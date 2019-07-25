@@ -27,6 +27,9 @@ ROS Published Topics
     - warning_led
 '''
 
+# Expert Qs:
+#   - IO control for door or IO for door?
+
 import rospy
 import socket
 
