@@ -1,0 +1,49 @@
+
+<launch>
+
+<!--=========================================================================-->
+<!--  Arguements                                                             -->
+<!--=========================================================================-->
+
+  <arg name="rectify" default="true"/>
+  <arg name="video_src" default="/dev/video0" />
+
+  <arg name="flag_image_view_initial" default="false" />
+  <arg name="flag_image_view_rectified" default="false" />
+
+<!--=========================================================================-->
+<!--  Camera Setup                                                           -->
+<!--=========================================================================-->
+
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
+    <param name="video_device" value="$(arg video_src)" />
+    <param name="image_width" value="640" />
+    <param name="image_height" value="480" />
+    <param name="pixel_format" value="yuyv" /> <!-- yuyv -->
+    <param name="camera_frame_id" value="usb_cam" />
+    <param name="io_method" value="mmap" />
+    <param name="framerate" value="5" />
+  </node>
+
+  <node if="$(arg flag_image_view_initial)" name="image_view_initial" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="usb_cam/image_raw" />
+    <param name="autosize" value="true" />
+    <param name="~image_transport" value="compressed" />
+  </node>
+
+<!--=========================================================================-->
+<!--  Rectification                                                          -->
+<!--=========================================================================-->
+
+  <node if="$(arg rectify)" name="image_rectification" pkg="image_proc" type="image_proc">
+    <remap from="image_raw" to="usb_cam/image_raw"/>
+    <remap from="camera_info" to="usb_cam/camera_info"/>
+  </node>
+
+  <node if="$(arg flag_image_view_rectified)" name="image_view_rectified" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="image_rect_color" />
+    <param name="autosize" value="true" />
+    <param name="~image_transport" value="compressed" />
+  </node>
+
+</launch>

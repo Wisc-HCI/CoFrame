@@ -1,0 +1,41 @@
+
+<!-- Calibration Instructions -->
+<!-- Start this launch file to configure usb_cam then, follow procedure at: -->
+<!-- http://wiki.ros.org/camera_calibration -->
+
+<launch>
+
+<!--=========================================================================-->
+<!--  Arguements                                                             -->
+<!--=========================================================================-->
+
+  <arg name="video_src" default="/dev/video0" />
+
+  <arg name="launch_calibrator" default="true"/>
+  <arg name="size" default="8x6"/>
+  <arg name="square" default="0.025"/>
+
+<!--=========================================================================-->
+<!--  Camera Setup                                                           -->
+<!--=========================================================================-->
+
+  <include file="$(find cobots_tasks)/launch/camera.launch">
+    <arg name="video_src" value="$(arg video_src)" />
+    <arg name="flag_image_view_initial" value="true" />
+    <arg name="flag_image_view_rectified" value="false" />
+    <arg name="rectify" default="false"/>
+  </include>
+
+<!--=========================================================================-->
+<!--  Calibration Application                                                          -->
+<!--=========================================================================-->
+
+  <include if="$(arg launch_calibrator)" file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+    <arg name="time" value="15"/>
+    <arg name="pkg" value="cobots_tasks"/>
+    <arg name="file" value="calibration_delay_app.launch"/>
+    <arg name="value" value="size:=$(arg size) square:=$(arg square) image:=/usb_cam/image_raw camera:=/usb_cam"/>
+    <arg name="node_name" value="timed_roslaunch_calibrator"/>
+  </include>
+
+</launch>

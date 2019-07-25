@@ -7,15 +7,24 @@ Date: 7-25-19
 
 Fakes a CNC device for a machine tending task.
 
-Socket Protocol
+Socket Protocol for fake CNC machine
     - ?D
-        - 0 or 1 (boolean door state)
+        - Returns 0 or 1 (boolean door state)
     - ?R
-        - 0 or 1 (boolean running state)
-    - !D0 or !D1
-        - 0 or 1 (boolean set status)
-    - !R0 or !R1
-        - 0 or 1 (boolean set status)
+        - Returns 0 or 1 (boolean running state)
+    - !D<value:[0,1]>
+        - Returns 0 or 1 (boolean set status)
+    - !R<value:[0,1]>
+        - Returns 0 or 1 (boolean set status)
+
+ROS Parameters
+    - ~rate
+        "Frequency in Hertz to check socket"
+
+ROS Published Topics
+    - running_led
+    - waiting_led
+    - warning_led
 '''
 
 import rospy

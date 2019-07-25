@@ -2,6 +2,11 @@
  * Fake CNC Device
  * @author Curt Henrichs
  * @date 7-25-19
+ *
+ * Defines the physical fake interface for the fake CNC machine.
+ *
+ * Used to create a more immersive interaction as it provides visual indication
+ * of the CNCs status for the operator.
  */
 
 //==============================================================================

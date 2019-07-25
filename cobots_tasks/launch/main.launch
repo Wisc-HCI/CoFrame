@@ -1,0 +1,57 @@
+<launch>
+
+<!--=========================================================================-->
+<!--  Arguements                                                             -->
+<!--=========================================================================-->
+
+  <arg name="video_src" default="/dev/video0" />
+
+  <arg name="marker_size" default="4.35" />
+  <arg name="max_new_marker_error" default="0.05" />
+  <arg name="max_track_error" default="0.05" />
+  <arg name="output_tf_frame" default="map" />
+
+  <arg name="flag_image_view_initial" default="false" />
+  <arg name="flag_image_view_rectified" default="false" />
+
+<!--=========================================================================-->
+<!--  CNC Device                                                             -->
+<!--=========================================================================-->
+
+  <node name="serial_bridge" pkg="rosserial_python" type="serial_node.py">
+    <param name="port" value="/dev/ttyUSB0"/>
+    <param name="baud" value="57600"/>
+  </node>
+
+  <node name="fake_cnc_socket" pkg="cobots_tasks" type="fake_cnc.py">
+    <param name="rate" value="10"/>
+  </node>
+
+<!--=========================================================================-->
+<!--  Camera Setup                                                           -->
+<!--=========================================================================-->
+
+  <include file="$(find cobots_tasks)/launch/camera.launch">
+    <arg name="video_src" value="$(arg video_src)" />
+    <arg name="flag_image_view_initial" value="$(arg flag_image_view_initial)" />
+    <arg name="flag_image_view_rectified" value="$(arg flag_image_view_rectified)" />
+  </include>
+
+  <node name="camera_transform_publisher" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 1 $(arg output_tf_frame) usb_cam"/>
+
+  <node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen">
+    <param name="marker_size"           type="double" value="$(arg marker_size)" />
+    <param name="max_new_marker_error"  type="double" value="$(arg max_new_marker_error)" />
+    <param name="max_track_error"       type="double" value="$(arg max_track_error)" />
+    <param name="output_frame"          type="string" value="$(arg output_tf_frame)" />
+
+    <remap from="camera_image"  to="usb_cam/image_raw" />
+    <remap from="camera_info"   to="usb_cam/camera_info" />
+  </node>
+
+<!--=========================================================================-->
+<!--  AR Jig                                                                 -->
+<!--=========================================================================-->
+
+
+</launch>
