@@ -53,5 +53,9 @@
 <!--  AR Jig                                                                 -->
 <!--=========================================================================-->
 
+  <node name="ar_jig_track_node" pkg="cobots_tasks" type="ar_jig_track.py">
+    <param name="rate" value="10"/>
+    <param name="tag_id" value="5"/>
+  </node>
 
 </launch>

@@ -15,7 +15,7 @@ Socket Protocol for fake CNC machine
     - !D<value:[0,1]>
         - Returns 0 or 1 (boolean set status)
     - !R<value:[0,1]>
-        - Returns 0 or 1 (boolean set status)
+        - Returns 0 or 1 (boolean set status)pass
 
 ROS Parameters
     - ~rate
