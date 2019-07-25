@@ -1,22 +1,44 @@
+/**
+ * Fake CNC Device
+ * @author Curt Henrichs
+ * @date 7-25-19
+ */
+
+//==============================================================================
+//  Libraries
+//==============================================================================
 
 #include <ros.h>
 #include< std_msgs/Bool.h>
+
+//==============================================================================
+//  Constants and Macro Declarations
+//==============================================================================
 
 #define LED_RUNNING (11)
 #define LED_WARNING (12)
 #define LED_WAITING (13)
 
+//==============================================================================
+//  Private Function Prototypes
+//==============================================================================
 
-void _LEDRunningCb( const std_msgs::Bool& msg);
-void _LEDWarningCb( const std_msgs::Bool& msg);
-void _LEDWaitingCb( const std_msgs::Bool& msg);
+static void _LEDRunningCb( const std_msgs::Bool& msg);
+static void _LEDWarningCb( const std_msgs::Bool& msg);
+static void _LEDWaitingCb( const std_msgs::Bool& msg);
 
+//==============================================================================
+//  Private Data Members
+//==============================================================================
 
-ros::NodeHandle nh;
-ros::Subscriber(<std_msgs::Bool> subLEDRunning("running_led", &_LEDRunningCb);
-ros::Subscriber(<std_msgs::Bool> subLEDRunning("warning_led", &_LEDWarningCb);
-ros::Subscriber(<std_msgs::Bool> subLEDRunning("waiting_led", &_LEDWaitingCb);
+static ros::NodeHandle nh;
+static ros::Subscriber<std_msgs::Bool> _subLEDRunning("running_led", &_LEDRunningCb);
+static ros::Subscriber<std_msgs::Bool> _subLEDWarning("warning_led", &_LEDWarningCb);
+static ros::Subscriber<std_msgs::Bool> _subLEDWaiting("waiting_led", &_LEDWaitingCb);
 
+//==============================================================================
+//  Main
+//==============================================================================
 
 void setup() {
   pinMode(LED_RUNNING, OUTPUT);
@@ -26,26 +48,28 @@ void setup() {
   digitalWrite(LED_RUNNING,LOW);
   digitalWrite(LED_WARNING,LOW);
   digitalWrite(LED_WAITING,LOW);
-  
+
   nh.initNode();
   nh.subscribe(sub);
 }
-
 
 void loop() {
   nh.spinOnce();
   delay(1);
 }
 
+//==============================================================================
+//  Private Function Implementation
+//==============================================================================
 
-void _LEDRunningCb( const std_msgs::Bool& msg) {
-  digitalWrite(LED_RUNNING,msg.data);
+static void _LEDRunningCb( const std_msgs::Bool& msg) {
+  digitalWrite(LED_RUNNING,(msg.data) ? (HIGH) : (LOW));
 }
 
-void _LEDWarningCb( const std_msgs::Bool& msg) {
-  digitalWrite(LED_WARNING,msg.data);
+static void _LEDWarningCb( const std_msgs::Bool& msg) {
+  digitalWrite(LED_WARNING,(msg.data) ? (HIGH) : (LOW));
 }
 
-void _LEDWaitingCb( const std_msgs::Bool& msg) {
-  digitalWrite(LED_WAITING,msg.data);
+static void _LEDWaitingCb( const std_msgs::Bool& msg) {
+  digitalWrite(LED_WAITING,(msg.data) ? (HIGH) : (LOW));
 }
