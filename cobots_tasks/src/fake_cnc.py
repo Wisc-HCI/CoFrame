@@ -71,9 +71,9 @@ class FakeCNC:
             try:
                 if data[0] == '?':      # query
                     if data[1] == 'D':      # Door
-                        clientsocket.send('{}'.format(int(self._door_status == True)))
+                        clientsocket.send('({})'.format(int(self._door_status == True)))
                     elif data[1] == 'R':    # Run
-                        clientsocket.send('{}'.format(int(self._running_status == True)))
+                        clientsocket.send('({})'.format(int(self._running_status == True)))
                     else:                   # invalid
                         print 'Invalid Atrribute'
                 elif data[0] == '!':    # asignment
@@ -83,35 +83,35 @@ class FakeCNC:
                         if not self._door_status and value:     # Close door
                             self._door_status = True
                             self._warning_led_pub.publish(Bool(False))
-                            clientsocket.send('1')
+                            clientsocket.send('(1)')
                         elif self._door_status and not value:   # Open door
                             if self._running_status:
-                                clientsocket.send('0') # must not be running
+                                clientsocket.send('(0)') # must not be running
                             else:
                                 self._door_status = False
                                 self._warning_led_pub.publish(Bool(True))
                                 clientsocket.send('1')
                         else:                                   # already in state
-                            clientsocket.send('1')
+                            clientsocket.send('(1)')
 
                     elif data[1] == 'R':    # Run
                         value = True if data[2] == '1' else False
 
                         if not self._running_status and value:      # Activate
                             if not self._door_status:
-                                clientsocket.send('0') # door must be closed
+                                clientsocket.send('(0)') # door must be closed
                             else:
                                 self._running_status = True
                                 self._running_led_pub.publish(Bool(True))
                                 self._waiting_led_pub.publish(Bool(False))
-                                clientsocket.send('1')
+                                clientsocket.send('(1)')
                         elif self._running_status and not value:    # Deactivate
                             self._running_status = False
                             self._running_led_pub.publish(Bool(False))
                             self._waiting_led_pub.publish(Bool(True))
-                            clientsocket.send('1')
+                            clientsocket.send('(1)')
                         else:                                       # already in state
-                            clientsocket.send('1')
+                            clientsocket.send('(1)')
 
                     else:                   # invalid
                         print 'Invalid Atrribute'

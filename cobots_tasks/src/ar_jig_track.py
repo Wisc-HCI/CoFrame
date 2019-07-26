@@ -67,9 +67,9 @@ class ARJigTrack:
                         clientsocket.send('')
                         break
 
-                    # send info
-                    msg = '[{0},{1},{2},'.format(pos[0],pos[1],pos[2])
-                    msg += '{0},{1},{2}]'.format(rot[0],rot[1],rot[2])
+                    # send info - read_ascii_float format
+                    msg = '({0},{1},{2},'.format(pos[0],pos[1],pos[2])
+                    msg += '{0},{1},{2})'.format(rot[0],rot[1],rot[2])
                     clientsocket.send(msg)
                 else:
                     print 'Invalid request'
