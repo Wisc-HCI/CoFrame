@@ -14,7 +14,7 @@
 //==============================================================================
 
 #include <ros.h>
-#include< std_msgs/Bool.h>
+#include<std_msgs/Bool.h>
 
 //==============================================================================
 //  Constants and Macro Declarations
@@ -55,7 +55,9 @@ void setup() {
   digitalWrite(LED_WAITING,LOW);
 
   nh.initNode();
-  nh.subscribe(sub);
+  nh.subscribe(_subLEDRunning);
+  nh.subscribe(_subLEDWarning);
+  nh.subscribe(_subLEDWaiting);
 }
 
 void loop() {

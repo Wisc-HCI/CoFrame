@@ -19,7 +19,7 @@
 <!--=========================================================================-->
 
   <node name="serial_bridge" pkg="rosserial_python" type="serial_node.py">
-    <param name="port" value="/dev/ttyUSB0"/>
+    <param name="port" value="/dev/ttyACM0"/>
     <param name="baud" value="57600"/>
   </node>
 
