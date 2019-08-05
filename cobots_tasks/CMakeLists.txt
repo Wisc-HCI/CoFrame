@@ -9,7 +9,6 @@ project(cobots_tasks)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
-  rosserial
   std_msgs
 )
 

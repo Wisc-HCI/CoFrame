@@ -1,0 +1,85 @@
+ Program
+   BeforeStart
+     part_in_jig≔ False 
+     feeder_cnt≔Pallet_1_cnt - 1
+     MoveJ
+       Home
+     Gripper Reset and Activate
+     Wait: 2.0
+     Gripper Move50% (1)
+   Robot Program
+     Restock CNC
+       Feeder
+         If feeder_cnt≥5
+           Popup
+           feeder_cnt≔0
+         Pallet_1
+           Patterns
+             Line_Pattern_1
+               StartItem_1
+               EndItem_1
+           Layers
+           At Each Item
+             Generated Movements
+               MoveJ
+                 Approach
+               MoveL
+                 ToolActionPoint
+               Tool action
+                 Gripper Close (1)
+               MoveL
+                 Exit_1
+         feeder_cnt≔feeder_cnt+1
+       'to cnc'
+       MoveL
+         Enter_CNC
+         Tooling_above
+         Tooling_part
+       Gripper Move50% (1)
+       'from cnc'
+       MoveL
+         Tooling_above
+         Exit_CNC
+       MoveJ
+         Home
+     CNC Tooling
+       Wait: 1.0
+     Check assembly zone state
+       'while previus part is in jig need to stall'
+       Loop part_in_jig
+         Wait: 0.25
+     Pick and Place Part on Jig
+       MoveL
+         Enter_CNC
+         Tooling_above
+         Tooling_part
+       Gripper Close (1)
+       MoveL
+         Tooling_above
+         Exit_CNC
+       Vision_Jig_Pose
+         'TODO vision pose move'
+         MoveL
+           'Get close with position the force stack it'
+           Waypoint_2
+       Force
+         MoveL
+           Direction: Base Z-
+             Until (expression)
+       MoveL
+         Direction: Base Z+
+           Until (distance)
+       Gripper Move50% (1)
+       MoveL
+         'move away from part'
+         Direction: Base Z+
+           Until (distance)
+       part_in_jig≔ True 
+       MoveJ
+         Home
+   Thread_1
+     'When part is placed, prompt op to move it.'
+     If part_in_jig
+       Popup
+       part_in_jig≔ False 
+     Wait: 0.25
