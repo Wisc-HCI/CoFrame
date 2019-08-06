@@ -9,13 +9,13 @@ Fakes a CNC device for a machine tending task.
 
 Socket Protocol for fake CNC machine
     - ?D
-        - Returns 0 or 1 (boolean door state)
+        - Returns 1 or 2 (boolean door state, 2 = True)
     - ?R
-        - Returns 0 or 1 (boolean running state)
-    - !D<value:[0,1]>
-        - Returns 0 or 1 (boolean set status)
-    - !R<value:[0,1]>
-        - Returns 0 or 1 (boolean set status)pass
+        - Returns 1 or 2 (boolean running state, 2 = True)
+    - !D<value:[1,2]>
+        - Returns 1 or 2 (boolean set status, 2 = True)
+    - !R<value:[1,2]>
+        - Returns 1 or 2 (boolean set status, 2 = True)
 
 ROS Parameters
     - ~rate
@@ -27,46 +27,55 @@ ROS Published Topics
     - warning_led
 '''
 
-# Expert Qs:
-#   - IO control for door or IO for door?
-
 import rospy
 import socket
+import traceback
 
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, UInt16
 
 
 TCP_IP = ''
 TCP_PORT = 5041
-BUFFER_SIZE = 5
+BUFFER_SIZE = 20
 DEFAULT_NODE_RATE = 10
+SETUP_DELAY = 5
+
+DOOR_OPENED = 45
+DOOR_CLOSED = 170
+
+CNC_RUN_TIME = 5
 
 
 class FakeCNC:
 
     def __init__(self, rate):
         self._rate = rate
+        self._timer = None
         self._running_status = False # F = idle, T = running
         self._door_status = False #F = open, T = closed
 
-        self._running_led_pub = rospy.Publisher("running_led",Bool,queue_size=2)
-        self._warning_led_pub = rospy.Publisher("warning_led",Bool,queue_size=2)
-        self._waiting_led_pub = rospy.Publisher("waiting_led",Bool,queue_size=2)
+        self._running_led_pub = rospy.Publisher("running_led",Bool,queue_size=1)
+        self._warning_led_pub = rospy.Publisher("warning_led",Bool,queue_size=1)
+        self._waiting_led_pub = rospy.Publisher("waiting_led",Bool,queue_size=1)
+        self._door_servo_pub = rospy.Publisher("door_servo",UInt16, queue_size=1)
 
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.bind((TCP_IP, TCP_PORT))
-        self._socket.listen(0)
+        self._socket.listen(1)
 
-        rospy.sleep(0.01)
+    def _timer_cb(self, event):
+        self._running_status = False
+        self._running_led_pub.publish(Bool(False))
+        self._waiting_led_pub.publish(Bool(True))
+
+    def spin(self):
+
+        rospy.sleep(SETUP_DELAY)
         self._running_led_pub.publish(Bool(False))
         self._warning_led_pub.publish(Bool(True))
         self._waiting_led_pub.publish(Bool(True))
-        rospy.sleep(0.01)
-
+        self._door_servo_pub.publish(UInt16(DOOR_OPENED))
         print 'setup complete'
-
-    def spin(self):
-        rate = rospy.Rate(self._rate)
 
         while not rospy.is_shutdown():
 
@@ -74,78 +83,91 @@ class FakeCNC:
             client, address = self._socket.accept()
             print 'connected'
 
-            while not rospy.is_shutdown():
+            while True:
+                # receive raw data
                 try:
                     data = client.recv(BUFFER_SIZE)
+                    if not data:
+                        break
                 except:
                     break
 
-                if not data:
-                    break
+                # convert to parsable
                 data = data.decode('utf-8')
                 print data
 
+                # process
                 try:
-                    self._process_raw(data)
+                    self._process_raw(client,data)
                 except:
+                    traceback.print_exc()
                     print 'Failed to parse'
 
-            client.close()
-            rate.sleep()
+                rospy.sleep(1/self._rate)
 
-    def _process_raw(self, data):
+            client.close()
+            rospy.sleep(1/self._rate)
+
+    def _process_raw(self, client, data):
         if data[0] == '?':      # query
-            self._process_get(data)
+            self._process_get(client,data)
         elif data[0] == '!':    # asignment
-            self._process_set(data)
+            self._process_set(client,data)
         else:                   # invalid
             print 'Invalid Operation'
+            client.send('(0)\n')
 
-    def _process_get(self, data):
+    def _process_get(self, client, data):
         if data[1] == 'D':      # Door
-            client.send('({})'.format(int(self._door_status == True)))
+            client.send('({})\n'.format(2 if self._door_status else 1))
         elif data[1] == 'R':    # Run
-            client.send('({})'.format(int(self._running_status == True)))
+            client.send('({})\n'.format(2 if self._running_status else 1))
         else:                   # invalid
             print 'Invalid Atrribute'
+            client.send('(0)\n')
 
-    def _process_set(self, data):
+    def _process_set(self, client, data):
         if data[1] == 'D':      # Door
-            value = True if data[2] == '1' else False
+            value = True if data[2] == '2' else False
 
             if not self._door_status and value:     # Close door
                 self._door_status = True
                 self._warning_led_pub.publish(Bool(False))
-                client.send('(1)')
+                self._door_servo_pub.publish(UInt16(DOOR_CLOSED))
+                client.send('(2)\n')
             elif self._door_status and not value:   # Open door
                 if self._running_status:
-                    client.send('(0)') # must not be running
+                    client.send('(1)\n') # must not be running
                 else:
                     self._door_status = False
                     self._warning_led_pub.publish(Bool(True))
-                    client.send('1')
+                    self._door_servo_pub.publish(UInt16(DOOR_OPENED))
+                    client.send('(2)\n')
             else:                                   # already in state
-                client.send('(1)')
+                client.send('(2)\n')
         elif data[1] == 'R':    # Run
-            value = True if data[2] == '1' else False
+            value = True if data[2] == '2' else False
 
             if not self._running_status and value:      # Activate
                 if not self._door_status:
-                    client.send('(0)') # door must be closed
+                    client.send('(1)\n') # door must be closed
                 else:
+                    self._timer = rospy.Timer(rospy.Duration(CNC_RUN_TIME), self._timer_cb, oneshot=True)
+
                     self._running_status = True
                     self._running_led_pub.publish(Bool(True))
                     self._waiting_led_pub.publish(Bool(False))
-                    client.send('(1)')
+                    client.send('(2)\n')
             elif self._running_status and not value:    # Deactivate
                 self._running_status = False
                 self._running_led_pub.publish(Bool(False))
                 self._waiting_led_pub.publish(Bool(True))
-                client.send('(1)')
+                client.send('(2)\n')
             else:                                       # already in state
-                client.send('(1)')
+                client.send('(2)\n')
         else:                   # invalid
             print 'Invalid Atrribute'
+            client.send('(0)\n')
 
 
 if __name__ == "__main__":

@@ -1,0 +1,8 @@
+ Program
+   Robot Program
+     Gripper Activate
+     Loop
+       Gripper Close (1)
+       Wait: 1.0
+       Gripper Open (1)
+       Wait: 1.0

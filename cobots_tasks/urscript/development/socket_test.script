@@ -1,4 +1,11 @@
-def proto_cobots_task():
+def socket_test():
+  set_tool_communication(False, 115200, 0, 1, 1.5, 3.5)
+  set_tool_output_mode(0)
+  set_tool_digital_output_mode(0, 1)
+  set_tool_digital_output_mode(1, 1)
+  set_tool_voltage(0)
+  set_gravity([0.0, 0.0, 9.82])
+  set_safety_mode_transition_hardness(1)
   set_standard_analog_input_domain(0, 1)
   set_standard_analog_input_domain(1, 1)
   set_tool_analog_input_domain(0, 1)
@@ -6,18 +13,9 @@ def proto_cobots_task():
   set_analog_outputdomain(0, 0)
   set_analog_outputdomain(1, 0)
   set_input_actions_to_default()
-  set_safety_mode_transition_hardness(1)
   set_tcp(p[0.0,0.0,0.0,0.0,0.0,0.0])
   set_payload(0.9,[0.0,0.0,0.0584])
-  set_tool_communication(False, 115200, 0, 1, 1.5, 3.5)
-  set_tool_output_mode(0)
-  set_tool_digital_output_mode(0, 1)
-  set_tool_digital_output_mode(1, 1)
-  set_tool_voltage(0)
-  set_gravity([0.0, 0.0, 9.82])
-  global Pallet_1_cnt=3
-  global referencePoint=p[-0.32161746529797736,-0.21331151735481269,0.15748757314952722,2.2474636324139854,2.1348817833114127,-0.05489515669635725]
-  global separatorPoint=p[0.0,0.0,0.0,0.0,0.0,0.0]
+  global Pallet_1_cnt=4
   rtde_set_watchdog("speed_slider_mask", 10.0, "ignore")
   # begin: URCap Installation Node
   #   Source: Robotiq_Grippers, 1.6.0.4, Robotiq Inc.
@@ -1713,409 +1711,71 @@ def proto_cobots_task():
   set_open_mm(50.0, 4)
   rq_set_gripper_max_cur(600, "1")
   # end: URCap Installation Node
-  global Pallet_1_lct=1
-  global Pallet_1_lno=1
-  global Pallet_1_sep= False 
-  global Pallet_1_tct=1
-  global Home_p=p[-.120061002628, -.175503106291, .356170742989, 3.135584278073, -.024228288096, .016209521382]
-  global Home_q=[-1.5189526716815394, -1.0823944371989747, -1.6762261390686035, -1.9461714229979457, 1.5876460075378418, -3.0725038687335413]
-  global Approach_p=p[-.321626932562, -.213313273833, .173331331195, 2.247509738285, 2.134972654784, -.055061899303]
-  global Approach_q=[-2.2224276701490044, -1.9742824039655975, -1.7374930382820803, -0.9576347628914075, 1.6098160743424232, -5.30489379055894]
-  global ToolActionPoint_p=p[-.321617465298, -.213311517355, .157487573150, 2.247463632829, 2.134881783901, -.054895157069]
-  global ToolActionPoint_q=[-2.222511593307761, -2.0116335353279666, -1.7689976694186553, -0.8888600627482512, 1.6095919601587871, -5.304642502374286]
-  global Exit_1_p=p[-.321620178314, -.213315741635, .185133896305, 2.247519286018, 2.134841204490, -.054950392829]
-  global Exit_1_q=[-2.222368065677191, -1.9490686852351686, -1.7109131816962142, -1.009489372946346, 1.6101441392879918, -5.305025402501802]
-  global Enter_CNC_p=p[-.079487177242, -.211207256596, .526829921263, 2.355775332182, .399655876885, -.090032580693]
-  global Enter_CNC_q=[-1.2188366095172327, -1.1760528844645997, -1.1199679374694824, -1.6813608608641566, 1.3859953880310059, -3.196533981953756]
-  global Tooling_above_p=p[.215755521168, -.353261839433, .387306652109, 3.109463423097, .041905239972, -.019352078851]
-  global Tooling_above_q=[-0.6929257551776331, -2.131153722802633, -0.4147176742553711, -2.1541840038695277, 1.5420098304748535, -2.292762581502096]
-  global Tooling_part_p=p[.215744925118, -.353270914285, .159533024820, 3.109475323259, .041797322115, -.019476313062]
-  global Tooling_part_q=[-0.6963041464435022, -2.104049345056051, -1.5898995399475098, -1.006326512699463, 1.5425734519958496, -2.2878387610064905]
-  global Exit_CNC_p=p[-.068303054267, -.232544206715, .487988241977, 3.078288482489, -.266027916381, .042601336870]
-  global Exit_CNC_q=[-1.2894437948810022, -1.5668881696513672, -0.5769538879394531, -2.509459157983297, 1.5805068016052246, -2.6897953192340296]
-  global Waypoint_2_p=p[-.159564061853, -.437517112000, .170613308978, 3.111936949784, -.005065914311, .025769508456]
-  global Waypoint_2_q=[-1.6413071791278284, -2.2893110714354457, -1.216172695159912, -1.1773737233928223, 1.5937414169311523, -3.2040393988238733]
-  def calculate_point_to_move_towards(feature, direction, position_distance):
-    local scale=position_distance * norm([direction[0], direction[1], direction[2]])
-    local direction_vector_normalized=normalize(direction)
-    local displacement_pose=p[direction_vector_normalized[0] * scale,direction_vector_normalized[1] * scale,direction_vector_normalized[2] * scale,0,0,0]
-    local wanted_displacement_in_base_frame=pose_sub(pose_trans(feature, displacement_pose), feature)
-    return pose_add(get_target_waypoint(), wanted_displacement_in_base_frame)
-  end
   $ 1 "BeforeStart"
-  $ 2 "part_in_jig≔ False "
-  global part_in_jig=  False  
-  $ 3 "feeder_cnt≔Pallet_1_cnt - 1"
-  global feeder_cnt=Pallet_1_cnt - 1
-  $ 4 "MoveJ"
-  $ 5 "Home"
-  movej(get_inverse_kin(Home_p, qnear=Home_q), a=1.3962634015954636, v=1.0471975511965976)
-  # begin: URCap Program Node
-  #   Source: Robotiq_Grippers, 1.6.0.4, Robotiq Inc.
-  #   Type: Gripper Activate
-  $ 6 "Gripper Reset and Activate"
-  
-  rq_init_comm_if_connected(9, "1")
-  rq_init_comm_if_connected(2, "2")
-  rq_init_comm_if_connected(3, "3")
-  rq_init_comm_if_connected(4, "4")
-  
-  reset_and_activate = True
-  
-  rq_activate_all_grippers(True)
-  
-  clear_socket_buffer("1")
-  clear_socket_buffer("2")
-  clear_socket_buffer("3")
-  clear_socket_buffer("4")
-  # end: URCap Program Node
-  $ 7 "Wait: 2.0"
-  sleep(2.0)
-  # begin: URCap Program Node
-  #   Source: Robotiq_Grippers, 1.6.0.4, Robotiq Inc.
-  #   Type: Gripper
-  $ 8 "Gripper Move50% (1)"
-  gripper_1_used = True
-  if (connectivity_checked[0] != 1):
-    if not(rq_set_sid(9, "1")):
-      popup("Gripper 1 must be connected to run this program.", "No connection", False, True, True)
-    end
-    connectivity_checked[0] = 1
+  $ 2 "cnc_address≔'10.130.229.221'"
+  global cnc_address="10.130.229.221"
+  $ 3 "cnc_port≔5041"
+  global cnc_port=5041
+  $ 4 "socket_close('cnc_socket')"
+  socket_close("cnc_socket")
+  $ 5 "open≔socket_open(cnc_address,cnc_port,'cnc_socket')"
+  global open=socket_open(cnc_address,cnc_port,"cnc_socket")
+  $ 6 "Loop  not open"
+  while (  not  open):
+    $ 7 "open≔socket_open(cnc_address,cnc_port,'cnc_socket')"
+    global open=socket_open(cnc_address,cnc_port,"cnc_socket")
   end
-  if (status_checked[0] != 1):
-    if not(rq_is_gripper_activated("1")):
-      popup("Gripper 1 is not activated. Go to Installation tab > Gripper to activate it and run the program again.", "Not activated", False, True, True)
-    end
-    status_checked[0] = 1
-  end
-  rq_set_pos_spd_for(128, 255, 255, "1")
-  rq_go_to("1")
-  rq_wait("1")
-  gripper_1_selected = True
-  gripper_2_selected = False
-  gripper_3_selected = False
-  gripper_4_selected = False
-  gripper_1_used = False
-  gripper_2_used = False
-  gripper_3_used = False
-  gripper_4_used = False
-  # end: URCap Program Node
-  $ 79 "Thread_1"
-  thread Thread_1():
-    while (True):
-      # 'When part is placed, prompt op to move it.'
-      if (part_in_jig):
-        popup("Move part from assembly zone", "Message", False, False, blocking=True)
-        global part_in_jig=  False  
-      end
-      sleep(0.25)
-    end
-  end
-  threadId_Thread_1 = run Thread_1()
   while (True):
-    $ 9 "Robot Program"
-    $ 10 "Restock CNC"
-    $ 11 "Feeder"
-    $ 12 "If feeder_cnt≥5"
-    if (feeder_cnt >= 5):
+    $ 8 "Robot Program"
+    $ 9 "Close door"
+    $ 10 "socket_send_string('!D2','cnc_socket')"
+    socket_send_string("!D2","cnc_socket")
+    $ 11 "recv≔socket_read_ascii_float(1,'cnc_socket')"
+    global recv=socket_read_ascii_float(1,"cnc_socket")
+    $ 12 "If recv[0] ≠ 1 or recv[1] ≠ 2"
+    if (recv[0]  !=  1  or  recv[1]  !=  2):
       $ 13 "Popup"
-      popup("Replace stock pallete", "Message", False, False, blocking=True)
-      $ 14 "feeder_cnt≔0"
-      global feeder_cnt=0
+      popup("Failed to close door", "Error", False, True, blocking=True)
+      $ 14 "Halt"
+      halt
     end
-    $ 15 "Pallet_1"
-    def Pallet_1_trans(pose):
-    return p[pose[0], pose[1], pose[2], 0, 0, 0]
-  end
-  def Pallet_1_rot(pose):
-  return p[0, 0, 0, pose[3], pose[4], pose[5]]
-  end
-  def Pallet_1_compute_pallet_waypoint(T_base_feature_taught, T_feature_referencePoint_taught, T_referencePoint_approach_taught, T_base_feature, T_base_referencePoint):
-  local trans_referencePoint_approach_in_feature_taught = pose_sub(Pallet_1_trans(pose_trans(T_feature_referencePoint_taught, T_referencePoint_approach_taught)), Pallet_1_trans(T_feature_referencePoint_taught))
-  local rot_referencePoint_approach_in_feature_taught = pose_trans(Pallet_1_rot(T_feature_referencePoint_taught), pose_trans(Pallet_1_rot(T_referencePoint_approach_taught), pose_inv(Pallet_1_rot(T_feature_referencePoint_taught))))
-  T_feature_referencePoint = pose_trans(pose_inv(T_base_feature), T_base_referencePoint)
-  rot_referencePoint_approach = pose_trans(pose_inv(Pallet_1_rot(T_feature_referencePoint)), pose_trans(rot_referencePoint_approach_in_feature_taught, Pallet_1_rot(T_feature_referencePoint)))
-  T_feature_approach = pose_trans(trans_referencePoint_approach_in_feature_taught, pose_trans(T_feature_referencePoint, rot_referencePoint_approach))
-  T_base_approach = pose_trans(T_base_feature, T_feature_approach)
-  return T_base_approach
-  end
-  Pallet_1_tct = 5
-  if (Pallet_1_cnt > 5 or Pallet_1_cnt < 1):
-    Pallet_1_cnt = 1
-  end
-  $ 16 "Patterns"
-  $ 17 "Line_Pattern_1"
-  $ 20 "Layers"
-  if (Pallet_1_cnt < 6):
-    Pallet_1_lno = 1
-    Pallet_1_lct = Pallet_1_cnt
-    global StartItem_1=pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], pose_trans(p[-.000000000000, -.000000000000, -.000000000000, .000000000000, .000000000000, .000000000000], p[-.321617465298, -.213311517355, .157487573150, 2.247463632414, 2.134881783311, -.054895156696]))
-    global EndItem_1=pose_trans(p[0.0,0.0,0.0,0.0,0.0,0.0], pose_trans(p[-.000000000000, -.000000000000, -.000000000000, .000000000000, .000000000000, .000000000000], p[-.330134750909, -.418614106988, .156271242717, -2.283303102617, -2.147471826108, -.030225653355]))
-    referencePoint = interpolate_pose(StartItem_1, EndItem_1, (Pallet_1_lct - 1)/4)
-    direction = p[0,0,1,0,0,0]
-    referencePoint = pose_add (referencePoint,p[0.0*direction[0],0.0*direction[1],0.0*direction[2],0,0,0])
-  end
-  Approach_p = Pallet_1_compute_pallet_waypoint(p[0.0,0.0,0.0,0.0,0.0,0.0], pose_trans(pose_inv(p[0.0,0.0,0.0,0.0,0.0,0.0]), p[-0.32161746529797736,-0.21331151735481269,0.15748757314952722,2.247463632413987,2.1348817833114153,-0.05489515669635894]), p[-8.59235984973783E-4,7.863375459360444E-5,-0.015820249427767497,1.4439189441932526E-4,-8.970881652895685E-6,-2.59536578242789E-5], p[0.0,0.0,0.0,0.0,0.0,0.0], referencePoint)
-  Approach_p = pose_trans(p[-0.32161746529797736,-0.21331151735481269,0.15748757314952722,2.247463632413986,2.1348817833114127,-0.054895156696360206], pose_trans(pose_inv(referencePoint), Approach_p))
-  ToolActionPoint_p = Pallet_1_compute_pallet_waypoint(p[0.0,0.0,0.0,0.0,0.0,0.0], pose_trans(pose_inv(p[0.0,0.0,0.0,0.0,0.0,0.0]), p[-0.32161746529797736,-0.21331151735481269,0.15748757314952722,2.247463632413987,2.1348817833114153,-0.05489515669635894]), p[2.7755575615628914E-17,5.551115123125783E-17,0.0,6.743496559769023E-10,3.227569427000087E-10,-1.0884184685803174E-10], p[0.0,0.0,0.0,0.0,0.0,0.0], referencePoint)
-  ToolActionPoint_p = pose_trans(p[-0.32161746529797736,-0.21331151735481269,0.15748757314952722,2.247463632413986,2.1348817833114127,-0.054895156696360206], pose_trans(pose_inv(referencePoint), ToolActionPoint_p))
-  Exit_1_p = Pallet_1_compute_pallet_waypoint(p[0.0,0.0,0.0,0.0,0.0,0.0], pose_trans(pose_inv(p[0.0,0.0,0.0,0.0,0.0,0.0]), p[-0.32161746529797736,-0.21331151735481269,0.15748757314952722,2.247463632413987,2.1348817833114153,-0.05489515669635894]), p[-0.0014997568365833769,1.5105854231073357E-4,-0.02760520095884178,3.530169635204149E-5,-1.6633355822172116E-5,4.271077777347683E-5], p[0.0,0.0,0.0,0.0,0.0,0.0], referencePoint)
-  Exit_1_p = pose_trans(p[-0.32161746529797736,-0.21331151735481269,0.15748757314952722,2.247463632413986,2.1348817833114127,-0.054895156696360206], pose_trans(pose_inv(referencePoint), Exit_1_p))
-  $ 21 "At Each Item"
-  $ 22 "Generated Movements"
-  $ 23 "MoveJ"
-  $ 24 "Approach"
-  movej(get_inverse_kin(pose_trans(referencePoint, pose_trans(p[.237773042550, .309395580111, .146561551444, -2.247463632414, -2.134881783311, .054895156696], Approach_p)), qnear=Approach_q), a=1.3962634015954636, v=1.0471975511965976)
-  $ 25 "MoveL"
-  $ 26 "ToolActionPoint"
-  movel(pose_trans(referencePoint, pose_trans(p[.237773042550, .309395580111, .146561551444, -2.247463632414, -2.134881783311, .054895156696], ToolActionPoint_p)), a=1.2, v=0.25)
-  $ 27 "Tool action"
-  # begin: URCap Program Node
-  #   Source: Robotiq_Grippers, 1.6.0.4, Robotiq Inc.
-  #   Type: Gripper
-  $ 28 "Gripper Close (1)"
-  gripper_1_used = True
-  if (connectivity_checked[0] != 1):
-    if not(rq_set_sid(9, "1")):
-      popup("Gripper 1 must be connected to run this program.", "No connection", False, True, True)
+    $ 15 "Start CNC - Preconfigured"
+    $ 16 "socket_send_string('!R2','cnc_socket')"
+    socket_send_string("!R2","cnc_socket")
+    $ 17 "recv≔socket_read_ascii_float(1,'cnc_socket')"
+    global recv=socket_read_ascii_float(1,"cnc_socket")
+    $ 18 "If recv[0] ≠ 1 or recv[1] ≠ 2"
+    if (recv[0]  !=  1  or  recv[1]  !=  2):
+      $ 19 "Popup"
+      popup("Failed to start CNC", "Error", False, True, blocking=True)
+      $ 20 "Halt"
+      halt
     end
-    connectivity_checked[0] = 1
-  end
-  if (status_checked[0] != 1):
-    if not(rq_is_gripper_activated("1")):
-      popup("Gripper 1 is not activated. Go to Installation tab > Gripper to activate it and run the program again.", "Not activated", False, True, True)
+    $ 21 "Wait for CNC to complete"
+    $ 22 "wait_cnc≔ True "
+    global wait_cnc=  True  
+    $ 23 "Loop wait_cnc"
+    while (wait_cnc):
+      $ 24 "Wait: 1.0"
+      sleep(1.0)
+      $ 25 "socket_send_string('?R','cnc_socket')"
+      socket_send_string("?R","cnc_socket")
+      $ 26 "recv≔socket_read_ascii_float(1,'cnc_socket')"
+      global recv=socket_read_ascii_float(1,"cnc_socket")
+      $ 27 "wait_cnc≔ not (recv[0] ≟ 1  and recv[1] ≟ 1)"
+      global wait_cnc=  not  (recv[0]  ==  1   and  recv[1]  ==  1)
     end
-    status_checked[0] = 1
-  end
-  rq_set_pos_spd_for(255, 255, 255, "1")
-  rq_go_to("1")
-  rq_wait("1")
-  gripper_1_selected = True
-  gripper_2_selected = False
-  gripper_3_selected = False
-  gripper_4_selected = False
-  gripper_1_used = False
-  gripper_2_used = False
-  gripper_3_used = False
-  gripper_4_used = False
-  # end: URCap Program Node
-  $ 29 "MoveL"
-  $ 30 "Exit_1"
-  movel(pose_trans(referencePoint, pose_trans(p[.237773042550, .309395580111, .146561551444, -2.247463632414, -2.134881783311, .054895156696], Exit_1_p)), a=1.2, v=0.25, r=0.026)
-  Pallet_1_sep = False
-  if (Pallet_1_cnt >= 5):
-    Pallet_1_cnt = 1
-  else:
-    Pallet_1_cnt = Pallet_1_cnt + 1
-  end
-  $ 31 "feeder_cnt≔feeder_cnt+1"
-  global feeder_cnt=feeder_cnt+1
-  $ 32 "'to cnc'"
-  # 'to cnc'
-  $ 33 "MoveL"
-  $ 34 "Enter_CNC"
-  movel(Enter_CNC_p, a=1.2, v=0.25, r=0.05)
-  $ 35 "Tooling_above"
-  movel(Tooling_above_p, a=1.2, v=0.25, r=0.05)
-  $ 36 "Tooling_part"
-  movel(Tooling_part_p, a=1.2, v=0.25)
-  # begin: URCap Program Node
-  #   Source: Robotiq_Grippers, 1.6.0.4, Robotiq Inc.
-  #   Type: Gripper
-  $ 37 "Gripper Move50% (1)"
-  gripper_1_used = True
-  if (connectivity_checked[0] != 1):
-    if not(rq_set_sid(9, "1")):
-      popup("Gripper 1 must be connected to run this program.", "No connection", False, True, True)
+    $ 28 "Open door"
+    $ 29 "socket_send_string('!D1','cnc_socket')"
+    socket_send_string("!D1","cnc_socket")
+    $ 30 "recv≔socket_read_ascii_float(1,'cnc_socket')"
+    global recv=socket_read_ascii_float(1,"cnc_socket")
+    $ 31 "If recv[1] ≠ 2"
+    if (recv[1]  !=  2):
+      $ 32 "Popup"
+      popup("Failed to open door", "Error", False, True, blocking=True)
+      $ 33 "Halt"
+      halt
     end
-    connectivity_checked[0] = 1
-  end
-  if (status_checked[0] != 1):
-    if not(rq_is_gripper_activated("1")):
-      popup("Gripper 1 is not activated. Go to Installation tab > Gripper to activate it and run the program again.", "Not activated", False, True, True)
-    end
-    status_checked[0] = 1
-  end
-  rq_set_pos_spd_for(128, 255, 255, "1")
-  rq_go_to("1")
-  rq_wait("1")
-  gripper_1_selected = True
-  gripper_2_selected = False
-  gripper_3_selected = False
-  gripper_4_selected = False
-  gripper_1_used = False
-  gripper_2_used = False
-  gripper_3_used = False
-  gripper_4_used = False
-  # end: URCap Program Node
-  $ 38 "'from cnc'"
-  # 'from cnc'
-  $ 39 "MoveL"
-  $ 40 "Tooling_above"
-  movel(Tooling_above_p, a=1.2, v=0.25, r=0.05)
-  $ 41 "Exit_CNC"
-  movel(Exit_CNC_p, a=1.2, v=0.25, r=0.05)
-  $ 42 "MoveJ"
-  $ 43 "Home"
-  movej(get_inverse_kin(Home_p, qnear=Home_q), a=1.3962634015954636, v=1.0471975511965976, r=0.01)
-  $ 44 "CNC Tooling"
-  $ 45 "Wait: 1.0"
-  sleep(1.0)
-  $ 46 "Check assembly zone state"
-  $ 47 "'while previus part is in jig need to stall'"
-  # 'while previus part is in jig need to stall'
-  $ 48 "Loop part_in_jig"
-  while (part_in_jig):
-    $ 49 "Wait: 0.25"
-    sleep(0.25)
-  end
-  $ 50 "Pick and Place Part on Jig"
-  $ 51 "MoveL"
-  $ 52 "Enter_CNC"
-  movel(Enter_CNC_p, a=1.2, v=0.25, r=0.025)
-  $ 53 "Tooling_above"
-  movel(Tooling_above_p, a=1.2, v=0.25, r=0.05)
-  $ 54 "Tooling_part"
-  movel(Tooling_part_p, a=1.2, v=0.25)
-  # begin: URCap Program Node
-  #   Source: Robotiq_Grippers, 1.6.0.4, Robotiq Inc.
-  #   Type: Gripper
-  $ 55 "Gripper Close (1)"
-  gripper_1_used = True
-  if (connectivity_checked[0] != 1):
-    if not(rq_set_sid(9, "1")):
-      popup("Gripper 1 must be connected to run this program.", "No connection", False, True, True)
-    end
-    connectivity_checked[0] = 1
-  end
-  if (status_checked[0] != 1):
-    if not(rq_is_gripper_activated("1")):
-      popup("Gripper 1 is not activated. Go to Installation tab > Gripper to activate it and run the program again.", "Not activated", False, True, True)
-    end
-    status_checked[0] = 1
-  end
-  rq_set_pos_spd_for(255, 255, 255, "1")
-  rq_go_to("1")
-  rq_wait("1")
-  gripper_1_selected = True
-  gripper_2_selected = False
-  gripper_3_selected = False
-  gripper_4_selected = False
-  gripper_1_used = False
-  gripper_2_used = False
-  gripper_3_used = False
-  gripper_4_used = False
-  # end: URCap Program Node
-  $ 56 "MoveL"
-  $ 57 "Tooling_above"
-  movel(Tooling_above_p, a=1.2, v=0.25, r=0.05)
-  $ 58 "Exit_CNC"
-  movel(Exit_CNC_p, a=1.2, v=0.25, r=0.05)
-  $ 59 "Vision_Jig_Pose"
-  $ 60 "'TODO vision pose move'"
-  # 'TODO vision pose move'
-  $ 61 "MoveL"
-  $ 62 "'Get close with position the force stack it'"
-  # 'Get close with position the force stack it'
-  $ 63 "Waypoint_2"
-  movel(Waypoint_2_p, a=1.2, v=0.25)
-  sleep(0.02)
-  zero_ftsensor()
-  force_mode(p[0.0,0.0,0.0,0.0,0.0,0.0], [0, 0, 1, 0, 0, 0], [0.0, 0.0, 25.0, 0.0, 0.0, 0.0], 1, [0.1, 0.1, 0.1, 0.3490658503988659, 0.3490658503988659, 0.3490658503988659])
-  $ 64 "Force"
-  $ 65 "MoveL"
-  $ 66 "Direction: Base Z-"
-  global move_thread_flag_66=0
-  thread move_thread_66():
-    move_thread_flag_66 = 1
-    local towardsPos=calculate_point_to_move_towards(p[0.0,0.0,0.0,0.0,0.0,0.0], [0.0,0.0,-1.0], 1000.0)
-    movel(towardsPos, a=0.8, v=0.025)
-    move_thread_flag_66 = 2
-  end
-  move_thread_flag_66 = 0
-  move_thread_han_66 = run move_thread_66()
-  while (True):
-    $ 67 "Until (expression)"
-    if ( force ()>5):
-      kill move_thread_han_66
-      stopl(0.8)
-      break
-    end
-    sync()
-  end
-  end_force_mode()
-  stopl(5.0)
-  $ 68 "MoveL"
-  $ 69 "Direction: Base Z+"
-  global move_thread_flag_69=0
-  thread move_thread_69():
-    move_thread_flag_69 = 1
-    local towardsPos=calculate_point_to_move_towards(p[0.0,0.0,0.0,0.0,0.0,0.0], [0.0,0.0,1.0], 0.0025)
-    movel(towardsPos, a=1.2, v=0.25)
-    move_thread_flag_69 = 2
-  end
-  move_thread_flag_69 = 0
-  move_thread_han_69 = run move_thread_69()
-  while (True):
-    $ 70 "Until (distance)"
-    if (move_thread_flag_69 > 1):
-      break
-    end
-    sync()
-  end
-  # begin: URCap Program Node
-  #   Source: Robotiq_Grippers, 1.6.0.4, Robotiq Inc.
-  #   Type: Gripper
-  $ 71 "Gripper Move50% (1)"
-  gripper_1_used = True
-  if (connectivity_checked[0] != 1):
-    if not(rq_set_sid(9, "1")):
-      popup("Gripper 1 must be connected to run this program.", "No connection", False, True, True)
-    end
-    connectivity_checked[0] = 1
-  end
-  if (status_checked[0] != 1):
-    if not(rq_is_gripper_activated("1")):
-      popup("Gripper 1 is not activated. Go to Installation tab > Gripper to activate it and run the program again.", "Not activated", False, True, True)
-    end
-    status_checked[0] = 1
-  end
-  rq_set_pos_spd_for(128, 255, 255, "1")
-  rq_go_to("1")
-  rq_wait("1")
-  gripper_1_selected = True
-  gripper_2_selected = False
-  gripper_3_selected = False
-  gripper_4_selected = False
-  gripper_1_used = False
-  gripper_2_used = False
-  gripper_3_used = False
-  gripper_4_used = False
-  # end: URCap Program Node
-  $ 72 "MoveL"
-  $ 73 "'move away from part'"
-  # 'move away from part'
-  $ 74 "Direction: Base Z+"
-  global move_thread_flag_74=0
-  thread move_thread_74():
-    move_thread_flag_74 = 1
-    local towardsPos=calculate_point_to_move_towards(p[0.0,0.0,0.0,0.0,0.0,0.0], [0.0,0.0,1.0], 0.05)
-    movel(towardsPos, a=1.2, v=0.25)
-    move_thread_flag_74 = 2
-  end
-  move_thread_flag_74 = 0
-  move_thread_han_74 = run move_thread_74()
-  while (True):
-    $ 75 "Until (distance)"
-    if (move_thread_flag_74 > 1):
-      break
-    end
-    sync()
-  end
-  $ 76 "part_in_jig≔ True "
-  global part_in_jig=  True  
-  $ 77 "MoveJ"
-  $ 78 "Home"
-  movej(get_inverse_kin(Home_p, qnear=Home_q), a=1.3962634015954636, v=1.0471975511965976)
   end
 end
