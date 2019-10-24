@@ -3,9 +3,10 @@ from abstract import Abstract
 from primitive import Pose
 from trajectory import Trajectory
 
+
 class Therblig(Abstract):
 
-    def __init__(self, pose=Pose(), connections=[], trajectories=[] label='', uuid=None):
+    def __init__(self, pose=Pose(), connections=[], trajectories=[], label='', uuid=None):
         Abstract.__init__(self,'therblig',label,uuid)
         self._pose = pose
         self._connections = connections
@@ -13,7 +14,7 @@ class Therblig(Abstract):
 
     def to_dct(self):
         return {
-            'type': self._type
+            'type': self._type,
             'uuid': self._uuid,
             'label': self.label,
             'pose': self._pose.to_dct(),

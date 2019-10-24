@@ -1,6 +1,7 @@
 from abstract import Abstract
 
-class Waypoint(Abstract):
+
+class Trajectory(Abstract):
 
     def __init__(self):
         pass
