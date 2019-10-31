@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>cobots_tasks</name>
+  <name>ur_support</name>
   <version>0.0.0</version>
-  <description>The tasks package</description>
+  <description>The ur_support package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

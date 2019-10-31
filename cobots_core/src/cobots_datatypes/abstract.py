@@ -1,3 +1,5 @@
+import uuid
+
 from abc import ABCMeta, abstractmethod
 
 
@@ -22,7 +24,7 @@ class Abstract(object):
 
     @staticmethod
     def generate_uuid(type):
-        return '{}'.format(type)
+        return '{}-{}'.format(type,uuid.uuid1().hex)
 
     @abstractmethod
     def to_dct(self):

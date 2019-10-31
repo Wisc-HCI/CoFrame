@@ -1,0 +1,13 @@
+<launch>
+
+  <arg name="simulated" default='true'/>
+
+
+  <include file="$(find cobots_core)/launch/ur3e.launch">
+    <arg name="simulated" value="$(arg simulated )"/>
+  </include>
+
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+
+
+</launch>
