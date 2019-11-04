@@ -3,11 +3,14 @@
   <arg name="simulated" default='true'/>
 
 
-  <include file="$(find cobots_core)/launch/ur3e.launch">
-    <arg name="simulated" value="$(arg simulated )"/>
-  </include>
-
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
+  <node name="data_server" pkg="cobots_ros" type="data_server.py">
+    <!--TODO-->
+  </node>
+
+  <node name="robot_control" pkg="cobots_ros" type="robot_control.py">
+    <!--TODO-->
+  </node>
 
 </launch>

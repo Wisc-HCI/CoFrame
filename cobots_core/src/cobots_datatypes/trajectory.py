@@ -1,7 +1,7 @@
 from abstract import Abstract
 from location import Location
 from waypoint import Waypoint
-from pose import Pose
+from geometry import Pose
 
 class Trajectory(Abstract):
 
