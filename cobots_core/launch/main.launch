@@ -5,11 +5,11 @@
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
-  <node name="data_server" pkg="cobots_ros" type="data_server.py">
+  <node name="data_server" pkg="cobots_core" type="data_server.py">
     <!--TODO-->
   </node>
 
-  <node name="robot_control" pkg="cobots_ros" type="robot_control.py">
+  <node name="robot_control" pkg="cobots_core" type="robot_control.py">
     <!--TODO-->
   </node>
 

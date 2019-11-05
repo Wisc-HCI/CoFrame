@@ -1,38 +1,36 @@
 <?xml version="1.0"?>
 <robot name="physical_and_simulated_robot" xmlns:xacro="http://ros.org/wiki/xacro">
 
-	<xacro:arg name="limited" default="true"/>
-
 	<!-- World -->
 	<link name="world" />
 
 	<!-- UR3e Physical -->
 	<xacro:include filename="$(find ur_e_description)/urdf/ur3e.urdf.xacro" />
-	<joint name="world_joint" type="fixed">
+	<joint name="physical_world_joint" type="fixed">
 		<parent link="world" />
-		<child link = "base_link" />
+		<child link = "physical_base_link" />
 		<origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
 	</joint>
-	<xacro:ur3e_robot prefix="" joint_limited="true"/>
+	<xacro:ur3e_robot prefix="physical_" joint_limited="true"/>
 
 	<!-- Robotiq 85 Physical-->
 	<xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
-	<xacro:robotiq_85_gripper prefix="" parent="tool0">
+	<xacro:robotiq_85_gripper prefix="physical_" parent="physical_tool0">
 		<origin xyz="0 0 0" rpy="${pi/2} -${pi/2} 0" />
 	</xacro:robotiq_85_gripper>
 
   <!-- UR3e Simulated -->
 	<xacro:include filename="$(find ur_e_description)/urdf/ur3e.urdf.xacro" />
-	<joint name="world_joint" type="fixed">
+	<joint name="simulated_world_joint" type="fixed">
 		<parent link="world" />
-		<child link = "base_link" />
+		<child link = "simulated_base_link" />
 		<origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
 	</joint>
 	<xacro:ur3e_robot prefix="simulated_" joint_limited="true"/>
 
   <!-- Robotiq 85 Simulated-->
 	<xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
-	<xacro:robotiq_85_gripper prefix="simulated_" parent="tool0">
+	<xacro:robotiq_85_gripper prefix="simulated_" parent="simulated_tool0">
 		<origin xyz="0 0 0" rpy="${pi/2} -${pi/2} 0" />
 	</xacro:robotiq_85_gripper>
 

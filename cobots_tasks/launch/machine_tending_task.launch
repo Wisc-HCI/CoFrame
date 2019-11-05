@@ -4,8 +4,9 @@
 <!--  Arguements                                                             -->
 <!--=========================================================================-->
 
-  <arg name="simulation_only" default="true"/>
+  <arg name="simulate_physical_robot" default="true"/>
   <arg name="use_cnc_serial_interface" default="false"/>
+  <arg name="load_rviz_cfg" default="true"/>
 
 <!--=========================================================================-->
 <!--  CNC Device                                                             -->
@@ -37,7 +38,7 @@
 <!--=========================================================================-->
 
   <include file="$(find cobots_tasks)/launch/robot.launch">
-    <arg name="simulation_only" value="$(arg simulation_only)"/>
+    <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
   </include>
 
 <!--=========================================================================-->
@@ -47,5 +48,9 @@
   <include file="$(find cobots_core)/launch/main.launch">
     <!--TODO-->
   </include>
+
+  <!-- RVIZ -->
+  <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_core)/rviz/ur3e.rviz"/>
+  <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
 
 </launch>
