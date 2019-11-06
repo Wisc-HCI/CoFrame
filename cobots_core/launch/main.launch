@@ -13,4 +13,8 @@
     <!--TODO-->
   </node>
 
+  <node name="application_tf_handler" pkg="cobots_core" type="application_tf_handler.py">
+    <!--TODO-->
+  </node>
+
 </launch>

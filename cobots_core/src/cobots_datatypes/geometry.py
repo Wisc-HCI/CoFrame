@@ -8,7 +8,7 @@ class Pose(object):
             self.position = Position(0,0,0)
         else:
             self.position = position
-            
+
         if orientation is None:
             pass
         else:
@@ -16,7 +16,7 @@ class Pose(object):
 
     def to_dct(self):
         return {
-            'position': self.position.to_dct()
+            'position': self.position.to_dct(),
             'orientation': self.orientation.to_dct()
         }
 
@@ -49,7 +49,7 @@ class Position(object):
             'z': self.z
         }
 
-    def to_list(self)::
+    def to_list(self):
         return [self.x,self.y,self.z]
 
     def to_ros(self):

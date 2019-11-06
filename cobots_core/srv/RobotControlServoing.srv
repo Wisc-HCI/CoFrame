@@ -1,0 +1,5 @@
+bool physical
+bool simulated
+---
+bool status
+string message

@@ -1,6 +1,6 @@
 
 from abstract import Abstract
-from pose import Pose
+from geometry import Pose
 
 
 class Location(Abstract):

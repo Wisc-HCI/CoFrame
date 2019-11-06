@@ -53,11 +53,13 @@ catkin_python_setup()
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  SetRobotControlMode.srv
+  GetRobotControlMode.srv
+  RobotControlServoing.srv
+  RobotControlFreedrive.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(

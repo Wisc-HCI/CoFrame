@@ -30,7 +30,6 @@ class Abstract(object):
     def to_dct(self):
         return {}
 
-    @abstractmethod
     @classmethod
     def from_dct(cls):
         return cls()

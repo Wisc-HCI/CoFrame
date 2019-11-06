@@ -5,6 +5,20 @@ Fake CNC Node
 Author: Curt Henrichs
 Date: 7-25-19
 
+
+
+
+
+
+TODO redo this as a ROS string input/output for node
+
+
+
+
+
+
+
+
 Fakes a CNC device for a machine tending task.
 
 Socket Protocol for fake CNC machine

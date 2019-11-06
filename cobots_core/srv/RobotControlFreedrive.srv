@@ -1,0 +1,4 @@
+bool state
+---
+bool status
+string message
