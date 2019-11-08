@@ -1,20 +1,19 @@
 <launch>
 
-  <arg name="simulated" default='true'/>
+  <arg name="task_filepath"/>
+  <arg name="ros_frame_id"/>
 
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
   <node name="data_server" pkg="cobots_core" type="data_server.py">
-    <!--TODO-->
+    <param name="task_filepath" value="$(arg task_filepath)"/>
   </node>
 
-  <node name="robot_control" pkg="cobots_core" type="robot_control.py">
-    <!--TODO-->
-  </node>
+  <node name="robot_control" pkg="cobots_core" type="robot_control.py"/>
 
   <node name="application_tf_handler" pkg="cobots_core" type="application_tf_handler.py">
-    <!--TODO-->
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>
 
 </launch>

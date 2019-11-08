@@ -10,10 +10,12 @@ project(cobots_core)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
+  geometry_msgs
+  trajectory_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(catkin REQUIRED COMPONENTS std_msgs message_generation)
+find_package(catkin REQUIRED COMPONENTS std_msgs message_generation actionlib_msgs)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -46,15 +48,19 @@ catkin_python_setup()
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  Move.msg
+  Stop.msg
+  Servo.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  GetData.srv
+  LoadData.srv
+  SaveData.srv
   SetRobotControlMode.srv
   GetRobotControlMode.srv
   RobotControlServoing.srv
@@ -62,16 +68,18 @@ add_service_files(
 )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+add_action_files(
+  FILES
+  MoveTrajectory.action
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
   std_msgs
+  actionlib_msgs
+  geometry_msgs
+  trajectory_msgs
 )
 
 ################################################
@@ -104,10 +112,7 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES tasks
-#  CATKIN_DEPENDS rospy rosserial std_msgs
-#  DEPENDS system_lib
+#  CATKIN_DEPENDS actionlib_msgs
 )
 
 ###########

@@ -4,7 +4,7 @@
   <arg name="limited" default='false' />
 
 
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_tasks)/description/physical_and_simulated_robot.xacro'" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_core)/description/physical_and_simulated_robot.xacro'" />
 
 
   <!-- Physical Robot Bringup -->
@@ -25,14 +25,25 @@
       <param name="output_topic" value="joint_states"/>
       <param name="prefix" value="physical_"/>
     </node>
-  </group>
-  <group if="$(arg simulate_physical_robot)" ns="physical">
-    <node name="physical_robot_controller" pkg="robot_behavior" type="virtual_robot_controller.py">
-      <param name="~gripper_joint" value="robotiq_85_left_knuckle_joint" />
+
+    <node name="physical_robot_controller" pkg="cobots_core" type="ur_robot_controller.py">
+        <param name="timestep" value="0.12"/>
+        <param name="lookahead" value="0.1"/>
+        <param name="gain" value="100"/>
+        <param name="base_frame" value="physical_base_link"/>
+        <param name="ee_frame" value="physical_ee_link"/>
+        <rosparam param="time_scalars">[100,100,100,100,100,100]</rosparam>
+        <param name="steady_state_length" value="3"/>
+        <param name="steady_state_threshold" value="0.01"/>
     </node>
 
+  </group>
+  <group if="$(arg simulate_physical_robot)" ns="physical">
+
+    <node name="physical_robot_controller" pkg="cobots_core" type="sim_robot_controller.py"/>
+
     <node name="physical_joint_remapper" pkg="cobots_core" type="joint_remapper.py">
-      <rosparam param="input_topics">[virtual_controller/joint_states]</rosparam>
+      <rosparam param="input_topics">[sim_controller/joint_states]</rosparam>
       <param name="output_topic" value="joint_states"/>
       <param name="prefix" value="physical_"/>
     </node>
@@ -40,12 +51,10 @@
 
   <!-- Simulated Robot Bringup -->
   <group ns="simulated">
-    <node name="simulated_robot_controller" pkg="robot_behavior" type="virtual_robot_controller.py">
-      <param name="~gripper_joint" value="robotiq_85_left_knuckle_joint" />
-    </node>
+    <node name="simulated_robot_controller" pkg="cobots_core" type="sim_robot_controller.py"/>
 
     <node name="simulated_joint_remapper" pkg="cobots_core" type="joint_remapper.py">
-      <rosparam param="input_topics">[virtual_controller/joint_states]</rosparam>
+      <rosparam param="input_topics">[sim_controller/joint_states]</rosparam>
       <param name="output_topic" value="joint_states"/>
       <param name="prefix" value="simulated_"/>
     </node>

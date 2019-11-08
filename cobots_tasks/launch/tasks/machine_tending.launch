@@ -37,20 +37,21 @@
 <!--  Robot (Physical and Simulated)                                         -->
 <!--=========================================================================-->
 
-  <include file="$(find cobots_tasks)/launch/robot.launch">
+  <include file="$(find cobots_core)/launch/robot.launch">
     <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
   </include>
 
 <!--=========================================================================-->
-<!--  Cobots Core                                                            -->
+<!--  Application                                                           -->
 <!--=========================================================================-->
 
-  <include file="$(find cobots_core)/launch/main.launch">
-    <!--TODO-->
+  <include file="$(find cobots_core)/launch/app.launch">
+    <arg name="task_filepath" value="$(find cobots_tasks)/tasks/machine_tending"/>
+    <arg name="ros_frame_id" value="world"/>
   </include>
 
   <!-- RVIZ -->
-  <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_core)/rviz/ur3e.rviz"/>
+  <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_tasks)/rviz/ur3e.rviz"/>
   <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
 
 </launch>

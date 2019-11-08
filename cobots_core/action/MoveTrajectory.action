@@ -1,0 +1,9 @@
+#goal definition
+cobots_core/Move[] moves
+---
+#result definition
+bool status
+string message
+---
+#feedback
+string message

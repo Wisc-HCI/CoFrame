@@ -1,0 +1,6 @@
+string filename
+bool update_cache
+---
+string data
+bool status
+string message
