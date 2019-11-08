@@ -1,115 +1,132 @@
 #!/usr/bin/env python
 
-import rospy
-
-
-class FakeController:
-    pass
-
-
-
+import tf
+import math
 import rospy
 import actionlib
 
+from ur_kin_py.kin import Kinematics
+
+from std_msgs.msg import Bool
+from pyquaternion import Quaternion
 from sensor_msgs.msg import JointState
-from trajectory_msgs.msg import JointTrajectoryPoint
-from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryResult, FollowJointTrajectoryGoal, FollowJointTrajectoryFeedback
+from cobots_core.msg import Stop, Servo, Move
+from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
 from control_msgs.msg import GripperCommandAction, GripperCommandGoal, GripperCommandFeedback, GripperCommandResult
 
 
-class FollowJointTrajectoryServer:
+MIN_M = -30.0
+MAX_M = 1.0
+MIN_TIME = 0.05
+MAX_TIME = 0.9
 
-    def __init__(self):
-        self._virtualController = rospy.Publisher('virtual_controller/joint_states',JointState,queue_size=5)
-        self._server = actionlib.SimpleActionServer('follow_joint_trajectory', FollowJointTrajectoryAction, self._execute, False)
-        self._server.start()
 
-    def _execute(self, goal):
-        status = 0
+class FakeController:
 
-        time = 0
-        for i in range(0,len(goal.trajectory.points)):
+    def __init__(self, ee_frame, base_frame, gain, lookahead, time_scalars, timestep, gripper_joint):
+        self._gain = gain
+        self._ee_frame = ee_frame
+        self._timestep = timestep
+        self._joint = gripper_joint
+        self._lookahead = lookahead
+        self._base_frame = base_frame
+        self._running_trajectory = False
+        self._time_scalars = time_scalars
 
-            if self._server.is_preempt_requested():
-                status = -3
-                break
+        self._tf_listener = tf.TransformListener()
 
-            jointState = JointState()
-            jointState.name = goal.trajectory.joint_names
-            jointState.position = goal.trajectory.points[i].positions
-            jointState.velocity = goal.trajectory.points[i].velocities
-            self._virtualController.publish(jointState)
+        self._js_pub = rospy.Publisher('sim_controller/joint_state',JointState,queue_size=10)
 
-            delay = goal.trajectory.points[i].time_from_start.to_sec() - time
-            rospy.sleep(delay)
-            time += delay
+        self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
+        self._servoing_sub = rospy.Subscriber('robot_control/servoing',Servo,self._servoing_cb)
+        self._stop_sub = rospy.Subscriber('robot_control/stop',Stop,self._stop_cb)
 
-            num_joints = len(goal.trajectory.joint_names)
+        self._move_trajectory_as = actionlib.SimpleActionServer('robot_control/move_trajectory',MoveTrajectoryAction,execute_cb=self._move_trajectory_cb,auto_start=False)
+        self._move_trajectory_as.start()
 
-            feedback = FollowJointTrajectoryFeedback()
-            feedback.joint_names = goal.trajectory.joint_names
-            feedback.desired = goal.trajectory.points[i]
-            feedback.actual = goal.trajectory.points[i]
-            feedback.error = JointTrajectoryPoint(positions=[0]*num_joints,
-                                                  velocities=[0]*num_joints,
-                                                  accelerations=[0]*num_joints,
-                                                  effort=[0]*num_joints)
-            self._server.publish_feedback(feedback)
+        self._gripper_as = actionlib.SimpleActionServer('gripper_command', GripperCommandAction, self._gripper_cb, False)
+        self._gripper_as.start()
 
-        result = FollowJointTrajectoryResult()
-        result.error_code = status
-        if status == -3:
-            self._server.set_preempted(result)
+    def _freedrive_cb(self, msg):
+        pass # Not used in simulated controller
+
+    def _servoing_cb(self, msg):
+        self._running_trajectory = False
+
+        if msg.motion_type == Servo.CIRCULAR:
+            pass # TODO need to figure out how UR does it
+        elif msg.motion_type == Servo.JOINT:
+            if msg.use_ur_ik:
+                pass # TODO need to figure out how UR does it
+            else:
+                pass #TODO need to figure out how UR does it
+
+    def _move_trajectory_cb(self, goal):
+        self._running_trajectory = True
+
+        result = MoveTrajectoryResult()
+        result.status = True
+        result.message = ''
+
+        feedback = MoveTrajectoryFeedback()
+        feedback.message = 'starting action'
+        self._move_trajectory_as.publish_feedback(feedback)
+
+        # TODO process path
+        for move in goal.moves:
+            if move.motion_type == Move.CIRCULAR:
+                pass
+            elif move.motion_type == Move.JOINT:
+                if move.use_ur_ik:
+                    pass
+                else:
+                    pass
+            elif move.motion_type == Move.LINEAR:
+                pass
+            elif move.motion_type == Move.PROCESS:
+                pass
+
+        # determine end condition
+        if self._running_trajectory:
+            self._running_trajectory = False
+            feedback = MoveTrajectoryFeedback()
+            feedback.message = 'in steady state'
+            self._move_trajectory_as.publish_feedback(feedback)
         else:
-            self._server.set_succeeded(result)
+            result.message = 'extern behavior prematurely stopped action'
+            result.status = False
 
+        self._move_trajectory_as.set_succeeded(result)
 
-class GripperCommandServer:
+    def _stop_cb(self, msg):
+        self._running_trajectory = False
 
-    def __init__(self, gripperJoint):
-        self._virtualController = rospy.Publisher('virtual_controller/joint_states',JointState,queue_size=5)
-        self._server = actionlib.SimpleActionServer('gripper_command', GripperCommandAction, self._execute, False)
-        self._server.start()
-        self._joint = gripperJoint
-
-    def _execute(self, goal):
+    def _gripper_cb(self, goal):
 
         jointState = JointState()
         jointState.name = self._joint if isinstance(self._joint,(list,tuple)) else [self._joint]
         jointState.position = [goal.command.position]*len(jointState.name)
-        self._virtualController.publish(jointState)
+        self._js_pub.publish(jointState)
 
         result = GripperCommandResult()
         result.position = goal.command.position
         result.stalled = False
         result.reached_goal = True
-        self._server.set_succeeded(result)
-
-
-class JointStateServoingServer:
-
-    def __init__(self, joint_state_topic, time):
-        self._time = time
-        self._virtualController = rospy.Publisher('virtual_controller/joint_states',JointState,queue_size=5)
-        self._servo_cub = rospy.Subscriber(joint_state_topic,JointState,self._servo_cb)
-
-    def _servo_cb(self, msg):
-        rospy.sleep(self._time)
-        self._virtualController.publish(msg)
+        self._gripper_as.set_succeeded(result)
 
 
 if __name__ == "__main__":
-    rospy.init_node('virtual_robot_controller')
+    rospy.init_node('ur_controller')
 
-    fjtServer = FollowJointTrajectoryServer()
+    print '\n\n', Kinematics('ur5').forward([0.1]*6), '\n\n'
 
-    gripperJoint = rospy.get_param("~gripper_joint",None)
-    if not gripperJoint is None:
-        gcServer = GripperCommandServer(gripperJoint)
+    gain = rospy.get_param('~gain')
+    ee_frame = rospy.get_param('~ee_frame')
+    lookahead = rospy.get_param('~lookahead')
+    base_frame = rospy.get_param('~base_frame')
+    gripper_joint = rospy.get_param("~gripper_joint")
+    timestep = rospy.get_param('~timestep',MIN_TIME)
+    time_scalars = rospy.get_param('~time_scalars',None)
 
-    servoing_time = rospy.param("~servoing_time",0.1)
-    joint_state_topic = rospy.get_param("~joint_state_topic",'servoing')
-    servoingServer = JointStateServoingServer(joint_state_topic,servoing_time)
-
-    while not rospy.is_shutdown():
-        rospy.spin()
+    node = FakeController(ee_frame,base_frame,gain,lookahead,time_scalars,timestep,gripper_joint)
+    rospy.spin()

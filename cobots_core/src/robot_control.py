@@ -29,6 +29,7 @@ from cobots_core.srv import SetRobotControlMode, SetRobotControlModeRequest, Set
 from cobots_core.srv import RobotControlFreedrive, RobotControlFreedriveRequest, RobotControlFreedriveResponse
 from cobots_core.srv import RobotControlServoing, RobotControlServoingRequest, RobotControlServoingResponse
 
+
 class RobotControl:
 
     def __init__(self):

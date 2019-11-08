@@ -1,29 +1,15 @@
-+#!/usr/bin/env python
-
-'''
-<node name="ur_custom_driver" pkg="cobots_tasks" type="ur_custom_driver.py">
-    <param name="timestep" value="0.12"/>
-    <param name="lookahead" value="0.1"/>
-    <param name="gain" value="100"/>
-    <param name="base_frame" value="physical_base_link"/>
-    <param name="ee_frame" value="physical_ee_link"/>
-    <rosparam param="time_scalars">[100,100,100,100,100,100]</rosparam>
-    <param name="steady_state_length" value="3"/>
-    <param name="steady_state_threshold" value="0.01"/>
-</node>
-'''
-
+#!/usr/bin/env python
 
 import tf
 import math
 import rospy
 import actionlib
 
-from enum import Enum
+from std_msgs.msg import Bool
 from pyquaternion import Quaternion
 from cobots_core.msg import Stop, Servo, Move
 from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
-
+from control_msgs.msg import GripperCommandAction, GripperCommandGoal, GripperCommandFeedback, GripperCommandResult
 
 MIN_M = -30.0
 MAX_M = 1.0
@@ -53,10 +39,10 @@ class URController:
         self._urscript_pub = rospy.Publisher('ur_driver/URScript',String,queue_size=10)
 
         self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
-        self._servoing_sub = rospy.Subscriber('robot_control/servoing',Servoing,self._servoing_cb)
+        self._servoing_sub = rospy.Subscriber('robot_control/servoing',Servo,self._servoing_cb)
         self._stop_sub = rospy.Subscriber('robot_control/stop',Stop,self._stop_cb)
 
-        self._move_trajectory_as = actionlib.SimpleActionServer('',MoveTrajectoryAction,execute_cb=self._move_trajectory_cb,auto_start=False)
+        self._move_trajectory_as = actionlib.SimpleActionServer('robot_control/move_trajectory',MoveTrajectoryAction,execute_cb=self._move_trajectory_cb,auto_start=False)
         self._move_trajectory_as.start()
 
     def _freedrive_cb(self, msg):
@@ -190,12 +176,17 @@ class URController:
         prev_pos = [pos]
         prev_quat = [Quaternion(rot[3],rot[0],rot[1],rot[2])]
 
+        preempted = False
         in_steady_state = False
-        while not in_steady_state:
+        while not in_steady_state and not preempted:
 
             # check if forced to stop
             if not self._running_trajectory:
                 break
+
+            if self._server.is_preempt_requested():
+                preempted = True
+                continue
 
             # waiting timestep
             rospy.sleep(0.1)
@@ -226,16 +217,23 @@ class URController:
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
 
-        if self._running_trajectory:
-            self._running_trajectory = False
-            feedback = MoveTrajectoryFeedback()
-            feedback.message = 'in steady state'
-            self._move_trajectory_as.publish_feedback(feedback)
-        else:
-            result.message = 'extern behavior prematurely stopped action'
-            result.status = False
+        # Determine end condition
+        if not preempted:
+            if self._running_trajectory:
+                self._running_trajectory = False
+                feedback = MoveTrajectoryFeedback()
+                feedback.message = 'in steady state'
+                self._move_trajectory_as.publish_feedback(feedback)
+            else:
+                result.message = 'extern behavior prematurely stopped action'
+                result.status = False
 
-        self._move_trajectory_as.set_succeeded(result)
+            self._move_trajectory_as.set_succeeded(result)
+        else:
+            result.message = 'action execution preempted'
+            result.status = False
+            self._urscript_pub.publish(String("stopj({0})\n".format(1.2)))
+            self._server.set_preempted(result)
 
     def __pose_difference(self, pos_1, quat_1, pos_2, quat_2):
         pos_dist = math.sqrt(sum([pow(pos_2[i] - pos_1[i],2) for i in range(0,3)]))
