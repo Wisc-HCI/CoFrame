@@ -2,7 +2,7 @@
 <package format="2">
   <name>cobots_tasks</name>
   <version>0.0.0</version>
-  <description>The cobots_tasks package</description>
+  <description>The cobots_ur_bringup</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

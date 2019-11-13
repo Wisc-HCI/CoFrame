@@ -1,0 +1,62 @@
+<launch>
+
+  <arg name="type" default="physical"/> <!-- physical, simulated, planner : used for prefix -->
+  <arg name="local" default="true"/> <!-- Local means launch will not include a ros_bridge interface-->
+  <arg name="ur_ip_address" default="127.0.0.1"/>
+  <arg name="fake_gripper" default="true"/>
+
+  <arg name="timestep" value="0.12"/>
+  <arg name="lookahead" value="0.1"/>
+  <arg name="gain" value="100"/>
+  <arg name="base_frame" value="base_link"/>
+  <arg name="ee_frame" value="ee_link"/>
+  <arg name="time_scalars" value="[100,100,100,100,100,100]"/>
+  <arg name="steady_state_length" value="3"/>
+  <arg name="steady_state_threshold" value="0.01"/>
+
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_ur_bringup)/description/ur3e.xacro'" />
+
+
+  <!-- Launch robot driver -->
+  <include file="$(find robot_bringup)/universal_robots/ur3e/bringup.launch">
+    <arg name="robot_ip" value="$(arg ur_ip_address)" />
+  </include>
+
+  <!-- Launch gripper driver -->
+  <node if="$(arg fake_gripper)" name="fake_gripper_action_server" pkg="cobots_ur_bringup" type="fake_gripper_action_server.py"/>
+  <node unless="$(arg fake_gripper)" name="urscript_gripper_action_server" pkg="robotiq_85_driver" type="urscript_gripper_action_server.py" output="screen" respawn="false">
+    <param name="speed" value="255"/>
+    <param name="urscript_topic" value="ur_driver/URScript"/>
+  </node>
+
+  <!-- Remap joints with type -->
+  <node name="joint_remapper" pkg="cobots_ur_bringup" type="joint_remapper.py">
+    <rosparam param="input_topics">[gripper/joint_state, ur/joint_states]</rosparam>
+    <param name="output_topic" value="joint_states"/>
+    <param name="prefix" value="$(arg type)_"/>
+  </node>
+
+  <!-- Higher-level controller for communication with cobots -->
+  <node if="$(arg local)" name="local_controller" pkg="cobots_ur_bringup" type="ur_local_controller.py">
+    <param name="timestep" value="$(arg timestep)"/>
+    <param name="lookahead" value="$(arg lookahead)"/>
+    <param name="gain" value="$(arg gain)"/>
+    <param name="base_frame" value="$(arg type)_$(arg base_frame)"/>
+    <param name="ee_frame" value="$(arg type)_$(arg ee_frame)"/>
+    <rosparam param="time_scalars" subst_value="true">$(arg time_scalars)</rosparam>
+    <param name="steady_state_length" value="$(arg steady_state_length)"/>
+    <param name="steady_state_threshold" value="$(arg steady_state_threshold)"/>
+  </node>
+  <node unless="$(arg local)" name="rosbridge_controller" pkg="cobots_ur_bringup" type="ur_rosbridge_controller">
+    <param name="timestep" value="$(arg timestep)"/>
+    <param name="lookahead" value="$(arg lookahead)"/>
+    <param name="gain" value="$(arg gain)"/>
+    <param name="base_frame" value="$(arg type)_$(arg base_frame)"/>
+    <param name="ee_frame" value="$(arg type)_$(arg ee_frame)"/>
+    <rosparam param="time_scalars" subst_value="true">$(arg time_scalars)</rosparam>
+    <param name="steady_state_length" value="$(arg steady_state_length)"/>
+    <param name="steady_state_threshold" value="$(arg steady_state_threshold)"/>
+  </node>
+
+</launch>
