@@ -5,16 +5,14 @@ import math
 import rospy
 import actionlib
 import roslibpy
-import roslibpy.tf
 import roslibpy.actionlib
 
 from std_msgs.msg import Bool
-from pyquaternion import PyQuaternion
 from sensor_msgs.msg import JointState
 from cobots_core.msg import Stop, Servo, Move
-from geometry_msgs import Pose, Quaternion, Vector
+from pyquaternion import Quaternion as PyQuaternion
+from geometry_msgs.msg import Pose, Quaternion, Vector3
 from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
-from control_msgs.msg import GripperCommandAction, GripperCommandGoal, GripperCommandFeedback, GripperCommandResult
 
 
 MIN_M = -30.0
@@ -41,7 +39,7 @@ class ActionServerROStoBridgeTranslation:
 
     def set_succeeded(self, msg):
         return self._bridge.set_succeeded({
-            'status': msg.status
+            'status': msg.status,
             'message': msg.message
         })
 
@@ -53,7 +51,7 @@ class URController:
 
     def __init__(self, mode, ee_frame, base_frame, gain, lookahead, time_scalars,
                  timestep, steady_state_length, steady_state_threshold,
-                 rosbridge_host=None, rosbridge_port=None, joint_state_topic=None):
+                 rosbridge_host=None, rosbridge_port=None, bridge_name_prefix=None):
         self._mode = mode
 
         self._gain = gain
@@ -81,19 +79,19 @@ class URController:
             self._bridge_client = roslibpy.Ros(host=rosbridge_host,port=rosbridge_port)
             self._bridge_client.run()
 
-            self._joint_state_sub = rospy.Subscriber(joint_state_topic,JointState,self._joint_state_bridge_cb)
-            self._joint_state_pub = roslibpy.Topic(self._bridge_client, joint_state_topic, 'sensor_msgs/JointState')
+            self._joint_state_sub = rospy.Subscriber('{}/joint_state'.format(bridge_name_prefix),JointState,self._joint_state_bridge_cb)
+            self._joint_state_pub = roslibpy.Topic(self._bridge_client, '{}/joint_state'.format(bridge_name_prefix), 'sensor_msgs/JointState')
 
-            self._freedrive_sub = roslibpy.Topic(self._bridge_client, 'robot_control/freedrive', 'std_msgs/Bool')
+            self._freedrive_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/freedrive'.format(bridge_name_prefix), 'std_msgs/Bool')
             self._freedrive_sub.subscribe(self._freedrive_bridge_cb)
 
-            self._servoing_sub = roslibpy.Topic(self._bridge_client, 'robot_control/servoing', 'cobots_core/Servo')
+            self._servoing_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/servoing'.format(bridge_name_prefix), 'cobots_core/Servo')
             self._servoing_sub.subscribe(self._servoing_bridge_cb)
 
-            self._stop_sub = roslibpy.Topic(self._bridge_client, 'robot_control/stop', 'cobots_core/Stop')
+            self._stop_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/stop'.format(bridge_name_prefix), 'cobots_core/Stop')
             self._stop_sub.subscribe(self._stop_bridge_cb)
 
-            self._move_trajectory_bridge_as = roslibpy.actionlib.SimpleActionServer(self._bridge_client, 'robot_control/move_trajectory', 'cobots_core/MoveTrajectoryAction')
+            self._move_trajectory_bridge_as = roslibpy.actionlib.SimpleActionServer(self._bridge_client, '{}/robot_control/move_trajectory'.format(bridge_name_prefix), 'cobots_core/MoveTrajectoryAction')
             self._move_trajectoryy_bridge_as.start(self._move_trajectory_bridge_cb)
             self._move_trajectory_as = ActionServerROStoBridgeTranslation(self._bridge_client)
         else:
@@ -136,14 +134,14 @@ class URController:
             motion_type=msg['motion_type'],
             use_ur_ik=msg['use_ur_ik'],
             target_pose=self.__translate_pose(msg['target_pose']),
-            target_joints=self.__translate_joint_trajectory_point(msg['target_joints'])
+            target_joints=self.__translate_joint_trajectory_point(msg['target_joints']),
             radius=msg['radius'],
             acceleration=msg['acceleration'],
             velocity=msg['velocity']))
 
     def __translate_pose(self, dct):
         return Pose(
-            position=Vector(
+            position=Vector3(
                 x=dct['position']['x'],
                 y=dct['position']['y'],
                 z=dct['position']['z']),
@@ -424,9 +422,9 @@ if __name__ == "__main__":
 
     rosbridge_host = rospy.get_param('~rosbridge_host',None)
     rosbridge_port = rospy.get_param('~rosbridge_host',None)
-    joint_state_topic = rospy.get_param('~joint_state_topic',None)
+    bridge_name_prefix = rospy.param('~bridge_name_prefix',None)
 
     node = URController(mode, ee_frame,base_frame,gain,lookahead,time_scalars,timestep,
                         steady_state_length,steady_state_threshold,
-                        rosbridge_host, rosbridge_port, joint_state_topic)
+                        rosbridge_host, rosbridge_port, bridge_name_prefix)
     rospy.spin()

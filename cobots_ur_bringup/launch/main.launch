@@ -29,14 +29,14 @@
   </include>
 
   <!-- Launch gripper driver -->
-  <node if="$(arg fake_gripper)" name="fake_gripper_action_server" pkg="cobots_ur_bringup" type="fake_gripper_action_server.py"/>
+  <node if="$(arg fake_gripper)" name="fake_gripper_action_server" pkg="robotiq_85_driver" type="fake_gripper_action_server.py"/>
   <node unless="$(arg fake_gripper)" name="urscript_gripper_action_server" pkg="robotiq_85_driver" type="urscript_gripper_action_server.py" output="screen" respawn="false">
     <param name="speed" value="255"/>
     <param name="urscript_topic" value="ur_driver/URScript"/>
   </node>
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="/use_gui" value="true"/>
+    <param name="/use_gui" value="false"/>
     <rosparam param="/source_list">[gripper/joint_state, ur/joint_states]</rosparam>
   </node>
 
@@ -45,18 +45,18 @@
   <!-- Remap joints with type -->
   <node name="joint_remapper" pkg="cobots_ur_bringup" type="joint_remapper.py">
     <rosparam param="input_topics">[gripper/joint_state, ur/joint_states]</rosparam>
-    <param name="output_topic" value="$(arg type)_joint_states"/>
+    <param name="output_topic" value="$(arg type)/joint_states"/>
     <param name="prefix" value="$(arg type)_"/>
   </node>
 
   <!-- Higher-level controller for communication with cobots -->
-  <node name="local_controller" pkg="cobots_ur_bringup" type="ur_local_controller.py">
+  <node name="ur_controller" pkg="cobots_ur_bringup" type="ur_controller.py">
     <param if="$(arg local)" name="mode" value="ros"/>
     <param unless="$(arg local)" name="mode" value="bridge"/>
 
     <param unless="$(arg local)" name="rosbridge_host" value="$(arg rosbridge_host)"/>
     <param unless="$(arg local)" name="rosbridge_port" value="$(arg rosbridge_port)"/>
-    <param unless="$(arg local)" name="joint_state_topic" value="$(arg type)_joint_states"/>
+    <param unless="$(arg local)" name="bridge_name_prefix" value="$(arg type)"/>
 
     <param name="timestep" value="$(arg timestep)"/>
     <param name="lookahead" value="$(arg lookahead)"/>
@@ -66,6 +66,12 @@
     <rosparam param="time_scalars" subst_value="true">$(arg time_scalars)</rosparam>
     <param name="steady_state_length" value="$(arg steady_state_length)"/>
     <param name="steady_state_threshold" value="$(arg steady_state_threshold)"/>
+  </node>
+
+  <node unless="$(arg local)" name="gripper_action_republisher" pkg="cobots_ur_bringup" type="gripper_action_republisher.py">
+    <param name="rosbridge_host" value="$(arg rosbridge_host)"/>
+    <param name="rosbridge_port" value="$(arg rosbridge_port)"/>
+    <param name="bridge_name_prefix" value="$(arg type)"/>
   </node>
 
 </launch>
