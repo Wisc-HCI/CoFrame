@@ -1,18 +1,21 @@
 <launch>
 
   <arg name="type" default="physical"/> <!-- physical, simulated, planner : used for prefix -->
-  <arg name="local" default="true"/> <!-- Local means launch will not include a ros_bridge interface-->
+  <arg name="local" default="true"/> <!-- Local means launch will not include a rosbridge interface-->
   <arg name="ur_ip_address" default="127.0.0.1"/>
   <arg name="fake_gripper" default="true"/>
 
-  <arg name="timestep" value="0.12"/>
-  <arg name="lookahead" value="0.1"/>
-  <arg name="gain" value="100"/>
-  <arg name="base_frame" value="base_link"/>
-  <arg name="ee_frame" value="ee_link"/>
-  <arg name="time_scalars" value="[100,100,100,100,100,100]"/>
-  <arg name="steady_state_length" value="3"/>
-  <arg name="steady_state_threshold" value="0.01"/>
+  <arg name="timestep" default="0.12"/>
+  <arg name="lookahead" default="0.1"/>
+  <arg name="gain" default="100"/>
+  <arg name="base_frame" default="base_link"/>
+  <arg name="ee_frame" default="ee_link"/>
+  <arg name="time_scalars" default="[100,100,100,100,100,100]"/>
+  <arg name="steady_state_length" default="3"/>
+  <arg name="steady_state_threshold" default="0.01"/>
+
+  <arg name="rosbridge_host" default="127.0.0.1"/>
+  <arg name="rosbridge_port" default="9090"/>
 
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_ur_bringup)/description/ur3e.xacro'" />
@@ -20,7 +23,9 @@
 
   <!-- Launch robot driver -->
   <include file="$(find robot_bringup)/universal_robots/ur3e/bringup.launch">
-    <arg name="robot_ip" value="$(arg ur_ip_address)" />
+    <arg name="robot_ip" value="$(arg ur_ip_address)"/>
+    <arg name="shutdown_on_disconnect" value="false"/>
+    <arg name="use_lowbandwidth_trajectory_follower" value="true"/>
   </include>
 
   <!-- Launch gripper driver -->
@@ -30,30 +35,34 @@
     <param name="urscript_topic" value="ur_driver/URScript"/>
   </node>
 
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="/use_gui" value="true"/>
+    <rosparam param="/source_list">[gripper/joint_state, ur/joint_states]</rosparam>
+  </node>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
   <!-- Remap joints with type -->
   <node name="joint_remapper" pkg="cobots_ur_bringup" type="joint_remapper.py">
     <rosparam param="input_topics">[gripper/joint_state, ur/joint_states]</rosparam>
-    <param name="output_topic" value="joint_states"/>
+    <param name="output_topic" value="$(arg type)_joint_states"/>
     <param name="prefix" value="$(arg type)_"/>
   </node>
 
   <!-- Higher-level controller for communication with cobots -->
-  <node if="$(arg local)" name="local_controller" pkg="cobots_ur_bringup" type="ur_local_controller.py">
+  <node name="local_controller" pkg="cobots_ur_bringup" type="ur_local_controller.py">
+    <param if="$(arg local)" name="mode" value="ros"/>
+    <param unless="$(arg local)" name="mode" value="bridge"/>
+
+    <param unless="$(arg local)" name="rosbridge_host" value="$(arg rosbridge_host)"/>
+    <param unless="$(arg local)" name="rosbridge_port" value="$(arg rosbridge_port)"/>
+    <param unless="$(arg local)" name="joint_state_topic" value="$(arg type)_joint_states"/>
+
     <param name="timestep" value="$(arg timestep)"/>
     <param name="lookahead" value="$(arg lookahead)"/>
     <param name="gain" value="$(arg gain)"/>
-    <param name="base_frame" value="$(arg type)_$(arg base_frame)"/>
-    <param name="ee_frame" value="$(arg type)_$(arg ee_frame)"/>
-    <rosparam param="time_scalars" subst_value="true">$(arg time_scalars)</rosparam>
-    <param name="steady_state_length" value="$(arg steady_state_length)"/>
-    <param name="steady_state_threshold" value="$(arg steady_state_threshold)"/>
-  </node>
-  <node unless="$(arg local)" name="rosbridge_controller" pkg="cobots_ur_bringup" type="ur_rosbridge_controller">
-    <param name="timestep" value="$(arg timestep)"/>
-    <param name="lookahead" value="$(arg lookahead)"/>
-    <param name="gain" value="$(arg gain)"/>
-    <param name="base_frame" value="$(arg type)_$(arg base_frame)"/>
-    <param name="ee_frame" value="$(arg type)_$(arg ee_frame)"/>
+    <param name="base_frame" value="$(arg base_frame)"/>
+    <param name="ee_frame" value="$(arg ee_frame)"/>
     <rosparam param="time_scalars" subst_value="true">$(arg time_scalars)</rosparam>
     <param name="steady_state_length" value="$(arg steady_state_length)"/>
     <param name="steady_state_threshold" value="$(arg steady_state_threshold)"/>
