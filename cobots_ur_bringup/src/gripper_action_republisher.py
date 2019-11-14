@@ -61,7 +61,7 @@ class GripperActionRepublisher:
 
     def _feedback_ros_cb(self, msg):
         self._bridge_feedback_pub.publish({
-            'header': 'header': self.__header_parse(msg.header),
+            'header': self.__header_parse(msg.header),
             'status': self.__status_parse(msg.status),
             'feedback': {
                 'position': msg.feedback.position,
