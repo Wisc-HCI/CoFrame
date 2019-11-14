@@ -31,7 +31,7 @@ class GripperActionRepublisher:
 
     def _goal_bridge_cb(self, dct):
         self._ros_goal_pub.publish(GripperCommandActionGoal(
-            header=self.__pack_header(dct['header'])
+            header=self.__pack_header(dct['header']),
             goal_id=self.__pack_goal_id(dct['goal_id']),
             goal=GripperCommandGoal(command=GripperCommand(
                 position=dct['goal']['command']['position'],
