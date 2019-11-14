@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
     rosbridge_host = rospy.get_param('~rosbridge_host',None)
     rosbridge_port = rospy.get_param('~rosbridge_host',None)
-    bridge_name_prefix = rospy.param('~bridge_name_prefix',None)
+    bridge_name_prefix = rospy.get_param('~bridge_name_prefix',None)
 
     node = GripperActionRepublisher(rosbridge_host, rosbridge_port, bridge_name_prefix)
     rospy.spin()

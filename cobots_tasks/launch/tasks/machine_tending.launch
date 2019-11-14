@@ -6,6 +6,8 @@
 
   <arg name="simulate_physical_robot" default="true"/>
   <arg name="use_cnc_serial_interface" default="false"/>
+
+  <arg name="launch_rviz" default="true"/>
   <arg name="load_rviz_cfg" default="true"/>
 
 <!--=========================================================================-->
@@ -51,7 +53,9 @@
   </include>
 
   <!-- RVIZ -->
-  <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_tasks)/rviz/ur3e.rviz"/>
-  <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
+  <group if="$(arg launch_rviz)">
+    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_tasks)/rviz/machine_tending.rviz"/>
+    <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
+  </group>
 
 </launch>

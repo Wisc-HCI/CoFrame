@@ -17,6 +17,9 @@
   <arg name="rosbridge_host" default="127.0.0.1"/>
   <arg name="rosbridge_port" default="9090"/>
 
+  <arg name="launch_rviz" default="false"/>
+  <arg name="load_rviz_cfg" default="true"/>
+
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_ur_bringup)/description/ur3e.xacro'" />
 
@@ -25,7 +28,7 @@
   <include file="$(find robot_bringup)/universal_robots/ur3e/bringup.launch">
     <arg name="robot_ip" value="$(arg ur_ip_address)"/>
     <arg name="shutdown_on_disconnect" value="false"/>
-    <arg name="use_lowbandwidth_trajectory_follower" value="true"/>
+    <arg name="use_lowbandwidth_trajectory_follower" value="false"/>
   </include>
 
   <!-- Launch gripper driver -->
@@ -68,10 +71,17 @@
     <param name="steady_state_threshold" value="$(arg steady_state_threshold)"/>
   </node>
 
+  <!-- Gripper passthrough bridge -->
   <node unless="$(arg local)" name="gripper_action_republisher" pkg="cobots_ur_bringup" type="gripper_action_republisher.py">
     <param name="rosbridge_host" value="$(arg rosbridge_host)"/>
     <param name="rosbridge_port" value="$(arg rosbridge_port)"/>
     <param name="bridge_name_prefix" value="$(arg type)"/>
   </node>
+
+  <!-- RVIZ -->
+  <group if="$(arg launch_rviz)">
+    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_ur_bringup)/rviz/ur3e.rviz"/>
+    <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
+  </group>
 
 </launch>
