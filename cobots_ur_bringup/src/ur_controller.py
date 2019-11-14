@@ -421,7 +421,7 @@ if __name__ == "__main__":
     steady_state_threshold = rospy.get_param('~steady_state_threshold',DEFAULT_STEADY_STATE_THRESHOLD)
 
     rosbridge_host = rospy.get_param('~rosbridge_host',None)
-    rosbridge_port = rospy.get_param('~rosbridge_host',None)
+    rosbridge_port = rospy.get_param('~rosbridge_port',None)
     bridge_name_prefix = rospy.get_param('~bridge_name_prefix',None)
 
     node = URController(mode, ee_frame,base_frame,gain,lookahead,time_scalars,timestep,
