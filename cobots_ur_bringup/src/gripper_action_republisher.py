@@ -17,6 +17,11 @@ class GripperActionRepublisher:
 
         self._ros_goal_pub = rospy.Publisher('gripper_command/goal',GripperCommandActionGoal,queue_size=10)
         self._ros_cancel_pub = rospy.Publisher('gripper_command/cancel',GoalID,queue_size=10)
+
+        self._bridge_status_pub = roslibpy.Topic(self._bridge_client,'{}/gripper_command/status'.format(bridge_name_prefix),'actionlib_msgs/GoalStatusArray')
+        self._bridge_result_pub = roslibpy.Topic(self._bridge_client,'{}/gripper_command/result'.format(bridge_name_prefix),'control_msgs/GripperCommandActionResult')
+        self._bridge_feedback_pub = roslibpy.Topic(self._bridge_client,'{}/gripper_command/feedback'.format(bridge_name_prefix),'control_msgs/GripperCommandActionFeedback')
+
         self._ros_status_sub = rospy.Subscriber('gripper_command/status',GoalStatusArray,self._status_ros_cb)
         self._ros_result_sub = rospy.Subscriber('gripper_command/result',GripperCommandActionResult,self._result_ros_cb)
         self._ros_feedback_sub = rospy.Subscriber('gripper_command/feedback',GripperCommandActionFeedback,self._feedback_ros_cb)
@@ -25,9 +30,6 @@ class GripperActionRepublisher:
         self._bridge_goal_sub.subscribe(self._goal_bridge_cb)
         self._bridge_cancel_sub = roslibpy.Topic(self._bridge_client,'{}/gripper_command/cancel'.format(bridge_name_prefix),'actionlib_msgs/GoalID')
         self._bridge_cancel_sub.subscribe(self._cancel_bridge_cb)
-        self._bridge_status_pub = roslibpy.Topic(self._bridge_client,'{}/gripper_command/status'.format(bridge_name_prefix),'actionlib_msgs/GoalStatusArray')
-        self._bridge_result_pub = roslibpy.Topic(self._bridge_client,'{}/gripper_command/result'.format(bridge_name_prefix),'control_msgs/GripperCommandActionResult')
-        self._bridge_feedback_pub = roslibpy.Topic(self._bridge_client,'{}/gripper_command/feedback'.format(bridge_name_prefix),'control_msgs/GripperCommandActionFeedback')
 
     def _goal_bridge_cb(self, dct):
         self._ros_goal_pub.publish(GripperCommandActionGoal(
