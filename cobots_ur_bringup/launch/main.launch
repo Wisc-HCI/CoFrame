@@ -40,6 +40,7 @@
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="false"/>
+    <param name="rate" value="10"/>
     <rosparam param="/source_list">[gripper/joint_state, ur/joint_states]</rosparam>
   </node>
 
@@ -47,7 +48,7 @@
 
   <!-- Remap joints with type -->
   <node name="joint_remapper" pkg="cobots_ur_bringup" type="joint_remapper.py">
-    <rosparam param="input_topics">[gripper/joint_state, ur/joint_states]</rosparam>
+    <rosparam param="input_topics">[joint_states]</rosparam>
     <param name="output_topic" value="$(arg type)/joint_states"/>
     <param name="prefix" value="$(arg type)_"/>
   </node>
