@@ -53,7 +53,7 @@
   </node>
 
   <!-- Higher-level controller for communication with cobots -->
-  <node name="ur_controller" pkg="cobots_ur_bringup" type="ur_controller.py">
+  <node name="ur_controller" pkg="cobots_ur_bringup" type="ur_controller.py" output="screen">
     <param if="$(arg local)" name="mode" value="ros"/>
     <param unless="$(arg local)" name="mode" value="bridge"/>
 
@@ -72,7 +72,7 @@
   </node>
 
   <!-- Gripper pass through bridge -->
-  <node unless="$(arg local)" name="gripper_action_republisher" pkg="cobots_ur_bringup" type="gripper_action_republisher.py">
+  <node unless="$(arg local)" name="gripper_action_republisher" pkg="cobots_ur_bringup" type="gripper_action_republisher.py"  output="screen">
     <param name="rosbridge_host" value="$(arg rosbridge_host)"/>
     <param name="rosbridge_port" value="$(arg rosbridge_port)"/>
     <param name="bridge_name_prefix" value="$(arg type)"/>

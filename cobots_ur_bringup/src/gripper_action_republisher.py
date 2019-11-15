@@ -22,6 +22,7 @@ class GripperActionRepublisher:
             except:
                 print 'Waiting for ROSBridge to connect'
             rospy.sleep(0.25)
+        print 'ROSBridge connected'
 
         self._ros_goal_pub = rospy.Publisher('gripper_command/goal',GripperCommandActionGoal,queue_size=10)
         self._ros_cancel_pub = rospy.Publisher('gripper_command/cancel',GoalID,queue_size=10)

@@ -86,6 +86,7 @@ class URController:
                 except:
                     print 'Waiting for ROSBridge to connect'
                 rospy.sleep(0.25)
+            print 'ROSBridge connected'
 
             self._joint_state_sub = rospy.Subscriber('{}/joint_state'.format(bridge_name_prefix),JointState,self._joint_state_bridge_cb)
             self._joint_state_pub = roslibpy.Topic(self._bridge_client, '{}/joint_state'.format(bridge_name_prefix), 'sensor_msgs/JointState')
