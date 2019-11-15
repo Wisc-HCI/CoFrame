@@ -92,7 +92,7 @@ class URController:
             self._stop_sub.subscribe(self._stop_bridge_cb)
 
             self._move_trajectory_bridge_as = roslibpy.actionlib.SimpleActionServer(self._bridge_client, '{}/robot_control/move_trajectory'.format(bridge_name_prefix), 'cobots_core/MoveTrajectoryAction')
-            self._move_trajectoryy_bridge_as.start(self._move_trajectory_bridge_cb)
+            self._move_trajectory_bridge_as.start(self._move_trajectory_bridge_cb)
             self._move_trajectory_as = ActionServerROStoBridgeTranslation(self._bridge_client)
         else:
             raise Exception('Invalid ROS interface mode selected: {}'.format(mode))
