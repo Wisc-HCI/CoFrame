@@ -37,11 +37,11 @@ class JointRemapper:
         self._prefix = prefix
         self._postfix = postfix
 
-        self._js_pub = rospy.Publisher(output_topic,JointState,queue_size=10)
+        self._js_pub = rospy.Publisher(output_topic,JointState,queue_size=1)
 
         self._js_subs = []
         for topic in input_topics:
-            self._js_subs.append(rospy.Subscriber(topic,JointState,self._js_cb))
+            self._js_subs.append(rospy.Subscriber(topic,JointState,self._js_cb,queue_size=1))
 
     def _js_cb(self, msg):
         for i in range(0,len(msg.name)):
