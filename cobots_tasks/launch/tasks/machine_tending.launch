@@ -4,6 +4,10 @@
 <!--  Arguements                                                             -->
 <!--=========================================================================-->
 
+  <arg name="local_physical" default="true"/>
+  <arg name="local_simulated" defualt="false"/>
+  <arg name="local_planner" default="false"/>
+
   <arg name="simulate_physical_robot" default="true"/>
   <arg name="use_cnc_serial_interface" default="false"/>
 
@@ -36,10 +40,13 @@
 <!--=========================================================================-->
 
 <!--=========================================================================-->
-<!--  Robot (Physical and Simulated)                                         -->
+<!--  Robot (All interfaces)                                      -->
 <!--=========================================================================-->
 
   <include file="$(find cobots_core)/launch/robot.launch">
+    <arg name="local_physical" value="$(arg local_physical)"/>
+    <arg name="local_simulated" value="$(arg local_simulated)"/>
+    <arg name="local_planner" value="$(arg local_planner)"/>
     <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
   </include>
 

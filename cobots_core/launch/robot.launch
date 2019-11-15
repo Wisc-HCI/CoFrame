@@ -1,5 +1,8 @@
 <launch>
 
+  <arg name="local_physical" default="true"/>
+  <arg name="local_simulated" defualt="false"/>
+  <arg name="local_planner" default="false"/>
   <arg name="simulate_physical_robot" default='true'/>
   <arg name="limited" default='false' />
 
@@ -7,10 +10,34 @@
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_core)/description/robot.xacro'" />
 
 
-  <!-- Launch physical interface from here if using hardware -->
-  <group unless="$(arg simulate_physical_robot)" ns="physical">
+  <!-- Launch physical robot interface from here if local-->
+  <group if="$(arg local_physical)" ns="physical">
     <include file="$(find cobots_ur_bringup)/launch/main.launch">
       <arg name="type" value="physical"/>
+      <arg name="local" value="true"/>
+      <arg name="launch_rviz" value="false"/>
+      <arg if="$(arg simulate_physical_robot)" name="ur_ip_address" value="127.0.0.1"/>
+      <arg if="$(arg simulate_physical_robot)" name="fake_gripper" value="true"/>
+      <arg unless="$(arg simulate_physical_robot)" name="ur_ip_address" value="10.134.71.9"/>
+      <arg unless="$(arg simulate_physical_robot)" name="fake_gripper" value="false"/>
+    </include>
+  </group>
+
+  <!-- Launch simulated robot interface from here if local -->
+  <group if="$(arg local_simulated)" ns="simulated">
+    <include file="$(find cobots_ur_bringup)/launch/main.launch">
+      <arg name="type" value="simulated"/>
+      <arg name="local" value="true"/>
+      <arg name="ur_ip_address" value="127.0.0.1"/>
+      <arg name="fake_gripper" value="true"/>
+      <arg name="launch_rviz" value="false"/>
+    </include>
+  </group>
+
+  <!-- Launch planner robot interface from here if local -->
+  <group if="$(arg local_planner)" ns="planner">
+    <include file="$(find cobots_ur_bringup)/launch/main.launch">
+      <arg name="type" value="planner"/>
       <arg name="local" value="true"/>
       <arg name="ur_ip_address" value="127.0.0.1"/>
       <arg name="fake_gripper" value="true"/>
