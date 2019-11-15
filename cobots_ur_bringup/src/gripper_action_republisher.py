@@ -13,7 +13,15 @@ class GripperActionRepublisher:
 
     def __init__(self, rosbridge_host, rosbridge_port, bridge_name_prefix):
         self._bridge_client = roslibpy.Ros(host=rosbridge_host,port=rosbridge_port)
-        self._bridge_client.run()
+
+        not_setup = True
+        while not rospy.is_shutdown() and not_setup:
+            try:
+                self._bridge_client.run()
+                not_setup = False
+            except:
+                print 'Waiting for ROSBridge to connect'
+            rospy.sleep(0.25)
 
         self._ros_goal_pub = rospy.Publisher('gripper_command/goal',GripperCommandActionGoal,queue_size=10)
         self._ros_cancel_pub = rospy.Publisher('gripper_command/cancel',GoalID,queue_size=10)

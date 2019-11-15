@@ -77,7 +77,15 @@ class URController:
             self._move_trajectory_as.start()
         elif mode == 'bridge':
             self._bridge_client = roslibpy.Ros(host=rosbridge_host,port=rosbridge_port)
-            self._bridge_client.run()
+
+            not_setup = True
+            while not rospy.is_shutdown() and not_setup:
+                try:
+                    self._bridge_client.run()
+                    not_setup = False
+                except:
+                    print 'Waiting for ROSBridge to connect'
+                rospy.sleep(0.25)
 
             self._joint_state_sub = rospy.Subscriber('{}/joint_state'.format(bridge_name_prefix),JointState,self._joint_state_bridge_cb)
             self._joint_state_pub = roslibpy.Topic(self._bridge_client, '{}/joint_state'.format(bridge_name_prefix), 'sensor_msgs/JointState')
