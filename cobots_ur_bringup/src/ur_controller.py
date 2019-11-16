@@ -8,7 +8,6 @@ import roslibpy
 import roslibpy.actionlib
 
 from std_msgs.msg import Bool, String
-from sensor_msgs.msg import JointState
 from cobots_core.msg import Stop, Servo, Move
 from pyquaternion import Quaternion as PyQuaternion
 from geometry_msgs.msg import Pose, Quaternion, Vector3
@@ -88,9 +87,6 @@ class URController:
                 rospy.sleep(0.25)
             print 'ROSBridge connected'
 
-            self._joint_state_sub = rospy.Subscriber('{}/joint_states'.format(bridge_name_prefix),JointState,self._joint_state_bridge_cb)
-            self._joint_state_pub = roslibpy.Topic(self._bridge_client, '{}/joint_states'.format(bridge_name_prefix), 'sensor_msgs/JointState')
-
             self._freedrive_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/freedrive'.format(bridge_name_prefix), 'std_msgs/Bool')
             self._freedrive_sub.subscribe(self._freedrive_bridge_cb)
 
@@ -105,14 +101,6 @@ class URController:
             self._move_trajectory_as = ActionServerROStoBridgeTranslation(self._bridge_client)
         else:
             raise Exception('Invalid ROS interface mode selected: {}'.format(mode))
-
-    def _joint_state_bridge_cb(self, msg):
-        self._joint_state_pub.publish({
-            'name': msg.name,
-            'position': msg.position,
-            'velocity': msg.velocity,
-            'effort': msg.effort
-        })
 
     def _freedrive_cb(self, msg):
         if msg.data:

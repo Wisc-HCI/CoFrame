@@ -87,6 +87,13 @@
     <param name="bridge_name_prefix" value="$(arg type)"/>
   </node>
 
+  <!-- Joint State pass through bridge -->
+  <node unless="$(arg local)" name="joint_state_republisher" pkg="cobots_ur_bringup" type="joint_state_republisher.py">
+    <param name="rosbridge_host" value="$(arg rosbridge_host)"/>
+    <param name="rosbridge_port" value="$(arg rosbridge_port)"/>
+    <param name="bridge_name_prefix" value="$(arg type)"/>
+  </node>
+
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">
     <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_ur_bringup)/rviz/ur3e.rviz"/>
