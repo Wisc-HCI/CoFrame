@@ -4,8 +4,8 @@
 <!--  Arguements                                                             -->
 <!--=========================================================================-->
 
-  <arg name="local_physical" default="true"/>
-  <arg name="local_simulated" defualt="false"/>
+  <arg name="local_physical" default="false"/>
+  <arg name="local_simulated" default="false"/>
   <arg name="local_planner" default="false"/>
 
   <arg name="simulate_physical_robot" default="true"/>
@@ -40,7 +40,7 @@
 <!--=========================================================================-->
 
 <!--=========================================================================-->
-<!--  Robot (All interfaces)                                      -->
+<!--  Robot (All interfaces)                                                 -->
 <!--=========================================================================-->
 
   <include file="$(find cobots_core)/launch/robot.launch">
@@ -51,7 +51,7 @@
   </include>
 
 <!--=========================================================================-->
-<!--  Application                                                           -->
+<!--  Application                                                            -->
 <!--=========================================================================-->
 
   <include file="$(find cobots_core)/launch/app.launch">

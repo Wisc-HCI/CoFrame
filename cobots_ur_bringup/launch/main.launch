@@ -88,7 +88,7 @@
   </node>
 
   <!-- Joint State pass through bridge -->
-  <node unless="$(arg local)" name="joint_state_republisher" pkg="cobots_ur_bringup" type="joint_state_republisher.py">
+  <node unless="$(arg local)" name="joint_state_republisher" pkg="cobots_ur_bringup" type="joint_state_republisher.py" output="screen">
     <param name="rosbridge_host" value="$(arg rosbridge_host)"/>
     <param name="rosbridge_port" value="$(arg rosbridge_port)"/>
     <param name="bridge_name_prefix" value="$(arg type)"/>
