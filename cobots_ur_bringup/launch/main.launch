@@ -43,6 +43,7 @@
     <param unless="$(arg local)" name="base_frame" value="base" />
     <param unless="$(arg local)" name="tool_frame" value="tool0_controller" />
     <param name="shutdown_on_disconnect" value="false" />
+    <remap unless="$(arg local)" from="joint_states" to="ur/joint_states"/>
   </node>
 
   <!-- Launch gripper driver -->
