@@ -32,7 +32,7 @@ class ActionServerROStoBridgeTranslation:
         return self._action .is_preempt_requested()
 
     def publish_feedback(self, msg):
-        return self._action .publish_feedback({
+        return self._action .send_feedback({
             'message': msg.message
         })
 
