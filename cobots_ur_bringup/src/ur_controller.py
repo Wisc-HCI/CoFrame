@@ -79,7 +79,7 @@ class URController:
                 rospy.sleep(0.25)
             print 'ROSBridge connected'
 
-            self._ur_mode_pub = roslibpy.Topic(self._bridge_client, '{}/robot_control/ur_driver/robot_mode_state'.format(bridge_name_prefix),'ur_msgs/RobotModeDataMsg')
+            self._ur_mode_pub = roslibpy.Topic(self._bridge_client, '{}/ur_driver/robot_mode_state'.format(bridge_name_prefix),'ur_msgs/RobotModeDataMsg')
             rospy.Timer(rospy.Duration(0.1), self._ur_mode_republish_cb)
 
             self._freedrive_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/freedrive'.format(bridge_name_prefix), 'std_msgs/Bool')
