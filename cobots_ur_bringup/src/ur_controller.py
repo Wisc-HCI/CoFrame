@@ -57,7 +57,6 @@ class URController:
         self._robot_state = RobotModeDataMsg()
 
         self._urscript_pub = rospy.Publisher('ur_driver/URScript',String,queue_size=10)
-        self._ur_mode_sub = rospy.Subscriber('ur_driver/robot_mode_state',RobotModeDataMsg,self._ur_mode_cb)
 
         if mode == 'ros':
             self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
@@ -66,6 +65,7 @@ class URController:
 
             self._move_trajectory_as = actionlib.SimpleActionServer('robot_control/move_trajectory',MoveTrajectoryAction,execute_cb=self._move_trajectory_cb,auto_start=False)
             self._move_trajectory_as.start()
+
         elif mode == 'bridge':
             self._bridge_client = roslibpy.Ros(host=rosbridge_host,port=rosbridge_port)
 
@@ -93,8 +93,11 @@ class URController:
             self._move_trajectory_bridge_as = roslibpy.actionlib.SimpleActionServer(self._bridge_client, '{}/robot_control/move_trajectory'.format(bridge_name_prefix), 'cobots_core/MoveTrajectoryAction')
             self._move_trajectory_bridge_as.start(self._move_trajectory_bridge_cb)
             self._move_trajectory_as = ActionServerROStoBridgeTranslation(self._bridge_client)
+            
         else:
             raise Exception('Invalid ROS interface mode selected: {}'.format(mode))
+
+        self._ur_mode_sub = rospy.Subscriber('ur_driver/robot_mode_state',RobotModeDataMsg,self._ur_mode_cb)
 
     def _ur_mode_cb(self, msg):
         self._robot_state = msg
