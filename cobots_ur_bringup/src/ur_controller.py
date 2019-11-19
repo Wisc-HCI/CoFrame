@@ -80,6 +80,7 @@ class URController:
             print 'ROSBridge connected'
 
             self._ur_mode_pub = roslibpy.Topic(self._bridge_client, '{}/robot_control/ur_driver/robot_mode_state'.format(bridge_name_prefix),'ur_msgs/RobotModeDataMsg')
+            rospy.Timer(rospy.Duration(0.1), self._ur_mode_republish_cb)
 
             self._freedrive_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/freedrive'.format(bridge_name_prefix), 'std_msgs/Bool')
             self._freedrive_sub.subscribe(self._freedrive_bridge_cb)
@@ -93,7 +94,7 @@ class URController:
             self._move_trajectory_bridge_as = roslibpy.actionlib.SimpleActionServer(self._bridge_client, '{}/robot_control/move_trajectory'.format(bridge_name_prefix), 'cobots_core/MoveTrajectoryAction')
             self._move_trajectory_bridge_as.start(self._move_trajectory_bridge_cb)
             self._move_trajectory_as = ActionServerROStoBridgeTranslation(self._bridge_client)
-            
+
         else:
             raise Exception('Invalid ROS interface mode selected: {}'.format(mode))
 
@@ -101,17 +102,18 @@ class URController:
 
     def _ur_mode_cb(self, msg):
         self._robot_state = msg
-        if self._mode == 'bridge':
-            self._ur_mode_pub.publish({
-                'timestamp': msg.timestamp,
-                'is_robot_connected': msg.is_robot_connected,
-                'is_real_robot_enabled': msg.is_real_robot_enabled,
-                'is_power_on_robot': msg.is_power_on_robot,
-                'is_emergency_stopped': msg.is_emergency_stopped,
-                'is_protective_stopped': msg.is_protective_stopped,
-                'is_program_running': msg.is_program_running,
-                'is_program_paused': msg.is_program_paused
-            })
+
+    def _ur_mode_republish_cb(self, event):
+        self._ur_mode_pub.publish({
+            'timestamp': self._robot_state.timestamp,
+            'is_robot_connected': self._robot_state.is_robot_connected,
+            'is_real_robot_enabled': self._robot_state.is_real_robot_enabled,
+            'is_power_on_robot': self._robot_state.is_power_on_robot,
+            'is_emergency_stopped': self._robot_state.is_emergency_stopped,
+            'is_protective_stopped': self._robot_state.is_protective_stopped,
+            'is_program_running': self._robot_state.is_program_running,
+            'is_program_paused': self._robot_state.is_program_paused
+        })
 
     def _freedrive_cb(self, msg):
         cmd =  'def prog():\n'
