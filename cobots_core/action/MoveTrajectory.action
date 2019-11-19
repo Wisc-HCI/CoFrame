@@ -1,5 +1,6 @@
 #goal definition
 cobots_core/Move[] moves
+bool wait_for_finish
 ---
 #result definition
 bool status

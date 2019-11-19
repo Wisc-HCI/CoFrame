@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import tf
+import time
 import math
 import rospy
 import actionlib
@@ -8,8 +9,8 @@ import roslibpy
 import roslibpy.actionlib
 
 from std_msgs.msg import Bool, String
+from ur_msgs.msg import RobotModeDataMsg
 from cobots_core.msg import Stop, Servo, Move
-from pyquaternion import Quaternion as PyQuaternion
 from geometry_msgs.msg import Pose, Quaternion, Vector3
 from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
 
@@ -18,9 +19,6 @@ MIN_M = -30.0
 MAX_M = 1.0
 MIN_TIME = 0.05
 MAX_TIME = 0.9
-
-DEFAULT_STEADY_STATE_LENGTH = 3
-DEFAULT_STEADY_STATE_THRESHOLD = 0.01
 
 
 class ActionServerROStoBridgeTranslation:
@@ -48,24 +46,18 @@ class ActionServerROStoBridgeTranslation:
 
 class URController:
 
-    def __init__(self, mode, ee_frame, base_frame, gain, lookahead, time_scalars,
-                 timestep, steady_state_length, steady_state_threshold,
+    def __init__(self, mode, gain, lookahead, time_scalars, timestep,
                  rosbridge_host=None, rosbridge_port=None, bridge_name_prefix=None):
         self._mode = mode
-
         self._gain = gain
-        self._ee_frame = ee_frame
         self._timestep = timestep
         self._lookahead = lookahead
-        self._base_frame = base_frame
         self._running_trajectory = False
         self._time_scalars = time_scalars
-        self._steady_state_length = steady_state_length
-        self._steady_state_threshold = steady_state_threshold
+        self._robot_state = RobotModeDataMsg()
 
         self._urscript_pub = rospy.Publisher('ur_driver/URScript',String,queue_size=10)
-
-        self._tf_listener = tf.TransformListener()
+        self._ur_mode_sub = rospy.Subscriber('ur_driver/robot_mode_state',RobotModeDataMsg,self._ur_mode_cb)
 
         if mode == 'ros':
             self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
@@ -87,6 +79,8 @@ class URController:
                 rospy.sleep(0.25)
             print 'ROSBridge connected'
 
+            self._ur_mode_pub = roslibpy.Topic(self._bridge_client, '{}/robot_control/ur_driver/robot_mode_state'.format(bridge_name_prefix),'ur_msgs/RobotModeDataMsg')
+
             self._freedrive_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/freedrive'.format(bridge_name_prefix), 'std_msgs/Bool')
             self._freedrive_sub.subscribe(self._freedrive_bridge_cb)
 
@@ -102,11 +96,31 @@ class URController:
         else:
             raise Exception('Invalid ROS interface mode selected: {}'.format(mode))
 
+    def _ur_mode_cb(self, msg):
+        self._robot_state = msg
+        if self._mode == 'bridge':
+            self._ur_mode_pub.publish({
+                'timestamp': msg.timestamp,
+                'is_robot_connected': msg.is_robot_connected,
+                'is_real_robot_enabled': msg.is_real_robot_enabled,
+                'is_power_on_robot': msg.is_power_on_robot,
+                'is_emergency_stopped': msg.is_emergency_stopped,
+                'is_protective_stopped': msg.is_protective_stopped,
+                'is_program_running': msg.is_program_running,
+                'is_program_paused': msg.is_program_paused
+            })
+
     def _freedrive_cb(self, msg):
+        cmd =  'def prog():\n'
         if msg.data:
-            cmd = 'set robotmode freedrive\n'
+            cmd += '\twhile (True):\n'
+            cmd += '\t\tfreedrive_mode()\n'
+            cmd += '\t\tsync()\n'
+            cmd += '\tend\n'
         else:
-            cmd = 'set robotmode run\n'
+            cmd += '\tend_freedrive_mode()\n'
+        cmd += 'end\n'
+        print cmd
         self._urscript_pub.publish(String(cmd))
 
     def _freedrive_bridge_cb(self, msg):
@@ -116,13 +130,15 @@ class URController:
         self._running_trajectory = False
 
         cmd = ''
-        if msg.motion_type == Servoing.CIRCULAR:
+        if msg.motion_type == Servo.CIRCULAR:
             cmd = self.__servoing_circular(msg.target_pose,msg.radius,msg.velocity,msg.acceleration)
-        elif msg.motion_type == Servoing.JOINT:
+        elif msg.motion_type == Servo.JOINT:
             if msg.use_ur_ik:
                 cmd = self.__servoing_joint_pose(msg.target_pose,msg.velocity,msg.acceleration)
             else:
                 cmd = self.__servoing_joint_joints(msg.target_joints.positions,msg.velocity,msg.acceleration)
+
+        print cmd
 
         self._urscript_pub.publish(String(cmd))
 
@@ -200,7 +216,7 @@ class URController:
         cmd =  "def prog():\n"
         cmd += "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
         cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
-        cmd += "\tservoc(rx,ry,rz,px,py,pz,pose_target,{0},{1},{2})\n".format(acceleration,velocity,radius)
+        cmd += "\tservoc(pose_target,{0},{1},{2})\n".format(acceleration,velocity,radius)
         cmd += "end\n"
         return cmd
 
@@ -230,21 +246,23 @@ class URController:
         #generate urscript program for path
         cmd = "def prog():\n"
         for move in goal.moves:
-            if move.motion_type == MoveTrajectoryGoal.CIRCULAR:
+            if move.motion_type == Move.CIRCULAR:
                 cmd += self.__move_circular(move)
-            elif move.motion_type == MoveTrajectoryGoal.JOINT:
+            elif move.motion_type == Move.JOINT:
                 if move.use_ur_ik:
                     cmd += self.__move_joint_pose(move)
                 else:
                     cmd += self.__move_joint_joints(move)
-            elif move.motion_type == MoveTrajectoryGoal.LINEAR:
+            elif move.motion_type == Move.LINEAR:
                 cmd += self.__move_linear(move)
-            elif move.motion_type == MoveTrajectoryGoal.PROCESS:
+            elif move.motion_type == Move.PROCESS:
                 cmd += self.__move_process(move)
             else:
                 result.status = False
                 result.message = 'invalid motion type encountered'
         cmd += "end\n"
+
+        print cmd
 
         # early stopping on error or if zero items
         if not result.status or len(goal.moves) == 0:
@@ -255,75 +273,67 @@ class URController:
         self._move_trajectory_as.publish_feedback(feedback)
 
         # publish to robot
-        self._urscript.publish(String(cmd))
+        self._urscript_pub.publish(String(cmd))
 
         feedback = MoveTrajectoryFeedback()
         feedback.message = 'published urscript'
         self._move_trajectory_as.publish_feedback(feedback)
 
-        # wait until movement has ceased
-        (pos,rot) = self._tf_listener.lookupTransform(self._ee_frame,self._base_frame,rospy.Time(0))
-        prev_pos = [pos]
-        prev_quat = [PyQuaternion(rot[3],rot[0],rot[1],rot[2])]
+        # wait for movement to complete
+        if goal.wait_for_finish:
+            state = 'start'
+            init_time = time.time()
+            while True:
+                # check if forced to stop
+                if not self._running_trajectory:
+                    state = 'stopped'
 
-        preempted = False
-        in_steady_state = False
-        while not in_steady_state and not preempted:
+                    self._urscript_pub.publish(String("stopj({0})\n".format(1.2)))
 
-            # check if forced to stop
-            if not self._running_trajectory:
-                break
+                    result.status = False
+                    result.message = 'forced to stop in node'
+                    self._move_trajectory_as.set_succeeded(result)
+                    break
 
-            if self._server.is_preempt_requested():
-                preempted = True
-                continue
+                elif self._move_trajectory_as.is_preempt_requested():
+                    state = 'preempted'
 
-            # waiting timestep
-            rospy.sleep(0.1)
+                    self._urscript_pub.publish(String("stopj({0})\n".format(1.2)))
 
-            # check steady state on end-effector
-            try:
-                (pos,rot) = self._tf_listener.lookupTransform(self._ee_frame,self._base_frame,rospy.Time(0))
-                quat = PyQuaternion(rot[3],rot[0],rot[1],rot[2])
+                    result.status = False
+                    result.message = 'preempted'
+                    self._server.set_preempted(result)
+                    break
 
-                # update pose comparison window
-                prev_pos.append(pos)
-                prev_quat.append(quat)
-                if len(prev_pos) > self._steady_state_length:
-                    prev_pos.pop(0)
-                    prev_quat.pop(0)
+                # run state machine
+                if state == 'start':
+                    if self._robot_state.is_program_running:
+                        state = 'moving'
+                        continue
 
-                # compute error and steady_state
-                if len(prev_pos) > 1:
-                    # compute average error for all poses
-                    err_sum = 0
-                    differences = len(prev_pos)-1
-                    for i in range(0,differences):
-                        err_sum += self.__pose_difference()
+                    elif time.time() - init_time >= 0.2:
+                        state = 'timeout'
 
-                    err_ave = err_sum / differences
-                    in_steady_state = err_ave < self._steady_state_threshold
+                        result.status = True
+                        result.message = 'Robot program never ran, could already be at state'
+                        self._move_trajectory_as.set_succeeded(result)
+                        break
 
-            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-                continue
+                elif state == 'moving':
+                    if not self._robot_state.is_program_running:
+                        state = 'stopped'
 
-        # Determine end condition
-        if not preempted:
-            if self._running_trajectory:
-                self._running_trajectory = False
-                feedback = MoveTrajectoryFeedback()
-                feedback.message = 'in steady state'
-                self._move_trajectory_as.publish_feedback(feedback)
-            else:
-                result.message = 'extern behavior prematurely stopped action'
-                result.status = False
+                        result.status = True
+                        result.message = 'Trajectory finished executing'
+                        self._move_trajectory_as.set_succeeded(result)
+                        break
 
-            self._move_trajectory_as.set_succeeded(result)
+                # waiting timestep
+                rospy.sleep(0.1)
         else:
-            result.message = 'action execution preempted'
-            result.status = False
-            self._urscript_pub.publish(String("stopj({0})\n".format(1.2)))
-            self._server.set_preempted(result)
+            result.status = True
+            result.message = 'Instructed to ignore trajectory execution state'
+            self._move_trajectory_as.set_succeeded(result)
 
     def _move_trajectory_bridge_cb(self, goal):
         moves = []
@@ -340,11 +350,6 @@ class URController:
                 time=md['time'],
                 circular_constrained=md['circular_constrained']))
         self._move_trajectory_cb(MoveTrajectoryGoal(moves=moves))
-
-    def __pose_difference(self, pos_1, quat_1, pos_2, quat_2):
-        pos_dist = math.sqrt(sum([pow(pos_2[i] - pos_1[i],2) for i in range(0,3)]))
-        quat_dist = quat_2.absolute_distance(quat_1)
-        return pos_dist + quat_dist
 
     def __move_circular(self, msg):
         px, py, pz, rx, ry, rz = self.___format_pose(msg.target_pose)
@@ -395,6 +400,8 @@ class URController:
         else: # default to this case for safety
             cmd = "stopl({0})\n".format(msg.acceleration)
 
+        print cmd
+
         self._urscript_pub.publish(String(cmd))
         self._running_trajectory = False
 
@@ -409,19 +416,14 @@ if __name__ == "__main__":
 
     mode = rospy.get_param('~mode') #ros, bridge
     gain = rospy.get_param('~gain')
-    ee_frame = rospy.get_param('~ee_frame')
     lookahead = rospy.get_param('~lookahead')
-    base_frame = rospy.get_param('~base_frame')
     time_scalars = rospy.get_param('~time_scalars',None)
     timestep = rospy.get_param('~timestep',MIN_TIME)
-    steady_state_length = rospy.get_param('~steady_state_length',DEFAULT_STEADY_STATE_LENGTH)
-    steady_state_threshold = rospy.get_param('~steady_state_threshold',DEFAULT_STEADY_STATE_THRESHOLD)
 
     rosbridge_host = rospy.get_param('~rosbridge_host',None)
     rosbridge_port = rospy.get_param('~rosbridge_port',None)
     bridge_name_prefix = rospy.get_param('~bridge_name_prefix',None)
 
-    node = URController(mode, ee_frame,base_frame,gain,lookahead,time_scalars,timestep,
-                        steady_state_length,steady_state_threshold,
+    node = URController(mode,gain,lookahead,time_scalars,timestep,
                         rosbridge_host, rosbridge_port, bridge_name_prefix)
     rospy.spin()

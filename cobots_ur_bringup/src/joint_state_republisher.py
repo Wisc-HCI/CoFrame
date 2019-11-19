@@ -10,7 +10,7 @@ class JointStateRepublisher:
 
     def __init__(self, rosbridge_host, rosbridge_port, bridge_name_prefix):
         self._count = 0
-        
+
         self._bridge_client = roslibpy.Ros(host=rosbridge_host,port=rosbridge_port)
 
         not_setup = True
@@ -27,7 +27,7 @@ class JointStateRepublisher:
         self._joint_state_pub = roslibpy.Topic(self._bridge_client, '{}/joint_states'.format(bridge_name_prefix), 'sensor_msgs/JointState')
 
     def _joint_state_bridge_cb(self, msg):
-        print self._count, '::::', msg
+        #print self._count, '::::', msg
         self._count += 1
         self._joint_state_pub.publish({
             'name': msg.name,
