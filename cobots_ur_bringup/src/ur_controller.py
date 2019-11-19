@@ -127,7 +127,6 @@ class URController:
         else:
             cmd += '\tend_freedrive_mode()\n'
         cmd += 'end\n'
-        print cmd
         self._urscript_pub.publish(String(cmd))
 
     def _freedrive_bridge_cb(self, msg):
@@ -144,8 +143,6 @@ class URController:
                 cmd = self.__servoing_joint_pose(msg.target_pose,msg.velocity,msg.acceleration)
             else:
                 cmd = self.__servoing_joint_joints(msg.target_joints,msg.velocity,msg.acceleration)
-
-        print cmd
 
         self._urscript_pub.publish(String(cmd))
 
@@ -178,15 +175,11 @@ class URController:
                 m = math.log(j)
                 if m <= MIN_M:
                     time = MIN_TIME
-                    #print 'min', time
                 elif m >= MAX_M:
                     time = MAX_TIME
-                    #print 'max', time
                 else:
                     time = (MAX_TIME - MIN_TIME) / (MAX_M - MIN_M) * (m - MIN_M) + MIN_TIME
-                    #print 'linear', time, m
             else:
-                #print 'zero-case'
                 time = MIN_TIME
         else:
             time = self._timestep
@@ -261,8 +254,6 @@ class URController:
                 result.message = 'invalid motion type encountered'
         cmd += "end\n"
 
-        print cmd
-
         # early stopping on error or if zero items
         if not result.status or len(goal.moves) == 0:
             self._move_trajectory_as.set_succeeded(result)
@@ -279,13 +270,10 @@ class URController:
         self._move_trajectory_as.publish_feedback(feedback)
 
         # wait for movement to complete
-        print goal.wait_for_finish
         if goal.wait_for_finish:
             state = 'start'
             init_time = time.time()
             while True:
-                print state
-
                 # check if forced to stop
                 if not self._running_trajectory:
                     state = 'stopped'
@@ -403,8 +391,6 @@ class URController:
             cmd = "stopj({0})\n".format(msg.acceleration)
         else: # default to this case for safety
             cmd = "stopl({0})\n".format(msg.acceleration)
-
-        print cmd
 
         self._urscript_pub.publish(String(cmd))
         self._running_trajectory = False

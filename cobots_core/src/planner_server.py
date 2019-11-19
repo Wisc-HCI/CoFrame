@@ -32,7 +32,7 @@ class PlannerServer:
 
     def __init__(self):
         self._ursim = RobotInterface('planner')
-        self._links = []
+        self._links = ['planner_base_link','planner_shoulder_link','planner_upper_arm_link','planner_forearm_link','planner_wrist_1_link','planner_wrist_2_link','planner_wrist_3_link']
         self._fixed_frame = '/world'
 
         self._listener = tf.TransformListener()
@@ -129,15 +129,14 @@ class PlannerServer:
                         z=rot[2],
                         w=rot[3])))
 
-                print 'link paths', link_paths
-
                 point_cloud.points.append(Point32(
                     x=pos[0],
                     y=pos[1],
                     z=pos[2]))
                 point_cloud.channels.append(ChannelFloat32())
 
-                print 'point cloud', point_cloud
+        print 'link paths', link_paths
+        print 'point cloud', point_cloud
 
     def _sample_cb(self, event):
         data = {}
