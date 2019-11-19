@@ -3,9 +3,7 @@
 
 import time
 import math
-import rospy
 
-from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Vector3, Quaternion, Pose
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 

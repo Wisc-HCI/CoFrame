@@ -9,7 +9,7 @@ bool use_ur_ik
 # Use pose for circular mode and maybe for joint mode if use_ur_ik is true
 # otherwise use joints
 geometry_msgs/Pose target_pose
-trajectory_msgs/JointTrajectoryPoint target_joints
+float32[] target_joints
 
 # Only used for circular servoing
 float32 STD_RADIUS = 0

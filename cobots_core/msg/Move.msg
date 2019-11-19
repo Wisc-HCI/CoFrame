@@ -10,7 +10,7 @@ bool use_ur_ik
 # Use pose for circular, linear, and process modes and maybe for joint mode if
 # use_ur_ik is true otherwise use joints
 geometry_msgs/Pose target_pose
-trajectory_msgs/JointTrajectoryPoint target_joints
+float32[] target_joints
 
 # Used for circular movement
 geometry_msgs/Pose path_pose

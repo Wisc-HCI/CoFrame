@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+#TODO this needs to be entirely rewritten using the robot_interface
+
 '''
 
 Modes = [
@@ -30,7 +32,7 @@ from cobots_core.srv import RobotControlFreedrive, RobotControlFreedriveRequest,
 from cobots_core.srv import RobotControlServoing, RobotControlServoingRequest, RobotControlServoingResponse
 
 
-class RobotControl:
+class RobotControlServer:
 
     def __init__(self):
         self._mode = 'idle'
@@ -133,8 +135,8 @@ class RobotControl:
 
 
 if __name__ == '__main__':
-    rospy.init_node('robot_control')
+    rospy.init_node('robot_control_server')
 
-    node = RobotControl()
+    node = RobotControlServer()
 
     rospy.spin()

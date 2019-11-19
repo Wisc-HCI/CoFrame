@@ -10,7 +10,13 @@
     <param name="task_filepath" value="$(arg task_filepath)"/>
   </node>
 
-  <node name="robot_control" pkg="cobots_core" type="robot_control.py"/>
+  <node name="robot_control_server" pkg="cobots_core" type="robot_control_server.py" output="screen">
+
+  </node>
+
+  <node name="planner_server" pkg="cobots_core" type="planner_server.py" output="screen">
+
+  </node>
 
   <node name="application_tf_handler" pkg="cobots_core" type="application_tf_handler.py">
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>

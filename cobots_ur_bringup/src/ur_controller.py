@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+#TODO add a local gripper_command driver here
+
 import tf
 import time
 import math
@@ -141,7 +143,7 @@ class URController:
             if msg.use_ur_ik:
                 cmd = self.__servoing_joint_pose(msg.target_pose,msg.velocity,msg.acceleration)
             else:
-                cmd = self.__servoing_joint_joints(msg.target_joints.positions,msg.velocity,msg.acceleration)
+                cmd = self.__servoing_joint_joints(msg.target_joints,msg.velocity,msg.acceleration)
 
         print cmd
 
@@ -152,7 +154,7 @@ class URController:
             motion_type=msg['motion_type'],
             use_ur_ik=msg['use_ur_ik'],
             target_pose=self.__translate_pose(msg['target_pose']),
-            target_joints=self.__translate_joint_trajectory_point(msg['target_joints']),
+            target_joints=msg['target_joints'],
             radius=msg['radius'],
             acceleration=msg['acceleration'],
             velocity=msg['velocity']))
@@ -168,14 +170,6 @@ class URController:
                 y=dct['orientation']['y'],
                 z=dct['orientation']['z'],
                 w=dct['orientation']['w']))
-
-    def __translate_joint_trajectory_point(self, dct):
-        return JointTrajectoryPoint(
-            positions=dct['positions'],
-            velocities=dct['velocities'],
-            accelerations=dct['accelerations'],
-            effort=dct['effort'],
-            time_from_start=dct['time_from_start'])
 
     def __servoing_joint_joints(self, js, velocity, acceleration):
         if self._time_scalars != None:
@@ -347,7 +341,7 @@ class URController:
                 motion_type=md['motion_type'],
                 use_ur_ik=md['use_ur_ik'],
                 target_pose=self.__translate_pose(md['target_pose']),
-                target_joints=self.__translate_joint_trajectory_point(md['target_joints']),
+                target_joints=md['target_joints'],
                 path_pose=self.__translate_pose(md['path_pose']),
                 radius=md['radius'],
                 acceleration=md['acceleration'],
@@ -376,7 +370,7 @@ class URController:
         return cmd
 
     def __move_joint_joints(self, msg):
-        js = msg.target_joints.positions
+        js = msg.target_joints
 
         cmd =  "\tjoints = [{0},{1},{2},{3},{4},{5}]\n".format(js[0],js[1],js[2],js[3],js[4],js[5])
         cmd += "\tmovej(joints,{0},{1},{2},{3})\n".format(msg.acceleration,msg.velocity,msg.time,msg.radius)

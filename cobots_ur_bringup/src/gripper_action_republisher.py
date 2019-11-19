@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+#TODO remove this
+
 import rospy
 import roslibpy
 
