@@ -279,10 +279,13 @@ class URController:
         self._move_trajectory_as.publish_feedback(feedback)
 
         # wait for movement to complete
+        print goal.wait_for_finish
         if goal.wait_for_finish:
             state = 'start'
             init_time = time.time()
             while True:
+                print state
+
                 # check if forced to stop
                 if not self._running_trajectory:
                     state = 'stopped'
@@ -348,7 +351,9 @@ class URController:
                 velocity=md['velocity'],
                 time=md['time'],
                 circular_constrained=md['circular_constrained']))
-        self._move_trajectory_cb(MoveTrajectoryGoal(moves=moves))
+        self._move_trajectory_cb(MoveTrajectoryGoal(
+            moves=moves,
+            wait_for_finish=goal['wait_for_finish']))
 
     def __move_circular(self, msg):
         px, py, pz, rx, ry, rz = self.___format_pose(msg.target_pose)
