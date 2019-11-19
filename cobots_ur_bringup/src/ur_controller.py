@@ -25,25 +25,25 @@ MAX_TIME = 0.9
 
 class ActionServerROStoBridgeTranslation:
 
-    def __init__(self, bridge):
-        self._bridge = bridge
+    def __init__(self, action):
+        self._action = action
 
     def is_preempt_requested(self):
-        return self._bridge.is_preempt_requested()
+        return self._action .is_preempt_requested()
 
     def publish_feedback(self, msg):
-        return self._bridge.publish_feedback({
+        return self._action .publish_feedback({
             'message': msg.message
         })
 
     def set_succeeded(self, msg):
-        return self._bridge.set_succeeded({
+        return self._action .set_succeeded({
             'status': msg.status,
             'message': msg.message
         })
 
     def set_preempted(self, msg):
-        return self._bridge.set_preempted()
+        return self._action .set_preempted()
 
 
 class URController:
@@ -95,7 +95,7 @@ class URController:
 
             self._move_trajectory_bridge_as = roslibpy.actionlib.SimpleActionServer(self._bridge_client, '{}/robot_control/move_trajectory'.format(bridge_name_prefix), 'cobots_core/MoveTrajectoryAction')
             self._move_trajectory_bridge_as.start(self._move_trajectory_bridge_cb)
-            self._move_trajectory_as = ActionServerROStoBridgeTranslation(self._bridge_client)
+            self._move_trajectory_as = ActionServerROStoBridgeTranslation(self._move_trajectory_bridge_as)
 
         else:
             raise Exception('Invalid ROS interface mode selected: {}'.format(mode))
