@@ -6,10 +6,10 @@ import actionlib
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
+from control_msgs.msg import GripperCommand
 from cobots_core.msg import Stop, Servo, Move
 from geometry_msgs.msg import Pose, Quaternion, Vector3
 from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal
-from control_msgs.msg import GripperCommandAction, GripperCommandGoal
 
 
 DEFAULT_TEST_START_DELAY = 5
@@ -31,7 +31,7 @@ class SystemTest:
         self._joint_state_sub = rospy.Subscriber('{}/joint_states'.format(system_prefix),JointState,self._joint_state_cb)
 
         self._move_trajectory_ac = actionlib.SimpleActionClient('{}/robot_control/move_trajectory'.format(system_prefix),MoveTrajectoryAction)
-        self._gripper_command_ac = actionlib.SimpleActionClient('{}/gripper_command'.format(system_prefix),GripperCommandAction)
+        self._gripper_pub = rospy.Publisher('{}/robot_control/gripper'.format(system_prefix),GripperCommand,queue_size=5)
 
     def _joint_state_cb(self, msg):
         self._last_js_msg = msg
@@ -111,14 +111,14 @@ class SystemTest:
         stop.acceleration = Stop.STD_ACCELERATION
 
         # Define Gripper Close Command
-        gripper_open_goal = GripperCommandGoal()
-        gripper_open_goal.command.position = 0.0
-        gripper_open_goal.command.max_effort = 1
+        gripper_open_goal = GripperCommand()
+        gripper_open_goal.position = 0.0
+        gripper_open_goal.max_effort = 1
 
         # Define Gripper Open Command
-        gripper_close_goal = GripperCommandGoal()
-        gripper_close_goal.command.position = 0.85
-        gripper_close_goal.command.max_effort = 1
+        gripper_close_goal = GripperCommand()
+        gripper_close_goal.position = 0.85
+        gripper_close_goal.max_effort = 1
 
         # Waiting for UR Controller
         print 'Waiting for Move Trajectory Server for UR Controller to connect'
@@ -154,24 +154,14 @@ class SystemTest:
         self._stop_pub.publish(stop)
         rospy.sleep(1)
 
-        # Waiting for Gripper
-        print 'Waiting for GripperCommand Server for Gripper Controller to connect'
-        self._gripper_command_ac.wait_for_server()
-
         # Interact with Gripper
         print 'Sending a close gripper command'
-        self._gripper_command_ac.send_goal(gripper_close_goal)
-        self._gripper_command_ac.wait_for_result()
-        result = self._gripper_command_ac.get_result()
-        print 'Position: {}, Effort: {}, Stalled: {}, Reached Goal: {}'.format(result.position, result.effort, result.stalled, result.reached_goal)
-        rospy.sleep(1)
+        self._gripper_pub.publish(gripper_close_goal)
+        rospy.sleep(5)
 
         print 'Sending an open gripper command'
-        self._gripper_command_ac.send_goal(gripper_open_goal)
-        self._gripper_command_ac.wait_for_result()
-        result = self._gripper_command_ac.get_result()
-        print 'Position: {}, Effort: {}, Stalled: {}, Reached Goal: {}'.format(result.position, result.effort, result.stalled, result.reached_goal)
-        rospy.sleep(1)
+        self._gripper_pub.publish(gripper_open_goal)
+        rospy.sleep(5)
 
         # Verifying joint position is being published
         print 'Checking that joint state messages are being published'
