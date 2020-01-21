@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-Planner server generates trajectories using
+Planner server generates traces from trajectories using
 - RelaxedIK
 
 Planner traces trajectories using
@@ -42,14 +42,15 @@ class PlannerServer:
             'planner_wrist_3_link',
             'planner_ee_link',
             'planner_robotiq_85_left_finger_tip_link',
-            'planner_robotiq_85_right_finger_tip_link']
+            'planner_robotiq_85_right_finger_tip_link'
+            ]
         self._fixed_frame = '/app'
 
         self._listener = tf.TransformListener()
 
-        self._point_cloud_pub = rospy.Publisher('planner/point_cloud',PointCloud,queue_size=5)
+        self._jobs = {}
 
-    def _generate_trace(self, msg):
+    def _generate_trace(self, job_data):
 
         # unpack trajectory
         print 'unpacking trajectory'
@@ -116,7 +117,6 @@ class PlannerServer:
 
         # convert trace into
         # - link-paths
-        # - point-cloud
         # - mesh
         print 'processing trace data'
         print self._samples
@@ -142,14 +142,6 @@ class PlannerServer:
                         z=rot[2],
                         w=rot[3])))
 
-                point_cloud.points.append(Point32(
-                    x=pos[0],
-                    y=pos[1],
-                    z=pos[2]))
-                point_cloud.channels.append(ChannelFloat32())
-
-        self._point_cloud_pub.publish(point_cloud)
-
     def _sample_cb(self, event):
         data = {}
         for link in self._links:
@@ -167,16 +159,19 @@ class PlannerServer:
         self._timer.shutdown()
         self._timer = None
 
+    def spin(self):
+
+        while not rospy.is_shutdown():
+
+            # check if job
+            if len(self._jobs.keys()) > 0:
+                self._generate_trace(self._jobs[self._jobs.keys[0]])
+            else:
+                rospy.sleep(0.1)
+
 
 if __name__ == "__main__":
     rospy.init_node('planner_server')
 
     node = PlannerServer()
-
-    rospy.sleep(15)
-
-    #TODO test
-    print 'starting test'
-    node._generate_trace(None)
-
-    rospy.spin()
+    node.spin()

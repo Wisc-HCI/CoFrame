@@ -132,3 +132,26 @@ class Orientation(object):
                 y=lst[2],
                 z=lst[3],
                 w=lst[0])
+
+
+class TraceDataPoint(object):
+
+    def __init__(self, position, orientation, grade, uuid):
+        self.position = position
+        self.orienation = orienation
+        self.grade = grade
+        self.uuid = uuid
+
+    @classmethod
+    def from_dct(self, dct):
+        return TraceDataPoint(
+            Position.from_dct(dct['position']),
+            Orientation.from_dct(dct['orienation']),
+            dct['grade'])
+
+    def to_dct(self):
+        return {
+            'position': self.position,
+            'orienation': self.orienation,
+            'grade': self.grade
+        }

@@ -1,28 +1,29 @@
-
 from abstract import Abstract
-from geometry import Pose
+from geometry import Position, Orientation
 
 
 class Location(Abstract):
 
-    def __init__(self, marker_type='', pose=Pose(), label='', uuid=None):
-        Abstract.__init__(self,'location',label,uuid)
-        self.pose = pose
-        self.marker_type = marker_type
+    def __init__(self, position=Position(), orientation=Orientation(), joints=None, name='', uuid=None):
+        Abstract.__init__(self,'location',name,uuid)
+        self.position = position
+        self.orientation = orientation
+        self.joints = joints
 
     def to_dct(self):
         return {
-            'type': self._type,
             'uuid': self._uuid,
-            'label': self.label,
-            'pose': self.pose.to_dct(),
-            'marker_type': self.marker_type
+            'name': self.name,
+            'position': self.position.to_dct(),
+            'orientation': self.orientation.to_dct(),
+            'joints': self.joints
         }
 
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            marker_type=dct['marker_type'],
-            pose=Pose.from_dct(dct['pose']),
-            label=dct['label'],
-            uuid=dct['uuid'])
+            position=Position.from_dct(dct['position']),
+            orientation=Orientation.from_dct(dct['orientation']),
+            name=dct['name'],
+            uuid=dct['uuid'],
+            joints=dct['joints'])

@@ -19,7 +19,8 @@ from cobots_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 class DataServer:
 
     def __init__(self, task_filepath):
-        self._task = {}
+        self._task_raw = {}
+        self._timestamp = rospy.Time.now()
         self._task_filepath = task_filepath
 
         self._update_sub = rospy.Subscriber('application/update',String,self._update_cb)
@@ -29,7 +30,8 @@ class DataServer:
         self._save_data_srv = rospy.Service('data_server/save_data',SaveData,self._save_data_cb)
 
     def _update_cb(self, msg):
-        self._task = json.loads(msg.data)
+        self._task_raw = json.loads(msg.data)
+        self._timestamp = rospy.Time.now()
 
     def _get_data_cb(self, request):
         inData = json.loads(request.data.data)
@@ -39,13 +41,14 @@ class DataServer:
             outData[data_type] = {}
 
             for data_id in inData[data_type]:
-                if data_type in self._task.keys() and data_id in self._task[data_type].keys():
-                    outData[data_type][data_id] = self._task[data_type][data_id]
+                if data_type in self._task_raw.keys() and data_id in self._task_raw[data_type].keys():
+                    outData[data_type][data_id] = self._task_raw[data_type][data_id]
                 else:
                     outData[data_type][data_id] = {'error': True}
 
         response = GetDataResponse()
         response.data = String(json.dumps(outData))
+        response.timestamp = self._timestamp
         return response
 
     def _load_data_cb(self, request):
@@ -68,7 +71,8 @@ class DataServer:
             return response
 
         if request.update_cache:
-            self._task = inData
+            self._task_raw = inData
+            self._timestamp = rospy.Time.now()
 
         response.data = json.dumps()
         response.status = True
@@ -80,7 +84,7 @@ class DataServer:
 
         try:
             fout = open(os.path.join(self._task_filepath,request.filename),'w')
-            fout.write(json.dumps(self._task))
+            fout.write(json.dumps(self._task_raw))
             fout.close()
         except:
             response.status = False

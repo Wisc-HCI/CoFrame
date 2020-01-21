@@ -1,30 +1,29 @@
 from abstract import Abstract
-from geometry import Pose
+from geometry import Position, Orientation
 
 
 class Waypoint(Abstract):
 
-    def __init__(self, location_uuid=None, parameters={}, pose=Pose(), label='', uuid=None):
+    def __init__(self, position=Position(), orientation=Orientation(), joints=None, name='', uuid=None):
         Abstract.__init__(self,'waypoint',label,uuid)
-        self.location_uuid = location_uuid
-        self.parameters = parameters
-        self.pose = pose
+        self.position = position
+        self.orientation = orientation
+        self.joints = joints
 
     def to_dct(self):
         return {
-            'location_uuid': self.location_uuid,
-            'parameters': self.parameters,
-            'type': self._type,
             'uuid': self._uuid,
-            'label': self.label,
-            'pose': self.pose.to_dct()
+            'name': self.name,
+            'position': self.position.to_dct(),
+            'orientation': self.orientation.to_dct(),
+            'joints': self.joints
         }
 
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            location_uuid=dct['location_uuid'],
-            parameters=dct['parameters'],
-            pose=Pose.from_dct(dct['pose']),
-            label=dct['label'],
-            uuid=dct['uuid'])
+            position=Position.from_dct(dct['position']),
+            orientation=Orientation.from_dct(dct['orientation']),
+            name=dct['name'],
+            uuid=dct['uuid'],
+            joints=dct['joints'])
