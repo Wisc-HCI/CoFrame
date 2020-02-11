@@ -111,3 +111,29 @@ class GripPrimitive(Primitive):
             effort=dct['effprt'],
             speed=dct['speed']
         )
+
+
+class MachinePrimitive(Primitive):
+
+    def __init__(self, action, name='', uuid=None):
+        Primitive.__init__(self,'machine',name,uuid)
+
+        self.action = action
+
+    def to_dct(self):
+        return {
+            'name': self.name,
+            'type': self.type,
+            'uuid': self.uuid,
+            'action': self.action
+        }
+
+    @classmethod
+    def from_dct(cls, dct):
+        if dct['type'] != 'machine':
+            raise Exception("Incorrect type provided {} is not machine".format(dct['type']))
+        return cls(
+            name=dct['name'],
+            uuid=dct['uuid'],
+            action=dct['action']
+        )

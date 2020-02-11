@@ -1,8 +1,0 @@
-string FREEDRIVE = freedrive
-string SERVOING = servoing
-string PLAYBACK = playback
-string IDLE = idle
-string mode
----
-bool status
-string message

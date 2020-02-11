@@ -1,4 +1,5 @@
 string data
----
-string data
 cobots_core/Version tag
+---
+bool status
+string message

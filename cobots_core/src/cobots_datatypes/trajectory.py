@@ -3,10 +3,10 @@ from abstract import Abstract
 
 class Trajectory(Abstract):
 
-    def __init__(self, type=None, startLoc_uuid=None, endLoc_uuid=None,
+    def __init__(self, startLoc_uuid=None, endLoc_uuid=None,
                  waypoint_uuids=[], name='', uuid=None, active=False,
                  velocity=0, acceleration=0):
-        Abstract.__init__(self,type,name,uuid)
+        Abstract.__init__(self,'trajectory',name,uuid)
         self.start_location_uuid = startLoc_uuid
         self.end_location_uuid = endLoc_uuid
         self.waypoint_uuids = waypoint_uuids
@@ -35,7 +35,6 @@ class Trajectory(Abstract):
             waypoint_uuids=['waypoint_uuids'],
             name=dct['name'],
             uuid=dct['uuid'],
-            type=dct['type'],
             active=dct['active'],
             velocity=dct['velocity'],
             acceleration=dct['acceleration'])

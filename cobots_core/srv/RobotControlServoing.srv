@@ -1,6 +1,0 @@
-bool physical
-bool simulated
-cobots_core/Servo data
----
-bool status
-string message

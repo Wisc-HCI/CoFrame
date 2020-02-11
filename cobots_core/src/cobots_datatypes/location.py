@@ -14,6 +14,7 @@ class Location(Abstract):
         return {
             'uuid': self._uuid,
             'name': self.name,
+            'type': self.type,
             'position': self.position.to_dct(),
             'orientation': self.orientation.to_dct(),
             'joints': self.joints

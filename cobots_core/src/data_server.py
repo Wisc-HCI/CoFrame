@@ -10,28 +10,38 @@ import json
 import rospy
 
 from std_msgs.msg import String
+from cobots_core.msg import UpdateData, Version
 
 from cobots_core.srv import GetData, GetDataRequest, GetDataResponse
+from cobots_core.srv import SetData, SetDataRequest, SetDataResponse
 from cobots_core.srv import LoadData, LoadDataRequest, LoadDataResponse
 from cobots_core.srv import SaveData, SaveDataRequest, SaveDataResponse
+from cobots_core.srv import CreateData, CreateDataRequest, CreateDataResponse
+from cobots_core.srv import DeleteData, DeleteDataRequest, DeleteDataResponse
+
+from cobots_datatypes.task import *
+from cobots_datatypes.program import *
+from cobots_datatypes.abstract import *
+from cobots_datatypes.geometry import *
+from cobots_datatypes.location import *
+from cobots_datatypes.waypoint import *
+from cobots_datatypes.primitive import *
+from cobots_datatypes.trajectory import *
 
 
 class DataServer:
 
     def __init__(self, task_filepath):
-        self._task_raw = {}
-        self._timestamp = rospy.Time.now()
         self._task_filepath = task_filepath
 
-        self._update_sub = rospy.Subscriber('application/update',String,self._update_cb)
+        self._update_pub = rospy.Publisher('application/update',UpdateData, queue_size=10)
 
         self._get_data_srv = rospy.Service('data_server/get_data',GetData,self._get_data_cb)
+        self._set_data_srv = rospy.Service('data_server/set_data',SetData,self._set_data_cb)
         self._load_data_srv = rospy.Service('data_server/load_data',LoadData,self._load_data_cb)
         self._save_data_srv = rospy.Service('data_server/save_data',SaveData,self._save_data_cb)
-
-    def _update_cb(self, msg):
-        self._task_raw = json.loads(msg.data)
-        self._timestamp = rospy.Time.now()
+        self._create_data_srv = rospy.Service('data_server/create_data',CreateData,self._create_data_cb)
+        self._delete_data_srv = rospy.Service('data_server/delete_data',DeleteData,self._delete_data_cb)
 
     def _get_data_cb(self, request):
         inData = json.loads(request.data.data)
@@ -84,13 +94,22 @@ class DataServer:
 
         try:
             fout = open(os.path.join(self._task_filepath,request.filename),'w')
-            fout.write(json.dumps(self._task_raw))
+            fout.write(json.dumps(program_raw))
             fout.close()
         except:
             response.status = False
             response.message = 'Error writing to file'
 
         return response
+
+    def _set_data_cb(self, request):
+        pass
+
+    def _create_data_cb(self, request):
+        pass
+
+    def _delete_data_cb(self, request):
+        pass
 
 
 if __name__ == '__main__':

@@ -53,18 +53,19 @@ add_message_files(
   Move.msg
   Stop.msg
   Servo.msg
+  Version.msg
+  UpdateData.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
   GetData.srv
+  SetData.srv
+  CreateData.srv
+  DeleteData.srv
   LoadData.srv
   SaveData.srv
-  SetRobotControlMode.srv
-  GetRobotControlMode.srv
-  RobotControlServoing.srv
-  RobotControlFreedrive.srv
 )
 
 ## Generate actions in the 'action' folder
