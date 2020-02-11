@@ -1,16 +1,20 @@
 from abstract import Abstract
 
 
+def PrimitiveFactory(dct):
+    return None
+
+
 class Primitive(Abstract):
 
     def __init__(self, type, name='', uuid=None):
-        Abstract.__init__(self,type,label,uuid)
+        Abstract.__init__(self,'primitive.'+type,name,uuid)
 
     def to_dct(self):
         return {
             'type': self._type,
             'uuid': self._uuid,
-            'name': self.name,
+            'name': self.name
         }
 
     @classmethod
@@ -20,6 +24,35 @@ class Primitive(Abstract):
             name=dct['name'],
             uuid=dct['uuid']
         )
+
+    def update(self, dct):
+        pass #TODO
+
+
+class Graph(Primitive):
+
+    def __init__(self, type='generic' name='', uuid=None):
+        Primitive.__init__(self,'graph.'+type,name,uuid)
+
+        #TODO generic graph structure
+
+    def to_dct(self):
+        return {
+            'type': self._type,
+            'uuid': self._uuid,
+            'name': self.name
+        }
+
+    @classmethod
+    def from_dct(cls, dct):
+        return cls(
+            name=dct['name'],
+            uuid=dct['uuid']
+        )
+
+
+class Break(Primitive):
+    pass
 
 
 class MovePrimitive(Primitive):
