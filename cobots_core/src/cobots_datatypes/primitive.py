@@ -1,11 +1,11 @@
-from abstract import Abstract
+from abstract import Node
 
 
 def PrimitiveFactory(dct):
     return None
 
 
-class Primitive(Abstract):
+class Primitive(Node):
 
     def __init__(self, type, name='', uuid=None):
         Abstract.__init__(self,'primitive.'+type,name,uuid)
@@ -27,32 +27,6 @@ class Primitive(Abstract):
 
     def update(self, dct):
         pass #TODO
-
-
-class Graph(Primitive):
-
-    def __init__(self, type='generic' name='', uuid=None):
-        Primitive.__init__(self,'graph.'+type,name,uuid)
-
-        #TODO generic graph structure
-
-    def to_dct(self):
-        return {
-            'type': self._type,
-            'uuid': self._uuid,
-            'name': self.name
-        }
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            uuid=dct['uuid']
-        )
-
-
-class Break(Primitive):
-    pass
 
 
 class MovePrimitive(Primitive):
@@ -88,6 +62,9 @@ class MovePrimitive(Primitive):
             trajectory_uuids=dct['trajectory_uuids'],
             runnableTraj_uuid=dct['runnable_trajectory_uuid']
         )
+
+class UnplannedMovePrimtive(Primitive):
+    pass #TODO
 
 
 class DelayPrimitive(Primitive):
@@ -146,10 +123,10 @@ class GripPrimitive(Primitive):
         )
 
 
-class MachinePrimitive(Primitive):
+class MachineStartPrimitive(Primitive):
 
-    def __init__(self, action, name='', uuid=None):
-        Primitive.__init__(self,'machine',name,uuid)
+    def __init__(self, name='', uuid=None):
+        Primitive.__init__(self,'machine-start',name,uuid)
 
         self.action = action
 
@@ -157,16 +134,88 @@ class MachinePrimitive(Primitive):
         return {
             'name': self.name,
             'type': self.type,
-            'uuid': self.uuid,
-            'action': self.action
+            'uuid': self.uuid
         }
 
     @classmethod
     def from_dct(cls, dct):
-        if dct['type'] != 'machine':
+        if dct['type'] != 'machine-start':
             raise Exception("Incorrect type provided {} is not machine".format(dct['type']))
         return cls(
             name=dct['name'],
-            uuid=dct['uuid'],
-            action=dct['action']
+            uuid=dct['uuid']
         )
+
+class MachineWaitPrimitive(Primitive):
+
+    def __init__(self, name='', uuid=None):
+        Primitive.__init__(self,'machine-wait',name,uuid)
+
+        self.action = action
+
+    def to_dct(self):
+        return {
+            'name': self.name,
+            'type': self.type,
+            'uuid': self.uuid
+        }
+
+    @classmethod
+    def from_dct(cls, dct):
+        if dct['type'] != 'machine-wait':
+            raise Exception("Incorrect type provided {} is not machine".format(dct['type']))
+        return cls(
+            name=dct['name'],
+            uuid=dct['uuid']
+        )
+
+class MachineStopPrimitive(Primitive):
+
+    def __init__(self, name='', uuid=None):
+        Primitive.__init__(self,'machine-stop',name,uuid)
+
+        self.action = action
+
+    def to_dct(self):
+        return {
+            'name': self.name,
+            'type': self.type,
+            'uuid': self.uuid
+        }
+
+    @classmethod
+    def from_dct(cls, dct):
+        if dct['type'] != 'machine-stop':
+            raise Exception("Incorrect type provided {} is not machine".format(dct['type']))
+        return cls(
+            name=dct['name'],
+            uuid=dct['uuid']
+        )
+
+
+class MachineInitializePrimitive(Primitive):
+
+    def __init__(self, name='', uuid=None):
+        Primitive.__init__(self,'machine-initialize',name,uuid)
+
+        self.action = action
+
+    def to_dct(self):
+        return {
+            'name': self.name,
+            'type': self.type,
+            'uuid': self.uuid
+        }
+
+    @classmethod
+    def from_dct(cls, dct):
+        if dct['type'] != 'machine-initialize':
+            raise Exception("Incorrect type provided {} is not machine".format(dct['type']))
+        return cls(
+            name=dct['name'],
+            uuid=dct['uuid']
+        )
+
+
+class Breakpoint(Primitive):
+    pass #TODO

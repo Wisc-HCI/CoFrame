@@ -25,6 +25,11 @@ class RobotControlServer:
         self._simulated_interface = RobotInterface('simulated')
         self._physical_interface = RobotInterface('physical')
 
+        # Control Panel Feedback
+        self._at_start_pub = rospy.Publisher('robot_control_server/at_start',Bool, queue_size=10, latch=True)
+        self._at_end_pub = rospy.Publisher('robot_control_server/at_end',Bool, queue_size=10, latch=True)
+        self._lockout_pub = rospy.Publisher('robot_control_server/lockout',Bool, queue_size=10, latch=True)
+
         # Robot Controls
         self._use_simulated_robot_sub = rospy.Subscriber('robot_control_server/use_simulated_robot',Bool,self._use_simulated_robot_cb)
         self._use_physical_robot_sub = rospy.Subscriber('robot_control_server/use_physical_robot',Bool,self._use_physical_robot_cb)

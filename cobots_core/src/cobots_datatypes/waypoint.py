@@ -1,8 +1,8 @@
-from abstract import Abstract
+from abstract import Node
 from geometry import Position, Orientation
 
 
-class Waypoint(Abstract):
+class Waypoint(Node):
 
     def __init__(self, position=Position(), orientation=Orientation(), joints=None, name='', uuid=None):
         Abstract.__init__(self,'waypoint',label,uuid)

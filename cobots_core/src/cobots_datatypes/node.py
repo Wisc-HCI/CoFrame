@@ -3,7 +3,7 @@ import uuid
 from abc import ABCMeta, abstractmethod
 
 
-class Abstract(object):
+class Node(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, type, name='', uuid=None):

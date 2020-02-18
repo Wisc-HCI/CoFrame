@@ -1,8 +1,8 @@
-from abstract import Abstract
+from abstract import Node
 from geometry import Position, Orientation
 
 
-class TraceDataPoint(Abstract):
+class DataPoint(object):
 
     def __init__(self, position=Position(), orientation=Orientation(), grade, uuid=None):
         Abstract.__init__(self,'trace_data_point','',uuid)
@@ -30,7 +30,7 @@ class TraceDataPoint(Abstract):
         )
 
 
-class TraceTrajectory(Abstract):
+class Trace(Node):
 
     def __init__(self, data, eePath, jPaths, tPaths, cPaths, uuid=None):
         Abstract.__init__(self,'trace_trajectory','',uuid)

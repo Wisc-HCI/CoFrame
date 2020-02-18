@@ -1,7 +1,7 @@
-from abstract import Abstract
+from abstract import Node
 
 
-class Trajectory(Abstract):
+class Trajectory(Node):
 
     def __init__(self, startLoc_uuid=None, endLoc_uuid=None,
                  waypoint_uuids=[], trace_uuid=None, name='', uuid=None, active=False,

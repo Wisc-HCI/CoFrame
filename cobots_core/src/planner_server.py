@@ -13,6 +13,8 @@ Planner creates full visualizations for trajectories
 - joint-link-paths (more general form of end-effector path)
 '''
 
+#TODO generalize this
+
 import tf
 import json
 import rospy

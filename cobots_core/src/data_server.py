@@ -5,6 +5,8 @@ The data server creates a link between the application and the data backend of
 the ROS interface.
 '''
 
+#TODO completely rewrite
+
 import os
 import json
 import rospy

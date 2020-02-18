@@ -2,6 +2,8 @@
 
 '''
 
+#TODO publish at_start, at_end, and lockout
+
 class ProgramRunner:
 
     def __init__(self, raw_program):

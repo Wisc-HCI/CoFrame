@@ -2,6 +2,7 @@
 
 '''
 # TODO make sure to update structures on set, delete, create
+# TODO this no longer makes sense given the new program structure
 
 from task import *
 from trace import *
@@ -61,17 +62,35 @@ class Program(Abstract):
         else:
             return self[field]
 
-    def set(self, field, id, data):
+    def set(self, field, id, data, suppress_upward_chain=False):
         if field == 'locations':
             self.locations[id].update(data)
+
+            # TODO update trajectories
+            # TODO delete traces
+
         elif field == 'waypoints':
             self.waypoints[id].update(data)
+
+            # TODO delete traces
+
         elif field == 'trajectories':
             self.trajectories[id].update(data)
+
+            # TODO delete traces
+            # TODO update primitive
+            # TODO update waypoints
+
         elif field == 'traces':
             self.traces[id].update(data)
+
         elif field == 'primitives':
             self.primitives[id].update(data)
+
+            # TODO update trajectories
+            # TODO delete traces
+            # TODO
+
         elif field == 'root_graph':
             self.root_graph = data
 
