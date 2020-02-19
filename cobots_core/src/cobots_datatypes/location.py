@@ -1,4 +1,4 @@
-from abstract import Node
+from node import Node
 from geometry import Position, Orientation
 
 

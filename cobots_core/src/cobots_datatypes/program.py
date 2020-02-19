@@ -4,18 +4,23 @@
 # TODO make sure to update structures on set, delete, create
 # TODO this no longer makes sense given the new program structure
 
+'''
+from node import *
 from task import *
 from trace import *
-from abstract import *
 from geometry import *
 from location import *
 from waypoint import *
 from primitive import *
 from trajectory import *
+'''
 
+class Program(object):
 
-class Program(Abstract):
+    def to_dct(self):
+        return {}
 
+'''
     def __init__(self, name='', uuid=None, dct=None):
         Abstract.__init__(self,'program',name,uuid)
 
@@ -178,3 +183,4 @@ class Program(Abstract):
             name=dct['name'],
             uuid=dct['uuid'],
             dct)
+'''

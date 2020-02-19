@@ -21,15 +21,18 @@ from cobots_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 from cobots_core.srv import CreateData, CreateDataRequest, CreateDataResponse
 from cobots_core.srv import DeleteData, DeleteDataRequest, DeleteDataResponse
 
-from cobots_datatypes.task import *
+
 from cobots_datatypes.program import *
-from cobots_datatypes.abstract import *
+
+'''
+from cobots_datatypes.task import *
+from cobots_datatypes.node import *
 from cobots_datatypes.geometry import *
 from cobots_datatypes.location import *
 from cobots_datatypes.waypoint import *
 from cobots_datatypes.primitive import *
 from cobots_datatypes.trajectory import *
-
+'''
 
 class DataServer:
 

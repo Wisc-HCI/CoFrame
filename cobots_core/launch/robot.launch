@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="local_physical" default="true"/>
+  <arg name="local_physical" default="false"/>
   <arg name="local_simulated" default="false"/>
   <arg name="local_planner" default="false"/>
   <arg name="simulate_physical_robot" default='true'/>
@@ -47,7 +47,7 @@
 
   <!-- Global State Publishers -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="/use_gui" value="false"/>
+    <param name="/use_gui" value="true"/>
     <param name="rate" value="25"/>
     <rosparam param="/source_list">[physical/joint_states,simulated/joint_states,planner/joint_states]</rosparam>
   </node>

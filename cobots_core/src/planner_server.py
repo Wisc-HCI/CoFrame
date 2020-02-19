@@ -27,7 +27,7 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
 
 #from rik_interface import RelaxedIKInterface
-from robot_interface import RobotInterface
+from interfaces.robot_interface import RobotInterface
 
 
 class PlannerServer:

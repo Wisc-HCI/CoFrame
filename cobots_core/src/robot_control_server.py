@@ -125,7 +125,7 @@ class RobotControlServer:
             # Update underlying program state on robot
             if self._playing:
                 self.program.update()
-            rate.spin()
+            rate.sleep()
 
     def _start_freedrive(self):
         self._simulated_interface.freedrive_pub.publish(True)

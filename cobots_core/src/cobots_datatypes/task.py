@@ -3,7 +3,7 @@ from primitive import Primitive
 
 class Task(Primitive):
 
-    def __init__(self, type='generic' name='', uuid=None):
+    def __init__(self, type='generic', name='', uuid=None):
         Primitive.__init__(self,'graph.'+type,name,uuid)
 
         #TODO generic graph structure

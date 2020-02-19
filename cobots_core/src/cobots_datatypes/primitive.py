@@ -1,4 +1,4 @@
-from abstract import Node
+from node import Node
 
 
 def PrimitiveFactory(dct):
@@ -20,7 +20,7 @@ class Primitive(Node):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            type=dct['type']
+            type=dct['type'],
             name=dct['name'],
             uuid=dct['uuid']
         )

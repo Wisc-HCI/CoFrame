@@ -4,6 +4,7 @@
   <arg name="local" default="true"/> <!-- Local means launch will not include a rosbridge interface-->
   <arg name="ur_ip_address" default="127.0.0.1"/>
   <arg name="fake_gripper" default="true"/>
+  <arg name="use_joint_gripper_gui" default="false"/>
 
   <arg name="timestep" default="0.12"/>
   <arg name="lookahead" default="0.1"/>
@@ -65,7 +66,7 @@
     <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_ur_bringup)/description/ur3e.xacro'" />
 
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-      <param name="/use_gui" value="false"/>
+      <param name="/use_gui" value="$(arg use_joint_gripper_gui)"/>
       <param name="rate" value="10"/>
       <rosparam param="/source_list">[gripper/joint_state, ur/joint_states]</rosparam>
     </node>
@@ -81,7 +82,7 @@
 
   <!-- Higher-level controller for communication with cobots -->
   <node name="ur_controller" pkg="cobots_ur_bringup" type="ur_controller.py" output="screen">
-    
+
     <!-- Application communication channel -->
     <param if="$(arg local)" name="mode" value="ros"/>
     <param unless="$(arg local)" name="mode" value="bridge"/>

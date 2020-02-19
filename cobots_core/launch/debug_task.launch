@@ -1,0 +1,42 @@
+<launch>
+
+<!--=========================================================================-->
+<!--  Arguements                                                             -->
+<!--=========================================================================-->
+
+  <arg name="local_physical" default="false"/>
+  <arg name="local_simulated" default="false"/>
+  <arg name="local_planner" default="false"/>
+
+  <arg name="simulate_physical_robot" default="true"/>
+
+  <arg name="launch_rviz" default="true"/>
+  <arg name="load_rviz_cfg" default="true"/>
+
+<!--=========================================================================-->
+<!--  Robot (All interfaces)                                                 -->
+<!--=========================================================================-->
+
+  <include file="$(find cobots_core)/launch/robot.launch">
+    <arg name="local_physical" value="$(arg local_physical)"/>
+    <arg name="local_simulated" value="$(arg local_simulated)"/>
+    <arg name="local_planner" value="$(arg local_planner)"/>
+    <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
+  </include>
+
+<!--=========================================================================-->
+<!--  Application                                                            -->
+<!--=========================================================================-->
+
+  <include file="$(find cobots_core)/launch/app.launch">
+    <arg name="task_filepath" value="$(find cobots_core)/"/>
+    <arg name="ros_frame_id" value="world"/>
+  </include>
+
+  <!-- RVIZ -->
+  <group if="$(arg launch_rviz)">
+    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_tasks)/rviz/machine_tending.rviz"/>
+    <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
+  </group>
+
+</launch>

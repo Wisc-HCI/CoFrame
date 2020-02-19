@@ -1,11 +1,10 @@
-from abstract import Node
+from node import Node
 from geometry import Position, Orientation
 
 
 class DataPoint(object):
 
-    def __init__(self, position=Position(), orientation=Orientation(), grade, uuid=None):
-        Abstract.__init__(self,'trace_data_point','',uuid)
+    def __init__(self, position=Position(), orientation=Orientation(), grade=0, uuid=None):
         self.position = position
         self.orientation = orientation
         self.grade = grade
@@ -45,7 +44,7 @@ class Trace(Node):
             'uuid': self.uuid,
             'type': self.type,
             'name': self.name,
-            'data': [self.data[i].to_dct(), for i in range(0,len(self.data))]
+            'data': [self.data[i].to_dct() for i in range(0,len(self.data))],
             'end_effector_path': self.end_effector_path,
             'joint_paths': self.joint_paths,
             'tool_paths': self.tool_paths,
@@ -58,7 +57,7 @@ class Trace(Node):
             uuid=dct['uuid'],
             data=[TraceDataPoint.from_dct(dct['data'][i]) for i in range(0,len(dct['data']))],
             eePath=dct['end_effector_path'],
-            jPaths=dct['joint_paths']
-            tPaths=dct['tool_paths']
+            jPaths=dct['joint_paths'],
+            tPaths=dct['tool_paths'],
             cPaths=dct['component_paths']
         )
