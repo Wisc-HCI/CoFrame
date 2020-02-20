@@ -3,10 +3,10 @@ from node import Node
 
 class Trajectory(Node):
 
-    def __init__(self, startLoc_uuid=None, endLoc_uuid=None,
+    def __init__(self, startLoc_uuid=None, endLoc_uuid=None, parent=None,
                  waypoint_uuids=[], trace_uuid=None, name='', uuid=None, active=False,
                  velocity=0, acceleration=0):
-        Abstract.__init__(self,'trajectory',name,uuid)
+        super(Node,self).__init__('trajectory',name,uuid,parent)
         self.start_location_uuid = startLoc_uuid
         self.end_location_uuid = endLoc_uuid
         self.waypoint_uuids = waypoint_uuids
@@ -16,18 +16,17 @@ class Trajectory(Node):
         self.acceleration = acceleration
 
     def to_dct(self):
-        return {
+        msg = super(Node,self).to_dct()
+        msg.update({
             'start_location_uuid': self.start_location_uuid,
             'end_location_uuid': self.end_location_uuid,
-            'type': self.type,
-            'uuid': self.uuid,
-            'name': self.name,
             'waypoint_uuids': self.waypoint_uuids,
             'trace_uuid': self.trace_uuid,
             'active': self.active,
             'velocity': self.velocity,
             'acceleration': self.acceleration
-        }
+        })
+        return msg
 
     @classmethod
     def from_dct(cls, dct):

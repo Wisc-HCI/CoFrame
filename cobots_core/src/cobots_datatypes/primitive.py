@@ -1,10 +1,6 @@
 from node import Node
 
 
-def PrimitiveFactory(dct):
-    return None
-
-
 class Primitive(Node):
 
     def __init__(self, type, name='', uuid=None):

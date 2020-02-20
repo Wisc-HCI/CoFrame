@@ -1,24 +1,58 @@
 import geometry_msgs.msg as ros_msgs
 
+from node import Node
 
-class Pose(object):
 
-    def __init__(self, position=None, orientation=None):
+class Pose(Node):
+
+    def __init__(self, position=None, orientation=None, parent=None):
+        super(Node,self).__init__('pose', parent=parent)
+
         if position is None:
-            self.position = Position(0,0,0)
+            self._position = Position(0,0,0,self)
         else:
-            self.position = position
+            self._position = position
+            self._position.parent = self
 
         if orientation is None:
-            pass
+            self._orientation = Orientation(0,0,0,1,self)
         else:
-            self.orientation = orientation
+            self._orientation = orientation
+            self._orientation.parent = self
+
+    def child_changed_event(self, attribute_trace):
+        if self._parent != None:
+            self._parent.child_changed_event(['pose'] + attribute_trace)
+
+    @property
+    def position(self):
+        return self._position
+
+    @position.setter
+    def position(self, value):
+        self._position = value
+        self._position.parent = self
+        if self._parent != None:
+            self._parent.child_changed_event(["pose","position"])
+
+    @property
+    def orientation(self):
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, value):
+        self._orientation = value
+        self._orientation.parent = self
+        if self._parent != None:
+            self._parent.child_changed_event(["pose","orientation"])
 
     def to_dct(self):
-        return {
+        msg = super(Node,self).to_dct()
+        msg.update({
             'position': self.position.to_dct(),
             'orientation': self.orientation.to_dct()
-        }
+        })
+        return msg
 
     def to_ros(self):
         return ros_msgs.Pose(position=self.position.to_ros(),
@@ -35,19 +69,56 @@ class Pose(object):
                    orientation=Orientation.from_ros(obj.orientation))
 
 
-class Position(object):
+class Position(Node):
 
-    def __init__(self, x, y, z):
-        self.x = x,
-        self.y = y,
-        self.z = z,
+    def __init__(self, x, y, z, parent=None):
+        super(Node,self).__init__('position', parent=parent)
+        self._x = x
+        self._y = y
+        self._z = z
+
+    def child_changed_event(self, attribute_trace):
+        if self._parent != None:
+            self._parent.child_changed_event(['position'] + attribute_trace)
+
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        self._x = value
+        if self._parent != None:
+            self._parent.child_changed_event(['position','x'])
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, value):
+        self._y = value
+        if self._parent != None:
+            self._parent.child_changed_event(['position','y'])
+
+    @property
+    def z(self):
+        return self._z
+
+    @z.setter
+    def z(self, value):
+        self._z = value
+        if self._parent != None:
+            self._parent.child_changed_event(['position','z'])
 
     def to_dct(self):
-        return {
+        msg = super(Node,self).to_dct()
+        msg.update({
             'x': self.x,
             'y': self.y,
             'z': self.z
-        }
+        })
+        return msg
 
     def to_list(self):
         return [self.x,self.y,self.z]
@@ -77,21 +148,69 @@ class Position(object):
             z=lst[2])
 
 
-class Orientation(object):
+class Orientation(Node):
 
-    def __init__(self, x, y, z, w):
-        self.x = x,
-        self.y = y,
-        self.z = z,
-        self.w = w
+    def __init__(self, x, y, z, w, parent=None):
+        super(Node,self).__init__('orientation', parent=parent)
+        self._x = x
+        self._y = y
+        self._z = z
+        self._w = w
+        self._parent = parent
+
+    def child_changed_event(self, attribute_trace):
+        if self._parent != None:
+            self._parent.child_changed_event(['orientation'] + attribute_trace)
+
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        self._x = value
+        if self._parent != None:
+            self._parent.child_changed_event(['orientation','x'])
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, value):
+        self._y = value
+        if self._parent != None:
+            self._parent.child_changed_event(['orientation','y'])
+
+    @property
+    def z(self):
+        return self._z
+
+    @z.setter
+    def z(self, value):
+        self._z = z
+        if self._parent != None:
+            self._parent.child_changed_event(['orientation','z'])
+
+    @property
+    def w(self):
+        return self._w
+
+    @w.setter
+    def w(self, value):
+        self._w = value
+        if self._parent != None:
+            self._parent.child_changed_event(['orientation','w'])
 
     def to_dct(self):
-        return {
+        msg = super(Node,self).to_dct()
+        msg.update({
             'x': self.x,
             'y': self.y,
             'z': self.z,
             'w': self.w
-        }
+        })
+        return msg
 
     def to_list(self, order='xyzw'):
         if order == 'xyzw':
