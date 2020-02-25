@@ -5,24 +5,30 @@ from node import Node
 
 class Pose(Node):
 
-    def __init__(self, position=None, orientation=None, parent=None):
-        super(Node,self).__init__('pose', parent=parent)
+    def __init__(self, position=None, orientation=None, type='', name='',
+                 uuid=None, parent=None, append_type=True):
+        super(Node,self).__init__(
+            type='pose.'+type if append_type else type,
+            name=name,
+            uuid=uuid,
+            parent=parent,
+            append_type=append_type)
+
+        self._initialize_private_members()
 
         if position is None:
-            self._position = Position(0,0,0,self)
+            self.position = Position(0,0,0,parent=self)
         else:
-            self._position = position
-            self._position.parent = self
+            self.position = position
 
         if orientation is None:
-            self._orientation = Orientation(0,0,0,1,self)
+            self.orientation = Orientation(0,0,0,1,parent=self)
         else:
-            self._orientation = orientation
-            self._orientation.parent = self
+            self.orientation = orientation
 
-    def child_changed_event(self, attribute_trace):
-        if self._parent != None:
-            self._parent.child_changed_event(['pose'] + attribute_trace)
+    def _initialize_private_members(self):
+        self._position = None
+        self._orientation = None
 
     @property
     def position(self):
@@ -30,10 +36,12 @@ class Pose(Node):
 
     @position.setter
     def position(self, value):
-        self._position = value
-        self._position.parent = self
-        if self._parent != None:
-            self._parent.child_changed_event(["pose","position"])
+        if (self._position != value):
+            self._position = value
+            self._position.parent = self
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('position')])
 
     @property
     def orientation(self):
@@ -41,10 +49,12 @@ class Pose(Node):
 
     @orientation.setter
     def orientation(self, value):
-        self._orientation = value
-        self._orientation.parent = self
-        if self._parent != None:
-            self._parent.child_changed_event(["pose","orientation"])
+        if self._orientation != value:
+            self._orientation = value
+            self._orientation.parent = self
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('orientation')])
 
     def to_dct(self):
         msg = super(Node,self).to_dct()
@@ -61,7 +71,11 @@ class Pose(Node):
     @classmethod
     def from_dct(self, dct):
         return cls(position=Position.from_dct(dct['position']),
-                   orientation=Orientation.from_dct(dct['orientation']))
+                   orientation=Orientation.from_dct(dct['orientation']),
+                   type=dct['type'] if 'type' in dct.keys() else '',
+                   append_type=not 'type' in dct.keys(),
+                   uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
+                   name=dct['name'] if 'name' in dct.keys() else '')
 
     @classmethod
     def from_ros(self, obj):
@@ -71,15 +85,24 @@ class Pose(Node):
 
 class Position(Node):
 
-    def __init__(self, x, y, z, parent=None):
-        super(Node,self).__init__('position', parent=parent)
-        self._x = x
-        self._y = y
-        self._z = z
+    def __init__(self, x, y, z, type='', name='', parent=None, uuid=None, append_type=True):
+        super(Node,self).__init__(
+            type='position.'+type if append_type else type,
+            name=name,
+            uuid=uuid,
+            parent=parent,
+            append_type=append_type)
 
-    def child_changed_event(self, attribute_trace):
-        if self._parent != None:
-            self._parent.child_changed_event(['position'] + attribute_trace)
+        self._initialize_private_members()
+
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def _initialize_private_members(self):
+        self._x = None
+        self._y = None
+        self._z = None
 
     @property
     def x(self):
@@ -87,9 +110,11 @@ class Position(Node):
 
     @x.setter
     def x(self, value):
-        self._x = value
-        if self._parent != None:
-            self._parent.child_changed_event(['position','x'])
+        if self._x != value:
+            self._x = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('x')])
 
     @property
     def y(self):
@@ -97,9 +122,11 @@ class Position(Node):
 
     @y.setter
     def y(self, value):
-        self._y = value
-        if self._parent != None:
-            self._parent.child_changed_event(['position','y'])
+        if self._y != value:
+            self._y = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('y')])
 
     @property
     def z(self):
@@ -107,9 +134,11 @@ class Position(Node):
 
     @z.setter
     def z(self, value):
-        self._z = value
-        if self._parent != None:
-            self._parent.child_changed_event(['position','z'])
+        if self._z != value:
+            self._z = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('z')])
 
     def to_dct(self):
         msg = super(Node,self).to_dct()
@@ -131,7 +160,11 @@ class Position(Node):
         return cls(
             x=dct['x'],
             y=dct['y'],
-            z=dct['z'])
+            z=dct['z'],
+            type=dct['type'] if 'type' in dct.keys() else ''
+            append_type=not 'type' in dct.keys()
+            uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
+            name=dct['name'] if 'name' in dct.keys() else '')
 
     @classmethod
     def from_ros(cls, obj):
@@ -150,17 +183,26 @@ class Position(Node):
 
 class Orientation(Node):
 
-    def __init__(self, x, y, z, w, parent=None):
-        super(Node,self).__init__('orientation', parent=parent)
-        self._x = x
-        self._y = y
-        self._z = z
-        self._w = w
-        self._parent = parent
+    def __init__(self, x, y, z, w, type='', name='', uuid=None, parent=None, append_type=True):
+        super(Node,self).__init__(
+            type='orientation.'+type if append_type else type,
+            name=name,
+            uuid=uuid,
+            parent=parent,
+            append_type=append_type)
 
-    def child_changed_event(self, attribute_trace):
-        if self._parent != None:
-            self._parent.child_changed_event(['orientation'] + attribute_trace)
+        self._initialize_private_members()
+
+        self.x = x
+        self.y = y
+        self.z = z
+        self.w = w
+
+    def _initialize_private_members(self):
+        self._x = None
+        self._y = None
+        self._z = None
+        self._w = None
 
     @property
     def x(self):
@@ -168,9 +210,11 @@ class Orientation(Node):
 
     @x.setter
     def x(self, value):
-        self._x = value
-        if self._parent != None:
-            self._parent.child_changed_event(['orientation','x'])
+        if self._x != value:
+            self._x = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('x')])
 
     @property
     def y(self):
@@ -178,9 +222,11 @@ class Orientation(Node):
 
     @y.setter
     def y(self, value):
-        self._y = value
-        if self._parent != None:
-            self._parent.child_changed_event(['orientation','y'])
+        if self._y != value:
+            self._y = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('y')])
 
     @property
     def z(self):
@@ -188,9 +234,11 @@ class Orientation(Node):
 
     @z.setter
     def z(self, value):
-        self._z = z
-        if self._parent != None:
-            self._parent.child_changed_event(['orientation','z'])
+        if self._z != value:
+            self._z = z
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('z')])
 
     @property
     def w(self):
@@ -198,9 +246,11 @@ class Orientation(Node):
 
     @w.setter
     def w(self, value):
-        self._w = value
-        if self._parent != None:
-            self._parent.child_changed_event(['orientation','w'])
+        if self._w != value:
+            self._w = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('w')])
 
     def to_dct(self):
         msg = super(Node,self).to_dct()
@@ -227,7 +277,11 @@ class Orientation(Node):
             x=dct['x'],
             y=dct['y'],
             z=dct['z'],
-            w=dct['w'])
+            w=dct['w'],
+            type=dct['type'] if 'type' in dct.keys() else ''
+            append_type=not 'type' in dct.keys()
+            uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
+            name=dct['name'] if 'name' in dct.keys() else '')
 
     @classmethod
     def from_ros(cls, obj):

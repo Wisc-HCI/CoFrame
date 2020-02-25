@@ -1,36 +1,25 @@
-from node import Node
-from geometry import Position, Orientation
+from geometry import Pose, Position, Orientation
 
 
-class Waypoint(Node):
+class Waypoint(Pose):
 
-    def __init__(self, position=Position(), orientation=Orientation(), joints=None, name='', uuid=None, parent=None):
-        super(Node,self).__init__('waypoint',name,uuid,parent)
-        self._position = position
-        self._orientation = orientation
-        self._joints = joints
+    def __init__(self, position=None, orientation=None, joints=None, type='',
+                 name='', uuid=None, parent=None, append_type=True):
+        super(Pose,self).__init__(
+            position=position,
+            orientation=orientation,
+            type='waypoint.'+type if append_type else type,
+            name=name,
+            uuid=uuid,
+            parent=parent,
+            append_type=append_type)
 
-    @property
-    def position(self):
-        return self._position
+        self._initialize_private_members()
 
-    @position.setter
-    def position(self, value):
-        self._position = value
-        self._position.parent = self
-        if self._parent != None:
-            self._parent.child_changed_event(["waypoint","position"])
+        self.joints = joints
 
-    @property
-    def orientation(self):
-        return self._orientation
-
-    @orientation.setter
-    def orientation(self, value):
-        self._orientation = value
-        self._orientation.parent = self
-        if self._parent != None:
-            self._parent.child_changed_event(["waypoint","orientation"])
+    def _initialize_private_members(self):
+        self._joints = None
 
     @property
     def joints(self):
@@ -38,22 +27,15 @@ class Waypoint(Node):
 
     @joints.setter
     def joints(self, value):
-        self._joints = value
-        if self._parent != None:
-            self._parent.child_changed_event(["waypoint","joints"])
-
-    def child_changed_event(self, attribute_trace):
-        if self._parent != None:
-            self._parent.child_changed_event(['waypoint'] + attribute_trace)
-
-    def create_pose(self):
-        return Pose(self.position,self.orientation,None)
+        if self._joints != value:
+            self._joints = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('joints')])
 
     def to_dct(self):
-        msg = super(Node,self).to_dct()
+        msg = super(Pose,self).to_dct()
         msg.update({
-            'position': self.position.to_dct(),
-            'orientation': self.orientation.to_dct(),
             'joints': self.joints
         })
         return msg
@@ -63,6 +45,8 @@ class Waypoint(Node):
         return cls(
             position=Position.from_dct(dct['position']),
             orientation=Orientation.from_dct(dct['orientation']),
+            type=dct['type']
+            append_type=False,
             name=dct['name'],
             uuid=dct['uuid'],
             joints=dct['joints'])

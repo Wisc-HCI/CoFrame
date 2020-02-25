@@ -3,6 +3,7 @@ class Context(object):
 
     def __init__(self):
         self.locations = {}
+        self.machines = {}
 
     def getLocation(self, uuid):
         return self.locations[uuid]
