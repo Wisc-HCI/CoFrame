@@ -7,20 +7,32 @@ class Node(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
-        self._initialize_private_members()
-        
-        self.parent = parent
-        self.type = 'node.'+type if append_type else type
-        self.name = name
+        self._parent = None
+        self._type = None
+        self._name = None
+
         if uuid is None:
             self._uuid = self._generate_uuid(self.type)
         else:
             self._uuid = uuid
 
-    def _initialize_private_members(self):
-        self._parent = None
-        self._type = None
-        self._name = None
+        self.parent = parent
+        self.type = 'node.'+type if append_type else type
+        self.name = name
+
+    @property
+    def context(self):
+        if self._parent != None:
+            return self._parent.context
+        else:
+            return None
+
+    @property
+    def cache(self):
+        if self._parent != None:
+            return self._parent.cache
+        else:
+            return None
 
     @property
     def uuid(self):
@@ -36,7 +48,7 @@ class Node(object):
             self._type = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('type')])
+                    [self._child_changed_event_msg('type','set')])
 
     @property
     def name(self):
@@ -45,10 +57,10 @@ class Node(object):
     @name.setter
     def name(self, value):
         if self._name != value:
-            self._name = name
+            self._name = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('name')])
+                    [self._child_changed_event_msg('name','set')])
 
     @property
     def parent(self):
@@ -57,21 +69,22 @@ class Node(object):
     @parent.setter
     def parent(self, value):
         if self._parent != value:
-            self._parent = parent
+            self.remove_from_cache()
+            self._parent = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('parent')])
+                    [self._child_changed_event_msg('parent','set')])
 
     @staticmethod
     def _generate_uuid(type):
         return '{}-py-{}'.format(type,uuid.uuid1().hex)
 
-    @staticmethod
-    def _child_changed_event_msg(attribute):
+    def _child_changed_event_msg(self, attribute, verb):
         return {
             'type': self.type,
             'uuid': self.uuid,
-            'attribute': attribute
+            'attribute': attribute,
+            'verb': verb
         }
 
     @abstractmethod
@@ -91,5 +104,13 @@ class Node(object):
 
     def child_changed_event(self, attribute_trace):
         if self._parent != None:
-            attribute_trace.append(self._child_changed_event_msg(None))
+            attribute_trace.append(self._child_changed_event_msg(None,'callback'))
             self._parent.child_changed_event(attribute_trace)
+
+    def remove_from_cache(self):
+        if self._parent != None and self._parent.cache != None:
+            self._parent.cache.remove(self.uuid)
+
+    def add_to_cache(self, uuid, node):
+        if self._parent != None and self._parent.cache != None:
+            self._parent.cache.add(uuid,node)

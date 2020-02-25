@@ -23,6 +23,9 @@ from cobots_core.srv import DeleteData, DeleteDataRequest, DeleteDataResponse
 
 
 from cobots_datatypes.program import *
+import test_programs.debug_prog as debug_prog
+
+debug_prog.generate()
 
 '''
 from cobots_datatypes.task import *

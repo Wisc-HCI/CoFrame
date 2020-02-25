@@ -5,7 +5,7 @@ from trajectory import Trajectory
 class Primitive(Node):
 
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Node,self).__(
+        super(Primitive,self).__init__(
             type='primitive.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -15,28 +15,28 @@ class Primitive(Node):
 
 class MoveTrajectory(Primitive):
 
-    def __init__(self, startLoc_uuid=None, endLoc_uuid=None, trajectories=[],
-                 runnableTraj_uuid=None, type='', name='', uuid=None, parent=None,
-                 append_type=True):
-        super(Primitive,self).__init__(
+    def __init__(self, startLocUuid=None, endLocUuid=None, trajectories=[],
+                 runnableTrajUuid=None, type='', name='', uuid=None, parent=None,
+                 append_type=True, create_default=True):
+        super(MoveTrajectory,self).__init__(
             type='move-trajectory.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
 
-        self._initialize_private_members()
-
-        self.start_location_uuid = startLoc_uuid
-        self.end_location_uuid = endLoc_uuid
-        self.trajectories = trajectories
-        self.runnable_trajectory_uuid = runnableTraj_uuid
-
-    def _initialize_private_members(self):
         self._start_location_uuid = None
         self._end_location_uuid = None
-        self._trajectories = None
+        self._trajectories = []
         self._runnable_trajectory_uuid = None
+
+        self.start_location_uuid = startLocUuid
+        self.end_location_uuid = endLocUuid
+        self.trajectories = trajectories
+        self.runnable_trajectory_uuid = runnableTrajUuid
+
+        if len(self.trajectories) == 0 and create_default:
+            self.add_trajectory(Trajectory(self.start_location_uuid,self._end_location_uuid))
 
     @property
     def start_location_uuid(self):
@@ -52,7 +52,7 @@ class MoveTrajectory(Primitive):
 
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('start_location_uuid')])
+                    [self._child_changed_event_msg('start_location_uuid','set')])
 
     @property
     def end_location_uuid(self):
@@ -68,16 +68,22 @@ class MoveTrajectory(Primitive):
 
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('end_location_uuid')])
+                    [self._child_changed_event_msg('end_location_uuid','set')])
 
-    @proptery
+    @property
     def trajectories(self):
         return self._trajectories
 
     @trajectories.setter
     def trajectories(self, value):
         if self._trajectories != value:
-            self._trajectories = trajectories
+            for t in self._trajectories:
+                t.remove_from_cache()
+
+            self._trajectories = value
+            for t in self._trajectories:
+                t.parent = self
+                self.add_to_cache(t.uuid,t)
 
             runnableFound = False
             for t in self._trajectories:
@@ -90,7 +96,7 @@ class MoveTrajectory(Primitive):
 
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('trajectories')])
+                    [self._child_changed_event_msg('trajectories','set')])
 
     @property
     def runnable_trajectory_uuid(self):
@@ -101,7 +107,7 @@ class MoveTrajectory(Primitive):
         if self._runnable_trajectory_uuid != value:
             runUuidFound = False
             for t in self._trajectories:
-                if t.uuid == runnableTraj_uuid:
+                if t.uuid == value:
                     runUuidFound = True
                     break
 
@@ -112,20 +118,44 @@ class MoveTrajectory(Primitive):
 
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('runnable_trajectory_uuid')])
+                    [self._child_changed_event_msg('runnable_trajectory_uuid','set')])
 
     def add_trajectory(self, t):
         t.parent = self
         self._trajectories.append(t)
+        self.add_to_cache(t.uuid,t)
+
+        if len(self._trajectories) == 1:
+            self.runnable_trajectory_uuid = t.uuid
+
         if self._parent != None:
             self._parent.child_changed_event(
-                [self._child_changed_event_msg('trajectories')])
+                [self._child_changed_event_msg('trajectories','add')])
 
     def get_trajectory(self, uuid):
         for t in self._trajectories:
             if t.uuid == uuid:
                 return t
         return None
+
+    def reorder_trajectories(self, uuid, shift):
+        idx = None
+        for i in range(0,len(self._trajectories)):
+            if self._trajectories[i].uuid == uuid:
+                idx = i
+                break
+
+        if idx != None:
+            shiftedIdx = idx + shift
+            if shiftedIdx < 0 or shiftedIdx >= len(self._trajectories):
+                raise Exception("Index out of bounds")
+
+            copy = self._trajectories.pop(idx)
+            self._trajectories.insert(shiftedIdx,copy) #TODO check to make sure not off by one
+
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('trajectories','reorder')])
 
     def delete_trajectory(self, uuid):
         delIdx = None
@@ -135,13 +165,20 @@ class MoveTrajectory(Primitive):
                 break
 
         if delIdx != None:
-            self._trajectories.pop(delIdx)
+            self._trajectories.pop(delIdx).remove_from_cache()
+
+            if uuid == self.runnable_trajectory_uuid:
+                if len(self.trajectories) > 0:
+                    self.runnable_trajectory_uuid = self.trajectories[0].uuid
+                else:
+                    self.runnable_trajectory_uuid = None
+
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('trajectories')])
+                    [self._child_changed_event_msg('trajectories','delete')])
 
     def to_dct(self):
-        msg = super(Primitive,self).to_dct()
+        msg = super(MoveTrajectory,self).to_dct()
         msg.update({
             'start_location_uuid': self.start_location_uuid,
             'end_location_uuid': self.end_location_uuid,
@@ -162,25 +199,28 @@ class MoveTrajectory(Primitive):
             trajectories=[Trajectory.from_dct(t) for t in dct['trajectories']],
             runnableTraj_uuid=dct['runnable_trajectory_uuid'])
 
+    def remove_from_cache(self):
+        for t in self._trajectories:
+            t.remove_from_cache()
+
+        super(MoveTrajectory,self).remove_from_cache()
+
 
 class MoveUnplanned(Primitive):
 
     def __init__(self, locUuid, manual_safety=True, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Primitive,self).__init__(
+        super(MoveUnplanned,self).__init__(
             type='move-unplanned.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
 
-        self._initialize_private_members()
+        self._location_uuid = None
+        self._manual_safety = None
 
         self.manual_safety = manual_safety
         self.location_uuid = locUuid
-
-    def _initialize_private_members(self):
-        self._location_uuid = None
-        self._manual_safety = None
 
     @property
     def manual_safety(self):
@@ -192,7 +232,7 @@ class MoveUnplanned(Primitive):
             self._manual_safety = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('manual_safety')])
+                    [self._child_changed_event_msg('manual_safety','set')])
 
     @property
     def location_uuid(self):
@@ -204,10 +244,10 @@ class MoveUnplanned(Primitive):
             self._location_uuid = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('location_uuid')])
+                    [self._child_changed_event_msg('location_uuid','set')])
 
     def to_dct(self):
-        msg = super(Primitive,self).to_dct()
+        msg = super(MoveUnplanned,self).to_dct()
         msg.update({
             'location_uuid': self.location_uuid,
         })
@@ -226,7 +266,7 @@ class MoveUnplanned(Primitive):
 class Delay(Primitive):
 
     def __init__(self, duration=0, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Primitive,self).__init__(
+        super(Delay,self).__init__(
             type='delay.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -250,10 +290,10 @@ class Delay(Primitive):
             self._duration = duration
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('duration')])
+                    [self._child_changed_event_msg('duration','set')])
 
     def to_dct(self):
-        msg = super(Primitive,self).to_dct()
+        msg = super(Delay,self).to_dct()
         msg.update({
             'duration': self.duration,
         })
@@ -272,7 +312,7 @@ class Delay(Primitive):
 class Gripper(Primitive):
 
     def __init__(self, position=0, effort=0, speed=0, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Primitive,self).__init__(
+        super(Gripper,self).__init__(
             type='gripper.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -300,7 +340,7 @@ class Gripper(Primitive):
             self._position = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('position')])
+                    [self._child_changed_event_msg('position','set')])
 
     @property
     def effort(self):
@@ -312,7 +352,7 @@ class Gripper(Primitive):
             self._effort = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('effort')])
+                    [self._child_changed_event_msg('effort','set')])
 
     @property
     def speed(self):
@@ -324,10 +364,10 @@ class Gripper(Primitive):
             self._speed = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('speed')])
+                    [self._child_changed_event_msg('speed','set')])
 
     def to_dct(self):
-        msg = super(Primitive,self).to_dct()
+        msg = super(Gripper,self).to_dct()
         msg.update({
             'position': self.position,
             'effort': self.effort,
@@ -347,10 +387,10 @@ class Gripper(Primitive):
             speed=dct['speed'])
 
 
-class Machine(Primitive):
+class MachinePrimitive(Primitive):
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Primitive,self).__init__(
+        super(MachinePrimitive,self).__init__(
             type='machine.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -374,10 +414,10 @@ class Machine(Primitive):
             self._machine_uuid = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('machine_uuid')])
+                    [self._child_changed_event_msg('machine_uuid','set')])
 
     def to_dct(self):
-        msg = super(Primitive,self).to_dct()
+        msg = super(MachinePrimitive,self).to_dct()
         msg.update({
             'machine_uuid': self.machine_uuid
         })
@@ -393,49 +433,49 @@ class Machine(Primitive):
             machineUuid=dct['machine_uuid'])
 
 
-class MachineStart(Machine):
+class MachineStart(MachinePrimitive):
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Machine,self).__init__(
+        super(MachineStart,self).__init__(
             machineUuid=machineUuid,
-            type='start.'+type if append_type else type,
+            type='machine-start.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
 
 
-class MachineWait(Machine):
+class MachineWait(MachinePrimitive):
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Machine,self).__init__(
+        super(MachineWait,self).__init__(
             machineUuid=machineUuid,
-            type='wait.'+type if append_type else type,
+            type='machine-wait.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
 
 
-class MachineStop(Machine):
+class MachineStop(MachinePrimitive):
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Machine,self).__init__(
+        super(MachineStop,self).__init__(
             machineUuid=machineUuid,
-            type='stop.'+type if append_type else type,
+            type='machine-stop.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
 
 
-class MachineInitialize(Machine):
+class MachineInitialize(MachinePrimitive):
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True):
-        super(Machine,self).__init__(
+        super(MachineInitialize,self).__init__(
             machineUuid=machineUuid,
-            type='initialize.'+type if append_type else type,
+            type='machine-initialize.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -445,7 +485,7 @@ class MachineInitialize(Machine):
 class Breakpoint(Primitive):
 
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Primitive,self).__init__(
+        super(Breakpoint,self).__init__(
             type='breakpoint.'+type if append_type else type,
             name=name,
             uuid=uuid,

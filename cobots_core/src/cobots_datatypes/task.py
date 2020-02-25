@@ -1,24 +1,39 @@
 from primitive import *
+from context import Context
 from trajectory import Trajectory
+from primitive_parser import PrimitiveParser
 
 
 class Task(Primitive):
 
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
-                 append_type=True):
-        super(Primitive,self).__init__(
+                 append_type=True, context=None):
+        super(Task,self).__init__(
             type='task.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
 
-        self._initialize_private_members()
+        self._primitives = []
+
+        if context != None:
+            self._context = context
+            self._context.parent_node = self
+            if self.parent != None:
+                self._context.parent_context = self.parent.context
+            else:
+                self._context.parent_context = None
+        else:
+            self._context = Context(
+                parent_context=self.parent.context if self.parent != None else None,
+                parent_node=self)
 
         self.primitives = primitives
 
-    def _initialize_private_members(self):
-        self._primitives = None
+    @property
+    def context(self):
+        return self._context
 
     @property
     def primitives(self):
@@ -27,17 +42,25 @@ class Task(Primitive):
     @primitives.setter
     def primitives(self, value):
         if self._primitives != value:
+            for p in self._primitives:
+                p.remove_from_cache()
+
             self._primitives = value
             for p in self._primitives:
                 p.parent = self
+                self.add_to_cache(p.uuid,p)
 
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('primitives')])
+                    [self._child_changed_event_msg('primitives','set')])
 
     def add_primitive(self, prm):
         prm.parent = self
         self._primitives.append(prm)
+        self.add_to_cache(prm.uuid,prm)
+        if self._parent != None:
+            self._parent.child_changed_event(
+                [self._child_changed_event_msg('primitives','add')])
 
     def reorder_primitives(self, uuid, shift):
         idx = None
@@ -56,7 +79,7 @@ class Task(Primitive):
 
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('primitives')])
+                    [self._child_changed_event_msg('primitives','reorder')])
 
     def delete_primitive(self, uuid):
         delIdx = None
@@ -66,10 +89,10 @@ class Task(Primitive):
                 break
 
         if delIdx != None:
-            self._primitives.pop(i)
+            self._primitives.pop(i).remove_from_cache()
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('primitives')])
+                    [self._child_changed_event_msg('primitives','delete')])
 
     def get_primitive(self, uuid):
         for p in self.primitives:
@@ -78,7 +101,7 @@ class Task(Primitive):
         return None
 
     def to_dct(self):
-        msg = super(Primitive,self).to_dct()
+        msg = super(Task,self).to_dct()
         msg.update({
             'primitives': [p.to_dct() for p in self.primitives]
         })
@@ -88,16 +111,24 @@ class Task(Primitive):
     def from_dct(cls, dct):
         return cls(
             name=dct['name'],
+            type=dct['type'],
+            append_type=False,
             uuid=dct['uuid'],
-            primitives=dct['primitives']
-        )
+            primitives=[PrimitiveParser(p) for p in dct['primitives']],
+            context=Context.from_dct(dct['context']))
+
+    def remove_from_cache(self):
+        for p in self._primitives:
+            p.remove_from_cache()
+
+        super(Task,self).remove_from_cache()
 
 
 class CloseGripper(Task):
 
     def __init__(self, position=0, effort=100, speed=100, type='', name='',
                  uuid=None, parent=None, append_type=True):
-        super(Task,self).__init__(
+        super(CloseGripper,self).__init__(
             type='close-gripper.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -115,7 +146,7 @@ class OpenGripper(Task):
 
     def __init__(self, position=0, effort=100, speed=100, type='', name='',
                  uuid=None, parent=None, append_type=True):
-        super(Task,self).__init__(
+        super(OpenGripper,self).__init__(
             type='open-gripper.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -132,8 +163,8 @@ class OpenGripper(Task):
 class PickAndPlace(Task):
 
     def __init__(self, startLocUuid=None, pickLocUuid=None, placeLocUuid=None, type='', name='',
-                 uuid=None, parent=None, append_type=True):
-        super(Task,self).__init__(
+                 uuid=None, parent=None, append_type=True, create_default=True):
+        super(PickAndPlace,self).__init__(
             type='pick-and-place.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -144,9 +175,9 @@ class PickAndPlace(Task):
         trajPlace = Trajectory(pickLocUuid,placeLocUuid)
 
         self.primitives = [
-            MoveTrajectory(startLocUuid,pickLocUuid,[trajPick],trajPick.uuid),
-            CloseGripper()
-            MoveTrajectory(pickLocUuid,placeLocUuid,[trajPlace],trajPlace.uuid),
+            MoveTrajectory(startLocUuid,pickLocUuid,[trajPick],trajPick.uuid,create_default=create_default),
+            CloseGripper(),
+            MoveTrajectory(pickLocUuid,placeLocUuid,[trajPlace],trajPlace.uuid,create_default=create_default),
             OpenGripper()
         ]
 
@@ -155,7 +186,7 @@ class Initialize(Task):
 
     def __init__(self, homeLocUuid=None, machineUuid=None, type='', name='',
                  uuid=None, parent=None, append_type=True):
-        super(Task,self).__init__(
+        super(Initialize,self).__init__(
             type='initialize.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -172,7 +203,7 @@ class MachineBlockingProcess(Task):
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True):
-        super(Task,self).__init__(
+        super(MachineBlockingProcess,self).__init__(
             type='machine-blocking-process.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -189,7 +220,7 @@ class Loop(Task):
 
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
                  append_type=True):
-        super(Task,self).__init__(
+        super(Loop,self).__init__(
             type='task.'+type if append_type else type,
             name=name,
             uuid=uuid,

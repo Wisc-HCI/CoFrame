@@ -5,7 +5,7 @@ class Location(Waypoint):
 
     def __init__(self, position=None, orientation=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
-        super(Waypoint,self).__init__(
+        super(Location,self).__init__(
             position=position,
             orientation=orientation,
             joints=joints,

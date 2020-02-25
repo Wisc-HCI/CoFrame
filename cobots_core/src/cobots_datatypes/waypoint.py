@@ -5,7 +5,7 @@ class Waypoint(Pose):
 
     def __init__(self, position=None, orientation=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
-        super(Pose,self).__init__(
+        super(Waypoint,self).__init__(
             position=position,
             orientation=orientation,
             type='waypoint.'+type if append_type else type,
@@ -14,12 +14,8 @@ class Waypoint(Pose):
             parent=parent,
             append_type=append_type)
 
-        self._initialize_private_members()
-
-        self.joints = joints
-
-    def _initialize_private_members(self):
         self._joints = None
+        self.joints = joints
 
     @property
     def joints(self):
@@ -31,10 +27,10 @@ class Waypoint(Pose):
             self._joints = value
             if self._parent != None:
                 self._parent.child_changed_event(
-                    [self._child_changed_event_msg('joints')])
+                    [self._child_changed_event_msg('joints','set')])
 
     def to_dct(self):
-        msg = super(Pose,self).to_dct()
+        msg = super(Waypoint,self).to_dct()
         msg.update({
             'joints': self.joints
         })
@@ -45,7 +41,7 @@ class Waypoint(Pose):
         return cls(
             position=Position.from_dct(dct['position']),
             orientation=Orientation.from_dct(dct['orientation']),
-            type=dct['type']
+            type=dct['type'],
             append_type=False,
             name=dct['name'],
             uuid=dct['uuid'],
