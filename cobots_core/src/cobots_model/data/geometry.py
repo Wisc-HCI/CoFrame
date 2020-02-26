@@ -1,6 +1,6 @@
 import geometry_msgs.msg as ros_msgs
 
-from node import Node
+from ..node import Node
 
 
 class Pose(Node):
@@ -78,6 +78,9 @@ class Pose(Node):
     def from_ros(self, obj):
         return cls(position=Position.from_ros(obj.position),
                    orientation=Orientation.from_ros(obj.orientation))
+
+    def set(self, dct):
+        pass #TODO write this
 
 
 class Position(Node):
@@ -173,6 +176,9 @@ class Position(Node):
             x=lst[0],
             y=lst[1],
             z=lst[2])
+
+    def set(self, dct):
+        pass #TODO write this
 
 
 class Orientation(Node):
@@ -296,3 +302,6 @@ class Orientation(Node):
                 y=lst[2],
                 z=lst[3],
                 w=lst[0])
+
+    def set(self, dct):
+        pass #TODO write this

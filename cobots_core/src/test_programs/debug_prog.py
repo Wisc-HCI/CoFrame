@@ -1,15 +1,9 @@
 
-from cobots_datatypes.node import *
-from cobots_datatypes.task import *
-from cobots_datatypes.cache import *
-from cobots_datatypes.trace import *
-from cobots_datatypes.context import *
-from cobots_datatypes.program import *
-from cobots_datatypes.geometry import *
-from cobots_datatypes.location import *
-from cobots_datatypes.waypoint import *
-from cobots_datatypes.primitive import *
-from cobots_datatypes.trajectory import *
+from cobots_model.program.task import *
+from cobots_model.data.machine import *
+from cobots_model.data.location import *
+from cobots_model.program.program import *
+from cobots_model.program.primitive import *
 
 def generate():
     # Define Program

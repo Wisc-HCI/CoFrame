@@ -1,4 +1,4 @@
-from node import Node
+from ..node import Node
 from trace import Trace
 from waypoint import Waypoint
 
@@ -215,3 +215,9 @@ class Trajectory(Node):
             self._trace.remove_from_cache()
 
         super(Trajectory,self).remove_from_cache()
+
+    def set(self, dct):
+        pass #TODO write this
+
+    def delete_child(self, uuid):
+        pass #TODO write this

@@ -1,5 +1,5 @@
-from location import Location
-from machine import Machine
+from ..data.location import Location
+from ..data.machine import Machine
 
 
 class Context(object):

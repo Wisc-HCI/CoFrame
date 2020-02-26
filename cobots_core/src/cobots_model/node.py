@@ -95,6 +95,13 @@ class Node(object):
             'uuid': self.uuid
         }
 
+    def set(self, dct):
+        pass #TODO implement this
+
+    def delete_child(self, uuid):
+        #TODO write this for each sub-node type that has children
+        pass #no possible children to delete
+
     @classmethod
     def from_dct(cls):
         return cls(type=dct['type'] if 'type' in dct.keys() else '',

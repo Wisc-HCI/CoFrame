@@ -46,3 +46,6 @@ class Waypoint(Pose):
             name=dct['name'],
             uuid=dct['uuid'],
             joints=dct['joints'])
+
+    def set(self, dct):
+        pass #TODO write this

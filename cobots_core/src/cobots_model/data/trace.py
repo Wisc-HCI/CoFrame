@@ -1,4 +1,4 @@
-from node import Node
+from ..node import Node
 from geometry import Pose, Position, Orientation
 
 
@@ -47,6 +47,9 @@ class TraceDataPoint(Pose):
             name=dct['name'],
             uuid=dct['uuid'],
             grade=dct['grade'])
+
+    def set(self, dct):
+        pass #TODO write this
 
 
 class Trace(Node):
@@ -189,3 +192,6 @@ class Trace(Node):
         for d in self._data:
             d.remove_from_cache()
         super(Trace,self).remove_from_cache()
+
+    def set(self, dct):
+        pass #TODO write this

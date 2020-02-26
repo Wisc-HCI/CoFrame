@@ -16,3 +16,6 @@ class Cache(object):
 
     def get(self, uuid):
         return self.get(uuid)
+
+    def set(self, uuid, dct):
+        self.get(uuid).set(dct)

@@ -1,5 +1,5 @@
-from node import Node
-from trajectory import Trajectory
+from ..node import Node
+from ..data.trajectory import Trajectory
 
 
 class Primitive(Node):
@@ -205,6 +205,12 @@ class MoveTrajectory(Primitive):
 
         super(MoveTrajectory,self).remove_from_cache()
 
+    def set(self, dct):
+        pass #TODO write this
+
+    def delete_child(self, uuid):
+        pass #TODO write this
+
 
 class MoveUnplanned(Primitive):
 
@@ -262,6 +268,9 @@ class MoveUnplanned(Primitive):
             uuid=dct['uuid'],
             locUuid=dct['location_uuid'])
 
+    def set(self, dct):
+        pass #TODO write this
+
 
 class Delay(Primitive):
 
@@ -307,6 +316,9 @@ class Delay(Primitive):
             append_type=False,
             uuid=dct['uuid'],
             duration=dct['duration'])
+
+    def set(self, dct):
+        pass #TODO write this
 
 
 class Gripper(Primitive):
@@ -386,6 +398,9 @@ class Gripper(Primitive):
             effort=dct['effort'],
             speed=dct['speed'])
 
+    def set(self, dct):
+        pass #TODO write this
+
 
 class MachinePrimitive(Primitive):
 
@@ -431,6 +446,9 @@ class MachinePrimitive(Primitive):
             type=dct['type'],
             append_type=False,
             machineUuid=dct['machine_uuid'])
+
+    def set(self, dct):
+        pass #TODO write this
 
 
 class MachineStart(MachinePrimitive):

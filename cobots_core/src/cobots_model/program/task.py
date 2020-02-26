@@ -1,6 +1,5 @@
 from primitive import *
 from context import Context
-from trajectory import Trajectory
 from primitive_parser import PrimitiveParser
 
 
@@ -123,6 +122,12 @@ class Task(Primitive):
 
         super(Task,self).remove_from_cache()
 
+    def set(self, dct):
+        pass #TODO write this
+
+    def delete_child(self, uuid):
+        pass #TODO write this (either primitive or context)
+
 
 class CloseGripper(Task):
 
@@ -171,13 +176,10 @@ class PickAndPlace(Task):
             parent=parent,
             append_type=append_type)
 
-        trajPick = Trajectory(startLocUuid,pickLocUuid)
-        trajPlace = Trajectory(pickLocUuid,placeLocUuid)
-
         self.primitives = [
-            MoveTrajectory(startLocUuid,pickLocUuid,[trajPick],trajPick.uuid,create_default=create_default),
+            MoveTrajectory(startLocUuid,pickLocUuid,create_default=create_default),
             CloseGripper(),
-            MoveTrajectory(pickLocUuid,placeLocUuid,[trajPlace],trajPlace.uuid,create_default=create_default),
+            MoveTrajectory(pickLocUuid,placeLocUuid,create_default=create_default),
             OpenGripper()
         ]
 
