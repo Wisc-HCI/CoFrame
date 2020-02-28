@@ -107,3 +107,6 @@ class Context(object):
 
         for l in self._locations:
             l.remove_from_cache()
+
+    def refresh_cache(self):
+        pass # Implement this where ever something is stored in cache

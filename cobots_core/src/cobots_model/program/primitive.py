@@ -12,6 +12,10 @@ class Primitive(Node):
             parent=parent,
             append_type=append_type)
 
+        def refresh_cache(self):
+            self.add_to_cache(self.uuid,self)
+            super(Primitive,self).refresh_cache()
+
 
 class MoveTrajectory(Primitive):
 
@@ -210,6 +214,12 @@ class MoveTrajectory(Primitive):
 
     def delete_child(self, uuid):
         pass #TODO write this
+
+    def refresh_cache(self):
+        for t in self._trajectories:
+            t.refresh_cache()
+
+        super(MoveTrajectory,self).refresh_cache()
 
 
 class MoveUnplanned(Primitive):

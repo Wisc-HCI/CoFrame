@@ -66,6 +66,7 @@ add_service_files(
   DeleteData.srv
   LoadData.srv
   SaveData.srv
+  GetOptions.srv
 )
 
 ## Generate actions in the 'action' folder

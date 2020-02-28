@@ -121,3 +121,12 @@ class Node(object):
     def add_to_cache(self, uuid, node):
         if self._parent != None and self._parent.cache != None:
             self._parent.cache.add(uuid,node)
+
+    def refresh_cache(self):
+        pass # Implement this where ever something is stored in cache
+
+    def __eq__(self, other):
+        try:
+            return self.uuid == other.uuid
+        except:
+            return False

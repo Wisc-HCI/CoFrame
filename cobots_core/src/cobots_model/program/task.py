@@ -116,9 +116,19 @@ class Task(Primitive):
             primitives=[PrimitiveParser(p) for p in dct['primitives']],
             context=Context.from_dct(dct['context']))
 
+    def refresh_cache(self):
+        for p in self._primitives:
+            p.refresh_cache()
+
+        self.context.refresh_cache()
+
+        super(Task,self).refresh_cache()
+
     def remove_from_cache(self):
         for p in self._primitives:
             p.remove_from_cache()
+
+        self.context.remove_from_cache()
 
         super(Task,self).remove_from_cache()
 

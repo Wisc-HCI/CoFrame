@@ -8,7 +8,7 @@ from cache import *
 
 class Program(Task):
 
-    def __init__(self, primitives=[], server_cb=None, name='', type='', uuid=None, append_type=True, context=None):
+    def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, context=None):
         super(Program,self).__init__(
             type='program.'+type if append_type else type,
             name=name,
@@ -18,13 +18,13 @@ class Program(Task):
             primitives=primitives,
             context=context)
 
-        self.server_cb = server_cb
+        self.changes_cb = changes_cb
         self._cache = Cache()
-        self.add_to_cache(self.uuid,self)
+        self.refresh_cache()
 
     def child_changed_event(self, attribute_trace):
-        if self.server_cb != None:
-            self.server_cb(attribute_trace)
+        if self.changes_cb != None:
+            self.changes_cb(attribute_trace)
 
     @property
     def cache(self):
