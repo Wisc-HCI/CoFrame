@@ -176,3 +176,4 @@ class DataClientInterface(object):
     def __program_changed_cb(self, trace):
         #TODO need to keep a manifest of all changed nodes
         # self._program_changes_manifest
+        pass

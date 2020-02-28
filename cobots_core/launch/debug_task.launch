@@ -29,7 +29,7 @@
 <!--=========================================================================-->
 
   <include file="$(find cobots_core)/launch/app.launch">
-    <arg name="task_filepath" value="$(find cobots_core)/"/>
+    <arg name="app_filepath" value="$(find cobots_core)/"/>
     <arg name="ros_frame_id" value="world"/>
   </include>
 

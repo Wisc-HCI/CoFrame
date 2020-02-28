@@ -36,7 +36,8 @@ class DataServer:
         self._program_history.append(HistoryEntry(
             action='initial',
             change_dct=self._program.to_dct(),
-            snapshot_dct=Program().to_dct()
+            snapshot_dct=Program().to_dct(),
+            source='data-server'
         ))
 
         self._update_program_pub = rospy.Publisher('application/update_program',UpdateData, queue_size=10)
@@ -86,7 +87,8 @@ class DataServer:
         self._program_history.append(HistoryEntry(
             action='load',
             change_dct=rawData,
-            snapshot_dct = data_snapshot
+            snapshot_dct = data_snapshot,
+            source='data-server'
         ))
 
         self.__push_program_update()
@@ -175,7 +177,8 @@ class DataServer:
                 self._program_history.append(HistoryEntry(
                     action='set',
                     change_dct=inData,
-                    snapshot_dct = data_snapshot
+                    snapshot_dct = data_snapshot,
+                    source='data-server'
                 ))
 
                 self.__push_program_update()
@@ -212,7 +215,8 @@ class DataServer:
                 self._program_history.append(HistoryEntry(
                     action='create',
                     change_dct=inData,
-                    snapshot_dct = data_snapshot
+                    snapshot_dct = data_snapshot,
+                    source='data-server'
                 ))
 
                 self.__push_program_update()
@@ -251,7 +255,8 @@ class DataServer:
                 self._program_history.append(HistoryEntry(
                     action='delete',
                     change_dct=inData,
-                    snapshot_dct = data_snapshot
+                    snapshot_dct = data_snapshot,
+                    source='data-server'
                 ))
 
                 self.__push_program_update()

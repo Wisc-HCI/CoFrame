@@ -1,13 +1,13 @@
 <launch>
 
-  <arg name="task_filepath"/>
+  <arg name="app_filepath"/>
   <arg name="ros_frame_id"/>
 
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
   <node name="data_server" pkg="cobots_core" type="data_server.py">
-    <param name="task_filepath" value="$(arg task_filepath)"/>
+    <param name="app_filepath" value="$(arg app_filepath)"/>
   </node>
 
   <node name="robot_control_server" pkg="cobots_core" type="robot_control_server.py" output="screen">

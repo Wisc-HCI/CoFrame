@@ -41,7 +41,7 @@ class HistoryEntry(object):
     def __init__(self, action, change_dct, version_tag=None, snapshot_dct=None, source=None):
         self.action = action
         self.changes = change_dct
-        self.snapshot = snapshot
+        self.snapshot = snapshot_dct
 
         if version_tag != None:
             self.version = version_tag
