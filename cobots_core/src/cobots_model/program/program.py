@@ -50,3 +50,9 @@ class Program(Task):
             pass #TODO
         else:
             raise Exception('Field ({}) is not able to be created')
+
+    def find_all_locations(self):
+        return self.cache.locations.values()
+
+    def find_all_trajectories(self):
+        return self.cache.trajectories.values()

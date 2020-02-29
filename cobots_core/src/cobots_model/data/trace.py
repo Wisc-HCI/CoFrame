@@ -62,7 +62,7 @@ class Trace(Node):
             parent=parent,
             append_type=append_type)
 
-        self._data = []
+        self._data = {}
         self._end_effector_path = None
         self._joint_paths = None
         self._tool_paths = None
@@ -138,28 +138,32 @@ class Trace(Node):
                 self._parent.child_changed_event(
                     [self._child_changed_event_msg('component_paths','set')])
 
-    def add_data_point(self, dp):
+    def add_data_point(self, dp, group):
         dp.parent = self
-        self._data.append(dp)
+
+        if not group in self._data.keys():
+            self._data[group] = []
+        self._data[group].append(dp)
+
         if self._parent != None:
             self._parent.child_changed_event(
                 [self._child_changed_event_msg('data','add')])
 
-    def get_data_point(self, uuid):
-        for d in self._data:
+    def get_data_point(self, uuid, group):
+        for d in self._data[group]:
             if d.uuid == uuid:
                 return d
         return None
 
-    def delete_data_point(self, uuid):
+    def delete_data_point(self, uuid, group):
         delIdx = None
-        for i in range(0,len(self._data)):
-            if self._data[i].uuid == uuid:
+        for i in range(0,len(self._data[group])):
+            if self._data[group][i].uuid == uuid:
                 delIdx = i
                 break
 
         if delIdx != None:
-            self._data.pop(delIdx).remove_from_cache()
+            self._data[group].pop(delIdx).remove_from_cache()
             if self._parent != None:
                 self._parent.child_changed_event(
                     [self._child_changed_event_msg('data','delete')])
@@ -167,7 +171,7 @@ class Trace(Node):
     def to_dct(self):
         msg = super(Trace,self).to_dct()
         msg.update({
-            'data': [d.to_dct() for d in self.data],
+            'data': {key: [d.to_dct() for d in self.data[key]] for key in self.data.keys()},
             'end_effector_path': self.end_effector_path,
             'joint_paths': self.joint_paths,
             'tool_paths': self.tool_paths,
@@ -182,15 +186,16 @@ class Trace(Node):
             type=dct['type'],
             name=dct['name'],
             append_type=False,
-            data=[TraceDataPoint.from_dct(dct['data'][i]) for i in range(0,len(dct['data']))],
+            data={key: [TraceDataPoint.from_dct(dct['data'][i]) for i in range(0,len(dct['data'][key]))] for key in dct['data'].keys()},
             eePath=dct['end_effector_path'],
             jPaths=dct['joint_paths'],
             tPaths=dct['tool_paths'],
             cPaths=dct['component_paths'])
 
     def remove_from_cache(self):
-        for d in self._data:
-            d.remove_from_cache()
+        for key in self._data.keys():
+            for d in self._data[key]:
+                d.remove_from_cache()
         super(Trace,self).remove_from_cache()
 
     def set(self, dct):
