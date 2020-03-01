@@ -6,10 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /RobotModel1
-        - /PointCloud1
-        - /TF1
         - /TF1/Frames1
+        - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 484
   - Class: rviz/Selection
@@ -594,6 +592,14 @@ Visualization Manager:
                               simulated_robotiq_85_right_finger_link:
                                 {}
       Update Interval: 0
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /data_model_visualizer/markers
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:

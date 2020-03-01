@@ -6,7 +6,7 @@
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
-  <node name="data_server" pkg="cobots_core" type="data_server.py">
+  <node name="data_server" pkg="cobots_core" type="data_server.py" output="screen">
     <param name="app_filepath" value="$(arg app_filepath)"/>
   </node>
 
@@ -30,7 +30,11 @@
 
   </node>
 
-  <node name="application_tf_handler" pkg="cobots_core" type="application_tf_handler.py">
+  <node name="application_tf_handler" pkg="cobots_core" type="application_tf_handler.py" output="screen">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node>
+
+  <node name="data_model_rviz_publisher" pkg="cobots_core" type="data_model_rviz_publisher.py" output="screen">
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>
 

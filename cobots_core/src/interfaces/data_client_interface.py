@@ -4,6 +4,7 @@
 
 import json
 import rospy
+import traceback
 
 from std_msgs.msg import String
 from cobots_core.msg import UpdateData, Version
@@ -22,7 +23,9 @@ from cobots_model.program.program import *
 
 class DataClientInterface(object):
 
-    def __init__(self, use_application_interface=False, use_program_interface=False, use_environment_interface=False, on_program_update_cb=None, on_environment_update_cb=None):
+    def __init__(self, use_application_interface=False, use_program_interface=False,
+                 use_environment_interface=False, on_program_update_cb=None,
+                 on_environment_update_cb=None):
         self._program = None
         self._program_verison = None
         self._program_changes_manifest = []
@@ -43,7 +46,7 @@ class DataClientInterface(object):
             self._get_app_options_srv = rospy.ServiceProxy('data_server/get_application_options',GetOptions)
 
         if use_program_interface:
-            self._update_program_sub = rospy.Subscriber('application/update_program',UpdateData, self._update_program_cb)
+            self._update_program_sub = rospy.Subscriber('data_server/update_program',UpdateData, self._update_program_cb)
 
             self._get_program_data_srv = rospy.ServiceProxy('data_server/get_program_data',GetData)
             self._set_program_data_srv = rospy.ServiceProxy('data_server/set_program_data',SetData)
@@ -51,7 +54,7 @@ class DataClientInterface(object):
             self._delete_program_data_srv = rospy.ServiceProxy('data_server/delete_program_data',DeleteData)
 
         if use_environment_interface:
-            self._update_env_sub = rospy.Subscriber('application/update_environment',UpdateData, self._update_env_cb)
+            self._update_env_sub = rospy.Subscriber('data_server/update_environment',UpdateData, self._update_env_cb)
 
             self._get_env_data_srv = rospy.ServiceProxy('data_server/get_environment_data',GetData)
             self._set_env_data_srv = rospy.ServiceProxy('data_server/set_environment_data',SetData)
@@ -81,6 +84,8 @@ class DataClientInterface(object):
             self._program.changes_cb = self.__program_changed_cb
             self._program_verison = VersionTag.from_ros(msg.currentTag)
         except:
+            traceback.print_exc()
+
             return #Error parsing, ignore for now
 
         if self._on_program_update_cb != None:

@@ -93,6 +93,7 @@ class VersionTag(object):
         msg.source = self.source
         msg.uuid = self.uuid
         msg.timestamp = rospy.Time.from_sec(self.timestamp)
+        return msg
 
     @classmethod
     def from_dct(cls, dct):

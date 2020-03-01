@@ -196,8 +196,8 @@ class Trajectory(Node):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            startLoc_uuid=dct['start_location_uuid'],
-            endLoc_uuid=dct['end_location_uuid'],
+            startLocUuid=dct['start_location_uuid'],
+            endLocUuid=dct['end_location_uuid'],
             waypoints=[Waypoint.from_dct(w) for w in dct['waypoints']],
             trace=Trace.from_dct(dct['trace']) if dct['trace'] != None else None,
             name=dct['name'],

@@ -12,7 +12,7 @@ class Node(object):
         self._name = None
 
         if uuid is None:
-            self._uuid = self._generate_uuid(self.type)
+            self._uuid = self._generate_uuid(type)
         else:
             self._uuid = uuid
 
@@ -103,7 +103,7 @@ class Node(object):
         pass #no possible children to delete
 
     @classmethod
-    def from_dct(cls):
+    def from_dct(cls, dct):
         return cls(type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -115,12 +115,12 @@ class Node(object):
             self._parent.child_changed_event(attribute_trace)
 
     def remove_from_cache(self):
-        if self._parent != None and self._parent.cache != None:
-            self._parent.cache.remove(self.uuid)
+        if self.cache != None:
+            self.cache.remove(self.uuid)
 
     def add_to_cache(self, uuid, node):
-        if self._parent != None and self._parent.cache != None:
-            self._parent.cache.add(uuid,node)
+        if self.cache != None:
+            self.cache.add(uuid,node)
 
     def refresh_cache(self):
         pass # Implement this where ever something is stored in cache

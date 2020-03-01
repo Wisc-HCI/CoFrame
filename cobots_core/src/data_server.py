@@ -40,8 +40,8 @@ class DataServer:
             source='data-server'
         ))
 
-        self._update_program_pub = rospy.Publisher('application/update_program',UpdateData, queue_size=10)
-        self._update_env_pub = rospy.Publisher('application/update_environment',UpdateData, queue_size=10)
+        self._update_program_pub = rospy.Publisher('data_server/update_program',UpdateData, queue_size=10)
+        self._update_env_pub = rospy.Publisher('data_server/update_environment',UpdateData, queue_size=10)
 
         self._load_data_srv = rospy.Service('data_server/load_application_data',LoadData,self._load_application_data_cb)
         self._save_data_srv = rospy.Service('data_server/save_application_data',SaveData,self._save_application_data_cb)
@@ -160,7 +160,7 @@ class DataServer:
     def _set_program_data_cb(self, request):
         response = SetDataResponse()
 
-        if request.tag == self._history.get_current_version:
+        if request.tag == self._program_history.get_current_version:
             inData = json.loads(request.data.data)
             data_snapshot = self._program.to_dct()
 
@@ -197,7 +197,7 @@ class DataServer:
     def _create_program_data_cb(self, request):
         response = CreateDataResponse()
 
-        if request.tag == self._history.get_current_version:
+        if request.tag == self._program_history.get_current_version:
             inData = json.loads(request.data.data)
             data_snapshot = self._program.to_dct()
 
@@ -235,7 +235,7 @@ class DataServer:
     def _delete_program_data_cb(self, request):
         response = DeleteDataResponse()
 
-        if request.tag == self._history.get_current_version:
+        if request.tag == self._program_history.get_current_version:
             inData = json.loads(request.data.data)
             data_snapshot = self._program.to_dct()
 
@@ -292,16 +292,23 @@ class DataServer:
         self._program.changes_cb = self.__program_updated_cb
 
     def __push_program_update(self):
-        entry = self._history.get_current_entry()
+        entry = self._program_history.get_current_entry()
 
         msg = UpdateData()
-        msg.data = entry.snapshot
+        msg.data = json.dumps(self._program.to_dct())
         msg.action = entry.action
-        msg.changes = entry.changes
-        msg.currentTag = entry.version_tag.to_ros()
-        msg.previousTag = self._history.get_previous_version().to_ros()
+        msg.changes = json.dumps(entry.changes)
+        msg.currentTag = entry.version.to_ros()
+
+        prevTag = self._program_history.get_previous_version()
+        msg.previousTag = prevTag.to_ros() if prevTag != None else Version(rospy.Duration(0),'','data-server')
 
         self._update_program_pub.publish(msg)
+
+    def spin(self):
+        rospy.sleep(0.5)
+        self.__push_program_update()
+        rospy.spin()
 
 
 if __name__ == '__main__':
@@ -310,4 +317,4 @@ if __name__ == '__main__':
     app_filepath = rospy.get_param('~app_filepath')
 
     node = DataServer(app_filepath)
-    rospy.spin()
+    node.spin()

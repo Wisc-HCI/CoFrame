@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import rospy
+
 from interfaces.data_client_interface import DataClientInterface
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -17,15 +19,16 @@ class DataModelRvizPublisherNode:
         self._marker_uuid_list = []
 
         self._ros_frame_id = ros_frame_id
-        self._tf_br = tf.TransformBroadcaster()
-        self._data_client = DataClientInterface(use_program_interface=True, on_program_update_cb=self._update_markers)
         self._marker_pub = rospy.Publisher('data_model_visualizer/markers',Marker,queue_size=10)
+        self._data_client = DataClientInterface(use_program_interface=True, on_program_update_cb=self._update_markers)
 
     def _update_markers(self):
+        print 'updating markers'
         updated_markers = []
 
         # get all locations and display all locations
         locations = self._data_client.program.find_all_locations()
+        print 'locations', locations
 
         for loc in locations:
             marker = Marker()
@@ -45,6 +48,9 @@ class DataModelRvizPublisherNode:
         # display all waypoints
         # display all traces
         trajectories = self._data_client.program.find_all_trajectories()
+        print 'trajectories', trajectories
+
+        print 'program cache', self._data_client.program.cache.data
 
         for traj in trajectories:
 

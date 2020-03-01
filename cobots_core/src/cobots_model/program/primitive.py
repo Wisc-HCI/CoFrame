@@ -198,10 +198,10 @@ class MoveTrajectory(Primitive):
             type=dct['type'],
             append_type=False,
             uuid=dct['uuid'],
-            startLoc_uuid=dct['start_location_uuid'],
-            endLoc_uuid=dct['end_location_uuid'],
+            startLocUuid=dct['start_location_uuid'],
+            endLocUuid=dct['end_location_uuid'],
             trajectories=[Trajectory.from_dct(t) for t in dct['trajectories']],
-            runnableTraj_uuid=dct['runnable_trajectory_uuid'])
+            runnableTrajUuid=dct['runnable_trajectory_uuid'])
 
     def remove_from_cache(self):
         for t in self._trajectories:

@@ -14,8 +14,6 @@ class Task(Primitive):
             parent=parent,
             append_type=append_type)
 
-        self._primitives = []
-
         if context != None:
             self._context = context
             self._context.parent_node = self
@@ -28,6 +26,7 @@ class Task(Primitive):
                 parent_context=self.parent.context if self.parent != None else None,
                 parent_node=self)
 
+        self._primitives = []
         self.primitives = primitives
 
     @property
@@ -102,7 +101,8 @@ class Task(Primitive):
     def to_dct(self):
         msg = super(Task,self).to_dct()
         msg.update({
-            'primitives': [p.to_dct() for p in self.primitives]
+            'primitives': [p.to_dct() for p in self.primitives],
+            'context': self.context.to_dct()
         })
         return msg
 
@@ -142,100 +142,120 @@ class Task(Primitive):
 class CloseGripper(Task):
 
     def __init__(self, position=0, effort=100, speed=100, type='', name='',
-                 uuid=None, parent=None, append_type=True):
+                 uuid=None, parent=None, append_type=True, primitives=None, context=None):
+        if primitives == None:
+            primitives=[
+                Gripper(
+                    position=position,
+                    effort=effort,
+                    speed=speed)
+            ]
+
         super(CloseGripper,self).__init__(
             type='close-gripper.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=[
-                Gripper(
-                    position=position,
-                    effort=effort,
-                    speed=speed)
-            ])
+            context=context,
+            primitives=primitives)
 
 
 class OpenGripper(Task):
 
     def __init__(self, position=0, effort=100, speed=100, type='', name='',
-                 uuid=None, parent=None, append_type=True):
+                 uuid=None, parent=None, append_type=True, primitives=None, context=None):
+        if primitives == None:
+            primitives=[
+                Gripper(
+                    position=position,
+                    effort=effort,
+                    speed=speed)
+            ]
+
         super(OpenGripper,self).__init__(
             type='open-gripper.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=[
-                Gripper(
-                    position=position,
-                    effort=effort,
-                    speed=speed)
-            ])
+            context=context,
+            primitives=primitives)
 
 
 class PickAndPlace(Task):
 
     def __init__(self, startLocUuid=None, pickLocUuid=None, placeLocUuid=None, type='', name='',
-                 uuid=None, parent=None, append_type=True, create_default=True):
+                 uuid=None, parent=None, append_type=True, create_default=True, primitives=None, context=None):
+        if primitives == None:
+            primitives = [
+                MoveTrajectory(startLocUuid,pickLocUuid,create_default=create_default),
+                CloseGripper(),
+                MoveTrajectory(pickLocUuid,placeLocUuid,create_default=create_default),
+                OpenGripper()
+            ]
+
         super(PickAndPlace,self).__init__(
             type='pick-and-place.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
-
-        self.primitives = [
-            MoveTrajectory(startLocUuid,pickLocUuid,create_default=create_default),
-            CloseGripper(),
-            MoveTrajectory(pickLocUuid,placeLocUuid,create_default=create_default),
-            OpenGripper()
-        ]
+            append_type=append_type,
+            context=context,
+            primitives=primitives)
 
 
 class Initialize(Task):
 
     def __init__(self, homeLocUuid=None, machineUuid=None, type='', name='',
-                 uuid=None, parent=None, append_type=True):
+                 uuid=None, parent=None, append_type=True, primitives=None, context=None):
+        if primitives == None:
+            primitives=[
+                MoveUnplanned(homeLocUuid,True),
+                OpenGripper(),
+                MachineInitialize(machineUuid)
+            ]
+
         super(Initialize,self).__init__(
             type='initialize.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=[
-                MoveUnplanned(homeLocUuid,True),
-                OpenGripper(),
-                MachineInitialize(machineUuid)
-            ])
+            context=context,
+            primitives=primitives)
 
 
 class MachineBlockingProcess(Task):
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
-                 append_type=True):
+                 append_type=True, primitives=None, context=None):
+        if primitives == None:
+            primitives=[
+                MachineStart(machineUuid),
+                MachineWait(machineUuid),
+                MachineStop(machineUuid)
+            ]
+
         super(MachineBlockingProcess,self).__init__(
             type='machine-blocking-process.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=[
-                MachineStart(machineUuid),
-                MachineWait(machineUuid),
-                MachineStop(machineUuid)
-            ])
+            context=context,
+            primitives=primitives)
 
 
 class Loop(Task):
 
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
-                 append_type=True):
+                 append_type=True, context=None):
         super(Loop,self).__init__(
             type='task.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type,
+            context=context,
             primitives=primitives)

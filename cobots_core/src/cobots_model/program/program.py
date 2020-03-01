@@ -9,6 +9,9 @@ from cache import *
 class Program(Task):
 
     def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, context=None):
+        self.changes_cb = changes_cb
+        self._cache = Cache()
+
         super(Program,self).__init__(
             type='program.'+type if append_type else type,
             name=name,
@@ -18,9 +21,7 @@ class Program(Task):
             primitives=primitives,
             context=context)
 
-        self.changes_cb = changes_cb
-        self._cache = Cache()
-        self.refresh_cache()
+        print self._cache.data
 
     def child_changed_event(self, attribute_trace):
         if self.changes_cb != None:
