@@ -26,9 +26,17 @@ class Cache(object):
 
     def clear(self):
         self.data = {}
+        self.locations = {}
+        self.trajectories = {}
 
-    def get(self, uuid):
-        return self.get(uuid)
+    def get(self, uuid, hint=None):
 
-    def set(self, uuid, dct):
-        self.get(uuid).set(dct)
+        if hint == 'trajectory' and uuid in trajectories.keys():
+            return self.trajectories[uuid]
+        elif hint == 'location' and uuid in locations.keys():
+            return self.locations[uuid]
+        else:
+            return self.data[uuid]
+
+    def set(self, uuid, dct, hint=None):
+        self.get(uuid,hint).set(dct)

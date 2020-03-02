@@ -5,6 +5,10 @@ from primitive_parser import PrimitiveParser
 
 class Task(Primitive):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
                  append_type=True, context=None):
         super(Task,self).__init__(
@@ -29,9 +33,36 @@ class Task(Primitive):
         self._primitives = []
         self.primitives = primitives
 
+    def to_dct(self):
+        msg = super(Task,self).to_dct()
+        msg.update({
+            'primitives': [p.to_dct() for p in self.primitives],
+            'context': self.context.to_dct()
+        })
+        return msg
+
+    @classmethod
+    def from_dct(cls, dct):
+        return cls(
+            name=dct['name'],
+            type=dct['type'],
+            append_type=False,
+            uuid=dct['uuid'],
+            primitives=[PrimitiveParser(p) for p in dct['primitives']],
+            context=Context.from_dct(dct['context']))
+
+    '''
+    Data accessor/modifier methods
+    '''
+
     @property
     def context(self):
         return self._context
+
+    @context.setter
+    def context(self, value):
+        if self._context != value:
+            pass #TODO need to update context
 
     @property
     def primitives(self):
@@ -98,31 +129,18 @@ class Task(Primitive):
                 return p
         return None
 
-    def to_dct(self):
-        msg = super(Task,self).to_dct()
-        msg.update({
-            'primitives': [p.to_dct() for p in self.primitives],
-            'context': self.context.to_dct()
-        })
-        return msg
+    def set(self, dct):
+        if 'primitives' in dct.keys():
+            self.primitives = [PrimitiveParser(p) for p in dct['primitives']]
 
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            type=dct['type'],
-            append_type=False,
-            uuid=dct['uuid'],
-            primitives=[PrimitiveParser(p) for p in dct['primitives']],
-            context=Context.from_dct(dct['context']))
+        if 'context' in dct.keys():
+            self.context = Context.from_dct(dct['context'])
 
-    def refresh_cache(self):
-        for p in self._primitives:
-            p.refresh_cache()
+        super(Task,self).set(dct)
 
-        self.context.refresh_cache()
-
-        super(Task,self).refresh_cache()
+    '''
+    Cache methods
+    '''
 
     def remove_from_cache(self):
         for p in self._primitives:
@@ -132,10 +150,22 @@ class Task(Primitive):
 
         super(Task,self).remove_from_cache()
 
-    def set(self, dct):
-        pass #TODO write this
+    def add_to_cache(self):
+        for p in self._primitives:
+            p.add_to_cache()
+
+        self.context.add_to_cache()
+
+        super(Task,self).add_to_cache()
+
+    '''
+    Children methods (optional)
+    '''
 
     def delete_child(self, uuid):
+        pass #TODO write this (either primitive or context)
+
+    def delete_children(self):
         pass #TODO write this (either primitive or context)
 
 

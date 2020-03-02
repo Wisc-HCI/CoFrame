@@ -5,6 +5,10 @@ from ..node import Node
 
 class Pose(Node):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, position=None, orientation=None, type='', name='',
                  uuid=None, parent=None, append_type=True):
         super(Pose,self).__init__(
@@ -26,32 +30,6 @@ class Pose(Node):
             self.orientation = Orientation(0,0,0,1,parent=self)
         else:
             self.orientation = orientation
-
-    @property
-    def position(self):
-        return self._position
-
-    @position.setter
-    def position(self, value):
-        if (self._position != value):
-            self._position = value
-            self._position.parent = self
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('position','set')])
-
-    @property
-    def orientation(self):
-        return self._orientation
-
-    @orientation.setter
-    def orientation(self, value):
-        if self._orientation != value:
-            self._orientation = value
-            self._orientation.parent = self
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('orientation','set')])
 
     def to_dct(self):
         msg = super(Pose,self).to_dct()
@@ -79,11 +57,53 @@ class Pose(Node):
         return cls(position=Position.from_ros(obj.position),
                    orientation=Orientation.from_ros(obj.orientation))
 
+    '''
+    Data accessor/modifier methods
+    '''
+
+    @property
+    def position(self):
+        return self._position
+
+    @position.setter
+    def position(self, value):
+        if (self._position != value):
+            self._position = value
+            self._position.parent = self
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('position','set')])
+
+    @property
+    def orientation(self):
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, value):
+        if self._orientation != value:
+            self._orientation = value
+            self._orientation.parent = self
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('orientation','set')])
+
     def set(self, dct):
-        pass #TODO write this
+        pos = dct.get('position',None)
+        if pos != None:
+            self.position.set(pos)
+
+        ort = dct.get('orientation',None)
+        if ort != None:
+            self.orientation.set(ort)
+
+        super(Pose,self).set(dct)
 
 
 class Position(Node):
+
+    '''
+    Data structure methods
+    '''
 
     def __init__(self, x, y, z, type='', name='', parent=None, uuid=None, append_type=True):
         super(Position,self).__init__(
@@ -100,42 +120,6 @@ class Position(Node):
         self.x = x
         self.y = y
         self.z = z
-
-    @property
-    def x(self):
-        return self._x
-
-    @x.setter
-    def x(self, value):
-        if self._x != value:
-            self._x = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('x','set')])
-
-    @property
-    def y(self):
-        return self._y
-
-    @y.setter
-    def y(self, value):
-        if self._y != value:
-            self._y = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('y','set')])
-
-    @property
-    def z(self):
-        return self._z
-
-    @z.setter
-    def z(self, value):
-        if self._z != value:
-            self._z = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('z','set')])
 
     def to_dct(self):
         msg = super(Position,self).to_dct()
@@ -177,29 +161,9 @@ class Position(Node):
             y=lst[1],
             z=lst[2])
 
-    def set(self, dct):
-        pass #TODO write this
-
-
-class Orientation(Node):
-
-    def __init__(self, x, y, z, w, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Orientation,self).__init__(
-            type='orientation.'+type if append_type else type,
-            name=name,
-            uuid=uuid,
-            parent=parent,
-            append_type=append_type)
-
-        self._x = None
-        self._y = None
-        self._z = None
-        self._w = None
-
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
+    '''
+    Data accessor/modifier methods
+    '''
 
     @property
     def x(self):
@@ -237,17 +201,45 @@ class Orientation(Node):
                 self._parent.child_changed_event(
                     [self._child_changed_event_msg('z','set')])
 
-    @property
-    def w(self):
-        return self._w
+    def set(self, dct):
+        x = dct.get('x',None)
+        if x != None:
+            self.x = x
 
-    @w.setter
-    def w(self, value):
-        if self._w != value:
-            self._w = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('w','set')])
+        y = dct.get('y',None)
+        if y != None:
+            self.y = y
+
+        z = dct.get('z',None)
+        if z != None:
+            self.z = z
+
+        super(Position,self).set(dct)
+
+
+class Orientation(Node):
+
+    '''
+    Data structure methods
+    '''
+
+    def __init__(self, x, y, z, w, type='', name='', uuid=None, parent=None, append_type=True):
+        super(Orientation,self).__init__(
+            type='orientation.'+type if append_type else type,
+            name=name,
+            uuid=uuid,
+            parent=parent,
+            append_type=append_type)
+
+        self._x = None
+        self._y = None
+        self._z = None
+        self._w = None
+
+        self.x = x
+        self.y = y
+        self.z = z
+        self.w = w
 
     def to_dct(self):
         msg = super(Orientation,self).to_dct()
@@ -303,5 +295,73 @@ class Orientation(Node):
                 z=lst[3],
                 w=lst[0])
 
+    '''
+    Data accessor/modifier methods
+    '''
+
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        if self._x != value:
+            self._x = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('x','set')])
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, value):
+        if self._y != value:
+            self._y = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('y','set')])
+
+    @property
+    def z(self):
+        return self._z
+
+    @z.setter
+    def z(self, value):
+        if self._z != value:
+            self._z = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('z','set')])
+
+    @property
+    def w(self):
+        return self._w
+
+    @w.setter
+    def w(self, value):
+        if self._w != value:
+            self._w = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('w','set')])
+
     def set(self, dct):
-        pass #TODO write this
+        x = dct.get('x',None)
+        if x != None:
+            self.x = x
+
+        y = dct.get('y',None)
+        if y != None:
+            self.y = y
+
+        z = dct.get('z',None)
+        if z != None:
+            self.z = z
+
+        w = dct.get('w',None)
+        if w != None:
+            self.w = w
+
+        super(Orientation,self).set(dct)

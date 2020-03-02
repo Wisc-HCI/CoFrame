@@ -52,4 +52,8 @@ def generate():
         ]
     ))
 
+    for traj in prog.find_all_trajectories():
+        trace = Trace('ee',{'ee': [TraceDataPoint(),TraceDataPoint(),TraceDataPoint()]})
+        traj.trace = trace
+
     return prog

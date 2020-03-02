@@ -1,30 +1,94 @@
+from ..node import Node
 from ..data.location import Location
 from ..data.machine import Machine
 
 
-class Context(object):
+class Context(Node):
 
-    def __init__(self, locations=[], machines=[], parent_context=None, parent_node=None):
+    '''
+    Data structure methods
+    '''
+
+    def __init__(self, locations=[], machines=[], parent_context=None, type='', name='', uuid=None, parent=None, append_type=True):
+        super(Context,self).__init__(
+            type='context.'+type if append_type else type,
+            name=name,
+            uuid=uuid,
+            parent=parent,
+            append_type=append_type)
+
         self._parent_context = parent_context
-        self._parent_node = parent_node
 
         self._locations = {}
         for l in locations:
-            l.parent = self._parent_node
+            l.parent = self
             self._locations[l.uuid] = l
 
         self._machines = {}
         for m in machines:
-            m.parent = self._parent_node
+            m.parent = self
             self._machines[m.uuid] = m
+
+    def to_dct(self):
+        msg = super(Context,self).to_dct()
+        msg.update({
+            'locations': [l.to_dct() for l in self.locations],
+            'machines': [m.to_dct() for m in self.machines]
+        })
+        return msg
+
+    @classmethod
+    def from_dct(cls, dct):
+        return Context(
+            name=dct['name'],
+            uuid=dct['uuid'],
+            type=dct['type'],
+            append_type=False,
+            locations=[Location.from_dct(l) for l in dct['locations']],
+            machines=[Machine.from_dct(m) for m in dct['machines']]
+        )
+
+    '''
+    Data accessor/modifier methods
+    '''
 
     @property
     def locations(self):
         return self._locations.values()
 
+    @locations.setter
+    def locations(self, value):
+        for l in self._locations:
+            l.remove_from_cache()
+        self._locations = {}
+
+        for l in value:
+            l.parent = self
+            l.add_to_cache()
+            self._locations[l.uuid] = l
+
+        if self._parent != None:
+            self._parent.child_changed_event(
+                [self._child_changed_event_msg('locations','set')])
+
     @property
     def machines(self):
         return self._machines.values()
+
+    @machines.setter
+    def machines(self, value):
+        for m in self._machines:
+            m.remove_from_cache()
+        self._machines = {}
+
+        for m in value:
+            m.parent = self
+            m.add_to_cache()
+            self._machines[m.uuid] = m
+
+        if self._parent != None:
+            self._parent.child_changed_event(
+                [self._child_changed_event_msg('machines','set')])
 
     @property
     def parent_context(self):
@@ -32,21 +96,11 @@ class Context(object):
 
     @parent_context.setter
     def parent_context(self, value):
-        if (self._parent_context != value):
+        if self._parent_context != value:
             self._parent_context = value
-            self._parent_node.child_changed_event(
-                [self._parent_node._child_changed_event_msg('context_parent_context','set')])
-
-    @property
-    def parent_node(self):
-        return self._parent_node
-
-    @parent_node.setter
-    def parent_node(self, value):
-        if self._parent_node != value:
-            self._parent_node = value
-            self._parent_node.child_changed_event(
-                [self._parent_node._child_changed_event_msg('context_parent_node','set')])
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('parent_context','set')])
 
     def get_location(self, uuid):
         if uuid in self._locations.keys():
@@ -55,18 +109,21 @@ class Context(object):
             return None
 
     def add_location(self, location):
-        location.parent = self._parent_node
+        location.parent = self
         self._locations[location.uuid] = location
-        self._parent_node.cache.add(location.uuid,location)
+        location.add_to_cache()
 
-        self._parent_node.child_changed_event(
-            [self._parent_node._child_changed_event_msg('context_locations','add')])
+        if self._parent != None:
+            self._parent.child_changed_event(
+                [self._child_changed_event_msg('locations','add')])
 
     def delete_location(self, uuid):
         if uuid in self._locations.keys():
             self._locations.pop(uuid).remove_from_cache()
-            self._parent_node.child_changed_event(
-                [self._parent_node._child_changed_event_msg('context_locations','delete')])
+
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('locations','delete')])
 
     def get_machine(self, uuid):
         if uuid in self._machines.keys():
@@ -75,31 +132,35 @@ class Context(object):
             return None
 
     def add_machine(self, machine):
-        machine.parent = self._parent_node
+        machine.parent = self
         self._machines[machine.uuid] = machine
-        self._parent_node.cache.add(machine.uuid,machine)
+        machine.add_to_cache()
 
-        self._parent_node.child_changed_event(
-            [self._parent_node._child_changed_event_msg('context_machines','add')])
+        if self._parent != None:
+            self._parent.child_changed_event(
+                [self._child_changed_event_msg('machines','add')])
 
     def delete_machine(self, uuid):
         if uuid in self._machines.keys():
             self._machines.pop(uuid).remove_from_cache()
-            self._parent_node.child_changed_event(
-                [self._parent_node._child_changed_event_msg('context_machines','delete')])
 
-    def to_dct(self):
-        return {
-            'locations': [l.to_dct() for l in self.locations],
-            'machines': [m.to_dct() for m in self.machines]
-        }
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('machines','delete')])
 
-    @classmethod
-    def from_dct(cls, dct):
-        return Context(
-            locations=[Location.from_dct(l) for l in dct['locations']],
-            machines=[Machine.from_dct(m) for m in dct['machines']]
-        )
+    def set(self, dct):
+
+        if 'locations' in dct.keys():
+            self.locations = [Location.from_dct(l) for l in dct['locations']]
+
+        if 'machines' in dct.keys():
+            self.machines = [Machine.from_dct(m) for m in dct['machines']]
+
+        super(Context,self).set(dct)
+
+    '''
+    Cache methods
+    '''
 
     def remove_from_cache(self):
         for m in self._machines:
@@ -108,5 +169,33 @@ class Context(object):
         for l in self._locations:
             l.remove_from_cache()
 
-    def refresh_cache(self):
-        pass # Implement this where ever something is stored in cache
+        super(Context,self).remove_from_cache()
+
+    def add_to_cache(self):
+        for m in self._machines:
+            m.add_to_cache()
+
+        for l in self._locations:
+            l.add_to_cache()
+
+        super(Context,self).add_to_cache()
+
+    '''
+    Children methods
+    '''
+
+    def delete_child(self, uuid):
+        success = False
+
+        if uuid in [l.uuid for l in self.locations]:
+            self.delete_location(uuid)
+            success = True
+        elif uuid in [m.uuid for m in self.machines]:
+            self.delete_machine(uuid)
+            success = True
+
+        return success
+
+    def delete_children(self):
+        self.locations = []
+        self.machines = []

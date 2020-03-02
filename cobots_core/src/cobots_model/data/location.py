@@ -3,6 +3,10 @@ from waypoint import Waypoint
 
 class Location(Waypoint):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, position=None, orientation=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
         super(Location,self).__init__(

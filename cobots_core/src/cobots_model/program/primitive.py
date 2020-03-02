@@ -4,6 +4,10 @@ from ..data.trajectory import Trajectory
 
 class Primitive(Node):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
         super(Primitive,self).__init__(
             type='primitive.'+type if append_type else type,
@@ -12,12 +16,12 @@ class Primitive(Node):
             parent=parent,
             append_type=append_type)
 
-        def refresh_cache(self):
-            self.add_to_cache(self.uuid,self)
-            super(Primitive,self).refresh_cache()
-
 
 class MoveTrajectory(Primitive):
+
+    '''
+    Data structure methods
+    '''
 
     def __init__(self, startLocUuid=None, endLocUuid=None, trajectories=[],
                  runnableTrajUuid=None, type='', name='', uuid=None, parent=None,
@@ -41,6 +45,32 @@ class MoveTrajectory(Primitive):
 
         if len(self.trajectories) == 0 and create_default:
             self.add_trajectory(Trajectory(self.start_location_uuid,self._end_location_uuid))
+
+    def to_dct(self):
+        msg = super(MoveTrajectory,self).to_dct()
+        msg.update({
+            'start_location_uuid': self.start_location_uuid,
+            'end_location_uuid': self.end_location_uuid,
+            'trajectories': [t.to_dct() for t in self.trajectories],
+            'runnable_trajectory_uuid': self.runnable_trajectory_uuid
+        })
+        return msg
+
+    @classmethod
+    def from_dct(cls, dct):
+        return cls(
+            name=dct['name'],
+            type=dct['type'],
+            append_type=False,
+            uuid=dct['uuid'],
+            startLocUuid=dct['start_location_uuid'],
+            endLocUuid=dct['end_location_uuid'],
+            trajectories=[Trajectory.from_dct(t) for t in dct['trajectories']],
+            runnableTrajUuid=dct['runnable_trajectory_uuid'])
+
+    '''
+    Data accessor/modifier methods
+    '''
 
     @property
     def start_location_uuid(self):
@@ -96,7 +126,11 @@ class MoveTrajectory(Primitive):
                     runnableFound = True
 
             if not runnableFound:
-                self.runnable_trajectory_uuid = None
+                # must assign a runnable id if more than zero trajectories
+                if len(self._trajectories) > 0:
+                    self.runnable_trajectory_uuid = self._trajectories[0].uuid
+                else:
+                    self.runnable_trajectory_uuid = None
 
             if self._parent != None:
                 self._parent.child_changed_event(
@@ -118,7 +152,11 @@ class MoveTrajectory(Primitive):
             if not runUuidFound and value != None:
                 raise Exception("runnable trajectory uuid not found in trajectories")
 
-            self._runnable_trajectory_uuid = value
+            # must always have a runnable uuid set if there is at least one trajectory
+            if value == None and len(self.trajectories) > 0:
+                self._runnable_trajectory_uuid = self.trajectories[0].uuid
+            else:
+                self._runnable_trajectory_uuid = value
 
             if self._parent != None:
                 self._parent.child_changed_event(
@@ -181,27 +219,24 @@ class MoveTrajectory(Primitive):
                 self._parent.child_changed_event(
                     [self._child_changed_event_msg('trajectories','delete')])
 
-    def to_dct(self):
-        msg = super(MoveTrajectory,self).to_dct()
-        msg.update({
-            'start_location_uuid': self.start_location_uuid,
-            'end_location_uuid': self.end_location_uuid,
-            'trajectories': [t.to_dct() for t in self.trajectories],
-            'runnable_trajectory_uuid': self.runnable_trajectory_uuid
-        })
-        return msg
+    def set(self, dct):
+        if 'start_location_uuid' in dct.keys():
+            self.start_location_uuid = dct['start_location_uuid']
 
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            type=dct['type'],
-            append_type=False,
-            uuid=dct['uuid'],
-            startLocUuid=dct['start_location_uuid'],
-            endLocUuid=dct['end_location_uuid'],
-            trajectories=[Trajectory.from_dct(t) for t in dct['trajectories']],
-            runnableTrajUuid=dct['runnable_trajectory_uuid'])
+        if 'end_location_uuid' in dct.keys():
+            self.end_location_uuid = dct['end_location_uuid']
+
+        if 'trajectories' in dct.keys():
+            self.trajectories = [Trajectory.from_dct(t) for t in dct['trajectories']]
+
+        if 'runnable_trajectory_uuid' in dct.keys():
+            self.runnable_trajectory_uuid = dct['runnable_trajectory_uuid']
+
+        super(MoveTrajectory,self).set(dct)
+
+    '''
+    Cache methods
+    '''
 
     def remove_from_cache(self):
         for t in self._trajectories:
@@ -209,20 +244,29 @@ class MoveTrajectory(Primitive):
 
         super(MoveTrajectory,self).remove_from_cache()
 
-    def set(self, dct):
-        pass #TODO write this
+    def add_to_cache(self):
+        for t in self._trajectories:
+            t.add_to_cache()
+
+        super(MoveTrajectory,self).add_to_cache()
+
+    '''
+    Children methods (optional)
+    '''
 
     def delete_child(self, uuid):
-        pass #TODO write this
+        if uuid in [t.uuid for t in self.trajectories]:
+            self.delete_trajectory(uuid)
 
-    def refresh_cache(self):
-        for t in self._trajectories:
-            t.refresh_cache()
-
-        super(MoveTrajectory,self).refresh_cache()
+    def delete_children(self):
+        self.trajectories = []
 
 
 class MoveUnplanned(Primitive):
+
+    '''
+    Data structure methods
+    '''
 
     def __init__(self, locUuid, manual_safety=True, type='', name='', uuid=None, parent=None, append_type=True):
         super(MoveUnplanned,self).__init__(
@@ -237,6 +281,26 @@ class MoveUnplanned(Primitive):
 
         self.manual_safety = manual_safety
         self.location_uuid = locUuid
+
+    def to_dct(self):
+        msg = super(MoveUnplanned,self).to_dct()
+        msg.update({
+            'location_uuid': self.location_uuid,
+        })
+        return msg
+
+    @classmethod
+    def from_dct(cls, dct):
+        return cls(
+            name=dct['name'],
+            type=dct['type'],
+            append_type=False,
+            uuid=dct['uuid'],
+            locUuid=dct['location_uuid'])
+
+    '''
+    Data accessor/modifier methods
+    '''
 
     @property
     def manual_safety(self):
@@ -262,28 +326,18 @@ class MoveUnplanned(Primitive):
                 self._parent.child_changed_event(
                     [self._child_changed_event_msg('location_uuid','set')])
 
-    def to_dct(self):
-        msg = super(MoveUnplanned,self).to_dct()
-        msg.update({
-            'location_uuid': self.location_uuid,
-        })
-        return msg
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            type=dct['type'],
-            append_type=False,
-            uuid=dct['uuid'],
-            locUuid=dct['location_uuid'])
-
     def set(self, dct):
-        pass #TODO write this
+        if 'location_uuid' in dct.keys():
+            self.location_uuid = dct['location_uuid']
+
+        super(MoveUnplanned,self).set(dct)
 
 
 class Delay(Primitive):
 
+    '''
+    Data structure methods
+    '''
     def __init__(self, duration=0, type='', name='', uuid=None, parent=None, append_type=True):
         super(Delay,self).__init__(
             type='delay.'+type if append_type else type,
@@ -292,24 +346,8 @@ class Delay(Primitive):
             parent=parent,
             append_type=append_type)
 
-        self._initialize_private_members()
-
+        self._duration = None
         self.duration = duration
-
-    def _initialize_private_members(self):
-        self._duration = 0
-
-    @property
-    def duration(self):
-        return self._duration
-
-    @duration.setter
-    def duration(self):
-        if self._duration != duration:
-            self._duration = duration
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('duration','set')])
 
     def to_dct(self):
         msg = super(Delay,self).to_dct()
@@ -327,11 +365,35 @@ class Delay(Primitive):
             uuid=dct['uuid'],
             duration=dct['duration'])
 
+    '''
+    Data accessor/modifier methods
+    '''
+
+    @property
+    def duration(self):
+        return self._duration
+
+    @duration.setter
+    def duration(self):
+        if self._duration != duration:
+            self._duration = duration
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('duration','set')])
+
     def set(self, dct):
-        pass #TODO write this
+        duration = dct.get('duration', None)
+        if duration != None:
+            self.duration = duration
+
+        super(Delay,self).set(dct)
 
 
 class Gripper(Primitive):
+
+    '''
+    Data structure methods
+    '''
 
     def __init__(self, position=0, effort=0, speed=0, type='', name='', uuid=None, parent=None, append_type=True):
         super(Gripper,self).__init__(
@@ -341,16 +403,37 @@ class Gripper(Primitive):
             parent=parent,
             append_type=append_type)
 
-        self._initialize_private_members()
+        self._position = None
+        self._effort = None
+        self._speed = None
 
         self.position = position
         self.effort = effort
         self.speed = speed
 
-    def _initialize_private_members(self):
-        self._position = None
-        self._effort = None
-        self._speed = None
+    def to_dct(self):
+        msg = super(Gripper,self).to_dct()
+        msg.update({
+            'position': self.position,
+            'effort': self.effort,
+            'speed': self.speed
+        })
+        return msg
+
+    @classmethod
+    def from_dct(cls, dct):
+        return cls(
+            name=dct['name'],
+            uuid=dct['uuid'],
+            type=dct['type'],
+            append_type=False,
+            position=dct['position'],
+            effort=dct['effort'],
+            speed=dct['speed'])
+
+    '''
+    Data accessor/modifier methods
+    '''
 
     @property
     def position(self):
@@ -388,31 +471,27 @@ class Gripper(Primitive):
                 self._parent.child_changed_event(
                     [self._child_changed_event_msg('speed','set')])
 
-    def to_dct(self):
-        msg = super(Gripper,self).to_dct()
-        msg.update({
-            'position': self.position,
-            'effort': self.effort,
-            'speed': self.speed
-        })
-        return msg
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            uuid=dct['uuid'],
-            type=dct['type'],
-            append_type=False,
-            position=dct['position'],
-            effort=dct['effort'],
-            speed=dct['speed'])
-
     def set(self, dct):
-        pass #TODO write this
+        position = dct.get('position', None)
+        if position != None:
+            self.position = position
+
+        effort = dct.get('effort', None)
+        if effort != None:
+            self.effort = effort
+
+        speed = dct.get('speed', None)
+        if speed != None:
+            self.speed = speed
+
+        super(Gripper,self).set(dct)
 
 
 class MachinePrimitive(Primitive):
+
+    '''
+    Data structure methods
+    '''
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
         super(MachinePrimitive,self).__init__(
@@ -422,24 +501,8 @@ class MachinePrimitive(Primitive):
             parent=parent,
             append_type=append_type)
 
-        self._initialize_private_members()
-
-        self.machine_uuid = machineUuid
-
-    def _initialize_private_members(self):
         self._machine_uuid = None
-
-    @property
-    def machine_uuid(self):
-        return self._machine_uuid
-
-    @machine_uuid.setter
-    def machine_uuid(self, value):
-        if self._machine_uuid != value:
-            self._machine_uuid = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('machine_uuid','set')])
+        self.machine_uuid = machineUuid
 
     def to_dct(self):
         msg = super(MachinePrimitive,self).to_dct()
@@ -457,11 +520,34 @@ class MachinePrimitive(Primitive):
             append_type=False,
             machineUuid=dct['machine_uuid'])
 
+    '''
+    Data accessor/modifier methods
+    '''
+
+    @property
+    def machine_uuid(self):
+        return self._machine_uuid
+
+    @machine_uuid.setter
+    def machine_uuid(self, value):
+        if self._machine_uuid != value:
+            self._machine_uuid = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('machine_uuid','set')])
+
     def set(self, dct):
-        pass #TODO write this
+        if 'machine_uuid' in dct.keys():
+            self.machine_uuid = dct['machine_uuid']
+
+        super(MachinePrimitive,self).set(dct)
 
 
 class MachineStart(MachinePrimitive):
+
+    '''
+    Data structure methods
+    '''
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
         super(MachineStart,self).__init__(
@@ -475,6 +561,10 @@ class MachineStart(MachinePrimitive):
 
 class MachineWait(MachinePrimitive):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
         super(MachineWait,self).__init__(
             machineUuid=machineUuid,
@@ -487,6 +577,10 @@ class MachineWait(MachinePrimitive):
 
 class MachineStop(MachinePrimitive):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
         super(MachineStop,self).__init__(
             machineUuid=machineUuid,
@@ -498,6 +592,10 @@ class MachineStop(MachinePrimitive):
 
 
 class MachineInitialize(MachinePrimitive):
+
+    '''
+    Data structure methods
+    '''
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True):
@@ -512,6 +610,10 @@ class MachineInitialize(MachinePrimitive):
 
 class Breakpoint(Primitive):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
         super(Breakpoint,self).__init__(
             type='breakpoint.'+type if append_type else type,
@@ -519,11 +621,3 @@ class Breakpoint(Primitive):
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            type=dct['type'],
-            append_type=False,
-            uuid=dct['uuid'])

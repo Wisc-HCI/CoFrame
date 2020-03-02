@@ -16,7 +16,7 @@ class DataModelRvizPublisherNode:
 
     def __init__(self, ros_frame_id):
         self._count = 0
-        self._marker_uuid_list = []
+        self._marker_uuid_list = {}
 
         self._ros_frame_id = ros_frame_id
         self._marker_pub = rospy.Publisher('data_model_visualizer/markers',Marker,queue_size=10)
@@ -34,6 +34,7 @@ class DataModelRvizPublisherNode:
             marker = Marker()
             marker.header.frame_id = self._ros_frame_id
             marker.type = Marker.MESH_RESOURCE
+            marker.ns = 'locations'
             marker.id = self._count
             marker.pose = loc.to_ros()
             marker.scale = Vector3(1,1,1)
@@ -42,7 +43,7 @@ class DataModelRvizPublisherNode:
 
             self._marker_pub.publish(marker)
             self._count = self._count + 1
-            updated_markers.append(loc.uuid)
+            updated_markers[loc.uuid] = marker
 
         # Get all trajectories
         # display all waypoints
@@ -59,6 +60,7 @@ class DataModelRvizPublisherNode:
                 marker = Marker()
                 marker.header.frame_id = self._ros_frame_id
                 marker.type = Marker.ARROW
+                marker.ns = 'waypoints'
                 marker.id = self._count
                 marker.pose = wp.to_ros()
                 marker.scale = Vector3(1,1,1)
@@ -66,7 +68,7 @@ class DataModelRvizPublisherNode:
 
                 self._marker_pub.publish(marker)
                 self._count = self._count + 1
-                updated_markers.append(wp.uuid)
+                updated_markers[wp.uuid] = marker
 
             if traj.trace != None:
 
@@ -75,7 +77,9 @@ class DataModelRvizPublisherNode:
                     lineMarker = Marker()
                     lineMarker.header.frame_id = self._ros_frame_id
                     lineMarker.type = Marker.LINE_STRIP
+                    marker.ns = 'trace'
                     lineMarker.id = self._count
+                    self._count = self._count + 1
                     lineMarker.scale = Vector3(1,1,1)
 
                     # render point
@@ -83,6 +87,7 @@ class DataModelRvizPublisherNode:
                         marker = Marker()
                         marker.header.frame_id = self._ros_frame_id
                         marker.type = Marker.SPHERE
+                        marker.ns = 'renderpoints'
                         marker.id = self._count
                         marker.pose = point.to_ros()
                         marker.scale = Vector3(1,1,1)
@@ -92,7 +97,7 @@ class DataModelRvizPublisherNode:
 
                         self._marker_pub.publish(marker)
                         self._count = self._count + 1
-                        updated_markers.append(point.uuid)
+                        updated_markers[point.uuid] = marker
 
                     # trace path color based on group
                     if key == traj.trace.end_effector_path:
@@ -105,13 +110,14 @@ class DataModelRvizPublisherNode:
                         lineMarker.color = ColorRGBA(128/255.0,128/255.0,128/255.0,1) # other color
 
                     self._marker_pub.publish(lineMarker)
-                    self._count = self._count + 1
-                    updated_markers.append(traj.trace.uuid)
+                    updated_markers[traj.trace.uuid] = lineMarker
 
         # Delete any markers that have not been updated
-        for ids in self._marker_uuid_list:
-            if not ids in updated_markers:
-                pass #TODO need to delete old markers that are not being used
+        for ids in self._marker_uuid_list.keys():
+            if not ids in updated_markers.keys():
+                marker = self._marker_uuid_list[ids]
+                marker.action = Marker.DELETE
+                self._marker_pub.publish(marker)
 
 
 if __name__ == "__main__":

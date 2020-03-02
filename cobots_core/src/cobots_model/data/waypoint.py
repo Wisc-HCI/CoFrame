@@ -3,6 +3,10 @@ from geometry import Pose, Position, Orientation
 
 class Waypoint(Pose):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, position=None, orientation=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
         super(Waypoint,self).__init__(
@@ -16,18 +20,6 @@ class Waypoint(Pose):
 
         self._joints = None
         self.joints = joints
-
-    @property
-    def joints(self):
-        return self._joints
-
-    @joints.setter
-    def joints(self, value):
-        if self._joints != value:
-            self._joints = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('joints','set')])
 
     def to_dct(self):
         msg = super(Waypoint,self).to_dct()
@@ -47,5 +39,25 @@ class Waypoint(Pose):
             uuid=dct['uuid'],
             joints=dct['joints'])
 
+    '''
+    Data accessor/modifier methods
+    '''
+
+    @property
+    def joints(self):
+        return self._joints
+
+    @joints.setter
+    def joints(self, value):
+        if self._joints != value:
+            self._joints = value
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('joints','set')])
+
     def set(self, dct):
-        pass #TODO write this
+        joints = dct.get('joints',None)
+        if joints != None:
+            self.joints = joints
+
+        super(Waypoint,self).set(dct)

@@ -5,6 +5,10 @@ from waypoint import Waypoint
 
 class Trajectory(Node):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, startLocUuid=None, endLocUuid=None, waypoints=[],
                  trace=None, velocity=0, acceleration=0, parent=None, type='',
                  name='', uuid=None, append_type=True):
@@ -28,6 +32,36 @@ class Trajectory(Node):
         self.velocity = velocity
         self.acceleration = acceleration
         self.trace = trace
+
+    def to_dct(self):
+        msg = super(Trajectory,self).to_dct()
+        msg.update({
+            'start_location_uuid': self.start_location_uuid,
+            'end_location_uuid': self.end_location_uuid,
+            'waypoints': [w.to_dct() for w in self.waypoints],
+            'trace': self.trace.to_dct() if self.trace != None else None,
+            'velocity': self.velocity,
+            'acceleration': self.acceleration
+        })
+        return msg
+
+    @classmethod
+    def from_dct(cls, dct):
+        return cls(
+            startLocUuid=dct['start_location_uuid'],
+            endLocUuid=dct['end_location_uuid'],
+            waypoints=[Waypoint.from_dct(w) for w in dct['waypoints']],
+            trace=Trace.from_dct(dct['trace']) if dct['trace'] != None else None,
+            name=dct['name'],
+            uuid=dct['uuid'],
+            type=dct['type'],
+            append_type=False,
+            velocity=dct['velocity'],
+            acceleration=dct['acceleration'])
+
+    '''
+    Data accessor/modifier methods
+    '''
 
     @property
     def start_location_uuid(self):
@@ -72,7 +106,7 @@ class Trajectory(Node):
             self._waypoints = value
             for w in self._waypoints:
                 w.parent = self
-                self.add_to_cache(w.uuid,w)
+                w.add_to_cache()
 
             self.trace = None
 
@@ -93,7 +127,7 @@ class Trajectory(Node):
             self._trace = value
             if self._trace != None:
                 self._trace.parent = self
-                self.add_to_cache(self._trace.uuid,self._trace)
+                self._trace.add_to_cache()
 
             if self._parent != None:
                 self._parent.child_changed_event(
@@ -131,8 +165,8 @@ class Trajectory(Node):
 
     def add_waypoint(self, wp):
         wp.parent = self
+        wp.add_to_cache()
         self._waypoints.append(wp)
-        self.add_to_cache(wp.uuid,wp)
 
         self.trace = None
 
@@ -181,31 +215,33 @@ class Trajectory(Node):
                 self._parent.child_changed_event(
                     [self._child_changed_event_msg('waypoints','delete')])
 
-    def to_dct(self):
-        msg = super(Trajectory,self).to_dct()
-        msg.update({
-            'start_location_uuid': self.start_location_uuid,
-            'end_location_uuid': self.end_location_uuid,
-            'waypoints': [w.to_dct() for w in self.waypoints],
-            'trace': self.trace.to_dct() if self.trace != None else None,
-            'velocity': self.velocity,
-            'acceleration': self.acceleration
-        })
-        return msg
+    def set(self, dct):
 
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            startLocUuid=dct['start_location_uuid'],
-            endLocUuid=dct['end_location_uuid'],
-            waypoints=[Waypoint.from_dct(w) for w in dct['waypoints']],
-            trace=Trace.from_dct(dct['trace']) if dct['trace'] != None else None,
-            name=dct['name'],
-            uuid=dct['uuid'],
-            type=dct['type'],
-            append_type=False,
-            velocity=dct['velocity'],
-            acceleration=dct['acceleration'])
+        if 'start_location_uuid' in dct.keys():
+            self.start_location_uuid = dct['start_location_uuid']
+
+        if 'end_location_uuid' in dct.keys():
+            self.end_location_uuid = dct['end_location_uuid']
+
+        if 'waypoints' in dct.keys():
+            self.waypoints = [Waypoint.from_dct(w) for w in dct['waypoints']]
+
+        velocity = dct.get('velocity',None)
+        if velocity != None:
+            self.velocity = velocity
+
+        acceleration = dct.get('acceleration',None)
+        if acceleration != None
+            self.acceleration = acceleration
+
+        if 'trace' in dct.keys():
+            self.trace = Trace.from_dct(dct['trace']) if dct['trace'] != None else None
+
+        super(Trajectory,self).set(dct)
+
+    '''
+    Cache methods
+    '''
 
     def remove_from_cache(self):
         for w in self._waypoints:
@@ -216,8 +252,31 @@ class Trajectory(Node):
 
         super(Trajectory,self).remove_from_cache()
 
-    def set(self, dct):
-        pass #TODO write this
+    def add_to_cache(self):
+        for w in self._waypoints:
+            w.add_to_cache()
+
+        if self._trace != None:
+            self._trace.add_to_cache()
+
+        super(Trajectory,self).add_to_cache()
+
+    '''
+    Children methods
+    '''
 
     def delete_child(self, uuid):
-        pass #TODO write this
+        success = False
+
+        if self.trace != None and self.trace.uuid == uuid:
+            self.trace = None
+            success = True
+        elif uuid in [wp.uuid for wp in self.waypoints]:
+            self.delete_waypoint(uuid)
+            success = True
+
+        return success
+
+    def delete_children(self):
+        self.trace = None
+        self.waypoints = []
