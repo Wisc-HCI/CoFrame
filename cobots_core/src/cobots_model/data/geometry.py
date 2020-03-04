@@ -11,15 +11,16 @@ class Pose(Node):
 
     def __init__(self, position=None, orientation=None, type='', name='',
                  uuid=None, parent=None, append_type=True):
+
+        self._position = None
+        self._orientation = None
+
         super(Pose,self).__init__(
             type='pose.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-
-        self._position = None
-        self._orientation = None
 
         if position is None:
             self.position = Position(0,0,0,parent=self)
@@ -106,16 +107,16 @@ class Position(Node):
     '''
 
     def __init__(self, x, y, z, type='', name='', parent=None, uuid=None, append_type=True):
+        self._x = None
+        self._y = None
+        self._z = None
+
         super(Position,self).__init__(
             type='position.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-
-        self._x = None
-        self._y = None
-        self._z = None
 
         self.x = x
         self.y = y
@@ -223,18 +224,22 @@ class Orientation(Node):
     Data structure methods
     '''
 
+    @classmethod
+    def Identity(cls):
+        return cls(0,0,0,1)
+
     def __init__(self, x, y, z, w, type='', name='', uuid=None, parent=None, append_type=True):
+        self._x = None
+        self._y = None
+        self._z = None
+        self._w = None
+
         super(Orientation,self).__init__(
             type='orientation.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-
-        self._x = None
-        self._y = None
-        self._z = None
-        self._w = None
 
         self.x = x
         self.y = y

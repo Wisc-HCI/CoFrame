@@ -26,17 +26,18 @@ class MoveTrajectory(Primitive):
     def __init__(self, startLocUuid=None, endLocUuid=None, trajectories=[],
                  runnableTrajUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True, create_default=True):
+
+        self._start_location_uuid = None
+        self._end_location_uuid = None
+        self._trajectories = []
+        self._runnable_trajectory_uuid = None
+
         super(MoveTrajectory,self).__init__(
             type='move-trajectory.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-
-        self._start_location_uuid = None
-        self._end_location_uuid = None
-        self._trajectories = []
-        self._runnable_trajectory_uuid = None
 
         self.start_location_uuid = startLocUuid
         self.end_location_uuid = endLocUuid
@@ -117,7 +118,6 @@ class MoveTrajectory(Primitive):
             self._trajectories = value
             for t in self._trajectories:
                 t.parent = self
-                self.add_to_cache(t.uuid,t)
 
             runnableFound = False
             for t in self._trajectories:
@@ -165,7 +165,6 @@ class MoveTrajectory(Primitive):
     def add_trajectory(self, t):
         t.parent = self
         self._trajectories.append(t)
-        self.add_to_cache(t.uuid,t)
 
         if len(self._trajectories) == 1:
             self.runnable_trajectory_uuid = t.uuid
@@ -258,9 +257,6 @@ class MoveTrajectory(Primitive):
         if uuid in [t.uuid for t in self.trajectories]:
             self.delete_trajectory(uuid)
 
-    def delete_children(self):
-        self.trajectories = []
-
 
 class MoveUnplanned(Primitive):
 
@@ -268,16 +264,18 @@ class MoveUnplanned(Primitive):
     Data structure methods
     '''
 
-    def __init__(self, locUuid, manual_safety=True, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, locUuid, manual_safety=True, type='', name='', uuid=None,
+                 parent=None, append_type=True):
+
+        self._location_uuid = None
+        self._manual_safety = None
+
         super(MoveUnplanned,self).__init__(
             type='move-unplanned.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-
-        self._location_uuid = None
-        self._manual_safety = None
 
         self.manual_safety = manual_safety
         self.location_uuid = locUuid
@@ -339,6 +337,8 @@ class Delay(Primitive):
     Data structure methods
     '''
     def __init__(self, duration=0, type='', name='', uuid=None, parent=None, append_type=True):
+        self._duration = None
+
         super(Delay,self).__init__(
             type='delay.'+type if append_type else type,
             name=name,
@@ -346,7 +346,6 @@ class Delay(Primitive):
             parent=parent,
             append_type=append_type)
 
-        self._duration = None
         self.duration = duration
 
     def to_dct(self):
@@ -395,17 +394,19 @@ class Gripper(Primitive):
     Data structure methods
     '''
 
-    def __init__(self, position=0, effort=0, speed=0, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, position=0, effort=0, speed=0, type='', name='', uuid=None,
+                 parent=None, append_type=True):
+
+        self._position = None
+        self._effort = None
+        self._speed = None
+
         super(Gripper,self).__init__(
             type='gripper.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-
-        self._position = None
-        self._effort = None
-        self._speed = None
 
         self.position = position
         self.effort = effort
@@ -494,6 +495,8 @@ class MachinePrimitive(Primitive):
     '''
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
+        self._machine_uuid = None
+
         super(MachinePrimitive,self).__init__(
             type='machine.'+type if append_type else type,
             name=name,
@@ -501,7 +504,6 @@ class MachinePrimitive(Primitive):
             parent=parent,
             append_type=append_type)
 
-        self._machine_uuid = None
         self.machine_uuid = machineUuid
 
     def to_dct(self):

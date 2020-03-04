@@ -9,7 +9,13 @@ class Context(Node):
     Data structure methods
     '''
 
-    def __init__(self, locations=[], machines=[], parent_context=None, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, locations=[], machines=[], parent_context=None, type='',
+                 name='', uuid=None, parent=None, append_type=True):
+
+        self._locations = {}
+        self._machines = {}
+        self._parent_context = None
+
         super(Context,self).__init__(
             type='context.'+type if append_type else type,
             name=name,
@@ -17,17 +23,9 @@ class Context(Node):
             parent=parent,
             append_type=append_type)
 
-        self._parent_context = parent_context
-
-        self._locations = {}
-        for l in locations:
-            l.parent = self
-            self._locations[l.uuid] = l
-
-        self._machines = {}
-        for m in machines:
-            m.parent = self
-            self._machines[m.uuid] = m
+        self.parent_context = parent_context
+        self.locations = locations
+        self.machines = machines
 
     def to_dct(self):
         msg = super(Context,self).to_dct()
@@ -63,9 +61,8 @@ class Context(Node):
         self._locations = {}
 
         for l in value:
-            l.parent = self
-            l.add_to_cache()
             self._locations[l.uuid] = l
+            l.parent = self
 
         if self._parent != None:
             self._parent.child_changed_event(
@@ -82,9 +79,8 @@ class Context(Node):
         self._machines = {}
 
         for m in value:
-            m.parent = self
-            m.add_to_cache()
             self._machines[m.uuid] = m
+            m.parent = self
 
         if self._parent != None:
             self._parent.child_changed_event(
@@ -111,7 +107,6 @@ class Context(Node):
     def add_location(self, location):
         location.parent = self
         self._locations[location.uuid] = location
-        location.add_to_cache()
 
         if self._parent != None:
             self._parent.child_changed_event(
@@ -134,7 +129,6 @@ class Context(Node):
     def add_machine(self, machine):
         machine.parent = self
         self._machines[machine.uuid] = machine
-        machine.add_to_cache()
 
         if self._parent != None:
             self._parent.child_changed_event(
@@ -163,19 +157,19 @@ class Context(Node):
     '''
 
     def remove_from_cache(self):
-        for m in self._machines:
+        for m in self.machines:
             m.remove_from_cache()
 
-        for l in self._locations:
+        for l in self.locations:
             l.remove_from_cache()
 
         super(Context,self).remove_from_cache()
 
     def add_to_cache(self):
-        for m in self._machines:
+        for m in self.machines:
             m.add_to_cache()
 
-        for l in self._locations:
+        for l in self.locations:
             l.add_to_cache()
 
         super(Context,self).add_to_cache()
@@ -195,7 +189,3 @@ class Context(Node):
             success = True
 
         return success
-
-    def delete_children(self):
-        self.locations = []
-        self.machines = []

@@ -9,10 +9,9 @@ from cobots_core.msg import UpdateData, Version
 
 from cobots_core.srv import GetData, GetDataRequest, GetDataResponse
 from cobots_core.srv import SetData, SetDataRequest, SetDataResponse
+
 from cobots_core.srv import LoadData, LoadDataRequest, LoadDataResponse
 from cobots_core.srv import SaveData, SaveDataRequest, SaveDataResponse
-from cobots_core.srv import CreateData, CreateDataRequest, CreateDataResponse
-from cobots_core.srv import DeleteData, DeleteDataRequest, DeleteDataResponse
 from cobots_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
 
 from version_tracking.history import *
@@ -30,7 +29,6 @@ class DataServer:
             self._program = debug_prog.generate()
         else:
             self._program = Program()
-        self._program.server_cb = self.__program_updated_cb
 
         self._program_history = History()
         self._program_history.append(HistoryEntry(
@@ -40,24 +38,20 @@ class DataServer:
             source='data-server'
         ))
 
-        self._update_program_pub = rospy.Publisher('data_server/update_program',UpdateData, queue_size=10)
-        self._update_env_pub = rospy.Publisher('data_server/update_environment',UpdateData, queue_size=10)
+        self._update_prog_pub = rospy.Publisher('data_server/update_program',UpdateData, queue_size=10, latch=True)
+        self._update_env_pub = rospy.Publisher('data_server/update_environment',UpdateData, queue_size=10, latch=True)
 
-        self._load_data_srv = rospy.Service('data_server/load_application_data',LoadData,self._load_application_data_cb)
-        self._save_data_srv = rospy.Service('data_server/save_application_data',SaveData,self._save_application_data_cb)
-        self._get_app_options_srv = rospy.Service('data_server/get_application_options',GetOptions,self._get_app_options_cb)
+        self._load_app_srv = rospy.Service('data_server/load_application_data',LoadData,self._load_app_cb)
+        self._save_app_srv = rospy.Service('data_server/save_application_data',SaveData,self._save_app_cb)
+        self._get_app_opts_srv = rospy.Service('data_server/get_application_options',GetOptions,self._get_app_opts_cb)
 
-        self._get_program_data_srv = rospy.Service('data_server/get_program_data',GetData,self._get_program_data_cb)
-        self._set_program_data_srv = rospy.Service('data_server/set_program_data',SetData,self._set_program_data_cb)
-        self._create_program_data_srv = rospy.Service('data_server/create_program_data',CreateData,self._create_program_data_cb)
-        self._delete_program_data_srv = rospy.Service('data_server/delete_program_data',DeleteData,self._delete_program_data_cb)
+        self._get_prog_srv = rospy.Service('data_server/get_program_data',GetData,self._get_prog_cb)
+        self._set_prog_srv = rospy.Service('data_server/set_program_data',SetData,self._set_prog_cb)
 
-        self._get_env_data_srv = rospy.Service('data_server/get_environment_data',GetData,self._get_env_data_cb)
-        self._set_env_data_srv = rospy.Service('data_server/set_environment_data',SetData,self._set_env_data_cb)
-        self._create_env_data_srv = rospy.Service('data_server/create_environmment_data',CreateData,self._create_env_data_cb)
-        self._delete_env_data_srv = rospy.Service('data_server/delete_environment_data',DeleteData,self._delete_env_data_cb)
+        self._get_env_srv = rospy.Service('data_server/get_environment_data',GetData,self._get_env_cb)
+        self._set_env_srv = rospy.Service('data_server/set_environment_data',SetData,self._set_env_cb)
 
-    def _load_application_data_cb(self, request):
+    def _load_app_cb(self, request):
         response = LoadDataResponse()
         data_snapshot = self._program.to_dct()
 
@@ -91,12 +85,12 @@ class DataServer:
             source='data-server'
         ))
 
-        self.__push_program_update()
+        self._push_program_update()
 
         response.status = True
         return response
 
-    def _save_application_data_cb(self, request):
+    def _save_app_cb(self, request):
         response = SaveDataResponse()
         response.status = True
 
@@ -131,11 +125,11 @@ class DataServer:
         self._application_filename = used_filepath
         return response
 
-    def _get_app_options_cb(self, request):
+    def _get_app_opts_cb(self, request):
         response = GetOptionsResponse()
         response.options = [] #TODO read options as files from app directory
 
-    def _get_program_data_cb(self, request):
+    def _get_prog_cb(self, request):
         errors = []
         response = GetDataResponse()
 
@@ -157,7 +151,7 @@ class DataServer:
         response.message = '' if response.status else 'error getting data'
         return response
 
-    def _set_program_data_cb(self, request):
+    def _set_prog_cb(self, request):
         response = SetDataResponse()
 
         if request.tag == self._program_history.get_current_version:
@@ -181,7 +175,7 @@ class DataServer:
                     source='data-server'
                 ))
 
-                self.__push_program_update()
+                self._push_program_update()
 
             response.status = len(errors) == 0
             response.errors = json.dumps(errors)
@@ -194,104 +188,13 @@ class DataServer:
 
         return response
 
-    def _create_program_data_cb(self, request):
-        response = CreateDataResponse()
-
-        if request.tag == self._program_history.get_current_version:
-            inData = json.loads(request.data.data)
-            data_snapshot = self._program.to_dct()
-
-            errors = []
-            for field in inData.keys():
-                for dct in inData[field]:
-                    try:
-                        self._program.create(field,dct)
-                    except:
-                        errors.append(dct['uuid'])
-
-            if len(errors) > 0:
-                pass #TODO need to revert program from history
-            else:
-                self._program_history.append(HistoryEntry(
-                    action='create',
-                    change_dct=inData,
-                    snapshot_dct = data_snapshot,
-                    source='data-server'
-                ))
-
-                self.__push_program_update()
-
-            response.status = len(errors) == 0
-            response.errors = json.dumps(errors)
-            response.message = '' if response.status else 'error creating data'
-
-        else:
-            response.status = False
-            response.errors = ''
-            response.message = 'mismatched version tags'
-
-        return response
-
-    def _delete_program_data_cb(self, request):
-        response = DeleteDataResponse()
-
-        if request.tag == self._program_history.get_current_version:
-            inData = json.loads(request.data.data)
-            data_snapshot = self._program.to_dct()
-
-            errors = []
-            for uuid in inData:
-                try:
-                    if uuid == self._program.uuid:
-                        self._program = self.__new_program()
-                        break
-                    self._program.delete(uuid)
-                except:
-                    errors.append(uuid)
-
-            if len(errors) > 0:
-                pass #TODO need to revert program from history
-            else:
-                self._program_history.append(HistoryEntry(
-                    action='delete',
-                    change_dct=inData,
-                    snapshot_dct = data_snapshot,
-                    source='data-server'
-                ))
-
-                self.__push_program_update()
-
-            response.status = len(errors) > 0
-            response.errors = json.dumps(errors)
-            response.message = '' if response.status else 'error deleting data'
-
-        else:
-            response.status = False
-            response.errors = ''
-            response.message = 'mismatched version tags'
-
-        return response
-
-    def _get_env_data_cb(self, request):
+    def _get_env_cb(self, request):
         pass #TODO write env model
 
-    def _set_env_data_cb(self, request):
+    def _set_env_cb(self, request):
         pass #TODO write env model
 
-    def _create_env_data_cb(self, request):
-        pass #TODO write env model
-
-    def _delete_env_data_cb(self, request):
-        pass #TODO write env model
-
-    def __program_updated_cb(self, attribute_trace):
-        pass #TODO all program changes pass through here - structure for update environment?
-
-    def __new_program(self):
-        self._program = Program()
-        self._program.changes_cb = self.__program_updated_cb
-
-    def __push_program_update(self):
+    def _push_program_update(self):
         entry = self._program_history.get_current_entry()
 
         msg = UpdateData()
@@ -303,11 +206,15 @@ class DataServer:
         prevTag = self._program_history.get_previous_version()
         msg.previousTag = prevTag.to_ros() if prevTag != None else Version(rospy.Duration(0),'','data-server')
 
-        self._update_program_pub.publish(msg)
+        self._update_prog_pub.publish(msg)
 
     def spin(self):
-        rospy.sleep(0.5)
-        self.__push_program_update()
+        # give nodes time before publishing initial state
+        # the topic latches message but as a best practice, it shouldn't rush
+        # all other nodes with the program data until general setup is his
+        # complete.
+        rospy.sleep(1)
+        self._push_program_update()
         rospy.spin()
 
 

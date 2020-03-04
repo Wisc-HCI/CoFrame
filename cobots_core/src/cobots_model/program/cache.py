@@ -14,6 +14,7 @@ class Cache(object):
 
         if isinstance(node,Location):
             self.locations[uuid] = node
+            #print self.locations
         elif isinstance(node,Trajectory):
             self.trajectories[uuid] = node
 
@@ -31,9 +32,9 @@ class Cache(object):
 
     def get(self, uuid, hint=None):
 
-        if hint == 'trajectory' and uuid in trajectories.keys():
+        if hint == 'trajectory' and uuid in self.trajectories.keys():
             return self.trajectories[uuid]
-        elif hint == 'location' and uuid in locations.keys():
+        elif hint == 'location' and uuid in self.locations.keys():
             return self.locations[uuid]
         else:
             return self.data[uuid]

@@ -19,16 +19,20 @@ class DataModelRvizPublisherNode:
         self._marker_uuid_list = {}
 
         self._ros_frame_id = ros_frame_id
-        self._marker_pub = rospy.Publisher('data_model_visualizer/markers',Marker,queue_size=10)
+        self._marker_pub = rospy.Publisher('data_model_visualizer/markers',Marker,queue_size=10,latch=True)
         self._data_client = DataClientInterface(use_program_interface=True, on_program_update_cb=self._update_markers)
 
     def _update_markers(self):
         print 'updating markers'
-        updated_markers = []
+        updated_markers = {}
+
+        rospy.sleep(1)
 
         # get all locations and display all locations
-        locations = self._data_client.program.find_all_locations()
-        print 'locations', locations
+        #print self._data_client.program.cache.locations
+
+        locations = self._data_client.program.cache.locations.values()
+        #print 'locations', locations
 
         for loc in locations:
             marker = Marker()
@@ -37,7 +41,7 @@ class DataModelRvizPublisherNode:
             marker.ns = 'locations'
             marker.id = self._count
             marker.pose = loc.to_ros()
-            marker.scale = Vector3(1,1,1)
+            marker.scale = Vector3(0.1,0.1,0.1)
             marker.color = ColorRGBA(173/255.0,216/255.0,230/255.0,1)
             marker.mesh_resource = 'package://cobots_core/markers/SimpleGripperPhycon.stl'
 
@@ -48,10 +52,10 @@ class DataModelRvizPublisherNode:
         # Get all trajectories
         # display all waypoints
         # display all traces
-        trajectories = self._data_client.program.find_all_trajectories()
-        print 'trajectories', trajectories
+        trajectories = self._data_client.program.cache.trajectories.values()
+        #print 'trajectories', trajectories
 
-        print 'program cache', self._data_client.program.cache.data
+        #print 'program cache', self._data_client.program.cache.data
 
         for traj in trajectories:
 
@@ -63,7 +67,7 @@ class DataModelRvizPublisherNode:
                 marker.ns = 'waypoints'
                 marker.id = self._count
                 marker.pose = wp.to_ros()
-                marker.scale = Vector3(1,1,1)
+                marker.scale = Vector3(0.05,0.01,0.01)
                 marker.color = ColorRGBA(123/255.0,104/255.0,238/255.0,1)
 
                 self._marker_pub.publish(marker)
@@ -77,10 +81,10 @@ class DataModelRvizPublisherNode:
                     lineMarker = Marker()
                     lineMarker.header.frame_id = self._ros_frame_id
                     lineMarker.type = Marker.LINE_STRIP
-                    marker.ns = 'trace'
+                    lineMarker.ns = 'trace'
                     lineMarker.id = self._count
                     self._count = self._count + 1
-                    lineMarker.scale = Vector3(1,1,1)
+                    lineMarker.scale = Vector3(0.01,0.01,0.01)
 
                     # render point
                     for point in traj.trace.data[key]:
@@ -90,7 +94,7 @@ class DataModelRvizPublisherNode:
                         marker.ns = 'renderpoints'
                         marker.id = self._count
                         marker.pose = point.to_ros()
-                        marker.scale = Vector3(1,1,1)
+                        marker.scale = Vector3(0.025,0.025,0.025)
                         marker.color = ColorRGBA(255/255.0,255/255.0,255/255.0,1)
 
                         lineMarker.points.append(marker.pose.position)

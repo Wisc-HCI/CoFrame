@@ -11,6 +11,10 @@ class Task(Primitive):
 
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
                  append_type=True, context=None):
+
+        self._primitives = []
+        self._context = Context()
+
         super(Task,self).__init__(
             type='task.'+type if append_type else type,
             name=name,
@@ -19,18 +23,8 @@ class Task(Primitive):
             append_type=append_type)
 
         if context != None:
-            self._context = context
-            self._context.parent_node = self
-            if self.parent != None:
-                self._context.parent_context = self.parent.context
-            else:
-                self._context.parent_context = None
-        else:
-            self._context = Context(
-                parent_context=self.parent.context if self.parent != None else None,
-                parent_node=self)
+            self.context = context
 
-        self._primitives = []
         self.primitives = primitives
 
     def to_dct(self):
@@ -62,7 +56,16 @@ class Task(Primitive):
     @context.setter
     def context(self, value):
         if self._context != value:
-            pass #TODO need to update context
+            self._context.remove_from_cache()
+
+            self._context = value
+            self._context.parent = self
+            if self.parent != None:
+                self._context.parent_context = self.parent.context
+
+            if self._parent != None:
+                self._parent.child_changed_event(
+                    [self._child_changed_event_msg('context','set')])
 
     @property
     def primitives(self):
@@ -77,7 +80,6 @@ class Task(Primitive):
             self._primitives = value
             for p in self._primitives:
                 p.parent = self
-                self.add_to_cache(p.uuid,p)
 
             if self._parent != None:
                 self._parent.child_changed_event(
@@ -86,7 +88,7 @@ class Task(Primitive):
     def add_primitive(self, prm):
         prm.parent = self
         self._primitives.append(prm)
-        self.add_to_cache(prm.uuid,prm)
+
         if self._parent != None:
             self._parent.child_changed_event(
                 [self._child_changed_event_msg('primitives','add')])
@@ -159,20 +161,31 @@ class Task(Primitive):
         super(Task,self).add_to_cache()
 
     '''
-    Children methods (optional)
+    Children methods
     '''
 
     def delete_child(self, uuid):
-        pass #TODO write this (either primitive or context)
+        success = True
 
-    def delete_children(self):
-        pass #TODO write this (either primitive or context)
+        if uuid == self.context.uuid:
+            self.context = Context()  # Must always have a context with a task
+        elif uuid in [p.uuid for p in self.primitives]:
+            self.delete_primitive(uuid)
+        else:
+            success = False
+
+        return success
 
 
 class CloseGripper(Task):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, position=0, effort=100, speed=100, type='', name='',
                  uuid=None, parent=None, append_type=True, primitives=None, context=None):
+
         if primitives == None:
             primitives=[
                 Gripper(
@@ -193,8 +206,13 @@ class CloseGripper(Task):
 
 class OpenGripper(Task):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, position=0, effort=100, speed=100, type='', name='',
                  uuid=None, parent=None, append_type=True, primitives=None, context=None):
+
         if primitives == None:
             primitives=[
                 Gripper(
@@ -215,8 +233,13 @@ class OpenGripper(Task):
 
 class PickAndPlace(Task):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, startLocUuid=None, pickLocUuid=None, placeLocUuid=None, type='', name='',
                  uuid=None, parent=None, append_type=True, create_default=True, primitives=None, context=None):
+
         if primitives == None:
             primitives = [
                 MoveTrajectory(startLocUuid,pickLocUuid,create_default=create_default),
@@ -237,8 +260,13 @@ class PickAndPlace(Task):
 
 class Initialize(Task):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, homeLocUuid=None, machineUuid=None, type='', name='',
                  uuid=None, parent=None, append_type=True, primitives=None, context=None):
+
         if primitives == None:
             primitives=[
                 MoveUnplanned(homeLocUuid,True),
@@ -258,8 +286,13 @@ class Initialize(Task):
 
 class MachineBlockingProcess(Task):
 
+    '''
+    Data structure methods
+    '''
+
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True, primitives=None, context=None):
+
         if primitives == None:
             primitives=[
                 MachineStart(machineUuid),
@@ -278,6 +311,10 @@ class MachineBlockingProcess(Task):
 
 
 class Loop(Task):
+
+    '''
+    Data structure methods
+    '''
 
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
                  append_type=True, context=None):

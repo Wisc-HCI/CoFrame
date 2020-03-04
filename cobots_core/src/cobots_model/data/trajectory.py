@@ -12,12 +12,6 @@ class Trajectory(Node):
     def __init__(self, startLocUuid=None, endLocUuid=None, waypoints=[],
                  trace=None, velocity=0, acceleration=0, parent=None, type='',
                  name='', uuid=None, append_type=True):
-        super(Trajectory,self).__init__(
-            type='trajectory.'+type if append_type else type,
-            name=name,
-            uuid=uuid,
-            parent=parent,
-            append_type=append_type)
 
         self._start_location_uuid = None
         self._end_location_uuid = None
@@ -25,6 +19,13 @@ class Trajectory(Node):
         self._velocity = None
         self._acceleration = None
         self._trace = None
+
+        super(Trajectory,self).__init__(
+            type='trajectory.'+type if append_type else type,
+            name=name,
+            uuid=uuid,
+            parent=parent,
+            append_type=append_type)
 
         self.start_location_uuid = startLocUuid
         self.end_location_uuid = endLocUuid
@@ -106,7 +107,6 @@ class Trajectory(Node):
             self._waypoints = value
             for w in self._waypoints:
                 w.parent = self
-                w.add_to_cache()
 
             self.trace = None
 
@@ -127,7 +127,6 @@ class Trajectory(Node):
             self._trace = value
             if self._trace != None:
                 self._trace.parent = self
-                self._trace.add_to_cache()
 
             if self._parent != None:
                 self._parent.child_changed_event(
@@ -165,7 +164,6 @@ class Trajectory(Node):
 
     def add_waypoint(self, wp):
         wp.parent = self
-        wp.add_to_cache()
         self._waypoints.append(wp)
 
         self.trace = None
@@ -231,7 +229,7 @@ class Trajectory(Node):
             self.velocity = velocity
 
         acceleration = dct.get('acceleration',None)
-        if acceleration != None
+        if acceleration != None:
             self.acceleration = acceleration
 
         if 'trace' in dct.keys():
@@ -276,7 +274,3 @@ class Trajectory(Node):
             success = True
 
         return success
-
-    def delete_children(self):
-        self.trace = None
-        self.waypoints = []

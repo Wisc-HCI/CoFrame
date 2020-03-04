@@ -1,7 +1,9 @@
-
+from cobots_model.data.trace import *
 from cobots_model.program.task import *
 from cobots_model.data.machine import *
+from cobots_model.data.waypoint import *
 from cobots_model.data.location import *
+from cobots_model.data.geometry import *
 from cobots_model.program.program import *
 from cobots_model.program.primitive import *
 
@@ -10,12 +12,12 @@ def generate():
     prog = Program()
 
     # Define and add location
-    home_loc = Location()
-    pick_stock_loc = Location()
-    place_stock_loc = Location()
-    retract_loc = Location()
-    pick_final_loc = Location()
-    place_final_loc = Location()
+    home_loc = Location(Position(0,0.2,0),Orientation.Identity())
+    pick_stock_loc = Location(Position(0.1,0.3,0),Orientation.Identity())
+    place_stock_loc = Location(Position(0.4,0.4,0.2),Orientation.Identity())
+    retract_loc = Location(Position(0.3,0.3,0.4),Orientation.Identity())
+    pick_final_loc = Location(Position(0.4,0.4,0.2),Orientation.Identity())
+    place_final_loc = Location(Position(-0.1,-0.1,-0.1),Orientation.Identity())
 
     prog.context.add_location(home_loc)
     prog.context.add_location(pick_stock_loc)
@@ -52,8 +54,17 @@ def generate():
         ]
     ))
 
-    for traj in prog.find_all_trajectories():
-        trace = Trace('ee',{'ee': [TraceDataPoint(),TraceDataPoint(),TraceDataPoint()]})
-        traj.trace = trace
+    for trajUuid in prog.cache.trajectories.keys():
+        trace = Trace('ee',{'ee': [
+            TraceDataPoint(home_loc.position,home_loc.orientation),
+            TraceDataPoint(retract_loc.position,retract_loc.orientation),
+            TraceDataPoint(place_final_loc.position,place_final_loc.orientation)]})
+
+        waypoints = [
+            Waypoint(retract_loc.position,retract_loc.orientation)
+        ]
+
+        prog.cache.get(trajUuid,'trajectory').waypoints = waypoints
+        prog.cache.get(trajUuid,'trajectory').trace = trace
 
     return prog

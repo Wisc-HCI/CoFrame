@@ -9,6 +9,9 @@ class Waypoint(Pose):
 
     def __init__(self, position=None, orientation=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
+
+        self._joints = None
+
         super(Waypoint,self).__init__(
             position=position,
             orientation=orientation,
@@ -18,7 +21,6 @@ class Waypoint(Pose):
             parent=parent,
             append_type=append_type)
 
-        self._joints = None
         self.joints = joints
 
     def to_dct(self):

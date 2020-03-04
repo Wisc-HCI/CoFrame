@@ -135,10 +135,6 @@ class Node(object):
         # write this for each sub-node type that has children
         pass #no children in root node to delete
 
-    def delete_children(self):
-        # write this for each sub-node type that has children
-        pass #no children in root node to delete
-
     def child_changed_event(self, attribute_trace):
         if self._parent != None:
             attribute_trace.append(self._child_changed_event_msg(None,'callback'))

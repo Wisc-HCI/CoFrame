@@ -10,6 +10,9 @@ class TraceDataPoint(Pose):
 
     def __init__(self, position=None, orientation=None, grade=0, type='',
                  name='', uuid=None, parent=None, append_type=True):
+
+        self._grade = None
+
         super(TraceDataPoint,self).__init__(
             position=position,
             orientation=orientation,
@@ -19,7 +22,6 @@ class TraceDataPoint(Pose):
             parent=parent,
             append_type=append_type)
 
-        self._grade = None
         self.grade = grade
 
     def to_dct(self):
@@ -46,7 +48,7 @@ class TraceDataPoint(Pose):
 
     @property
     def grade(self):
-        return self._orientation
+        return self._grade
 
     @grade.setter
     def grade(self, value):
@@ -72,12 +74,6 @@ class Trace(Node):
 
     def __init__(self, eePath=None, data={}, jPaths=[], tPaths=[], cPaths=[],
                  time=0, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Trace,self).__init__(
-            type='trace.'+type if append_type else type,
-            name=name,
-            uuid=uuid,
-            parent=parent,
-            append_type=append_type)
 
         self._data = {}
         self._time = None
@@ -85,6 +81,13 @@ class Trace(Node):
         self._joint_paths = None
         self._tool_paths = None
         self._component_paths = None
+
+        super(Trace,self).__init__(
+            type='trace.'+type if append_type else type,
+            name=name,
+            uuid=uuid,
+            parent=parent,
+            append_type=append_type)
 
         self.data = data
         self.time = time
@@ -112,7 +115,7 @@ class Trace(Node):
             type=dct['type'],
             name=dct['name'],
             append_type=False,
-            data={key: [TraceDataPoint.from_dct(dct['data'][i]) for i in range(0,len(dct['data'][key]))] for key in dct['data'].keys()},
+            data={key: [TraceDataPoint.from_dct(dct['data'][key][i]) for i in range(0,len(dct['data'][key]))] for key in dct['data'].keys()},
             eePath=dct['end_effector_path'],
             jPaths=dct['joint_paths'],
             tPaths=dct['tool_paths'],
@@ -140,7 +143,6 @@ class Trace(Node):
             for key in self._data.keys():
                 for d in self._data[key]:
                     d.parent = self
-                    d.add_to_cache()
 
             if self._parent != None:
                 self._parent.child_changed_event(
@@ -233,6 +235,7 @@ class Trace(Node):
 
         if delIdx != None:
             self._data[group].pop(delIdx).remove_from_cache()
+
             if self._parent != None:
                 self._parent.child_changed_event(
                     [self._child_changed_event_msg('data','delete')])
@@ -281,7 +284,16 @@ class Trace(Node):
     '''
 
     def delete_child(self, uuid):
-        raise Exception('Deleting single datapoint is unsupported')
 
-    def delete_children(self):
-        self.data = {}
+        group = None
+        for g in self._data.keys():
+            for d in self._data[g]:
+                if d.uuid == uuid:
+                    group = g
+                    break
+
+        if group != None:
+            self.delete_data_point(uuid, group)
+            return True
+        else:
+            return False
