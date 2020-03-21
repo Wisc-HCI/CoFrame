@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-#TODO add a local gripper_command driver here
-
 import tf
 import time
 import math
@@ -14,6 +12,7 @@ from std_msgs.msg import Bool, String
 from ur_msgs.msg import RobotModeDataMsg
 from cobots_core.msg import Stop, Servo, Move
 from geometry_msgs.msg import Pose, Quaternion, Vector3
+from control_msgs.msg import GripperCommandAction, GripperCommandActionGoal, GripperCommand
 from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
 
 
@@ -59,11 +58,13 @@ class URController:
         self._robot_state = RobotModeDataMsg()
 
         self._urscript_pub = rospy.Publisher('ur_driver/URScript',String,queue_size=10)
+        self._gripper_command_ac = actionlib.SimpleActionClient('gripper_command',GripperCommandAction)
 
         if mode == 'ros':
             self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
             self._servoing_sub = rospy.Subscriber('robot_control/servoing',Servo,self._servoing_cb)
             self._stop_sub = rospy.Subscriber('robot_control/stop',Stop,self._stop_cb)
+            self._gripper_sub = rospy.Subscriber('robot_control/gripper',GripperCommand,self._gripper_cb)
 
             self._move_trajectory_as = actionlib.SimpleActionServer('robot_control/move_trajectory',MoveTrajectoryAction,execute_cb=self._move_trajectory_cb,auto_start=False)
             self._move_trajectory_as.start()
@@ -92,6 +93,9 @@ class URController:
 
             self._stop_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/stop'.format(bridge_name_prefix), 'cobots_core/Stop')
             self._stop_sub.subscribe(self._stop_bridge_cb)
+
+            self._gripper_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/gripper'.format(bridge_name_prefix), 'control_msgs/GripperCommand')
+            self._gripper_sub.subscribe(self._gripper_bridge_cb)
 
             self._move_trajectory_bridge_as = roslibpy.actionlib.SimpleActionServer(self._bridge_client, '{}/robot_control/move_trajectory'.format(bridge_name_prefix), 'cobots_core/MoveTrajectoryAction')
             self._move_trajectory_bridge_as.start(self._move_trajectory_bridge_cb)
@@ -399,6 +403,16 @@ class URController:
         self._stop_cb(Stop(
             motion_type=msg['motion_type'],
             acceleration=msg['acceleration']))
+
+    def _gripper_cb(self, msg):
+        self._gripper_command_ac.send_goal(GripperCommandGoal(command=msg))
+        self._gripper_command_ac.wait_for_result()
+        result = self._gripper_command_ac.get_result()
+
+    def _gripper_bridge_cb(self, msg):
+        self._gripper_command_cb(GripperCommand(
+            position=msg['position'],
+            max_effort=msg['max_effort']))
 
 
 if __name__ == "__main__":
