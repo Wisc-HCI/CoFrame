@@ -26,8 +26,6 @@ class DataModelRvizPublisherNode:
         print 'updating markers'
         updated_markers = {}
 
-        rospy.sleep(1)
-
         # get all locations and display all locations
         #print self._data_client.program.cache.locations
 
@@ -45,6 +43,7 @@ class DataModelRvizPublisherNode:
             marker.color = ColorRGBA(173/255.0,216/255.0,230/255.0,1)
             marker.mesh_resource = 'package://cobots_core/markers/SimpleGripperPhycon.stl'
 
+            print 'adding location markers', loc.uuid
             self._marker_pub.publish(marker)
             self._count = self._count + 1
             updated_markers[loc.uuid] = marker
@@ -70,6 +69,7 @@ class DataModelRvizPublisherNode:
                 marker.scale = Vector3(0.05,0.01,0.01)
                 marker.color = ColorRGBA(123/255.0,104/255.0,238/255.0,1)
 
+                print 'adding waypoint marker', wp.uuid
                 self._marker_pub.publish(marker)
                 self._count = self._count + 1
                 updated_markers[wp.uuid] = marker
@@ -99,6 +99,7 @@ class DataModelRvizPublisherNode:
 
                         lineMarker.points.append(marker.pose.position)
 
+                        print 'adding render point marker', point.uuid
                         self._marker_pub.publish(marker)
                         self._count = self._count + 1
                         updated_markers[point.uuid] = marker
@@ -113,6 +114,7 @@ class DataModelRvizPublisherNode:
                     else:
                         lineMarker.color = ColorRGBA(128/255.0,128/255.0,128/255.0,1) # other color
 
+                    print 'adding line trace marker', traj.trace.uuid
                     self._marker_pub.publish(lineMarker)
                     updated_markers[traj.trace.uuid] = lineMarker
 
@@ -121,6 +123,7 @@ class DataModelRvizPublisherNode:
             if not ids in updated_markers.keys():
                 marker = self._marker_uuid_list[ids]
                 marker.action = Marker.DELETE
+                print 'deleting marker', ids
                 self._marker_pub.publish(marker)
 
 
