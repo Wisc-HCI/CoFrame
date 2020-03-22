@@ -213,7 +213,7 @@ class DataServer:
         # the topic latches message but as a best practice, it shouldn't rush
         # all other nodes with the program data until general setup is his
         # complete.
-        rospy.sleep(1)
+        rospy.sleep(30)
         self._push_program_update()
         rospy.spin()
 

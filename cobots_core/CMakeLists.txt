@@ -62,8 +62,6 @@ add_service_files(
   FILES
   GetData.srv
   SetData.srv
-  CreateData.srv
-  DeleteData.srv
   LoadData.srv
   SaveData.srv
   GetOptions.srv
