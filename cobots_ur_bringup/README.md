@@ -1,7 +1,9 @@
 # cobots_ur_bringup
 
+This version of bringup is going to be deprecated in favor of the UR robot driver.
+
 This bringup configuration can be used to connect the ROS core infrastructure to
-either a physical UR Robot or to a URSim application.
+either a physical UR Robot or to a URSim application using the UR-Modern driver.
 
 Deploy this launch configuration onto a URSim VM with ROS installed, onto a
 dedicated URSim computer, or a remote UR controller computer.
@@ -21,7 +23,7 @@ this application.
 Then install ROS.
 
 If not using the VM then install according to your specific OS's version. Otherwise,
-install ROS Indigo on the VM.
+install ROS Indigo on the VM. I used the desktop-install instead of the desktop-full-install.
 
 Create a workspace called `catkin_ws` in your home directory. If you name it
 something else, the provided script will not work. However you are free to change
@@ -30,14 +32,15 @@ it to suit your needs.
 Next, clone the [cobots_ros](https://github.com/Wisc-HCI/cobots_ros) repository.
 
 Followed by these dependencies:
-- [RobotWebTools/rosbridge_suite](https://github.com/RobotWebTools/rosbridge_suite)
 - [Wisc-HCI/robotiq_85_gripper](https://github.com/Wisc-HCI/robotiq_85_gripper)
 - [ros-industrial/universal_robot](https://github.com/ros-industrial/universal_robot)
 - [industrial_core](http://wiki.ros.org/industrial_core) via `sudo apt install ros-<VERSION>-industrial-core`
-- [AdmiralWall/ur_modern_driver](https://github.com/AdmiralWall/ur_modern_driver) forked from [ros-industrial/ur_modern_driver](https://github.com/ros-industrial/ur_modern_driver) for 5.4 support.
+- [AdmiralWall/ur_modern_driver](https://github.com/AdmiralWall/ur_modern_driver) forked from [ros-industrial/ur_modern_driver](https://github.com/ros-industrial/ur_modern_driver) for 5.4 support
+- [moveit](https://moveit.ros.org/) via `sudo apt install ros-<VERSION>-moveit`
+- [controller_manager](http://wiki.ros.org/controller_manager) via `sudo apt install ros-<VERSION>-controller-manager`
+- [roslibpy](https://pypi.org/project/roslibpy/) via `pip install roslibpy`
 
-- [moveit]
-- [controller-manager]
+NOTE: Roslibpy requires an older version of the Twisted library. Install
 
 ## Execute
 ### Option 1

@@ -6,6 +6,7 @@ These packages compose the ROS backend for the Cobots project.
 - [cobots_ros](./cobots_ros/README.md): ROS meta-package
 - [cobots_core](./cobots_core/README.md): ROS Server backend
 - [cobots_tasks](./cobots_tasks/README.md): Specific tasks for experiments and demos
+- [cobots_ur_bringup](./cobots_ur_bringup/README.md): Interface for UR robot (both local and remote systems)
 
 For the front-end implementation:
 
@@ -13,6 +14,13 @@ For the front-end implementation:
 
 ## System
 TODO
+
+
+
+
+
+
+
 
 ## Installation and Dependencies
 
