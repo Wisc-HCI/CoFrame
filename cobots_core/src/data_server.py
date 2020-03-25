@@ -14,8 +14,9 @@ from cobots_core.srv import LoadData, LoadDataRequest, LoadDataResponse
 from cobots_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 from cobots_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
 
-from version_tracking.history import *
 from cobots_model.program.program import *
+from cobots_model.version_tracking.history import *
+
 import test_programs.debug_prog as debug_prog
 
 

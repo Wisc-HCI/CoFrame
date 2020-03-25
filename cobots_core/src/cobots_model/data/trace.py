@@ -16,7 +16,7 @@ class TraceDataPoint(Pose):
         super(TraceDataPoint,self).__init__(
             position=position,
             orientation=orientation,
-            type='trace.'+type if append_type else type,
+            type='trace-data-point.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -54,9 +54,7 @@ class TraceDataPoint(Pose):
     def grade(self, value):
         if self._grade != value:
             self._grade = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('grade','set')])
+            updated_attribute('grade','set')
 
     def set(self, dct):
         grade = dct.get('grade',None)
@@ -144,9 +142,7 @@ class Trace(Node):
                 for d in self._data[key]:
                     d.parent = self
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('data','set')])
+            updated_attribute('data','set')
 
     @property
     def time(self):
@@ -156,10 +152,7 @@ class Trace(Node):
     def time(self, value):
         if self._time != value:
             self._time = value
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('time','set')])
+            updated_attribute('time','set')
 
     @property
     def end_effector_path(self):
@@ -169,9 +162,7 @@ class Trace(Node):
     def end_effector_path(self, value):
         if self._end_effector_path != value:
             self._end_effector_path = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('end_effector_path','set')])
+            updated_attribute('end_effector_path','set')
 
     @property
     def joint_paths(self):
@@ -181,9 +172,7 @@ class Trace(Node):
     def joint_paths(self, value):
         if self._joint_paths != value:
             self._joint_paths = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('joint_paths','set')])
+            updated_attribute('joint_paths','set')
 
     @property
     def tool_paths(self):
@@ -193,9 +182,7 @@ class Trace(Node):
     def tool_paths(self, value):
         if self._tool_paths != value:
             self._tool_paths = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('tool_paths','set')])
+            updated_attribute('tool_paths','set')
 
     @property
     def component_paths(self):
@@ -205,9 +192,7 @@ class Trace(Node):
     def component_paths(self, value):
         if self._component_paths != value:
             self._component_paths = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('component_paths','set')])
+            updated_attribute('component_paths','set')
 
     def add_data_point(self, dp, group):
         dp.parent = self
@@ -216,9 +201,7 @@ class Trace(Node):
             self._data[group] = []
         self._data[group].append(dp)
 
-        if self._parent != None:
-            self._parent.child_changed_event(
-                [self._child_changed_event_msg('data','add')])
+        updated_attribute('data','add')
 
     def get_data_point(self, uuid, group):
         for d in self._data[group]:
@@ -235,10 +218,7 @@ class Trace(Node):
 
         if delIdx != None:
             self._data[group].pop(delIdx).remove_from_cache()
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('data','delete')])
+            updated_attribute('data','delete')
 
     def set(self, dct):
         data = dct.get('data',None)

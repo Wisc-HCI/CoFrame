@@ -161,3 +161,8 @@ class Node(object):
             return self.uuid == other.uuid
         except:
             return False
+
+    def updated_attribute(self, attribute, verb):
+        if self._parent != None:
+            self._parent.child_changed_event(
+                [self._child_changed_event_msg(attribute,verb)])

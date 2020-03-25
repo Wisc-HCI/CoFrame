@@ -53,9 +53,7 @@ class Waypoint(Pose):
     def joints(self, value):
         if self._joints != value:
             self._joints = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('joints','set')])
+            updated_attribute('joints','set')
 
     def set(self, dct):
         joints = dct.get('joints',None)

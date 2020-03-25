@@ -14,9 +14,9 @@ from cobots_core.srv import SetData, SetDataRequest, SetDataResponse
 from cobots_core.srv import LoadData, LoadDataRequest, LoadDataResponse
 from cobots_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 
-from version_tracking.history import *
 from cobots_model.program.program import *
 from cobots_model.environment.environment import *
+from cobots_model.version_tracking.history import *
 
 
 class DataClientInterface(object):

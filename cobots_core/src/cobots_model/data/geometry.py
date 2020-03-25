@@ -71,9 +71,7 @@ class Pose(Node):
         if (self._position != value):
             self._position = value
             self._position.parent = self
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('position','set')])
+            updated_attribute('position','set')
 
     @property
     def orientation(self):
@@ -84,9 +82,7 @@ class Pose(Node):
         if self._orientation != value:
             self._orientation = value
             self._orientation.parent = self
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('orientation','set')])
+            updated_attribute('orientation','set')
 
     def set(self, dct):
         pos = dct.get('position',None)
@@ -174,9 +170,7 @@ class Position(Node):
     def x(self, value):
         if self._x != value:
             self._x = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('x','set')])
+            updated_attribute('x','set')
 
     @property
     def y(self):
@@ -186,9 +180,7 @@ class Position(Node):
     def y(self, value):
         if self._y != value:
             self._y = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('y','set')])
+            updated_attribute('y','set')
 
     @property
     def z(self):
@@ -198,9 +190,7 @@ class Position(Node):
     def z(self, value):
         if self._z != value:
             self._z = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('z','set')])
+            updated_attribute('z','set')
 
     def set(self, dct):
         x = dct.get('x',None)
@@ -312,9 +302,7 @@ class Orientation(Node):
     def x(self, value):
         if self._x != value:
             self._x = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('x','set')])
+            updated_attribute('x','set')
 
     @property
     def y(self):
@@ -324,9 +312,7 @@ class Orientation(Node):
     def y(self, value):
         if self._y != value:
             self._y = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('y','set')])
+            updated_attribute('y','set')
 
     @property
     def z(self):
@@ -336,9 +322,7 @@ class Orientation(Node):
     def z(self, value):
         if self._z != value:
             self._z = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('z','set')])
+            updated_attribute('z','set')
 
     @property
     def w(self):
@@ -348,9 +332,7 @@ class Orientation(Node):
     def w(self, value):
         if self._w != value:
             self._w = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('w','set')])
+            updated_attribute('w','set')
 
     def set(self, dct):
         x = dct.get('x',None)

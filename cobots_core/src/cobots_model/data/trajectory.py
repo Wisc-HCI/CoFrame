@@ -1,17 +1,19 @@
 from ..node import Node
-from trace import Trace
 from waypoint import Waypoint
+from trace import Trace, TraceDataPoint
 
 
 class Trajectory(Node):
+
+    TYPES = ['joint', 'linear', 'planner']
 
     '''
     Data structure methods
     '''
 
     def __init__(self, startLocUuid=None, endLocUuid=None, waypoints=[],
-                 trace=None, velocity=0, acceleration=0, parent=None, type='',
-                 name='', uuid=None, append_type=True):
+                 trace=None, move_type="joint", velocity=0, acceleration=0,
+                 parent=None, type='', name='', uuid=None, append_type=True):
 
         self._start_location_uuid = None
         self._end_location_uuid = None
@@ -19,6 +21,7 @@ class Trajectory(Node):
         self._velocity = None
         self._acceleration = None
         self._trace = None
+        self._move_type = None
 
         super(Trajectory,self).__init__(
             type='trajectory.'+type if append_type else type,
@@ -33,6 +36,7 @@ class Trajectory(Node):
         self.velocity = velocity
         self.acceleration = acceleration
         self.trace = trace
+        self.move_type = move_type
 
     def to_dct(self):
         msg = super(Trajectory,self).to_dct()
@@ -42,7 +46,8 @@ class Trajectory(Node):
             'waypoints': [w.to_dct() for w in self.waypoints],
             'trace': self.trace.to_dct() if self.trace != None else None,
             'velocity': self.velocity,
-            'acceleration': self.acceleration
+            'acceleration': self.acceleration,
+            'move_type': self.move_type
         })
         return msg
 
@@ -58,7 +63,8 @@ class Trajectory(Node):
             type=dct['type'],
             append_type=False,
             velocity=dct['velocity'],
-            acceleration=dct['acceleration'])
+            acceleration=dct['acceleration'],
+            move_type=dct['move_type'])
 
     '''
     Data accessor/modifier methods
@@ -72,12 +78,8 @@ class Trajectory(Node):
     def start_location_uuid(self, value):
         if self._start_location_uuid != value:
             self._start_location_uuid = value
-
             self.trace = None
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('start_location_uuid','set')])
+            updated_attribute('start_location_uuid','set')
 
     @property
     def end_location_uuid(self):
@@ -87,12 +89,8 @@ class Trajectory(Node):
     def end_location_uuid(self, value):
         if self._end_location_uuid != value:
             self._end_location_uuid = value
-
             self.trace = None
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('end_location_uuidy','set')])
+            updated_attribute('end_location_uuidy','set')
 
     @property
     def waypoints(self):
@@ -109,10 +107,7 @@ class Trajectory(Node):
                 w.parent = self
 
             self.trace = None
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('waypoints','set')])
+            updated_attribute('waypoints','set')
 
     @property
     def trace(self):
@@ -128,9 +123,7 @@ class Trajectory(Node):
             if self._trace != None:
                 self._trace.parent = self
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('trace','set')])
+            updated_attribute('trace','set')
 
     @property
     def velocity(self):
@@ -140,12 +133,8 @@ class Trajectory(Node):
     def velocity(self, value):
         if self._velocity != value:
             self._velocity = value
-
             self.trace = None
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('velocity','set')])
+            updated_attribute('velocity','set')
 
     @property
     def acceleration(self):
@@ -155,22 +144,29 @@ class Trajectory(Node):
     def acceleration(self, value):
         if self._acceleration != value:
             self._acceleration = value
-
             self.trace = None
+            updated_attribute('acceleration','set')
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('acceleration','set')])
+    @property
+    def move_type(self):
+        return self._move_type
+
+    @move_type.setter
+    def move_type(self, value):
+        if self._move_type != value:
+
+            if not value in self.TYPES:
+                raise Exception("Invalid move_type provided")
+
+            self._move_type = value
+            self.trace = None
+            updated_attribute('move_type','set')
 
     def add_waypoint(self, wp):
         wp.parent = self
         self._waypoints.append(wp)
-
         self.trace = None
-
-        if self._parent != None:
-            self._parent.child_changed_event(
-                [self._child_changed_event_msg('waypoints','add')])
+        updated_attribute('waypoints','add')
 
     def get_waypoint(self, uuid):
         for w in self.waypoints:
@@ -192,10 +188,7 @@ class Trajectory(Node):
 
             copy = self._waypoints.pop(idx)
             self._waypoints.insert(shiftedIdx,copy) #TODO check to make sure not off by one
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('waypoints','reorder')])
+            updated_attribute('waypoints','reorder')
 
     def delete_waypoint(self, uuid):
         delIdx = None
@@ -206,12 +199,8 @@ class Trajectory(Node):
 
         if delIdx != None:
             self._waypoints.pop(i).remove_from_cache()
-
             self.trace = None
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('waypoints','delete')])
+            updated_attribute('waypoints','delete')
 
     def set(self, dct):
 
@@ -231,6 +220,10 @@ class Trajectory(Node):
         acceleration = dct.get('acceleration',None)
         if acceleration != None:
             self.acceleration = acceleration
+
+        move_type = dct.get('move_type',None)
+        if move_type != None:
+            self.move_type = move_type
 
         if 'trace' in dct.keys():
             self.trace = Trace.from_dct(dct['trace']) if dct['trace'] != None else None
