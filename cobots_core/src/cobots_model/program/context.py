@@ -64,9 +64,7 @@ class Context(Node):
             self._locations[l.uuid] = l
             l.parent = self
 
-        if self._parent != None:
-            self._parent.child_changed_event(
-                [self._child_changed_event_msg('locations','set')])
+        self.updated_attribute('locations','set')
 
     @property
     def machines(self):
@@ -82,9 +80,7 @@ class Context(Node):
             self._machines[m.uuid] = m
             m.parent = self
 
-        if self._parent != None:
-            self._parent.child_changed_event(
-                [self._child_changed_event_msg('machines','set')])
+        self.updated_attribute('machines','set')
 
     @property
     def parent_context(self):
@@ -94,9 +90,7 @@ class Context(Node):
     def parent_context(self, value):
         if self._parent_context != value:
             self._parent_context = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('parent_context','set')])
+            self.updated_attribute('parent_context','set')
 
     def get_location(self, uuid):
         if uuid in self._locations.keys():
@@ -107,18 +101,12 @@ class Context(Node):
     def add_location(self, location):
         location.parent = self
         self._locations[location.uuid] = location
-
-        if self._parent != None:
-            self._parent.child_changed_event(
-                [self._child_changed_event_msg('locations','add')])
+        self.updated_attribute('location','add')
 
     def delete_location(self, uuid):
         if uuid in self._locations.keys():
             self._locations.pop(uuid).remove_from_cache()
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('locations','delete')])
+            self.updated_attribute('location','delete')
 
     def get_machine(self, uuid):
         if uuid in self._machines.keys():
@@ -129,18 +117,12 @@ class Context(Node):
     def add_machine(self, machine):
         machine.parent = self
         self._machines[machine.uuid] = machine
-
-        if self._parent != None:
-            self._parent.child_changed_event(
-                [self._child_changed_event_msg('machines','add')])
+        self.updated_attribute('machine','add')
 
     def delete_machine(self, uuid):
         if uuid in self._machines.keys():
             self._machines.pop(uuid).remove_from_cache()
-
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('machines','delete')])
+            self.updated_attribute('machine','delete')
 
     def set(self, dct):
 

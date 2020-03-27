@@ -32,8 +32,8 @@ def PrimitiveParser(dct):
         return primitive.Delay.from_dct(dct)
     elif exactType == 'gripper':
         return primitive.Gripper.from_dct(dct)
-    elif exactType == 'machine':
-        return primitive.Machine.from_dct(dct)
+    elif exactType == 'machine-primitive':
+        return primitive.MachinePrimitive.from_dct(dct)
     elif exactType == 'machine-start':
         return primitive.MachineStart.from_dct(dct)
     elif exactType == 'machine-wait':

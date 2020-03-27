@@ -85,9 +85,7 @@ class MoveTrajectory(Primitive):
             for t in self.trajectories:
                 t.start_location_uuid = self._start_location_uuid
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('start_location_uuid','set')])
+            self.updated_attribute('start_location_uuid','set')
 
     @property
     def end_location_uuid(self):
@@ -101,9 +99,7 @@ class MoveTrajectory(Primitive):
             for t in self.trajectories:
                 t.end_location_uuid = self._end_location_uuid
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('end_location_uuid','set')])
+            self.updated_attribute('end_location_uuid','set')
 
     @property
     def trajectories(self):
@@ -132,9 +128,7 @@ class MoveTrajectory(Primitive):
                 else:
                     self.runnable_trajectory_uuid = None
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('trajectories','set')])
+            self.updated_attribute('trajectories','set')
 
     @property
     def runnable_trajectory_uuid(self):
@@ -158,9 +152,7 @@ class MoveTrajectory(Primitive):
             else:
                 self._runnable_trajectory_uuid = value
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('runnable_trajectory_uuid','set')])
+            self.updated_attribute('runnable_trajectory_uuid','set')
 
     def add_trajectory(self, t):
         t.parent = self
@@ -169,9 +161,7 @@ class MoveTrajectory(Primitive):
         if len(self._trajectories) == 1:
             self.runnable_trajectory_uuid = t.uuid
 
-        if self._parent != None:
-            self._parent.child_changed_event(
-                [self._child_changed_event_msg('trajectories','add')])
+        self.updated_attribute('trajectories','add')
 
     def get_trajectory(self, uuid):
         for t in self._trajectories:
@@ -194,9 +184,7 @@ class MoveTrajectory(Primitive):
             copy = self._trajectories.pop(idx)
             self._trajectories.insert(shiftedIdx,copy) #TODO check to make sure not off by one
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('trajectories','reorder')])
+            self.updated_attribute('trajectories','reorder')
 
     def delete_trajectory(self, uuid):
         delIdx = None
@@ -214,9 +202,7 @@ class MoveTrajectory(Primitive):
                 else:
                     self.runnable_trajectory_uuid = None
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('trajectories','delete')])
+            self.updated_attribute('trajectories','delete')
 
     def set(self, dct):
         if 'start_location_uuid' in dct.keys():
@@ -284,6 +270,7 @@ class MoveUnplanned(Primitive):
         msg = super(MoveUnplanned,self).to_dct()
         msg.update({
             'location_uuid': self.location_uuid,
+            'manual_safety': self.manual_safety
         })
         return msg
 
@@ -294,7 +281,8 @@ class MoveUnplanned(Primitive):
             type=dct['type'],
             append_type=False,
             uuid=dct['uuid'],
-            locUuid=dct['location_uuid'])
+            locUuid=dct['location_uuid'],
+            manual_safety=dct['manual_safety'])
 
     '''
     Data accessor/modifier methods
@@ -308,9 +296,7 @@ class MoveUnplanned(Primitive):
     def manual_safety(self, value):
         if self._manual_safety != value:
             self._manual_safety = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('manual_safety','set')])
+            self.updated_attribute('manual_safety','set')
 
     @property
     def location_uuid(self):
@@ -320,13 +306,14 @@ class MoveUnplanned(Primitive):
     def location_uuid(self, value):
         if self._location_uuid != value:
             self._location_uuid = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('location_uuid','set')])
+            self.updated_attribute('location_uuid','set')
 
     def set(self, dct):
         if 'location_uuid' in dct.keys():
             self.location_uuid = dct['location_uuid']
+
+        if 'manual_safety' in dct.keys():
+            self.manual_safety = dct['manual_safety']
 
         super(MoveUnplanned,self).set(dct)
 
@@ -373,12 +360,10 @@ class Delay(Primitive):
         return self._duration
 
     @duration.setter
-    def duration(self):
-        if self._duration != duration:
-            self._duration = duration
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('duration','set')])
+    def duration(self, value):
+        if self._duration != value:
+            self._duration = value
+            self.updated_attribute("duration",'set')
 
     def set(self, dct):
         duration = dct.get('duration', None)
@@ -444,9 +429,7 @@ class Gripper(Primitive):
     def position(self, value):
         if self._position != value:
             self._position = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('position','set')])
+            self.updated_attribute('position','set')
 
     @property
     def effort(self):
@@ -456,9 +439,7 @@ class Gripper(Primitive):
     def effort(self, value):
         if self._effort != value:
             self._effort = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('effort','set')])
+            self.updated_attribute('effort','set')
 
     @property
     def speed(self):
@@ -468,9 +449,7 @@ class Gripper(Primitive):
     def speed(self, value):
         if self._speed != value:
             self._speed = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('speed','set')])
+            self.updated_attribute('speed','set')
 
     def set(self, dct):
         position = dct.get('position', None)
@@ -498,7 +477,7 @@ class MachinePrimitive(Primitive):
         self._machine_uuid = None
 
         super(MachinePrimitive,self).__init__(
-            type='machine.'+type if append_type else type,
+            type='machine-primitive.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -534,9 +513,7 @@ class MachinePrimitive(Primitive):
     def machine_uuid(self, value):
         if self._machine_uuid != value:
             self._machine_uuid = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('machine_uuid','set')])
+            self.updated_attribute('machine_uuid','set')
 
     def set(self, dct):
         if 'machine_uuid' in dct.keys():

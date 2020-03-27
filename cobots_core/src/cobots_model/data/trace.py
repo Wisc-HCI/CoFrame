@@ -272,6 +272,9 @@ class Trace(Node):
                     group = g
                     break
 
+            if group != None:
+                break
+
         if group != None:
             self.delete_data_point(uuid, group)
             return True
