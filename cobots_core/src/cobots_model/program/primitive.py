@@ -112,9 +112,6 @@ class MoveTrajectory(Primitive):
                 t.remove_from_cache()
 
             self._trajectories = value
-            for t in self._trajectories:
-                t.parent = self
-
             runnableFound = False
             for t in self._trajectories:
                 t.parent = self

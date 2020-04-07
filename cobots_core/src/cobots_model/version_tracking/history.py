@@ -56,7 +56,7 @@ class HistoryEntry(object):
             'type': 'history-entry',
             'action': self.action,
             'change': self.changes,
-            'version_tag': self.version,
+            'version_tag': self.version.to_dct(),
             'snapshot': self.snapshot
         }
 
@@ -65,7 +65,7 @@ class HistoryEntry(object):
         return cls(
             action=dct['action'],
             change_dct=dct['change'],
-            version_tag=dct['version_tag'],
+            version_tag=VersionTag.from_dct(dct['version_tag']),
             snapshot_dct=dct['snapshot']
         )
 

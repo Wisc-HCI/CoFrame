@@ -1,5 +1,5 @@
 '''
-
+TODO need to think about the write portion more
 '''
 
 import json

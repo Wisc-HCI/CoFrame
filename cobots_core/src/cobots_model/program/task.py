@@ -63,9 +63,7 @@ class Task(Primitive):
             if self.parent != None:
                 self._context.parent_context = self.parent.context
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('context','set')])
+            self.updated_attribute('context','set')
 
     @property
     def primitives(self):
@@ -81,17 +79,12 @@ class Task(Primitive):
             for p in self._primitives:
                 p.parent = self
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('primitives','set')])
+            self.updated_attribute('primitives','set')
 
     def add_primitive(self, prm):
         prm.parent = self
         self._primitives.append(prm)
-
-        if self._parent != None:
-            self._parent.child_changed_event(
-                [self._child_changed_event_msg('primitives','add')])
+        self.updated_attribute('primitives','set')
 
     def reorder_primitives(self, uuid, shift):
         idx = None
@@ -108,9 +101,7 @@ class Task(Primitive):
             copy = self._primitives.pop(idx)
             self._primitives.insert(shiftedIdx,copy) #TODO check to make sure not off by one
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('primitives','reorder')])
+            self.updated_attribute('primitives','reorder')
 
     def delete_primitive(self, uuid):
         delIdx = None
@@ -121,9 +112,7 @@ class Task(Primitive):
 
         if delIdx != None:
             self._primitives.pop(i).remove_from_cache()
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('primitives','delete')])
+            self.updated_attribute('primitives','delete')
 
     def get_primitive(self, uuid):
         for p in self.primitives:
@@ -183,7 +172,7 @@ class CloseGripper(Task):
     Data structure methods
     '''
 
-    def __init__(self, position=0, effort=100, speed=100, type='', name='',
+    def __init__(self, position=100, effort=100, speed=100, type='', name='',
                  uuid=None, parent=None, append_type=True, primitives=None, context=None):
 
         if primitives == None:
@@ -319,7 +308,7 @@ class Loop(Task):
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
                  append_type=True, context=None):
         super(Loop,self).__init__(
-            type='task.'+type if append_type else type,
+            type='loop.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
