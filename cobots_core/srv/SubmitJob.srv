@@ -1,0 +1,4 @@
+string type
+string params # JSON parameters specific to type
+---
+string job_id

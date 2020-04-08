@@ -60,6 +60,8 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  SubmitJob.srv
+  PendingJobs.srv
   GetData.srv
   SetData.srv
   LoadData.srv

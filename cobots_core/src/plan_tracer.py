@@ -25,155 +25,195 @@ from cobots_core.msg import Stop, Servo, Move
 from cobots_core.msg import MoveTrajectoryGoal
 from trajectory_msgs.msg import JointTrajectoryPoint
 from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
+from cobots_core.srv import SubmitJob, SubmitJobRequest, SubmitJobResponse
+from cobots_core.srv import PendingJobs, PendingJobsRequest, PendingJobsResponse
 
-#from rik_interface import RelaxedIKInterface
+from rik_interface import RelaxedIKInterface
 from interfaces.robot_interface import RobotInterface
+from interfaces.data_client_interface import DataClientInterface
+
+from cobots_model.data.trace import *
+from cobots_model.data.trajectory import *
+from cobots_model.data.geometry import *
 
 
-class PlannerServer:
+class PlanTracer:
 
     def __init__(self):
+        self._jobs = []
+        self._samples = {}
+        self._fixed_frame = '/planner_base_link'
+
+        self._link_groups = {
+            'end_effector_path': 'planner_ee_link',
+            'joint_paths': [
+                'planner_base_link',
+                'planner_shoulder_link',
+                'planner_upper_arm_link',
+                'planner_forearm_link',
+                'planner_wrist_1_link',
+                'planner_wrist_2_link',
+                'planner_wrist_3_link',
+            ],
+            'tool_paths': [
+                'planner_robotiq_85_left_finger_tip_link',
+                'planner_robotiq_85_right_finger_tip_link'
+            ],
+            'component_paths': []
+        }
+
         self._ursim = RobotInterface('planner')
-        self._links = [
-            'planner_base_link',
-            'planner_shoulder_link',
-            'planner_upper_arm_link',
-            'planner_forearm_link',
-            'planner_wrist_1_link',
-            'planner_wrist_2_link',
-            'planner_wrist_3_link',
-            'planner_ee_link',
-            'planner_robotiq_85_left_finger_tip_link',
-            'planner_robotiq_85_right_finger_tip_link'
-            ]
-        self._fixed_frame = '/app'
+        self._data_client = DataClientInterface(use_program_interface=True)
 
         self._listener = tf.TransformListener()
+        self._submit_job_srv = rospy.Service('plan_tracer/submit_job',SubmitJob,self._submit_job_cb)
+        self._pending_jobs_srv = rospy.Service('plan_tracer/pending_jobs',PendingJobs,self._pending_jobs_cb)
 
-        self._jobs = {}
+    def _submit_job_cb(self, request):
+        id = '{}-py-{}'.format('plan_tracer_job',uuid.uuid1().hex)
 
-    def _generate_trace(self, job_data):
+        self._jobs.append({
+            'type': request.type,
+            'params': json.loads(request.params),
+            'id': id
+        })
 
-        # unpack trajectory
-        print 'unpacking trajectory'
-        #TODO currently hard-coded
-        trajectory = {
-            'waypoints': [
-                {
-                    'joints': [-1.48055,-1.77753,-1.98455,-0.98455,1.59455,0.08926]
-                },
-                {
-                    'joints': [-3.20208,-1.63108,-2.14362,-0.9582,1.5476,-1.63179]
-                }
-            ]
-        }
-        print trajectory
+        response = JobResponse()
+        response.job_id = id
+        return response
 
-        # reset state of robot to initial joint state
-        print 'resetting state of robot'
-        start_move = Move()
-        start_move.motion_type = Move.JOINT
-        start_move.use_ur_ik = False
-        start_move.target_joints = trajectory['waypoints'][0]['joints']
-        start_move.radius = Move.STD_RADIUS
-        start_move.acceleration = Move.JOINT_ACCELERATION
-        start_move.velocity = Move.JOINT_VELOCITY
+    def _pending_jobs_cb(self, request):
+        response = PendingJobsResponse()
 
-        start_traj = MoveTrajectoryGoal()
-        start_traj.moves = [start_move]
-        start_traj.wait_for_finish = True
-        print start_traj
+        for j in self._jobs:
+            response.job_ids.append(j['job_id'])
+            response.types.append(j['type'])
+            response.params.append(json.dumps(j['params']))
 
-        self._ursim.move_trajectory_action.send_goal(start_traj)
-        self._ursim.move_trajectory_action.wait_for_result()
-        result = self._ursim.move_trajectory_action.get_result()
-        print result
+        return response
+
+    def generate_waypoint(self, job_data):
+        pass
+
+    def generate_trace(self, job_data):
 
         # generate trajectory path for robot
         print 'generating full trajectory path'
-        moves = []
-        for wp in trajectory['waypoints']:
-            move = Move()
-            move.motion_type = Move.JOINT
-            move.use_ur_ik = False
-            move.target_joints = wp['joints']
-            move.radius = Move.STD_RADIUS
-            move.acceleration = Move.JOINT_ACCELERATION
-            move.velocity = Move.JOINT_VELOCITY
+        fullTraj = self.pack_robot_trajectory(job_data['trajectory_uuid'])
 
-            moves.append(move)
-        full_traj = MoveTrajectoryGoal()
-        full_traj.moves = moves
-        full_traj.wait_for_finish = True
-        print full_traj
+        # reset state of robot to initial joint state
+        print 'resetting state of robot'
+        # TODO
 
         # run trace, collecting links of interest at sample frequency
         print 'running full trajectory and capturing trace data'
-        self._samples = []
-        self._start_sample_timer()
-        self._ursim.move_trajectory_action.send_goal(full_traj)
-        self._ursim.move_trajectory_action.wait_for_result()
-        result = self._ursim.move_trajectory_action.get_result()
-        self._stop_sample_timer()
+        self._samples = {gorup:[] for group in self._link_groups.keys()}
+
+        self.start_sample_timer()
+        start_time = time.time()
+        result = self.perform_robot_trajectory(fullTraj)
+        end_time = time.time()
+        self.stop_sample_timer()
+
+        timeVal = end_time - start_time
         print result
 
-        # convert trace into
-        # - link-paths
-        # - mesh
+        # package and save trace
         print 'processing trace data'
-        print self._samples
-        link_paths = {}
-        point_cloud = PointCloud()
-        point_cloud.header.frame_id = self._fixed_frame
-        for entry in self._samples:
-            for link in entry.keys():
-                if not link in link_paths.keys():
-                    link_paths[link] = []
-
-                pos = entry[link]['position']
-                rot = entry[link]['rotation']
-
-                link_paths[link].append(Pose(
-                    position=Vector3(
-                        x=pos[0],
-                        y=pos[1],
-                        z=pos[2]),
-                    orientation=Quaternion(
-                        x=rot[0],
-                        y=rot[1],
-                        z=rot[2],
-                        w=rot[3])))
+        trace = self.pack_cobots_trace(self._samples,timeVal)
+        #TODO save
 
     def _sample_cb(self, event):
-        data = {}
-        for link in self._links:
-            (pos,rot) = self._listener.lookupTransform(self._fixed_frame, link, rospy.Time(0))
-            data[link] = {
-                'position': pos,
-                'rotation': rot
-            }
-        self._samples.append(data)
+        for group in self._link_groups.keys():
+            for link in self._link_groups[group]:
+                (pos,rot) = self._listener.lookupTransform(self._fixed_frame, link, rospy.Time(0))
+                self._samples[group][link].append(TraceDataPoint(
+                    position=Position.from_list(pos),
+                    orientation=Orientation.from_list(rot)
+                ))
 
-    def _start_sample_timer(self, sample_rate=0.1):
+    def start_sample_timer(self, sample_rate=0.1):
         self._timer = rospy.Timer(rospy.Duration(sample_rate),self._sample_cb)
 
-    def _stop_sample_timer(self):
+    def stop_sample_timer(self):
         self._timer.shutdown()
         self._timer = None
 
     def spin(self):
+        rate = rospy.Rate(10)
 
         while not rospy.is_shutdown():
 
             # check if job
-            if len(self._jobs.keys()) > 0:
-                self._generate_trace(self._jobs[self._jobs.keys[0]])
-            else:
-                rospy.sleep(0.1)
+            if len(self._jobs) > 0:
+                job = self._jobs.pop(0)
+                if job.type = "trace":
+                    self.generate_trace(job)
+                elif job.type = "waypoint":
+                    self.generate_waypoint(job)
+                else:
+                    rospy.log('Invalid type provided {}'.format(job.type))
+
+            rate.sleep()
+
+    def pack_robot_trajectory(self, trajId):
+        #TODO
+        moves = []
+        for wp in trajectory.waypoints:
+            move = self._ursim.pack_robot_move_joint(wp['joints'])
+            moves.append(move)
+
+        full_traj = MoveTrajectoryGoal()
+        full_traj.moves = moves
+        full_traj.wait_for_finish = True
+        return full_traj
+
+    def pack_cobots_trace(self, samples, time):
+        return Trace(
+            eePath=self._link_groups["end_effector_path"],
+            data=samples,
+            jPaths=self._link_groups["joint_paths"],
+            tPaths=self._link_groups["tool_paths"],
+            cPaths=self._link_groups["component_paths"],
+            time = time
+        )
+
+    def set_robot_joints(self, joints, run=True):
+        move = self._ursim.pack_robot_move_joint(joints)
+
+        trajectory = MoveTrajectoryGoal()
+        trajectory.moves = [move]
+        trajectory.wait_for_finish = True
+
+        if run:
+            result = self.perform_robot_trajectory(trajectory)
+        else:
+            result = None
+
+        return move, result
+
+    def set_robot_pose(self, pose, run=True):
+        move = self._ursim.pack_robot_move_pose_linear(pose)
+
+        trajectory = MoveTrajectoryGoal()
+        trajectory.moves = [move]
+        trajectory.wait_for_finish = True
+
+        if run:
+            result = self.perform_robot_trajectory(trajectory)
+        else:
+            result = None
+
+        return move, result
+
+    def perform_robot_trajectory(self, trajectory):
+        self._ursim.move_trajectory_action.send_goal(trajectory)
+        self._ursim.move_trajectory_action.wait_for_result()
+        return self._ursim.move_trajectory_action.get_result()
 
 
 if __name__ == "__main__":
-    rospy.init_node('planner_server')
+    rospy.init_node('plan_tracer')
 
-    node = PlannerServer()
+    node = PlanTracer()
     node.spin()
