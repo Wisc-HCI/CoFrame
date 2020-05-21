@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+'''
+Convert ur_mode and gripper_stat to a consistent interface for robot_interface
+'''
+
 import tf
 import time
 import math
@@ -32,8 +36,8 @@ class URController
         self._gripper_state = GripperStat()
 
         self._urscript_pub = rospy.Publisher('ur_hardware_interface/script_command',String,queue_size=10)
-        self._gripper_cmd_pub = rospy.Publisher("/gripper/cmd", GripperCmd, queue_size=10)
-        self._gripper_stat_sub = rospy.Publisher('/gripper/stat', GripperStat, self._gripper_stat_cb)
+        self._gripper_cmd_pub = rospy.Publisher("gripper/cmd", GripperCmd, queue_size=10)
+        self._gripper_stat_sub = rospy.Publisher('gripper/stat', GripperStat, self._gripper_stat_cb)
         self._ur_mode_sub = rospy.Subscriber('ur_driver/robot_mode_state',RobotModeDataMsg,self._ur_mode_cb)
 
         self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
