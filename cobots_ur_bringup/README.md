@@ -1,8 +1,5 @@
 # cobots_ur_bringup
 
-This version of ur_bringup replaces the older UR_modern_driver implementation with
-the current ur_robot_driver.
-
 This configuration can be used to connect the cobots core infrastructure to
 either a physical UR robot or to a URSim application. The URSim may either be
 ran locally, on a URSim VM, or on a separate dedicated machine. ROS in not needed
