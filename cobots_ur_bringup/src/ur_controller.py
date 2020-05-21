@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-'''
-TODO gripper interface still needs to be written
-'''
-
 import tf
 import time
 import math
@@ -33,6 +29,7 @@ class URController
         self._running_trajectory = False
         self._time_scalars = time_scalars
         self._robot_state = RobotModeDataMsg()
+        self._gripper_state = GripperStat()
 
         self._urscript_pub = rospy.Publisher('ur_hardware_interface/script_command',String,queue_size=10)
         self._gripper_cmd_pub = rospy.Publisher("/gripper/cmd", GripperCmd, queue_size=10)
@@ -286,11 +283,14 @@ class URController
         self._running_trajectory = False
 
     def _gripper_cb(self, msg):
-        pass
-
+        cmd = GripperCmd()
+        cmd.position = msg.position / 100 * 0.085
+        cmd.speed = msg.speed / 100
+        cmd.force = msg.effort / 100
+        self._gripper_cmd_pub.publish(cmd)
 
     def _gripper_stat_cb(self, msg):
-        pass
+        self._gripper_state = msg
 
 
 if __name__ == "__main__":
