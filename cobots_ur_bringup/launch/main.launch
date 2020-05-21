@@ -2,6 +2,7 @@
 
   <arg name="type" default="physical"/> <!-- physical, simulated, planner : used for prefix -->
   <arg name="ip_address" default="127.0.0.1"/>
+  <arg name="port" default="50002"/>
   <arg name="fake_gripper" default="true"/>
 
   <arg name="timestep" default="0.12"/>
@@ -17,7 +18,7 @@
     <arg name="robot_description_file" value="$(find ur_description)/launch/ur3_upload.launch"/>
     <arg name="robot_ip" value="$(arg ip_address)"/>
     <arg name="reverse_port" value="50001"/>
-    <arg name="script_sender_port" value="50002"/>
+    <arg name="script_sender_port" value="$(arg port)"/>
     <arg name="kinematics_config" value="$(find ur_description)/config/ur3_default.yaml"/>
     <arg name="limited" value="false"/>
     <arg name="tf_prefix" value="$(arg type)_"/>

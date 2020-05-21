@@ -23,8 +23,8 @@ For the front-end implementation:
 - [uwgraphics/relaxed_ik](https://github.com/uwgraphics/relaxed_ik)
 - [Wisc-HCI/robotiq_85_gripper](https://github.com/Wisc-HCI/robotiq_85_gripper)
 - [industrial_core](wiki.ros.org/industrial_core) via `sudo apt install ros-<VERSION>-industrial-core`
-- [dwhit/ros-sharp](https://github.com/dwhit/ros-sharp.git)
-- [MoriKen254/timed_roslaunch](https://github.com/MoriKen254/timed_roslaunch.git)
+- [dwhit/ros-sharp](https://github.com/dwhit/ros-sharp)
+- [MoriKen254/timed_roslaunch](https://github.com/MoriKen254/timed_roslaunch)
 - [moveit](https://moveit.ros.org/) via `sudo apt install ros-<VERSION>-moveit`
   - Needed to for successful build, though we don't use it directly
 - [joint_state_publisher_gui](http://wiki.ros.org/joint_state_publisher) via 'sudo apt install ros-<VERSION>-joint-state-publisher-gui'
