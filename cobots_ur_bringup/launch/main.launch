@@ -1,57 +1,37 @@
 <launch>
 
   <arg name="type" default="physical"/> <!-- physical, simulated, planner : used for prefix -->
-  <arg name="local" default="true"/> <!-- Local means launch will not include a rosbridge interface-->
-  <arg name="ur_ip_address" default="127.0.0.1"/>
+  <arg name="ip_address" default="127.0.0.1"/>
   <arg name="fake_gripper" default="true"/>
-  <arg name="use_joint_gripper_gui" default="false"/>
 
   <arg name="timestep" default="0.12"/>
   <arg name="lookahead" default="0.1"/>
   <arg name="gain" default="100"/>
-  <arg name="base_frame" default="base_link"/>
-  <arg name="ee_frame" default="ee_link"/>
   <arg name="time_scalars" default="[100,100,100,100,100,100]"/>
-  <arg name="steady_state_length" default="3"/>
-  <arg name="steady_state_threshold" default="0.01"/>
-
-  <arg name="rosbridge_host" default="127.0.0.1"/>
-  <arg name="rosbridge_port" default="9090"/>
-
-  <arg name="launch_rviz" default="false"/>
-  <arg name="load_rviz_cfg" default="true"/>
-
 
   <!-- Launch robot driver -->
-  <node name="ur_driver" pkg="ur_modern_driver" type="ur_driver">
-    <param name="robot_ip_address" value="$(arg ur_ip_address)"/>
-    <param name="reverse_port" value="50001"/>
-    <param name="limited" value="false"/>
-    <param name="min_payload"  value="0.0"/>
-    <param name="max_payload"  value="3.0"/>
-    <param if="$(arg local)" name="prefix" value="$(arg type)_" />
-    <param unless="$(arg local)" name="prefix" value="" />
-    <param name="use_lowbandwidth_trajectory_follower" value="false"/>
-    <param name="time_interval" value="0.008"/>
-    <param name="servoj_time" value="0.008" />
-    <param name="servoj_time_waiting" value="0.001" />
-    <param name="max_waiting_time" value="2.0" />
-    <param name="servoj_gain" value="100." />
-    <param name="servoj_lookahead_time" value="1." />
-    <param name="max_joint_difference" value="0.01" />
-    <param if="$(arg local)" name="base_frame" value="$(arg type)_base" />
-    <param if="$(arg local)" name="tool_frame" value="$(arg type)_tool0_controller" />
-    <param unless="$(arg local)" name="base_frame" value="base" />
-    <param unless="$(arg local)" name="tool_frame" value="tool0_controller" />
-    <param name="shutdown_on_disconnect" value="false" />
-    <remap unless="$(arg local)" from="joint_states" to="ur/joint_states"/>
-  </node>
+  <include file="$(find ur_robot_driver)/launch/ur_common.launch">
+    <arg name="debug" value="false"/>
+    <arg name="use_tool_communication" value="false"/>
+    <arg name="controller_config_file" value="$(find ur_robot_driver)/config/ur3_controllers.yaml"/>
+    <arg name="robot_description_file" value="$(find ur_description)/launch/ur3_upload.launch"/>
+    <arg name="robot_ip" value="$(arg ip_address)"/>
+    <arg name="reverse_port" value="50001"/>
+    <arg name="script_sender_port" value="50002"/>
+    <arg name="kinematics_config" value="$(find ur_description)/config/ur3_default.yaml"/>
+    <arg name="limited" value="false"/>
+    <arg name="tf_prefix" value="$(arg type)_"/>
+    <arg name="controllers" value="joint_state_controller scaled_pos_traj_controller speed_scaling_state_controller force_torque_sensor_controller"/>
+    <arg name="stopped_controllers" value="pos_traj_controller joint_group_vel_controller"/>
+    <arg name="headless_mode" value="false"/>
+  </include>
 
   <!-- Launch gripper driver -->
-  <node if="$(arg fake_gripper)" name="fake_gripper_action_server" pkg="robotiq_85_driver" type="fake_gripper_action_server.py"/>
-  <node unless="$(arg fake_gripper)" name="urscript_gripper_action_server" pkg="robotiq_85_driver" type="urscript_gripper_action_server.py" output="screen" respawn="false">
-    <param name="speed" value="255"/>
-    <param name="urscript_topic" value="ur_driver/URScript"/>
+  <node if="$(arg fake_gripper)" pkg="robotiq_85_driver" type="fake_robotiq_85_driver" name="fake_robotiq_85_driver" respawn="true" output="screen"/>
+  <node unless="$(arg fake_gripper)" pkg="robotiq_85_driver" type="robotiq_85_driver_remote_serial" name="robotiq_85_driver" respawn="true" output="screen">
+      <param name="num_grippers" value="1" />
+      <param name="comport" value="/tmp/ttyUR" />
+      <param name="baud" value="115200" />
   </node>
 
   <!-- Handle Robot State -->
@@ -62,54 +42,16 @@
       <param name="prefix" value="$(arg type)_"/>
     </node>
   </group>
-  <group unless="$(arg local)">
-    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_ur_bringup)/description/ur3e.xacro'" />
-
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-      <param name="/use_gui" value="$(arg use_joint_gripper_gui)"/>
-      <param name="rate" value="10"/>
-      <rosparam param="/source_list">[gripper/joint_state, ur/joint_states]</rosparam>
-    </node>
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
-
-    <!-- Remap joints with type -->
-    <node name="joint_remapper" pkg="cobots_ur_bringup" type="joint_remapper.py">
-      <rosparam param="input_topics">[joint_states]</rosparam>
-      <param name="output_topic" value="$(arg type)/joint_states"/>
-      <param name="prefix" value="$(arg type)_"/>
-    </node>
-  </group>
 
   <!-- Higher-level controller for communication with cobots -->
   <node name="ur_controller" pkg="cobots_ur_bringup" type="ur_controller.py" output="screen">
-
-    <!-- Application communication channel -->
-    <param if="$(arg local)" name="mode" value="ros"/>
-    <param unless="$(arg local)" name="mode" value="bridge"/>
-
-    <!-- Rosbridge parameters -->
-    <param unless="$(arg local)" name="rosbridge_host" value="$(arg rosbridge_host)"/>
-    <param unless="$(arg local)" name="rosbridge_port" value="$(arg rosbridge_port)"/>
-    <param unless="$(arg local)" name="bridge_name_prefix" value="$(arg type)"/>
 
     <!-- Servoing parameters -->
     <param name="timestep" value="$(arg timestep)"/>
     <param name="lookahead" value="$(arg lookahead)"/>
     <param name="gain" value="$(arg gain)"/>
     <rosparam param="time_scalars" subst_value="true">$(arg time_scalars)</rosparam>
-  </node>
 
-  <!-- Joint State pass through bridge -->
-  <node unless="$(arg local)" name="joint_state_republisher" pkg="cobots_ur_bringup" type="joint_state_republisher.py" output="screen">
-    <param name="rosbridge_host" value="$(arg rosbridge_host)"/>
-    <param name="rosbridge_port" value="$(arg rosbridge_port)"/>
-    <param name="bridge_name_prefix" value="$(arg type)"/>
   </node>
-
-  <!-- RVIZ -->
-  <group if="$(arg launch_rviz)">
-    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_ur_bringup)/rviz/ur3e.rviz"/>
-    <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
-  </group>
 
 </launch>

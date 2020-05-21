@@ -20,7 +20,7 @@
 <!--  Robot (All interfaces)                                                 -->
 <!--=========================================================================-->
 
-  <include file="$(find cobots_core)/launch/robot.launch">
+  <include file="$(find cobots_core)/launch/robot_bringup_old_driver.launch">
     <arg name="local_physical" value="$(arg local_physical)"/>
     <arg name="local_simulated" value="$(arg local_simulated)"/>
     <arg name="local_planner" value="$(arg local_planner)"/>

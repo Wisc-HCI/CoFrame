@@ -6,7 +6,8 @@ import actionlib
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
-from cobots_core.msg import Stop, Servo, Move, Grip
+from control_msgs.msg import GripperCommand
+from cobots_core.msg import Stop, Servo, Move
 from geometry_msgs.msg import Pose, Quaternion, Vector3
 from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal
 
@@ -30,7 +31,7 @@ class SystemTest:
         self._joint_state_sub = rospy.Subscriber('{}/joint_states'.format(system_prefix),JointState,self._joint_state_cb)
 
         self._move_trajectory_ac = actionlib.SimpleActionClient('{}/robot_control/move_trajectory'.format(system_prefix),MoveTrajectoryAction)
-        self._gripper_pub = rospy.Publisher('{}/robot_control/gripper'.format(system_prefix),Grip,queue_size=5)
+        self._gripper_pub = rospy.Publisher('{}/robot_control/gripper'.format(system_prefix),GripperCommand,queue_size=5)
 
     def _joint_state_cb(self, msg):
         self._last_js_msg = msg
@@ -110,16 +111,14 @@ class SystemTest:
         stop.acceleration = Stop.STD_ACCELERATION
 
         # Define Gripper Close Command
-        gripper_open_goal = Grip()
+        gripper_open_goal = GripperCommand()
         gripper_open_goal.position = 0.0
-        gripper_open_goal.effort = 1
-        gripper_open_goal.speed = 1
+        gripper_open_goal.max_effort = 1
 
         # Define Gripper Open Command
-        gripper_close_goal = Grip()
+        gripper_close_goal = GripperCommand()
         gripper_close_goal.position = 0.85
-        gripper_close_goal.effort = 1
-        gripper_close_goal.speed = 1
+        gripper_close_goal.max_effort = 1
 
         # Waiting for UR Controller
         print 'Waiting for Move Trajectory Server for UR Controller to connect'

@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 
-'''
-TODO gripper interface still needs to be written
-'''
-
 import tf
 import time
 import math
 import rospy
 import actionlib
+import roslibpy
+import roslibpy.actionlib
 
 from std_msgs.msg import Bool, String
 from ur_msgs.msg import RobotModeDataMsg
-from cobots_core.msg import Stop, Servo, Move, Grip
-from robotiq_85_msgs.msg import GripperCmd, GripperStat
+from cobots_core.msg import Stop, Servo, Move
 from geometry_msgs.msg import Pose, Quaternion, Vector3
+from control_msgs.msg import GripperCommandAction, GripperCommandActionGoal, GripperCommand
 from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
 
 
@@ -24,9 +22,34 @@ MIN_TIME = 0.05
 MAX_TIME = 0.9
 
 
-class URController
+class ActionServerROStoBridgeTranslation:
 
-    def __init__(self, gain, lookahead, time_scalars, timestep):
+    def __init__(self, action):
+        self._action = action
+
+    def is_preempt_requested(self):
+        return self._action .is_preempt_requested()
+
+    def publish_feedback(self, msg):
+        return self._action .send_feedback({
+            'message': msg.message
+        })
+
+    def set_succeeded(self, msg):
+        return self._action .set_succeeded({
+            'status': msg.status,
+            'message': msg.message
+        })
+
+    def set_preempted(self, msg):
+        return self._action .set_preempted()
+
+
+class URController:
+
+    def __init__(self, mode, gain, lookahead, time_scalars, timestep,
+                 rosbridge_host=None, rosbridge_port=None, bridge_name_prefix=None):
+        self._mode = mode
         self._gain = gain
         self._timestep = timestep
         self._lookahead = lookahead
@@ -34,21 +57,69 @@ class URController
         self._time_scalars = time_scalars
         self._robot_state = RobotModeDataMsg()
 
-        self._urscript_pub = rospy.Publisher('ur_hardware_interface/script_command',String,queue_size=10)
-        self._gripper_cmd_pub = rospy.Publisher("/gripper/cmd", GripperCmd, queue_size=10)
-        self._gripper_stat_sub = rospy.Publisher('/gripper/stat', GripperStat, self._gripper_stat_cb)
+        self._urscript_pub = rospy.Publisher('ur_driver/URScript',String,queue_size=10)
+        self._gripper_command_ac = actionlib.SimpleActionClient('gripper_command',GripperCommandAction)
+
+        if mode == 'ros':
+            self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
+            self._servoing_sub = rospy.Subscriber('robot_control/servoing',Servo,self._servoing_cb)
+            self._stop_sub = rospy.Subscriber('robot_control/stop',Stop,self._stop_cb)
+            self._gripper_sub = rospy.Subscriber('robot_control/gripper',GripperCommand,self._gripper_cb)
+
+            self._move_trajectory_as = actionlib.SimpleActionServer('robot_control/move_trajectory',MoveTrajectoryAction,execute_cb=self._move_trajectory_cb,auto_start=False)
+            self._move_trajectory_as.start()
+
+        elif mode == 'bridge':
+            self._bridge_client = roslibpy.Ros(host=rosbridge_host,port=rosbridge_port)
+
+            not_setup = True
+            while not rospy.is_shutdown() and not_setup:
+                try:
+                    self._bridge_client.run()
+                    not_setup = False
+                except:
+                    print 'Waiting for ROSBridge to connect'
+                rospy.sleep(0.25)
+            print 'ROSBridge connected'
+
+            self._ur_mode_pub = roslibpy.Topic(self._bridge_client, '{}/ur_driver/robot_mode_state'.format(bridge_name_prefix),'ur_msgs/RobotModeDataMsg')
+            rospy.Timer(rospy.Duration(0.1), self._ur_mode_republish_cb)
+
+            self._freedrive_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/freedrive'.format(bridge_name_prefix), 'std_msgs/Bool')
+            self._freedrive_sub.subscribe(self._freedrive_bridge_cb)
+
+            self._servoing_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/servoing'.format(bridge_name_prefix), 'cobots_core/Servo')
+            self._servoing_sub.subscribe(self._servoing_bridge_cb)
+
+            self._stop_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/stop'.format(bridge_name_prefix), 'cobots_core/Stop')
+            self._stop_sub.subscribe(self._stop_bridge_cb)
+
+            self._gripper_sub = roslibpy.Topic(self._bridge_client, '{}/robot_control/gripper'.format(bridge_name_prefix), 'control_msgs/GripperCommand')
+            self._gripper_sub.subscribe(self._gripper_bridge_cb)
+
+            self._move_trajectory_bridge_as = roslibpy.actionlib.SimpleActionServer(self._bridge_client, '{}/robot_control/move_trajectory'.format(bridge_name_prefix), 'cobots_core/MoveTrajectoryAction')
+            self._move_trajectory_bridge_as.start(self._move_trajectory_bridge_cb)
+            self._move_trajectory_as = ActionServerROStoBridgeTranslation(self._move_trajectory_bridge_as)
+
+        else:
+            raise Exception('Invalid ROS interface mode selected: {}'.format(mode))
+
         self._ur_mode_sub = rospy.Subscriber('ur_driver/robot_mode_state',RobotModeDataMsg,self._ur_mode_cb)
-
-        self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
-        self._servoing_sub = rospy.Subscriber('robot_control/servoing',Servo,self._servoing_cb)
-        self._stop_sub = rospy.Subscriber('robot_control/stop',Stop,self._stop_cb)
-        self._gripper_sub = rospy.Subscriber('robot_control/gripper',Grip,self._gripper_cb)
-
-        self._move_trajectory_as = actionlib.SimpleActionServer('robot_control/move_trajectory',MoveTrajectoryAction,execute_cb=self._move_trajectory_cb,auto_start=False)
-        self._move_trajectory_as.start()
 
     def _ur_mode_cb(self, msg):
         self._robot_state = msg
+
+    def _ur_mode_republish_cb(self, event):
+        self._ur_mode_pub.publish({
+            'timestamp': self._robot_state.timestamp,
+            'is_robot_connected': self._robot_state.is_robot_connected,
+            'is_real_robot_enabled': self._robot_state.is_real_robot_enabled,
+            'is_power_on_robot': self._robot_state.is_power_on_robot,
+            'is_emergency_stopped': self._robot_state.is_emergency_stopped,
+            'is_protective_stopped': self._robot_state.is_protective_stopped,
+            'is_program_running': self._robot_state.is_program_running,
+            'is_program_paused': self._robot_state.is_program_paused
+        })
 
     def _freedrive_cb(self, msg):
         cmd =  'def prog():\n'
@@ -61,6 +132,9 @@ class URController
             cmd += '\tend_freedrive_mode()\n'
         cmd += 'end\n'
         self._urscript_pub.publish(String(cmd))
+
+    def _freedrive_bridge_cb(self, msg):
+        self._freedrive_cb(Bool(msg['data']))
 
     def _servoing_cb(self, msg):
         self._running_trajectory = False
@@ -75,6 +149,28 @@ class URController
                 cmd = self.__servoing_joint_joints(msg.target_joints,msg.velocity,msg.acceleration)
 
         self._urscript_pub.publish(String(cmd))
+
+    def _servoing_bridge_cb(self, msg):
+        self._servoing_cb(Servo(
+            motion_type=msg['motion_type'],
+            use_ur_ik=msg['use_ur_ik'],
+            target_pose=self.__translate_pose(msg['target_pose']),
+            target_joints=msg['target_joints'],
+            radius=msg['radius'],
+            acceleration=msg['acceleration'],
+            velocity=msg['velocity']))
+
+    def __translate_pose(self, dct):
+        return Pose(
+            position=Vector3(
+                x=dct['position']['x'],
+                y=dct['position']['y'],
+                z=dct['position']['z']),
+            orientation=Quaternion(
+                x=dct['orientation']['x'],
+                y=dct['orientation']['y'],
+                z=dct['orientation']['z'],
+                w=dct['orientation']['w']))
 
     def __servoing_joint_joints(self, js, velocity, acceleration):
         if self._time_scalars != None:
@@ -233,6 +329,24 @@ class URController
             result.message = 'Instructed to ignore trajectory execution state'
             self._move_trajectory_as.set_succeeded(result)
 
+    def _move_trajectory_bridge_cb(self, goal):
+        moves = []
+        for md in goal['moves']:
+            moves.append(Move(
+                motion_type=md['motion_type'],
+                use_ur_ik=md['use_ur_ik'],
+                target_pose=self.__translate_pose(md['target_pose']),
+                target_joints=md['target_joints'],
+                path_pose=self.__translate_pose(md['path_pose']),
+                radius=md['radius'],
+                acceleration=md['acceleration'],
+                velocity=md['velocity'],
+                time=md['time'],
+                circular_constrained=md['circular_constrained']))
+        self._move_trajectory_cb(MoveTrajectoryGoal(
+            moves=moves,
+            wait_for_finish=goal['wait_for_finish']))
+
     def __move_circular(self, msg):
         px, py, pz, rx, ry, rz = self.___format_pose(msg.target_pose)
         ppx, ppy, ppz, prx, pry, prz = self.___format_pose(msg.path_pose)
@@ -285,21 +399,35 @@ class URController
         self._urscript_pub.publish(String(cmd))
         self._running_trajectory = False
 
+    def _stop_bridge_cb(self, msg):
+        self._stop_cb(Stop(
+            motion_type=msg['motion_type'],
+            acceleration=msg['acceleration']))
+
     def _gripper_cb(self, msg):
-        pass
+        self._gripper_command_ac.send_goal(GripperCommandGoal(command=msg))
+        self._gripper_command_ac.wait_for_result()
+        result = self._gripper_command_ac.get_result()
 
-
-    def _gripper_stat_cb(self, msg):
-        pass
+    def _gripper_bridge_cb(self, msg):
+        self._gripper_command_cb(GripperCommand(
+            position=msg['position'],
+            max_effort=msg['max_effort']))
 
 
 if __name__ == "__main__":
     rospy.init_node('ur_controller')
 
+    mode = rospy.get_param('~mode') #ros, bridge
     gain = rospy.get_param('~gain')
     lookahead = rospy.get_param('~lookahead')
     time_scalars = rospy.get_param('~time_scalars',None)
     timestep = rospy.get_param('~timestep',MIN_TIME)
 
-    node = URController(gain,lookahead,time_scalars,timestep)
+    rosbridge_host = rospy.get_param('~rosbridge_host',None)
+    rosbridge_port = rospy.get_param('~rosbridge_port',None)
+    bridge_name_prefix = rospy.get_param('~bridge_name_prefix',None)
+
+    node = URController(mode,gain,lookahead,time_scalars,timestep,
+                        rosbridge_host, rosbridge_port, bridge_name_prefix)
     rospy.spin()

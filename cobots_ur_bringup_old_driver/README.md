@@ -1,6 +1,4 @@
-# cobots_ur_bringup
-
-TODO rewrite this documentation
+# cobots_ur_bringup_old_driver
 
 This version of bringup is going to be deprecated in favor of the UR robot driver.
 
