@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <robot name="robot" xmlns:xacro="http://ros.org/wiki/xacro">
 
+	<xacro:arg name="kinematics_config" default="$(find ur_e_description)/config/ur3e_default.yaml"/>
+
 	<!-- World -->
 	<link name="world" />
 
@@ -11,7 +13,9 @@
 		<child link = "physical_base_link" />
 		<origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
 	</joint>
-	<xacro:ur3e_robot prefix="physical_" joint_limited="true"/>
+	<xacro:ur3e_robot prefix="physical_" joint_limited="false"
+    kinematics_file="${load_yaml('$(arg kinematics_config)')}"
+  />
 
 	<!-- Robotiq 85 Physical -->
 	<xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
@@ -26,7 +30,9 @@
 		<child link = "simulated_base_link" />
 		<origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
 	</joint>
-	<xacro:ur3e_robot prefix="simulated_" joint_limited="true"/>
+	<xacro:ur3e_robot prefix="simulated_" joint_limited="false"
+    kinematics_file="${load_yaml('$(arg kinematics_config)')}"
+  />
 
   <!-- Robotiq 85 Simulated -->
 	<xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />
@@ -41,7 +47,9 @@
 		<child link = "planner_base_link" />
 		<origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
 	</joint>
-	<xacro:ur3e_robot prefix="planner_" joint_limited="true"/>
+	<xacro:ur3e_robot prefix="planner_" joint_limited="false"
+    kinematics_file="${load_yaml('$(arg kinematics_config)')}"
+  />
 
 	<!-- Robotiq 85 Planner -->
 	<xacro:include filename="$(find robotiq_85_description)/urdf/robotiq_85_gripper.urdf.xacro" />

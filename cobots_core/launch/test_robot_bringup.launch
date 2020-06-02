@@ -1,11 +1,20 @@
 <launch>
 
+  <arg name="launch_rviz" default="true"/>
+  <arg name="load_rviz_cfg" default="true"/>
+
   <!-- Launch Robot Bringup -->
-  <include file="$(find cobots_core)/launch/robot_bringup_old_driver.launch">
+  <include file="$(find cobots_core)/launch/robot_bringup.launch">
     <arg name="simulate_physical_robot" value="true"/>
   </include>
 
   <!-- System test code -->
   <node name="bringup_test" pkg="cobots_core" type="bringup_test.py"/>
+
+  <!-- RVIZ -->
+  <group if="$(arg launch_rviz)">
+    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_tasks)/rviz/machine_tending.rviz"/>
+    <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
+  </group>
 
 </launch>

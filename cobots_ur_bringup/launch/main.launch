@@ -3,6 +3,7 @@
   <arg name="type" default="physical"/> <!-- physical, simulated, planner : used for prefix -->
   <arg name="ip_address" default="127.0.0.1"/>
   <arg name="port" default="50002"/>
+  <arg name="reverse_port" default="50001"/>
   <arg name="fake_gripper" default="true"/>
 
   <arg name="timestep" default="0.12"/>
@@ -12,13 +13,15 @@
 
   <arg name="kinematics_config" default="$(find ur_description)/config/ur3_default.yaml"/>
 
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_e_description)/urdf/ur3e_robot.urdf.xacro' kinematics_config:=$(arg kinematics_config)"/>
+
   <!-- Launch robot driver -->
   <include file="$(find ur_robot_driver)/launch/ur_control.launch">
     <arg name="debug" value="false"/>
     <arg name="use_tool_communication" value="false"/>
     <arg name="controller_config_file" value="$(find ur_robot_driver)/config/ur3_controllers.yaml"/>
     <arg name="robot_ip" value="$(arg ip_address)"/>
-    <arg name="reverse_port" value="50001"/>
+    <arg name="reverse_port" value="$(arg reverse_port)"/>
     <arg name="script_sender_port" value="$(arg port)"/>
     <arg name="kinematics_config" value="$(arg kinematics_config)"/>
     <arg name="tf_prefix" value="$(arg type)_"/>
@@ -45,8 +48,8 @@
 
   <!-- Handle Robot State -->
   <node name="joint_remapper" pkg="cobots_ur_bringup" type="joint_remapper.py">
-    <rosparam param="input_topics">[gripper/joint_state]</rosparam>
-    <param name="output_topic" value="joint_states"/>
+    <rosparam param="input_topics">[joint_states, gripper/joint_state]</rosparam>
+    <param name="output_topic" value="joint_states_labeled"/>
     <param name="prefix" value="$(arg type)_"/>
   </node>
 

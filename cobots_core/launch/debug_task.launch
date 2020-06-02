@@ -13,7 +13,7 @@
 <!--  Robot (All interfaces)                                                 -->
 <!--=========================================================================-->
 
-  <include file="$(find cobots_core)/launch/robot_bringup_old_driver.launch">
+  <include file="$(find cobots_core)/launch/robot_bringup.launch">
     <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
   </include>
 
