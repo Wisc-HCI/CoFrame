@@ -24,7 +24,7 @@ MIN_TIME = 0.05
 MAX_TIME = 0.9
 
 
-class URController
+class URController:
 
     def __init__(self, gain, lookahead, time_scalars, timestep):
         self._gain = gain
@@ -37,9 +37,9 @@ class URController
 
         self._urscript_pub = rospy.Publisher('ur_hardware_interface/script_command',String,queue_size=10)
         self._gripper_cmd_pub = rospy.Publisher("gripper/cmd", GripperCmd, queue_size=10)
-        self._gripper_stat_sub = rospy.Publisher('gripper/stat', GripperStat, self._gripper_stat_cb)
-        self._ur_mode_sub = rospy.Subscriber('ur_driver/robot_mode_state',RobotModeDataMsg,self._ur_mode_cb)
+        self._gripper_stat_sub = rospy.Publisher('gripper/stat', GripperStat, self._gripper_stat_cb, queue_size=10)
 
+        self._ur_mode_sub = rospy.Subscriber('ur_driver/robot_mode_state',RobotModeDataMsg,self._ur_mode_cb)
         self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
         self._servoing_sub = rospy.Subscriber('robot_control/servoing',Servo,self._servoing_cb)
         self._stop_sub = rospy.Subscriber('robot_control/stop',Stop,self._stop_cb)

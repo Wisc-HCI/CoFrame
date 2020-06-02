@@ -5,11 +5,11 @@
   <arg name="simulate_physical_robot" default='true'/>
 
   <arg name="physical_ip_robot" default="10.134.71.9"/>
-  <arg name="physical_ip_sim" default="127.0.0.1"/>
+  <arg name="physical_ip_sim" default="170.16.0.3"/>
   <arg name="physical_port" default="50002"/>
-  <arg name="planner_ip" default="127.0.0.1"/>
+  <arg name="planner_ip" default="170.16.0.4"/>
   <arg name="planner_port" default="50022"/>
-  <arg name="simulated_ip" default="127.0.0.1"/>
+  <arg name="simulated_ip" default="170.16.0.5"/>
   <arg name="simulated_port" default="50012"/>
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find cobots_core)/description/robot.xacro'" />

@@ -1,0 +1,38 @@
+<launch>
+
+  <arg name="launch_rviz" default="true"/>
+  <arg name="load_rviz_cfg" default="true"/>
+
+  <arg name="kinematics_config" value="$(find ur_description)/config/ur3_default.yaml"/>
+
+  <!-- Robot State -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_e_description)/urdf/ur3e_robot.urdf.xacro' kinematics_config:=$(arg kinematics_config)"/>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="/use_gui" value="true"/>
+    <param name="rate" value="25"/>
+    <rosparam param="/source_list">[physical/joint_states,simulated/joint_states,planner/joint_states]</rosparam>
+  </node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+  <!-- Bringup launch -->
+  <include file="$(find cobots_ur_bringup)/launch/main.launch">
+    <arg name="type" value="physical"/>
+    <arg name="ip_address" default="170.16.0.3"/>
+    <arg name="port" default="50022"/>
+    <arg name="fake_gripper" default="true"/>
+  </include>
+
+  <!-- Test script -->
+  <node name="bringup_system_test" pkg="cobots_ur_bringup" type="bringup_system_test.py" output="screen">
+    <param name="system_prefix" value=""/>
+    <param name="test_start_delay" value="180"/>
+  </node>
+
+  <!-- RVIZ -->
+  <group if="$(arg launch_rviz)">
+    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_ur_bringup)/rviz/test.rviz"/>
+    <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
+  </group>
+
+</launch>
