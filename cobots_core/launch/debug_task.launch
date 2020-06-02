@@ -4,14 +4,7 @@
 <!--  Arguements                                                             -->
 <!--=========================================================================-->
 
-  <arg name="local_physical" default="false"/>
-  <arg name="local_simulated" default="true"/>
-  <arg name="local_planner" default="true"/>
-
   <arg name="simulate_physical_robot" default="true"/>
-
-  <arg name="local_simulated_ip" default="170.16.0.3"/>
-  <arg name="local_planner_ip" default="170.16.0.4"/>
 
   <arg name="launch_rviz" default="true"/>
   <arg name="load_rviz_cfg" default="true"/>
@@ -21,12 +14,7 @@
 <!--=========================================================================-->
 
   <include file="$(find cobots_core)/launch/robot_bringup_old_driver.launch">
-    <arg name="local_physical" value="$(arg local_physical)"/>
-    <arg name="local_simulated" value="$(arg local_simulated)"/>
-    <arg name="local_planner" value="$(arg local_planner)"/>
     <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
-    <arg name="local_simulated_ip" value="$(arg local_simulated_ip)"/>
-    <arg name="local_planner_ip" value="$(arg local_planner_ip)"/>
   </include>
 
 <!--=========================================================================-->

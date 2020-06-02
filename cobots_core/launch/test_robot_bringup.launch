@@ -1,0 +1,11 @@
+<launch>
+
+  <!-- Launch Robot Bringup -->
+  <include file="$(find cobots_core)/launch/robot_bringup_old_driver.launch">
+    <arg name="simulate_physical_robot" value="true"/>
+  </include>
+
+  <!-- System test code -->
+  <node name="bringup_test" pkg="cobots_core" type="bringup_test.py"/>
+
+</launch>
