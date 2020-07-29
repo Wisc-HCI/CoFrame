@@ -7,7 +7,9 @@
 class ProgramRunner:
 
     def __init__(self, raw_program):
-        pass
+        self._program = raw_program
+
+        #TODO
 
     def start(self):
         # bring robot to initial state
@@ -28,4 +30,10 @@ class ProgramRunner:
         pass #TODO
 
     def reset(self):
+        pass #TODO
+
+    def step_forward(self):
+        pass #TODO
+
+    def step_backward(self):
         pass #TODO

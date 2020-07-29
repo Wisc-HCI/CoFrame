@@ -20,9 +20,12 @@ from cobots_model.version_tracking.history import *
 import test_programs.debug_prog as debug_prog
 
 
+DEFAULT_PROGRAM = 'debug_prog'
+
+
 class DataServer:
 
-    def __init__(self, app_filepath, default_program='debug_prog'):
+    def __init__(self, app_filepath, default_program):
         self._application_filepath = app_filepath
         self._application_filename = None
 
@@ -223,6 +226,7 @@ if __name__ == '__main__':
     rospy.init_node('data_server')
 
     app_filepath = rospy.get_param('~app_filepath')
+    default_program = rospy.get_param('~default_program',DEFAULT_PROGRAM)
 
-    node = DataServer(app_filepath)
+    node = DataServer(app_filepath,default_program)
     node.spin()
