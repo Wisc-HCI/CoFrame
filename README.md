@@ -11,9 +11,11 @@ These packages compose the ROS backend for the Cobots project.
 For the front-end implementation:
 
 - [cobots_augmented_reality_ui](https://github.com/Wisc-HCI/cobots_augmented_reality_ui)
+- [cobots_web_ui]
 
 ## Dependencies
 
+### Backend
 - [RobotWebTools/rosbridge_suite](https://github.com/RobotWebTools/rosbridge_suite)
   - [GT-RAIL/rosauth](https://github.com/GT-RAIL/rosauth)
     - First try the package manager `sudo apt install ros-<VERSION>-rosauth`
@@ -30,8 +32,6 @@ For the front-end implementation:
 - [joint_state_publisher_gui](http://wiki.ros.org/joint_state_publisher) via 'sudo apt install ros-<VERSION>-joint-state-publisher-gui'
 - [UniversalRobots/Universal_Robots_ROS_Driver](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver)
 - [fmauch/universal_robot](https://github.com/fmauch/universal_robot)
-
-
 
 
 ## Not used right now (but probably will in the future)
