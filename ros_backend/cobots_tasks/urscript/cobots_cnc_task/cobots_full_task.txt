@@ -1,0 +1,129 @@
+ Program
+   BeforeStart
+     Gripper Reset and Activate
+     Wait: 5.0
+     cnc_address≔"10.130.229.221"
+     cnc_port≔5041
+     Connect to CNC
+       socket_close("cnc_socket")
+       open≔socket_open(cnc_address,cnc_port,"cnc_socket")
+       Loop  not open
+         open≔socket_open(cnc_address,cnc_port,"cnc_socket")
+     Open CNC Door
+       socket_send_string("!D1","cnc_socket")
+       recv≔socket_read_ascii_float(1,"cnc_socket")
+       If recv[0] ≠ 1 or recv[1] ≠ 2
+         Popup
+         Halt
+     part_in_jig≔ False 
+     feeder_cnt≔Pallet_1_cnt - 1
+     Home Robot
+       MoveJ
+         Home
+       Gripper Move50% (1)
+   Robot Program
+     Restock CNC
+       Feeder
+         If feeder_cnt≥5
+           Popup
+           feeder_cnt≔0
+         Pallet_1
+           Patterns
+             Line_Pattern_1
+               StartItem_1
+               EndItem_1
+           Layers
+           At Each Item
+             Generated Movements
+               MoveJ
+                 Approach
+               MoveL
+                 ToolActionPoint
+               Tool action
+                 Gripper Close (1)
+               MoveL
+                 Exit_1
+         feeder_cnt≔feeder_cnt+1
+       'to cnc'
+       MoveJ
+         path_1
+         path_2
+         Enter_CNC
+       MoveL
+         Tooling_above
+         Tooling_part
+       Gripper Move50% (1)
+       'from cnc'
+       MoveL
+         Tooling_above
+         Exit_CNC
+     CNC Tooling
+       Close CNC Door
+         socket_send_string("!D2","cnc_socket")
+         recv≔socket_read_ascii_float(1,"cnc_socket")
+         If recv[0] ≠ 1 or recv[1] ≠ 2
+           Popup
+           Halt
+       Start CNC - Preconfigured
+         socket_send_string("!R2","cnc_socket")
+         recv≔socket_read_ascii_float(1,"cnc_socket")
+         If recv[0] ≠ 1 or recv[1] ≠ 2
+           Popup
+           Halt
+       Wait for CNC to complete process
+         wait_cnc≔ True 
+         Loop wait_cnc
+           Wait: 1.0
+           socket_send_string("?R","cnc_socket")
+           recv≔socket_read_ascii_float(1,"cnc_socket")
+           wait_cnc≔ not  (recv[0] ≟ 1  and recv[1] ≟ 1)
+       Open CNC Door
+         socket_send_string("!D1","cnc_socket")
+         recv≔socket_read_ascii_float(1,"cnc_socket")
+         If recv[0] ≠ 1 or recv[1] ≠ 2
+           Popup
+           Halt
+     Check assembly zone state
+       'while previus part is in jig need to stall'
+       Loop part_in_jig
+         Wait: 0.25
+     Pick and Place Part on Jig
+       MoveJ
+         Enter_CNC
+       MoveL
+         Tooling_above
+         Tooling_part
+       Gripper Close (1)
+       MoveL
+         Tooling_above
+       MoveJ
+         Enter_CNC
+         path_2
+         path_1
+       Vision_Jig_Pose
+         'TODO vision pose move'
+         MoveL
+           'Get close with position the force stack it'
+           Waypoint_2
+       Force
+         MoveL
+           Direction: Base Z-
+             Until (expression)
+       MoveL
+         Direction: Base Z+
+           Until (distance)
+       Gripper Move50% (1)
+       MoveL
+         'move away from part'
+         Direction: Base Z+
+           Until (distance)
+       part_in_jig≔ True 
+       If feeder_cnt≥5
+         MoveJ
+           Home
+   Thread_1
+     'When part is placed, prompt op to move it.'
+     If part_in_jig
+       Popup
+       part_in_jig≔ False 
+     Wait: 0.25
