@@ -1,6 +1,6 @@
-# cobots_ur_bringup
+# evd_ros_ur_bringup
 
-This configuration can be used to connect the cobots core infrastructure to
+This configuration can be used to connect the EvD core infrastructure to
 either a physical UR robot or to a URSim application. The URSim may either be
 ran locally, on a URSim VM, or on a separate dedicated machine. ROS in not needed
 in either the VM or the separate machine. This configuration requires the ur robot
@@ -30,7 +30,7 @@ this application.
 Via roslaunch, run the following,
 
 ```
-roslaunch cobots_ur_bringup main.launch type:=<TYPE-STRING>
+roslaunch evd_ros_ur_bringup main.launch type:=<TYPE-STRING>
 ```
 
 ### Type

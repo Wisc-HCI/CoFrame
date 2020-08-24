@@ -1,16 +1,14 @@
-# cobots_ros
-Cobots is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's understanding.
+# evd_ros_backend
+EvD is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's understanding.
 
-These packages compose the ROS backend for the Cobots project.
+These packages compose the ROS backend for the EvD project.
 
-- [cobots_ros](./cobots_ros/README.md): ROS meta-package
-- [cobots_core](./cobots_core/README.md): ROS Server backend
-- [cobots_tasks](./cobots_tasks/README.md): Specific tasks for experiments and demos
-- [cobots_ur_bringup](./cobots_ur_bringup/README.md): Interface for UR robot
+- [evd_ros_backend](./evd_ros_backend/README.md): ROS meta-package
+- [evd_ros_core](./evd_ros_core/README.md): ROS Server backend
+- [evd_ros_tasks](./evd_ros_tasks/README.md): Specific tasks for experiments and demos
+- [evd_ros_ur_bringup](./evd_ros_ur_bringup/README.md): Interface for UR robot
 
-For the front-end implementation:
-
-- [cobots_augmented_reality_ui](https://github.com/Wisc-HCI/cobots_augmented_reality_ui)
+System overview for both Frontend and Backend is [here](../README.md).
 
 ## Dependencies
 
@@ -30,9 +28,6 @@ For the front-end implementation:
 - [joint_state_publisher_gui](http://wiki.ros.org/joint_state_publisher) via 'sudo apt install ros-<VERSION>-joint-state-publisher-gui'
 - [UniversalRobots/Universal_Robots_ROS_Driver](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver)
 - [fmauch/universal_robot](https://github.com/fmauch/universal_robot)
-
-
-
 
 ## Not used right now (but probably will in the future)
 - [ros-perception/ar_track_alvar](https://github.com/ros-perception/ar_track_alvar.git)

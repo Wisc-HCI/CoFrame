@@ -1,7 +1,7 @@
-# cobots_tasks
-Cobots is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's understanding.
+# evd_ros_tasks
+EvD is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's understanding.
 
-This package provides several tasks implemented for experiments and demos when using the cobots system.
+This package provides several tasks implemented for experiments and demos when using the EvD system.
 
 To see the system overview check out the repository [README](../README.md).
 
