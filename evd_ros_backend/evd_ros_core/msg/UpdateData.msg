@@ -1,5 +1,5 @@
 string data
 string action
 string changes
-cobots_core/Version currentTag
-cobots_core/Version previousTag
+evd_ros_core/Version currentTag
+evd_ros_core/Version previousTag

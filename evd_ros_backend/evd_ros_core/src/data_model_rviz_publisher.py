@@ -41,7 +41,7 @@ class DataModelRvizPublisherNode:
             marker.pose = loc.to_ros()
             marker.scale = Vector3(0.1,0.1,0.1)
             marker.color = ColorRGBA(173/255.0,216/255.0,230/255.0,1)
-            marker.mesh_resource = 'package://cobots_core/markers/SimpleGripperPhycon.stl'
+            marker.mesh_resource = 'package://evd_ros_core/markers/SimpleGripperPhycon.stl'
 
             print 'adding location markers', loc.uuid
             self._marker_pub.publish(marker)

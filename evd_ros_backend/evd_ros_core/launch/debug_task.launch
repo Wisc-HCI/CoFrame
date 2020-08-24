@@ -13,7 +13,7 @@
 <!--  Robot (All interfaces)                                                 -->
 <!--=========================================================================-->
 
-  <include file="$(find cobots_core)/launch/robot_bringup.launch">
+  <include file="$(find evd_ros_core)/launch/robot_bringup.launch">
     <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
   </include>
 
@@ -21,14 +21,14 @@
 <!--  Application                                                            -->
 <!--=========================================================================-->
 
-  <include file="$(find cobots_core)/launch/app.launch">
-    <arg name="app_filepath" value="$(find cobots_core)/"/>
+  <include file="$(find evd_ros_core)/launch/app.launch">
+    <arg name="app_filepath" value="$(find evd_ros_core)/"/>
     <arg name="ros_frame_id" value="world"/>
   </include>
 
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">
-    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_tasks)/rviz/machine_tending.rviz"/>
+    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find evd_ros_tasks)/rviz/machine_tending.rviz"/>
     <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
   </group>
 

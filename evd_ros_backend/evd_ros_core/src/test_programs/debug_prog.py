@@ -1,11 +1,11 @@
-from cobots_model.data.trace import *
-from cobots_model.program.task import *
-from cobots_model.data.machine import *
-from cobots_model.data.waypoint import *
-from cobots_model.data.location import *
-from cobots_model.data.geometry import *
-from cobots_model.program.program import *
-from cobots_model.program.primitive import *
+from evd_script.data.trace import *
+from evd_script.program.task import *
+from evd_script.data.machine import *
+from evd_script.data.waypoint import *
+from evd_script.data.location import *
+from evd_script.data.geometry import *
+from evd_script.program.program import *
+from evd_script.program.primitive import *
 
 def generate():
     # Define Program

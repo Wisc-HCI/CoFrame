@@ -12,10 +12,10 @@ import actionlib
 
 from std_msgs.msg import Bool, String
 from ur_msgs.msg import RobotModeDataMsg
-from cobots_core.msg import Stop, Servo, Move, Grip
+from evd_ros_core.msg import Stop, Servo, Move, Grip
 from robotiq_85_msgs.msg import GripperCmd, GripperStat
 from geometry_msgs.msg import Pose, Quaternion, Vector3
-from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
+from evd_ros_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
 
 
 MIN_M = -30.0

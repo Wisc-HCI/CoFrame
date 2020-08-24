@@ -9,7 +9,7 @@
 
   <!-- Bringup launch -->
   <group ns="$(arg type)">
-    <include file="$(find cobots_ur_bringup)/launch/main.launch">
+    <include file="$(find evd_ros_ur_bringup)/launch/main.launch">
       <arg name="type" value="$(arg type)"/>
       <arg name="ip_address" value="170.16.0.3"/>
       <arg name="port" value="50022"/>
@@ -29,14 +29,14 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
   <!-- Test script -->
-  <node name="bringup_system_test" pkg="cobots_ur_bringup" type="bringup_system_test.py" output="screen">
+  <node name="bringup_system_test" pkg="evd_ros_ur_bringup" type="bringup_system_test.py" output="screen">
     <param name="system_prefix" value="$(arg type)"/>
     <param name="test_start_delay" value="180"/>
   </node>
 
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">
-    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find cobots_ur_bringup)/rviz/test.rviz"/>
+    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find evd_ros_ur_bringup)/rviz/test.rviz"/>
     <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
   </group>
 

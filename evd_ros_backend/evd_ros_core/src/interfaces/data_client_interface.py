@@ -7,16 +7,16 @@ import rospy
 import traceback
 
 from std_msgs.msg import String
-from cobots_core.msg import UpdateData, Version
+from evd_ros_core.msg import UpdateData, Version
 
-from cobots_core.srv import GetData, GetDataRequest, GetDataResponse
-from cobots_core.srv import SetData, SetDataRequest, SetDataResponse
-from cobots_core.srv import LoadData, LoadDataRequest, LoadDataResponse
-from cobots_core.srv import SaveData, SaveDataRequest, SaveDataResponse
+from evd_ros_core.srv import GetData, GetDataRequest, GetDataResponse
+from evd_ros_core.srv import SetData, SetDataRequest, SetDataResponse
+from evd_ros_core.srv import LoadData, LoadDataRequest, LoadDataResponse
+from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 
-from cobots_model.program.program import *
-from cobots_model.environment.environment import *
-from cobots_model.version_tracking.history import *
+from evd_script.program.program import *
+from evd_script.environment.environment import *
+from evd_script.version_tracking.history import *
 
 
 class DataClientInterface(object):

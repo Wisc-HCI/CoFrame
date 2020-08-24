@@ -21,20 +21,20 @@ import rospy
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
-from cobots_core.msg import Stop, Servo, Move
-from cobots_core.msg import MoveTrajectoryGoal
+from evd_ros_core.msg import Stop, Servo, Move
+from evd_ros_core.msg import MoveTrajectoryGoal
 from trajectory_msgs.msg import JointTrajectoryPoint
 from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
-from cobots_core.srv import SubmitJob, SubmitJobRequest, SubmitJobResponse
-from cobots_core.srv import PendingJobs, PendingJobsRequest, PendingJobsResponse
+from evd_ros_core.srv import SubmitJob, SubmitJobRequest, SubmitJobResponse
+from evd_ros_core.srv import PendingJobs, PendingJobsRequest, PendingJobsResponse
 
 from rik_interface import RelaxedIKInterface
 from interfaces.robot_interface import RobotInterface
 from interfaces.data_client_interface import DataClientInterface
 
-from cobots_model.data.trace import *
-from cobots_model.data.trajectory import *
-from cobots_model.data.geometry import *
+from evd_script.data.trace import *
+from evd_script.data.trajectory import *
+from evd_script.data.geometry import *
 
 
 class PlanTracer:
@@ -120,7 +120,7 @@ class PlanTracer:
 
         # package and save trace
         print 'processing trace data'
-        trace = self.pack_cobots_trace(self._samples,timeVal)
+        trace = self.pack_trace(self._samples,timeVal)
         #TODO save
 
     def _sample_cb(self, event):
@@ -168,7 +168,7 @@ class PlanTracer:
         full_traj.wait_for_finish = True
         return full_traj
 
-    def pack_cobots_trace(self, samples, time):
+    def pack_trace(self, samples, time):
         return Trace(
             eePath=self._link_groups["end_effector_path"],
             data=samples,

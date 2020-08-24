@@ -34,7 +34,7 @@ roslaunch evd_ros_ur_bringup main.launch type:=<TYPE-STRING>
 ```
 
 ### Type
-There are three types expected by cobots_core:
+There are three types expected by evd_ros_core:
 - physical : this connects to a real robot or the real robot's simulation.
 - simulated : this is used for the interactive robot marker on the front-end interface.
-- planner : this is used by cobot_core's planner subsystem for generating and testing trajectories.
+- planner : this is used by evd_ros_core's planner subsystem for generating and testing trajectories.

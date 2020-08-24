@@ -1,5 +1,5 @@
 #goal definition
-cobots_core/Grip goal
+evd_ros_core/Grip goal
 bool wait_for_finish
 ---
 #result definition

@@ -10,8 +10,8 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
 from ur_msgs.msg import RobotModeDataMsg
 from robotiq_85_msgs.msg import GripperStat
-from cobots_core.msg import MoveTrajectoryAction
-from cobots_core.msg import Stop, Servo, Move, Grip
+from evd_ros_core.msg import MoveTrajectoryAction
+from evd_ros_core.msg import Stop, Servo, Move, Grip
 
 
 class RobotInterface:

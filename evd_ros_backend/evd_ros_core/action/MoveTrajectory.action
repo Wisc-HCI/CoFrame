@@ -1,5 +1,5 @@
 #goal definition
-cobots_core/Move[] moves
+evd_ros_core/Move[] moves
 bool wait_for_finish
 ---
 #result definition

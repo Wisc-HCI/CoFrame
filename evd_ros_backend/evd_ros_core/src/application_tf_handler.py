@@ -4,7 +4,7 @@
 Generates transforms to connect external application into ros frame
 '''
 
-#TODO update for new cobots UI system
+#TODO update for new UI system
 
 import tf
 import rospy

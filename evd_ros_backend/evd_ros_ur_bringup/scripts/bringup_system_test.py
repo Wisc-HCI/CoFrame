@@ -6,9 +6,9 @@ import actionlib
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
-from cobots_core.msg import Stop, Servo, Move, Grip
+from evd_ros_core.msg import Stop, Servo, Move, Grip
 from geometry_msgs.msg import Pose, Quaternion, Vector3
-from cobots_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal
+from evd_ros_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal
 
 
 DEFAULT_TEST_START_DELAY = 5

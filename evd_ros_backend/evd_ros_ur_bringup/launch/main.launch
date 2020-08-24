@@ -47,14 +47,14 @@
   </node>
 
   <!-- Handle Robot State -->
-  <node name="joint_remapper" pkg="cobots_ur_bringup" type="joint_remapper.py">
+  <node name="joint_remapper" pkg="evd_ros_ur_bringup" type="joint_remapper.py">
     <rosparam param="input_topics">[joint_states, gripper/joint_state]</rosparam>
     <param name="output_topic" value="joint_states_labeled"/>
     <param name="prefix" value="$(arg type)_"/>
   </node>
 
-  <!-- Higher-level controller for communication with cobots -->
-  <node name="ur_controller" pkg="cobots_ur_bringup" type="ur_controller.py" output="screen">
+  <!-- Higher-level controller for communication with evd_ros -->
+  <node name="ur_controller" pkg="evd_ros_ur_bringup" type="ur_controller.py" output="screen">
 
     <!-- Servoing parameters -->
     <param name="timestep" value="$(arg timestep)"/>

@@ -1,7 +1,7 @@
 import uuid
 import rospy
 
-from cobots_core.msg import Version
+from evd_ros_core.msg import Version
 
 
 class History(object):
