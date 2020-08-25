@@ -1,0 +1,41 @@
+<launch>
+
+  <arg name="app_filepath"/>
+  <arg name="ros_frame_id"/>
+
+
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+
+  <node name="data_server" pkg="evd_ros_core" type="data_server.py" output="screen">
+    <param name="app_filepath" value="$(arg app_filepath)"/>
+  </node>
+
+  <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py" output="screen">
+
+  </node>
+
+  <node name="plan_tracer" pkg="evd_ros_core" type="plan_tracer.py" output="screen">
+
+  </node>
+
+  <node name="collision_detector" pkg="evd_ros_core" type="collision_detector.py" output="screen">
+
+  </node>
+
+  <node name="verifier" pkg="evd_ros_core" type="verifier.py" output="screen">
+
+  </node>
+
+  <node name="expert_model" pkg="evd_ros_core" type="expert_model.py" output="screen">
+
+  </node>
+
+  <node name="application_tf_handler" pkg="evd_ros_core" type="application_tf_handler.py" output="screen">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node>
+
+  <node name="data_model_rviz_publisher" pkg="evd_ros_core" type="data_model_rviz_publisher.py" output="screen">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node>
+
+</launch>

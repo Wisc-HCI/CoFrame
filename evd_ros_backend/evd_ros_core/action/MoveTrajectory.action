@@ -1,0 +1,10 @@
+#goal definition
+evd_ros_core/Move[] moves
+bool wait_for_finish
+---
+#result definition
+bool status
+string message
+---
+#feedback
+string message
