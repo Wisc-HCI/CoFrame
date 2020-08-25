@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
+
 import ParametersPanel from './ParametersPanel';
 import ChecklistPanel from './ChecklistPanel';
 
-import * as ReactIcons from '@fluentui/react-icons';
 import { Stack } from 'office-ui-fabric-react';
-import { Separator } from 'office-ui-fabric-react/lib/Separator';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 
 export default class DetailPanel extends Component {
@@ -28,11 +27,13 @@ export default class DetailPanel extends Component {
     render() {
 
         const padding = 15;
+        const buttonHeight = 40;
 
         let width = this.props.width - (2 * padding);
         let height = this.props.height - (2 * padding);
         
-        
+        let distanceFromTop = padding + buttonHeight + this.props.distanceFromTop;
+
         const _items = [
             {
                 key: 'Parameters',
@@ -50,27 +51,28 @@ export default class DetailPanel extends Component {
 
         let activePanel = null;
         if (this.state.activePanel === "parameters") {
-            activePanel = (<ParametersPanel width={width} height={height}/>);
+            activePanel = (<ParametersPanel width={width} height={height} distanceFromTop={distanceFromTop} />);
+
         } else if (this.state.activePanel === "checklist") {
-            activePanel = (<ChecklistPanel width={width} height={height}/>);
+            activePanel = (<ChecklistPanel width={width} height={height} distanceFromTop={distanceFromTop} />);
+
         } else {
             activePanel = (<p>Invalid panel type</p>);
+
         }
 
         return (
             <div style={{ padding: `${padding}px`, width: `${this.props.width}px`, height: `${this.props.height}px`}}>
-                <div style={{backgroundColor: this.props.theme.semanticColors.bodyBackground, boxShadow: "3px 3px 3px #000", overflow: 'hidden'}}>
+                <div style={{backgroundColor: this.props.theme.semanticColors.bodyBackground, boxShadow: "3px 3px 3px #000"}}>
                     <Stack>
                         <CommandBar 
                             items={_items}
                             ariaLabel="Use left and right arrow keys to navigate between commands"
                         />
-                        <div>
-                            {activePanel}
-                        </div>
+                        {activePanel}
                     </Stack>
                 </div>
             </div>
-        )
+        );
     }
 }

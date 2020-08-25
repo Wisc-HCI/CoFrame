@@ -12,9 +12,12 @@ import DetailPanel from './components/DetailPanel';
 
 import WebAR from './components/WebAR';
 
+import ParametersPanel from './components/DetailPanel/ParametersPanel';
+import { LoremIpsum } from 'react-lorem-ipsum';
+import { ScrollablePane } from 'office-ui-fabric-react/lib/ScrollablePane';
+
+
 import { Stack } from 'office-ui-fabric-react';
-import { Panel } from 'office-ui-fabric-react/lib/Panel';
-import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
 class App extends React.Component {
 
@@ -48,6 +51,8 @@ class App extends React.Component {
 
   render() {
 
+    let distanceFromTop = 0;
+
     let totalHeight = this.state.height;
     console.log(`Height: ${totalHeight}`);
     let totalWidth = this.state.width;
@@ -58,6 +63,7 @@ class App extends React.Component {
       headerHeight = totalHeight;
     }
     totalHeight -= headerHeight;
+    distanceFromTop += headerHeight;
 
     // handle detail panel
     let detailWidth = DetailPanel.getDesiredWidth();
@@ -80,7 +86,7 @@ class App extends React.Component {
               <div style={{width: `${programEditorWidth + detailWidth}px`}}>
                 <Stack horizontal>
                   <ProgramEditor theme={this.props.theme} width={`${programEditorWidth}px`} height={`${programEditorHeight}px`} />
-                  <DetailPanel theme={this.props.theme} width={detailWidth} height={programEditorHeight}/>
+                  <DetailPanel theme={this.props.theme} width={detailWidth} height={programEditorHeight} distanceFromTop={distanceFromTop}/>
                 </Stack>
               </div>
               
