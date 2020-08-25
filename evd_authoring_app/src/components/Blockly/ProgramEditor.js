@@ -5,6 +5,8 @@ import Blockly from 'blockly';
 import ConfigFiles from './content/programContent';
 import parseWorkspaceXml from './BlocklyHelper';
 
+import './styles.css';
+
 class ProgramEditor extends Component {
     constructor(props) {
       super(props);
@@ -82,9 +84,9 @@ class ProgramEditor extends Component {
       */
     }
 
-    render() {
+    render() { 
       return (
-          <div id="blockly" style={{height: this.props.height, width: this.props.width}}>
+          <div id="blockly" style={{height: this.props.height, width: this.props.width, boxShadow: "3px 3px 3px #000"}}>
               <ReactBlockly.BlocklyEditor  
                   toolboxCategories={this.state.toolboxCategories}
                   workspaceConfiguration={{

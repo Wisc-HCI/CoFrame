@@ -5,6 +5,8 @@ import Blockly from 'blockly';
 import ConfigFiles from './content/trajectoryContent';
 import parseWorkspaceXml from './BlocklyHelper';
 
+import './styles.css';
+
 class TrajectoryEditor extends Component {
     constructor(props) {
         super(props);

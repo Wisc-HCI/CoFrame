@@ -1,16 +1,53 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider, teamsDarkTheme } from '@fluentui/react-northstar';
-
-import './index.css';
-
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import {
+  loadTheme,
+  styled,
+  classNamesFunction,
+  initializeIcons
+} from "office-ui-fabric-react";
+
+import { styles } from "./App.styles"; // We'll have to create the App.styles.js file
+import "./styles.css";
+
+// Importing our theme definitions
+import { dark } from "./themes/dark";
+import { light } from "./themes/light";
+
+const getClassNames = classNamesFunction();
+
+// Loads the light theme by default
+let currentTheme = dark;
+loadTheme(currentTheme);
+
+// Toggles between the light & dark theme
+const toggleTheme = () => {
+  currentTheme = currentTheme === light ? dark : light;
+  loadTheme(currentTheme);
+};
+
+// Initialize icons in case this example uses them
+initializeIcons();
+
+function AppThemeWrapper(props) {
+  const {styles, theme } = props;
+
+  const classNames = getClassNames(styles, theme);
+
+  return (
+    <div className={classNames.root}>
+      <App theme={theme}/>
+    </div>);
+}
+
+// Passes the theme and styles as props to our component
+const StyledApp = styled(AppThemeWrapper, styles);
+
 ReactDOM.render(
-  <Provider theme={teamsDarkTheme}>
-    <App />
-  </Provider>,
+  <StyledApp />,
   document.getElementById('root')
 );
 

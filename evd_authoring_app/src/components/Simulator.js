@@ -16,7 +16,7 @@ class Simulator extends Component {
     
     render() {
         return (
-            <Unity unityContent={this.unityContent} />
+            <Unity unityContent={this.unityContent}/>
         );
     }
 }

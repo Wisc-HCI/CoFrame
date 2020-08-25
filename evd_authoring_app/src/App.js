@@ -1,15 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import 'react-splitter-layout/lib/index.css';
 import { Provider } from 'react-redux';
 import store from './store';
 
 import Header from './components/Header';
-import Footer from './components/Footer';
-import Simulator from './components/Simulator';
+//import Footer from './components/Footer';
+//import Simulator from './components/Simulator';
 import ProgramEditor from './components/Blockly/ProgramEditor';
-import TrajectoryEditor from './components/Blockly/TrajectoryEditor';
+//import TrajectoryEditor from './components/Blockly/TrajectoryEditor';
+import DetailPanel from './components/DetailPanel';
+
 import WebAR from './components/WebAR';
+
+import { Stack } from 'office-ui-fabric-react';
+import { Panel } from 'office-ui-fabric-react/lib/Panel';
+import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
 class App extends React.Component {
 
@@ -18,12 +23,10 @@ class App extends React.Component {
 
     this.state = {
       height: 0,
-      width: 0,
-      panelOpen: false
+      width: 0
     };
     
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-    this.setOpenPanel = this.setOpenPanel.bind(this);
   }
 
   componentWillMount() {
@@ -43,10 +46,6 @@ class App extends React.Component {
     this.setState({...this.state, width: window.innerWidth, height: window.innerHeight});
   }
 
-  setOpenPanel(state) {
-    this.setState({...this.state, panelOpen: state});
-  }
-  
   render() {
 
     let totalHeight = this.state.height;
@@ -60,27 +59,35 @@ class App extends React.Component {
     }
     totalHeight -= headerHeight;
 
+    // handle detail panel
+    let detailWidth = DetailPanel.getDesiredWidth();
+    if (detailWidth > totalWidth) {
+      detailWidth = totalWidth;
+    }
+    totalWidth -= detailWidth;
+
     // handle program editor layout
     let programEditorHeight = totalHeight;
     let programEditorWidth = totalWidth;
-
-    // handle side panel layout
-    let sidePanelSize = 30; // %
 
     return (
       <Provider store={store}>
         <Router>
           <Route exact path="/" render={props => (
             <React.Fragment>
-              <Header menuType="MAIN" width={'100%'} height={`${headerHeight}px`} />
-              <ProgramEditor width={`${programEditorWidth}px`} height={`${programEditorHeight}px`} />
+              <Header theme={this.props.theme} width={'100%'} height={`${headerHeight}px`} filename={"Untitled"}/>
+              
+              <div style={{width: `${programEditorWidth + detailWidth}px`}}>
+                <Stack horizontal>
+                  <ProgramEditor theme={this.props.theme} width={`${programEditorWidth}px`} height={`${programEditorHeight}px`} />
+                  <DetailPanel theme={this.props.theme} width={detailWidth} height={programEditorHeight}/>
+                </Stack>
+              </div>
+              
             </React.Fragment>
           )} />
           <Route path="/web_ar" component={props => (
-            <React.Fragment>
-              <Header menuType="WEB_AR" />
-              <WebAR />
-            </React.Fragment>
+            <WebAR />
           )} />
         </Router>
       </Provider>

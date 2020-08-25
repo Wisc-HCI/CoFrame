@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@fluentui/react-northstar": "^0.51.0",
+    "@fluentui/react": "^7.130.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -14,9 +14,6 @@
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
-    "react-sizeme": "^2.6.12",
-    "react-sliding-side-panel": "^1.1.8",
-    "react-splitter-layout": "^4.0.0",
     "react-unity-webgl": "^7.1.10",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
