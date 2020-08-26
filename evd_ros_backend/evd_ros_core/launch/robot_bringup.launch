@@ -11,13 +11,13 @@
   <arg name="display_joint_gui" default='true'/>
 
   <arg name="physical_ip_robot" default="10.134.71.9"/>
-  <arg name="physical_ip_sim" default="170.16.0.6"/>
+  <arg name="physical_ip_sim" default="192.168.1.101"/>
   <arg name="physical_port" default="50002"/>
   <arg name="physical_reverse_port" default="50001"/>
-  <arg name="planner_ip" default="170.16.0.3"/>
+  <arg name="planner_ip" default="192.168.1.102"/>
   <arg name="planner_port" default="50022"/>
   <arg name="planner_reverse_port" default="50021"/>
-  <arg name="simulated_ip" default="170.16.0.4"/>
+  <arg name="simulated_ip" default="192.168.1.100"/>
   <arg name="simulated_port" default="50012"/>
   <arg name="simulated_reverse_port" default="50011"/>
 
