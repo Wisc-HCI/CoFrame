@@ -1,4 +1,4 @@
-export const light = {
+const light = {
   palette: {
     themePrimary: '#615399',
     themeLighterAlt: '#f7f6fb',
@@ -22,5 +22,7 @@ export const light = {
     neutralDark: '#201f1e',
     black: '#000000',
     white: '#ffffff',
-  }
+  },
 };
+
+export default light;

@@ -1,117 +1,121 @@
-import React, { Component } from 'react'
-
-import Logo from '../logo.svg'
+import React, { Component } from 'react';
 
 import { Stack } from 'office-ui-fabric-react';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 
-const overflowProps = { ariaLabel: 'More commands' };
-
+import Logo from '../logo.svg';
 
 class Header extends Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
+    this.onUpload = this.onUpload.bind(this);
+    this.onDownload = this.onDownload.bind(this);
+    this.onOpen = this.onOpen.bind(this);
+    this.onSettings = this.onSettings.bind(this);
+  }
 
-        this.onUpload = this.onUpload.bind(this);
-        this.onDownload = this.onDownload.bind(this);
-        this.onOpen = this.onOpen.bind(this);
-        this.onSettings = this.onSettings.bind(this);
-    }
+  static getDesiredHeight() {
+    return 55; // px
+  }
 
-    static getDesiredHeight() {
-        return 110; //px
-    }
+  static getDesiredWidth() {
+    return null;
+  }
 
-    static getDesiredWidth() {
-        return null;
-    }
+  onUpload(e) {
+    console.log('On upload');
+    this.props.onButtonClick('upload');
+  }
 
-    render() {
+  onDownload(e) {
+    console.log('On download');
+    this.props.onButtonClick('download');
+  }
 
-        const _items = [
-            {
-              key: 'newItem',
-              text: 'New',
-              iconProps: { iconName: 'New' },
-              onClick: () => console.log('New'),
-            },
-            {
-              key: 'upload',
-              text: 'Upload',
-              iconProps: { iconName: 'Upload' },
-              onClick: () => console.log('Upload'),
-            },
-            {
-              key: 'share',
-              text: 'Share',
-              iconProps: { iconName: 'Share' },
-              onClick: () => console.log('Share'),
-            },
-            {
-              key: 'download',
-              text: 'Download',
-              iconProps: { iconName: 'Download' },
-              onClick: () => console.log('Download'),
-            },
-          ];
-          
-          const _overflowItems = [
-            { 
-                key: 'settings', 
-                text: 'Settings', 
-                onClick: () => console.log('Settings'), 
-                iconProps: { iconName: 'Settings' } 
-            },
-          ];    
+  onOpen(e) {
+    console.log('On open');
+    this.props.onButtonClick('open');
+  }
 
-        return (
-            <header style={{
-                    width: this.props.width, 
-                    height: this.props.height, 
-                    overflow: 'hidden', 
-                    backgroundColor: this.props.theme.semanticColors.bodyBackground, 
-                    boxShadow: "3px 3px 3px #000"
-                }}
-            >
-                <Stack horizontal>
-                    
-                    <img src={Logo} alt="EvD Logo" style={{height: '75px', paddingTop: '22px', paddingLeft: '20px'}} />
-                    <div>
-                        <Stack>
-                            <Stack.Item align="center">
-                                <h2><b><i>Expert View Dashboard - {this.props.filename}</i></b></h2>
-                            </Stack.Item>
-                            <Stack.Item align="center">
-                                <CommandBar 
-                                    items={_items}
-                                    overflowItems={_overflowItems}
-                                    overflowButtonProps={overflowProps}
-                                    ariaLabel="Use left and right arrow keys to navigate between commands"
-                                />
-                            </Stack.Item>
-                        </Stack>
-                    </div>
-                </Stack>
-            </header>
-        );
-    }
+  onSettings(e) {
+    console.log('On Settings');
+    this.props.onButtonClick('settings');
+  }
 
-    onUpload(e) {
-        console.log("On upload");
-    }
+  createButtonList() {
+    return [
+      {
+        key: 'open',
+        text: 'Open',
+        iconProps: { iconName: 'OpenFolderHorizontal' },
+        onClick: this.onOpen,
+      },
+      {
+        key: 'upload',
+        text: 'Upload',
+        iconProps: { iconName: 'Upload' },
+        onClick: this.onUpload,
+      },
+      {
+        key: 'download',
+        text: 'Download',
+        iconProps: { iconName: 'Download' },
+        onClick: this.onDownload,
+      },
+      {
+        key: 'settings',
+        text: 'Settings',
+        onClick: this.onSettings,
+        iconProps: { iconName: 'Settings' },
+      },
+    ];
+  }
 
-    onDownload(e) {
-        console.log("On download");
-    }
+  render() {
+    const { width, height, theme, filename } = this.props;
 
-    onOpen(e) {
-        console.log("On open");
-    }
+    const items = this.createButtonList();
 
-    onSettings(e) {
-        console.log("On Settings");
-    }
+    return (
+      <header
+        style={{
+          width: `${width}px`,
+          height: `${height}px`,
+          backgroundColor: theme.semanticColors.bodyBackground,
+          boxShadow: '3px 3px 3px #000',
+        }}
+      >
+        <Stack horizontal>
+          <img
+            src={Logo}
+            alt="EvD Logo"
+            style={{
+              height: '40px',
+              paddingTop: '13px',
+              paddingLeft: '13px',
+              paddingRight: '13px',
+            }}
+          />
+
+          <Stack.Item align="start">
+            <h2>
+              <b>
+                <i>Expert View Dashboard - {filename}</i>
+              </b>
+            </h2>
+          </Stack.Item>
+
+          <Stack.Item grow align="center">
+            <CommandBar
+              items={items}
+              ariaLabel="Use left and right arrow keys to navigate between commands"
+            />
+          </Stack.Item>
+        </Stack>
+      </header>
+    );
+  }
 }
 
 export default Header;
