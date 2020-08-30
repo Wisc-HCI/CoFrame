@@ -209,18 +209,22 @@ class App extends React.Component {
                 <DownloadModal
                   open={downloadModalOpen}
                   closeModal={this.closeModal}
+                  theme={theme}
                 />
                 <UploadModal
                   open={uploadModalOpen}
                   closeModal={this.closeModal}
+                  theme={theme}
                 />
-                <OpenModal 
-                  open={openModalOpen} 
-                  closeModal={this.closeModal} 
+                <OpenModal
+                  open={openModalOpen}
+                  closeModal={this.closeModal}
+                  theme={theme}
                 />
                 <SettingsModal
                   open={settingsModalOpen}
                   closeModal={this.closeModal}
+                  theme={theme}
                 />
               </>
             )}

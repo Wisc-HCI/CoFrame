@@ -8,6 +8,8 @@ import {
   PrimaryButton,
 } from 'office-ui-fabric-react';
 
+import ExpertDetails from './ExpertDetails';
+
 const SAFETY_COLOR = '#54eb61';
 const QUALITY_COLOR = '#6c8feb';
 const PERFORMANCE_COLOR = '#ebbc49';
@@ -26,7 +28,7 @@ class Simulator extends Component {
     );
 
     this.state = {
-      frame: 'quality',
+      frame: 'safety',
     };
 
     this.onSafetyClicked = this.onSafetyClicked.bind(this);
@@ -37,6 +39,8 @@ class Simulator extends Component {
     this.onPauseClicked = this.onPauseClicked.bind(this);
     this.onPlayClicked = this.onPlayClicked.bind(this);
     this.onResetClicked = this.onResetClicked.bind(this);
+
+    this.generateButtonLayout = this.generateButtonLayout.bind(this);
   }
 
   onSafetyClicked() {
@@ -47,7 +51,7 @@ class Simulator extends Component {
 
   onQualityClicked() {
     this.setState((prevState) => {
-      return { ...prevState, frame: 'quslity' };
+      return { ...prevState, frame: 'quality' };
     });
   }
 
@@ -348,6 +352,8 @@ class Simulator extends Component {
               onClick={this.onPauseClicked}
             />
           </Stack.Item>
+
+          <ExpertDetails />
         </Stack>
       </div>
     );
