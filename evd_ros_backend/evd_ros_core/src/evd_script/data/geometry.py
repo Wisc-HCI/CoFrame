@@ -45,7 +45,7 @@ class Pose(Node):
                     orientation=self.orientation.to_ros())
 
     @classmethod
-    def from_dct(self, dct):
+    def from_dct(cls, dct):
         return cls(position=Position.from_dct(dct['position']),
                    orientation=Orientation.from_dct(dct['orientation']),
                    type=dct['type'] if 'type' in dct.keys() else '',
@@ -71,7 +71,7 @@ class Pose(Node):
         if (self._position != value):
             self._position = value
             self._position.parent = self
-            updated_attribute('position','set')
+            self.updated_attribute('position','set')
 
     @property
     def orientation(self):
@@ -82,7 +82,7 @@ class Pose(Node):
         if self._orientation != value:
             self._orientation = value
             self._orientation.parent = self
-            updated_attribute('orientation','set')
+            self.updated_attribute('orientation','set')
 
     def set(self, dct):
         pos = dct.get('position',None)
@@ -94,6 +94,25 @@ class Pose(Node):
             self.orientation.set(ort)
 
         super(Pose,self).set(dct)
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+        self.orientation.deep_update()
+        self.position.deep_update()
+
+        super(Pose,self).deep_update()
+
+        self.updated_attribute('position','update')
+        self.updated_attribute('orientation','update')
+
+    def shallow_update(self):
+        super(Pose,self).shallow_update()
+
+        self.updated_attribute('position','update')
+        self.updated_attribute('orientation','update')
 
 
 class Position(Node):
@@ -170,7 +189,7 @@ class Position(Node):
     def x(self, value):
         if self._x != value:
             self._x = value
-            updated_attribute('x','set')
+            self.updated_attribute('x','set')
 
     @property
     def y(self):
@@ -180,7 +199,7 @@ class Position(Node):
     def y(self, value):
         if self._y != value:
             self._y = value
-            updated_attribute('y','set')
+            self.updated_attribute('y','set')
 
     @property
     def z(self):
@@ -190,7 +209,7 @@ class Position(Node):
     def z(self, value):
         if self._z != value:
             self._z = value
-            updated_attribute('z','set')
+            self.updated_attribute('z','set')
 
     def set(self, dct):
         x = dct.get('x',None)
@@ -206,6 +225,24 @@ class Position(Node):
             self.z = z
 
         super(Position,self).set(dct)
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+        super(Position,self).deep_update()
+
+        self.updated_attribute('x','update')
+        self.updated_attribute('y','update')
+        self.updated_attribute('z','update')
+
+    def shallow_update(self):
+        super(Position,self).shallow_update()
+
+        self.updated_attribute('x','update')
+        self.updated_attribute('y','update')
+        self.updated_attribute('z','update')
 
 
 class Orientation(Node):
@@ -302,7 +339,7 @@ class Orientation(Node):
     def x(self, value):
         if self._x != value:
             self._x = value
-            updated_attribute('x','set')
+            self.updated_attribute('x','set')
 
     @property
     def y(self):
@@ -312,7 +349,7 @@ class Orientation(Node):
     def y(self, value):
         if self._y != value:
             self._y = value
-            updated_attribute('y','set')
+            self.updated_attribute('y','set')
 
     @property
     def z(self):
@@ -322,7 +359,7 @@ class Orientation(Node):
     def z(self, value):
         if self._z != value:
             self._z = value
-            updated_attribute('z','set')
+            self.updated_attribute('z','set')
 
     @property
     def w(self):
@@ -332,7 +369,7 @@ class Orientation(Node):
     def w(self, value):
         if self._w != value:
             self._w = value
-            updated_attribute('w','set')
+            self.updated_attribute('w','set')
 
     def set(self, dct):
         x = dct.get('x',None)
@@ -352,3 +389,23 @@ class Orientation(Node):
             self.w = w
 
         super(Orientation,self).set(dct)
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+        super(Orientation,self).deep_update()
+
+        self.updated_attribute('x','update')
+        self.updated_attribute('y','update')
+        self.updated_attribute('z','update')
+        self.updated_attribute('w','update')
+
+    def shallow_update(self):
+        super(Orientation,self).shallow_update()
+
+        self.updated_attribute('x','update')
+        self.updated_attribute('y','update')
+        self.updated_attribute('z','update')
+        self.updated_attribute('w','update')

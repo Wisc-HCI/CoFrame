@@ -14,9 +14,9 @@ public class OccupancyZoneManagerScript : MonoBehaviour
     [SerializeField]
     private bool robotActive = false;
 
-    public void OnUpdate(Cobots.OccupancyZone zone)
+    public void OnUpdate(EvD.OccupancyZone zone)
     {
-        if (zone.occupancyType == Cobots.OccupancyZone.HUMAN_TYPE)
+        if (zone.occupancyType == EvD.OccupancyZone.HUMAN_TYPE)
         {
             humanActive = true;
             HumanOccupancyZone.model = zone;

@@ -78,7 +78,7 @@ public class PathRenderScript : MonoBehaviour
         }
     }
 
-    public void Draw(List<Cobots.TraceDataPoint> data, DrawMode mode, Color colorCode = new Color())
+    public void Draw(List<EvD.TraceDataPoint> data, DrawMode mode, Color colorCode = new Color())
     {
         this.mode = mode;
 

@@ -79,7 +79,7 @@ class Trajectory(Node):
         if self._start_location_uuid != value:
             self._start_location_uuid = value
             self.trace = None
-            updated_attribute('start_location_uuid','set')
+            self.updated_attribute('start_location_uuid','set')
 
     @property
     def end_location_uuid(self):
@@ -90,7 +90,7 @@ class Trajectory(Node):
         if self._end_location_uuid != value:
             self._end_location_uuid = value
             self.trace = None
-            updated_attribute('end_location_uuidy','set')
+            self.updated_attribute('end_location_uuidy','set')
 
     @property
     def waypoints(self):
@@ -107,7 +107,7 @@ class Trajectory(Node):
                 w.parent = self
 
             self.trace = None
-            updated_attribute('waypoints','set')
+            self.updated_attribute('waypoints','set')
 
     @property
     def trace(self):
@@ -123,7 +123,7 @@ class Trajectory(Node):
             if self._trace != None:
                 self._trace.parent = self
 
-            updated_attribute('trace','set')
+            self.updated_attribute('trace','set')
 
     @property
     def velocity(self):
@@ -134,7 +134,7 @@ class Trajectory(Node):
         if self._velocity != value:
             self._velocity = value
             self.trace = None
-            updated_attribute('velocity','set')
+            self.updated_attribute('velocity','set')
 
     @property
     def acceleration(self):
@@ -145,7 +145,7 @@ class Trajectory(Node):
         if self._acceleration != value:
             self._acceleration = value
             self.trace = None
-            updated_attribute('acceleration','set')
+            self.updated_attribute('acceleration','set')
 
     @property
     def move_type(self):
@@ -160,13 +160,13 @@ class Trajectory(Node):
 
             self._move_type = value
             self.trace = None
-            updated_attribute('move_type','set')
+            self.updated_attribute('move_type','set')
 
     def add_waypoint(self, wp):
         wp.parent = self
         self._waypoints.append(wp)
         self.trace = None
-        updated_attribute('waypoints','add')
+        self.updated_attribute('waypoints','add')
 
     def get_waypoint(self, uuid):
         for w in self.waypoints:
@@ -188,7 +188,7 @@ class Trajectory(Node):
 
             copy = self._waypoints.pop(idx)
             self._waypoints.insert(shiftedIdx,copy) #TODO check to make sure not off by one
-            updated_attribute('waypoints','reorder')
+            self.updated_attribute('waypoints','reorder')
 
     def delete_waypoint(self, uuid):
         delIdx = None
@@ -200,7 +200,7 @@ class Trajectory(Node):
         if delIdx != None:
             self._waypoints.pop(i).remove_from_cache()
             self.trace = None
-            updated_attribute('waypoints','delete')
+            self.updated_attribute('waypoints','delete')
 
     def set(self, dct):
 
@@ -236,7 +236,7 @@ class Trajectory(Node):
 
     def remove_from_cache(self):
         for w in self._waypoints:
-            w.remove_from_cache
+            w.remove_from_cache()
 
         if self._trace != None:
             self._trace.remove_from_cache()
@@ -267,3 +267,35 @@ class Trajectory(Node):
             success = True
 
         return success
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+        for w in self.waypoints:
+            w.deep_update()
+
+        if self.trace != None:
+            self.trace.deep_update()
+
+        super(Trajectory,self).deep_update()
+
+        self.updated_attribute('start_location_uuid','update')
+        self.updated_attribute('end_location_uuid','update')
+        self.updated_attribute('waypoints','update')
+        self.updated_attribute('velocity','update')
+        self.updated_attribute('acceleration','update')
+        self.updated_attribute('move_type','update')
+        self.updated_attribute('trace','update')
+
+    def shallow_update(self):
+        super(Trajectory,self).shallow_update()
+
+        self.updated_attribute('start_location_uuid','update')
+        self.updated_attribute('end_location_uuid','update')
+        self.updated_attribute('waypoints','update')
+        self.updated_attribute('velocity','update')
+        self.updated_attribute('acceleration','update')
+        self.updated_attribute('move_type','update')
+        self.updated_attribute('trace','update')

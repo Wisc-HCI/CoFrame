@@ -4,7 +4,7 @@ using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 
 
-public class NonInteractiveMarkerScript : Cobots.AbstractMarker
+public class NonInteractiveMarkerScript : EvD.AbstractMarker
 {
     /* No additional implementation needed */
 }

@@ -1,6 +1,6 @@
 from primitive import *
 from context import Context
-from primitive_parser import PrimitiveParser
+from ..utility_functions import NodeParser
 
 
 class Task(Primitive):
@@ -42,7 +42,7 @@ class Task(Primitive):
             type=dct['type'],
             append_type=False,
             uuid=dct['uuid'],
-            primitives=[PrimitiveParser(p) for p in dct['primitives']],
+            primitives=[NodeParser(p) for p in dct['primitives']],
             context=Context.from_dct(dct['context']))
 
     '''
@@ -122,7 +122,7 @@ class Task(Primitive):
 
     def set(self, dct):
         if 'primitives' in dct.keys():
-            self.primitives = [PrimitiveParser(p) for p in dct['primitives']]
+            self.primitives = [NodeParser(p) for p in dct['primitives']]
 
         if 'context' in dct.keys():
             self.context = Context.from_dct(dct['context'])
@@ -164,6 +164,28 @@ class Task(Primitive):
             success = False
 
         return success
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+
+        for p in self.primitives:
+            p.deep_update()
+
+        self.context.deep_update()
+
+        super(Task,self).deep_update()
+
+        self.updated_attribute('primitives','update')
+        self.updated_attribute('context','update')
+
+    def shallow_update(self):
+        super(Task,self).shallow_update()
+
+        self.updated_attribute('primitives','update')
+        self.updated_attribute('context','update')
 
 
 class CloseGripper(Task):

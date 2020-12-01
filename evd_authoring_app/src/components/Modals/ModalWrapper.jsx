@@ -3,14 +3,7 @@ import React, { Component } from 'react';
 import { Modal, IconButton, Separator } from 'office-ui-fabric-react';
 
 class ModalWrapper extends Component {
-  constructor(props) {
-    super(props);
-
-    this.generateHeaderStyle = this.generateHeaderStyle.bind(this);
-    this.generateBodyStyle = this.generateBodyStyle.bind(this);
-  }
-
-  generateHeaderStyle(theme) {
+  static generateHeaderStyle(theme) {
     return {
       borderTop: `4px solid ${theme.palette.themePrimary}`,
       color: theme.palette.neutralPrimary,
@@ -20,7 +13,7 @@ class ModalWrapper extends Component {
     };
   }
 
-  generateBodyStyle() {
+  static generateBodyStyle() {
     return {
       padding: '0 24px 24px 24px',
       overflowY: 'hidden',
@@ -33,11 +26,16 @@ class ModalWrapper extends Component {
   }
 
   render() {
-    const { open, title, content, theme, hideModal } = this.props;
+    const { open, title, content, theme, hideModal, width } = this.props;
 
     return (
-      <Modal isOpen={open} onDismiss={hideModal} isBlocking>
-        <div style={this.generateHeaderStyle(theme)}>
+      <Modal
+        isOpen={open}
+        onDismiss={hideModal}
+        isBlocking
+        styles={{ main: { width: `${width}px` } }}
+      >
+        <div style={ModalWrapper.generateHeaderStyle(theme)}>
           <h2>{title}</h2>
           <IconButton
             styles={{
@@ -54,7 +52,7 @@ class ModalWrapper extends Component {
           />
         </div>
         <Separator />
-        <div style={this.generateBodyStyle()}>{content}</div>
+        <div style={ModalWrapper.generateBodyStyle()}>{content}</div>
       </Modal>
     );
   }

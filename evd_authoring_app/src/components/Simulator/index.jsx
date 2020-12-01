@@ -16,6 +16,21 @@ const PERFORMANCE_COLOR = '#ebbc49';
 const BUISNESS_COLOR = '#eb3d7a';
 
 class Simulator extends Component {
+  static getFrameColor(frame) {
+    switch (frame) {
+      case 'safety':
+        return SAFETY_COLOR;
+      case 'quality':
+        return QUALITY_COLOR;
+      case 'performance':
+        return PERFORMANCE_COLOR;
+      case 'buisness':
+        return BUISNESS_COLOR;
+      default:
+        return null;
+    }
+  }
+
   constructor(props) {
     super(props);
 
@@ -79,21 +94,6 @@ class Simulator extends Component {
     console.log('On reset clicked');
   }
 
-  getFrameColor(frame) {
-    switch (frame) {
-      case 'safety':
-        return SAFETY_COLOR;
-      case 'quality':
-        return QUALITY_COLOR;
-      case 'performance':
-        return PERFORMANCE_COLOR;
-      case 'buisness':
-        return BUISNESS_COLOR;
-      default:
-        return null;
-    }
-  }
-
   generateButtonLayout(frame) {
     let frameButtons = null;
     if (frame === 'safety') {
@@ -104,17 +104,17 @@ class Simulator extends Component {
             onClick={this.onSafetyClicked}
             styles={{
               root: {
-                backgroundColor: this.getFrameColor('safety'),
-                borderColor: this.getFrameColor('safety'),
+                backgroundColor: Simulator.getFrameColor('safety'),
+                borderColor: Simulator.getFrameColor('safety'),
                 borderRadius: '0',
               },
               rootHovered: {
-                backgroundColor: this.getFrameColor('safety'),
-                borderColor: this.getFrameColor('safety'),
+                backgroundColor: Simulator.getFrameColor('safety'),
+                borderColor: Simulator.getFrameColor('safety'),
               },
               rootPressed: {
-                backgroundColor: this.getFrameColor('safety'),
-                borderColor: this.getFrameColor('safety'),
+                backgroundColor: Simulator.getFrameColor('safety'),
+                borderColor: Simulator.getFrameColor('safety'),
               },
             }}
           />
@@ -122,7 +122,10 @@ class Simulator extends Component {
             text="Program Quality"
             onClick={this.onQualityClicked}
             styles={{
-              root: { color: this.getFrameColor('quality'), borderRadius: '0' },
+              root: {
+                color: Simulator.getFrameColor('quality'),
+                borderRadius: '0',
+              },
             }}
           />
           <DefaultButton
@@ -130,7 +133,7 @@ class Simulator extends Component {
             onClick={this.onPerformanceClicked}
             styles={{
               root: {
-                color: this.getFrameColor('performance'),
+                color: Simulator.getFrameColor('performance'),
                 borderRadius: '0',
               },
             }}
@@ -140,7 +143,7 @@ class Simulator extends Component {
             onClick={this.onBuisnessClicked}
             styles={{
               root: {
-                color: this.getFrameColor('buisness'),
+                color: Simulator.getFrameColor('buisness'),
                 borderRadius: '0',
               },
             }}
@@ -154,7 +157,10 @@ class Simulator extends Component {
             text="Safety"
             onClick={this.onSafetyClicked}
             styles={{
-              root: { color: this.getFrameColor('safety'), borderRadius: '0' },
+              root: {
+                color: Simulator.getFrameColor('safety'),
+                borderRadius: '0',
+              },
             }}
           />
           <PrimaryButton
@@ -162,17 +168,17 @@ class Simulator extends Component {
             onClick={this.onQualityClicked}
             styles={{
               root: {
-                backgroundColor: this.getFrameColor('quality'),
-                borderColor: this.getFrameColor('quality'),
+                backgroundColor: Simulator.getFrameColor('quality'),
+                borderColor: Simulator.getFrameColor('quality'),
                 borderRadius: '0',
               },
               rootHovered: {
-                backgroundColor: this.getFrameColor('quality'),
-                borderColor: this.getFrameColor('quality'),
+                backgroundColor: Simulator.getFrameColor('quality'),
+                borderColor: Simulator.getFrameColor('quality'),
               },
               rootPressed: {
-                backgroundColor: this.getFrameColor('quality'),
-                borderColor: this.getFrameColor('quality'),
+                backgroundColor: Simulator.getFrameColor('quality'),
+                borderColor: Simulator.getFrameColor('quality'),
               },
             }}
           />
@@ -181,7 +187,7 @@ class Simulator extends Component {
             onClick={this.onPerformanceClicked}
             styles={{
               root: {
-                color: this.getFrameColor('performance'),
+                color: Simulator.getFrameColor('performance'),
                 borderRadius: '0',
               },
             }}
@@ -191,7 +197,7 @@ class Simulator extends Component {
             onClick={this.onBuisnessClicked}
             styles={{
               root: {
-                color: this.getFrameColor('buisness'),
+                color: Simulator.getFrameColor('buisness'),
                 borderRadius: '0',
               },
             }}
@@ -205,14 +211,20 @@ class Simulator extends Component {
             text="Safety"
             onClick={this.onSafetyClicked}
             styles={{
-              root: { color: this.getFrameColor('safety'), borderRadius: '0' },
+              root: {
+                color: Simulator.getFrameColor('safety'),
+                borderRadius: '0',
+              },
             }}
           />
           <DefaultButton
             text="Program Quality"
             onClick={this.onQualityClicked}
             styles={{
-              root: { color: this.getFrameColor('quality'), borderRadius: '0' },
+              root: {
+                color: Simulator.getFrameColor('quality'),
+                borderRadius: '0',
+              },
             }}
           />
           <PrimaryButton
@@ -220,17 +232,17 @@ class Simulator extends Component {
             onClick={this.onPerformanceClicked}
             styles={{
               root: {
-                backgroundColor: this.getFrameColor('performance'),
-                borderColor: this.getFrameColor('performance'),
+                backgroundColor: Simulator.getFrameColor('performance'),
+                borderColor: Simulator.getFrameColor('performance'),
                 borderRadius: '0',
               },
               rootHovered: {
-                backgroundColor: this.getFrameColor('performance'),
-                borderColor: this.getFrameColor('performance'),
+                backgroundColor: Simulator.getFrameColor('performance'),
+                borderColor: Simulator.getFrameColor('performance'),
               },
               rootPressed: {
-                backgroundColor: this.getFrameColor('performance'),
-                borderColor: this.getFrameColor('performance'),
+                backgroundColor: Simulator.getFrameColor('performance'),
+                borderColor: Simulator.getFrameColor('performance'),
               },
             }}
           />
@@ -239,7 +251,7 @@ class Simulator extends Component {
             onClick={this.onBuisnessClicked}
             styles={{
               root: {
-                color: this.getFrameColor('buisness'),
+                color: Simulator.getFrameColor('buisness'),
                 borderRadius: '0',
               },
             }}
@@ -253,14 +265,20 @@ class Simulator extends Component {
             text="Safety"
             onClick={this.onSafetyClicked}
             styles={{
-              root: { color: this.getFrameColor('safety'), borderRadius: '0' },
+              root: {
+                color: Simulator.getFrameColor('safety'),
+                borderRadius: '0',
+              },
             }}
           />
           <DefaultButton
             text="Program Quality"
             onClick={this.onQualityClicked}
             styles={{
-              root: { color: this.getFrameColor('quality'), borderRadius: '0' },
+              root: {
+                color: Simulator.getFrameColor('quality'),
+                borderRadius: '0',
+              },
             }}
           />
           <DefaultButton
@@ -268,7 +286,7 @@ class Simulator extends Component {
             onClick={this.onPerformanceClicked}
             styles={{
               root: {
-                color: this.getFrameColor('performance'),
+                color: Simulator.getFrameColor('performance'),
                 borderRadius: '0',
               },
             }}
@@ -278,17 +296,17 @@ class Simulator extends Component {
             onClick={this.onBuisnessClicked}
             styles={{
               root: {
-                backgroundColor: this.getFrameColor('buisness'),
-                borderColor: this.getFrameColor('buisness'),
+                backgroundColor: Simulator.getFrameColor('buisness'),
+                borderColor: Simulator.getFrameColor('buisness'),
                 borderRadius: '0',
               },
               rootHovered: {
-                backgroundColor: this.getFrameColor('buisness'),
-                borderColor: this.getFrameColor('buisness'),
+                backgroundColor: Simulator.getFrameColor('buisness'),
+                borderColor: Simulator.getFrameColor('buisness'),
               },
               rootPressed: {
-                backgroundColor: this.getFrameColor('buisness'),
-                borderColor: this.getFrameColor('buisness'),
+                backgroundColor: Simulator.getFrameColor('buisness'),
+                borderColor: Simulator.getFrameColor('buisness'),
               },
             }}
           />
@@ -326,7 +344,7 @@ class Simulator extends Component {
           <div
             style={{
               padding: '5px',
-              backgroundColor: this.getFrameColor(frame),
+              backgroundColor: Simulator.getFrameColor(frame),
             }}
           >
             <Unity unityContent={this.unityContent} />

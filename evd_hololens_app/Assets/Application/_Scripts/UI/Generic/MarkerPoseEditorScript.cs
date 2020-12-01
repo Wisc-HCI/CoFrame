@@ -7,7 +7,7 @@ public class MarkerPoseEditorScript : MonoBehaviour
     public VectorDisplayScript position;
     public VectorDisplayScript orientation;
     public System.Action closeCallback = null;
-    public Cobots.Waypoint waypoint = null;
+    public EvD.Waypoint waypoint = null;
 
     private void Update()
     {
@@ -34,8 +34,8 @@ public class MarkerPoseEditorScript : MonoBehaviour
             Random.Range(-180, 180)
         );
 
-        waypoint.position = Cobots.Position.FromUnity(pos);
-        waypoint.orientation = Cobots.Orientation.FromUnity(Quaternion.Euler(rot));
+        waypoint.position = EvD.Position.FromUnity(pos);
+        waypoint.orientation = EvD.Orientation.FromUnity(Quaternion.Euler(rot));
     }
 
     public void OnCloseButtonClick()

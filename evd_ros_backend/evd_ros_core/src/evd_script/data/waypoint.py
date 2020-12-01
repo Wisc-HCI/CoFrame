@@ -53,11 +53,23 @@ class Waypoint(Pose):
     def joints(self, value):
         if self._joints != value:
             self._joints = value
-            updated_attribute('joints','set')
+            self.updated_attribute('joints','set')
 
     def set(self, dct):
-        joints = dct.get('joints',None)
-        if joints != None:
-            self.joints = joints
+        self.joints = dct.get('joints',None)
 
         super(Waypoint,self).set(dct)
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+        super(Waypoint,self).deep_update()
+
+        self.updated_attribute('joints','update')
+
+    def shallow_update(self):
+        super(Waypoint,self).shallow_update()
+
+        self.updated_attribute('joints','update')

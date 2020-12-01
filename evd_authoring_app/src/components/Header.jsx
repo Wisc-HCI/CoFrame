@@ -23,24 +23,28 @@ class Header extends Component {
     return null;
   }
 
-  onUpload(e) {
+  onUpload() {
+    const { onButtonClick } = this.props;
     console.log('On upload');
-    this.props.onButtonClick('upload');
+    onButtonClick('upload');
   }
 
-  onDownload(e) {
+  onDownload() {
+    const { onButtonClick } = this.props;
     console.log('On download');
-    this.props.onButtonClick('download');
+    onButtonClick('download');
   }
 
-  onOpen(e) {
+  onOpen() {
+    const { onButtonClick } = this.props;
     console.log('On open');
-    this.props.onButtonClick('open');
+    onButtonClick('open');
   }
 
-  onSettings(e) {
+  onSettings() {
+    const { onButtonClick } = this.props;
     console.log('On Settings');
-    this.props.onButtonClick('settings');
+    onButtonClick('settings');
   }
 
   createButtonList() {

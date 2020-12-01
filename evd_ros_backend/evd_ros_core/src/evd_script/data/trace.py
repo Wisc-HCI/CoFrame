@@ -54,7 +54,7 @@ class TraceDataPoint(Pose):
     def grade(self, value):
         if self._grade != value:
             self._grade = value
-            updated_attribute('grade','set')
+            self.updated_attribute('grade','set')
 
     def set(self, dct):
         grade = dct.get('grade',None)
@@ -62,6 +62,20 @@ class TraceDataPoint(Pose):
             self.grade = grade
 
         super(TraceDataPoint,self).set(dct)
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+        super(TraceDataPoint,self).deep_update()
+
+        self.updated_attribute('grade','update')
+
+    def shallow_update(self):
+        super(TraceDataPoint,self).shallow_update()
+
+        self.updated_attribute('grade','update')
 
 
 class Trace(Node):
@@ -142,7 +156,7 @@ class Trace(Node):
                 for d in self._data[key]:
                     d.parent = self
 
-            updated_attribute('data','set')
+            self.updated_attribute('data','set')
 
     @property
     def time(self):
@@ -152,7 +166,7 @@ class Trace(Node):
     def time(self, value):
         if self._time != value:
             self._time = value
-            updated_attribute('time','set')
+            self.updated_attribute('time','set')
 
     @property
     def end_effector_path(self):
@@ -162,7 +176,7 @@ class Trace(Node):
     def end_effector_path(self, value):
         if self._end_effector_path != value:
             self._end_effector_path = value
-            updated_attribute('end_effector_path','set')
+            self.updated_attribute('end_effector_path','set')
 
     @property
     def joint_paths(self):
@@ -172,7 +186,7 @@ class Trace(Node):
     def joint_paths(self, value):
         if self._joint_paths != value:
             self._joint_paths = value
-            updated_attribute('joint_paths','set')
+            self.updated_attribute('joint_paths','set')
 
     @property
     def tool_paths(self):
@@ -182,7 +196,7 @@ class Trace(Node):
     def tool_paths(self, value):
         if self._tool_paths != value:
             self._tool_paths = value
-            updated_attribute('tool_paths','set')
+            self.updated_attribute('tool_paths','set')
 
     @property
     def component_paths(self):
@@ -192,7 +206,7 @@ class Trace(Node):
     def component_paths(self, value):
         if self._component_paths != value:
             self._component_paths = value
-            updated_attribute('component_paths','set')
+            self.updated_attribute('component_paths','set')
 
     def add_data_point(self, dp, group):
         dp.parent = self
@@ -201,7 +215,7 @@ class Trace(Node):
             self._data[group] = []
         self._data[group].append(dp)
 
-        updated_attribute('data','add')
+        self.updated_attribute('data','add')
 
     def get_data_point(self, uuid, group):
         for d in self._data[group]:
@@ -218,7 +232,7 @@ class Trace(Node):
 
         if delIdx != None:
             self._data[group].pop(delIdx).remove_from_cache()
-            updated_attribute('data','delete')
+            self.updated_attribute('data','delete')
 
     def set(self, dct):
         data = dct.get('data',None)
@@ -280,3 +294,33 @@ class Trace(Node):
             return True
         else:
             return False
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+
+        for key in self.data.keys():
+            for dp in self.data[key]:
+                dp.deep_update()
+
+
+        super(Trace,self).deep_update()
+
+        self.updated_attribute('data','update')
+        self.updated_attribute('time','update')
+        self.updated_attribute('end_effector_path','update')
+        self.updated_attribute('joint_paths','update')
+        self.updated_attribute('tool_paths','update')
+        self.updated_attribute('component_paths','update')
+
+    def shallow_update(self):
+        super(Trace,self).shallow_update()
+
+        self.updated_attribute('data','update')
+        self.updated_attribute('time','update')
+        self.updated_attribute('end_effector_path','update')
+        self.updated_attribute('joint_paths','update')
+        self.updated_attribute('tool_paths','update')
+        self.updated_attribute('component_paths','update')

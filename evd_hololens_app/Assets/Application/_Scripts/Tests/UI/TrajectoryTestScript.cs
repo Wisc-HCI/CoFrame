@@ -28,10 +28,10 @@ public class TrajectoryTestScript : MonoBehaviour
     {
         SetDisablePanelState();
 
-        StartLocation.GetComponent<Cobots.AbstractMarker>().selectedCallback = OnMarkerSelected;
-        EndLocation.GetComponent<Cobots.AbstractMarker>().selectedCallback = OnMarkerSelected;
-        WaypointOne.GetComponent<Cobots.AbstractMarker>().selectedCallback = OnMarkerSelected;
-        WaypointTwo.GetComponent<Cobots.AbstractMarker>().selectedCallback = OnMarkerSelected;
+        StartLocation.GetComponent<EvD.AbstractMarker>().selectedCallback = OnMarkerSelected;
+        EndLocation.GetComponent<EvD.AbstractMarker>().selectedCallback = OnMarkerSelected;
+        WaypointOne.GetComponent<EvD.AbstractMarker>().selectedCallback = OnMarkerSelected;
+        WaypointTwo.GetComponent<EvD.AbstractMarker>().selectedCallback = OnMarkerSelected;
     }
 
     private void Start()
@@ -88,7 +88,7 @@ public class TrajectoryTestScript : MonoBehaviour
         Trajectory.OnDeleteWaypoint(WaypointTwo.uuid);
     }
 
-    private void OnMarkerSelected(Cobots.AbstractMarker marker, bool state)
+    private void OnMarkerSelected(EvD.AbstractMarker marker, bool state)
     {
         selectedMarkers[marker.uuid] = state;
     }

@@ -31,7 +31,7 @@ public class RobotMarkerManagerScript : MonoBehaviour
         }
     }
 
-    public void OnWaypointUpdate(Cobots.Waypoint way)
+    public void OnWaypointUpdate(EvD.Waypoint way)
     {
         bool hasJoints = way.joints != null;
         bool prevJoints = activeMarkers.ContainsKey(way.uuid);
@@ -58,7 +58,7 @@ public class RobotMarkerManagerScript : MonoBehaviour
         }
     }
 
-    public void OnWaypointAdd(Cobots.Waypoint way)
+    public void OnWaypointAdd(EvD.Waypoint way)
     {
         var obj = Instantiate(MarkerPrefab, transform, false);
         var ms = obj.GetComponent<RobotMarkerJointStateWriterScript>();

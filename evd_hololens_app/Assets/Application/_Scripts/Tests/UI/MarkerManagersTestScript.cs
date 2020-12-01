@@ -20,17 +20,17 @@ public class MarkerManagersTestScript : MonoBehaviour
 
     private string type = "start";
     private string activeId = null;
-    private Cobots.Program program = new Cobots.Program();
-    private Cobots.AttributeTraceProcessor traceProcessor = new Cobots.AttributeTraceProcessor();
-    private Cobots.Container<Cobots.Waypoint> waypointContainer = new Cobots.Container<Cobots.Waypoint>();
-    private Cobots.Container<Cobots.Location> locationContainer = new Cobots.Container<Cobots.Location>();
+    private EvD.Program program = new EvD.Program();
+    private EvD.AttributeTraceProcessor traceProcessor = new EvD.AttributeTraceProcessor();
+    private EvD.Container<EvD.Waypoint> waypointContainer = new EvD.Container<EvD.Waypoint>();
+    private EvD.Container<EvD.Location> locationContainer = new EvD.Container<EvD.Location>();
 
     public Transform spawnPoint;
 
     private void Awake()
     {
-        traceProcessor.SubscribeToType("node.primitive.container<Cobots.Waypoint>.", ContainerCallback);
-        traceProcessor.SubscribeToType("node.primitive.container<Cobots.Location>.", ContainerCallback);
+        traceProcessor.SubscribeToType("node.primitive.container<EvD.Waypoint>.", ContainerCallback);
+        traceProcessor.SubscribeToType("node.primitive.container<EvD.Location>.", ContainerCallback);
         traceProcessor.SubscribeToType("node.pose.waypoint.location.", MarkerCallback);
         traceProcessor.SubscribeToType("node.pose.waypoint.", MarkerCallback);
 
@@ -143,7 +143,7 @@ public class MarkerManagersTestScript : MonoBehaviour
         if (typeDropdown.options[typeDropdown.value].text.ToLower() == "location")
         {
             // New location
-            Cobots.Location loc = new Cobots.Location(Cobots.Position.FromUnity(spawnPoint.localPosition), Cobots.Orientation.FromUnity(spawnPoint.localRotation));
+            EvD.Location loc = new EvD.Location(EvD.Position.FromUnity(spawnPoint.localPosition), EvD.Orientation.FromUnity(spawnPoint.localRotation));
             loc.name = loc.uuid;
             locationContainer.Add(loc);
 
@@ -154,7 +154,7 @@ public class MarkerManagersTestScript : MonoBehaviour
         else
         {
             // New waypoint
-            Cobots.Waypoint way = new Cobots.Waypoint(Cobots.Position.FromUnity(spawnPoint.localPosition), Cobots.Orientation.FromUnity(spawnPoint.localRotation));
+            EvD.Waypoint way = new EvD.Waypoint(EvD.Position.FromUnity(spawnPoint.localPosition), EvD.Orientation.FromUnity(spawnPoint.localRotation));
             way.name = way.uuid;
             waypointContainer.Add(way);
 
@@ -250,7 +250,7 @@ public class MarkerManagersTestScript : MonoBehaviour
     {
         if (entry["verb"] == "add")
         {
-            var m = (Cobots.Waypoint)(program.cache.Get(entry["child_uuid"]));
+            var m = (EvD.Waypoint)(program.cache.Get(entry["child_uuid"]));
             robotMarkerManager.OnWaypointAdd(m);
             interactiveMarkerManager.OnWaypointAdd(m);
         }
@@ -268,12 +268,12 @@ public class MarkerManagersTestScript : MonoBehaviour
         {
             if (entry["attribute"] == "joints")
             {
-                robotMarkerManager.OnWaypointUpdate((Cobots.Waypoint)(program.cache.Get(entry["uuid"])));
+                robotMarkerManager.OnWaypointUpdate((EvD.Waypoint)(program.cache.Get(entry["uuid"])));
             }
             
             if (entry["attribute"] == "position" || entry["attribute"] == "orientation" || entry["attribute"] == "name")
             {
-                interactiveMarkerManager.OnWaypointUpdate((Cobots.Waypoint)(program.cache.Get(entry["uuid"])));
+                interactiveMarkerManager.OnWaypointUpdate((EvD.Waypoint)(program.cache.Get(entry["uuid"])));
             }
         }
     }

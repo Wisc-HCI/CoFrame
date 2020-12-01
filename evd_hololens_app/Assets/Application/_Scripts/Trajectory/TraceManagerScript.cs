@@ -43,13 +43,13 @@ public class TraceManagerScript : MonoBehaviour
         }
     }
 
-    public void OnTraceUpdate(Cobots.Trace trace)
+    public void OnTraceUpdate(EvD.Trace trace)
     {
         var ts = traces[trace.uuid];
         ts.OnUpdate(trace);
     }
 
-    public void OnTraceAdd(Cobots.Trace trace)
+    public void OnTraceAdd(EvD.Trace trace)
     {
         var obj = Instantiate(TracePrefab, transform, false);
         var ts = obj.GetComponent<TraceRendererScript>();

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MarkerTestScript : MonoBehaviour
 {
-    public Cobots.AbstractMarker marker;
+    public EvD.AbstractMarker marker;
 
     public VectorDisplayScript position;
     public VectorDisplayScript orientation;
@@ -93,7 +93,7 @@ public class MarkerTestScript : MonoBehaviour
         marker.allowNameInteraction = nameInteractableToggle.isOn;
     }
 
-    private void OnNameTagUpdateCallback(Cobots.AbstractMarker m, string name)
+    private void OnNameTagUpdateCallback(EvD.AbstractMarker m, string name)
     {
         nameField.text = name;
     }

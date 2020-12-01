@@ -37,7 +37,7 @@ public class CollisionMeshManagerScript : MonoBehaviour
         return val;
     }
 
-    public void OnCollisionMeshUpdate(Cobots.CollisionMesh cState)
+    public void OnCollisionMeshUpdate(EvD.CollisionMesh cState)
     {
         foreach (var c in collisionMeshes)
         {

@@ -8,7 +8,7 @@ public class OccupancyZoneScript : MonoBehaviour
     [SerializeField]
     protected float DEFAULT_GROUND_HEIGHT = -0.62f;
 
-    private Cobots.OccupancyZone _model = null;
+    private EvD.OccupancyZone _model = null;
     private string _uuid;
 
     private void Awake()
@@ -32,7 +32,7 @@ public class OccupancyZoneScript : MonoBehaviour
         }
     }
 
-    public Cobots.OccupancyZone model
+    public EvD.OccupancyZone model
     {
         get
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 
 
-public class InteractiveMarkerScript : Cobots.AbstractMarker
+public class InteractiveMarkerScript : EvD.AbstractMarker
 {
     
 
@@ -24,8 +24,8 @@ public class InteractiveMarkerScript : Cobots.AbstractMarker
     {
         if (waypoint != null && isBeingManipulated)
         {
-            waypoint.position = Cobots.Position.FromUnity(Position);
-            waypoint.orientation = Cobots.Orientation.FromUnity(Orientation);
+            waypoint.position = EvD.Position.FromUnity(Position);
+            waypoint.orientation = EvD.Orientation.FromUnity(Orientation);
         }
     }
 }

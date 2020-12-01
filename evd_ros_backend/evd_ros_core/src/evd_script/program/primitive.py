@@ -240,6 +240,30 @@ class MoveTrajectory(Primitive):
         if uuid in [t.uuid for t in self.trajectories]:
             self.delete_trajectory(uuid)
 
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+
+        for t in self.trajectories:
+            t.deep_update()
+
+        super(MoveTrajectory,self).deep_update()
+
+        self.updated_attribute('start_location_uuid','update')
+        self.updated_attribute('end_location_uuid','update')
+        self.updated_attribute('trajectories','update')
+        self.updated_attribute('runnable_trajectory_uuid','update')
+
+    def shallow_update(self):
+        super(MoveTrajectory,self).shallow_update()
+
+        self.updated_attribute('start_location_uuid','update')
+        self.updated_attribute('end_location_uuid','update')
+        self.updated_attribute('trajectories','update')
+        self.updated_attribute('runnable_trajectory_uuid','update')
+
 
 class MoveUnplanned(Primitive):
 
@@ -314,6 +338,23 @@ class MoveUnplanned(Primitive):
 
         super(MoveUnplanned,self).set(dct)
 
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+
+        super(MoveUnplanned,self).deep_update()
+
+        self.updated_attribute('location_uuid','update')
+        self.updated_attribute('manual_safety','update')
+
+    def shallow_update(self):
+        super(MoveUnplanned,self).shallow_update()
+
+        self.updated_attribute('location_uuid','update')
+        self.updated_attribute('manual_safety','update')
+
 
 class Delay(Primitive):
 
@@ -368,6 +409,21 @@ class Delay(Primitive):
             self.duration = duration
 
         super(Delay,self).set(dct)
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+
+        super(Delay,self).deep_update()
+
+        self.updated_attribute('duration','update')
+
+    def shallow_update(self):
+        super(Delay,self).shallow_update()
+
+        self.updated_attribute('duration','update')
 
 
 class Gripper(Primitive):
@@ -463,6 +519,25 @@ class Gripper(Primitive):
 
         super(Gripper,self).set(dct)
 
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+
+        super(Gripper,self).deep_update()
+
+        self.updated_attribute('position','update')
+        self.updated_attribute('effort','update')
+        self.updated_attribute('speed','update')
+
+    def shallow_update(self):
+        super(Gripper,self).shallow_update()
+
+        self.updated_attribute('position','update')
+        self.updated_attribute('effort','update')
+        self.updated_attribute('speed','update')
+
 
 class MachinePrimitive(Primitive):
 
@@ -517,6 +592,20 @@ class MachinePrimitive(Primitive):
             self.machine_uuid = dct['machine_uuid']
 
         super(MachinePrimitive,self).set(dct)
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+        super(MachinePrimitive,self).deep_update()
+
+        self.updated_attribute('machine_uuid','update')
+
+    def shallow_update(self):
+        super(MachinePrimitive,self).shallow_update()
+
+        self.updated_attribute('machine_uuid','update')
 
 
 class MachineStart(MachinePrimitive):

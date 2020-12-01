@@ -44,6 +44,7 @@ const toggleTheme = () => {
 };
 
 function AppThemeWrapper(props) {
+  // eslint-disable-next-line no-shadow
   const { styles, theme } = props;
 
   const classNames = getClassNames(styles, theme);

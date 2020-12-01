@@ -21,7 +21,7 @@ public class TraceRendererScript : MonoBehaviour
         public List<string> names = new List<string>();
         public DrawMode mode = DrawMode.Inactive;
         public Color colorCode = new Color();
-        public Dictionary<string, List<Cobots.TraceDataPoint>> data = new Dictionary<string, List<Cobots.TraceDataPoint>>();
+        public Dictionary<string, List<EvD.TraceDataPoint>> data = new Dictionary<string, List<EvD.TraceDataPoint>>();
         public Dictionary<string, PathRenderScript> scripts = new Dictionary<string, PathRenderScript>();
         public bool visible = false;
 
@@ -191,7 +191,7 @@ public class TraceRendererScript : MonoBehaviour
         return pathEntries["component"].mode;
     }
 
-    public void OnUpdate(Cobots.Trace t)
+    public void OnUpdate(EvD.Trace t)
     {
         // Generate end-effector path
         var l = new List<string>();
@@ -245,7 +245,7 @@ public class TraceRendererScript : MonoBehaviour
         }
     }
     
-    private void UpdateSubset(string subset, Cobots.Trace t)
+    private void UpdateSubset(string subset, EvD.Trace t)
     {
         pathEntries[subset].data.Clear();
         foreach (var n in pathEntries[subset].names)

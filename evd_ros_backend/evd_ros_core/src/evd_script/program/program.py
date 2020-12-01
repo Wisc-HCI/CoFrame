@@ -39,4 +39,9 @@ class Program(Task):
 
     def child_changed_event(self, attribute_trace):
         if self.changes_cb != None:
+            attribute_trace.append(self._child_changed_event_msg(None, 'callback'))
             self.changes_cb(attribute_trace)
+
+    def updated_attribute(attribute, verb, child_uuid = None):
+        event = [self._child_changed_event_msg(attribute, verb, child_uuid)]
+        self.changes_cb(event)

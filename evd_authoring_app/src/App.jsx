@@ -15,74 +15,7 @@ import DownloadModal from './components/Modals/DownloadModal';
 import OpenModal from './components/Modals/OpenModel';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      height: 0,
-      width: 0,
-      downloadModalOpen: false,
-      uploadModalOpen: false,
-      openModalOpen: false,
-      settingsModalOpen: false,
-    };
-
-    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-    this.onHeaderButtonClicked = this.onHeaderButtonClicked.bind(this);
-    this.computeHeaderLayout = this.computeHeaderLayout.bind(this);
-  }
-
-  componentWillMount() {
-    this.updateWindowDimensions();
-    window.addEventListener('resize', this.updateWindowDimensions);
-  }
-
-  componentDidMount() {
-    this.updateWindowDimensions();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateWindowDimensions);
-  }
-
-  updateWindowDimensions() {
-    this.setState((prevState) => {
-      return {
-        ...prevState,
-        width: window.innerWidth,
-        height: window.innerHeight,
-      };
-    });
-  }
-
-  closeModal(modal) {
-    this.setState((prevState) => {
-      return {
-        ...prevState,
-        downloadModalOpen:
-          modal === 'download' ? false : prevState.downloadModalOpen,
-        uploadModalOpen: modal === 'upload' ? false : prevState.uploadModalOpen,
-        openModalOpen: modal === 'open' ? false : prevState.openModalOpen,
-        settingsModalOpen:
-          modal === 'settings' ? false : prevState.settingsModalOpen,
-      };
-    });
-  }
-
-  onHeaderButtonClicked(button) {
-    this.setState((prevState) => {
-      return {
-        ...prevState,
-        downloadModalOpen: button === 'download',
-        uploadModalOpen: button === 'upload',
-        openModalOpen: button === 'open',
-        settingsModalOpen: button === 'settings',
-      };
-    });
-  }
-
-  computeHeaderLayout(layoutObj) {
+  static computeHeaderLayout(layoutObj) {
     const newLayoutObj = { ...layoutObj };
 
     // handle header layout
@@ -101,7 +34,7 @@ class App extends React.Component {
     return newLayoutObj;
   }
 
-  computeMainLayout(layoutObj) {
+  static computeMainLayout(layoutObj) {
     const newLayoutObj = { ...layoutObj };
 
     let remainingWidth = newLayoutObj.totalWidth;
@@ -119,6 +52,73 @@ class App extends React.Component {
     newLayoutObj.simulatorHeight = newLayoutObj.remainingHeight;
 
     return newLayoutObj;
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      height: 0,
+      width: 0,
+      downloadModalOpen: false,
+      uploadModalOpen: false,
+      openModalOpen: false,
+      settingsModalOpen: false,
+    };
+
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.onHeaderButtonClicked = this.onHeaderButtonClicked.bind(this);
+  }
+
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillMount() {
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
+  }
+
+  componentDidMount() {
+    this.updateWindowDimensions();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
+
+  onHeaderButtonClicked(button) {
+    this.setState((prevState) => {
+      return {
+        ...prevState,
+        downloadModalOpen: button === 'download',
+        uploadModalOpen: button === 'upload',
+        openModalOpen: button === 'open',
+        settingsModalOpen: button === 'settings',
+      };
+    });
+  }
+
+  closeModal(modal) {
+    this.setState((prevState) => {
+      return {
+        ...prevState,
+        downloadModalOpen:
+          modal === 'download' ? false : prevState.downloadModalOpen,
+        uploadModalOpen: modal === 'upload' ? false : prevState.uploadModalOpen,
+        openModalOpen: modal === 'open' ? false : prevState.openModalOpen,
+        settingsModalOpen:
+          modal === 'settings' ? false : prevState.settingsModalOpen,
+      };
+    });
+  }
+
+  updateWindowDimensions() {
+    this.setState((prevState) => {
+      return {
+        ...prevState,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+    });
   }
 
   render() {
@@ -150,8 +150,8 @@ class App extends React.Component {
 
     const mainPadding = 10;
 
-    layoutObj = this.computeHeaderLayout(layoutObj);
-    layoutObj = this.computeMainLayout(layoutObj);
+    layoutObj = App.computeHeaderLayout(layoutObj);
+    layoutObj = App.computeMainLayout(layoutObj);
 
     return (
       <Provider store={store}>
@@ -210,21 +210,25 @@ class App extends React.Component {
                   open={downloadModalOpen}
                   closeModal={this.closeModal}
                   theme={theme}
+                  totalWidth={layoutObj.totalWidth}
                 />
                 <UploadModal
                   open={uploadModalOpen}
                   closeModal={this.closeModal}
                   theme={theme}
+                  totalWidth={layoutObj.totalWidth}
                 />
                 <OpenModal
                   open={openModalOpen}
                   closeModal={this.closeModal}
                   theme={theme}
+                  totalWidth={layoutObj.totalWidth}
                 />
                 <SettingsModal
                   open={settingsModalOpen}
                   closeModal={this.closeModal}
                   theme={theme}
+                  totalWidth={layoutObj.totalWidth}
                 />
               </>
             )}

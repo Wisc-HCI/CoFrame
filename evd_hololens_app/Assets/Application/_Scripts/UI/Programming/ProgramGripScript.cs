@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Cobots;
+using EvD;
 
 public class ProgramGripScript : MonoBehaviour
 {

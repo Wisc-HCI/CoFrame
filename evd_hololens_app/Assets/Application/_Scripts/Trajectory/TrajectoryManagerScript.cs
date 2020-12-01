@@ -62,7 +62,7 @@ public class TrajectoryManagerScript : MonoBehaviour
         }
     }
 
-    public void OnTrajectoryCreate(Cobots.Trajectory trajectory)
+    public void OnTrajectoryCreate(EvD.Trajectory trajectory)
     {
         var obj = Instantiate(TrajectoryPrefab, transform, false);
         var ts = obj.GetComponent<TrajectoryRenderScript>();
@@ -86,7 +86,7 @@ public class TrajectoryManagerScript : MonoBehaviour
         trajectories.Add(trajectory.uuid, ts);
     }
 
-    public void OnAddWaypoint(Cobots.Trajectory trajectory, string waypointUuid)
+    public void OnAddWaypoint(EvD.Trajectory trajectory, string waypointUuid)
     {
         if (trajectories.ContainsKey(trajectory.uuid))
         {
@@ -105,7 +105,7 @@ public class TrajectoryManagerScript : MonoBehaviour
         }
     }
 
-    public void OnDeleteWaypoint(Cobots.Trajectory trajectory, string waypointUuid)
+    public void OnDeleteWaypoint(EvD.Trajectory trajectory, string waypointUuid)
     {
         if (trajectories.ContainsKey(trajectory.uuid))
         {

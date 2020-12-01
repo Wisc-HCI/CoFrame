@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-concat */
+
 const INITIAL_XML = '<xml xmlns="http://www.w3.org/1999/xhtml">\n' + '</xml>';
 
 const INITIAL_TOOLBOX_XML =
@@ -8,6 +10,9 @@ const INITIAL_TOOLBOX_XML =
   '  </category>\n' +
   '  <category name="Locations" colour="#A6745C" custom="LOCATIONS">\n' +
   '    <button text="Create Location" callbackKey="createLocationPressed"></button>\n' +
+  '  </category>\n' +
+  '  <category name="Waypoints" colour="#A6745C" custom="WAYPOINTS">\n' +
+  '    <button text="Create Waypoint" callbackKey="createWaypointPressed"></button>\n' +
   '  </category>\n' +
   '  <category name="Machines" colour="#A6745C" custom="MACHINES">\n' +
   '    <button text="Create Machine" callbackKey="createMachinePressed"></button>\n' +

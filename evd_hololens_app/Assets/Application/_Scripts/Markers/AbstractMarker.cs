@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Cobots
+namespace EvD
 {
     public abstract class AbstractMarker : MonoBehaviour
     {
@@ -248,7 +248,7 @@ namespace Cobots
                     Orientation = _waypoint.orientation.ToUnity();
                     name = _waypoint.name;
 
-                    string type = UtilityFunctions.GetType(_waypoint);
+                    string type = UtilityFunctions.GetExactType(_waypoint);
                     if (type == "location")
                     {
                         markerType = MarkerMeshTypeScript.Options.Location;

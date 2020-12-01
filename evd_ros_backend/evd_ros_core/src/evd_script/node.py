@@ -61,9 +61,7 @@ class Node(object):
     def type(self, value):
         if self._type != value:
             self._type = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('type','set')])
+            self.updated_attribute("type","set")
 
     @property
     def name(self):
@@ -73,9 +71,7 @@ class Node(object):
     def name(self, value):
         if self._name != value:
             self._name = value
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('name','set')])
+            self.updated_attribute("name","set")
 
     @property
     def parent(self):
@@ -89,9 +85,7 @@ class Node(object):
             self._parent = value
             self.add_to_cache()
 
-            if self._parent != None:
-                self._parent.child_changed_event(
-                    [self._child_changed_event_msg('parent','set')])
+            self.updated_attribute("parent","set")
 
     def set(self, dct):
         # Note: cannot set uuid
@@ -133,7 +127,7 @@ class Node(object):
 
     def delete_child(self, uuid):
         # write this for each sub-node type that has children
-        pass #no children in root node to delete
+        return True #no children in root node to delete
 
     def child_changed_event(self, attribute_trace):
         if self._parent != None:
@@ -148,12 +142,13 @@ class Node(object):
     def _generate_uuid(type):
         return '{}-py-{}'.format(type,uuid.uuid1().hex)
 
-    def _child_changed_event_msg(self, attribute, verb):
+    def _child_changed_event_msg(self, attribute, verb, child_uuid = None):
         return {
             'type': self.type,
             'uuid': self.uuid,
             'attribute': attribute,
-            'verb': verb
+            'verb': verb,
+            'child_uuid': child_uuid
         }
 
     def __eq__(self, other):
@@ -162,7 +157,21 @@ class Node(object):
         except:
             return False
 
+    '''
+    Update methods
+    '''
+
     def updated_attribute(self, attribute, verb):
         if self._parent != None:
             self._parent.child_changed_event(
                 [self._child_changed_event_msg(attribute,verb)])
+
+    def deep_update(self):
+        self.updated_attribute('name', 'update')
+        self.updated_attribute('type', 'update')
+        self.updated_attribute('uuid', 'update')
+
+    def shallow_update(self):
+        self.updated_attribute('name', 'update')
+        self.updated_attribute('type', 'update')
+        self.updated_attribute('uuid', 'update')

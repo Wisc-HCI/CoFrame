@@ -101,20 +101,20 @@ public class TraceTestScript : MonoBehaviour
         allPaths.AddRange(compPaths);
 
         // generate random new trace
-        Dictionary<string, List<Cobots.TraceDataPoint>> data = new Dictionary<string, List<Cobots.TraceDataPoint>>();
+        Dictionary<string, List<EvD.TraceDataPoint>> data = new Dictionary<string, List<EvD.TraceDataPoint>>();
         foreach (string name in allPaths)
         {
-            data[name] = new List<Cobots.TraceDataPoint>();
+            data[name] = new List<EvD.TraceDataPoint>();
             for (int i=0; i<NUMBER_OF_TEST_POINTS; i++)
             {
                 float grade = Random.Range(0.0f, 1.0f);
-                var tp = new Cobots.TraceDataPoint(Cobots.Position.GenerateRandom(minPos, maxPos), Cobots.Orientation.GenerateRandom(minRot, maxRot),grade);
+                var tp = new EvD.TraceDataPoint(EvD.Position.GenerateRandom(minPos, maxPos), EvD.Orientation.GenerateRandom(minRot, maxRot),grade);
                 data[name].Add(tp);
             }
         }
         
         // pack and update
-        Cobots.Trace t = new Cobots.Trace(eePath, data, jointPaths, toolPaths, compPaths, 10);
+        EvD.Trace t = new EvD.Trace(eePath, data, jointPaths, toolPaths, compPaths, 10);
         trace.OnUpdate(t);
     }
 

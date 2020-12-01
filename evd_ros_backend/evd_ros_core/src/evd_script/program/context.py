@@ -101,12 +101,12 @@ class Context(Node):
     def add_location(self, location):
         location.parent = self
         self._locations[location.uuid] = location
-        self.updated_attribute('location','add')
+        self.updated_attribute('locations','add', location.uuid)
 
     def delete_location(self, uuid):
         if uuid in self._locations.keys():
             self._locations.pop(uuid).remove_from_cache()
-            self.updated_attribute('location','delete')
+            self.updated_attribute('locations','delete', uuid)
 
     def get_machine(self, uuid):
         if uuid in self._machines.keys():
@@ -117,12 +117,12 @@ class Context(Node):
     def add_machine(self, machine):
         machine.parent = self
         self._machines[machine.uuid] = machine
-        self.updated_attribute('machine','add')
+        self.updated_attribute('machines','add', machine.uuid)
 
     def delete_machine(self, uuid):
         if uuid in self._machines.keys():
             self._machines.pop(uuid).remove_from_cache()
-            self.updated_attribute('machine','delete')
+            self.updated_attribute('machines','delete', uuid)
 
     def set(self, dct):
 
@@ -171,3 +171,26 @@ class Context(Node):
             success = True
 
         return success
+
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+
+        for l in self.locations:
+            l.deep_update()
+
+        for m in self.machines:
+            m.deep_update()
+
+        super(Context,self).deep_update()
+
+        self.updated_attribute('machines','update')
+        self.updated_attribute('locations','update')
+
+    def shallow_update(self):
+        super(Context,self).shallow_update()
+
+        self.updated_attribute('machines','update')
+        self.updated_attribute('locations','update')

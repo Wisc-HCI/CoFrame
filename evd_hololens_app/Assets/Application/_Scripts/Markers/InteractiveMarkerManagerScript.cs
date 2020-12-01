@@ -9,11 +9,11 @@ public class InteractiveMarkerManagerScript : MonoBehaviour
     public GameObject InteractiveMarkerPrefab;
     public GameObject NonInteractivePrefab;
 
-    private System.Action<Cobots.AbstractMarker, bool> _markerSelectedCallback = null; 
+    private System.Action<EvD.AbstractMarker, bool> _markerSelectedCallback = null; 
 
-    private Dictionary<string, Cobots.AbstractMarker> markers = new Dictionary<string, Cobots.AbstractMarker>();
+    private Dictionary<string, EvD.AbstractMarker> markers = new Dictionary<string, EvD.AbstractMarker>();
 
-    public System.Action<Cobots.AbstractMarker, bool> markerSelectedCallback
+    public System.Action<EvD.AbstractMarker, bool> markerSelectedCallback
     {
         private get
         {
@@ -65,7 +65,7 @@ public class InteractiveMarkerManagerScript : MonoBehaviour
         }
     }
 
-    public Cobots.AbstractMarker GetMarker(string uuid)
+    public EvD.AbstractMarker GetMarker(string uuid)
     {
        if (markers.ContainsKey(uuid))
        {
@@ -77,7 +77,7 @@ public class InteractiveMarkerManagerScript : MonoBehaviour
        }
     }
 
-    public void OnWaypointUpdate(Cobots.Waypoint way)
+    public void OnWaypointUpdate(EvD.Waypoint way)
     {
         var ms = markers[way.uuid];
         if (!ms.isBeingManipulated)
@@ -88,10 +88,10 @@ public class InteractiveMarkerManagerScript : MonoBehaviour
         ms.name = way.name;
     }
 
-    public void OnWaypointAdd(Cobots.Waypoint way)
+    public void OnWaypointAdd(EvD.Waypoint way)
     {
         var obj = Instantiate(InteractiveMarkerPrefab, transform, false);
-        var ms = obj.GetComponent<Cobots.AbstractMarker>();
+        var ms = obj.GetComponent<EvD.AbstractMarker>();
         ms.waypoint = way;
         ms.selectedCallback = markerSelectedCallback;
 

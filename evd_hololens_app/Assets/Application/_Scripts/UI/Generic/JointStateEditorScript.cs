@@ -7,7 +7,7 @@ public class JointStateEditorScript : MonoBehaviour
     public JointStateValuesScript jointUI;
     public System.Action closeCallback = null;
 
-    private Cobots.Waypoint _waypoint = null;
+    private EvD.Waypoint _waypoint = null;
     private double[] _prevData = null;
     private float[] _prevJointUIData = null;
 
@@ -26,7 +26,7 @@ public class JointStateEditorScript : MonoBehaviour
         }
     }
 
-    public Cobots.Waypoint waypoint
+    public EvD.Waypoint waypoint
     {
         get
         {

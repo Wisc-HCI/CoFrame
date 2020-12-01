@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/MRTK/Examples/Experimental/HandMenuLayout/Scenes/HandMenuLayoutExamples.unity
     guid: 9e1c6bf44fb90c54dbf82acf2808c16f
   - enabled: 0
-    path: Assets/_Scenes/Evaluation-1.unity
+    path: Assets/_Scenes/Hololens.unity
     guid: e260d1c9fd828334ab64dfc69ca2d494
   m_configObjects:
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: 6e948ba8474477c4eb26023623c5bde5,

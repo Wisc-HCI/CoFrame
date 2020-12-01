@@ -16,8 +16,8 @@ public class OccupancyZoneManagerTestScript : MonoBehaviour
     public Toggle controlsVisible;
     public Toggle robotVisible;
 
-    private Cobots.OccupancyZone human = new Cobots.OccupancyZone("human");
-    private Cobots.OccupancyZone robot = new Cobots.OccupancyZone("robot");
+    private EvD.OccupancyZone human = new EvD.OccupancyZone("human");
+    private EvD.OccupancyZone robot = new EvD.OccupancyZone("robot");
 
     [SerializeField]
     private bool visible = false;

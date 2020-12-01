@@ -37,7 +37,7 @@ public class PinchPointManagerScript : MonoBehaviour
         return val;
     }
 
-    public void OnPinchPointUpdate(Cobots.PinchPoint pState)
+    public void OnPinchPointUpdate(EvD.PinchPoint pState)
     {
         foreach (var p in pinchPoints)
         {
