@@ -3,13 +3,18 @@
   <arg name="launch_rviz" default="true"/>
   <arg name="load_rviz_cfg" default="true"/>
 
+  <arg name="run_test_script" default="false"/>
+
   <!-- Launch Robot Bringup -->
   <include file="$(find evd_ros_core)/launch/robot_bringup.launch">
     <arg name="simulate_physical_robot" value="true"/>
+    <arg name="active_physical" value="true"/>
+    <arg name="active_simulated" value="true"/>
+    <arg name="active_planner" value="true"/>
   </include>
 
   <!-- System test code -->
-  <node name="bringup_test" pkg="evd_ros_core" type="bringup_test.py"/>
+  <node if="$(arg run_test_script)" name="bringup_test" pkg="evd_ros_core" type="bringup_test.py"/>
 
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">
