@@ -147,9 +147,9 @@ class PlanTracer:
             # check if job
             if len(self._jobs) > 0:
                 job = self._jobs.pop(0)
-                if job.type = "trace":
+                if job.type == "trace":
                     self.generate_trace(job)
-                elif job.type = "waypoint":
+                elif job.type == "waypoint":
                     self.generate_waypoint(job)
                 else:
                     rospy.log('Invalid type provided {}'.format(job.type))

@@ -1,4 +1,10 @@
 from ..node import Node
+from ..data.geometry import Pose, Orientation
+
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Vector3
+from std_msgs.msg import ColorRGBA
+
 
 class PinchPoint(Node):
 
@@ -14,8 +20,9 @@ class PinchPoint(Node):
     Data structure methods
     '''
 
-    def __init__(self, state = None, type='', name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, state = None, type='', orientation=None, name='', parent=None, uuid=None, append_type=True):
         self._state = None
+        self._orientation = None
 
         super(PinchPoint,self).__init__(
             type='pinch-point.'+type if append_type else type,
@@ -25,21 +32,44 @@ class PinchPoint(Node):
             append_type=append_type)
 
         self.state = state if state != None else GOOD_STATE
+        self.orientation = orientation if orientation != None else Orientation()
 
     def to_dct(self):
         msg = super(PinchPoint,self).to_dct()
         msg.update({
-            'state': self.state
+            'state': self.state,
+            'orientation': self.orientation
         })
         return msg
 
     @classmethod
     def from_dct(cls, dct):
         return cls(state=dct['state'],
+                   orientation=Orientation.from_dct(dct['orientation']),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
+
+    def to_ros_marker(self, frame_id, id=0):
+        # The frame_id should match the joint associated with this pinchpoint
+        # The pose for this marker is at origin for that frame
+
+        if self.state == self.GOOD_STATE:
+            color = ColorRGBA(0,1,0,1)
+        elif self.state == self.WARN_STATE:
+            color = ColorRGBA(0.5,0.5,0,1)
+        elif self.state == self.ERROR_STATE:
+            color = ColorRGBA(1,0,0,1)
+
+        marker = Marker()
+        marker.header.frame_id = frame_id
+        marker.type = Marker.CYLINDER
+        marker.ns = 'pinch_points'
+        marker.id = id
+        marker.pose = Pose(orientation=self.orientation).to_ros()
+        marker.scale = Vector3(0.1,0.1,0.1)
+        marker.color = color
 
     '''
     Data accessor/modifier methods
@@ -67,9 +97,24 @@ class PinchPoint(Node):
     def set_state_error(self):
         self.state = self.ERROR_STATE
 
+    @property
+    def orientation(self):
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, value):
+        if self._orientation != value:
+            if value == None:
+                raise Exception('Orientation cannot be None')
+            self._orientation = value
+            self.updated_attribute('orientation','set')
+
     def set(self, dct):
         if 'state' in dct.keys():
             self.state = dct['state']
+
+        if 'orientation' in dct.keys():
+            self.orientation = Orientation.from_dct(dct['orientation'])
 
         super(PinchPoint,self).set(dct)
 
@@ -81,8 +126,10 @@ class PinchPoint(Node):
         super(PinchPoint,self).deep_update()
 
         self.updated_attribute('state','update')
+        self.updated_attribute('orientation','update')
 
     def shallow_update(self):
         super(PinchPoint,self).shallow_update()
 
         self.updated_attribute('state','update')
+        self.updated_attribute('orientation','update')

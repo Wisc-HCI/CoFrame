@@ -1,6 +1,11 @@
 from ..node import Node
 
 
+#TODO link to collision meshes
+#TODO provide a thing input region
+#TODO provide a thing output region
+#TODO handle thing conversion (thing consumers and thing generators)
+
 class Machine(Node):
 
     '''

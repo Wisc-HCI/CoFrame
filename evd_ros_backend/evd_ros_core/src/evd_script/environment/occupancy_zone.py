@@ -1,4 +1,10 @@
 from ..node import Node
+from ..data.geometry import Pose, Position
+
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Vector3
+from std_msgs.msg import ColorRGBA
+
 
 class OccupancyZone(Node):
 
@@ -13,12 +19,13 @@ class OccupancyZone(Node):
     Data structure methods
     '''
 
-    def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, type='', name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, height = 0, type='', name='', parent=None, uuid=None, append_type=True):
         self._occupancy_type = None
         self._position_x = None
         self._position_z = None
         self._scale_x = None
         self._scale_z = None
+        self._height = None
 
         super(OccupancyZone,self).__init__(
             type='occupancy-zone.'+type if append_type else type,
@@ -32,6 +39,7 @@ class OccupancyZone(Node):
         self.position_z = posZ
         self.scale_x = sclX
         self.scale_z = sclZ
+        self.height = height
 
     def to_dct(self):
         msg = super(OccupancyZone,self).to_dct()
@@ -40,7 +48,8 @@ class OccupancyZone(Node):
             'position_x': self.position_x,
             'position_z': self.position_z,
             'scale_x': self.scale_x,
-            'scale_z': self.scale_z
+            'scale_z': self.scale_z,
+            'height': self.height
         })
         return msg
 
@@ -51,10 +60,25 @@ class OccupancyZone(Node):
                    posZ=dct['position_z'],
                    sclX=dct['scale_x'],
                    sclZ=dct['scale_z'],
+                   height=dct['height'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
+
+    def to_ros_marker(self, frame_id='app', id=0):
+        # The frame_id should be the application frame
+
+        marker = Marker()
+        marker.header.frame_id = frame_id
+        marker.type = Marker.CUBE
+        marker.ns = 'occupancy_zones'
+        marker.id = id
+        marker.pose = Pose(position=Position(self.position_x,self.height,self.position_z)).to_ros()
+        marker.scale = Vector3(self.scale_x,0.001,self.scale_z)
+        marker.color = ColorRGBA(0.2,0.2,0.2,0.2)
+
+        return marker
 
     '''
     Data accessor/modifier methods
@@ -114,6 +138,16 @@ class OccupancyZone(Node):
             self._scale_z = value
             self.updated_attribute('scale_z', 'set')
 
+    @hproperty
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, value):
+        if self._height != value:
+            self._height = value
+            self.updated_attribute('height', 'set')
+
     def set(self, dct):
 
         if 'occupancy_type' in dct.keys():
@@ -131,6 +165,9 @@ class OccupancyZone(Node):
         if 'scale_z' in dct.keys():
             self.scale_z = dct['scale_z']
 
+        if 'height' in dct.keys():
+            self.height = dct['height']
+
         super(OccupancyZone,self).set(dct)
 
     '''
@@ -145,6 +182,7 @@ class OccupancyZone(Node):
         self.updated_attribute('position_z','update')
         self.updated_attribute('scale_x','update')
         self.updated_attribute('scale_z','update')
+        self.updated_attribute('height','update')
 
     def shallow_update(self):
         super(ReachSphere,self).shallow_update()
@@ -154,3 +192,4 @@ class OccupancyZone(Node):
         self.updated_attribute('position_z','update')
         self.updated_attribute('scale_x','update')
         self.updated_attribute('scale_z','update')
+        self.updated_attribute('height','update')

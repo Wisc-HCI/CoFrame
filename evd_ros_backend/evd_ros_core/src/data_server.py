@@ -15,30 +15,44 @@ from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 from evd_ros_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
 
 from evd_script.program.program import *
+from evd_script.environment.environment import *
 from evd_script.version_tracking.history import *
 
-import test_programs.debug_prog as debug_prog
+import test_applications.debug_app as debug_app
 
 
-DEFAULT_PROGRAM = 'debug_prog'
+DEFAULT_APP = 'debug_app'
 
+
+#TODO environment handling needs to be done
 
 class DataServer:
 
-    def __init__(self, app_filepath, default_program):
+    def __init__(self, app_filepath, default_app):
         self._application_filepath = app_filepath
         self._application_filename = None
 
-        if default_program == 'debug_prog':
-            self._program = debug_prog.generate()
+        if default_app == 'debug_app':
+            app = debug_app.generate()
+            self._program = app['program']
+            self._environment = app['environment']
         else:
             self._program = Program()
+            self._environment = Environment()
 
         self._program_history = History()
         self._program_history.append(HistoryEntry(
             action='initial',
             change_dct=self._program.to_dct(),
             snapshot_dct=Program().to_dct(),
+            source='data-server'
+        ))
+
+        self._environment_history = History()
+        self._environment_history.append(HistoryEntry(
+            action='initial',
+            change_dct==self._environment.to_dct(),
+            snapshot_dct=Environment().to_dct(),
             source='data-server'
         ))
 
@@ -57,7 +71,8 @@ class DataServer:
 
     def _load_app_cb(self, request):
         response = LoadDataResponse()
-        data_snapshot = self._program.to_dct()
+        program_snapshot = self._program.to_dct()
+        environment_snapshot = self._environment.to_dct()
 
         # Try opening file
         try:
@@ -74,7 +89,8 @@ class DataServer:
             rawData = json.loads(inStr)
             self._program = Program.from_dct(rawData['program'])
             self._program.server_cb = self.__program_updated_cb
-            self._environment = rawData['environment'] #TODO fix later
+            self._environment = Environment.from_dct(rawData['environment'])
+            self._environment.server_cb = self._environent_updated_cb
         except:
             response.status = False
             response.message = 'Error json load'
@@ -82,14 +98,23 @@ class DataServer:
 
         # On successful load
         self._application_filename = request.filename
+
         self._program_history.append(HistoryEntry(
             action='load',
-            change_dct=rawData,
-            snapshot_dct = data_snapshot,
+            change_dct=rawData['program'],
+            snapshot_dct = program_snapshot,
+            source='data-server'
+        ))
+
+        self._environment_history.append(HistoryEntry(
+            action='load',
+            change_dct=rawData['environment'],
+            snapshot_dct = environment_snapshot,
             source='data-server'
         ))
 
         self._push_program_update()
+        self._push_environment_update()
 
         response.status = True
         return response
@@ -112,7 +137,7 @@ class DataServer:
         # Generate packaged representation of data
         outData = {
             'program': self._program.to_dct(),
-            'environment': None #TODO fix later
+            'environment': self._environment.to_dct()
         }
 
         # Try writing to file
@@ -131,7 +156,10 @@ class DataServer:
 
     def _get_app_opts_cb(self, request):
         response = GetOptionsResponse()
-        response.options = [] #TODO read options as files from app directory
+
+        response.options = [f for f in os.listdir(self._application_filepath) if os.isfile(os.join(self._application_filepath,f))]
+
+        return response
 
     def _get_prog_cb(self, request):
         errors = []
@@ -158,6 +186,8 @@ class DataServer:
     def _set_prog_cb(self, request):
         response = SetDataResponse()
 
+        #TODO figure out the best way to update both the program and environment
+        '''
         if request.tag == self._program_history.get_current_version:
             inData = json.loads(request.data.data)
             data_snapshot = self._program.to_dct()
@@ -189,11 +219,31 @@ class DataServer:
             response.status = False
             response.errors = ''
             response.message = 'mismatched version tags'
+        '''
 
         return response
 
     def _get_env_cb(self, request):
-        pass #TODO write env model
+        errors = []
+        response = GetDataResponse()
+
+        if request.all:
+            outData = self._environment.to_dct()
+        else:
+            outData = {}
+            inData = json.loads(request.data.data)
+            for uuid in inData:
+                try:
+                    outData[uuid] = self._environment.cache.get(uuid).to_dct()
+                except:
+                    errors.append(uuid)
+
+        response.data = json.dumps(outData)
+        response.tag = self._environment_history.get_current_version().to_ros()
+        response.status = len(errors) == 0
+        response.errors = json.dumps(errors)
+        response.message = '' if response.status else 'error getting data'
+        return response
 
     def _set_env_cb(self, request):
         pass #TODO write env model
@@ -212,6 +262,20 @@ class DataServer:
 
         self._update_prog_pub.publish(msg)
 
+    def _push_environment_update(self):
+        entry = self._environment_history.get_current_entry()
+
+        msg = UpdateData()
+        msg.data = json.dumps(self._environment.to_dct())
+        msg.action = entry.action
+        msg.changes = json.dumps(entry.changes)
+        msg.currentTag = entry.version.to_ros()
+
+        prevTag = self._environment_history.get_previous_version()
+        msg.previousTag = prevTag.to_ros() if prevTag != None else Version(rospy.Duration(0),'','data-server')
+
+        self._update_env_pub.publish(msg)
+
     def spin(self):
         # give nodes time before publishing initial state
         # the topic latches message but as a best practice, it shouldn't rush
@@ -219,6 +283,7 @@ class DataServer:
         # complete.
         rospy.sleep(30)
         self._push_program_update()
+        self._push_environment_update()
         rospy.spin()
 
 
@@ -226,7 +291,7 @@ if __name__ == '__main__':
     rospy.init_node('data_server')
 
     app_filepath = rospy.get_param('~app_filepath')
-    default_program = rospy.get_param('~default_program',DEFAULT_PROGRAM)
+    default_app = rospy.get_param('~default_app',DEFAULT_APP)
 
-    node = DataServer(app_filepath,default_program)
+    node = DataServer(app_filepath,default_app)
     node.spin()

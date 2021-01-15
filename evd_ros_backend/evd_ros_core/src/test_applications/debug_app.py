@@ -1,14 +1,11 @@
-from evd_script.data.trace import *
-from evd_script.program.task import *
-from evd_script.data.machine import *
-from evd_script.data.waypoint import *
-from evd_script.data.location import *
-from evd_script.data.geometry import *
-from evd_script.program.program import *
-from evd_script.program.primitive import *
+from evd_script import *
+
 
 def generate():
+
+    #===========================================================================
     # Define Program
+    #===========================================================================
     prog = Program()
 
     # Define and add location
@@ -25,6 +22,8 @@ def generate():
     prog.context.add_location(retract_loc)
     prog.context.add_location(pick_final_loc)
     prog.context.add_location(place_final_loc)
+
+    locations = [home_loc,pick_stock_loc,place_stock_loc,retract_loc,pick_final_loc,place_final_loc]
 
     # Define and add machines
     cnc = Machine()
@@ -67,4 +66,17 @@ def generate():
         prog.cache.get(trajUuid,'trajectory').waypoints = waypoints
         prog.cache.get(trajUuid,'trajectory').trace = trace
 
-    return prog
+    #===========================================================================
+    # Define Environment
+    #===========================================================================
+    env = Environment(
+        reach_sphere=ReachSphere(),
+        pinch_points=[],
+        collision_meshes=[],
+        occupancy_zone=[
+            OccupancyZone(OccupancyZone.HUMAN_TYPE),
+            OccupancyZone(OccupancyZone.ROBOT_TYPE)],
+        locations=locations,
+        trajectories=prog.cache.trajectories.values())
+
+    return {"program": prog, "environment": env}

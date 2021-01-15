@@ -1,4 +1,10 @@
 from ..node import Node
+from ..data.geometry import Pose
+
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Vector3
+from std_msgs.msg import ColorRGBA
+
 
 class ReachSphere(Node):
 
@@ -40,6 +46,28 @@ class ReachSphere(Node):
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
+
+    def to_ros_marker(self, frame_id='base_link', id=0):
+        # The frame_id should be the robot's base_link
+
+        if self.state == self.GOOD_STATE:
+            color = ColorRGBA(0,1,0,1)
+        elif self.state == self.WARN_STATE:
+            color = ColorRGBA(0.5,0.5,0,1)
+        elif self.state == self.ERROR_STATE:
+            color = ColorRGBA(1,0,0,1)
+
+        marker = Marker()
+        marker.header.frame_id = frame_id
+        marker.type = Marker.SPHERE
+        marker.ns = 'reach_sphere'
+        marker.id = id
+        marker.pose = Pose().to_ros()
+        marker.scale = Vector3(1,1,1)
+        marker.color = color
+
+        return marker
+
 
     '''
     Data accessor/modifier methods

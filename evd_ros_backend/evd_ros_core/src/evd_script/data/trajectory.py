@@ -2,6 +2,10 @@ from ..node import Node
 from waypoint import Waypoint
 from trace import Trace, TraceDataPoint
 
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Vector3
+from std_msgs.msg import ColorRGBA
+
 
 class Trajectory(Node):
 
@@ -65,6 +69,28 @@ class Trajectory(Node):
             velocity=dct['velocity'],
             acceleration=dct['acceleration'],
             move_type=dct['move_type'])
+
+    def to_ros_markers(self, frame_id, id_start=0):
+        waypoint_markers = []
+        waypoint_uuids = []
+
+        lineMarker = Marker()
+        lineMarker.header.frame_id = frame_id
+        lineMarker.type = Marker.LINE_STRIP
+        lineMarker.ns = 'trajectories'
+        lineMarker.id = id_start
+        lineMarker.scale = Vector3(0.01,0.01,0.01)
+        lineMarker.color = ColorRGBA(1,1,1,1)
+
+        count = id_start + 1
+        for wp in self.waypoints:
+            marker = wp.to_ros_marker(frame_id,count)
+            lineMarker.points.append(marker.pose.position)
+            waypoint_markers.append(marker)
+            waypoint_uuids.append(wp.uuid)
+            count += 1
+
+        return lineMarker, waypoint_markers, waypoint_uuids
 
     '''
     Data accessor/modifier methods

@@ -8,18 +8,18 @@ from geometry_msgs.msg import Vector3
 from std_msgs.msg import ColorRGBA
 
 
-DEFAULT_ROS_FRAME_ID = 'world'
+DEFAULT_ROS_FRAME_ID = 'app'
 DEFAULT_PUBLISH_RATE = 5.0
 
 
-class DataModelRvizPublisherNode:
+class ProgramModelRvizPublisherNode:
 
     def __init__(self, ros_frame_id):
         self._count = 0
         self._marker_uuid_list = {}
 
         self._ros_frame_id = ros_frame_id
-        self._marker_pub = rospy.Publisher('data_model_visualizer/markers',Marker,queue_size=10,latch=True)
+        self._marker_pub = rospy.Publisher('program_model_visualizer/markers',Marker,queue_size=10,latch=True)
         self._data_client = DataClientInterface(use_program_interface=True, on_program_update_cb=self._update_markers)
 
     def _update_markers(self):
@@ -128,10 +128,10 @@ class DataModelRvizPublisherNode:
 
 
 if __name__ == "__main__":
-    rospy.init_node('data_model_rviz_publisher')
+    rospy.init_node('program_model_rviz_publisher')
 
     ros_frame_id = rospy.get_param('~ros_frame_id',DEFAULT_ROS_FRAME_ID)
 
-    node = DataModelRvizPublisherNode(ros_frame_id)
+    node = ProgramModelRvizPublisherNode(ros_frame_id)
 
     rospy.spin()

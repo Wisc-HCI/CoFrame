@@ -1,5 +1,5 @@
 '''
-TODO need to think about the write portion more
+
 '''
 
 import json
@@ -13,6 +13,7 @@ from evd_ros_core.srv import GetData, GetDataRequest, GetDataResponse
 from evd_ros_core.srv import SetData, SetDataRequest, SetDataResponse
 from evd_ros_core.srv import LoadData, LoadDataRequest, LoadDataResponse
 from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
+from evd_ros_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
 
 from evd_script.program.program import *
 from evd_script.environment.environment import *
@@ -77,7 +78,7 @@ class DataClientInterface(object):
     def get_applications_options(self):
         if self._use_application_interface:
             response = self._get_app_options_srv()
-            return response.options
+            return response.options, response.currently_loaded
         else:
             raise Exception('Not using application interface')
 

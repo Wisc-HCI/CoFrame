@@ -1,5 +1,9 @@
 from geometry import Pose, Position, Orientation
 
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Vector3
+from std_msgs.msg import ColorRGBA
+
 
 class Waypoint(Pose):
 
@@ -40,6 +44,20 @@ class Waypoint(Pose):
             name=dct['name'],
             uuid=dct['uuid'],
             joints=dct['joints'])
+
+    def to_ros_marker(self, frame_id='app', id=0):
+        # The frame_id should be the application frame
+
+        marker = Marker()
+        marker.header.frame_id = frame_id
+        marker.type = Marker.ARROW
+        marker.ns = 'waypoints'
+        marker.id = id
+        marker.pose = self.to_ros()
+        marker.scale = Vector3(0.05,0.01,0.01)
+        marker.color = ColorRGBA(123/255.0,104/255.0,238/255.0,1)
+
+        return marker
 
     '''
     Data accessor/modifier methods

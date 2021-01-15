@@ -1,6 +1,10 @@
 from ..node import Node
 from geometry import Pose, Position, Orientation
 
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Vector3
+from std_msgs.msg import ColorRGBA
+
 
 class TraceDataPoint(Pose):
 
@@ -41,6 +45,18 @@ class TraceDataPoint(Pose):
             name=dct['name'],
             uuid=dct['uuid'],
             grade=dct['grade'])
+
+    def to_ros_marker(self, frame_id, id=0):
+        marker = Marker()
+        marker.header.frame_id = frame_id
+        marker.type = Marker.SPHERE
+        marker.ns = 'render_points'
+        marker.id = id
+        marker.pose = self.to_ros()
+        marker.scale = Vector3(0.025,0.025,0.025)
+        marker.color = ColorRGBA(255/255.0,255/255.0,255/255.0,1)
+
+        return marker
 
     '''
     Data accessor/modifier methods
@@ -133,6 +149,48 @@ class Trace(Node):
             tPaths=dct['tool_paths'],
             cPaths=dct['component_paths'],
             time=dct['time'])
+
+    def to_ros_markers(self, frame_id, id_start=0):
+        render_point_markers = []
+        line_markers = []
+        render_point_uuids = []
+
+        count = id_start
+        for key in self.data.keys():
+            lineMarker = Marker()
+            lineMarker.header.frame_id = frame_id
+            lineMarker.type = Marker.LINE_STRIP
+            lineMarker.ns = 'traces'
+            lineMarker.id = count
+            lineMarker.scale = Vector3(0.01,0.01,0.01)
+
+            count += 1
+
+            pointsList = []
+            uuidsList = []
+            for point in self.data[key]:
+                marker = point.to_ros_marker(frame_id,count)
+                lineMarker.points.append(marker.pose.position)
+                pointsList.append(marker)
+                uuidsList.append(point.uuid)
+                count += 1
+
+            # trace path color based on group
+            if key == self.end_effector_path:
+                lineMarker.color = ColorRGBA(0/255.0,255/255.0,0/255.0,1) #end effector color
+            elif key in self.joint_paths:
+                lineMarker.color = ColorRGBA(0/255.0,0/255.0,255/255.0,1) # joint paths color
+            elif key in self.tool_paths:
+                lineMarker.color = ColorRGBA(255/255.0,0/255.0,0/255.0,1) # tool paths  color
+            else:
+                lineMarker.color = ColorRGBA(128/255.0,128/255.0,128/255.0,1) # other color
+
+            render_point_markers.append(pointsList)
+            line_markers.append(lineMarker)
+            render_point_uuids.append(uuidsList)
+
+        return line_markers, render_point_markers, render_point_uuids
+
 
     '''
     Data accessor/modifier methods
