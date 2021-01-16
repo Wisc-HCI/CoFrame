@@ -1,11 +1,12 @@
 from geometry import Pose, Position, Orientation
+from ..visualizable import VisualizeMarker
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 from std_msgs.msg import ColorRGBA
 
 
-class Waypoint(Pose):
+class Waypoint(Pose, VisualizeMarker):
 
     '''
     Data structure methods

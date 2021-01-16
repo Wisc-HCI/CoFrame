@@ -1,12 +1,13 @@
 from ..node import Node
 from ..data.geometry import Pose
+from ..visualizable import VisualizeMarker
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 from std_msgs.msg import ColorRGBA
 
 
-class CollisionMesh(Node):
+class CollisionMesh(Node,VisualizeMarker):
 
     '''
     Constants

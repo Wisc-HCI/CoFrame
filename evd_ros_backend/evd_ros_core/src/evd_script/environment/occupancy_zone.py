@@ -1,4 +1,5 @@
 from ..node import Node
+from ..visualizable import VisualizeMarker
 from ..data.geometry import Pose, Position
 
 from visualization_msgs.msg import Marker
@@ -6,7 +7,7 @@ from geometry_msgs.msg import Vector3
 from std_msgs.msg import ColorRGBA
 
 
-class OccupancyZone(Node):
+class OccupancyZone(Node, VisualizeMarker):
 
     '''
     Constants

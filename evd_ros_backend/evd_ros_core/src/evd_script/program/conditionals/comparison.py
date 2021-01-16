@@ -1,0 +1,2 @@
+class ComparisonConditional(AbstractConditional):
+    pass

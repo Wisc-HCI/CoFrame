@@ -3,25 +3,16 @@
 import rospy
 
 from interfaces.data_client_interface import DataClientInterface
-from visualization_msgs.msg import Marker
-from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 
 DEFAULT_ROS_FRAME_ID = 'app'
 DEFAULT_PUBLISH_RATE = 5.0
 
-#TODO rewrite using the model-built-in marker generation
-
-#TODO display collision meshes
-#TODO display occupancy zones
-#TODO display pinch-points
-#TODO display reach sphere
-
 
 class EnvironmentModelRvizPublisher:
 
-    def __init__(self, ros_frame_id):
+    def __init__(self, ros_frame_id, display_traces):
+        self.display_traces = display_traces
         self._count = 0
         self._marker_uuid_list = {}
 
@@ -34,89 +25,86 @@ class EnvironmentModelRvizPublisher:
         updated_markers = {}
 
         # get all locations and display all locations
-        locations = self._data_client.environment.locations.values()
-
+        locations = self._data_client.environment.locations
         for loc in locations:
-            marker = Marker()
-            marker.header.frame_id = self._ros_frame_id
-            marker.type = Marker.MESH_RESOURCE
-            marker.ns = 'location'
-            marker.id = self._count
-            marker.pose = loc.to_ros()
-            marker.scale = Vector3(0.1,0.1,0.1)
-            marker.color = ColorRGBA(173/255.0,216/255.0,230/255.0,1)
-            marker.mesh_resource = 'package://evd_ros_core/markers/SimpleGripperPhycon.stl'
-
+            marker = loc.to_ros_marker(self._ros_frame_id,self._count)
             print 'adding location markers', loc.uuid
             self._marker_pub.publish(marker)
-            self._count = self._count + 1
+            self._count += 1
             updated_markers[loc.uuid] = marker
 
-        # Getall trajectories
-        # display all waypoints
-        # display all traces
-        trajectories = self._data_client.environment.cache.trajectories.values()
-
+        # Get all trajectories and display all waypoints and display all traces
+        trajectories = self._data_client.environment.trajectories
         for traj in trajectories:
 
+            trajMarker, waypointMarkers, waypointUuids = traj.to_ros_markers(self._ros_frame_id, self._count)
+            self._count = self._count + 1 + len(waypointMarkers)
+
             # waypoints
-            for wp in traj.waypoints:
-                marker = Marker()
-                marker.header.frame_id = self._ros_frame_id
-                marker.type = Marker.ARROW
-                marker.ns = 'waypoints'
-                marker.id = self._count
-                marker.pose = wp.to_ros()
-                marker.scale = Vector3(0.05,0.01,0.01)
-                marker.color = ColorRGBA(123/255.0,104/255.0,238/255.0,1)
-
-                print 'adding waypoint marker', wp.uuid
+            for i in range(0,len(waypointMarkers)):
+                marker = waypointMarkers[i]
+                uuid = waypointUuids[i]
+                print 'adding waypoint marker', uuid
                 self._marker_pub.publish(marker)
-                self._count = self._count + 1
-                updated_markers[wp.uuid] = marker
+                updated_markers[uuid] = marker
 
-            if traj.trace != None:
-                # trace path
-                for key in traj.trace.data.keys():
-                    lineMarker = Marker()
-                    lineMarker.header.frame_id = self._ros_frame_id
-                    lineMarker.type = Marker.LINE_STRIP
-                    lineMarker.ns = 'trace'
-                    lineMarker.id = self._count
-                    self._count = self._count + 1
-                    lineMarker.scale = Vector3(0.01,0.01,0.01)
+            # If we can and want to display traces otherwise just display the trajectory sketch
+            if traj.trace != None and self.display_traces:
+                traceMarkers, renderpointMarkers, renderpointUuids = traj.trace.to_ros_markers(self._ros_frame_id,self._count)
+                self._count = self._count + len(traceMarkers) + len(renderpointMarkers)
 
-                    # render point
-                    for point in traj.trace.data[key]:
-                        marker = Marker()
-                        marker.header.frame_id = self._ros_frame_id
-                        marker.type = Marker.SPHERE
-                        marker.ns = 'renderpoints'
-                        marker.id = self._count
-                        marker.pose = point.to_ros()
-                        marker.scale = Vector3(0.025,0.025,0.025)
-                        marker.color = ColorRGBA(255/255.0,255/255.0,255/255.0,1)
+                # For each trace
+                for i in range(0,len(traceMarkers)):
 
-                        lineMarker.points.append(marker.pose.position)
+                    #renderpoints
+                    for j in range(0,len(renderpointMarkers[i])):
+                        marker = renderpointMarkers[i][j]
+                        uuid = renderpointUuids[i][j]
 
-                        print 'adding render point marker', point.uuid
+                        print 'adding render point marker', uuid
                         self._marker_pub.publish(marker)
-                        self._count = self._count + 1
-                        updated_markers[point.uuid] = marker
+                        updated_markers[uuid] = marker
 
-                    # trace path color based on group
-                    if key == traj.trace.end_effector_path:
-                        lineMarker.color = ColorRGBA(0/255.0,255/255.0,0/255.0,1) #end effector color
-                    elif key in traj.trace.joint_paths:
-                        lineMarker.color = ColorRGBA(0/255.0,0/255.0,255/255.0,1) # joint paths color
-                    elif key in traj.trace.tool_paths:
-                        lineMarker.color = ColorRGBA(255/255.0,0/255.0,0/255.0,1) # tool paths  color
-                    else:
-                        lineMarker.color = ColorRGBA(128/255.0,128/255.0,128/255.0,1) # other color
-
+                    # trace line
                     print 'adding line trace marker', traj.trace.uuid
-                    self._marker_pub.publish(lineMarker)
-                    updated_markers[traj.trace.uuid] = lineMarker
+                    self._marker_pub.publish(traceMarkers[i])
+                    updated_markers[traj.trace.uuid] = traceMarkers[i]
+
+            else:
+                print 'adding trajectory line marker', traj.uuid
+                self._marker_pub.publish(trajMarker)
+                updated_markers[traj.uuid] = trajMarker
+
+        # display reach sphere
+        reach_sphere = self._data_client.environment.reach_sphere
+        marker = reach_sphere.to_ros_marker('base_link',self._count)
+        self._marker_pub.publish(marker)
+        self._count += 1
+        updated_markers[reach_sphere.uuid] = marker
+
+        # display occupancy zones
+        zones = self._data_client.environment.occupancy_zones
+        for zone in zones:
+            marker = zone.to_ros_marker(self._ros_frame_id, self._count)
+            self._marker_pub.publish(marker)
+            self._count += 1
+            updated_markers[zone.uuid] = marker
+
+        # display pinch-points
+        pinchpoints = self._data_client.environment.pinch_points
+        for point in pinchpoints:
+            marker  = point.to_ros_marker(self._count)
+            self._marker_pub.publish(marker)
+            self._count += 1
+            updated_markers[point.uuid] = marker
+
+        # display collision meshes
+        meshes = self._data_client.environment.collision_meshes
+        for mesh in meshes:
+            marker = mesh.to_ros_marker(self._ros_frame_id, self._count)
+            self._marker_pub.publish(marker)
+            self._count += 1
+            updated_markers[mesh.uuid] = marker
 
         # Delete any markers that have not been updated
         for ids in self._marker_uuid_list.keys():
@@ -126,6 +114,8 @@ class EnvironmentModelRvizPublisher:
                 print 'deleting marker', ids
                 self._marker_pub.publish(marker)
 
+        # Update marker list
+        self._marker_uuid_list = updated_markers
 
 
 if __name__ == "__main__":
@@ -133,6 +123,6 @@ if __name__ == "__main__":
 
     ros_frame_id = rospy.get_param('~ros_frame_id',DEFAULT_ROS_FRAME_ID)
 
-    node = EnvironmentModelRvizPublisher(ros_frame_id)
+    node = EnvironmentModelRvizPublisher(ros_frame_id, True)
 
     rospy.spin()

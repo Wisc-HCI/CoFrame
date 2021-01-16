@@ -1,12 +1,13 @@
 from ..node import Node
 from ..data.geometry import Pose
+from ..visualizable import VisualizeMarker
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 from std_msgs.msg import ColorRGBA
 
 
-class ReachSphere(Node):
+class ReachSphere(Node, VisualizeMarker):
 
     '''
     Constants
@@ -20,8 +21,9 @@ class ReachSphere(Node):
     Data structure methods
     '''
 
-    def __init__(self, state = None, type='', name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, state = None, radius=1, type='', name='', parent=None, uuid=None, append_type=True):
         self._state = None
+        self._radius = None
 
         super(ReachSphere,self).__init__(
             type='reach-sphere.'+type if append_type else type,
@@ -31,17 +33,20 @@ class ReachSphere(Node):
             append_type=append_type)
 
         self.state = state if state != None else GOOD_STATE
+        self.radius = radius
 
     def to_dct(self):
         msg = super(ReachSphere,self).to_dct()
         msg.update({
-            'state': self.state
+            'state': self.state,
+            'radius': self.radius
         })
         return msg
 
     @classmethod
     def from_dct(cls, dct):
         return cls(state=dct['state'],
+                   radius=dct['radius']
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -63,7 +68,7 @@ class ReachSphere(Node):
         marker.ns = 'reach_sphere'
         marker.id = id
         marker.pose = Pose().to_ros()
-        marker.scale = Vector3(1,1,1)
+        marker.scale = Vector3(self.radius,self.radius,self.radius)
         marker.color = color
 
         return marker
@@ -95,9 +100,24 @@ class ReachSphere(Node):
     def set_state_error(self):
         self.state = self.ERROR_STATE
 
+    @property
+    def radius(self):
+        return self._radius
+
+    @radius.setter
+    def radius(self, value):
+        if self._radius != value:
+            if value < 0:
+                raise Exception('Radius must be a postive number')
+            self._radius = value
+            self.updated_attribute('radius','set')
+
     def set(self, dct):
         if 'state' in dct.keys():
             self.state = dct['state']
+
+        if 'radius' in dct.keys():
+            self.radius = dct['radius']
 
         super(ReachSphere,self).set(dct)
 
@@ -109,8 +129,10 @@ class ReachSphere(Node):
         super(ReachSphere,self).deep_update()
 
         self.updated_attribute('state','update')
+        self.updated_attribute('radius','update')
 
     def shallow_update(self):
         super(ReachSphere,self).shallow_update()
 
         self.updated_attribute('state','update')
+        self.updated_attribute('radius','update')

@@ -26,10 +26,24 @@ def NodeParser(dct):
         node = PickAndPlace.FromDct(dct)
     elif exactType == "initialize":
         node = Initialize.FromDct(dct)
-    elif exactType =="machine-blocking-process":
-        node = MachineBlockingProcess.FromDct(dct)
+
     elif exactType == "loop":
         node = Loop.FromDct(dct)
+    elif exactType == "conditional":
+        node = Conditional.FromDct(dct)
+
+    elif exactType == "machine-primitive":
+        node = MachinePrimitive.FromDct(dct)
+    elif exactType == "machine-start":
+        node = MachineStart.FromDct(dct)
+    elif exactType == "machine-wait":
+        node = MachineWait.FromDct(dct)
+    elif exactType == "machine-stop":
+        node = MachineStop.FromDct(dct)
+    elif exactType == "machine-initialize":
+        node = MachineInitialize.FromDct(dct)
+    elif exactType =="machine-blocking-process":
+        node = MachineBlockingProcess.FromDct(dct)
 
     elif exactType == "primitive":
         node = Primitive.FromDct(dct)
@@ -41,16 +55,6 @@ def NodeParser(dct):
         node = Delay.FromDct(dct)
     elif exactType == "gripper":
         node = Gripper.FromDct(dct)
-    elif exactType == "machine-primitive":
-        node = MachinePrimitive.FromDct(dct)
-    elif exactType == "machine-start":
-        node = MachineStart.FromDct(dct)
-    elif exactType == "machine-wait":
-        node = MachineWait.FromDct(dct)
-    elif exactType == "machine-stop":
-        node = MachineStop.FromDct(dct)
-    elif exactType == "machine-initialize":
-        node = MachineInitialize.FromDct(dct)
     elif exactType == "breakpoint":
         node = Breakpoint.FromDct(dct)
 

@@ -1,13 +1,14 @@
 from ..node import Node
 from waypoint import Waypoint
 from trace import Trace, TraceDataPoint
+from ..visualizable import VisualizeMarkers
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 from std_msgs.msg import ColorRGBA
 
 
-class Trajectory(Node):
+class Trajectory(Node, VisualizeMarkers):
 
     TYPES = ['joint', 'linear', 'planner']
 

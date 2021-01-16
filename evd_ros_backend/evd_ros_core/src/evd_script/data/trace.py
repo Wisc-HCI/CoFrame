@@ -1,12 +1,13 @@
 from ..node import Node
 from geometry import Pose, Position, Orientation
+from ..visualizable import VisualizeMarker, VisualizeMarkers
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 from std_msgs.msg import ColorRGBA
 
 
-class TraceDataPoint(Pose):
+class TraceDataPoint(Pose, VisualizeMarker):
 
     '''
     Data structure methods
@@ -94,7 +95,7 @@ class TraceDataPoint(Pose):
         self.updated_attribute('grade','update')
 
 
-class Trace(Node):
+class Trace(Node, VisualizeMarkers):
 
     '''
     Data structure methods
