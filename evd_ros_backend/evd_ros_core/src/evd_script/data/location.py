@@ -8,6 +8,12 @@ from std_msgs.msg import ColorRGBA
 class Location(Waypoint):
 
     '''
+    Class Constants
+    '''
+
+    MESH_LOCATION = 'package://evd_ros_core/markers/SimpleGripperPhycon.stl'
+
+    '''
     Data structure methods
     '''
 
@@ -34,6 +40,6 @@ class Location(Waypoint):
         marker.pose = self.to_ros()
         marker.scale = Vector3(0.1,0.1,0.1)
         marker.color = ColorRGBA(173/255.0,216/255.0,230/255.0,1)
-        marker.mesh_resource = 'package://evd_ros_core/markers/SimpleGripperPhycon.stl'
+        marker.mesh_resource = MESH_LOCATION
 
         return marker

@@ -185,6 +185,8 @@ class Region(Pose, VisualizeMarker):
 
         super(Region,self).deep_update()
 
+        self.updated_attribute('center_position', 'update')
+        self.updated_attribute('center_orientation', 'update')
         self.updated_attribute('free_orientation','update')
         self.updated_attribute('uncertainty_orientation_limit','update')
         self.updated_attribute('uncertainty_orientation_alt_target','update')
@@ -192,6 +194,8 @@ class Region(Pose, VisualizeMarker):
     def shallow_update(self):
         super(Region,self).shallow_update()
 
+        self.updated_attribute('center_position', 'update')
+        self.updated_attribute('center_orientation', 'update')
         self.updated_attribute('free_orientation','update')
         self.updated_attribute('uncertainty_orientation_limit','update')
         self.updated_attribute('uncertainty_orientation_alt_target','update')
@@ -355,8 +359,6 @@ class CubeRegion(Region):
     def deep_update(self):
         super(CubeRegion,self).deep_update()
 
-        self.updated_attribute('center_position', 'update')
-        self.updated_attribute('center_orientation', 'update')
         self.updated_attribute('uncertainty_x', 'update')
         self.updated_attribute('uncertainty_y', 'update')
         self.updated_attribute('uncertainty_z', 'update')
@@ -364,8 +366,6 @@ class CubeRegion(Region):
     def shallow_update(self):
         super(CubeRegion,self).shallow_update()
 
-        self.updated_attribute('center_position', 'update')
-        self.updated_attribute('center_orientation', 'update')
         self.updated_attribute('uncertainty_x', 'update')
         self.updated_attribute('uncertainty_y', 'update')
         self.updated_attribute('uncertainty_z', 'update')
@@ -486,13 +486,9 @@ class SphereRegion(Region):
     def deep_update(self):
         super(SphereRegion,self).deep_update()
 
-        self.updated_attribute('center_position', 'update')
-        self.updated_attribute('center_orientation', 'update')
         self.updated_attribute('uncertainty_radius', 'update')
 
     def shallow_update(self):
         super(SphereRegion,self).shallow_update()
 
-        self.updated_attribute('center_position', 'update')
-        self.updated_attribute('center_orientation', 'update')
         self.updated_attribute('uncertainty_radius', 'update')

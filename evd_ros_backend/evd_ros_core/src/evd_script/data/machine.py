@@ -137,6 +137,25 @@ class MachineRecipe(Node):
 
         super(MachineRecipe,self).set(dct)
 
+    '''
+    Update Methods
+    '''
+
+    def deep_update(self):
+        super(MachineRecipe,self).deep_update()
+
+        self.updated_attribute('process_time','update')
+        self.updated_attribute('input_thing_quantities','update')
+        self.updated_attribute('output_thing_quantities','update')
+
+    def shallow_update(self):
+        super(MachineRecipe,self).shallow_update()
+
+        self.updated_attribute('process_time','update')
+        self.updated_attribute('input_thing_quantities','update')
+        self.updated_attribute('output_thing_quantities','update')
+        
+
 class Machine(Node):
 
     '''
