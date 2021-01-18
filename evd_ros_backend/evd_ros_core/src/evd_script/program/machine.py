@@ -1,8 +1,5 @@
 from task import Task
 from primitive import Primitive
-from conditionals.abstract import AbstractConditional
-
-#TODO machine conditional
 
 
 class MachineBlockingProcess(Task):
@@ -163,13 +160,3 @@ class MachineInitialize(MachinePrimitive):
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-
-
-class MachineConditional(MachinePrimitive, AbstractConditional):
-
-    '''
-    Data structure methods
-    '''
-
-    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
-        pass #TODO

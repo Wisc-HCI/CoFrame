@@ -1,4 +1,4 @@
 from abstract import AbstractConditional
 
-class LogicCondition(AbstractConditional):
+class LogicConditional(AbstractConditional):
     pass
