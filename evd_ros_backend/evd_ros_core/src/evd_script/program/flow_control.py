@@ -57,7 +57,7 @@ class Loop(Task):
                 self._condition.remove_from_cache()
             self._condition = value
             if self._condition != None:
-                self._condition.add_to_cache()
+                self._condition.parent = self
 
             self.updated_attribute('condition','set')
 

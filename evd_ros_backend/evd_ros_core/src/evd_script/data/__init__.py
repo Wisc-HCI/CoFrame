@@ -4,5 +4,5 @@ from .waypoint import Waypoint
 from .machine import Machine
 from .trace import Trace, TraceDataPoint
 from .trajectory import Trajectory
-from .region import Region
+from .region import AbstractRegion, CubeRegion, SphereRegion
 from .thing import Thing

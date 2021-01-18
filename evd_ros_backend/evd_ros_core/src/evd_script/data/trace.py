@@ -364,7 +364,6 @@ class Trace(Node, VisualizeMarkers):
             for dp in self.data[key]:
                 dp.deep_update()
 
-
         super(Trace,self).deep_update()
 
         self.updated_attribute('data','update')

@@ -54,6 +54,9 @@ class OccupancyZone(Node, VisualizeMarker):
         })
         return msg
 
+    def to_position(self):
+        return Position(self.position_x,self.height,self.position_z)
+
     @classmethod
     def from_dct(cls, dct):
         return cls(occupancyType=dct['occupancy_type'],
@@ -75,7 +78,7 @@ class OccupancyZone(Node, VisualizeMarker):
         marker.type = Marker.CUBE
         marker.ns = 'occupancy_zones'
         marker.id = id
-        marker.pose = Pose(position=Position(self.position_x,self.height,self.position_z)).to_ros()
+        marker.pose = Pose(position=self.to_position()).to_ros()
         marker.scale = Vector3(self.scale_x,0.001,self.scale_z)
         marker.color = ColorRGBA(0.2,0.2,0.2,0.2)
 

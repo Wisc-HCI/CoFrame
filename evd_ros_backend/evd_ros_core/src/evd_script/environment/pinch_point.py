@@ -21,7 +21,7 @@ class PinchPoint(Node, VisualizeMarker):
     Data structure methods
     '''
 
-    def __init__(self, state = None, link='', type='', orientation=None, name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, state = None, orientation=None, link='', type='', name='', parent=None, uuid=None, append_type=True):
         self._state = None
         self._orientation = None
         self._link = None
@@ -111,7 +111,14 @@ class PinchPoint(Node, VisualizeMarker):
         if self._orientation != value:
             if value == None:
                 raise Exception('Orientation cannot be None')
+
+            if self._orientation != None:
+                self._orientation.remove_from_cache()
+
             self._orientation = value
+            if self._orientation != None:
+                self._orientation.parent = self
+
             self.updated_attribute('orientation','set')
 
     @property
@@ -135,6 +142,20 @@ class PinchPoint(Node, VisualizeMarker):
             self.link = dct['link']
 
         super(PinchPoint,self).set(dct)
+
+    '''
+    Cache methods
+    '''
+
+    def remove_from_cache(self):
+        self.orientation.remove_from_cache()
+        
+        super(PinchPoint,self).remove_from_cache()
+
+    def add_to_cache(self):
+        self.orientation.add_to_cache()
+
+        super(PinchPoint,self).add_to_cache()
 
     '''
     Update Methods

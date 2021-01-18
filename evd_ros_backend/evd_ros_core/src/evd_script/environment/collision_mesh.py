@@ -127,7 +127,14 @@ class CollisionMesh(Node,VisualizeMarker):
         if self._pose != value:
             if value == None:
                 raise Exception('Pose cannot be None')
+
+            if self._pose != None:
+                self._psoe.remove_from_cache()
+
             self._pose = value
+            if self._pose != None:
+                self._pose.parent = self
+
             self.updated_attribute('pose','set')
 
     def set(self, dct):
@@ -141,6 +148,20 @@ class CollisionMesh(Node,VisualizeMarker):
             self.pose = Pose.from_dct(dct['pose'])
 
         super(CollisionMesh,self).set(dct)
+
+    '''
+    Cache methods
+    '''
+
+    def remove_from_cache(self):
+        self.pose.remove_from_cache()
+
+        super(CollisionMesh,self).remove_from_cache()
+
+    def add_to_cache(self):
+        self.pose.add_to_cache()
+
+        super(CollisionMesh,self).add_to_cache()
 
     '''
     Update Methods

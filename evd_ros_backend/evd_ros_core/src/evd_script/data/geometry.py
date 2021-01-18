@@ -1,3 +1,4 @@
+import tf
 import geometry_msgs.msg as ros_msgs
 
 from ..node import Node
@@ -69,6 +70,12 @@ class Pose(Node):
     @position.setter
     def position(self, value):
         if (self._position != value):
+            if value == None:
+                raise Exception('Position cannot be None')
+
+            if self._position != None:
+                self._position.remove_from_cache()
+
             self._position = value
             self._position.parent = self
             self.updated_attribute('position','set')
@@ -80,6 +87,12 @@ class Pose(Node):
     @orientation.setter
     def orientation(self, value):
         if self._orientation != value:
+            if value == None:
+                raise Exception('Orientation cannot be None')
+
+            if self._orientation != None:
+                self._orientation.remove_from_cache()
+
             self._orientation = value
             self._orientation.parent = self
             self.updated_attribute('orientation','set')
@@ -87,13 +100,29 @@ class Pose(Node):
     def set(self, dct):
         pos = dct.get('position',None)
         if pos != None:
-            self.position.set(pos)
+            self.position = Position.from_dct(pos)
 
         ort = dct.get('orientation',None)
         if ort != None:
-            self.orientation.set(ort)
+            self.orientation = Orientation.from_dct(ort)
 
         super(Pose,self).set(dct)
+
+    '''
+    Cache methods
+    '''
+
+    def remove_from_cache(self):
+        self.position.remove_from_cache()
+        self.orientation.remove_from_cache()
+
+        super(Pose,self).remove_from_cache()
+
+    def add_to_cache(self):
+        self.position.add_to_cache()
+        self.orientation.add_to_cache()
+
+        super(Pose,self).add_to_cache()
 
     '''
     Update Methods
@@ -326,6 +355,16 @@ class Orientation(Node):
                 y=lst[2],
                 z=lst[3],
                 w=lst[0])
+
+    def to_euler():
+        quaternion = self.to_list('xyzw')
+        euler = tf.transformations.euler_from_quaternion(quaternion)
+        return euler
+
+    @classmethod
+    def from_euler(cls, rpy):
+        quaternion = tf.transformations.quaternion_from_euler(rpy[0],rpy[1],rpy[2])
+        return cls.from_list(quaternion,'xyzw')
 
     '''
     Data accessor/modifier methods

@@ -1,5 +1,4 @@
 from abstract import AbstractConditional
 
-
-class ComparisonConditional(AbstractConditional):
+class LogicCondition(AbstractConditional):
     pass
