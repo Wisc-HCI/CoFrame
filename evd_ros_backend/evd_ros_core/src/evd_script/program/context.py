@@ -1,6 +1,7 @@
 from ..node import Node
 from ..data.location import Location
 from ..data.machine import Machine
+from ..data.thing import Thing
 
 
 class Context(Node):
@@ -9,11 +10,12 @@ class Context(Node):
     Data structure methods
     '''
 
-    def __init__(self, locations=[], machines=[], parent_context=None, type='',
+    def __init__(self, locations=[], machines=[], things=[], parent_context=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
 
         self._locations = {}
         self._machines = {}
+        self._things = {}
         self._parent_context = None
 
         super(Context,self).__init__(
@@ -26,12 +28,14 @@ class Context(Node):
         self.parent_context = parent_context
         self.locations = locations
         self.machines = machines
+        self.things = things
 
     def to_dct(self):
         msg = super(Context,self).to_dct()
         msg.update({
             'locations': [l.to_dct() for l in self.locations],
-            'machines': [m.to_dct() for m in self.machines]
+            'machines': [m.to_dct() for m in self.machines],
+            'things': [t.to_dct() for t in self.things]
         })
         return msg
 
@@ -43,8 +47,8 @@ class Context(Node):
             type=dct['type'],
             append_type=False,
             locations=[Location.from_dct(l) for l in dct['locations']],
-            machines=[Machine.from_dct(m) for m in dct['machines']]
-        )
+            machines=[Machine.from_dct(m) for m in dct['machines']],
+            things=[Thing.from_dct(t) for t in dct['things']])
 
     '''
     Data accessor/modifier methods
@@ -81,6 +85,22 @@ class Context(Node):
             m.parent = self
 
         self.updated_attribute('machines','set')
+
+    @property
+    def things(self):
+        return self._things.values()
+
+    @things.setter
+    def things(self, value):
+        for t in self._things:
+            t.remove_from_cache()
+        self._things = {}
+
+        for t in value:
+            self._things[t.uuid] = t
+            t.parent = self
+
+        self.updated_attribute('things','set')
 
     @property
     def parent_context(self):
@@ -124,6 +144,22 @@ class Context(Node):
             self._machines.pop(uuid).remove_from_cache()
             self.updated_attribute('machines','delete', uuid)
 
+    def get_thing(self, uuid):
+        if uuid in self._things.keys():
+            return self._things[uuid]
+        else:
+            return None
+
+    def add_thing(self, thing):
+        thing.parent = self
+        self._things[thing.uuid] = thing
+        self.updated_attribute('things','add',thing.uuid)
+
+    def delete_thing(self, uuid):
+        if uuid in self._things.keys():
+            self._things.pop(uuid).remove_from_cache()
+            self.updated_attribute('things','delete', uuid)
+
     def set(self, dct):
 
         if 'locations' in dct.keys():
@@ -131,6 +167,9 @@ class Context(Node):
 
         if 'machines' in dct.keys():
             self.machines = [Machine.from_dct(m) for m in dct['machines']]
+
+        if 'things' in dct.keys():
+            self.things = [Thing.from_dct(t) for t in dct['things']]
 
         super(Context,self).set(dct)
 
@@ -145,6 +184,9 @@ class Context(Node):
         for l in self.locations:
             l.remove_from_cache()
 
+        for t in self.things:
+            t.remove_from_cache()
+
         super(Context,self).remove_from_cache()
 
     def add_to_cache(self):
@@ -153,6 +195,9 @@ class Context(Node):
 
         for l in self.locations:
             l.add_to_cache()
+
+        for t in self.things:
+            t.add_to_cache()
 
         super(Context,self).add_to_cache()
 
@@ -169,6 +214,9 @@ class Context(Node):
         elif uuid in [m.uuid for m in self.machines]:
             self.delete_machine(uuid)
             success = True
+        elif uuid in [t.uuid for t in self.things]:
+            self.delete_thing(uuid)
+            success = True
 
         return success
 
@@ -184,13 +232,18 @@ class Context(Node):
         for m in self.machines:
             m.deep_update()
 
+        for t in self.things:
+            t.deep_update()
+
         super(Context,self).deep_update()
 
         self.updated_attribute('machines','update')
         self.updated_attribute('locations','update')
+        self.updated_attribute('things','update')
 
     def shallow_update(self):
         super(Context,self).shallow_update()
 
         self.updated_attribute('machines','update')
         self.updated_attribute('locations','update')
+        self.updated_attribute('things','update')
