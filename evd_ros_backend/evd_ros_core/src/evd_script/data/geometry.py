@@ -206,6 +206,15 @@ class Position(Node):
             y=lst[1],
             z=lst[2])
 
+    @classmethod
+    def euclidean_distance(cls, pos1, pos2):
+        difX = pos1.x - pos2.x
+        difY = pos1.y - pos2.y
+        difZ = pos1.z - pos2.z
+
+        distance = math.sqrt(math.pow(difX,2) + math.pow(difY,2) + math.pow(difZ,2))
+        return distance
+
     '''
     Data accessor/modifier methods
     '''
@@ -365,6 +374,30 @@ class Orientation(Node):
     def from_euler(cls, rpy):
         quaternion = tf.transformations.quaternion_from_euler(rpy[0],rpy[1],rpy[2])
         return cls.from_list(quaternion,'xyzw')
+
+    @classmethod
+    def relative_rotation_list(cls, q1, q2): # in xyzw
+        q1_inv = [q1[0], q1[1], q1[2], -q1[3]]
+        return  tf.transformations.quaternion_multiply(q2, q1_inv)
+
+    @classmethod
+    def relative_rotation(cls, orientation1, orientation2):
+        q1 = orientation1.to_list()
+        q2 = orientation2.to_list()
+
+        qr = cls.relative_rotation_list(q1, q2)
+
+        return cls.from_list(qr)
+
+    @classmethod
+    def difference(cls, orientation1, orientation2):
+        q1 = orientation1.to_list()
+        q2 = orientation2.to_list()
+
+        qr = cls.relative_rotation_list(q1, q2)
+
+        theta = 2 * math.acos(math.abs(qr[3]))
+        return theta
 
     '''
     Data accessor/modifier methods
