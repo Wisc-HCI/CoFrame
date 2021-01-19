@@ -2,9 +2,8 @@ from ..node import Node
 from geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker, VisualizeMarkers
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, ColorTable
 from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 
 class TraceDataPoint(Pose, VisualizeMarker):
@@ -55,7 +54,7 @@ class TraceDataPoint(Pose, VisualizeMarker):
         marker.id = id
         marker.pose = self.to_ros()
         marker.scale = Vector3(0.025,0.025,0.025)
-        marker.color = ColorRGBA(255/255.0,255/255.0,255/255.0,1)
+        marker.color = ColorTable.TRACE_DATA_POINT_COLOR
 
         return marker
 
@@ -178,13 +177,13 @@ class Trace(Node, VisualizeMarkers):
 
             # trace path color based on group
             if key == self.end_effector_path:
-                lineMarker.color = ColorRGBA(0/255.0,255/255.0,0/255.0,1) #end effector color
+                lineMarker.color = ColorTable.TRACE_END_EFFECTOR_COLOR
             elif key in self.joint_paths:
-                lineMarker.color = ColorRGBA(0/255.0,0/255.0,255/255.0,1) # joint paths color
+                lineMarker.color = ColorTable.TRACE_JOINT_COLOR
             elif key in self.tool_paths:
-                lineMarker.color = ColorRGBA(255/255.0,0/255.0,0/255.0,1) # tool paths  color
+                lineMarker.color = ColorTable.TRACE_TOOL_COLOR
             else:
-                lineMarker.color = ColorRGBA(128/255.0,128/255.0,128/255.0,1) # other color
+                lineMarker.color = ColorTable.TRACE_COMPONENT_COLOR
 
             render_point_markers.append(pointsList)
             line_markers.append(lineMarker)

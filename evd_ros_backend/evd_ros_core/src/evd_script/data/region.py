@@ -3,9 +3,8 @@ import math
 from .geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, ColorTable
 from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 # Regions are just poses with uncertain positions and orientations
 
@@ -270,7 +269,7 @@ class CubeRegion(Region):
             2 * self.uncertainty_x,
             2 * self.uncertainty_y,
             2 * self.uncertainty_z)
-        marker.color = ColorRGBA(0,0,1,1)
+        marker.color = ColorTable.REGION_COLOR
 
         return marker
 
@@ -431,7 +430,7 @@ class SphereRegion(Region):
             2 * self.uncertainty_radius,
             2 * self.uncertainty_radius,
             2 * self.uncertainty_radius)
-        marker.color = ColorRGBA(0,0,1,1)
+        marker.color = ColorTable.REGION_COLOR
 
         return marker
 

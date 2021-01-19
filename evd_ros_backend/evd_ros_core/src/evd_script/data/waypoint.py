@@ -1,9 +1,8 @@
 from geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, ColorTable
 from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 
 class Waypoint(Pose, VisualizeMarker):
@@ -56,7 +55,7 @@ class Waypoint(Pose, VisualizeMarker):
         marker.id = id
         marker.pose = self.to_ros()
         marker.scale = Vector3(0.05,0.01,0.01)
-        marker.color = ColorRGBA(123/255.0,104/255.0,238/255.0,1)
+        marker.color = ColorTable.WAYPOINT_COLOR
 
         return marker
 

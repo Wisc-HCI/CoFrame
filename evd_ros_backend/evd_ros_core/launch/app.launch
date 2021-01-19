@@ -34,8 +34,4 @@
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>
 
-  <node name="data_model_rviz_publisher" pkg="evd_ros_core" type="data_model_rviz_publisher.py" output="screen">
-    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
-  </node>
-
 </launch>

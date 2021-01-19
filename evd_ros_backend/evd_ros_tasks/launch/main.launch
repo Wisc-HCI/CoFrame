@@ -1,9 +1,9 @@
 <launch>
 
-  <arg name="task" default="machine_tending"/>
+  <arg name="task" default="3d_printer_machine_tending"/>
   <arg name="simulate_physical_robot" default="true"/>
 
-  <include if="$(eval arg('task') == 'machine_tending')" file="$(find evd_ros_tasks)/launch/tasks/machine_tending.launch">
+  <include if="$(eval arg('task') == '3d_printer_machine_tending')" file="$(find evd_ros_tasks)/launch/tasks/3d_printer_machine_tending.launch">
     <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
   </include>
 

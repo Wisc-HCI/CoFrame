@@ -2,9 +2,8 @@ from ..node import Node
 from ..visualizable import VisualizeMarker
 from ..data.geometry import Pose, Orientation
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, ColorTable
 from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 
 class PinchPoint(Node, VisualizeMarker):
@@ -61,11 +60,11 @@ class PinchPoint(Node, VisualizeMarker):
         # The pose for this marker is at origin for that frame
 
         if self.state == self.GOOD_STATE:
-            color = ColorRGBA(0,1,0,1)
+            color = ColorTable.GOOD_COLOR
         elif self.state == self.WARN_STATE:
-            color = ColorRGBA(0.5,0.5,0,1)
+            color = ColorTable.WARN_COLOR
         elif self.state == self.ERROR_STATE:
-            color = ColorRGBA(1,0,0,1)
+            color = ColorTable.ERROR_COLOR
 
         marker = Marker()
         marker.header.frame_id = self.link
@@ -149,7 +148,7 @@ class PinchPoint(Node, VisualizeMarker):
 
     def remove_from_cache(self):
         self.orientation.remove_from_cache()
-        
+
         super(PinchPoint,self).remove_from_cache()
 
     def add_to_cache(self):

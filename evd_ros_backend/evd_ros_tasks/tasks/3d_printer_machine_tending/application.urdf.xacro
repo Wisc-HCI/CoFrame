@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<application name="application" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Common -->
+  <link name="world" />
+  <link name="app" />
+  <joint name="world_app_joint" type="fixed">
+    <parent link="world"/>
+    <child link="app"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <!-- Robot -->
+  <xacro:include filename="$(find evd_ros_core)/description/robot.urdf.xacro'" />
+  <joint name="app_robot_common_joint" type="fixed">
+    <parent link="app"/>
+    <child link="robot_common"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <!-- Table -->
+  <link name="table_link" type="fixed">
+    <visual>
+      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/Table/Table.stl"/>
+    </visual>
+    <collision>
+      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/Table/Table.stl"/>
+    </collision>
+  </link>
+  <joint name="app_table_joint" type="fixed">
+    <parent link="app" />
+    <child link="table_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <!-- 3D Printer -->
+  <link name="3d_printer_link" type="fixed">
+    <visual>
+      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/MK2-Printer/MK2-Printer.stl"/>
+    </visual>
+    <collision>
+      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/MK2-Printer/MK2-Printer.stl"/>
+    </collision>
+  </link>
+  <joint name="app_3d_printer_joint" type="fixed">
+    <parent link="app" />
+    <child link="3d_printer_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <!-- Product Box -->
+  <link name="box_link" type="fixed">
+    <visual>
+      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/Box/Box.stl"/>
+    </visual>
+    <collision>
+      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/Box/Box.stl"/>
+    </collision>
+  </link>
+  <joint name="app_box_joint" type="fixed">
+    <parent link="app" />
+    <child link="box_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <!-- Robot Pedestal -->
+  <link name="ur3e_pedestal_link" type="fixed" >
+    <visual>
+      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/ur3e-Pedestal/Pedestal.stl"/>
+    </visual>
+    <collision>
+      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/ur3e-Pedestal/Pedestal.stl"/>
+    </collision>
+  </link>
+  <joint name="robot_common_ur3e_pedestal_joint" type="fixed">
+    <parent link="robot_common" />
+    <child link="ur3e_pedestal_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+</application>

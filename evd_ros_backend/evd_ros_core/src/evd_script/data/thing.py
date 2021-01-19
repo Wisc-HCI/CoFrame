@@ -1,9 +1,8 @@
 from ..node import Node
 from ..visualizable import VisualizeMarker
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, ColorTable
 from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 # Things are objects being processed in the environment. They can be generated and consumed by machines.
 # Useful as a token for verification.
@@ -73,7 +72,7 @@ class Thing(Node):
             marker.id = id
             marker.pose = self.pose.to_ros()
             marker.scale = Vector3(1,1,1)
-            marker.color = ColorRGBA(1,1,1,1)
+            marker.color = ColorTable.THING_COLOR
             marker.mesh_resource = self.mesh_id
 
         return marker

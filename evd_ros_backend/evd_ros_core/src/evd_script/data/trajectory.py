@@ -3,9 +3,8 @@ from waypoint import Waypoint
 from trace import Trace, TraceDataPoint
 from ..visualizable import VisualizeMarkers
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, ColorTable
 from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 
 class Trajectory(Node, VisualizeMarkers):
@@ -81,7 +80,7 @@ class Trajectory(Node, VisualizeMarkers):
         lineMarker.ns = 'trajectories'
         lineMarker.id = id_start
         lineMarker.scale = Vector3(0.01,0.01,0.01)
-        lineMarker.color = ColorRGBA(1,1,1,1)
+        lineMarker.color = ColorTable.TRAJECTORY_COLOR
 
         count = id_start + 1
         for wp in self.waypoints:

@@ -2,9 +2,8 @@ from ..node import Node
 from ..data.geometry import Pose
 from ..visualizable import VisualizeMarker
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, ColorTable
 from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 
 class CollisionMesh(Node,VisualizeMarker):
@@ -61,11 +60,11 @@ class CollisionMesh(Node,VisualizeMarker):
         # The frame_id should be the application frame
 
         if self.state == self.GOOD_STATE:
-            color = ColorRGBA(0,1,0,1)
+            color = ColorTable.GOOD_COLOR
         elif self.state == self.WARN_STATE:
-            color = ColorRGBA(0.5,0.5,0,1)
+            color = ColorTable.WARN_COLOR
         elif self.state == self.ERROR_STATE:
-            color = ColorRGBA(1,0,0,1)
+            color = ColorTable.ERROR_COLOR
 
         marker = Marker()
         marker.header.frame_id = frame_id

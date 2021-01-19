@@ -2,9 +2,8 @@ from ..node import Node
 from ..visualizable import VisualizeMarker
 from ..data.geometry import Pose, Position
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, ColorTable
 from geometry_msgs.msg import Vector3
-from std_msgs.msg import ColorRGBA
 
 
 class OccupancyZone(Node, VisualizeMarker):
@@ -80,7 +79,7 @@ class OccupancyZone(Node, VisualizeMarker):
         marker.id = id
         marker.pose = Pose(position=self.to_position()).to_ros()
         marker.scale = Vector3(self.scale_x,0.001,self.scale_z)
-        marker.color = ColorRGBA(0.2,0.2,0.2,0.2)
+        marker.color = ColorTable.OCCUPANCY_ZONE_COLOR
 
         return marker
 
