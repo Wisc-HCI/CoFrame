@@ -5,12 +5,14 @@
 
   <arg name="run_test_script" default="false"/>
 
+  <arg name="enable_robot_drivers" default="true"/>
+
   <!-- Launch Robot Bringup -->
   <include file="$(find evd_ros_core)/launch/robot_bringup.launch">
-    <arg name="simulate_physical_robot" value="true"/>
-    <arg name="active_physical" value="true"/>
-    <arg name="active_simulated" value="true"/>
-    <arg name="active_planner" value="true"/>
+    <arg name="simulate_physical_robot" value="$(arg enable_robot_drivers)"/>
+    <arg name="active_physical" value="$(arg enable_robot_drivers)"/>
+    <arg name="active_simulated" value="$(arg enable_robot_drivers)"/>
+    <arg name="active_planner" value="$(arg enable_robot_drivers)"/>
   </include>
 
   <!-- System test code -->
