@@ -1,4 +1,4 @@
-from conditionals.abstract import AbstractConditional
+from .abstract import AbstractConditional
 
 #TODO machine conditional
 

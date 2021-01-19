@@ -1,4 +1,4 @@
-from abstract import AbstractConditional
+from .abstract import AbstractConditional
 
 
 class ComparisonConditional(AbstractConditional):

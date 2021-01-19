@@ -1,15 +1,15 @@
-from ..node import Node
+from ..primitive import Primitive
 
 
-class Primitive(Node):
+class Breakpoint(Primitive):
 
     '''
     Data structure methods
     '''
 
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
-        super(Primitive,self).__init__(
-            type='primitive.'+type if append_type else type,
+        super(Breakpoint,self).__init__(
+            type='breakpoint.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

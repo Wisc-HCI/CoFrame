@@ -2,8 +2,8 @@
 
 '''
 
-from task import *
-from cache import *
+from .task import Task
+from .cache import Cache
 
 
 class Program(Task):
