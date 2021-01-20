@@ -20,11 +20,12 @@ class CollisionMesh(Node,VisualizeMarker):
     Data structure methods
     '''
 
-    def __init__(self, state = None, mesh_id = None, pose = None, type='', name='',
+    def __init__(self, state = None, mesh_id = None, pose = None, link='', type='', name='',
                  parent=None, uuid=None, append_type=True):
         self._state = None
         self._mesh_id = None
         self._pose = None
+        self._link = None
 
         super(CollisionMesh,self).__init__(
             type='collision-mesh.'+type if append_type else type,
@@ -36,13 +37,15 @@ class CollisionMesh(Node,VisualizeMarker):
         self.state = state if state != None else GOOD_STATE
         self.mesh_id = mesh_id
         self.pose = pose if pose != None else Pose()
+        self.link = link
 
     def to_dct(self):
         msg = super(PinchPoint,self).to_dct()
         msg.update({
             'state': self.state,
             'mesh_id': self.mesh_id,
-            'pose': self.pose.to_dct()
+            'pose': self.pose.to_dct(),
+            'link': self.link
         })
         return msg
 
@@ -51,6 +54,7 @@ class CollisionMesh(Node,VisualizeMarker):
         return cls(state=dct['state'],
                    mesh_id=dct['mesh_id'],
                    pose=Pose.from_dct(dct['pose']),
+                   link=dct['link'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -136,6 +140,16 @@ class CollisionMesh(Node,VisualizeMarker):
 
             self.updated_attribute('pose','set')
 
+    @property
+    def link(self):
+        return self._link
+
+    @link.setter
+    def link(self):
+        if self._link != value:
+            self._link = value
+            self.updated_attribute('link','set')
+
     def set(self, dct):
         if 'state' in dct.keys():
             self.state = dct['state']
@@ -145,6 +159,9 @@ class CollisionMesh(Node,VisualizeMarker):
 
         if 'pose' in dct.keys():
             self.pose = Pose.from_dct(dct['pose'])
+
+        if 'link' in dct.keys():
+            self.link = dct['link']
 
         super(CollisionMesh,self).set(dct)
 
@@ -167,11 +184,14 @@ class CollisionMesh(Node,VisualizeMarker):
     '''
 
     def deep_update(self):
+        self.pose.deep_update()
+
         super(CollisionMesh,self).deep_update()
 
         self.updated_attribute('state','update')
         self.updated_attribute('mesh_id','update')
         self.updated_attribute('pose','update')
+        self.updated_attribute('link','update')
 
     def shallow_update(self):
         super(CollisionMesh,self).shallow_update()
@@ -179,3 +199,4 @@ class CollisionMesh(Node,VisualizeMarker):
         self.updated_attribute('state','update')
         self.updated_attribute('mesh_id','update')
         self.updated_attribute('pose','update')
+        self.updated_attribute('link','update')

@@ -37,7 +37,7 @@ class Location(Waypoint):
         marker.ns = 'locations'
         marker.id = id
         marker.pose = self.to_ros()
-        marker.scale = Vector3(0.1,0.1,0.1)
+        marker.scale = Vector3(1,1,1)
         marker.color = ColorTable.LOCATION_COLOR
         marker.mesh_resource = MESH_LOCATION
 
