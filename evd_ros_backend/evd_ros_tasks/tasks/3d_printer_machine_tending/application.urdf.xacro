@@ -25,13 +25,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl" scale="0.000001 0.000001 0.000001"/>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Table.stl" scale="0.000001 0.000001 0.000001"/>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Table.stl"/>
       </geometry>
     </collision>
   </link>
@@ -46,13 +46,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl" scale="0.000001 0.000001 0.000001"/>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl"/>
       </geometry>
     </collision>
   </link>
@@ -67,13 +67,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Box/Box.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Box/Box.stl"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl"/>
       </geometry>
     </collision>
   </link>
@@ -88,13 +88,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl" scale="0.000001 0.000001 0.000001"/>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl" scale="0.000001 0.000001 0.000001"/>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl"/>
       </geometry>
     </collision>
   </link>
