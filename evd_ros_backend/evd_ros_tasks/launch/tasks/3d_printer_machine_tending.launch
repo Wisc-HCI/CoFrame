@@ -23,15 +23,19 @@
 <!--=========================================================================-->
 
   <!-- Core -->
+  <!--
   <include file="$(find evd_ros_core)/launch/app.launch">
     <arg name="app_filepath" value="$(find evd_ros_tasks)/tasks/3d_printer_machine_tending/"/>
     <arg name="ros_frame_id" value="world"/>
   </include>
+-->
 
   <!-- For Debug -->
+  <!--
   <include file="$(find evd_ros_core)/launch/backend_data_visualizer.launch">
     <arg name="ros_frame_id" value="world"/>
   </include>
+-->
 
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">

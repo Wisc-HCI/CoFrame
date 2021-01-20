@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<application name="application" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="application" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="kinematics_config" default="$(find ur_e_description)/config/ur3e_default.yaml"/>
 
   <!-- Common -->
   <link name="world" />
@@ -11,7 +13,7 @@
   </joint>
 
   <!-- Robot -->
-  <xacro:include filename="$(find evd_ros_core)/description/robot.urdf.xacro'" />
+  <xacro:include filename="$(find evd_ros_core)/description/robot.urdf.xacro"/>
   <joint name="app_robot_common_joint" type="fixed">
     <parent link="app"/>
     <child link="robot_common"/>
@@ -21,10 +23,16 @@
   <!-- Table -->
   <link name="table_link" type="fixed">
     <visual>
-      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/Table/Table.stl"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl" scale="0.000001 0.000001 0.000001"/>
+      </geometry>
     </visual>
     <collision>
-      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/Table/Table.stl"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Table.stl" scale="0.000001 0.000001 0.000001"/>
+      </geometry>
     </collision>
   </link>
   <joint name="app_table_joint" type="fixed">
@@ -36,10 +44,16 @@
   <!-- 3D Printer -->
   <link name="3d_printer_link" type="fixed">
     <visual>
-      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/MK2-Printer/MK2-Printer.stl"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
     </visual>
     <collision>
-      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/MK2-Printer/MK2-Printer.stl"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl" scale="0.000001 0.000001 0.000001"/>
+      </geometry>
     </collision>
   </link>
   <joint name="app_3d_printer_joint" type="fixed">
@@ -51,10 +65,16 @@
   <!-- Product Box -->
   <link name="box_link" type="fixed">
     <visual>
-      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/Box/Box.stl"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Box/Box.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
     </visual>
     <collision>
-      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/Box/Box.stl"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
     </collision>
   </link>
   <joint name="app_box_joint" type="fixed">
@@ -66,10 +86,16 @@
   <!-- Robot Pedestal -->
   <link name="ur3e_pedestal_link" type="fixed" >
     <visual>
-      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/ur3e-Pedestal/Pedestal.stl"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl" scale="0.000001 0.000001 0.000001"/>
+      </geometry>
     </visual>
     <collision>
-      <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/ur3e-Pedestal/Pedestal.stl"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl" scale="0.000001 0.000001 0.000001"/>
+      </geometry>
     </collision>
   </link>
   <joint name="robot_common_ur3e_pedestal_joint" type="fixed">
@@ -78,4 +104,4 @@
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
   </joint>
 
-</application>
+</robot>

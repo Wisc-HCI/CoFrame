@@ -68,6 +68,7 @@
     <param name="rate" value="25"/>
     <rosparam param="/source_list">[physical/joint_states_labeled,simulated/joint_states_labeled,planner/joint_states_labeled]</rosparam>
   </node>
+
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
 </launch>

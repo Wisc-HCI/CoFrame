@@ -30,6 +30,11 @@ def generate():
 
     prog.context.add_machine(cnc)
 
+    # Define and add statically defined things
+    raw_stock = Thing()
+
+    prog.context.add_thing(raw_stock)
+
     # Define and add primitives
     prog.add_primitive(Initialize(
         homeLocUuid=home_loc.uuid,
