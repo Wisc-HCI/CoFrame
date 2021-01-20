@@ -32,7 +32,7 @@ class RobotInterface:
 
         self._joint_state_sub = rospy.Subscriber('{}/joint_states'.format(self._prefix),JointState,self._joint_state_cb)
         self._robot_mode_state_sub = rospy.Subscriber('{}/ur_driver/robot_mode_state'.format(self._prefix),RobotModeDataMsg,self._robot_mode_state_cb)
-        self._gripper_state_sub = rospy.Publisher('{}/gripper/stat'.format(self._prefix), GripperStat, self._gripper_state_cb)
+        self._gripper_state_sub = rospy.Subscriber('{}/gripper/stat'.format(self._prefix), GripperStat, self._gripper_state_cb)
 
         self.move_trajectory_action = actionlib.SimpleActionClient('{}/robot_control/move_trajectory'.format(self._prefix),MoveTrajectoryAction)
         #self.gripper_command_action = actionlib.SimpleActionClient('{}/gripper_command'.format(self._prefix),Grip)

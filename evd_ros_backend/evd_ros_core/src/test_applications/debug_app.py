@@ -31,18 +31,18 @@ def generate():
     prog.context.add_machine(cnc)
 
     # Define and add statically defined things
-    raw_stock = Thing()
+    raw_stock = Thing('stock',pick_stock_loc)
 
     prog.context.add_thing(raw_stock)
 
     # Define and add primitives
     prog.add_primitive(Initialize(
         homeLocUuid=home_loc.uuid,
-        machineUuid=cnc.uuid))
+        machineUuids=[cnc.uuid]))
 
     prog.add_primitive(Loop(
         primitives=[
-            PickAndPlace(
+            SimplePickAndPlace(
                 startLocUuid=home_loc.uuid,
                 pickLocUuid=pick_stock_loc.uuid,
                 placeLocUuid=place_stock_loc.uuid),
@@ -51,7 +51,7 @@ def generate():
                 endLocUuid=retract_loc.uuid),
             MachineBlockingProcess(
                 machineUuid=cnc.uuid),
-            PickAndPlace(
+            SimplePickAndPlace(
                 startLocUuid=retract_loc.uuid,
                 pickLocUuid=pick_final_loc.uuid,
                 placeLocUuid=place_final_loc.uuid)
@@ -74,11 +74,12 @@ def generate():
     #===========================================================================
     # Define Environment
     #===========================================================================
+
     env = Environment(
         reach_sphere=ReachSphere(),
         pinch_points=[],
         collision_meshes=[],
-        occupancy_zone=[
+        occupancy_zones=[
             OccupancyZone(OccupancyZone.HUMAN_TYPE),
             OccupancyZone(OccupancyZone.ROBOT_TYPE)],
         locations=locations,

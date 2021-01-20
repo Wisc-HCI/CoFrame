@@ -1,9 +1,9 @@
 from ..node import Node
 from waypoint import Waypoint
 from trace import Trace, TraceDataPoint
-from ..visualizable import VisualizeMarkers
+from ..visualizable import VisualizeMarkers, ColorTable
 
-from visualization_msgs.msg import Marker, ColorTable
+from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 

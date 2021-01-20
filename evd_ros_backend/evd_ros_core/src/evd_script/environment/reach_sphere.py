@@ -1,8 +1,8 @@
 from ..node import Node
 from ..data.geometry import Pose
-from ..visualizable import VisualizeMarker
+from ..visualizable import VisualizeMarker, ColorTable
 
-from visualization_msgs.msg import Marker, ColorTable
+from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
@@ -31,7 +31,7 @@ class ReachSphere(Node, VisualizeMarker):
             parent=parent,
             append_type=append_type)
 
-        self.state = state if state != None else GOOD_STATE
+        self.state = state if state != None else self.GOOD_STATE
         self.radius = radius
 
     def to_dct(self):
@@ -45,7 +45,7 @@ class ReachSphere(Node, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(state=dct['state'],
-                   radius=dct['radius']
+                   radius=dct['radius'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,

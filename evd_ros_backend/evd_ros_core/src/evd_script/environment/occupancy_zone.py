@@ -1,8 +1,8 @@
 from ..node import Node
-from ..visualizable import VisualizeMarker
+from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Pose, Position
 
-from visualization_msgs.msg import Marker, ColorTable
+from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
@@ -141,7 +141,7 @@ class OccupancyZone(Node, VisualizeMarker):
             self._scale_z = value
             self.updated_attribute('scale_z', 'set')
 
-    @hproperty
+    @property
     def height(self):
         return self._height
 

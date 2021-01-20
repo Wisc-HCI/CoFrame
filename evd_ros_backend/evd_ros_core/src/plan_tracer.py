@@ -28,7 +28,7 @@ from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
 from evd_ros_core.srv import SubmitJob, SubmitJobRequest, SubmitJobResponse
 from evd_ros_core.srv import PendingJobs, PendingJobsRequest, PendingJobsResponse
 
-from rik_interface import RelaxedIKInterface
+from interfaces.rik_interface import RelaxedIKInterface
 from interfaces.robot_interface import RobotInterface
 from interfaces.data_client_interface import DataClientInterface
 

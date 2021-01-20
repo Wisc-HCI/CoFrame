@@ -1,9 +1,9 @@
-from ..data.trajectory import Trajectory
-from ..data.location import Location
-from ..data.waypoint import Waypoint
-from ..data.thing import Thing
-from ..data.trace import Trace
-from ..data.machine import Machine
+from .data.trajectory import Trajectory
+from .data.location import Location
+from .data.waypoint import Waypoint
+from .data.thing import Thing
+from .data.trace import Trace
+from .data.machine import Machine
 
 
 class Cache(object):
@@ -40,6 +40,8 @@ class Cache(object):
 
     def remove(self, uuid):
 
+        node = self.data.pop(uuid, None)
+
         if isinstance(node,Trajectory):
             self.trajectories.pop(uuid,None)
 
@@ -57,8 +59,6 @@ class Cache(object):
 
         if isinstance(node,Machine):
             self.machines.pop(uuid, None)
-
-        node = self.data.pop(uuid, None)
 
     def clear(self):
         self.data = {}

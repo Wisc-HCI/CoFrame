@@ -1,6 +1,5 @@
 from .primitive import Primitive
 from .context import Context
-from ..utility_functions import NodeParser
 
 
 class Task(Primitive):
@@ -37,6 +36,8 @@ class Task(Primitive):
 
     @classmethod
     def from_dct(cls, dct):
+        from ..utility_functions import NodeParser
+
         return cls(
             name=dct['name'],
             type=dct['type'],
@@ -121,6 +122,8 @@ class Task(Primitive):
         return None
 
     def set(self, dct):
+        from ..utility_functions import NodeParser
+
         if 'primitives' in dct.keys():
             self.primitives = [NodeParser(p) for p in dct['primitives']]
 

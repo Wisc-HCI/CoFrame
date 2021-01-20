@@ -1,7 +1,7 @@
 from ..node import Node
-from ..visualizable import VisualizeMarker
+from ..visualizable import VisualizeMarker, ColorTable
 
-from visualization_msgs.msg import Marker, ColorTable
+from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 # Things are objects being processed in the environment. They can be generated and consumed by machines.
@@ -51,7 +51,7 @@ class Thing(Node):
 
     @classmethod
     def from_dct(cls, dct):
-        return cls(thing_type=dct['thing_type']
+        return cls(thing_type=dct['thing_type'],
                    mesh_id=dct['mesh_id'],
                    pose=Pose.from_dct(dct['pose']),
                    safety_level=dct['safety_level'],

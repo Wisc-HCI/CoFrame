@@ -1,8 +1,8 @@
 from ..node import Node
-from ..visualizable import VisualizeMarker
+from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Pose, Orientation
 
-from visualization_msgs.msg import Marker, ColorTable
+from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 

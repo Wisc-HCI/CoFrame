@@ -161,10 +161,10 @@ class Node(object):
     Update methods
     '''
 
-    def updated_attribute(self, attribute, verb):
+    def updated_attribute(self, attribute, verb, child_uuid = None):
         if self._parent != None:
             self._parent.child_changed_event(
-                [self._child_changed_event_msg(attribute,verb)])
+                [self._child_changed_event_msg(attribute, verb, child_uuid)])
 
     def deep_update(self):
         self.updated_attribute('name', 'update')

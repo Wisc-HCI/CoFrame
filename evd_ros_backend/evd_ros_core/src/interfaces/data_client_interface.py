@@ -15,9 +15,7 @@ from evd_ros_core.srv import LoadData, LoadDataRequest, LoadDataResponse
 from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 from evd_ros_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
 
-from evd_script.program.program import *
-from evd_script.environment.environment import *
-from evd_script.version_tracking.history import *
+from evd_script import *
 
 
 class DataClientInterface(object):

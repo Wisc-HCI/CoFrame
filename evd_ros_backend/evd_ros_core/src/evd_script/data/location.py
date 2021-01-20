@@ -1,7 +1,8 @@
 from waypoint import Waypoint
 
 from geometry_msgs.msg import Vector3
-from visualization_msgs.msg import Marker, ColorTable
+from visualization_msgs.msg import Marker
+from ..visualizable import ColorTable
 
 
 class Location(Waypoint):

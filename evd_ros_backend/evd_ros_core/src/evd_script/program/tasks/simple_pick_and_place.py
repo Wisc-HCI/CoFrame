@@ -21,7 +21,7 @@ class SimplePickAndPlace(Task):
                 OpenGripper()
             ]
 
-        super(PickAndPlace,self).__init__(
+        super(SimplePickAndPlace,self).__init__(
             type='simple-pick-and-place.'+type if append_type else type,
             name=name,
             uuid=uuid,

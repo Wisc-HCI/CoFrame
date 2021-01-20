@@ -1,5 +1,4 @@
 from ..task import Task
-from ..utility_functions import NodeParser
 
 
 class Loop(Task):
@@ -26,12 +25,14 @@ class Loop(Task):
     def to_dct(self):
         msg = super(Loop,self).to_dct()
         msg.update({
-            'condition': self.condition.to_dct()
+            'condition': self.condition.to_dct() if self.condition != None else None
         })
         return msg
 
     @classmethod
     def from_dct(cls, dct):
+        from ..utility_functions import NodeParser
+
         return cls(
             condition=NodeParser(dct['condition']) if dct['condition'] != None else None,
             name=dct['name'],

@@ -1,5 +1,4 @@
 from ..node import Node
-from ..utility_functions import NodeParser
 from ..environment.collision_mesh import CollisionMesh
 
 
@@ -154,7 +153,7 @@ class MachineRecipe(Node):
         self.updated_attribute('process_time','update')
         self.updated_attribute('input_thing_quantities','update')
         self.updated_attribute('output_thing_quantities','update')
-        
+
 
 class Machine(Node):
 
@@ -185,19 +184,21 @@ class Machine(Node):
     def to_dct(self):
         msg = super(Machine,self).to_dct()
         msg.update({
-            'collision_mesh': self.collision_mesh.to_dct(),
-            'input_regions': {k: self.input_regions[k].to_dct() for k in self.input_regions.keys()},
-            'output_regions': {k: self.output_regions[k].to_dct() for k in self.output_regions.keys()},
+            'collision_mesh': self.collision_mesh.to_dct() if self.collision_mesh != None else None,
+            'input_regions': {k: self.input_regions[k].to_dct() for k in self.input_regions.keys()} if self.input_regions != None else None,
+            'output_regions': {k: self.output_regions[k].to_dct() for k in self.output_regions.keys()} if self.output_regions != None else None,
             'recipe': self.recipe.to_dct()
         })
         return msg
 
     @classmethod
     def from_dct(cls, dct):
+        from ..utility_functions import NodeParser
+
         return cls(
-            collision_mesh=CollisionMesh.from_dct(dct['collision_mesh']),
-            input_regions={k: NodeParser(dct[k]) for k in dct['input_regions'].keys()},
-            output_regions={k: NodeParser(dct[k]) for k in dct['output_regions'].keys()},
+            collision_mesh=CollisionMesh.from_dct(dct['collision_mesh']) if dct['collision_mesh'] != None else None,
+            input_regions={k: NodeParser(dct[k]) for k in dct['input_regions'].keys()} if dct['input_regions'] != None else None,
+            output_regions={k: NodeParser(dct[k]) for k in dct['output_regions'].keys()} if dct['output_regions'] != None else None,
             recipe=MachineRecipe.from_dct(dct['recipe']),
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
@@ -348,6 +349,7 @@ class Machine(Node):
             self.updated_attribute('recipe','set')
 
     def set(self, dct):
+        from ..utility_functions import NodeParser
 
         if 'collision_mesh' in dct.keys():
             self.collision_mesh = CollisionMesh.from_dct(dct['collision_mesh'])

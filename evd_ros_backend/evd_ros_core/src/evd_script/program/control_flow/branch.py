@@ -1,5 +1,4 @@
 from ..primitive import Primitive
-from ..utility_functions import NodeParser
 
 
 class Branch(Primitive):
@@ -23,6 +22,8 @@ class Branch(Primitive):
 
     @classmethod
     def from_dct(self, value):
+        from ..utility_functions import NodeParser
+        
         pass
 
     '''
@@ -34,14 +35,14 @@ class Branch(Primitive):
     '''
 
     def remove_from_cache(self):
-        for e in self.entries
+        for e in self.entries:
             e.condition.remove_from_cache()
             e.primitive.remove_from_cache()
 
         super(Branch,self).remove_from_cache()
 
     def add_to_cache(self):
-        for e in self.entries
+        for e in self.entries:
             e.condition.add_to_cache()
             e.primitive.add_to_cache()
 

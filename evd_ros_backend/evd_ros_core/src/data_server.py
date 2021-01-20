@@ -51,7 +51,7 @@ class DataServer:
         self._environment_history = History()
         self._environment_history.append(HistoryEntry(
             action='initial',
-            change_dct==self._environment.to_dct(),
+            change_dct=self._environment.to_dct(),
             snapshot_dct=Environment().to_dct(),
             source='data-server'
         ))

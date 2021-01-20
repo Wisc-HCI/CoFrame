@@ -13,8 +13,8 @@ class Environment(Node):
     Data structure methods
     '''
 
-    def __init__(reach_sphere, pinch_points, collision_meshes, occupancy_zones,
-                 locations, trajectories, changes_cb=None, name='', type='',
+    def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
+                 locations=[], trajectories=[], changes_cb=None, name='', type='',
                  uuid=None, append_type=True, context=None):
 
         self._reach_sphere = None
@@ -25,6 +25,8 @@ class Environment(Node):
         self._trajectories = None
 
         self.changes_cb = changes_cb
+
+        from ..cache import Cache
         self._cache = Cache()
 
         super(Environment,self).__init__(
@@ -34,7 +36,7 @@ class Environment(Node):
             parent=None,
             append_type=append_type)
 
-        self.reach_sphere = reach_sphere
+        self.reach_sphere = reach_sphere if reach_sphere != None else ReachSphere()
         self.pinch_points = pinch_points
         self.collision_meshes = collision_meshes
         self.occupancy_zones = occupancy_zones
@@ -80,7 +82,7 @@ class Environment(Node):
 
     @reach_sphere.setter
     def reach_sphere(self, value):
-        if value === None:
+        if value == None:
             raise Exception('reach sphere cannot be null')
 
         if self._reach_sphere != value:
@@ -93,11 +95,11 @@ class Environment(Node):
 
     @property
     def pinch_points(self):
-        return self._reach_sphere
+        return self._pinch_points
 
     @pinch_points.setter
     def pinch_points(self, value):
-        if value === None:
+        if value == None:
             raise Exception('pinch point list cannot be null')
 
         if self._pinch_points != value:
@@ -117,7 +119,7 @@ class Environment(Node):
 
     @collision_meshes.setter
     def collision_meshes(self, value):
-        if value === None:
+        if value == None:
             raise Exception('collision meshes list cannot be null')
 
         if self._collision_meshes != value:
@@ -137,7 +139,7 @@ class Environment(Node):
 
     @occupancy_zones.setter
     def occupancy_zones(self, value):
-        if value === None:
+        if value == None:
             raise Exception('occupancy zones list cannot be null')
 
         if self._occupancy_zones != value:
@@ -157,7 +159,7 @@ class Environment(Node):
 
     @locations.setter
     def locations(self, value):
-        if value === None:
+        if value == None:
             raise Exception('locations list cannot be null')
 
         if self._locations != value:
@@ -193,7 +195,7 @@ class Environment(Node):
 
     @trajectories.setter
     def trajectories(self, value):
-        if value === None:
+        if value == None:
             raise Exception('trajectories list cannot be null')
 
         if self._trajectories != value:

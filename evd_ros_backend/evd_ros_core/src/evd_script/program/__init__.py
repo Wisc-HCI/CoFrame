@@ -1,5 +1,4 @@
 from .task import Task
-from .cache import Cache
 from .context import Context
 from .primitive import Primitive
 from .program import Program

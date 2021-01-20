@@ -3,7 +3,6 @@
 '''
 
 from .task import Task
-from .cache import Cache
 
 
 class Program(Task):
@@ -14,6 +13,8 @@ class Program(Task):
 
     def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, context=None):
         self.changes_cb = changes_cb
+
+        from ..cache import Cache
         self._cache = Cache()
 
         super(Program,self).__init__(
@@ -42,6 +43,7 @@ class Program(Task):
             attribute_trace.append(self._child_changed_event_msg(None, 'callback'))
             self.changes_cb(attribute_trace)
 
-    def updated_attribute(attribute, verb, child_uuid = None):
+    def updated_attribute(self, attribute, verb, child_uuid = None):
         event = [self._child_changed_event_msg(attribute, verb, child_uuid)]
-        self.changes_cb(event)
+        if self.changes_cb != None:
+            self.changes_cb(event)
