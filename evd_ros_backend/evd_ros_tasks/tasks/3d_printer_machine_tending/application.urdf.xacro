@@ -16,27 +16,6 @@
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
   </joint>
 
-  <!-- Location Marker Test -->
-  <link name="location_marker_test_link" type="fixed">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://evd_ros_core/markers/LocationMarker.stl"/>
-      </geometry>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://evd_ros_core/markers/LocationMarker.stl"/>
-      </geometry>
-    </collision>
-  </link>
-  <joint name="app_location_joint" type="fixed">
-    <parent link="app"/>
-    <child link="location_marker_test_link"/>
-    <origin xyz="0.0 1.0 0.0" rpy="0.0 0.0 0.0" />
-  </joint>
-
   <!-- Robot -->
   <xacro:include filename="$(find evd_ros_core)/description/robot.urdf.xacro"/>
   <joint name="app_robot_common_joint" type="fixed">
