@@ -54,7 +54,7 @@ class Waypoint(Pose, VisualizeMarker):
         marker.ns = 'waypoints'
         marker.id = id
         marker.pose = self.to_ros()
-        marker.scale = Vector3(0.05,0.01,0.01)
+        marker.scale = Vector3(0.075,0.03,0.03)
         marker.color = ColorTable.WAYPOINT_COLOR
 
         return marker
