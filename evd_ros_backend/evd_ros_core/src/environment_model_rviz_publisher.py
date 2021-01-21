@@ -2,6 +2,7 @@
 
 import rospy
 
+from visualization_msgs.msg import Marker
 from interfaces.data_client_interface import DataClientInterface
 
 

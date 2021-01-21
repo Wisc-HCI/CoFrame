@@ -1,3 +1,4 @@
+from .geometry import Pose
 from ..node import Node
 from ..visualizable import VisualizeMarker, ColorTable
 
@@ -71,7 +72,7 @@ class Thing(Node):
             marker.ns = 'things'
             marker.id = id
             marker.pose = self.pose.to_ros()
-            marker.scale = Vector3(1,1,1)
+            marker.scale = Vector3(0.001,0.001,0.001)
             marker.color = ColorTable.THING_COLOR
             marker.mesh_resource = self.mesh_id
 

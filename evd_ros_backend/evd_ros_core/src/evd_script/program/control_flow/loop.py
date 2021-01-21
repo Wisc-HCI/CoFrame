@@ -31,7 +31,7 @@ class Loop(Task):
 
     @classmethod
     def from_dct(cls, dct):
-        from ..utility_functions import NodeParser
+        from ...utility_functions import NodeParser
 
         return cls(
             condition=NodeParser(dct['condition']) if dct['condition'] != None else None,

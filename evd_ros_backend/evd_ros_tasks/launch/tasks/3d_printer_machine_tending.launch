@@ -9,16 +9,23 @@
   <arg name="launch_rviz" default="true"/>
   <arg name="load_rviz_cfg" default="true"/>
 
+  <arg name="run_robot" default="false"/>
+
 <!--=========================================================================-->
 <!--  Robot (All interfaces)                                                 -->
 <!--=========================================================================-->
 
-  <!--
-  <include file="$(find evd_ros_core)/launch/robot_bringup.launch">
-    <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
-    <arg name="application_description_xacro" value="$(find evd_ros_tasks)/tasks/3d_printer_machine_tending/application.urdf.xacro"/>
-  </include>
-  -->
+  <group if="$(arg run_robot)">
+    <include file="$(find evd_ros_core)/launch/robot_bringup.launch">
+      <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
+      <arg name="application_description_xacro" value="$(find evd_ros_tasks)/tasks/3d_printer_machine_tending/application.urdf.xacro"/>
+    </include>
+  </group>
+  <group unless="$(arg run_robot)">
+    <include file="$(find evd_ros_core)/launch/robot_no_bringup.launch">
+      <arg name="application_description_xacro" value="$(find evd_ros_tasks)/tasks/3d_printer_machine_tending/application.urdf.xacro"/>
+    </include>
+  </group>
 
 <!--=========================================================================-->
 <!--  Application                                                            -->
@@ -31,11 +38,9 @@
   </include>
 
   <!-- For Debug -->
-  <!--
   <include file="$(find evd_ros_core)/launch/backend_data_visualizer.launch">
     <arg name="ros_frame_id" value="world"/>
   </include>
--->
 
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">

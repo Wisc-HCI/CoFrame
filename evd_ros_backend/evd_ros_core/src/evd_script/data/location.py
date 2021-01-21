@@ -40,6 +40,6 @@ class Location(Waypoint):
         marker.pose = self.to_ros()
         marker.scale = Vector3(1,1,1)
         marker.color = ColorTable.LOCATION_COLOR
-        marker.mesh_resource = MESH_LOCATION
+        marker.mesh_resource = self.MESH_LOCATION
 
         return marker

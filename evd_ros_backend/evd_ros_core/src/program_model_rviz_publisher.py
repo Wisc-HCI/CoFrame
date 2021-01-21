@@ -2,6 +2,7 @@
 
 import rospy
 
+from visualization_msgs.msg import Marker
 from interfaces.data_client_interface import DataClientInterface
 
 
@@ -26,7 +27,6 @@ class ProgramModelRvizPublisherNode:
 
         # get all locations and display all locations
         locations = self._data_client.program.cache.locations.values()
-
         for loc in locations:
             marker = loc.to_ros_marker(self._ros_frame_id,self._count)
             print 'adding location markers', loc.uuid
@@ -36,7 +36,6 @@ class ProgramModelRvizPublisherNode:
 
         # Get all trajectories and display all waypoints and display all traces
         trajectories = self._data_client.program.cache.trajectories.values()
-
         for traj in trajectories:
 
             trajMarker, waypointMarkers, waypointUuids = traj.to_ros_markers(self._ros_frame_id, self._count)
@@ -76,6 +75,16 @@ class ProgramModelRvizPublisherNode:
                 print 'adding trajectory line marker', traj.uuid
                 self._marker_pub.publish(trajMarker)
                 updated_markers[traj.uuid] = trajMarker
+
+        # Get all things
+        things = self._data_client.program.cache.things.values()
+        for thing in things:
+            marker = thing.to_ros_marker(self._ros_frame_id,self._count)
+            if marker != None:
+                print 'adding thing markers', thing.uuid
+                self._marker_pub.publish(marker)
+                self._count = self._count + 1
+                updated_markers[thing.uuid] = marker
 
         # Delete any markers that have not been updated
         for ids in self._marker_uuid_list.keys():

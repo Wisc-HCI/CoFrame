@@ -31,7 +31,7 @@ def generate():
     prog.context.add_machine(cnc)
 
     # Define and add statically defined things
-    raw_stock = Thing('stock',pick_stock_loc)
+    raw_stock = Thing('stock',pick_stock_loc,mesh_id='package://evd_ros_core/markers/3DBenchy.stl')
 
     prog.context.add_thing(raw_stock)
 
