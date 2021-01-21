@@ -1,7 +1,7 @@
-from ..node import Node
-from ..data.location import Location
-from ..data.machine import Machine
-from ..data.thing import Thing
+from .node import Node
+from .data.location import Location
+from .data.machine import Machine
+from .data.thing import Thing
 
 
 class Context(Node):
@@ -115,6 +115,8 @@ class Context(Node):
     def get_location(self, uuid):
         if uuid in self._locations.keys():
             return self._locations[uuid]
+        elif self._parent_context != None:
+            return self._parent_context.get_location(uuid)
         else:
             return None
 
@@ -131,6 +133,8 @@ class Context(Node):
     def get_machine(self, uuid):
         if uuid in self._machines.keys():
             return self._machines[uuid]
+        elif self._parent_context != None:
+            return self._parent_context.get_machine(uuid)
         else:
             return None
 
@@ -147,6 +151,8 @@ class Context(Node):
     def get_thing(self, uuid):
         if uuid in self._things.keys():
             return self._things[uuid]
+        elif self._parent_context != None:
+            return self._parent_context.get_thing(uuid)
         else:
             return None
 

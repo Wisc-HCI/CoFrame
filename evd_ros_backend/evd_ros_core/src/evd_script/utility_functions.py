@@ -1,3 +1,5 @@
+from .cache import *
+
 from .data import DataNodeParser
 from .environment import EnvironmentNodeParser
 from .program import ProgramNodeParser
@@ -6,6 +8,17 @@ from .node import Node
 
 
 def NodeParser(dct):
+
+    ## Check if object already in the cache
+    try:
+        node = get_evd_cache_obj().get(dct['uuid'])
+    except:
+        node = None
+
+    if node != None:
+        return node
+
+    ## Must create a new object
     type = dct["type"].split('.')
     exactType = type[len(type) - 2]
 

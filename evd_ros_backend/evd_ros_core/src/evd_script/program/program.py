@@ -14,9 +14,6 @@ class Program(Task):
     def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, context=None):
         self.changes_cb = changes_cb
 
-        from ..cache import Cache
-        self._cache = Cache()
-
         super(Program,self).__init__(
             type='program.'+type if append_type else type,
             name=name,
@@ -25,14 +22,6 @@ class Program(Task):
             append_type=append_type,
             primitives=primitives,
             context=context)
-
-    '''
-    Data accessor/modifier methods
-    '''
-
-    @property
-    def cache(self):
-        return self._cache
 
     '''
     Utility methods

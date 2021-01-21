@@ -1,5 +1,5 @@
 from .primitive import Primitive
-from .context import Context
+from ..context import Context
 
 
 class Task(Primitive):
@@ -12,7 +12,7 @@ class Task(Primitive):
                  append_type=True, context=None):
 
         self._primitives = []
-        self._context = Context()
+        self._context = None
 
         super(Task,self).__init__(
             type='task.'+type if append_type else type,
@@ -21,8 +21,7 @@ class Task(Primitive):
             parent=parent,
             append_type=append_type)
 
-        if context != None:
-            self.context = context
+        self.context = context if context != None else Context()
 
         self.primitives = primitives
 
@@ -57,7 +56,8 @@ class Task(Primitive):
     @context.setter
     def context(self, value):
         if self._context != value:
-            self._context.remove_from_cache()
+            if self._context != None:
+                self._context.remove_from_cache()
 
             self._context = value
             self._context.parent = self
@@ -65,6 +65,23 @@ class Task(Primitive):
                 self._context.parent_context = self.parent.context
 
             self.updated_attribute('context','set')
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, value):
+        if self._parent != value:
+
+            self.remove_from_cache()
+            self._parent = value
+            self.add_to_cache()
+
+            self.updated_attribute("parent","set")
+
+            if self.parent != None:
+                self._context.parent_context = self.parent.context
 
     @property
     def primitives(self):

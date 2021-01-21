@@ -24,12 +24,12 @@ class Pose(Node):
             append_type=append_type)
 
         if position is None:
-            self.position = Position(0,0,0,parent=self)
+            self.position = Position(0,0,0)
         else:
             self.position = position
 
         if orientation is None:
-            self.orientation = Orientation(0,0,0,1,parent=self)
+            self.orientation = Orientation(0,0,0,1)
         else:
             self.orientation = orientation
 
@@ -69,7 +69,7 @@ class Pose(Node):
 
     @position.setter
     def position(self, value):
-        if (self._position != value):
+        if self._position != value:
             if value == None:
                 raise Exception('Position cannot be None')
 

@@ -28,6 +28,8 @@ class DataClientInterface(object):
         self._use_program_interface = use_program_interface
         self._use_environment_interface = use_environment_interface
 
+        self._cache = get_evd_cache_obj()
+
         if self._use_application_interface:
             self._load_app_srv = rospy.ServiceProxy('data_server/load_application_data',LoadData)
             self._save_app_srv = rospy.ServiceProxy('data_server/save_application_data',SaveData)
@@ -168,6 +170,7 @@ class DataClientInterface(object):
 
     def _update_program_cb(self, msg):
         #TODO need to do a smarter version of this where if our tag matches previous tag then only perform the update to current tag
+        #TODO need to push these changes through the program update callback (just the changes!)
         try:
             self._program = Program.from_dct(json.loads(msg.data))
             self._program.changes_cb = self.__program_changed_cb
@@ -201,3 +204,11 @@ class DataClientInterface(object):
         #TODO need to keep a manifest of all changed nodes
         # self._environment_changes_manifest
         print trace
+
+    '''
+    Public Utilities
+    '''
+    
+    @property
+    def cache(self):
+        return self._cache

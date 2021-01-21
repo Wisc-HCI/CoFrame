@@ -1,5 +1,7 @@
+from .cache import *
+
 from .node import Node
-from .cache import Cache
+from .context import Context
 from .utility_functions import NodeParser, get_exact_type
 from .attribute_trace_processor import AttributeTraceProcessor
 from .visualizable import VisualizeMarker, VisualizeMarkers, ColorTable

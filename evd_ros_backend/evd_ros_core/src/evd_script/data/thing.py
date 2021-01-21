@@ -1,5 +1,4 @@
 from .geometry import Pose
-from ..node import Node
 from ..visualizable import VisualizeMarker, ColorTable
 
 from visualization_msgs.msg import Marker
@@ -8,7 +7,7 @@ from geometry_msgs.msg import Vector3
 # Things are objects being processed in the environment. They can be generated and consumed by machines.
 # Useful as a token for verification.
 
-class Thing(Node):
+class Thing(Pose):
 
     '''
     Class Constants
@@ -21,14 +20,15 @@ class Thing(Node):
     Data structure methods
     '''
 
-    def __init__(self, thing_type, pose, safety_level=0, mesh_id=None, type='',
-                 name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, thing_type, safety_level=0, mesh_id=None, position=None, orientation=None,
+                 type='', name='', parent=None, uuid=None, append_type=True):
         self._thing_type = None
-        self._pose = None
         self._safety_level = None
         self._mesh_id = None
 
         super(Thing,self).__init__(
+            position=position,
+            orientation=orientation,
             type='thing.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -36,7 +36,6 @@ class Thing(Node):
             append_type=append_type)
 
         self.thing_type = thing_type
-        self.pose = pose
         self.safety_level = safety_level
         self.mesh_id = mesh_id
 
@@ -44,7 +43,6 @@ class Thing(Node):
         msg = super(Thing,self).to_dct()
         msg.update({
             'thing_type': self.thing_type,
-            'pose': self.pose.to_dct(),
             'safety_level': self.safety_level,
             'mesh_id': self.mesh_id
         })
@@ -54,7 +52,6 @@ class Thing(Node):
     def from_dct(cls, dct):
         return cls(thing_type=dct['thing_type'],
                    mesh_id=dct['mesh_id'],
-                   pose=Pose.from_dct(dct['pose']),
                    safety_level=dct['safety_level'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
@@ -71,8 +68,8 @@ class Thing(Node):
             marker.type = Marker.MESH_RESOURCE
             marker.ns = 'things'
             marker.id = id
-            marker.pose = self.pose.to_ros()
-            marker.scale = Vector3(0.001,0.001,0.001)
+            marker.pose = self.to_ros()
+            marker.scale = Vector3(1,1,1)
             marker.color = ColorTable.THING_COLOR
             marker.mesh_resource = self.mesh_id
 
@@ -94,23 +91,6 @@ class Thing(Node):
 
             self._thing_type = value
             self.updated_attribute('thing_type','set')
-
-    @property
-    def pose(self):
-        return self._pose
-
-    @pose.setter
-    def pose(self, value):
-        if self._pose != value:
-            if value == None:
-                raise Exception('Must supply a valid pose')
-
-            if self._pose != None:
-                self._pose.remove_from_cache()
-
-            self._pose = value
-            self._pose.parent = self
-            self.updated_attribute('pose','set')
 
     @property
     def safety_level(self):
@@ -140,9 +120,6 @@ class Thing(Node):
         if 'thing_type' in dct.keys():
             self.thing_type = dct['thing_type']
 
-        if 'pose' in dct.keys():
-            self.pose = Pose.from_dct(dct['pose'])
-
         if 'safety_level' in dct.keys():
             self.safety_level = dct['safety_level']
 
@@ -157,13 +134,9 @@ class Thing(Node):
 
     def remove_from_cache(self):
 
-        self.pose.remove_from_cache()
-
         super(Thing,self).remove_from_cache()
 
     def add_to_cache(self):
-
-        self.pose.add_to_cache()
 
         super(Thing,self).add_to_cache()
 
@@ -173,12 +146,9 @@ class Thing(Node):
 
     def deep_update(self):
 
-        self.pose.deep_update()
-
         super(Thing,self).deep_update()
 
         self.updated_attribute('thing_type','update')
-        self.updated_attribute('pose','update')
         self.updated_attribute('safety_level','update')
         self.updated_attribute('mesh_id','update')
 
@@ -186,6 +156,5 @@ class Thing(Node):
         super(Thing,self).shallow_update()
 
         self.updated_attribute('thing_type','update')
-        self.updated_attribute('pose','update')
         self.updated_attribute('safety_level','update')
         self.updated_attribute('mesh_id','update')

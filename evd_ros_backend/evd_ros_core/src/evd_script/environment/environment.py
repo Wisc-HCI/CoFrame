@@ -26,9 +26,6 @@ class Environment(Node):
 
         self.changes_cb = changes_cb
 
-        from ..cache import Cache
-        self._cache = Cache()
-
         super(Environment,self).__init__(
             type='environment.'+type if append_type else type,
             name=name,
@@ -71,10 +68,6 @@ class Environment(Node):
     '''
     Data accessor/modifier methods
     '''
-
-    @property
-    def cache(self):
-        return self._cache
 
     @property
     def reach_sphere(self):

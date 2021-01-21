@@ -1,5 +1,7 @@
 import uuid
 
+from .cache import *
+
 from abc import ABCMeta, abstractmethod
 
 
@@ -102,20 +104,11 @@ class Node(object):
     Cache methods
     '''
 
-    @property
-    def cache(self):
-        if self._parent != None:
-            return self._parent.cache
-        else:
-            return None
-
     def remove_from_cache(self):
-        if self.cache != None:
-            self.cache.remove(self.uuid)
+        get_evd_cache_obj().remove(self.uuid)
 
     def add_to_cache(self):
-        if self.cache != None:
-            self.cache.add(self._uuid,self)
+        get_evd_cache_obj().add(self._uuid,self)
 
     def refresh_cache_entry(self):
         self.remove_from_cache()

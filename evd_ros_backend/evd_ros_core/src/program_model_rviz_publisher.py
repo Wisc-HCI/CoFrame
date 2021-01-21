@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import rospy
+import pprint
 
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 from interfaces.data_client_interface import DataClientInterface
 
 
 DEFAULT_ROS_FRAME_ID = 'app'
-DEFAULT_PUBLISH_RATE = 5.0
 
 
 class ProgramModelRvizPublisherNode:
@@ -18,24 +18,33 @@ class ProgramModelRvizPublisherNode:
         self._marker_uuid_list = {}
 
         self._ros_frame_id = ros_frame_id
-        self._marker_pub = rospy.Publisher('program_model_visualizer/markers',Marker,queue_size=10,latch=True)
+        self._marker_pub = rospy.Publisher('program_model_visualizer/markers',MarkerArray,queue_size=10,latch=True)
         self._data_client = DataClientInterface(use_program_interface=True, on_program_update_cb=self._update_markers)
 
     def _update_markers(self):
-        print 'updating markers'
+
+        markerArray = MarkerArray()
+
+        print '\n\n\n\n'
+        print 'Cache Log'
+        pprint.pprint(self._data_client.cache.utility_cache_stats())
+
+        print '\n\n\n\nupdating markers'
         updated_markers = {}
 
         # get all locations and display all locations
-        locations = self._data_client.program.cache.locations.values()
+        locations = self._data_client.cache.locations.values()
+        print '\n\nLocations=', locations
         for loc in locations:
             marker = loc.to_ros_marker(self._ros_frame_id,self._count)
             print 'adding location markers', loc.uuid
-            self._marker_pub.publish(marker)
+            markerArray.markers.append(marker)
             self._count = self._count + 1
             updated_markers[loc.uuid] = marker
 
         # Get all trajectories and display all waypoints and display all traces
-        trajectories = self._data_client.program.cache.trajectories.values()
+        trajectories = self._data_client.cache.trajectories.values()
+        print '\n\nTrajectories', trajectories
         for traj in trajectories:
 
             trajMarker, waypointMarkers, waypointUuids = traj.to_ros_markers(self._ros_frame_id, self._count)
@@ -46,7 +55,7 @@ class ProgramModelRvizPublisherNode:
                 marker = waypointMarkers[i]
                 uuid = waypointUuids[i]
                 print 'adding waypoint marker', uuid
-                self._marker_pub.publish(marker)
+                markerArray.markers.append(marker)
                 updated_markers[uuid] = marker
 
             # If we can and want to display traces otherwise just display the trajectory sketch
@@ -63,26 +72,28 @@ class ProgramModelRvizPublisherNode:
                         uuid = renderpointUuids[i][j]
 
                         print 'adding render point marker', uuid
-                        self._marker_pub.publish(marker)
+                        markerArray.markers.append(marker)
                         updated_markers[uuid] = marker
 
                     # trace line
                     print 'adding line trace marker', traj.trace.uuid
-                    self._marker_pub.publish(traceMarkers[i])
+                    markerArray.markers.append(traceMarkers[i])
                     updated_markers[traj.trace.uuid] = traceMarkers[i]
 
             else:
                 print 'adding trajectory line marker', traj.uuid
-                self._marker_pub.publish(trajMarker)
+                markerArray.markers.append(trajMarker)
                 updated_markers[traj.uuid] = trajMarker
+                print trajMarker
 
         # Get all things
-        things = self._data_client.program.cache.things.values()
+        things = self._data_client.cache.things.values()
+        print '\n\nThings=', things
         for thing in things:
             marker = thing.to_ros_marker(self._ros_frame_id,self._count)
             if marker != None:
                 print 'adding thing markers', thing.uuid
-                self._marker_pub.publish(marker)
+                markerArray.markers.append(marker)
                 self._count = self._count + 1
                 updated_markers[thing.uuid] = marker
 
@@ -92,9 +103,10 @@ class ProgramModelRvizPublisherNode:
                 marker = self._marker_uuid_list[ids]
                 marker.action = Marker.DELETE
                 print 'deleting marker', ids
-                self._marker_pub.publish(marker)
+                markerArray.markers.append(marker)
 
         # Update marker list
+        self._marker_pub.publish(markerArray)
         self._marker_uuid_list = updated_markers
 
 

@@ -21,7 +21,7 @@ class Trajectory(Node, VisualizeMarkers):
 
         self._start_location_uuid = None
         self._end_location_uuid = None
-        self._waypoints = []
+        self._waypoints = None
         self._velocity = None
         self._acceleration = None
         self._trace = None
@@ -39,8 +39,8 @@ class Trajectory(Node, VisualizeMarkers):
         self.waypoints = waypoints
         self.velocity = velocity
         self.acceleration = acceleration
-        self.trace = trace
         self.move_type = move_type
+        self.trace = trace
 
     def to_dct(self):
         msg = super(Trajectory,self).to_dct()
@@ -83,12 +83,19 @@ class Trajectory(Node, VisualizeMarkers):
         lineMarker.color = ColorTable.TRAJECTORY_COLOR
 
         count = id_start + 1
+
+        startLoc = self.context.get_location(self.start_location_uuid)
+        lineMarker.points.append(startLoc.position.to_ros())
+
         for wp in self.waypoints:
             marker = wp.to_ros_marker(frame_id,count)
             lineMarker.points.append(marker.pose.position)
             waypoint_markers.append(marker)
             waypoint_uuids.append(wp.uuid)
             count += 1
+
+        endLoc = self.context.get_location(self.end_location_uuid)
+        lineMarker.points.append(endLoc.position.to_ros())
 
         return lineMarker, waypoint_markers, waypoint_uuids
 
@@ -125,8 +132,12 @@ class Trajectory(Node, VisualizeMarkers):
     @waypoints.setter
     def waypoints(self, value):
         if self._waypoints != value:
-            for w in self._waypoints:
-                w.remove_from_cache()
+            if value == None:
+                raise Exception('Waypoints must be a list not None')
+
+            if self._waypoints != None:
+                for w in self._waypoints:
+                    w.remove_from_cache()
 
             self._waypoints = value
             for w in self._waypoints:

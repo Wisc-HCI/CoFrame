@@ -1,7 +1,11 @@
+import pprint
+
 from evd_script import *
 
 
 def generate():
+
+    cache = get_evd_cache_obj()
 
     #===========================================================================
     # Define Program
@@ -9,12 +13,12 @@ def generate():
     prog = Program()
 
     # Define and add location
-    home_loc = Location(Position(0,0.2,0),Orientation.Identity())
-    pick_stock_loc = Location(Position(0.1,0.3,0),Orientation.Identity())
-    place_stock_loc = Location(Position(0.4,0.4,0.2),Orientation.Identity())
-    retract_loc = Location(Position(0.3,0.3,0.4),Orientation.Identity())
-    pick_final_loc = Location(Position(0.4,0.4,0.2),Orientation.Identity())
-    place_final_loc = Location(Position(-0.1,-0.1,-0.1),Orientation.Identity())
+    home_loc = Location(Position(0,0.2,0),Orientation.Identity(),name='home')
+    pick_stock_loc = Location(Position(0.1,0.3,0),Orientation.Identity(), name='pick stock')
+    place_stock_loc = Location(Position(0.4,0.4,0.2),Orientation.Identity(), name='place stock')
+    retract_loc = Location(Position(0.3,0.3,0.4),Orientation.Identity(), name='retract')
+    pick_final_loc = Location(Position(0.4,0.4,0.2),Orientation.Identity(), name='pick_final')
+    place_final_loc = Location(Position(-0.1,-0.1,-0.1),Orientation.Identity(), name='place_final')
 
     prog.context.add_location(home_loc)
     prog.context.add_location(pick_stock_loc)
@@ -26,12 +30,12 @@ def generate():
     locations = [home_loc,pick_stock_loc,place_stock_loc,retract_loc,pick_final_loc,place_final_loc]
 
     # Define and add machines
-    cnc = Machine()
+    cnc = Machine(name='cnc')
 
     prog.context.add_machine(cnc)
 
     # Define and add statically defined things
-    raw_stock = Thing('stock',pick_stock_loc,mesh_id='package://evd_ros_core/markers/3DBenchy.stl')
+    raw_stock = Thing('stock',mesh_id='package://evd_ros_core/markers/3DBenchy.stl',name='boat')
 
     prog.context.add_thing(raw_stock)
 
@@ -58,7 +62,7 @@ def generate():
         ]
     ))
 
-    for trajUuid in prog.cache.trajectories.keys():
+    for trajUuid in cache.trajectories.keys():
         trace = Trace('ee',{'ee': [
             TraceDataPoint(home_loc.position,home_loc.orientation),
             TraceDataPoint(retract_loc.position,retract_loc.orientation),
@@ -68,8 +72,12 @@ def generate():
             Waypoint(retract_loc.position,retract_loc.orientation)
         ]
 
-        prog.cache.get(trajUuid,'trajectory').waypoints = waypoints
-        prog.cache.get(trajUuid,'trajectory').trace = trace
+        cache.get(trajUuid,'trajectory').waypoints = waypoints
+        cache.get(trajUuid,'trajectory').trace = trace
+
+    #print '\n\n\n\n'
+    #print 'Cache Log'
+    #pprint.pprint(cache.utility_cache_stats())
 
     #===========================================================================
     # Define Environment
@@ -83,6 +91,6 @@ def generate():
             OccupancyZone(OccupancyZone.HUMAN_TYPE),
             OccupancyZone(OccupancyZone.ROBOT_TYPE)],
         locations=locations,
-        trajectories=prog.cache.trajectories.values())
+        trajectories=cache.trajectories.values())
 
     return {"program": prog, "environment": env}

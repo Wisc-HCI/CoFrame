@@ -16,12 +16,12 @@ class Initialize(Task):
         if primitives == None:
             primitives = []
 
-        primitives += [MachineInitialize(id) for id in machineUuids]
+            primitives += [MachineInitialize(id) for id in machineUuids]
 
-        primitives += [
-            MoveUnplanned(homeLocUuid,True),
-            OpenGripper()
-        ]
+            primitives += [
+                MoveUnplanned(homeLocUuid,True),
+                OpenGripper()
+            ]
 
         super(Initialize,self).__init__(
             type='initialize.'+type if append_type else type,

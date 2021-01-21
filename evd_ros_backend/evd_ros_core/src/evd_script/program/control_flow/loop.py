@@ -34,6 +34,7 @@ class Loop(Task):
         from ...utility_functions import NodeParser
 
         return cls(
+            primitives=[NodeParser(p) for p in dct['primitives']],
             condition=NodeParser(dct['condition']) if dct['condition'] != None else None,
             name=dct['name'],
             uuid=dct['uuid'],

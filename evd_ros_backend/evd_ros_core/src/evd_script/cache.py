@@ -1,9 +1,23 @@
+# Cache is global so that we can keep a UUID list for NodeParser
+cacheObj = None
+def get_evd_cache_obj():
+    global cacheObj
+
+    if cacheObj == None:
+        cacheObj = Cache()
+
+    return cacheObj
+
+
 from .data.trajectory import Trajectory
 from .data.location import Location
 from .data.waypoint import Waypoint
 from .data.thing import Thing
 from .data.trace import Trace
 from .data.machine import Machine
+
+from .environment.environment import Environment
+from .program.program import Program
 
 
 class Cache(object):
@@ -16,6 +30,8 @@ class Cache(object):
         self.things = {}
         self.traces = {}
         self.machines = {}
+        self.environments = {}
+        self.programs = {}
 
     def add(self, uuid, node):
         self.data[uuid] = node
@@ -37,6 +53,12 @@ class Cache(object):
 
         if isinstance(node,Machine):
             self.machines[uuid] = node
+
+        if isinstance(node,Program):
+            self.programs[uuid] = node
+
+        if isinstance(node,Environment):
+            self.environments[uuid] = node
 
     def remove(self, uuid):
 
@@ -60,6 +82,12 @@ class Cache(object):
         if isinstance(node,Machine):
             self.machines.pop(uuid, None)
 
+        if isinstance(node,Program):
+            self.programs.pop(uuid, None)
+
+        if isinstance(node,Environment):
+            self.environments.pop(uuid, None)
+
     def clear(self):
         self.data = {}
         self.locations = {}
@@ -67,6 +95,8 @@ class Cache(object):
         self.things = {}
         self.traces = {}
         self.machines = {}
+        self.programs = {}
+        self.environments ={}
 
     def get(self, uuid, hint=None):
 
@@ -78,12 +108,42 @@ class Cache(object):
             return self.waypoints[uuid]
         elif hint == 'thing' and uuid in self.things.keys():
             return self.things[uuid]
-        elif hint == 'traces' and uuid in self.traces.keys():
+        elif hint == 'trace' and uuid in self.traces.keys():
             return self.traces[uuid]
-        elif hint == 'machines' and uuid in self.machines.keys():
+        elif hint == 'machine' and uuid in self.machines.keys():
             return self.machines[uuid]
+        elif hint == 'program' and uuid in self.programs.keys():
+            return self.programs[uuid]
+        elif hint == 'environment' and uuid in self.environments.keys():
+            return self.environments[uuid]
         else:
             return self.data[uuid]
 
     def set(self, uuid, dct, hint=None):
         self.get(uuid,hint).set(dct)
+
+    def utility_cache_stats(self):
+        log = {
+            'data': {},
+            'num_trajectories': 0,
+            'num_locations': 0,
+            'num_waypoints': 0,
+            'num_things': 0,
+            'num_traces': 0,
+            'num_machines': 0
+        }
+
+        for n in self.data.values():
+            if type(n) not in log['data'].keys():
+                log['data'][type(n)] = 0
+
+            log['data'][type(n)] += 1
+
+        log['num_trajectories'] = len(self.trajectories)
+        log['num_locations'] = len(self.locations)
+        log['num_waypoints'] = len(self.waypoints)
+        log['num_things'] = len(self.things)
+        log['num_traces'] = len(self.traces)
+        log['num_machines'] = len(self.machines)
+
+        return log

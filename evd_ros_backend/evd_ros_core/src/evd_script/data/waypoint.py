@@ -74,7 +74,9 @@ class Waypoint(Pose, VisualizeMarker):
             self.updated_attribute('joints','set')
 
     def set(self, dct):
-        self.joints = dct.get('joints',None)
+
+        if 'joints' in dct.keys():
+            self.joints = dct['joints']
 
         super(Waypoint,self).set(dct)
 
