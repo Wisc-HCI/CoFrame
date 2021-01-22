@@ -127,11 +127,15 @@ def generate():
         PinchPoint(PinchPoint.GOOD_STATE, link='simulated_wrist_3_link', radius=0.1, length=0.16, offset=Position.from_axis('z',0.1))
     ]
     prog.environment.collision_meshes = [
-
+        CollisionMesh(CollisionMesh.GOOD_STATE, link='box_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl'),
+        CollisionMesh(CollisionMesh.GOOD_STATE, link='table_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Table.stl'),
+        CollisionMesh(CollisionMesh.GOOD_STATE, link='3d_printer_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl'),
+        CollisionMesh(CollisionMesh.GOOD_STATE, link='ur3e_pedestal_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl')
     ]
     prog.environment.occupancy_zones = [
-        OccupancyZone(OccupancyZone.HUMAN_TYPE),
-        OccupancyZone(OccupancyZone.ROBOT_TYPE)
+        OccupancyZone(OccupancyZone.HUMAN_TYPE, posZ=1, sclX=2, height=-0.77),
+        OccupancyZone(OccupancyZone.HUMAN_TYPE, posZ=-0.8, sclX=2, height=-0.77),
+        OccupancyZone(OccupancyZone.ROBOT_TYPE, sclX=1.2, sclZ=1.2, height=-0.77)
     ]
 
     return prog

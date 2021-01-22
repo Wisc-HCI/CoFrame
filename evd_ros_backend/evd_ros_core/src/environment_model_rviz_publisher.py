@@ -16,6 +16,7 @@ class EnvironmentModelRvizPublisher:
         self.display_traces = display_traces
         self._count = 0
         self._marker_uuid_list = {}
+        self._marker_periodic_uuid_list = {}
 
         self._ros_frame_id = ros_frame_id
         self._marker_pub = rospy.Publisher('environment_model_visualizer/markers',MarkerArray,queue_size=10,latch=True)
@@ -24,15 +25,12 @@ class EnvironmentModelRvizPublisher:
     def _update_markers(self):
 
         print 'Environment'
-
         markerArray = MarkerArray()
+        updated_markers = {}
 
         print '\n\n\n\n'
         print 'Cache Log'
         pprint.pprint(self._data_client.cache.utility_cache_stats())
-
-        print '\n\n\n\nupdating markers'
-        updated_markers = {}
 
         # get all locations and display all locations
         locations = self._data_client.program.environment.locations
@@ -115,35 +113,72 @@ class EnvironmentModelRvizPublisher:
             self._count += 1
             updated_markers[zone.uuid] = marker
 
-        # display pinch-points
-        pinchpoints = self._data_client.program.environment.pinch_points
-        print '\n\nPinch Points', pinchpoints
-        for point in pinchpoints:
-            marker  = point.to_ros_marker(self._count)
-            markerArray.markers.append(marker)
-            self._count += 1
-            updated_markers[point.uuid] = marker
-
-        # display collision meshes
-        meshes = self._data_client.program.environment.collision_meshes
-        print '\n\nCollision Meshes', meshes
-        for mesh in meshes:
-            marker = mesh.to_ros_marker(self._ros_frame_id, self._count)
-            markerArray.markers.append(marker)
-            self._count += 1
-            updated_markers[mesh.uuid] = marker
-
         # Delete any markers that have not been updated
-        for ids in self._marker_uuid_list.keys():
-            if not ids in updated_markers.keys():
-                marker = self._marker_uuid_list[ids]
+        for uuid in self._marker_uuid_list.keys():
+            if not uuid in updated_markers.keys():
+                marker = self._marker_uuid_list[uuid]
                 marker.action = Marker.DELETE
-                print 'deleting marker', ids
+                print 'deleting marker', uuid
                 markerArray.markers.append(marker)
+            else:
+                marker_old = self._marker_periodic_uuid_list[uuid]
+                marker_new = updated_markers[uuid]
+
+                if marker_old.id != marker_new.id:
+                    marker_old.action = Marker.DELETE
+                    markerArray.markers.append(marker_old)
 
         # Update marker list
         self._marker_pub.publish(markerArray)
         self._marker_uuid_list = updated_markers
+
+    def spin(self):
+        rate = rospy.Rate(10.0)
+        while not rospy.is_shutdown():
+
+            rate.sleep()
+            if self._data_client.program == None:
+                continue
+
+            markerArray = MarkerArray()
+            updated_markers = {}
+
+            # display pinch-points
+            pinchpoints = self._data_client.program.environment.pinch_points
+            #print '\n\nPinch Points', pinchpoints
+            for point in pinchpoints:
+                marker  = point.to_ros_marker(self._count)
+                markerArray.markers.append(marker)
+                self._count += 1
+                updated_markers[point.uuid] = marker
+
+            # display collision meshes
+            meshes = self._data_client.program.environment.collision_meshes
+            #print '\n\nCollision Meshes', meshes
+            for mesh in meshes:
+                marker = mesh.to_ros_marker(self._count)
+                markerArray.markers.append(marker)
+                self._count += 1
+                updated_markers[mesh.uuid] = marker
+
+            # Delete any markers that have not been updated
+            for uuid in self._marker_periodic_uuid_list.keys():
+                if not uuid in updated_markers.keys():
+                    marker = self._marker_periodic_uuid_list[uuid]
+                    marker.action = Marker.DELETE
+                    markerArray.markers.append(marker)
+                else:
+                    marker_old = self._marker_periodic_uuid_list[uuid]
+                    marker_new = updated_markers[uuid]
+
+                    if marker_old.id != marker_new.id:
+                        marker_old.action = Marker.DELETE
+                        markerArray.markers.append(marker_old)
+
+            # Update marker list
+            self._marker_pub.publish(markerArray)
+            self._marker_periodic_uuid_list = updated_markers
+
 
 
 if __name__ == "__main__":
@@ -153,4 +188,4 @@ if __name__ == "__main__":
 
     node = EnvironmentModelRvizPublisher(ros_frame_id, True)
 
-    rospy.spin()
+    node.spin()

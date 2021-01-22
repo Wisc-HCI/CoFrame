@@ -19,7 +19,8 @@ class OccupancyZone(Node, VisualizeMarker):
     Data structure methods
     '''
 
-    def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, height = 0, type='', name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, height = 0,
+                 type='', name='', parent=None, uuid=None, append_type=True):
         self._occupancy_type = None
         self._position_x = None
         self._position_z = None
@@ -72,14 +73,25 @@ class OccupancyZone(Node, VisualizeMarker):
     def to_ros_marker(self, frame_id='app', id=0):
         # The frame_id should be the application frame
 
+        if self.occupancy_type == OccupancyZone.HUMAN_TYPE:
+            color = ColorTable.OCCUPANCY_ZONE_HUMAN_COLOR
+        else:
+            color = ColorTable.OCCUPANCY_ZONE_ROBOT_COLOR
+
         marker = Marker()
         marker.header.frame_id = frame_id
         marker.type = Marker.CUBE
         marker.ns = 'occupancy_zones'
         marker.id = id
-        marker.pose = Pose(position=self.to_position()).to_ros()
-        marker.scale = Vector3(self.scale_x,0.001,self.scale_z)
-        marker.color = ColorTable.OCCUPANCY_ZONE_COLOR
+
+        marker.pose.position.x = self.position_x
+        marker.pose.position.y = self.position_z
+        marker.pose.position.z = self.height
+
+        marker.pose.orientation.w = 1
+
+        marker.scale = Vector3(self.scale_x,self.scale_z,0.001)
+        marker.color = color
 
         return marker
 
@@ -113,7 +125,7 @@ class OccupancyZone(Node, VisualizeMarker):
 
     @property
     def position_z(self):
-        return self._position_x
+        return self._position_z
 
     @position_z.setter
     def position_z(self, value):
