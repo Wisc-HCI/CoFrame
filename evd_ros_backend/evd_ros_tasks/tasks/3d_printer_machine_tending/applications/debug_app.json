@@ -430,7 +430,7 @@
                 "orientation": {
                     "name": "", 
                     "type": "node.orientation.", 
-                    "uuid": "orientation.-py-65e962565ce711ebb773340286a5d052", 
+                    "uuid": "orientation.-py-c0b88f3c5ce511ebb773340286a5d052", 
                     "w": 1, 
                     "x": 0, 
                     "y": 0, 
@@ -439,7 +439,7 @@
                 "position": {
                     "name": "", 
                     "type": "node.position.", 
-                    "uuid": "position.-py-65e962555ce711ebb773340286a5d052", 
+                    "uuid": "position.-py-c0b88f3b5ce511ebb773340286a5d052", 
                     "x": 0, 
                     "y": 0, 
                     "z": 0
@@ -528,6 +528,29 @@
                 "orientation": {
                     "name": "", 
                     "type": "node.orientation.", 
+                    "uuid": "orientation.-py-c0b88f875ce511ebb773340286a5d052", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-c0b88f865ce511ebb773340286a5d052", 
+                    "x": 0.2, 
+                    "y": 0.3333333333333333, 
+                    "z": 0.06666666666666667
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-c0b88f885ce511ebb773340286a5d052"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
                     "uuid": "orientation.-py-c0b88f955ce511ebb773340286a5d052", 
                     "w": 0.7071068, 
                     "x": 0, 
@@ -567,29 +590,6 @@
                 }, 
                 "type": "node.pose.waypoint.", 
                 "uuid": "pose.waypoint.-py-c0b88f935ce511ebb773340286a5d052"
-            }, 
-            {
-                "joints": null, 
-                "name": "", 
-                "orientation": {
-                    "name": "", 
-                    "type": "node.orientation.", 
-                    "uuid": "orientation.-py-c0b88f695ce511ebb773340286a5d052", 
-                    "w": 0.7071068, 
-                    "x": 0, 
-                    "y": 0.7071068, 
-                    "z": 0
-                }, 
-                "position": {
-                    "name": "", 
-                    "type": "node.position.", 
-                    "uuid": "position.-py-c0b88f685ce511ebb773340286a5d052", 
-                    "x": 0.06666666666666667, 
-                    "y": 0.26666666666666666, 
-                    "z": 0.0
-                }, 
-                "type": "node.pose.waypoint.", 
-                "uuid": "pose.waypoint.-py-c0b88f6a5ce511ebb773340286a5d052"
             }, 
             {
                 "joints": null, 
@@ -643,29 +643,6 @@
                 "orientation": {
                     "name": "", 
                     "type": "node.orientation.", 
-                    "uuid": "orientation.-py-c0b88f875ce511ebb773340286a5d052", 
-                    "w": 0.7071068, 
-                    "x": 0, 
-                    "y": 0.7071068, 
-                    "z": 0
-                }, 
-                "position": {
-                    "name": "", 
-                    "type": "node.position.", 
-                    "uuid": "position.-py-c0b88f865ce511ebb773340286a5d052", 
-                    "x": 0.2, 
-                    "y": 0.3333333333333333, 
-                    "z": 0.06666666666666667
-                }, 
-                "type": "node.pose.waypoint.", 
-                "uuid": "pose.waypoint.-py-c0b88f885ce511ebb773340286a5d052"
-            }, 
-            {
-                "joints": null, 
-                "name": "", 
-                "orientation": {
-                    "name": "", 
-                    "type": "node.orientation.", 
                     "uuid": "orientation.-py-c0b88f745ce511ebb773340286a5d052", 
                     "w": 0.7071068, 
                     "x": 0, 
@@ -682,6 +659,29 @@
                 }, 
                 "type": "node.pose.waypoint.", 
                 "uuid": "pose.waypoint.-py-c0b88f755ce511ebb773340286a5d052"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-c0b88f695ce511ebb773340286a5d052", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-c0b88f685ce511ebb773340286a5d052", 
+                    "x": 0.06666666666666667, 
+                    "y": 0.26666666666666666, 
+                    "z": 0.0
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-c0b88f6a5ce511ebb773340286a5d052"
             }
         ]
     }, 
@@ -748,7 +748,7 @@
                 "name": "", 
                 "things": [], 
                 "type": "node.context.", 
-                "uuid": "context.-py-65e962545ce711ebb773340286a5d052", 
+                "uuid": "context.-py-c0b88f645ce511ebb773340286a5d052", 
                 "waypoints": []
             }, 
             "name": "", 

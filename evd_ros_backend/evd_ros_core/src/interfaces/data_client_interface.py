@@ -44,24 +44,24 @@ class DataClientInterface(object):
     Application Interface
     '''
 
-    def load_application(self, filename):
+    def load_application(self, filename, name, description, level, custom=True):
         if self._use_application_interface:
-            response = self._load_data_srv(filename)
+            response = self._load_app_srv(filename, name, description, level, custom)
             return response.status, response.message
         else:
             raise Exception('Not using application interface')
 
-    def save_application(self, filename=None):
+    def save_application(self, use_current_info=True, filename='untitled.json', name='', description='', level=0):
         if self._use_application_interface:
-            response = self._save_data_srv(filename == None, filename if filename != None else '')
+            response = self._save_app_srv(use_current_info, filename, name, description, level)
             return response.status, response.message
         else:
             raise Exception('Not using application interface')
 
-    def get_applications_options(self):
+    def get_application_options(self):
         if self._use_application_interface:
             response = self._get_app_options_srv()
-            return response.options, response.currently_loaded
+            return response
         else:
             raise Exception('Not using application interface')
 

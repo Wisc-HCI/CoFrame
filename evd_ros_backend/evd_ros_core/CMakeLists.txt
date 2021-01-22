@@ -56,6 +56,7 @@ add_message_files(
   Servo.msg
   Version.msg
   UpdateData.msg
+  ApplicationOption.msg
 )
 
 ## Generate services in the 'srv' folder

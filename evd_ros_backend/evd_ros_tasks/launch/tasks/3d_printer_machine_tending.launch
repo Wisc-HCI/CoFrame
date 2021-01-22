@@ -33,7 +33,7 @@
 
   <!-- Core -->
   <include file="$(find evd_ros_core)/launch/app.launch">
-    <arg name="app_filepath" value="$(find evd_ros_tasks)/tasks/3d_printer_machine_tending/"/>
+    <arg name="app_filepath" value="$(find evd_ros_tasks)/tasks/3d_printer_machine_tending/applications/"/>
     <arg name="ros_frame_id" value="world"/>
   </include>
 

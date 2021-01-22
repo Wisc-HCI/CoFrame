@@ -1,5 +1,11 @@
-bool use_current_name
+bool use_current_info
+
+# If false then fill out the details
+
 string filename
+string name
+string description
+int32 level
 ---
 bool status
 string message

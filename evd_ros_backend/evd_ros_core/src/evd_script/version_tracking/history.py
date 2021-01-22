@@ -25,13 +25,13 @@ class History(object):
 
     def get_current_version(self):
         if len(self._history) > 0:
-            return self._history[-1].version_tag
+            return self._history[-1].version
         else:
             return None
 
     def get_previous_version(self):
         if len(self._history) > 1:
-            return self._history[-2].version_tag
+            return self._history[-2].version
         else:
             return None
 

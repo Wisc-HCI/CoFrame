@@ -1,0 +1,34 @@
+{
+    "description": "Teaches the basics of machine tending with a collaborative robot", 
+    "name": "3D Printer Machine Tending Task", 
+    "options": [
+        {
+            "custom": true, 
+            "description": "", 
+            "filename": "debug_app.json", 
+            "level": 0, 
+            "name": ""
+        }, 
+        {
+            "custom": true, 
+            "description": "", 
+            "filename": "default_application.json", 
+            "level": 0, 
+            "name": ""
+        }, 
+        {
+            "custom": false, 
+            "description": "Verison of application with conditional looping", 
+            "filename": "looping.json", 
+            "level": 2, 
+            "name": "Looping Application"
+        }, 
+        {
+            "custom": true, 
+            "description": "", 
+            "filename": "test.json", 
+            "level": 0, 
+            "name": ""
+        }
+    ]
+}

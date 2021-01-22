@@ -3,9 +3,11 @@
 import os
 import json
 import rospy
+import pprint
+import traceback
 
 from std_msgs.msg import String
-from evd_ros_core.msg import UpdateData, Version
+from evd_ros_core.msg import UpdateData, Version, ApplicationOption
 
 from evd_ros_core.srv import GetData, GetDataRequest, GetDataResponse
 from evd_ros_core.srv import SetData, SetDataRequest, SetDataResponse
@@ -27,12 +29,28 @@ class DataServer:
 
     def __init__(self, app_filepath, default_app):
         self._application_filepath = app_filepath
-        self._application_filename = None
+        self._application_meta = None
 
         if default_app == 'debug_app':
             self._program = debug_app.generate()
+            self._application_meta = {
+                'filename': 'debug_app.json',
+                'name': 'Debug Application',
+                'description': 'Application developed for testing core package',
+                'level': 0,
+                'custom': False
+            }
         else:
             self._program = Program()
+            self._application_meta ={
+                'filename': 'untitled.json',
+                'name': 'Untitled Program',
+                'description': '',
+                'level': 0,
+                'custom': False
+            }
+
+        self._program.changes_cb = self.__program_updated_cb
 
         self._program_history = History()
         self._program_history.append(HistoryEntry(
@@ -57,33 +75,42 @@ class DataServer:
 
         # Try opening file
         try:
-            fin = open(os.path.join(self._application_filepath,request.filename),'r')
+            fin = open(os.path.join(self._application_filepath, request.filename),'r')
             inStr = fin.read()
             fin.close()
         except:
+            traceback.print_exc()
             response.status = False
-            response.message = 'Error reading file'
+            response.message = 'Error reading in program file'
             return response
 
         # Try parsing file
         try:
             rawData = json.loads(inStr)
-            self._program = Program.from_dct()
-            self._program.server_cb = self.__program_updated_cb
+            self._program.remove_from_cache()
+            self._program = Program.from_dct(rawData)
+            self._program.changes_cb = self.__program_updated_cb
         except:
+            traceback.print_exc()
             response.status = False
-            response.message = 'Error json load'
+            response.message = 'Error on program json load'
             return response
 
         # On successful load
-        self._application_filename = request.filename
-
         self._program_history.append(HistoryEntry(
             action='load',
-            change_dct=rawData['program'],
+            change_dct=rawData,
             snapshot_dct = program_snapshot,
             source='data-server'
         ))
+
+        self._application_meta ={
+            'filename': request.filename,
+            'name': request.name,
+            'description': request.description,
+            'level': request.level,
+            'custom': request.custom
+        }
 
         self._push_program_update()
 
@@ -95,13 +122,13 @@ class DataServer:
         response.status = True
 
         # make sure a valid file in selected
-        if request.use_current_name:
-            if self._application_filename == None:
+        if request.use_current_info:
+            if self._application_meta['filename'] == None:
                 response.status = False
                 response.message = 'Error cannot save to unspecified file'
                 return response
             else:
-                used_filepath = self._application_filename
+                used_filepath = self._application_meta['filename']
         else:
             used_filepath = request.filename
 
@@ -110,22 +137,106 @@ class DataServer:
 
         # Try writing to file
         try:
-            fout = open(os.path.join(self._task_filepath,used_filepath),'w')
-            fout.write(json.dumps(outData))
+            fout = open(os.path.join(self._application_filepath, used_filepath),'w')
+            fout.write(json.dumps(outData, indent=4, sort_keys=True))
             fout.close()
         except:
+            traceback.print_exc()
             response.status = False
-            response.message = 'Error writing to file'
+            response.message = 'Error writing to progam file'
             return response
 
         # On success
-        self._application_filename = used_filepath
+        if not request.use_current_info:
+            self._application_meta = {
+                'filename': request.filename,
+                'name': request.name,
+                'description': request.description,
+                'level': request.level,
+                'custom': True
+            }
+
+            # Update meta file listing
+            # Try opening meta file
+            try:
+                fin = open(os.path.join(self._application_filepath,'meta.json'),'r')
+                inStr = fin.read()
+                fin.close()
+            except:
+                traceback.print_exc()
+                response.status = False
+                response.message = 'Error reading in meta file'
+                return response
+
+            # Try parsing file
+            try:
+                metaData = json.loads(inStr)
+            except:
+                traceback.print_exc()
+                response.status = False
+                response.message = 'Error json load meta file'
+                return response
+
+            idx = None
+            for i in range(0,len(metaData['options'])):
+                if request.filename == metaData['options'][i]['filename']:
+                    idx = i
+                    break
+
+            if idx != None:
+                metaData['options'][i] = self._application_meta
+            else:
+                metaData['options'].append(self._application_meta)
+
+            try:
+                fout = open(os.path.join(self._application_filepath,'meta.json'),'w')
+                fout.write(json.dumps(metaData, indent=4, sort_keys=True))
+                fout.close()
+            except:
+                traceback.print_exc()
+                response.status = False
+                response.message = 'Error writing to meta file'
+                return response
+
         return response
 
     def _get_app_opts_cb(self, request):
         response = GetOptionsResponse()
 
-        response.options = [f for f in os.listdir(self._application_filepath) if os.isfile(os.join(self._application_filepath,f))]
+        # Try opening meta file
+        try:
+            fin = open(os.path.join(self._application_filepath,'meta.json'),'r')
+            inStr = fin.read()
+            fin.close()
+        except:
+            traceback.print_exc()
+            response.status = False
+            response.message = 'Error reading file'
+            return response
+
+        # Try parsing file
+        try:
+            metaData = json.loads(inStr)
+        except:
+            traceback.print_exc()
+            response.status = False
+            response.message = 'Error json load'
+            return response
+
+        # Process meta data
+        response.title = metaData['name']
+        response.description = metaData['description']
+        response.currently_loaded_filename = self._application_meta['filename']
+
+        for option in metaData['options']:
+            appOpt = ApplicationOption()
+            appOpt.filename = option['filename']
+            appOpt.name = option['name']
+            appOpt.description = option['description']
+            appOpt.level = option['level']
+            appOpt.custom = option['custom']
+
+            response.options.append(appOpt)
 
         return response
 
@@ -144,18 +255,16 @@ class DataServer:
                 except:
                     errors.append(uuid)
 
-        response.data = json.dumps(outData)
+        response.data = json.dumps(outData, indent=4, sort_keys=True)
         response.tag = self._program_history.get_current_version().to_ros()
         response.status = len(errors) == 0
-        response.errors = json.dumps(errors)
+        response.errors = json.dumps(errors, indent=4, sort_keys=True)
         response.message = '' if response.status else 'error getting data'
         return response
 
     def _set_prog_cb(self, request):
         response = SetDataResponse()
 
-        #TODO figure out the best way to update program
-        '''
         if request.tag == self._program_history.get_current_version:
             inData = json.loads(request.data.data)
             data_snapshot = self._program.to_dct()
@@ -165,10 +274,13 @@ class DataServer:
                 try:
                     self._program.cache.set(uuid,inData[uuid])
                 except:
+                    traceback.print_exc()
                     errors.append(uuid)
 
             if len(errors) > 0:
-                pass #TODO need to revert program from history
+                self._program.remove_from_cache()
+                self._program = Program.from_dct(data_snapshot)
+                self._program.changes_cb = self.__program_updated_cb
             else:
                 self._program_history.append(HistoryEntry(
                     action='set',
@@ -180,14 +292,13 @@ class DataServer:
                 self._push_program_update()
 
             response.status = len(errors) == 0
-            response.errors = json.dumps(errors)
-            response.message = '' if response.status else 'error setting data'
+            response.errors = json.dumps(errors, indent=4, sort_keys=True)
+            response.message = '' if response.status else 'error setting data, reverted to previous program state'
 
         else:
             response.status = False
             response.errors = ''
             response.message = 'mismatched version tags'
-        '''
 
         return response
 
@@ -205,11 +316,15 @@ class DataServer:
 
         self._update_prog_pub.publish(msg)
 
+    def __program_updated_cb(self, attribute_trace):
+        print 'In Data Server:', attribute_trace
+        #TODO what to do with this?
+
     def spin(self):
         # give nodes time before publishing initial state
         # the topic latches message but as a best practice, it shouldn't rush
-        # all other nodes with the program data until general setup is his
-        # complete.
+        # all other nodes with the program data until general setup is complete
+
         rospy.sleep(10)
         self._push_program_update()
         rospy.spin()

@@ -3,6 +3,3 @@ string name
 string description
 int32 level
 bool custom
----
-bool status
-string message
