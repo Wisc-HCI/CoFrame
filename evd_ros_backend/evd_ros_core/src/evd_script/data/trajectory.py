@@ -1,13 +1,13 @@
 from ..node import Node
 from waypoint import Waypoint
 from trace import Trace, TraceDataPoint
-from ..visualizable import VisualizeMarkers, ColorTable
+from ..visualizable import VisualizeMarkers, VisualizeMarker, ColorTable
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class Trajectory(Node, VisualizeMarkers):
+class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
 
     TYPES = ['joint', 'linear', 'planner']
 
@@ -15,13 +15,13 @@ class Trajectory(Node, VisualizeMarkers):
     Data structure methods
     '''
 
-    def __init__(self, startLocUuid=None, endLocUuid=None, waypoints=[],
+    def __init__(self, startLocUuid=None, endLocUuid=None, waypointUuids=[],
                  trace=None, move_type="joint", velocity=0, acceleration=0,
                  parent=None, type='', name='', uuid=None, append_type=True):
 
         self._start_location_uuid = None
         self._end_location_uuid = None
-        self._waypoints = None
+        self._waypoint_uuids = None
         self._velocity = None
         self._acceleration = None
         self._trace = None
@@ -36,7 +36,7 @@ class Trajectory(Node, VisualizeMarkers):
 
         self.start_location_uuid = startLocUuid
         self.end_location_uuid = endLocUuid
-        self.waypoints = waypoints
+        self.waypoint_uuids = waypointUuids
         self.velocity = velocity
         self.acceleration = acceleration
         self.move_type = move_type
@@ -47,7 +47,7 @@ class Trajectory(Node, VisualizeMarkers):
         msg.update({
             'start_location_uuid': self.start_location_uuid,
             'end_location_uuid': self.end_location_uuid,
-            'waypoints': [w.to_dct() for w in self.waypoints],
+            'waypoint_uuids': self.waypoint_uuids,
             'trace': self.trace.to_dct() if self.trace != None else None,
             'velocity': self.velocity,
             'acceleration': self.acceleration,
@@ -60,7 +60,7 @@ class Trajectory(Node, VisualizeMarkers):
         return cls(
             startLocUuid=dct['start_location_uuid'],
             endLocUuid=dct['end_location_uuid'],
-            waypoints=[Waypoint.from_dct(w) for w in dct['waypoints']],
+            waypointUuids=dct['waypoint_uuids'],
             trace=Trace.from_dct(dct['trace']) if dct['trace'] != None else None,
             name=dct['name'],
             uuid=dct['uuid'],
@@ -87,7 +87,8 @@ class Trajectory(Node, VisualizeMarkers):
         startLoc = self.context.get_location(self.start_location_uuid)
         lineMarker.points.append(startLoc.position.to_ros())
 
-        for wp in self.waypoints:
+        for wpUuid in self.waypoint_uuids:
+            wp = self.context.get_waypoint(wpUuid)
             marker = wp.to_ros_marker(frame_id,count)
             lineMarker.points.append(marker.pose.position)
             waypoint_markers.append(marker)
@@ -98,6 +99,30 @@ class Trajectory(Node, VisualizeMarkers):
         lineMarker.points.append(endLoc.position.to_ros())
 
         return lineMarker, waypoint_markers, waypoint_uuids
+
+    def to_ros_marker(self, frame_id, id=0):
+        waypoint_markers = []
+        waypoint_uuids = []
+
+        lineMarker = Marker()
+        lineMarker.header.frame_id = frame_id
+        lineMarker.type = Marker.LINE_STRIP
+        lineMarker.ns = 'trajectories'
+        lineMarker.id = id
+        lineMarker.scale = Vector3(0.01,0.01,0.01)
+        lineMarker.color = ColorTable.TRAJECTORY_COLOR
+
+        startLoc = self.context.get_location(self.start_location_uuid)
+        lineMarker.points.append(startLoc.position.to_ros())
+
+        for wpUuid in self.waypoint_uuids:
+            wp = self.context.get_waypoint(wpUuid)
+            lineMarker.points.append(wp.position.to_ros())
+
+        endLoc = self.context.get_location(self.end_location_uuid)
+        lineMarker.points.append(endLoc.position.to_ros())
+
+        return lineMarker
 
     '''
     Data accessor/modifier methods
@@ -126,25 +151,18 @@ class Trajectory(Node, VisualizeMarkers):
             self.updated_attribute('end_location_uuidy','set')
 
     @property
-    def waypoints(self):
-        return self._waypoints
+    def waypoint_uuids(self):
+        return self._waypoint_uuids
 
-    @waypoints.setter
-    def waypoints(self, value):
-        if self._waypoints != value:
+    @waypoint_uuids.setter
+    def waypoint_uuids(self, value):
+        if self._waypoint_uuids != value:
             if value == None:
                 raise Exception('Waypoints must be a list not None')
 
-            if self._waypoints != None:
-                for w in self._waypoints:
-                    w.remove_from_cache()
-
-            self._waypoints = value
-            for w in self._waypoints:
-                w.parent = self
-
+            self._waypoint_uuids = value
             self.trace = None
-            self.updated_attribute('waypoints','set')
+            self.updated_attribute('waypoint_uuids','set')
 
     @property
     def trace(self):
@@ -199,43 +217,36 @@ class Trajectory(Node, VisualizeMarkers):
             self.trace = None
             self.updated_attribute('move_type','set')
 
-    def add_waypoint(self, wp):
-        wp.parent = self
-        self._waypoints.append(wp)
+    def add_waypoint_uuid(self, uuid):
+        self._waypoint_uuids.append(uuid)
         self.trace = None
         self.updated_attribute('waypoints','add')
 
-    def get_waypoint(self, uuid):
-        for w in self.waypoints:
-            if w.uuid == uuid:
-                return w
-        return None
-
-    def reorder_waypoints(self, uuid, shift):
+    def reorder_waypoint_uuids(self, uuid, shift):
         idx = None
-        for i in range(0,len(self._waypoints)):
-            if self._waypoints[i].uuid == uuid:
+        for i in range(0,len(self._waypoint_uuids)):
+            if self._waypoint_uuids[i] == uuid:
                 idx = i
                 break
 
         if idx != None:
             shiftedIdx = idx + shift
-            if shiftedIdx < 0 or shiftedIdx >= len(self._waypoints):
+            if shiftedIdx < 0 or shiftedIdx >= len(self._waypoint_uuids):
                 raise Exception("Index out of bounds")
 
-            copy = self._waypoints.pop(idx)
-            self._waypoints.insert(shiftedIdx,copy) #TODO check to make sure not off by one
+            copy = self._waypoint_uuids.pop(idx)
+            self._waypoint_uuids.insert(shiftedIdx,copy) #TODO check to make sure not off by one
             self.updated_attribute('waypoints','reorder')
 
-    def delete_waypoint(self, uuid):
+    def delete_waypoint_uuid(self, uuid):
         delIdx = None
-        for i in range(0,len(self._waypoints)):
-            if self._waypoints[i].uuid == uuid:
+        for i in range(0,len(self._waypoint_uuids)):
+            if self._waypoint_uuids[i] == uuid:
                 delIdx = i
                 break
 
         if delIdx != None:
-            self._waypoints.pop(i).remove_from_cache()
+            self._waypoints.pop(i)
             self.trace = None
             self.updated_attribute('waypoints','delete')
 
@@ -247,8 +258,8 @@ class Trajectory(Node, VisualizeMarkers):
         if 'end_location_uuid' in dct.keys():
             self.end_location_uuid = dct['end_location_uuid']
 
-        if 'waypoints' in dct.keys():
-            self.waypoints = [Waypoint.from_dct(w) for w in dct['waypoints']]
+        if 'waypoint_uuids' in dct.keys():
+            self.waypoint_uuids = dct['waypoint_uuids']
 
         velocity = dct.get('velocity',None)
         if velocity != None:
@@ -272,8 +283,6 @@ class Trajectory(Node, VisualizeMarkers):
     '''
 
     def remove_from_cache(self):
-        for w in self._waypoints:
-            w.remove_from_cache()
 
         if self._trace != None:
             self._trace.remove_from_cache()
@@ -281,8 +290,6 @@ class Trajectory(Node, VisualizeMarkers):
         super(Trajectory,self).remove_from_cache()
 
     def add_to_cache(self):
-        for w in self._waypoints:
-            w.add_to_cache()
 
         if self._trace != None:
             self._trace.add_to_cache()
@@ -299,9 +306,6 @@ class Trajectory(Node, VisualizeMarkers):
         if self.trace != None and self.trace.uuid == uuid:
             self.trace = None
             success = True
-        elif uuid in [wp.uuid for wp in self.waypoints]:
-            self.delete_waypoint(uuid)
-            success = True
 
         return success
 
@@ -310,8 +314,6 @@ class Trajectory(Node, VisualizeMarkers):
     '''
 
     def deep_update(self):
-        for w in self.waypoints:
-            w.deep_update()
 
         if self.trace != None:
             self.trace.deep_update()
@@ -320,7 +322,7 @@ class Trajectory(Node, VisualizeMarkers):
 
         self.updated_attribute('start_location_uuid','update')
         self.updated_attribute('end_location_uuid','update')
-        self.updated_attribute('waypoints','update')
+        self.updated_attribute('waypoint_uuids','update')
         self.updated_attribute('velocity','update')
         self.updated_attribute('acceleration','update')
         self.updated_attribute('move_type','update')
@@ -331,7 +333,7 @@ class Trajectory(Node, VisualizeMarkers):
 
         self.updated_attribute('start_location_uuid','update')
         self.updated_attribute('end_location_uuid','update')
-        self.updated_attribute('waypoints','update')
+        self.updated_attribute('waypoint_uuids','update')
         self.updated_attribute('velocity','update')
         self.updated_attribute('acceleration','update')
         self.updated_attribute('move_type','update')

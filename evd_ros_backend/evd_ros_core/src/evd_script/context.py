@@ -2,6 +2,7 @@ from .node import Node
 from .data.location import Location
 from .data.machine import Machine
 from .data.thing import Thing
+from .data.waypoint import Waypoint
 
 
 class Context(Node):
@@ -10,12 +11,13 @@ class Context(Node):
     Data structure methods
     '''
 
-    def __init__(self, locations=[], machines=[], things=[], parent_context=None, type='',
+    def __init__(self, locations=[], machines=[], things=[], waypoints=[], parent_context=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
 
         self._locations = {}
         self._machines = {}
         self._things = {}
+        self._waypoints = {}
         self._parent_context = None
 
         super(Context,self).__init__(
@@ -29,13 +31,15 @@ class Context(Node):
         self.locations = locations
         self.machines = machines
         self.things = things
+        self.waypoints = waypoints
 
     def to_dct(self):
         msg = super(Context,self).to_dct()
         msg.update({
             'locations': [l.to_dct() for l in self.locations],
             'machines': [m.to_dct() for m in self.machines],
-            'things': [t.to_dct() for t in self.things]
+            'things': [t.to_dct() for t in self.things],
+            'waypoints': [w.to_dct() for w in self.waypoints]
         })
         return msg
 
@@ -48,7 +52,8 @@ class Context(Node):
             append_type=False,
             locations=[Location.from_dct(l) for l in dct['locations']],
             machines=[Machine.from_dct(m) for m in dct['machines']],
-            things=[Thing.from_dct(t) for t in dct['things']])
+            things=[Thing.from_dct(t) for t in dct['things']],
+            waypoints=[Waypoint.from_dct(w) for w in dct['waypoints']])
 
     '''
     Data accessor/modifier methods
@@ -101,6 +106,22 @@ class Context(Node):
             t.parent = self
 
         self.updated_attribute('things','set')
+
+    @property
+    def waypoints(self):
+        return self._waypoints.values()
+
+    @waypoints.setter
+    def waypoints(self, value):
+        for w in self._waypoints:
+            w.remove_from_cache()
+        self._waypoints = {}
+
+        for w in value:
+            self._waypoints[w.uuid] = w
+            w.parent = self
+
+        self.updated_attribute('waypoints','set')
 
     @property
     def parent_context(self):
@@ -166,6 +187,24 @@ class Context(Node):
             self._things.pop(uuid).remove_from_cache()
             self.updated_attribute('things','delete', uuid)
 
+    def get_waypoint(self, uuid):
+        if uuid in self._waypoints.keys():
+            return self._waypoints[uuid]
+        elif self._parent_context != None:
+            return self._parent_context.get_waypoint(uuid)
+        else:
+            return None
+
+    def add_waypoint(self, waypoint):
+        waypoint.parent = self
+        self._waypoints[waypoint.uuid] = waypoint
+        self.updated_attribute('waypoints','add',waypoint.uuid)
+
+    def delete_waypoint(self, uuid):
+        if uuid in self._waypoints.keys():
+            self._waypoints.pop(uuid).remove_from_cache()
+            self.updated_attribute('waypoints','delete',uuid)
+
     def set(self, dct):
 
         if 'locations' in dct.keys():
@@ -176,6 +215,9 @@ class Context(Node):
 
         if 'things' in dct.keys():
             self.things = [Thing.from_dct(t) for t in dct['things']]
+
+        if 'waypoints' in dct.keys():
+            self.waypoints = [Waypoint.from_dct(w) for w in dct['waypoints']]
 
         super(Context,self).set(dct)
 
@@ -193,6 +235,9 @@ class Context(Node):
         for t in self.things:
             t.remove_from_cache()
 
+        for w in self.waypoints:
+            w.remove_from_cache()
+
         super(Context,self).remove_from_cache()
 
     def add_to_cache(self):
@@ -204,6 +249,9 @@ class Context(Node):
 
         for t in self.things:
             t.add_to_cache()
+
+        for w in self.waypoints:
+            w.add_to_cache()
 
         super(Context,self).add_to_cache()
 
@@ -223,6 +271,8 @@ class Context(Node):
         elif uuid in [t.uuid for t in self.things]:
             self.delete_thing(uuid)
             success = True
+        elif uuid in [w.uuid for w in self.waypoints]:
+            self.delete_waypoint(uuid)
 
         return success
 
@@ -241,11 +291,15 @@ class Context(Node):
         for t in self.things:
             t.deep_update()
 
+        for w in self.waypoints:
+            w.deep_update()
+
         super(Context,self).deep_update()
 
         self.updated_attribute('machines','update')
         self.updated_attribute('locations','update')
         self.updated_attribute('things','update')
+        self.updated_attribute('waypoints','update')
 
     def shallow_update(self):
         super(Context,self).shallow_update()
@@ -253,3 +307,4 @@ class Context(Node):
         self.updated_attribute('machines','update')
         self.updated_attribute('locations','update')
         self.updated_attribute('things','update')
+        self.updated_attribute('waypoints','update')

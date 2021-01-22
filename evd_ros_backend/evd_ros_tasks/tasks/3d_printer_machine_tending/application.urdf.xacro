@@ -43,7 +43,7 @@
   <joint name="app_table_joint" type="fixed">
     <parent link="app" />
     <child link="table_link" />
-    <origin xyz="0.0 0.35 -0.37" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.0 0.36 -0.37" rpy="0.0 0.0 0.0" />
   </joint>
 
   <!-- 3D Printer -->
