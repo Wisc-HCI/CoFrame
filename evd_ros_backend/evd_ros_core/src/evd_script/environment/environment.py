@@ -1,32 +1,37 @@
-from ..node import Node
+from ..context import Context
 from reach_sphere import ReachSphere
 from collision_mesh import CollisionMesh
 from occupancy_zone import OccupancyZone
 from pinch_point import PinchPoint
 from ..data.location import Location
-from ..data.trajectory import Trajectory
+from ..data.machine import Machine
+from ..data.thing import Thing
+from ..data.waypoint import Waypoint
 
 
-class Environment(Node):
+class Environment(Context):
 
     '''
     Data structure methods
     '''
 
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
-                 locations=[], trajectories=[], changes_cb=None, name='', type='',
-                 uuid=None, append_type=True, context=None):
+                 locations=[], machines=[], things=[], waypoints=[], parent_context=None,
+                 changes_cb=None, name='', type='', uuid=None, append_type=True):
 
         self._reach_sphere = None
         self._pinch_points = None
         self._collision_meshes = None
         self._occupancy_zones = None
-        self._locations = None
-        self._trajectories = None
 
         self.changes_cb = changes_cb
 
         super(Environment,self).__init__(
+            locations=locations,
+            machines=machines,
+            things=things,
+            waypoints=waypoints,
+            parent_context=parent_context,
             type='environment.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -37,8 +42,6 @@ class Environment(Node):
         self.pinch_points = pinch_points
         self.collision_meshes = collision_meshes
         self.occupancy_zones = occupancy_zones
-        self.locations = locations
-        self.trajectories = trajectories
 
     def to_dct(self):
         msg = super(Environment,self).to_dct()
@@ -46,20 +49,20 @@ class Environment(Node):
             'reach_sphere': self.reach_sphere.to_dct(),
             'pinch_points': [p.to_dct() for p in self.pinch_points],
             'collision_meshes': [c.to_dct() for c in self.collision_meshes],
-            'occupancy_zones': [o.to_dct() for o in self.occupancy_zones],
-            'locations': [l.to_dct() for l in self.locations],
-            'trajectories': [t.to_dct() for t in self.trajectories]
+            'occupancy_zones': [o.to_dct() for o in self.occupancy_zones]
         })
         return msg
 
     @classmethod
-    def from_dct(self, dct):
+    def from_dct(cls, dct):
         return cls(reach_sphere=ReachSphere.from_dct(dct['reach_sphere']),
                    pinch_points=[PinchPoint.from_dct(p) for p in dct['pinch_points']],
                    collision_meshes=[CollisionMesh.from_dct(c) for c in dct['collision_meshes']],
                    occupancy_zones=[OccupancyZone.from_dct(o) for o in dct['occupancy_zones']],
                    locations=[Location.from_dct(l) for l in dct['locations']],
-                   trajectories=[Trajectory.from_dct(t) for t in dct['trajectories']],
+                   machines=[Machine.from_dct(m) for m in dct['machines']],
+                   things=[Thing.from_dct(t) for t in dct['things']],
+                   waypoints=[Waypoint.from_dct(w) for w in dct['waypoints']],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -146,78 +149,6 @@ class Environment(Node):
 
             self.updated_attribute('occupancy_zones','set')
 
-    @property
-    def locations(self):
-        return self._locations
-
-    @locations.setter
-    def locations(self, value):
-        if value == None:
-            raise Exception('locations list cannot be null')
-
-        if self._locations != value:
-            if self._locations != None:
-                for l in self._locations:
-                    l.remove_from_cache()
-
-            self._locations= value
-            for l in self._locations:
-                l.parent = self
-
-            self.updated_attribute('locations','set')
-
-    def add_location(self, l):
-        l.parent = self
-        self._locations.append(l)
-        self.updated_attribute('locations','add',l.uuid)
-
-    def delete_location(self, uuid):
-        idx = -1
-        for i in range(0,len(self._locations)):
-            if self._locations[i].uuid == uuid:
-                idx = i
-                break
-
-        if idx != -1:
-            self._locations.pop(idx)
-            self.updated_attribute('locations','delete',uuid)
-
-    @property
-    def trajectories(self):
-        return self._trajectories
-
-    @trajectories.setter
-    def trajectories(self, value):
-        if value == None:
-            raise Exception('trajectories list cannot be null')
-
-        if self._trajectories != value:
-            if self._trajectories != None:
-                for t in self._trajectories:
-                    t.remove_from_cache()
-
-            self._trajectories = value
-            for t in self._trajectories:
-                t.parent = self
-
-            self.updated_attribute('trajectories','set')
-
-    def add_trajectory(self, t):
-        t.parent = self
-        self._trajectories.append(l)
-        self.updated_attribute('trajectories','add',t.uuid)
-
-    def delete_trajectory(self, uuid):
-        idx = -1
-        for i in range(0,len(self._trajectories)):
-            if self._trajectories[i].uuid == uuid:
-                idx = i
-                break
-
-        if idx != -1:
-            self._trajectories.pop(idx)
-            self.updated_attribute('trajectories','delete',uuid)
-
     def set(self, dct):
 
         if 'reach_sphere' in dct.keys():
@@ -231,12 +162,6 @@ class Environment(Node):
 
         if 'occupancy_zones' in dct.keys():
             self.occupancy_zones = [OccupancyZone.from_dct(o) for o in dct['occupancy_zones']]
-
-        if 'locations' in dct.keys():
-            self.locations = [Location.from_dct(l) for l in dct['locations']]
-
-        if 'trajectories' in dct.keys():
-            self.trajectories = [Trajectory.from_dct(t) for t in dct['trajectories']]
 
         super(Environment,self).set(dct)
 
@@ -256,12 +181,6 @@ class Environment(Node):
         for o in self.occupancy_zones:
             o.remove_from_cache()
 
-        for l in self.locations:
-            l.remove_from_cache()
-
-        for t in self.trajectories:
-            t.remove_from_cache()
-
         super(Environment,self).remove_from_cache()
 
     def add_to_cache(self):
@@ -276,29 +195,7 @@ class Environment(Node):
         for o in self.occupancy_zones:
             o.add_to_cache()
 
-        for l in self.locations:
-            l.add_to_cache()
-
-        for t in self.trajectories:
-            t.add_to_cache()
-
         super(Environment,self).add_to_cache()
-
-    '''
-    Children methods
-    '''
-
-    def delete_child(self, uuid):
-        success = False
-
-        if uuid in [l.uuid for l in self.locations]:
-            self.delete_location(uuid)
-            success = True
-        elif uuid in [t.uuid for t in self.trajectories]:
-            self.delete_trajectory(uuid)
-            success = True
-
-        return success
 
     '''
     Update Methods
@@ -316,20 +213,12 @@ class Environment(Node):
         for o in self.occupancy_zones:
             o.deep_update()
 
-        for l in self.locations:
-            l.deep_update()
-
-        for t in self.trajectories:
-            t.deep_update()
-
         super(Environment,self).deep_update()
 
         self.updated_attribute('reach_sphere','update')
         self.updated_attribute('pinch_points','update')
         self.updated_attribute('collision_meshes','update')
         self.updated_attribute('occupancy_zones','update')
-        self.updated_attribute('locations','update')
-        self.updated_attribute('trajectories','update')
 
     def shallow_update(self):
         super(Environment,self).shallow_update()
@@ -338,5 +227,3 @@ class Environment(Node):
         self.updated_attribute('pinch_points','update')
         self.updated_attribute('collision_meshes','update')
         self.updated_attribute('occupancy_zones','update')
-        self.updated_attribute('locations','update')
-        self.updated_attribute('trajectories','update')

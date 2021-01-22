@@ -43,7 +43,7 @@ class Task(Primitive):
             append_type=False,
             uuid=dct['uuid'],
             primitives=[NodeParser(p) for p in dct['primitives']],
-            context=Context.from_dct(dct['context']))
+            context=NodeParser(dct['context']) if dct['context'] != None else None)
 
     '''
     Data accessor/modifier methods

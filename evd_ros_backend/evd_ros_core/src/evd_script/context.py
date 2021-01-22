@@ -1,8 +1,8 @@
 from .node import Node
-from .data.location import Location
-from .data.machine import Machine
 from .data.thing import Thing
+from .data.machine import Machine
 from .data.waypoint import Waypoint
+from .data.location import Location
 
 
 class Context(Node):
@@ -58,6 +58,10 @@ class Context(Node):
     '''
     Data accessor/modifier methods
     '''
+
+    @property
+    def context(self):
+        return self
 
     @property
     def locations(self):

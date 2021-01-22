@@ -1,6 +1,6 @@
 from ..node import Node
 from ..visualizable import VisualizeMarker, ColorTable
-from ..data.geometry import Pose, Orientation
+from ..data.geometry import Orientation, Position
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -20,10 +20,14 @@ class PinchPoint(Node, VisualizeMarker):
     Data structure methods
     '''
 
-    def __init__(self, state = None, orientation=None, link='', type='', name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, state = None, axis='x', offset=None, link='', radius=0.05, length=0.2,
+                 type='', name='', parent=None, uuid=None, append_type=True):
         self._state = None
-        self._orientation = None
+        self._axis = None
+        self._offset = None
         self._link = None
+        self._radius = None
+        self._length = None
 
         super(PinchPoint,self).__init__(
             type='pinch-point.'+type if append_type else type,
@@ -33,23 +37,32 @@ class PinchPoint(Node, VisualizeMarker):
             append_type=append_type)
 
         self.state = state if state != None else GOOD_STATE
-        self.orientation = orientation if orientation != None else Orientation()
+        self.axis = axis
+        self.offset = offset if offset != None else Position(0,0,0)
         self.link = link
+        self.radius = radius
+        self.length = length
 
     def to_dct(self):
         msg = super(PinchPoint,self).to_dct()
         msg.update({
             'state': self.state,
-            'orientation': self.orientation,
-            'link': self.link
+            'axis': self.axis,
+            'offset': self.offset.to_dct(),
+            'link': self.link,
+            'radius': self.radius,
+            'length': self.length
         })
         return msg
 
     @classmethod
     def from_dct(cls, dct):
         return cls(state=dct['state'],
-                   orientation=Orientation.from_dct(dct['orientation']),
+                   axis=dct['axis'],
+                   offset=Position.from_dct(dct['offset']),
                    link=dct['link'],
+                   radius=dct['radius'],
+                   length=dct['length'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -71,9 +84,12 @@ class PinchPoint(Node, VisualizeMarker):
         marker.type = Marker.CYLINDER
         marker.ns = 'pinch_points'
         marker.id = id
-        marker.pose = Pose(orientation=self.orientation).to_ros()
-        marker.scale = Vector3(0.1,0.1,0.1)
+        marker.pose.position = self.offset.to_ros()
+        marker.pose.orientation = Orientation.from_axis(self.axis)
+        marker.scale = Vector3(2*self.radius,2*self.radius,self.length)
         marker.color = color
+
+        return marker
 
     '''
     Data accessor/modifier methods
@@ -102,43 +118,87 @@ class PinchPoint(Node, VisualizeMarker):
         self.state = self.ERROR_STATE
 
     @property
-    def orientation(self):
-        return self._orientation
+    def axis(self):
+        return self._axis
 
-    @orientation.setter
-    def orientation(self, value):
-        if self._orientation != value:
+    @axis.setter
+    def axis(self, value):
+        if self._axis != value:
             if value == None:
-                raise Exception('Orientation cannot be None')
+                raise Exception('Axis cannot be None')
 
-            if self._orientation != None:
-                self._orientation.remove_from_cache()
-
-            self._orientation = value
-            if self._orientation != None:
-                self._orientation.parent = self
-
-            self.updated_attribute('orientation','set')
+            self._axis = value
+            self.updated_attribute('axis','set')
 
     @property
     def link(self):
         return self._link
 
     @link.setter
-    def link(self):
+    def link(self, value):
         if self._link != value:
             self._link = value
             self.updated_attribute('link','set')
+
+    @property
+    def offset(self):
+        return self._offset
+
+    @offset.setter
+    def offset(self, value):
+        if self._offset != value:
+            if value == None:
+                raise Exception('Offset cannot be none')
+
+            if self._offset != None:
+                self._offset.remove_from_cache()
+
+            self._offset = value
+            self._offset.parent = self
+            self.updated_attribute('offset','set')
+
+    @property
+    def radius(self):
+        return self._radius
+
+    @radius.setter
+    def radius(self, value):
+        if self._radius != value:
+            if value < 0:
+                raise Exception('Radius must be a positive number or zero')
+            self._radius = value
+            self.updated_attribute('radius','set')
+
+    @property
+    def length(self):
+        return self._length
+
+    @length.setter
+    def length(self, value):
+        if self._length != value:
+            if value < 0:
+                raise Exception('Length must be a positive number or zero')
+            self._length = value
+            self.updated_attribute('length','set')
 
     def set(self, dct):
         if 'state' in dct.keys():
             self.state = dct['state']
 
-        if 'orientation' in dct.keys():
-            self.orientation = Orientation.from_dct(dct['orientation'])
+        if 'axis' in dct.keys():
+            self.axis = dct['axis']
+
+        if 'offset' in dct.keys():
+            self.offset = Position.from_dct(dct['offset'])
 
         if 'link' in dct.keys():
             self.link = dct['link']
+
+        if 'radius' in dct.keys():
+            self.radius = dct['radius']
+
+        if 'length' in dct.keys():
+            self.length = dct['length']
 
         super(PinchPoint,self).set(dct)
 
@@ -147,12 +207,12 @@ class PinchPoint(Node, VisualizeMarker):
     '''
 
     def remove_from_cache(self):
-        self.orientation.remove_from_cache()
+        self.offset.remove_from_cache()
 
         super(PinchPoint,self).remove_from_cache()
 
     def add_to_cache(self):
-        self.orientation.add_to_cache()
+        self.offset.add_to_cache()
 
         super(PinchPoint,self).add_to_cache()
 
@@ -161,15 +221,24 @@ class PinchPoint(Node, VisualizeMarker):
     '''
 
     def deep_update(self):
+
+        self.offset.deep_update()
+
         super(PinchPoint,self).deep_update()
 
         self.updated_attribute('state','update')
-        self.updated_attribute('orientation','update')
+        self.updated_attribute('axis', 'update')
+        self.updated_attribute('offset','update')
         self.updated_attribute('link','update')
+        self.updated_attribute('radius','update')
+        self.updated_attribute('length', 'update')
 
     def shallow_update(self):
         super(PinchPoint,self).shallow_update()
 
         self.updated_attribute('state','update')
-        self.updated_attribute('orientation','update')
+        self.updated_attribute('axis', 'update')
+        self.updated_attribute('offset','update')
         self.updated_attribute('link','update')
+        self.updated_attribute('radius','update')
+        self.updated_attribute('length', 'update')

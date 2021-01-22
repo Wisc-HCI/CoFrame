@@ -1,5 +1,4 @@
 from ..node import Node
-from ..environment.collision_mesh import CollisionMesh
 
 
 class MachineRecipe(Node):
@@ -161,9 +160,9 @@ class Machine(Node):
     Data structure methods
     '''
 
-    def __init__(self, collision_mesh=None, input_regions=None, output_regions=None,
+    def __init__(self, collision_mesh_uuid=None, input_regions=None, output_regions=None,
                  recipe=None, type='', name='', uuid=None, parent=None, append_type=True):
-        self._collision_mesh = None
+        self._collision_mesh_uuid = None
         self._input_regions = None
         self._output_regions = None
         self._machine_type = None
@@ -176,7 +175,7 @@ class Machine(Node):
             parent=parent,
             append_type=append_type)
 
-        self.collision_mesh = collision_mesh
+        self.collision_mesh_uuid = collision_mesh_uuid
         self.input_regions = input_regions
         self.output_regions = output_regions
         self.recipe = recipe if recipe != None else MachineRecipe()
@@ -184,7 +183,7 @@ class Machine(Node):
     def to_dct(self):
         msg = super(Machine,self).to_dct()
         msg.update({
-            'collision_mesh': self.collision_mesh.to_dct() if self.collision_mesh != None else None,
+            'collision_mesh_uuid': self.collision_mesh_uuid,
             'input_regions': {k: self.input_regions[k].to_dct() for k in self.input_regions.keys()} if self.input_regions != None else None,
             'output_regions': {k: self.output_regions[k].to_dct() for k in self.output_regions.keys()} if self.output_regions != None else None,
             'recipe': self.recipe.to_dct()
@@ -196,7 +195,7 @@ class Machine(Node):
         from ..utility_functions import NodeParser
 
         return cls(
-            collision_mesh=CollisionMesh.from_dct(dct['collision_mesh']) if dct['collision_mesh'] != None else None,
+            collision_mesh_uuid=dct['collision_mesh_uuid'],
             input_regions={k: NodeParser(dct[k]) for k in dct['input_regions'].keys()} if dct['input_regions'] != None else None,
             output_regions={k: NodeParser(dct[k]) for k in dct['output_regions'].keys()} if dct['output_regions'] != None else None,
             recipe=MachineRecipe.from_dct(dct['recipe']),
@@ -210,20 +209,20 @@ class Machine(Node):
     '''
 
     @property
-    def collision_mesh(self):
-        return self._collision_mesh
+    def collision_mesh_uuid(self):
+        return self._collision_mesh_uuid
 
-    @collision_mesh.setter
-    def collision_mesh(self, value):
-        if self._collision_mesh != value:
-            if self._collision_mesh != None:
-                self._collision_mesh.remove_from_cache()
+    @collision_mesh_uuid.setter
+    def collision_mesh_uuid(self, value):
+        if self._collision_mesh_uuid != value:
+            if self._collision_mesh_uuid != None:
+                self._collision_mesh_uuid.remove_from_cache()
 
-            self._collision_mesh = value
-            if self._collision_mesh != None:
-                self._collision_mesh.parent = self
+            self._collision_mesh_uuid = value
+            if self._collision_mesh_uuid != None:
+                self._collision_mesh_uuid.parent = self
 
-            self.updated_attribute('collision_mesh','set')
+            self.updated_attribute('collision_mesh_uuid','set')
 
     @property
     def machine_type(self):
@@ -351,8 +350,8 @@ class Machine(Node):
     def set(self, dct):
         from ..utility_functions import NodeParser
 
-        if 'collision_mesh' in dct.keys():
-            self.collision_mesh = CollisionMesh.from_dct(dct['collision_mesh'])
+        if 'collision_mesh_uuid' in dct.keys():
+            self.collision_mesh_uuid = dct['collision_mesh_uuid']
 
         if 'input_regions' in dct.keys():
             self.input_regions = {k: NodeParser(dct[k]) for k in dct['input_regions'].keys()}
@@ -371,9 +370,6 @@ class Machine(Node):
 
     def remove_from_cache(self):
 
-        if self.collision_mesh != None:
-            self.collision_mesh.remove_from_cache()
-
         if self.input_regions != None:
             for k in self.input_regions.keys():
                 self.input_regions[k].remove_from_cache()
@@ -387,9 +383,6 @@ class Machine(Node):
         super(Machine,self).remove_from_cache()
 
     def add_to_cache(self):
-
-        if self.collision_mesh != None:
-            self.collision_mesh.add_to_cache()
 
         if self.input_regions != None:
             for k in self.input_regions.keys():
@@ -411,7 +404,7 @@ class Machine(Node):
         super(Machine,self).deep_update()
 
         self.updated_attribute('machine_type','update')
-        self.updated_attribute('collision_mesh','update')
+        self.updated_attribute('collision_mesh_uuid','update')
         self.updated_attribute('input_regions','update')
         self.updated_attribute('output_regions','update')
         self.updated_attribute('recipe','update')
@@ -420,7 +413,7 @@ class Machine(Node):
         super(Machine,self).shallow_update()
 
         self.updated_attribute('machine_type','update')
-        self.updated_attribute('collision_mesh','update')
+        self.updated_attribute('collision_mesh_uuid','update')
         self.updated_attribute('input_regions','update')
         self.updated_attribute('output_regions','update')
         self.updated_attribute('recipe','update')

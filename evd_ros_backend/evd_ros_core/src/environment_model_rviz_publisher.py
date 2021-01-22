@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import pprint
 
 from visualization_msgs.msg import Marker, MarkerArray
 from interfaces.data_client_interface import DataClientInterface
@@ -18,9 +19,11 @@ class EnvironmentModelRvizPublisher:
 
         self._ros_frame_id = ros_frame_id
         self._marker_pub = rospy.Publisher('environment_model_visualizer/markers',MarkerArray,queue_size=10,latch=True)
-        self._data_client = DataClientInterface(use_environment_interface=True, on_environment_update_cb=self._update_markers)
+        self._data_client = DataClientInterface(on_program_update_cb=self._update_markers)
 
     def _update_markers(self):
+
+        print 'Environment'
 
         markerArray = MarkerArray()
 
@@ -32,7 +35,7 @@ class EnvironmentModelRvizPublisher:
         updated_markers = {}
 
         # get all locations and display all locations
-        locations = self._data_client.environment.locations
+        locations = self._data_client.program.environment.locations
         print '\n\nLocations=', locations
         for loc in locations:
             marker = loc.to_ros_marker(self._ros_frame_id,self._count)
@@ -42,7 +45,7 @@ class EnvironmentModelRvizPublisher:
             updated_markers[loc.uuid] = marker
 
         # Get all trajectories and display all waypoints and display all traces
-        trajectories = self._data_client.environment.trajectories
+        trajectories = self._data_client.cache.trajectories.values()
         print '\n\nTrajectories', trajectories
         for traj in trajectories:
 
@@ -54,7 +57,7 @@ class EnvironmentModelRvizPublisher:
                 marker = waypointMarkers[i]
                 uuid = waypointUuids[i]
                 print 'adding waypoint marker', uuid
-                markerArray.markers.append(marker))
+                markerArray.markers.append(marker)
                 updated_markers[uuid] = marker
 
             # If we can and want to display traces otherwise just display the trajectory sketch
@@ -84,15 +87,28 @@ class EnvironmentModelRvizPublisher:
                 markerArray.markers.append(trajMarker)
                 updated_markers[traj.uuid] = trajMarker
 
+        # Get all things
+        things = self._data_client.cache.things.values()
+        print '\n\nThings=', things
+        for thing in things:
+            marker = thing.to_ros_marker(self._ros_frame_id,self._count)
+            if marker != None:
+                print 'adding thing markers', thing.uuid
+                markerArray.markers.append(marker)
+                self._count = self._count + 1
+                updated_markers[thing.uuid] = marker
+
         # display reach sphere
-        reach_sphere = self._data_client.environment.reach_sphere
-        marker = reach_sphere.to_ros_marker('base_link',self._count)
+        reach_sphere = self._data_client.program.environment.reach_sphere
+        print '\n\nReach Sphere', reach_sphere.uuid
+        marker = reach_sphere.to_ros_marker(self._ros_frame_id,self._count)
         markerArray.markers.append(marker)
         self._count += 1
         updated_markers[reach_sphere.uuid] = marker
 
         # display occupancy zones
-        zones = self._data_client.environment.occupancy_zones
+        zones = self._data_client.program.environment.occupancy_zones
+        print '\n\nOccupancy Zones', zones
         for zone in zones:
             marker = zone.to_ros_marker(self._ros_frame_id, self._count)
             markerArray.markers.append(marker)
@@ -100,7 +116,8 @@ class EnvironmentModelRvizPublisher:
             updated_markers[zone.uuid] = marker
 
         # display pinch-points
-        pinchpoints = self._data_client.environment.pinch_points
+        pinchpoints = self._data_client.program.environment.pinch_points
+        print '\n\nPinch Points', pinchpoints
         for point in pinchpoints:
             marker  = point.to_ros_marker(self._count)
             markerArray.markers.append(marker)
@@ -108,7 +125,8 @@ class EnvironmentModelRvizPublisher:
             updated_markers[point.uuid] = marker
 
         # display collision meshes
-        meshes = self._data_client.environment.collision_meshes
+        meshes = self._data_client.program.environment.collision_meshes
+        print '\n\nCollision Meshes', meshes
         for mesh in meshes:
             marker = mesh.to_ros_marker(self._ros_frame_id, self._count)
             markerArray.markers.append(marker)

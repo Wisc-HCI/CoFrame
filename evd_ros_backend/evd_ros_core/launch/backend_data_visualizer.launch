@@ -3,8 +3,8 @@
 
   <arg name="ros_frame_id"/>
 
-  <arg name="run_program_pub" default="true" />
-  <arg name="run_environment_pub" default="false" />
+  <arg name="run_program_pub" default="false" />
+  <arg name="run_environment_pub" default="true" />
   <arg name="run_app_pub" default="false" />
 
   <node if="$(arg run_program_pub)" name="program_model_rviz_publisher" pkg="evd_ros_core" type="program_model_rviz_publisher.py" output="screen">

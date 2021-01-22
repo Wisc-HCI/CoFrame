@@ -215,6 +215,25 @@ class Position(Node):
         distance = math.sqrt(math.pow(difX,2) + math.pow(difY,2) + math.pow(difZ,2))
         return distance
 
+    @classmethod
+    def from_axis(cls, axis, scale=1):
+        axis = axis.lower()
+        orientation = None
+
+        if axis == 'x' or axis == '+x':
+            return cls(scale,0,0)
+        elif axis == '-x':
+            return cls(-scale,0,0)
+        elif axis == 'y' or axis == '+y':
+            return cls(0,scale,0)
+        elif axis == '-y':
+            return cls(0,-scale,0)
+        elif axis == 'z' or axis == '+x':
+            return cls(0,0,scale)
+        elif axis == '-z':
+            return cls(0,0,-scale)
+        else:
+            raise Exception('axis is not valid')
     '''
     Data accessor/modifier methods
     '''
@@ -398,6 +417,26 @@ class Orientation(Node):
 
         theta = 2 * math.acos(math.abs(qr[3]))
         return theta
+
+    @classmethod
+    def from_axis(cls, axis):
+        axis = axis.lower()
+        orientation = None
+
+        if axis == 'x' or axis == '+x':
+            return cls(0,0,0,1)
+        elif axis == '-x':
+            return cls(-1,0,0,0)
+        elif axis == 'y' or axis == '+y':
+            return cls(0,0.7071068,0,0.7071068)
+        elif axis == '-y':
+            return cls(0,-0.7071068,0,0.7071068)
+        elif axis == 'z' or axis == '+z':
+            return cls(0,0,0.7071068,0.7071068)
+        elif axis == '-z':
+            return cls(0,0,-0.7071068,0.7071068)
+        else:
+            raise Exception('axis is not valid')
 
     '''
     Data accessor/modifier methods

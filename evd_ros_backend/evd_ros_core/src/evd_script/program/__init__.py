@@ -28,8 +28,6 @@ def ProgramNodeParser(exactType, dct):
 
     if exactType == "program":
         node = Program.from_dct(dct)
-    elif exactType == "context":
-        node = Context.from_dct(dct)
     elif exactType == "task":
         node = Task.from_dct(dct)
     elif exactType == "primitive":

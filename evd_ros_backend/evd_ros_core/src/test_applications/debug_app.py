@@ -67,25 +67,25 @@ def generate():
     for trajUuid in cache.trajectories.keys():
         trajectory = cache.trajectories[trajUuid]
 
-        startPos = prog.context.get_location(trajectory.start_location_uuid).position
-        endPos = prog.context.get_location(trajectory.end_location_uuid).position
+        startLoc = prog.context.get_location(trajectory.start_location_uuid)
+        endLoc = prog.context.get_location(trajectory.end_location_uuid)
 
-        xFunc = interpolate.interp1d([0,1],[startPos.x,endPos.x])
-        yFunc = interpolate.interp1d([0,1],[startPos.y,endPos.y])
-        zFunc = interpolate.interp1d([0,1],[startPos.z,endPos.z])
+        xFunc = interpolate.interp1d([0,1],[startLoc.position.x,endLoc.position.x])
+        yFunc = interpolate.interp1d([0,1],[startLoc.position.y,endLoc.position.y])
+        zFunc = interpolate.interp1d([0,1],[startLoc.position.z,endLoc.position.z])
 
         # Put a waypoint midway between locations
         NUM_WPS = 2
         waypoint_uuids = []
         for i in range(0,NUM_WPS+1):
-            if i+1 == NUM_WPS:
+            if i == NUM_WPS:
                 break
 
             w = Waypoint(
                 position=Position(
-                    x=xFunc((i+1.0)/NUM_WPS).tolist(),
-                    y=yFunc((i+1.0)/NUM_WPS).tolist(),
-                    z=zFunc((i+1.0)/NUM_WPS).tolist()),
+                    x=xFunc((i+1.0)/(NUM_WPS+1)).tolist(),
+                    y=yFunc((i+1.0)/(NUM_WPS+1)).tolist(),
+                    z=zFunc((i+1.0)/(NUM_WPS+1)).tolist()),
                 orientation=Orientation(
                     x=0,
                     y=0.7071068,
@@ -98,12 +98,14 @@ def generate():
         trajectory.waypoint_uuids = waypoint_uuids
 
         # Put a trace datapoint at each location and waypoint
-        trace = Trace('ee',{'ee': [
-            TraceDataPoint(home_loc.position,home_loc.orientation),
-            TraceDataPoint(retract_loc.position,retract_loc.orientation),
-            TraceDataPoint(place_final_loc.position,place_final_loc.orientation)]})
+        datapoints = []
+        datapoints.append(TraceDataPoint(startLoc.position,startLoc.orientation))
+        for uuid in waypoint_uuids:
+            wp = prog.context.get_waypoint(uuid)
+            datapoints.append(TraceDataPoint(wp.position,wp.orientation))
+        datapoints.append(TraceDataPoint(endLoc.position,endLoc.orientation))
 
-        trajectory.trace = trace
+        trajectory.trace = Trace('ee',{'ee': datapoints})
 
     #print '\n\n\n\n'
     #print 'Cache Log'
@@ -116,14 +118,20 @@ def generate():
     # Define Environment
     #===========================================================================
 
-    env = Environment(
-        reach_sphere=ReachSphere(),
-        pinch_points=[],
-        collision_meshes=[],
-        occupancy_zones=[
-            OccupancyZone(OccupancyZone.HUMAN_TYPE),
-            OccupancyZone(OccupancyZone.ROBOT_TYPE)],
-        locations=locations,
-        trajectories=cache.trajectories.values())
+    prog.environment.reach_sphere = ReachSphere(ReachSphere.GOOD_STATE, 0.6, offset=Position(0,0,0.15))
+    prog.environment.pinch_points = [
+        PinchPoint(PinchPoint.GOOD_STATE, link='simulated_shoulder_link', radius=0.075, length=0.2, offset=Position.from_axis('z',-0.05)),
+        PinchPoint(PinchPoint.GOOD_STATE, link='simulated_upper_arm_link', radius=0.075, length=0.2, offset=Position.from_axis('z',0.075)),
+        PinchPoint(PinchPoint.GOOD_STATE, link='simulated_forearm_link', radius=0.075, length=0.2, offset=Position.from_axis('z',0.075)),
+        PinchPoint(PinchPoint.GOOD_STATE, link='simulated_wrist_1_link', radius=0.06, length=0.17, offset=Position.from_axis('z',-0.05)),
+        PinchPoint(PinchPoint.GOOD_STATE, link='simulated_wrist_3_link', radius=0.1, length=0.16, offset=Position.from_axis('z',0.1))
+    ]
+    prog.environment.collision_meshes = [
 
-    return {"program": prog, "environment": env}
+    ]
+    prog.environment.occupancy_zones = [
+        OccupancyZone(OccupancyZone.HUMAN_TYPE),
+        OccupancyZone(OccupancyZone.ROBOT_TYPE)
+    ]
+
+    return prog

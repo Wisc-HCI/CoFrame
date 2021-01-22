@@ -5,6 +5,7 @@ from .environment import EnvironmentNodeParser
 from .program import ProgramNodeParser
 from .test import TestNodeParser
 from .node import Node
+from .context import Context
 
 
 def NodeParser(dct):
@@ -40,6 +41,8 @@ def NodeParser(dct):
 
     if exactType == "node":
         node = Node.from_dct(dct)
+    elif exactType == "context":
+        node = Context.from_dct(dct)
     else:
         raise Exception('Could not parse object supplied with type: {}'.format(exactType))
 

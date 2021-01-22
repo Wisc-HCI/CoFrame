@@ -19,7 +19,7 @@ class ProgramModelRvizPublisherNode:
 
         self._ros_frame_id = ros_frame_id
         self._marker_pub = rospy.Publisher('program_model_visualizer/markers',MarkerArray,queue_size=10,latch=True)
-        self._data_client = DataClientInterface(use_program_interface=True, on_program_update_cb=self._update_markers)
+        self._data_client = DataClientInterface(on_program_update_cb=self._update_markers)
 
     def _update_markers(self):
 
@@ -115,6 +115,6 @@ if __name__ == "__main__":
 
     ros_frame_id = rospy.get_param('~ros_frame_id',DEFAULT_ROS_FRAME_ID)
 
-    node = ProgramModelRvizPublisherNode(ros_frame_id, False)
+    node = ProgramModelRvizPublisherNode(ros_frame_id, True)
 
     rospy.spin()

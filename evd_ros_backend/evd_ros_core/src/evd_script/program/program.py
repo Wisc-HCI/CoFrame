@@ -3,6 +3,7 @@
 '''
 
 from .task import Task
+from ..environment import Environment
 
 
 class Program(Task):
@@ -11,8 +12,18 @@ class Program(Task):
     Data structure methods
     '''
 
-    def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, context=None):
+    def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None, context=None):
         self.changes_cb = changes_cb
+
+        if environment != None and context != None:
+            raise Exception("Environment is an alias for Context")
+        elif environment == None and context == None:
+            environment = Environment()
+        elif context != None:
+            environment = context
+
+        if not isinstance(environment,Environment):
+            raise Exception('Program level context must be an environment')
 
         super(Program,self).__init__(
             type='program.'+type if append_type else type,
@@ -21,7 +32,29 @@ class Program(Task):
             parent=None,
             append_type=append_type,
             primitives=primitives,
-            context=context)
+            context=environment)
+
+    '''
+    Data accessor/modifier methods
+    '''
+
+    @property
+    def environment(self):
+        return self._context
+
+    @environment.setter
+    def environment(self, value):
+        if self._context != value:
+            if not isinstance(value,Environment):
+                raise Exception('Program level context must be an environment')
+
+            if self._context != None:
+                self._context.remove_from_cache()
+
+            self._context = value
+            self._context.parent = self
+
+            self.updated_attribute('context','set')
 
     '''
     Utility methods

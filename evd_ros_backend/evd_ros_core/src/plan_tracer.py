@@ -63,7 +63,6 @@ class PlanTracer:
         }
 
         self._ursim = RobotInterface('planner')
-        self._data_client = DataClientInterface(use_program_interface=True)
 
         self._listener = tf.TransformListener()
         self._submit_job_srv = rospy.Service('plan_tracer/submit_job',SubmitJob,self._submit_job_cb)
