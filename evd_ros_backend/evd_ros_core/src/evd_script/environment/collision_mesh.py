@@ -20,9 +20,8 @@ class CollisionMesh(Node,VisualizeMarker):
     Data structure methods
     '''
 
-    def __init__(self, state = None, mesh_id = None, pose_offset = None, link='', type='', name='',
+    def __init__(self, mesh_id = None, pose_offset = None, link='', type='', name='',
                  parent=None, uuid=None, append_type=True):
-        self._state = None
         self._mesh_id = None
         self._pose_offset = None
         self._link = None
@@ -34,7 +33,6 @@ class CollisionMesh(Node,VisualizeMarker):
             parent=parent,
             append_type=append_type)
 
-        self.state = state if state != None else GOOD_STATE
         self.mesh_id = mesh_id
         self.pose_offset = pose_offset if pose_offset != None else Pose()
         self.link = link
@@ -42,7 +40,6 @@ class CollisionMesh(Node,VisualizeMarker):
     def to_dct(self):
         msg = super(CollisionMesh,self).to_dct()
         msg.update({
-            'state': self.state,
             'mesh_id': self.mesh_id,
             'pose_offset': self.pose_offset.to_dct(),
             'link': self.link
@@ -51,8 +48,7 @@ class CollisionMesh(Node,VisualizeMarker):
 
     @classmethod
     def from_dct(cls, dct):
-        return cls(state=dct['state'],
-                   mesh_id=dct['mesh_id'],
+        return cls(mesh_id=dct['mesh_id'],
                    pose_offset=Pose.from_dct(dct['pose_offset']),
                    link=dct['link'],
                    type=dct['type'] if 'type' in dct.keys() else '',
@@ -60,14 +56,14 @@ class CollisionMesh(Node,VisualizeMarker):
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
 
-    def to_ros_marker(self, id=0):
+    def to_ros_marker(self, id=0, state='good'):
         # The frame_id should be the application frame
 
-        if self.state == self.GOOD_STATE:
+        if state == self.GOOD_STATE:
             color = ColorTable.GOOD_COLOR
-        elif self.state == self.WARN_STATE:
+        elif state == self.WARN_STATE:
             color = ColorTable.WARN_COLOR
-        elif self.state == self.ERROR_STATE:
+        elif state == self.ERROR_STATE:
             color = ColorTable.ERROR_COLOR
 
         marker = Marker()
@@ -88,28 +84,6 @@ class CollisionMesh(Node,VisualizeMarker):
     '''
     Data accessor/modifier methods
     '''
-
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, value):
-        if self._state != value:
-            if value != self.GOOD_STATE and value != self.WARN_STATE and value != self.ERROR_STATE:
-                raise Exception('Invalid state provided')
-
-            self._state = value
-            self.updated_attribute('state','set')
-
-    def set_state_good(self):
-        self.state = self.GOOD_STATE
-
-    def set_state_warn(self):
-        self.state = self.WARN_STATE
-
-    def set_state_error(self):
-        self.state = self.ERROR_STATE
 
     @property
     def mesh_id(self):
@@ -151,8 +125,6 @@ class CollisionMesh(Node,VisualizeMarker):
             self.updated_attribute('link','set')
 
     def set(self, dct):
-        if 'state' in dct.keys():
-            self.state = dct['state']
 
         if 'mesh_id' in dct.keys():
             self.mesh_id = dct['mesh_id']
@@ -188,7 +160,6 @@ class CollisionMesh(Node,VisualizeMarker):
 
         super(CollisionMesh,self).deep_update()
 
-        self.updated_attribute('state','update')
         self.updated_attribute('mesh_id','update')
         self.updated_attribute('pose_offset','update')
         self.updated_attribute('link','update')
@@ -196,7 +167,6 @@ class CollisionMesh(Node,VisualizeMarker):
     def shallow_update(self):
         super(CollisionMesh,self).shallow_update()
 
-        self.updated_attribute('state','update')
         self.updated_attribute('mesh_id','update')
         self.updated_attribute('pose_offset','update')
         self.updated_attribute('link','update')

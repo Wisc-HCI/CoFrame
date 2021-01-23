@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-#TODO
 
-'''
-Verify program is syntatically and semantically valid to run
-'''
+class Verifier:
+
+    def __init__(self):
+        pass
+
+    def spin(self):
+        pass
+
+
+if __name__ == "__main__":
+    rospy.init_node('verifier')
+
+    node = Verifier()
+    node.spin()

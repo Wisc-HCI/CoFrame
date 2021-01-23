@@ -20,9 +20,8 @@ class PinchPoint(Node, VisualizeMarker):
     Data structure methods
     '''
 
-    def __init__(self, state = None, axis='x', offset=None, link='', radius=0.05, length=0.2,
+    def __init__(self, axis='x', offset=None, link='', radius=0.05, length=0.2,
                  type='', name='', parent=None, uuid=None, append_type=True):
-        self._state = None
         self._axis = None
         self._offset = None
         self._link = None
@@ -36,7 +35,6 @@ class PinchPoint(Node, VisualizeMarker):
             parent=parent,
             append_type=append_type)
 
-        self.state = state if state != None else GOOD_STATE
         self.axis = axis
         self.offset = offset if offset != None else Position(0,0,0)
         self.link = link
@@ -46,7 +44,6 @@ class PinchPoint(Node, VisualizeMarker):
     def to_dct(self):
         msg = super(PinchPoint,self).to_dct()
         msg.update({
-            'state': self.state,
             'axis': self.axis,
             'offset': self.offset.to_dct(),
             'link': self.link,
@@ -57,8 +54,7 @@ class PinchPoint(Node, VisualizeMarker):
 
     @classmethod
     def from_dct(cls, dct):
-        return cls(state=dct['state'],
-                   axis=dct['axis'],
+        return cls(axis=dct['axis'],
                    offset=Position.from_dct(dct['offset']),
                    link=dct['link'],
                    radius=dct['radius'],
@@ -68,15 +64,15 @@ class PinchPoint(Node, VisualizeMarker):
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
 
-    def to_ros_marker(self, id=0):
+    def to_ros_marker(self, id=0, state='good'):
         # The frame_id should match the joint associated with this pinchpoint
         # The pose for this marker is at origin for that frame
 
-        if self.state == self.GOOD_STATE:
+        if state == self.GOOD_STATE:
             color = ColorTable.GOOD_COLOR
-        elif self.state == self.WARN_STATE:
+        elif state == self.WARN_STATE:
             color = ColorTable.WARN_COLOR
-        elif self.state == self.ERROR_STATE:
+        elif state == self.ERROR_STATE:
             color = ColorTable.ERROR_COLOR
 
         marker = Marker()
@@ -94,28 +90,6 @@ class PinchPoint(Node, VisualizeMarker):
     '''
     Data accessor/modifier methods
     '''
-
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, value):
-        if self._state != value:
-            if value != self.GOOD_STATE and value != self.WARN_STATE and value != self.ERROR_STATE:
-                raise Exception('Invalid state provided')
-
-            self._state = value
-            self.updated_attribute('state','set')
-
-    def set_state_good(self):
-        self.state = self.GOOD_STATE
-
-    def set_state_warn(self):
-        self.state = self.WARN_STATE
-
-    def set_state_error(self):
-        self.state = self.ERROR_STATE
 
     @property
     def axis(self):
@@ -182,8 +156,6 @@ class PinchPoint(Node, VisualizeMarker):
             self.updated_attribute('length','set')
 
     def set(self, dct):
-        if 'state' in dct.keys():
-            self.state = dct['state']
 
         if 'axis' in dct.keys():
             self.axis = dct['axis']
@@ -226,7 +198,6 @@ class PinchPoint(Node, VisualizeMarker):
 
         super(PinchPoint,self).deep_update()
 
-        self.updated_attribute('state','update')
         self.updated_attribute('axis', 'update')
         self.updated_attribute('offset','update')
         self.updated_attribute('link','update')
@@ -236,7 +207,6 @@ class PinchPoint(Node, VisualizeMarker):
     def shallow_update(self):
         super(PinchPoint,self).shallow_update()
 
-        self.updated_attribute('state','update')
         self.updated_attribute('axis', 'update')
         self.updated_attribute('offset','update')
         self.updated_attribute('link','update')

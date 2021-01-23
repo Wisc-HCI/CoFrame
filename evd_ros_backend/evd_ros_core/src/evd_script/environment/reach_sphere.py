@@ -20,9 +20,8 @@ class ReachSphere(Node, VisualizeMarker):
     Data structure methods
     '''
 
-    def __init__(self, state = None, radius=1, offset=None, type='', name='',
+    def __init__(self, radius=1, offset=None, type='', name='',
                  parent=None, uuid=None, append_type=True):
-        self._state = None
         self._radius = None
         self._offset = None
 
@@ -33,14 +32,12 @@ class ReachSphere(Node, VisualizeMarker):
             parent=parent,
             append_type=append_type)
 
-        self.state = state if state != None else self.GOOD_STATE
         self.radius = radius
         self.offset = offset if offset != None else Position(0,0,0)
 
     def to_dct(self):
         msg = super(ReachSphere,self).to_dct()
         msg.update({
-            'state': self.state,
             'radius': self.radius,
             'offset': self.offset.to_dct()
         })
@@ -48,23 +45,24 @@ class ReachSphere(Node, VisualizeMarker):
 
     @classmethod
     def from_dct(cls, dct):
-        return cls(state=dct['state'],
-                   radius=dct['radius'],
+        return cls(radius=dct['radius'],
                    offset=Position.from_dct(dct['offset']),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
 
-    def to_ros_marker(self, frame_id='app', id=0):
+    def to_ros_marker(self, frame_id='app', id=0, state='good'):
         # The frame_id should be app
 
-        if self.state == self.GOOD_STATE:
+        if state == self.GOOD_STATE:
             color = ColorTable.GOOD_COLOR
-        elif self.state == self.WARN_STATE:
+        elif state == self.WARN_STATE:
             color = ColorTable.WARN_COLOR
-        elif self.state == self.ERROR_STATE:
+        elif state == self.ERROR_STATE:
             color = ColorTable.ERROR_COLOR
+        else:
+            raise Exception('State {} is not a valid state'.format(state))
 
         marker = Marker()
         marker.header.frame_id = frame_id
@@ -81,28 +79,6 @@ class ReachSphere(Node, VisualizeMarker):
     '''
     Data accessor/modifier methods
     '''
-
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, value):
-        if self._state != value:
-            if value != self.GOOD_STATE and value != self.WARN_STATE and value != self.ERROR_STATE:
-                raise Exception('Invalid state provided')
-
-            self._state = value
-            self.updated_attribute('state','set')
-
-    def set_state_good(self):
-        self.state = self.GOOD_STATE
-
-    def set_state_warn(self):
-        self.state = self.WARN_STATE
-
-    def set_state_error(self):
-        self.state = self.ERROR_STATE
 
     @property
     def radius(self):
@@ -132,8 +108,6 @@ class ReachSphere(Node, VisualizeMarker):
             self.updated_attribute('offset','set')
 
     def set(self, dct):
-        if 'state' in dct.keys():
-            self.state = dct['state']
 
         if 'radius' in dct.keys():
             self.radius = dct['radius']
@@ -168,13 +142,11 @@ class ReachSphere(Node, VisualizeMarker):
 
         super(ReachSphere,self).deep_update()
 
-        self.updated_attribute('state','update')
         self.updated_attribute('radius','update')
         self.updated_attribute('offset','update')
 
     def shallow_update(self):
         super(ReachSphere,self).shallow_update()
 
-        self.updated_attribute('state','update')
         self.updated_attribute('radius','update')
         self.updated_attribute('offset','update')
