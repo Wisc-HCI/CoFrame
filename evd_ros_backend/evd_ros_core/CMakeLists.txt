@@ -54,6 +54,7 @@ add_message_files(
   Move.msg
   Stop.msg
   Servo.msg
+  Issue.msg
   Version.msg
   UpdateData.msg
   ApplicationOption.msg
@@ -69,6 +70,8 @@ add_service_files(
   LoadData.srv
   SaveData.srv
   GetOptions.srv
+  ClearIssue.srv
+  GetIssues.srv
 )
 
 ## Generate actions in the 'action' folder

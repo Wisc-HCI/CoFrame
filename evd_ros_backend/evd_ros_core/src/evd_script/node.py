@@ -40,6 +40,9 @@ class Node(object):
             'uuid': self.uuid
         }
 
+    def on_delete(self):
+        pass # Implement this if your node needs to clean up something on deletion
+
     '''
     Data accessor/modifier methods
     '''
@@ -149,6 +152,9 @@ class Node(object):
             return self.uuid == other.uuid
         except:
             return False
+
+    def __del__(self):
+        self.on_delete()
 
     '''
     Update methods

@@ -13,6 +13,7 @@ from robotiq_85_msgs.msg import GripperStat
 from evd_ros_core.msg import MoveTrajectoryAction
 from evd_ros_core.msg import Stop, Servo, Move, Grip
 
+from evd_script.data.trajectory import *
 
 class RobotInterface:
 

@@ -4,13 +4,13 @@ import rospy
 import pprint
 
 from visualization_msgs.msg import Marker, MarkerArray
-from interfaces.data_client_interface import DataClientInterface
+from ..interfaces.data_client_interface import DataClientInterface
 
 
 DEFAULT_ROS_FRAME_ID = 'app'
 
 
-class ProgramModelRvizPublisherNode:
+class TestProgramDataVisualizer:
 
     def __init__(self, ros_frame_id, display_traces):
         self.display_traces = display_traces
@@ -18,7 +18,7 @@ class ProgramModelRvizPublisherNode:
         self._marker_uuid_list = {}
 
         self._ros_frame_id = ros_frame_id
-        self._marker_pub = rospy.Publisher('program_model_visualizer/markers',MarkerArray,queue_size=10,latch=True)
+        self._marker_pub = rospy.Publisher('test_program_data_visualizer/markers',MarkerArray,queue_size=10,latch=True)
         self._data_client = DataClientInterface(on_program_update_cb=self._update_markers)
 
     def _update_markers(self):
@@ -111,10 +111,10 @@ class ProgramModelRvizPublisherNode:
 
 
 if __name__ == "__main__":
-    rospy.init_node('program_model_rviz_publisher')
+    rospy.init_node('test_program_data_visualizer')
 
     ros_frame_id = rospy.get_param('~ros_frame_id',DEFAULT_ROS_FRAME_ID)
 
-    node = ProgramModelRvizPublisherNode(ros_frame_id, True)
+    node = TestProgramDataVisualizer(ros_frame_id, True)
 
     rospy.spin()

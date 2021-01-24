@@ -8,6 +8,7 @@ from interfaces.robot_interface import RobotInterface
 from interfaces.data_client_interface import DataClientInterface
 from interfaces.program_runner import ProgramRunner
 
+
 class RobotControlServer:
 
     def __init__(self):

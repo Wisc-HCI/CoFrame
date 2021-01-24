@@ -1,4 +1,0 @@
-# TODO
-
-class RelaxedIKInterface:
-    pass

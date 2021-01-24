@@ -4,13 +4,13 @@ import rospy
 import pprint
 
 from visualization_msgs.msg import Marker, MarkerArray
-from interfaces.data_client_interface import DataClientInterface
+from ..interfaces.data_client_interface import DataClientInterface
 
 
 DEFAULT_ROS_FRAME_ID = 'app'
 
 
-class EnvironmentModelRvizPublisher:
+class TestEnvironmentDataVisualizer:
 
     def __init__(self, ros_frame_id, display_traces):
         self.display_traces = display_traces
@@ -19,7 +19,7 @@ class EnvironmentModelRvizPublisher:
         self._marker_periodic_uuid_list = {}
 
         self._ros_frame_id = ros_frame_id
-        self._marker_pub = rospy.Publisher('environment_model_visualizer/markers',MarkerArray,queue_size=10,latch=True)
+        self._marker_pub = rospy.Publisher('test_environment_data_visualizer/markers',MarkerArray,queue_size=10,latch=True)
         self._data_client = DataClientInterface(on_program_update_cb=self._update_markers)
 
     def _update_markers(self):
@@ -182,10 +182,10 @@ class EnvironmentModelRvizPublisher:
 
 
 if __name__ == "__main__":
-    rospy.init_node('environment_model_rviz_publisher')
+    rospy.init_node('test_environment_data_visualizer')
 
     ros_frame_id = rospy.get_param('~ros_frame_id',DEFAULT_ROS_FRAME_ID)
 
-    node = EnvironmentModelRvizPublisher(ros_frame_id, True)
+    node = TestEnvironmentDataVisualizer(ros_frame_id, True)
 
     node.spin()

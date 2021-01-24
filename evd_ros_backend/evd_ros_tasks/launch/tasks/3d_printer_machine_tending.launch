@@ -38,7 +38,7 @@
   </include>
 
   <!-- For Debug -->
-  <include file="$(find evd_ros_core)/launch/backend_data_visualizer.launch">
+  <include file="$(find evd_ros_core)/launch/test_core_application.launch">
     <arg name="ros_frame_id" value="world"/>
   </include>
 

@@ -13,6 +13,11 @@ Planner creates full visualizations for trajectories
 - joint-link-paths (more general form of end-effector path)
 '''
 
+# Iterate through all trajectories to generate valid traces
+#   Also update the feasability and joint states of locations/waypoints
+#TODO If trajectories are in context, what happens when program does not contain associated move trajectory?
+#       Does this node make the repair?
+
 #TODO generalize this
 
 import tf
@@ -28,7 +33,6 @@ from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
 from evd_ros_core.srv import SubmitJob, SubmitJobRequest, SubmitJobResponse
 from evd_ros_core.srv import PendingJobs, PendingJobsRequest, PendingJobsResponse
 
-from interfaces.rik_interface import RelaxedIKInterface
 from interfaces.robot_interface import RobotInterface
 from interfaces.data_client_interface import DataClientInterface
 
@@ -37,7 +41,7 @@ from evd_script.data.trajectory import *
 from evd_script.data.geometry import *
 
 
-class PlanTracer:
+class TraceProcessor:
 
     def __init__(self):
         self._jobs = []
@@ -63,46 +67,24 @@ class PlanTracer:
         }
 
         self._ursim = RobotInterface('planner')
-
         self._listener = tf.TransformListener()
-        self._submit_job_srv = rospy.Service('plan_tracer/submit_job',SubmitJob,self._submit_job_cb)
-        self._pending_jobs_srv = rospy.Service('plan_tracer/pending_jobs',PendingJobs,self._pending_jobs_cb)
+        self._data_client = DataClientInterface(on_program_update_cb=self._program_updated)
 
-    def _submit_job_cb(self, request):
-        id = '{}-py-{}'.format('plan_tracer_job',uuid.uuid1().hex)
-
-        self._jobs.append({
-            'type': request.type,
-            'params': json.loads(request.params),
-            'id': id
-        })
-
-        response = JobResponse()
-        response.job_id = id
-        return response
-
-    def _pending_jobs_cb(self, request):
-        response = PendingJobsResponse()
-
-        for j in self._jobs:
-            response.job_ids.append(j['job_id'])
-            response.types.append(j['type'])
-            response.params.append(json.dumps(j['params']))
-
-        return response
-
-    def generate_waypoint(self, job_data):
+    def _program_updated(self):
         pass
 
-    def generate_trace(self, job_data):
+    def generate_waypoint(self, evd_waypoint):
+        pass
+
+    def generate_trace(self, evd_trajectory):
 
         # generate trajectory path for robot
         print 'generating full trajectory path'
-        fullTraj = self.pack_robot_trajectory(job_data['trajectory_uuid'])
+        fullTraj = self.pack_robot_trajectory(evd_trajectory)
 
         # reset state of robot to initial joint state
         print 'resetting state of robot'
-        # TODO
+        #self.(set_robot_pose)
 
         # run trace, collecting links of interest at sample frequency
         print 'running full trajectory and capturing trace data'
@@ -155,12 +137,47 @@ class PlanTracer:
 
             rate.sleep()
 
-    def pack_robot_trajectory(self, trajId):
-        #TODO
+    def pack_robot_trajectory(self, evd_trajectory):
         moves = []
-        for wp in trajectory.waypoints:
-            move = self._ursim.pack_robot_move_joint(wp['joints'])
+
+        loc_uuid = evd_trajectory.start_location_uuid
+        loc = self._data_client.cache.get(loc_uuid, 'location')
+        if evd_trajectory.move_type == 'joint':
+            if loc.joints != None and len(loc.joints) > 0:
+                move = self._ursim.pack_robot_move_joint(loc.joints)
+            else:
+                move = self._ursim.pack_robot_move_pose_joint(loc.to_ros())
+        elif evd_trajectory.move_type == 'linear':
+            move = self._ursim.pack_robot_move_pose_linear(loc.to_ros())
+        elif evd_trajectory.move_type == 'planner':
+            pass #TODO
+        moves.append(move)
+
+        for wp_uuid in evd_trajectory.waypoint_uuids:
+            wp = self._data_client.cache.get(wp_uuid, 'waypoint')
+            if evd_trajectory.move_type == 'joint':
+                if wp.joints != None and len(wp.joints) > 0:
+                    move = self._ursim.pack_robot_move_joint(wp.joints)
+                else:
+                    move = self._ursim.pack_robot_move_pose_joint(wp.to_ros())
+            elif evd_trajectory.move_type == 'linear':
+                move = self._ursim.pack_robot_move_pose_linear(loc.to_ros())
+            elif evd_trajectory.move_type == 'planner':
+                pass #TODO
             moves.append(move)
+
+        loc_uuid = evd_trajectory.end_location_uuid
+        loc = self._data_client.cache.get(loc_uuid, 'location')
+        if evd_trajectory.move_type == 'joint':
+            if loc.joints != None and len(loc.joints) > 0:
+                move = self._ursim.pack_robot_move_joint(loc.joints)
+            else:
+                move = self._ursim.pack_robot_move_pose_joint(loc.to_ros())
+        elif evd_trajectory.move_type == 'linear':
+            move = self._ursim.pack_robot_move_pose_linear(loc.to_ros())
+        elif evd_trajectory.move_type == 'planner':
+            pass #TODO
+        moves.append(move)
 
         full_traj = MoveTrajectoryGoal()
         full_traj.moves = moves

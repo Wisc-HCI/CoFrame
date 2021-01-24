@@ -57,7 +57,7 @@ class Task(Primitive):
     def context(self, value):
         if self._context != value:
             if self._context != None:
-                self._context.remove_from_cache()
+                raise Exception("Cannot overwrite an established context")
 
             self._context = value
             self._context.parent = self
@@ -144,9 +144,6 @@ class Task(Primitive):
         if 'primitives' in dct.keys():
             self.primitives = [NodeParser(p) for p in dct['primitives']]
 
-        if 'context' in dct.keys():
-            self.context = Context.from_dct(dct['context'])
-
         super(Task,self).set(dct)
 
     '''
@@ -176,9 +173,7 @@ class Task(Primitive):
     def delete_child(self, uuid):
         success = True
 
-        if uuid == self.context.uuid:
-            self.context = Context()  # Must always have a context with a task
-        elif uuid in [p.uuid for p in self.primitives]:
+        if uuid in [p.uuid for p in self.primitives]:
             self.delete_primitive(uuid)
         else:
             success = False

@@ -8,6 +8,8 @@ from ..data.machine import Machine
 from ..data.thing import Thing
 from ..data.waypoint import Waypoint
 
+from .orphans import *
+
 
 class Environment(Context):
 
@@ -18,6 +20,8 @@ class Environment(Context):
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
                  locations=[], machines=[], things=[], waypoints=[], parent_context=None,
                  changes_cb=None, name='', type='', uuid=None, append_type=True):
+
+        self._orphan_list = evd_orphan_list()
 
         self._reach_sphere = None
         self._pinch_points = None

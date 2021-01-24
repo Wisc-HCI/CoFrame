@@ -18,6 +18,8 @@ from .data.machine import Machine
 
 from .environment.environment import Environment
 from .program.program import Program
+from .program.primitive import Primitive
+from .context import Context
 
 
 class Cache(object):
@@ -32,6 +34,8 @@ class Cache(object):
         self.machines = {}
         self.environments = {}
         self.programs = {}
+        self.primitives = {}
+        self.contexts = {}
 
     def add(self, uuid, node):
         self.data[uuid] = node
@@ -59,6 +63,12 @@ class Cache(object):
 
         if isinstance(node,Environment):
             self.environments[uuid] = node
+
+        if isinstance(node,Primitive):
+            self.primitives[uuid] = node
+
+        if isinstance(node,Context):
+            self.contexts[uuid] = node
 
     def remove(self, uuid):
 
@@ -88,6 +98,12 @@ class Cache(object):
         if isinstance(node,Environment):
             self.environments.pop(uuid, None)
 
+        if isinstance(node,Primitive):
+            self.primitives.pop(uuid, None)
+
+        if isinstance(node,Context):
+            self.contexts.pop(uuid, None)
+
     def clear(self):
         self.data = {}
         self.locations = {}
@@ -96,7 +112,9 @@ class Cache(object):
         self.traces = {}
         self.machines = {}
         self.programs = {}
-        self.environments ={}
+        self.environments = {}
+        self.primitives = {}
+        self.contexts = {}
 
     def get(self, uuid, hint=None):
 
@@ -116,6 +134,10 @@ class Cache(object):
             return self.programs[uuid]
         elif hint == 'environment' and uuid in self.environments.keys():
             return self.environments[uuid]
+        elif hint == 'primitive' and uuid in self.primitives.keys():
+            return self.primitives[uuid]
+        elif hint == 'context' and uuid in self.contexts.keys():
+            return self.contexts[uuid]
         else:
             return self.data[uuid]
 
@@ -130,7 +152,9 @@ class Cache(object):
             'num_waypoints': 0,
             'num_things': 0,
             'num_traces': 0,
-            'num_machines': 0
+            'num_machines': 0,
+            'num_primitives': 0,
+            'num_contexts': 0,
         }
 
         for n in self.data.values():
@@ -145,5 +169,7 @@ class Cache(object):
         log['num_things'] = len(self.things)
         log['num_traces'] = len(self.traces)
         log['num_machines'] = len(self.machines)
+        log['num_primitives'] = len(self.primitives)
+        log['num_contexts'] = len(self.contexts)
 
         return log

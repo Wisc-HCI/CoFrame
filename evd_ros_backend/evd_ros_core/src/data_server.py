@@ -318,7 +318,6 @@ class DataServer:
 
     def __program_updated_cb(self, attribute_trace):
         print 'In Data Server:', attribute_trace
-        #TODO what to do with this?
 
     def spin(self):
         # give nodes time before publishing initial state

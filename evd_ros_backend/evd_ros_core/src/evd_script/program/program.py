@@ -4,6 +4,7 @@
 
 from .task import Task
 from ..environment import Environment
+from ..orphans import *
 
 
 class Program(Task):
@@ -13,6 +14,7 @@ class Program(Task):
     '''
 
     def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None, context=None):
+        self._orphan_list = evd_orphan_list()
         self.changes_cb = changes_cb
 
         if environment != None and context != None:
@@ -61,11 +63,18 @@ class Program(Task):
     '''
 
     def child_changed_event(self, attribute_trace):
+        if not self._orphan_list.empty():
+            evd_orphan_repair()
+
         if self.changes_cb != None:
             attribute_trace.append(self._child_changed_event_msg(None, 'callback'))
             self.changes_cb(attribute_trace)
 
     def updated_attribute(self, attribute, verb, child_uuid = None):
         event = [self._child_changed_event_msg(attribute, verb, child_uuid)]
+
+        if not self._orphan_list.empty():
+            evd_orphan_repair()
+
         if self.changes_cb != None:
             self.changes_cb(event)

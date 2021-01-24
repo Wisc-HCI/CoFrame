@@ -8,13 +8,14 @@ class MoveTrajectory(Primitive):
     Data structure methods
     '''
 
-    def __init__(self, startLocUuid=None, endLocUuid=None, trajectories=[],
+    def __init__(self, startLocUuid=None, endLocUuid=None, trajectory=None, trajectory_uuid=None,
                  runnableTrajUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True, create_default=True):
 
+        self._context_patch = None
         self._start_location_uuid = None
         self._end_location_uuid = None
-        self._trajectories = []
+        self._trajectory_uuid = None
         self._runnable_trajectory_uuid = None
 
         super(MoveTrajectory,self).__init__(
@@ -26,20 +27,28 @@ class MoveTrajectory(Primitive):
 
         self.start_location_uuid = startLocUuid
         self.end_location_uuid = endLocUuid
-        self.trajectories = trajectories
-        self.runnable_trajectory_uuid = runnableTrajUuid
 
-        if len(self.trajectories) == 0 and create_default:
-            self.add_trajectory(Trajectory(self.start_location_uuid,self._end_location_uuid))
+        if trajectory != None and trajectory_uuid != None:
+            raise Exception('Cannot supply both a default trajectory and a trajectory id already in context')
+        elif trajectory != None:
+            self.trajectory = trajectory
+        elif trajectory_uuid != None:
+            self.trajectory_uuid = trajectory_uuid
+        else:
+            self.trajectory = Trajectory(self.start_location_uuid,self.end_location_uuid)
 
     def to_dct(self):
         msg = super(MoveTrajectory,self).to_dct()
         msg.update({
             'start_location_uuid': self.start_location_uuid,
             'end_location_uuid': self.end_location_uuid,
-            'trajectories': [t.to_dct() for t in self.trajectories],
-            'runnable_trajectory_uuid': self.runnable_trajectory_uuid
         })
+
+        if self._context_patch == None:
+            msg['trajectory_uuid'] = self.trajectory_uuid
+        else:
+            msg['trajectory'] = self.trajectory.to_dct()
+            
         return msg
 
     @classmethod
@@ -51,12 +60,32 @@ class MoveTrajectory(Primitive):
             uuid=dct['uuid'],
             startLocUuid=dct['start_location_uuid'],
             endLocUuid=dct['end_location_uuid'],
-            trajectories=[Trajectory.from_dct(t) for t in dct['trajectories']],
-            runnableTrajUuid=dct['runnable_trajectory_uuid'])
+            trajectory=Trajectory.from_dct(dct['trajectory']) if 'trajectory' in dct.keys() else None,
+            trajectory_uuid=dct['trajectory_uuid'] if 'trajectory_uuid' in dct.keys() else None)
+
+    def on_delete(self):
+
+        self.context.delete_trajectory(self.trajectory_uuid)
+
+        super(MoveTrajectory,self).on_delete()
 
     '''
     Data accessor/modifier methods
     '''
+
+    @property
+    def context(self):
+        # Need to patch context when none exists
+        realContext = super(MoveTrajectory,self).context
+        if realContext == None:
+            if self._context_patch == None:
+                self._context_patch = ContextPatch()
+            return self._context_patch
+        else:
+            if self._context_patch != None:
+                self._context_patch.update_context(realContext)
+                self._context_patch = None
+            return realContext
 
     @property
     def start_location_uuid(self):
@@ -67,8 +96,8 @@ class MoveTrajectory(Primitive):
         if self._start_location_uuid != value:
             self._start_location_uuid = value
 
-            for t in self.trajectories:
-                t.start_location_uuid = self._start_location_uuid
+            t = self.context.get_trajectory(self.trajectory_uuid)
+            t.start_location_uuid = self._start_location_uuid
 
             self.updated_attribute('start_location_uuid','set')
 
@@ -81,110 +110,46 @@ class MoveTrajectory(Primitive):
         if self._end_location_uuid != value:
             self._end_location_uuid = value
 
-            for t in self.trajectories:
-                t.end_location_uuid = self._end_location_uuid
+            t = self.context.get_trajectory(self.trajectory_uuid)
+            t.end_location_uuid = self._end_location_uuid
 
             self.updated_attribute('end_location_uuid','set')
 
     @property
-    def trajectories(self):
-        return self._trajectories
+    def trajectory(self):
+        return self.context.get_trajectory(self.trajectory_uuid)
 
-    @trajectories.setter
-    def trajectories(self, value):
-        if self._trajectories != value:
-            for t in self._trajectories:
-                t.remove_from_cache()
+    @trajectory.setter
+    def trajectory(self, value):
+        if self._trajectory_uuid != value.uuid:
+            self.context.delete_trajectory(self.trajectory_uuid)
+            self.context.add_trajectory(value)
+            self.trajectory_uuid = value.uuid
 
-            self._trajectories = value
-            runnableFound = False
-            for t in self._trajectories:
-                t.parent = self
-                if t.uuid == self.runnable_trajectory_uuid:
-                    runnableFound = True
-
-            if not runnableFound:
-                # must assign a runnable id if more than zero trajectories
-                if len(self._trajectories) > 0:
-                    self.runnable_trajectory_uuid = self._trajectories[0].uuid
-                else:
-                    self.runnable_trajectory_uuid = None
-
-            self.updated_attribute('trajectories','set')
+            self.updated_attribute('trajectory','set')
 
     @property
-    def runnable_trajectory_uuid(self):
-        return self._runnable_trajectory_uuid
+    def trajectory_uuid(self):
+        return self._trajectory_uuid
 
-    @runnable_trajectory_uuid.setter
-    def runnable_trajectory_uuid(self, value):
-        if self._runnable_trajectory_uuid != value:
-            runUuidFound = False
-            for t in self._trajectories:
-                if t.uuid == value:
-                    runUuidFound = True
-                    break
+    @trajectory_uuid.setter
+    def trajectory_uuid(self, value):
+        if self._trajectory_uuid != value:
+            if value == None:
+                raise Exception('Id must be defined')
 
-            if not runUuidFound and value != None:
-                raise Exception("runnable trajectory uuid not found in trajectories")
+            traj = self.context.get_trajectory(value)
+            if traj == None:
+                raise Exception('Id must have a trajectory already in context')
 
-            # must always have a runnable uuid set if there is at least one trajectory
-            if value == None and len(self.trajectories) > 0:
-                self._runnable_trajectory_uuid = self.trajectories[0].uuid
-            else:
-                self._runnable_trajectory_uuid = value
+            if traj.start_location_uuid != self.start_location_uuid:
+                raise Exception('Trajectory must have matching start location to primitive if set by id')
 
-            self.updated_attribute('runnable_trajectory_uuid','set')
+            if traj.end_location_uuid != self.end_location_uuid:
+                raise Exception('Trajectory must have matching end location to primitive if set by id')
 
-    def add_trajectory(self, t):
-        t.parent = self
-        self._trajectories.append(t)
-
-        if len(self._trajectories) == 1:
-            self.runnable_trajectory_uuid = t.uuid
-
-        self.updated_attribute('trajectories','add')
-
-    def get_trajectory(self, uuid):
-        for t in self._trajectories:
-            if t.uuid == uuid:
-                return t
-        return None
-
-    def reorder_trajectories(self, uuid, shift):
-        idx = None
-        for i in range(0,len(self._trajectories)):
-            if self._trajectories[i].uuid == uuid:
-                idx = i
-                break
-
-        if idx != None:
-            shiftedIdx = idx + shift
-            if shiftedIdx < 0 or shiftedIdx >= len(self._trajectories):
-                raise Exception("Index out of bounds")
-
-            copy = self._trajectories.pop(idx)
-            self._trajectories.insert(shiftedIdx,copy) #TODO check to make sure not off by one
-
-            self.updated_attribute('trajectories','reorder')
-
-    def delete_trajectory(self, uuid):
-        delIdx = None
-        for i in range(0,len(self._trajectories)):
-            if self._trajectories[i].uuid == uuid:
-                delIdx = i
-                break
-
-        if delIdx != None:
-            self._trajectories.pop(delIdx).remove_from_cache()
-
-            if uuid == self.runnable_trajectory_uuid:
-                if len(self.trajectories) > 0:
-                    self.runnable_trajectory_uuid = self.trajectories[0].uuid
-                else:
-                    self.runnable_trajectory_uuid = None
-
-            self.updated_attribute('trajectories','delete')
+            self._trajectory_uuid = value
+            self.updated_attribute('trajectory_uuid','set')
 
     def set(self, dct):
         if 'start_location_uuid' in dct.keys():
@@ -193,37 +158,13 @@ class MoveTrajectory(Primitive):
         if 'end_location_uuid' in dct.keys():
             self.end_location_uuid = dct['end_location_uuid']
 
-        if 'trajectories' in dct.keys():
-            self.trajectories = [Trajectory.from_dct(t) for t in dct['trajectories']]
+        if 'trajectory' in dct.keys():
+            self.trajectory = Trajectory.from_dct(dct['trajectory'])
 
-        if 'runnable_trajectory_uuid' in dct.keys():
-            self.runnable_trajectory_uuid = dct['runnable_trajectory_uuid']
+        if 'trajectory_uuid' in dct.keys():
+            self.trajectory_uuid = dct['trajectory_uuid']
 
         super(MoveTrajectory,self).set(dct)
-
-    '''
-    Cache methods
-    '''
-
-    def remove_from_cache(self):
-        for t in self._trajectories:
-            t.remove_from_cache()
-
-        super(MoveTrajectory,self).remove_from_cache()
-
-    def add_to_cache(self):
-        for t in self._trajectories:
-            t.add_to_cache()
-
-        super(MoveTrajectory,self).add_to_cache()
-
-    '''
-    Children methods (optional)
-    '''
-
-    def delete_child(self, uuid):
-        if uuid in [t.uuid for t in self.trajectories]:
-            self.delete_trajectory(uuid)
 
     '''
     Update Methods
@@ -231,20 +172,57 @@ class MoveTrajectory(Primitive):
 
     def deep_update(self):
 
-        for t in self.trajectories:
-            t.deep_update()
-
         super(MoveTrajectory,self).deep_update()
 
         self.updated_attribute('start_location_uuid','update')
         self.updated_attribute('end_location_uuid','update')
-        self.updated_attribute('trajectories','update')
-        self.updated_attribute('runnable_trajectory_uuid','update')
+        self.updated_attribute('trajectory_uuid','update')
+        self.updated_attribute('trajectory','update')
 
     def shallow_update(self):
         super(MoveTrajectory,self).shallow_update()
 
         self.updated_attribute('start_location_uuid','update')
         self.updated_attribute('end_location_uuid','update')
-        self.updated_attribute('trajectories','update')
-        self.updated_attribute('runnable_trajectory_uuid','update')
+        self.updated_attribute('trajectory_uuid','update')
+        self.updated_attribute('trajectory','update')
+
+
+class ContextPatch(object):
+
+    def __init__(self):
+        self._trajectories = {}
+
+    @property
+    def trajectories(self):
+        return self._trajectories
+
+    @trajectories.setter
+    def trajectories(self, value):
+        for t in self._trajectories:
+            t.remove_from_cache()
+        self._trajectories = {}
+
+        for t in value:
+            self._trajectories[t.uuid] = t
+            t.parent = self
+
+    def get_trajectory(self, uuid):
+        if uuid in self._trajectories.keys():
+            return self._trajectories[uuid]
+        else:
+            return None
+
+    def add_trajectory(self, trajectory):
+        trajectory.parent = self
+        self._trajectories[trajectory.uuid] = trajectory
+
+    def delete_trajectory(self, uuid):
+        if uuid in self._trajectories.keys():
+            self._trajectories.pop(uuid).remove_from_cache()
+
+    def update_context(self, context):
+        for traj in self._trajectories.values():
+            context.add_trajectory(traj)
+
+        self._trajectories = {}

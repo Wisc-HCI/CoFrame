@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <arg name="ros_frame_id"/>
+
+  <arg name="run_program_vis" default="false" />
+  <arg name="run_environment_vis" default="false" />
+  <arg name="run_app_pub" default="false" />
+  <arg name="run_issues" default="true"/>
+
+  <node if="$(arg run_program_vis)" name="test_program_data_visualizer" pkg="evd_ros_core" type="test_program_data_visualizer.py" output="screen">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node>
+
+  <node if="$(arg run_environment_vis)" name="test_environment_data_visualizer" pkg="evd_ros_core" type="test_environment_data_visualizer.py" output="screen">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node>
+
+  <node if="$(arg run_app_pub)" name="test_application_data_publisher" pkg="evd_ros_core" type="test_application_data_publisher.py" output="screen">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node>
+
+  <node if="$(arg run_isues)" name="test_issue_server" pkg="evd_ros_core" type="test_issue_server.py" output="screen"/>
+
+</launch>

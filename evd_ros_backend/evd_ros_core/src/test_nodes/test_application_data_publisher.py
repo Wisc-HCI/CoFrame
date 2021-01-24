@@ -3,10 +3,10 @@
 import rospy
 import Tkinter as tk
 
-from interfaces.data_client_interface import DataClientInterface
+from ..interfaces.data_client_interface import DataClientInterface
 
 
-class ApplicationModelControl:
+class TestApplicationDataPublisher:
 
     def __init__(self, _root=None):
 
@@ -72,5 +72,5 @@ class ApplicationModelControl:
 
 if __name__ == "__main__":
 
-    node = ApplicationModelControl()
+    node = TestApplicationDataPublisher()
     node.spin()
