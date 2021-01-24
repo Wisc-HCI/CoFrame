@@ -7,8 +7,7 @@ from ..data.location import Location
 from ..data.machine import Machine
 from ..data.thing import Thing
 from ..data.waypoint import Waypoint
-
-from .orphans import *
+from ..data.trajectory import Trajectory
 
 
 class Environment(Context):
@@ -18,10 +17,8 @@ class Environment(Context):
     '''
 
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
-                 locations=[], machines=[], things=[], waypoints=[], parent_context=None,
-                 changes_cb=None, name='', type='', uuid=None, append_type=True):
-
-        self._orphan_list = evd_orphan_list()
+                 locations=[], machines=[], things=[], waypoints=[], trajectories=[], changes_cb=None,
+                 name='', type='', uuid=None, append_type=True):
 
         self._reach_sphere = None
         self._pinch_points = None
@@ -35,7 +32,7 @@ class Environment(Context):
             machines=machines,
             things=things,
             waypoints=waypoints,
-            parent_context=parent_context,
+            trajectories=trajectories,
             type='environment.'+type if append_type else type,
             name=name,
             uuid=uuid,
@@ -67,6 +64,7 @@ class Environment(Context):
                    machines=[Machine.from_dct(m) for m in dct['machines']],
                    things=[Thing.from_dct(t) for t in dct['things']],
                    waypoints=[Waypoint.from_dct(w) for w in dct['waypoints']],
+                   trajectories=[Trajectory.from_dct(t) for t in dct['trajectories']],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -204,6 +202,20 @@ class Environment(Context):
     '''
     Update Methods
     '''
+
+    def late_construct_update(self):
+        self.reach_sphere.late_construct_update()
+
+        for p in self.pinch_points:
+            p.late_construct_update()
+
+        for c in self.collision_meshes:
+            c.late_construct_update()
+
+        for o in self.occupancy_zones:
+            o.late_construct_update()
+
+        super(Environment,self).late_construct_update()
 
     def deep_update(self):
         self.reach_sphere.deep_update()

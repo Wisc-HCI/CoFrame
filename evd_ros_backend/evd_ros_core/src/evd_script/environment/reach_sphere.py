@@ -136,6 +136,11 @@ class ReachSphere(Node, VisualizeMarker):
     Update Methods
     '''
 
+    def late_construct_update(self):
+        self.offset.late_construct_update()
+
+        super(ReachSphere,self).late_construct_update()
+
     def deep_update(self):
 
         self.offset.deep_update()

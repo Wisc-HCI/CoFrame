@@ -33,8 +33,8 @@ from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
 from evd_ros_core.srv import SubmitJob, SubmitJobRequest, SubmitJobResponse
 from evd_ros_core.srv import PendingJobs, PendingJobsRequest, PendingJobsResponse
 
-from interfaces.robot_interface import RobotInterface
-from interfaces.data_client_interface import DataClientInterface
+from evd_interfaces.robot_interface import RobotInterface
+from evd_interfaces.data_client_interface import DataClientInterface
 
 from evd_script.data.trace import *
 from evd_script.data.trajectory import *
@@ -229,7 +229,7 @@ class TraceProcessor:
 
 
 if __name__ == "__main__":
-    rospy.init_node('plan_tracer')
+    rospy.init_node('trace_processor')
 
-    node = PlanTracer()
+    node = TraceProcessor()
     node.spin()

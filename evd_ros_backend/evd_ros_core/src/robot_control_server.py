@@ -4,9 +4,9 @@ import json
 import rospy
 
 from std_msgs.msg import Empty, Bool
-from interfaces.robot_interface import RobotInterface
-from interfaces.data_client_interface import DataClientInterface
-from interfaces.program_runner import ProgramRunner
+from evd_interfaces.robot_interface import RobotInterface
+from evd_interfaces.data_client_interface import DataClientInterface
+from evd_interfaces.program_runner import ProgramRunner
 
 
 class RobotControlServer:

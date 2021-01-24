@@ -14,7 +14,7 @@ class TestIssuesServer:
         self._get_issues_srv = rospy.ServiceProxy('issue_server/get_issues',GetIssues)
         self._clear_issue_srv = rospy.ServiceProxy('issue_server/clear_issue',ClearIssue)
 
-    def spin():
+    def spin(self):
 
         # Give ROS some setup time
         rospy.sleep(5)
@@ -76,9 +76,7 @@ class TestIssuesServer:
         rospy.spin()
 
     def _check_if_submitted_are_in_list(self, issues, condition_str='', should_find_1=True, should_find_2=True):
-        if len(issues) < 2:
-            raise Exception('Number of issues less than number sumbitted')
-
+        
         found1 = False
         found2 = False
         for i in issues:

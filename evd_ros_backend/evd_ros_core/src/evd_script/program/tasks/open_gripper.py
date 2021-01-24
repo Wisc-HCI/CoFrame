@@ -8,12 +8,13 @@ class OpenGripper(Task):
     Data structure methods
     '''
 
-    def __init__(self, position=0, effort=100, speed=100, type='', name='',
-                 uuid=None, parent=None, append_type=True, primitives=None, context=None):
+    def __init__(self, position=0, effort=100, speed=100, thing_uuid=None, type='',
+                 name='', uuid=None, parent=None, append_type=True, primitives=None):
 
         if primitives == None:
             primitives=[
                 Gripper(
+                    thing_uuid=thing_uuid,
                     position=position,
                     effort=effort,
                     speed=speed)
@@ -25,5 +26,4 @@ class OpenGripper(Task):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            context=context,
             primitives=primitives)

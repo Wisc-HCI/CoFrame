@@ -177,6 +177,13 @@ class Region(Pose, VisualizeMarker):
     Update Methods
     '''
 
+    def late_construct_update(self):
+
+        if self.uncertainty_orientation_alt_target != None:
+            self.uncertainty_orientation_alt_target.late_construct_update()
+
+        super(Region,self).late_construct_update()
+
     def deep_update(self):
 
         if self.uncertainty_orientation_alt_target != None:

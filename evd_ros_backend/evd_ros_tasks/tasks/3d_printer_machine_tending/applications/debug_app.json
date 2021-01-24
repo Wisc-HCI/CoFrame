@@ -1,0 +1,1471 @@
+{
+    "environment": {
+        "collision_meshes": [
+            {
+                "link": "box_link", 
+                "mesh_id": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl", 
+                "name": "", 
+                "pose_offset": {
+                    "name": "", 
+                    "orientation": {
+                        "name": "", 
+                        "type": "node.orientation.", 
+                        "uuid": "orientation.-py-6599f73d5e8711eb9ea034e6d76dbfc3", 
+                        "w": 1, 
+                        "x": 0, 
+                        "y": 0, 
+                        "z": 0
+                    }, 
+                    "position": {
+                        "name": "", 
+                        "type": "node.position.", 
+                        "uuid": "position.-py-6599f73c5e8711eb9ea034e6d76dbfc3", 
+                        "x": 0, 
+                        "y": 0, 
+                        "z": 0
+                    }, 
+                    "type": "node.pose.", 
+                    "uuid": "pose.-py-6599f73b5e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.collision-mesh.", 
+                "uuid": "collision-mesh.-py-6599f73a5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "link": "table_link", 
+                "mesh_id": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Table.stl", 
+                "name": "", 
+                "pose_offset": {
+                    "name": "", 
+                    "orientation": {
+                        "name": "", 
+                        "type": "node.orientation.", 
+                        "uuid": "orientation.-py-6599f7415e8711eb9ea034e6d76dbfc3", 
+                        "w": 1, 
+                        "x": 0, 
+                        "y": 0, 
+                        "z": 0
+                    }, 
+                    "position": {
+                        "name": "", 
+                        "type": "node.position.", 
+                        "uuid": "position.-py-6599f7405e8711eb9ea034e6d76dbfc3", 
+                        "x": 0, 
+                        "y": 0, 
+                        "z": 0
+                    }, 
+                    "type": "node.pose.", 
+                    "uuid": "pose.-py-6599f73f5e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.collision-mesh.", 
+                "uuid": "collision-mesh.-py-6599f73e5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "link": "3d_printer_link", 
+                "mesh_id": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl", 
+                "name": "", 
+                "pose_offset": {
+                    "name": "", 
+                    "orientation": {
+                        "name": "", 
+                        "type": "node.orientation.", 
+                        "uuid": "orientation.-py-6599f7455e8711eb9ea034e6d76dbfc3", 
+                        "w": 1, 
+                        "x": 0, 
+                        "y": 0, 
+                        "z": 0
+                    }, 
+                    "position": {
+                        "name": "", 
+                        "type": "node.position.", 
+                        "uuid": "position.-py-6599f7445e8711eb9ea034e6d76dbfc3", 
+                        "x": 0, 
+                        "y": 0, 
+                        "z": 0
+                    }, 
+                    "type": "node.pose.", 
+                    "uuid": "pose.-py-6599f7435e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.collision-mesh.", 
+                "uuid": "collision-mesh.-py-6599f7425e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "link": "ur3e_pedestal_link", 
+                "mesh_id": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl", 
+                "name": "", 
+                "pose_offset": {
+                    "name": "", 
+                    "orientation": {
+                        "name": "", 
+                        "type": "node.orientation.", 
+                        "uuid": "orientation.-py-6599f7495e8711eb9ea034e6d76dbfc3", 
+                        "w": 1, 
+                        "x": 0, 
+                        "y": 0, 
+                        "z": 0
+                    }, 
+                    "position": {
+                        "name": "", 
+                        "type": "node.position.", 
+                        "uuid": "position.-py-6599f7485e8711eb9ea034e6d76dbfc3", 
+                        "x": 0, 
+                        "y": 0, 
+                        "z": 0
+                    }, 
+                    "type": "node.pose.", 
+                    "uuid": "pose.-py-6599f7475e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.collision-mesh.", 
+                "uuid": "collision-mesh.-py-6599f7465e8711eb9ea034e6d76dbfc3"
+            }
+        ], 
+        "locations": [
+            {
+                "joints": null, 
+                "name": "retract", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6cc5e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6cb5e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.3, 
+                    "y": 0.3, 
+                    "z": 0.4
+                }, 
+                "type": "node.pose.waypoint.location.", 
+                "uuid": "pose.waypoint.location.-py-6599f6cd5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "place stock", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6c95e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6c85e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.4, 
+                    "y": 0.4, 
+                    "z": 0.2
+                }, 
+                "type": "node.pose.waypoint.location.", 
+                "uuid": "pose.waypoint.location.-py-6599f6ca5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "place_final", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6d25e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6d15e8711eb9ea034e6d76dbfc3", 
+                    "x": -0.1, 
+                    "y": -0.1, 
+                    "z": -0.1
+                }, 
+                "type": "node.pose.waypoint.location.", 
+                "uuid": "pose.waypoint.location.-py-6599f6d35e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "home", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6c35e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6c25e8711eb9ea034e6d76dbfc3", 
+                    "x": 0, 
+                    "y": 0.2, 
+                    "z": 0
+                }, 
+                "type": "node.pose.waypoint.location.", 
+                "uuid": "pose.waypoint.location.-py-6599f6c45e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "pick stock", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6c65e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6c55e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.1, 
+                    "y": 0.3, 
+                    "z": 0
+                }, 
+                "type": "node.pose.waypoint.location.", 
+                "uuid": "pose.waypoint.location.-py-6599f6c75e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "pick_final", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6cf5e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6ce5e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.4, 
+                    "y": 0.4, 
+                    "z": 0.2
+                }, 
+                "type": "node.pose.waypoint.location.", 
+                "uuid": "pose.waypoint.location.-py-6599f6d05e8711eb9ea034e6d76dbfc3"
+            }
+        ], 
+        "machines": [
+            {
+                "input_regions": null, 
+                "name": "cnc", 
+                "output_regions": null, 
+                "recipe": {
+                    "input_thing_quantities": {}, 
+                    "name": "", 
+                    "output_thing_quantities": {}, 
+                    "process_time": 0, 
+                    "type": "node.machine-recipe.", 
+                    "uuid": "machine-recipe.-py-6599f6d55e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.machine.", 
+                "uuid": "machine.-py-6599f6d45e8711eb9ea034e6d76dbfc3"
+            }
+        ], 
+        "name": "", 
+        "occupancy_zones": [
+            {
+                "height": -0.77, 
+                "name": "", 
+                "occupancy_type": "human", 
+                "position_x": 0, 
+                "position_z": 1, 
+                "scale_x": 2, 
+                "scale_z": 1, 
+                "type": "node.occupancy-zone.", 
+                "uuid": "occupancy-zone.-py-6599f74a5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "height": -0.77, 
+                "name": "", 
+                "occupancy_type": "human", 
+                "position_x": 0, 
+                "position_z": -0.8, 
+                "scale_x": 2, 
+                "scale_z": 1, 
+                "type": "node.occupancy-zone.", 
+                "uuid": "occupancy-zone.-py-6599f74b5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "height": -0.77, 
+                "name": "", 
+                "occupancy_type": "robot", 
+                "position_x": 0, 
+                "position_z": 0, 
+                "scale_x": 1.6, 
+                "scale_z": 1.2, 
+                "type": "node.occupancy-zone.", 
+                "uuid": "occupancy-zone.-py-6599f74c5e8711eb9ea034e6d76dbfc3"
+            }
+        ], 
+        "pinch_points": [
+            {
+                "axis": "x", 
+                "length": 0.2, 
+                "link": "simulated_shoulder_link", 
+                "name": "", 
+                "offset": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7305e8711eb9ea034e6d76dbfc3", 
+                    "x": 0, 
+                    "y": 0, 
+                    "z": -0.05
+                }, 
+                "radius": 0.075, 
+                "type": "node.pinch-point.", 
+                "uuid": "pinch-point.-py-6599f7315e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "axis": "x", 
+                "length": 0.2, 
+                "link": "simulated_upper_arm_link", 
+                "name": "", 
+                "offset": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7325e8711eb9ea034e6d76dbfc3", 
+                    "x": 0, 
+                    "y": 0, 
+                    "z": 0.075
+                }, 
+                "radius": 0.075, 
+                "type": "node.pinch-point.", 
+                "uuid": "pinch-point.-py-6599f7335e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "axis": "x", 
+                "length": 0.2, 
+                "link": "simulated_forearm_link", 
+                "name": "", 
+                "offset": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7345e8711eb9ea034e6d76dbfc3", 
+                    "x": 0, 
+                    "y": 0, 
+                    "z": 0.075
+                }, 
+                "radius": 0.075, 
+                "type": "node.pinch-point.", 
+                "uuid": "pinch-point.-py-6599f7355e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "axis": "x", 
+                "length": 0.17, 
+                "link": "simulated_wrist_1_link", 
+                "name": "", 
+                "offset": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7365e8711eb9ea034e6d76dbfc3", 
+                    "x": 0, 
+                    "y": 0, 
+                    "z": -0.05
+                }, 
+                "radius": 0.06, 
+                "type": "node.pinch-point.", 
+                "uuid": "pinch-point.-py-6599f7375e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "axis": "x", 
+                "length": 0.16, 
+                "link": "simulated_wrist_3_link", 
+                "name": "", 
+                "offset": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7385e8711eb9ea034e6d76dbfc3", 
+                    "x": 0, 
+                    "y": 0, 
+                    "z": 0.1
+                }, 
+                "radius": 0.1, 
+                "type": "node.pinch-point.", 
+                "uuid": "pinch-point.-py-6599f7395e8711eb9ea034e6d76dbfc3"
+            }
+        ], 
+        "reach_sphere": {
+            "name": "", 
+            "offset": {
+                "name": "", 
+                "type": "node.position.", 
+                "uuid": "position.-py-6599f72e5e8711eb9ea034e6d76dbfc3", 
+                "x": 0, 
+                "y": 0, 
+                "z": 0.15
+            }, 
+            "radius": 0.8, 
+            "type": "node.reach-sphere.", 
+            "uuid": "reach-sphere.-py-6599f72f5e8711eb9ea034e6d76dbfc3"
+        }, 
+        "things": [
+            {
+                "mesh_id": "package://evd_ros_core/markers/3DBenchy.stl", 
+                "name": "boat", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6d85e8711eb9ea034e6d76dbfc3", 
+                    "w": 1, 
+                    "x": 0, 
+                    "y": 0, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6d75e8711eb9ea034e6d76dbfc3", 
+                    "x": 0, 
+                    "y": 0, 
+                    "z": 0
+                }, 
+                "safety_level": 0, 
+                "thing_type": "stock", 
+                "type": "node.pose.thing.", 
+                "uuid": "pose.thing.-py-6599f6d65e8711eb9ea034e6d76dbfc3"
+            }
+        ], 
+        "trajectories": [
+            {
+                "acceleration": 0, 
+                "end_location_uuid": "pose.waypoint.location.-py-6599f6d35e8711eb9ea034e6d76dbfc3", 
+                "move_type": "joint", 
+                "name": "", 
+                "start_location_uuid": "pose.waypoint.location.-py-6599f6d05e8711eb9ea034e6d76dbfc3", 
+                "trace": {
+                    "component_paths": [], 
+                    "data": {
+                        "ee": [
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6cf5e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6ce5e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.4, 
+                                    "y": 0.4, 
+                                    "z": 0.2
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f6fd5e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6f85e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6f75e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.23333333333333336, 
+                                    "y": 0.23333333333333336, 
+                                    "z": 0.1
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f6fe5e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6fb5e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6fa5e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.06666666666666671, 
+                                    "y": 0.06666666666666671, 
+                                    "z": 0.0
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f6ff5e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6d25e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6d15e8711eb9ea034e6d76dbfc3", 
+                                    "x": -0.1, 
+                                    "y": -0.1, 
+                                    "z": -0.1
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7005e8711eb9ea034e6d76dbfc3"
+                            }
+                        ]
+                    }, 
+                    "end_effector_path": "ee", 
+                    "joint_paths": [], 
+                    "name": "", 
+                    "time": 0, 
+                    "tool_paths": [], 
+                    "type": "node.trace.", 
+                    "uuid": "trace.-py-6599f7015e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.trajectory.", 
+                "uuid": "trajectory.-py-6599f6f25e8711eb9ea034e6d76dbfc3", 
+                "velocity": 0, 
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-6599f6f95e8711eb9ea034e6d76dbfc3", 
+                    "pose.waypoint.-py-6599f6fc5e8711eb9ea034e6d76dbfc3"
+                ]
+            }, 
+            {
+                "acceleration": 0, 
+                "end_location_uuid": "pose.waypoint.location.-py-6599f6c75e8711eb9ea034e6d76dbfc3", 
+                "move_type": "joint", 
+                "name": "", 
+                "start_location_uuid": "pose.waypoint.location.-py-6599f6c45e8711eb9ea034e6d76dbfc3", 
+                "trace": {
+                    "component_paths": [], 
+                    "data": {
+                        "ee": [
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6c35e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6c25e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0, 
+                                    "y": 0.2, 
+                                    "z": 0
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7085e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f7035e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f7025e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.03333333333333333, 
+                                    "y": 0.23333333333333334, 
+                                    "z": 0.0
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7095e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f7065e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f7055e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.06666666666666667, 
+                                    "y": 0.26666666666666666, 
+                                    "z": 0.0
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f70a5e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6c65e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6c55e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.1, 
+                                    "y": 0.3, 
+                                    "z": 0
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f70b5e8711eb9ea034e6d76dbfc3"
+                            }
+                        ]
+                    }, 
+                    "end_effector_path": "ee", 
+                    "joint_paths": [], 
+                    "name": "", 
+                    "time": 0, 
+                    "tool_paths": [], 
+                    "type": "node.trace.", 
+                    "uuid": "trace.-py-6599f70c5e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.trajectory.", 
+                "uuid": "trajectory.-py-6599f6df5e8711eb9ea034e6d76dbfc3", 
+                "velocity": 0, 
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-6599f7045e8711eb9ea034e6d76dbfc3", 
+                    "pose.waypoint.-py-6599f7075e8711eb9ea034e6d76dbfc3"
+                ]
+            }, 
+            {
+                "acceleration": 0, 
+                "end_location_uuid": "pose.waypoint.location.-py-6599f6ca5e8711eb9ea034e6d76dbfc3", 
+                "move_type": "joint", 
+                "name": "", 
+                "start_location_uuid": "pose.waypoint.location.-py-6599f6c75e8711eb9ea034e6d76dbfc3", 
+                "trace": {
+                    "component_paths": [], 
+                    "data": {
+                        "ee": [
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6c65e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6c55e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.1, 
+                                    "y": 0.3, 
+                                    "z": 0
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7135e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f70e5e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f70d5e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.2, 
+                                    "y": 0.3333333333333333, 
+                                    "z": 0.06666666666666667
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7145e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f7115e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f7105e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.30000000000000004, 
+                                    "y": 0.3666666666666667, 
+                                    "z": 0.13333333333333333
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7155e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6c95e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6c85e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.4, 
+                                    "y": 0.4, 
+                                    "z": 0.2
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7165e8711eb9ea034e6d76dbfc3"
+                            }
+                        ]
+                    }, 
+                    "end_effector_path": "ee", 
+                    "joint_paths": [], 
+                    "name": "", 
+                    "time": 0, 
+                    "tool_paths": [], 
+                    "type": "node.trace.", 
+                    "uuid": "trace.-py-6599f7175e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.trajectory.", 
+                "uuid": "trajectory.-py-6599f6e35e8711eb9ea034e6d76dbfc3", 
+                "velocity": 0, 
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-6599f70f5e8711eb9ea034e6d76dbfc3", 
+                    "pose.waypoint.-py-6599f7125e8711eb9ea034e6d76dbfc3"
+                ]
+            }, 
+            {
+                "acceleration": 0, 
+                "end_location_uuid": "pose.waypoint.location.-py-6599f6d05e8711eb9ea034e6d76dbfc3", 
+                "move_type": "joint", 
+                "name": "", 
+                "start_location_uuid": "pose.waypoint.location.-py-6599f6cd5e8711eb9ea034e6d76dbfc3", 
+                "trace": {
+                    "component_paths": [], 
+                    "data": {
+                        "ee": [
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6cc5e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6cb5e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.3, 
+                                    "y": 0.3, 
+                                    "z": 0.4
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f71e5e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f7195e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f7185e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.3333333333333333, 
+                                    "y": 0.3333333333333333, 
+                                    "z": 0.33333333333333337
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f71f5e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f71c5e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f71b5e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.3666666666666667, 
+                                    "y": 0.3666666666666667, 
+                                    "z": 0.2666666666666667
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7205e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6cf5e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6ce5e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.4, 
+                                    "y": 0.4, 
+                                    "z": 0.2
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7215e8711eb9ea034e6d76dbfc3"
+                            }
+                        ]
+                    }, 
+                    "end_effector_path": "ee", 
+                    "joint_paths": [], 
+                    "name": "", 
+                    "time": 0, 
+                    "tool_paths": [], 
+                    "type": "node.trace.", 
+                    "uuid": "trace.-py-6599f7225e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.trajectory.", 
+                "uuid": "trajectory.-py-6599f6ee5e8711eb9ea034e6d76dbfc3", 
+                "velocity": 0, 
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-6599f71a5e8711eb9ea034e6d76dbfc3", 
+                    "pose.waypoint.-py-6599f71d5e8711eb9ea034e6d76dbfc3"
+                ]
+            }, 
+            {
+                "acceleration": 0, 
+                "end_location_uuid": "pose.waypoint.location.-py-6599f6cd5e8711eb9ea034e6d76dbfc3", 
+                "move_type": "joint", 
+                "name": "", 
+                "start_location_uuid": "pose.waypoint.location.-py-6599f6ca5e8711eb9ea034e6d76dbfc3", 
+                "trace": {
+                    "component_paths": [], 
+                    "data": {
+                        "ee": [
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6c95e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6c85e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.4, 
+                                    "y": 0.4, 
+                                    "z": 0.2
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f7295e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f7245e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f7235e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.3666666666666667, 
+                                    "y": 0.3666666666666667, 
+                                    "z": 0.26666666666666666
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f72a5e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f7275e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f7265e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.33333333333333337, 
+                                    "y": 0.33333333333333337, 
+                                    "z": 0.33333333333333337
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f72b5e8711eb9ea034e6d76dbfc3"
+                            }, 
+                            {
+                                "grade": 0, 
+                                "name": "", 
+                                "orientation": {
+                                    "name": "", 
+                                    "type": "node.orientation.", 
+                                    "uuid": "orientation.-py-6599f6cc5e8711eb9ea034e6d76dbfc3", 
+                                    "w": 0.7071068, 
+                                    "x": 0, 
+                                    "y": 0.7071068, 
+                                    "z": 0
+                                }, 
+                                "position": {
+                                    "name": "", 
+                                    "type": "node.position.", 
+                                    "uuid": "position.-py-6599f6cb5e8711eb9ea034e6d76dbfc3", 
+                                    "x": 0.3, 
+                                    "y": 0.3, 
+                                    "z": 0.4
+                                }, 
+                                "type": "node.pose.trace-data-point.", 
+                                "uuid": "pose.trace-data-point.-py-6599f72c5e8711eb9ea034e6d76dbfc3"
+                            }
+                        ]
+                    }, 
+                    "end_effector_path": "ee", 
+                    "joint_paths": [], 
+                    "name": "", 
+                    "time": 0, 
+                    "tool_paths": [], 
+                    "type": "node.trace.", 
+                    "uuid": "trace.-py-6599f72d5e8711eb9ea034e6d76dbfc3"
+                }, 
+                "type": "node.trajectory.", 
+                "uuid": "trajectory.-py-6599f6e85e8711eb9ea034e6d76dbfc3", 
+                "velocity": 0, 
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-6599f7255e8711eb9ea034e6d76dbfc3", 
+                    "pose.waypoint.-py-6599f7285e8711eb9ea034e6d76dbfc3"
+                ]
+            }
+        ], 
+        "type": "node.context.environment.", 
+        "uuid": "context.environment.-py-6599f6be5e8711eb9ea034e6d76dbfc3", 
+        "waypoints": [
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6f85e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6f75e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.23333333333333336, 
+                    "y": 0.23333333333333336, 
+                    "z": 0.1
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f6f95e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f7195e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7185e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.3333333333333333, 
+                    "y": 0.3333333333333333, 
+                    "z": 0.33333333333333337
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f71a5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f7275e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7265e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.33333333333333337, 
+                    "y": 0.33333333333333337, 
+                    "z": 0.33333333333333337
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f7285e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f71c5e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f71b5e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.3666666666666667, 
+                    "y": 0.3666666666666667, 
+                    "z": 0.2666666666666667
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f71d5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f70e5e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f70d5e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.2, 
+                    "y": 0.3333333333333333, 
+                    "z": 0.06666666666666667
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f70f5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f7245e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7235e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.3666666666666667, 
+                    "y": 0.3666666666666667, 
+                    "z": 0.26666666666666666
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f7255e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f6fb5e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f6fa5e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.06666666666666671, 
+                    "y": 0.06666666666666671, 
+                    "z": 0.0
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f6fc5e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f7065e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7055e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.06666666666666667, 
+                    "y": 0.26666666666666666, 
+                    "z": 0.0
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f7075e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f7115e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7105e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.30000000000000004, 
+                    "y": 0.3666666666666667, 
+                    "z": 0.13333333333333333
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f7125e8711eb9ea034e6d76dbfc3"
+            }, 
+            {
+                "joints": null, 
+                "name": "", 
+                "orientation": {
+                    "name": "", 
+                    "type": "node.orientation.", 
+                    "uuid": "orientation.-py-6599f7035e8711eb9ea034e6d76dbfc3", 
+                    "w": 0.7071068, 
+                    "x": 0, 
+                    "y": 0.7071068, 
+                    "z": 0
+                }, 
+                "position": {
+                    "name": "", 
+                    "type": "node.position.", 
+                    "uuid": "position.-py-6599f7025e8711eb9ea034e6d76dbfc3", 
+                    "x": 0.03333333333333333, 
+                    "y": 0.23333333333333334, 
+                    "z": 0.0
+                }, 
+                "type": "node.pose.waypoint.", 
+                "uuid": "pose.waypoint.-py-6599f7045e8711eb9ea034e6d76dbfc3"
+            }
+        ]
+    }, 
+    "name": "", 
+    "primitives": [
+        {
+            "name": "", 
+            "primitives": [
+                {
+                    "machine_uuid": "machine.-py-6599f6d45e8711eb9ea034e6d76dbfc3", 
+                    "name": "", 
+                    "type": "node.primitive.machine-primitive.machine-initialize.", 
+                    "uuid": "primitive.machine-primitive.machine-initialize.-py-6599f6d95e8711eb9ea034e6d76dbfc3"
+                }, 
+                {
+                    "location_uuid": "pose.waypoint.location.-py-6599f6c45e8711eb9ea034e6d76dbfc3", 
+                    "manual_safety": true, 
+                    "name": "", 
+                    "type": "node.primitive.move-unplanned.", 
+                    "uuid": "primitive.move-unplanned.-py-6599f6da5e8711eb9ea034e6d76dbfc3"
+                }, 
+                {
+                    "name": "", 
+                    "primitives": [
+                        {
+                            "effort": 100, 
+                            "name": "", 
+                            "position": 0, 
+                            "speed": 100, 
+                            "thing_uuid": null, 
+                            "type": "node.primitive.gripper.", 
+                            "uuid": "primitive.gripper.-py-6599f6db5e8711eb9ea034e6d76dbfc3"
+                        }
+                    ], 
+                    "type": "node.primitive.task.open-gripper.", 
+                    "uuid": "primitive.task.open-gripper.-py-6599f6dc5e8711eb9ea034e6d76dbfc3"
+                }
+            ], 
+            "type": "node.primitive.task.initialize.", 
+            "uuid": "primitive.task.initialize.-py-6599f6dd5e8711eb9ea034e6d76dbfc3"
+        }, 
+        {
+            "condition": null, 
+            "name": "", 
+            "primitives": [
+                {
+                    "name": "", 
+                    "primitives": [
+                        {
+                            "end_location_uuid": "pose.waypoint.location.-py-6599f6c75e8711eb9ea034e6d76dbfc3", 
+                            "name": "", 
+                            "start_location_uuid": "pose.waypoint.location.-py-6599f6c45e8711eb9ea034e6d76dbfc3", 
+                            "trajectory_uuid": "trajectory.-py-6599f6df5e8711eb9ea034e6d76dbfc3", 
+                            "type": "node.primitive.move-trajectory.", 
+                            "uuid": "primitive.move-trajectory.-py-6599f6de5e8711eb9ea034e6d76dbfc3"
+                        }, 
+                        {
+                            "name": "", 
+                            "primitives": [
+                                {
+                                    "effort": 100, 
+                                    "name": "", 
+                                    "position": 100, 
+                                    "speed": 100, 
+                                    "thing_uuid": null, 
+                                    "type": "node.primitive.gripper.", 
+                                    "uuid": "primitive.gripper.-py-6599f6e05e8711eb9ea034e6d76dbfc3"
+                                }
+                            ], 
+                            "type": "node.primitive.task.close-gripper.", 
+                            "uuid": "primitive.task.close-gripper.-py-6599f6e15e8711eb9ea034e6d76dbfc3"
+                        }, 
+                        {
+                            "end_location_uuid": "pose.waypoint.location.-py-6599f6ca5e8711eb9ea034e6d76dbfc3", 
+                            "name": "", 
+                            "start_location_uuid": "pose.waypoint.location.-py-6599f6c75e8711eb9ea034e6d76dbfc3", 
+                            "trajectory_uuid": "trajectory.-py-6599f6e35e8711eb9ea034e6d76dbfc3", 
+                            "type": "node.primitive.move-trajectory.", 
+                            "uuid": "primitive.move-trajectory.-py-6599f6e25e8711eb9ea034e6d76dbfc3"
+                        }, 
+                        {
+                            "name": "", 
+                            "primitives": [
+                                {
+                                    "effort": 100, 
+                                    "name": "", 
+                                    "position": 0, 
+                                    "speed": 100, 
+                                    "thing_uuid": null, 
+                                    "type": "node.primitive.gripper.", 
+                                    "uuid": "primitive.gripper.-py-6599f6e45e8711eb9ea034e6d76dbfc3"
+                                }
+                            ], 
+                            "type": "node.primitive.task.open-gripper.", 
+                            "uuid": "primitive.task.open-gripper.-py-6599f6e55e8711eb9ea034e6d76dbfc3"
+                        }
+                    ], 
+                    "type": "node.primitive.task.simple-pick-and-place.", 
+                    "uuid": "primitive.task.simple-pick-and-place.-py-6599f6e65e8711eb9ea034e6d76dbfc3"
+                }, 
+                {
+                    "end_location_uuid": "pose.waypoint.location.-py-6599f6cd5e8711eb9ea034e6d76dbfc3", 
+                    "name": "", 
+                    "start_location_uuid": "pose.waypoint.location.-py-6599f6ca5e8711eb9ea034e6d76dbfc3", 
+                    "trajectory_uuid": "trajectory.-py-6599f6e85e8711eb9ea034e6d76dbfc3", 
+                    "type": "node.primitive.move-trajectory.", 
+                    "uuid": "primitive.move-trajectory.-py-6599f6e75e8711eb9ea034e6d76dbfc3"
+                }, 
+                {
+                    "name": "", 
+                    "primitives": [
+                        {
+                            "machine_uuid": "machine.-py-6599f6d45e8711eb9ea034e6d76dbfc3", 
+                            "name": "", 
+                            "type": "node.primitive.machine-primitive.machine-start.", 
+                            "uuid": "primitive.machine-primitive.machine-start.-py-6599f6e95e8711eb9ea034e6d76dbfc3"
+                        }, 
+                        {
+                            "machine_uuid": "machine.-py-6599f6d45e8711eb9ea034e6d76dbfc3", 
+                            "name": "", 
+                            "type": "node.primitive.machine-primitive.machine-wait.", 
+                            "uuid": "primitive.machine-primitive.machine-wait.-py-6599f6ea5e8711eb9ea034e6d76dbfc3"
+                        }, 
+                        {
+                            "machine_uuid": "machine.-py-6599f6d45e8711eb9ea034e6d76dbfc3", 
+                            "name": "", 
+                            "type": "node.primitive.machine-primitive.machine-stop.", 
+                            "uuid": "primitive.machine-primitive.machine-stop.-py-6599f6eb5e8711eb9ea034e6d76dbfc3"
+                        }
+                    ], 
+                    "type": "node.primitive.task.machine-blocking-process.", 
+                    "uuid": "primitive.task.machine-blocking-process.-py-6599f6ec5e8711eb9ea034e6d76dbfc3"
+                }, 
+                {
+                    "name": "", 
+                    "primitives": [
+                        {
+                            "end_location_uuid": "pose.waypoint.location.-py-6599f6d05e8711eb9ea034e6d76dbfc3", 
+                            "name": "", 
+                            "start_location_uuid": "pose.waypoint.location.-py-6599f6cd5e8711eb9ea034e6d76dbfc3", 
+                            "trajectory_uuid": "trajectory.-py-6599f6ee5e8711eb9ea034e6d76dbfc3", 
+                            "type": "node.primitive.move-trajectory.", 
+                            "uuid": "primitive.move-trajectory.-py-6599f6ed5e8711eb9ea034e6d76dbfc3"
+                        }, 
+                        {
+                            "name": "", 
+                            "primitives": [
+                                {
+                                    "effort": 100, 
+                                    "name": "", 
+                                    "position": 100, 
+                                    "speed": 100, 
+                                    "thing_uuid": null, 
+                                    "type": "node.primitive.gripper.", 
+                                    "uuid": "primitive.gripper.-py-6599f6ef5e8711eb9ea034e6d76dbfc3"
+                                }
+                            ], 
+                            "type": "node.primitive.task.close-gripper.", 
+                            "uuid": "primitive.task.close-gripper.-py-6599f6f05e8711eb9ea034e6d76dbfc3"
+                        }, 
+                        {
+                            "end_location_uuid": "pose.waypoint.location.-py-6599f6d35e8711eb9ea034e6d76dbfc3", 
+                            "name": "", 
+                            "start_location_uuid": "pose.waypoint.location.-py-6599f6d05e8711eb9ea034e6d76dbfc3", 
+                            "trajectory_uuid": "trajectory.-py-6599f6f25e8711eb9ea034e6d76dbfc3", 
+                            "type": "node.primitive.move-trajectory.", 
+                            "uuid": "primitive.move-trajectory.-py-6599f6f15e8711eb9ea034e6d76dbfc3"
+                        }, 
+                        {
+                            "name": "", 
+                            "primitives": [
+                                {
+                                    "effort": 100, 
+                                    "name": "", 
+                                    "position": 0, 
+                                    "speed": 100, 
+                                    "thing_uuid": null, 
+                                    "type": "node.primitive.gripper.", 
+                                    "uuid": "primitive.gripper.-py-6599f6f35e8711eb9ea034e6d76dbfc3"
+                                }
+                            ], 
+                            "type": "node.primitive.task.open-gripper.", 
+                            "uuid": "primitive.task.open-gripper.-py-6599f6f45e8711eb9ea034e6d76dbfc3"
+                        }
+                    ], 
+                    "type": "node.primitive.task.simple-pick-and-place.", 
+                    "uuid": "primitive.task.simple-pick-and-place.-py-6599f6f55e8711eb9ea034e6d76dbfc3"
+                }
+            ], 
+            "type": "node.primitive.task.loop.", 
+            "uuid": "primitive.task.loop.-py-6599f6f65e8711eb9ea034e6d76dbfc3"
+        }
+    ], 
+    "type": "node.primitive.task.program.", 
+    "uuid": "primitive.task.program.-py-6599f6c15e8711eb9ea034e6d76dbfc3"
+}

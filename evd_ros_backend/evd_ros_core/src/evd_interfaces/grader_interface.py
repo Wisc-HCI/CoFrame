@@ -1,3 +1,7 @@
+
+class GraderInterface:
+    pass
+
 '''
 def _submit_job_cb(self, request):
     id = '{}-py-{}'.format('plan_tracer_job',uuid.uuid1().hex)

@@ -192,6 +192,11 @@ class PinchPoint(Node, VisualizeMarker):
     Update Methods
     '''
 
+    def late_construct_update(self):
+        self.offset.late_construct_update()
+
+        super(PinchPoint,self).late_construct_update()
+
     def deep_update(self):
 
         self.offset.deep_update()

@@ -160,6 +160,9 @@ class Node(object):
     Update methods
     '''
 
+    def late_construct_update(self):
+        pass # Implement if your class needs to update something after entire program is constructed
+
     def updated_attribute(self, attribute, verb, child_uuid = None):
         if self._parent != None:
             self._parent.child_changed_event(

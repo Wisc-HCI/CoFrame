@@ -7,9 +7,10 @@ class Gripper(Primitive):
     Data structure methods
     '''
 
-    def __init__(self, position=0, effort=0, speed=0, type='', name='', uuid=None,
-                 parent=None, append_type=True):
+    def __init__(self, position=0, effort=0, speed=0, thing_uuid=None, type='',
+                 name='', uuid=None, parent=None, append_type=True):
 
+        self._thing_uuid = None
         self._position = None
         self._effort = None
         self._speed = None
@@ -21,6 +22,7 @@ class Gripper(Primitive):
             parent=parent,
             append_type=append_type)
 
+        self.thing_uuid = thing_uuid
         self.position = position
         self.effort = effort
         self.speed = speed
@@ -28,6 +30,7 @@ class Gripper(Primitive):
     def to_dct(self):
         msg = super(Gripper,self).to_dct()
         msg.update({
+            'thing_uuid': self.thing_uuid,
             'position': self.position,
             'effort': self.effort,
             'speed': self.speed
@@ -43,7 +46,8 @@ class Gripper(Primitive):
             append_type=False,
             position=dct['position'],
             effort=dct['effort'],
-            speed=dct['speed'])
+            speed=dct['speed'],
+            thing_uuid=dct['thing_uuid'])
 
     '''
     Data accessor/modifier methods
@@ -79,6 +83,16 @@ class Gripper(Primitive):
             self._speed = value
             self.updated_attribute('speed','set')
 
+    @property
+    def thing_uuid(self):
+        return self._thing_uuid
+
+    @thing_uuid.setter
+    def thing_uuid(self, value):
+        if self._thing_uuid != value:
+            self._thing_uuid = value
+            self.updated_attribute('thing_uuid','set')
+
     def set(self, dct):
         position = dct.get('position', None)
         if position != None:
@@ -92,6 +106,9 @@ class Gripper(Primitive):
         if speed != None:
             self.speed = speed
 
+        if 'thing_uuid' in dct.keys():
+            self.thing_uuid = dct['thing_uuid']
+
         super(Gripper,self).set(dct)
 
     '''
@@ -102,6 +119,7 @@ class Gripper(Primitive):
 
         super(Gripper,self).deep_update()
 
+        self.updated_attribute('thing_uuid','update')
         self.updated_attribute('position','update')
         self.updated_attribute('effort','update')
         self.updated_attribute('speed','update')
@@ -109,6 +127,7 @@ class Gripper(Primitive):
     def shallow_update(self):
         super(Gripper,self).shallow_update()
 
+        self.updated_attribute('thing_uuid','update')
         self.updated_attribute('position','update')
         self.updated_attribute('effort','update')
         self.updated_attribute('speed','update')

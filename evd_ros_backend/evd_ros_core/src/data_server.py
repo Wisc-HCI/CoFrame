@@ -3,7 +3,6 @@
 import os
 import json
 import rospy
-import pprint
 import traceback
 
 from std_msgs.msg import String
@@ -317,7 +316,7 @@ class DataServer:
         self._update_prog_pub.publish(msg)
 
     def __program_updated_cb(self, attribute_trace):
-        print 'In Data Server:', attribute_trace
+        pass
 
     def spin(self):
         # give nodes time before publishing initial state

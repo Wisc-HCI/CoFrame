@@ -4,7 +4,7 @@ import rospy
 import pprint
 
 from visualization_msgs.msg import Marker, MarkerArray
-from ..interfaces.data_client_interface import DataClientInterface
+from evd_interfaces.data_client_interface import DataClientInterface
 
 
 DEFAULT_ROS_FRAME_ID = 'app'
@@ -24,27 +24,27 @@ class TestEnvironmentDataVisualizer:
 
     def _update_markers(self):
 
-        print 'Environment'
+        #print 'Environment'
         markerArray = MarkerArray()
         updated_markers = {}
 
-        print '\n\n\n\n'
-        print 'Cache Log'
-        pprint.pprint(self._data_client.cache.utility_cache_stats())
+        #print '\n\n\n\n'
+        #print 'Cache Log'
+        #pprint.pprint(self._data_client.cache.utility_cache_stats())
 
         # get all locations and display all locations
         locations = self._data_client.program.environment.locations
-        print '\n\nLocations=', locations
+        #print '\n\nLocations=', locations
         for loc in locations:
             marker = loc.to_ros_marker(self._ros_frame_id,self._count)
-            print 'adding location markers', loc.uuid
+            #print 'adding location markers', loc.uuid
             markerArray.markers.append(marker)
             self._count += 1
             updated_markers[loc.uuid] = marker
 
         # Get all trajectories and display all waypoints and display all traces
         trajectories = self._data_client.cache.trajectories.values()
-        print '\n\nTrajectories', trajectories
+        #print '\n\nTrajectories', trajectories
         for traj in trajectories:
 
             trajMarker, waypointMarkers, waypointUuids = traj.to_ros_markers(self._ros_frame_id, self._count)
@@ -54,7 +54,7 @@ class TestEnvironmentDataVisualizer:
             for i in range(0,len(waypointMarkers)):
                 marker = waypointMarkers[i]
                 uuid = waypointUuids[i]
-                print 'adding waypoint marker', uuid
+                #print 'adding waypoint marker', uuid
                 markerArray.markers.append(marker)
                 updated_markers[uuid] = marker
 
@@ -71,34 +71,34 @@ class TestEnvironmentDataVisualizer:
                         marker = renderpointMarkers[i][j]
                         uuid = renderpointUuids[i][j]
 
-                        print 'adding render point marker', uuid
+                        #print 'adding render point marker', uuid
                         markerArray.markers.append(marker)
                         updated_markers[uuid] = marker
 
                     # trace line
-                    print 'adding line trace marker', traj.trace.uuid
+                    #print 'adding line trace marker', traj.trace.uuid
                     markerArray.markers.append(traceMarkers[i])
                     updated_markers[traj.trace.uuid] = traceMarkers[i]
 
             else:
-                print 'adding trajectory line marker', traj.uuid
+                #print 'adding trajectory line marker', traj.uuid
                 markerArray.markers.append(trajMarker)
                 updated_markers[traj.uuid] = trajMarker
 
         # Get all things
         things = self._data_client.cache.things.values()
-        print '\n\nThings=', things
+        #print '\n\nThings=', things
         for thing in things:
             marker = thing.to_ros_marker(self._ros_frame_id,self._count)
             if marker != None:
-                print 'adding thing markers', thing.uuid
+                #print 'adding thing markers', thing.uuid
                 markerArray.markers.append(marker)
                 self._count = self._count + 1
                 updated_markers[thing.uuid] = marker
 
         # display reach sphere
         reach_sphere = self._data_client.program.environment.reach_sphere
-        print '\n\nReach Sphere', reach_sphere.uuid
+        #print '\n\nReach Sphere', reach_sphere.uuid
         marker = reach_sphere.to_ros_marker(self._ros_frame_id,self._count)
         markerArray.markers.append(marker)
         self._count += 1
@@ -106,7 +106,7 @@ class TestEnvironmentDataVisualizer:
 
         # display occupancy zones
         zones = self._data_client.program.environment.occupancy_zones
-        print '\n\nOccupancy Zones', zones
+        #print '\n\nOccupancy Zones', zones
         for zone in zones:
             marker = zone.to_ros_marker(self._ros_frame_id, self._count)
             markerArray.markers.append(marker)
@@ -118,10 +118,10 @@ class TestEnvironmentDataVisualizer:
             if not uuid in updated_markers.keys():
                 marker = self._marker_uuid_list[uuid]
                 marker.action = Marker.DELETE
-                print 'deleting marker', uuid
+                #print 'deleting marker', uuid
                 markerArray.markers.append(marker)
             else:
-                marker_old = self._marker_periodic_uuid_list[uuid]
+                marker_old = self._marker_uuid_list[uuid]
                 marker_new = updated_markers[uuid]
 
                 if marker_old.id != marker_new.id:

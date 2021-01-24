@@ -3,6 +3,8 @@
 '''
 '''
 
+#TODO provide pending job notices as well
+
 import rospy
 
 from evd_ros_core.msg import Issue
@@ -21,7 +23,7 @@ class IssueServer:
 
     def _issue_submit_cb(self, msg):
 
-        if self.source not in self.full_table.keys():
+        if msg.source not in self.full_table.keys():
             self.full_table[msg.source] = {}
 
         self.full_table[msg.source][msg.id] = msg
@@ -37,7 +39,7 @@ class IssueServer:
                         if id in self.full_table[request.source]:
                             src_filter_list.append(self.full_table[request.source][id])
                 else:
-                    src_filter_list = self.full_table[reuest.source].values()
+                    src_filter_list = self.full_table[request.source].values()
         else:
             for source in self.full_table.keys():
                 for id in self.full_table[source].keys():

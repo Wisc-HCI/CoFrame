@@ -155,6 +155,11 @@ class CollisionMesh(Node,VisualizeMarker):
     Update Methods
     '''
 
+    def late_construct_update(self):
+        self.pose_offset.late_construct_update()
+
+        super(CollisionMesh,self).late_construct_update()
+
     def deep_update(self):
         self.pose_offset.deep_update()
 

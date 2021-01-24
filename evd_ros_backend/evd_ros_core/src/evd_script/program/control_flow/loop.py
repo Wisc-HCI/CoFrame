@@ -8,7 +8,7 @@ class Loop(Task):
     '''
 
     def __init__(self, primitives=[], condition=None, type='', name='', uuid=None, parent=None,
-                 append_type=True, context=None):
+                 append_type=True):
         self._condition = None
 
         super(Loop,self).__init__(
@@ -17,7 +17,6 @@ class Loop(Task):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            context=context,
             primitives=primitives)
 
         self.condition = condition
@@ -90,9 +89,17 @@ class Loop(Task):
     Update Methods
     '''
 
+    def late_construct_update(self):
+
+        if self.condition != None:
+            self.condition.late_construct_update()
+
+        super(Loop,self).late_construct_update() 
+
     def deep_update(self):
 
-        self.condition.deep_update()
+        if self.condition != None:
+            self.condition.deep_update()
 
         super(Loop,self).deep_update()
 

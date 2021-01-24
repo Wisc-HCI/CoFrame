@@ -377,7 +377,32 @@ class Machine(Node):
     Update Methods
     '''
 
+    def late_construct_update(self):
+
+        if self.input_regions != None:
+            for i in self.input_regions.values():
+                i.late_construct_update()
+
+        if self.output_regions != None:
+            for o in self.output_regions.values():
+                o.late_construct_update()
+
+        self.recipe.late_construct_update()
+
+        super(Machine,self).late_construct_update()
+
     def deep_update(self):
+
+        if self.input_regions != None:
+            for i in self.input_regions.values():
+                i.deep_update()
+
+        if self.output_regions != None:
+            for o in self.output_regions.values():
+                o.deep_update()
+
+        self.recipe.deep_update()
+
         super(Machine,self).deep_update()
 
         self.updated_attribute('machine_type','update')

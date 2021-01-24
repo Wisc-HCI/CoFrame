@@ -4,7 +4,7 @@ import rospy
 import pprint
 
 from visualization_msgs.msg import Marker, MarkerArray
-from ..interfaces.data_client_interface import DataClientInterface
+from evd_interfaces.data_client_interface import DataClientInterface
 
 
 DEFAULT_ROS_FRAME_ID = 'app'
@@ -25,26 +25,30 @@ class TestProgramDataVisualizer:
 
         markerArray = MarkerArray()
 
-        print '\n\n\n\n'
-        print 'Cache Log'
-        pprint.pprint(self._data_client.cache.utility_cache_stats())
+        #print '\n\n\n\n'
+        #print 'Cache Log'
+        #pprint.pprint(self._data_client.cache.utility_cache_stats())
 
-        print '\n\n\n\nupdating markers'
+        #print '\n\n\n\n'
+        #print 'Current Context'
+        #pprint.pprint(self._data_client.program.environment.trajectories)
+
+        #print '\n\n\n\nupdating markers'
         updated_markers = {}
 
         # get all locations and display all locations
         locations = self._data_client.cache.locations.values()
-        print '\n\nLocations=', locations
+        #print '\n\nLocations=', locations
         for loc in locations:
             marker = loc.to_ros_marker(self._ros_frame_id,self._count)
-            print 'adding location markers', loc.uuid
+            #print 'adding location markers', loc.uuid
             markerArray.markers.append(marker)
             self._count = self._count + 1
             updated_markers[loc.uuid] = marker
 
         # Get all trajectories and display all waypoints and display all traces
         trajectories = self._data_client.cache.trajectories.values()
-        print '\n\nTrajectories', trajectories
+        #print '\n\nTrajectories', trajectories
         for traj in trajectories:
 
             trajMarker, waypointMarkers, waypointUuids = traj.to_ros_markers(self._ros_frame_id, self._count)
@@ -54,7 +58,7 @@ class TestProgramDataVisualizer:
             for i in range(0,len(waypointMarkers)):
                 marker = waypointMarkers[i]
                 uuid = waypointUuids[i]
-                print 'adding waypoint marker', uuid
+                #print 'adding waypoint marker', uuid
                 markerArray.markers.append(marker)
                 updated_markers[uuid] = marker
 
@@ -71,39 +75,46 @@ class TestProgramDataVisualizer:
                         marker = renderpointMarkers[i][j]
                         uuid = renderpointUuids[i][j]
 
-                        print 'adding render point marker', uuid
+                        #print 'adding render point marker', uuid
                         markerArray.markers.append(marker)
                         updated_markers[uuid] = marker
 
                     # trace line
-                    print 'adding line trace marker', traj.trace.uuid
+                    #print 'adding line trace marker', traj.trace.uuid
                     markerArray.markers.append(traceMarkers[i])
                     updated_markers[traj.trace.uuid] = traceMarkers[i]
 
             else:
-                print 'adding trajectory line marker', traj.uuid
+                #print 'adding trajectory line marker', traj.uuid
                 markerArray.markers.append(trajMarker)
                 updated_markers[traj.uuid] = trajMarker
-                print trajMarker
+                #print trajMarker
 
         # Get all things
         things = self._data_client.cache.things.values()
-        print '\n\nThings=', things
+        #print '\n\nThings=', things
         for thing in things:
             marker = thing.to_ros_marker(self._ros_frame_id,self._count)
             if marker != None:
-                print 'adding thing markers', thing.uuid
+                #print 'adding thing markers', thing.uuid
                 markerArray.markers.append(marker)
                 self._count = self._count + 1
                 updated_markers[thing.uuid] = marker
 
         # Delete any markers that have not been updated
-        for ids in self._marker_uuid_list.keys():
-            if not ids in updated_markers.keys():
-                marker = self._marker_uuid_list[ids]
+        for uuid in self._marker_uuid_list.keys():
+            if not uuid in updated_markers.keys():
+                marker = self._marker_uuid_list[uuid]
                 marker.action = Marker.DELETE
-                print 'deleting marker', ids
+                #print 'deleting marker', uuid
                 markerArray.markers.append(marker)
+            else:
+                marker_old = self._marker_uuid_list[uuid]
+                marker_new = updated_markers[uuid]
+
+                if marker_old.id != marker_new.id:
+                    marker_old.action = Marker.DELETE
+                    markerArray.markers.append(marker_old)
 
         # Update marker list
         self._marker_pub.publish(markerArray)
@@ -115,6 +126,6 @@ if __name__ == "__main__":
 
     ros_frame_id = rospy.get_param('~ros_frame_id',DEFAULT_ROS_FRAME_ID)
 
-    node = TestProgramDataVisualizer(ros_frame_id, True)
+    node = TestProgramDataVisualizer(ros_frame_id, False)
 
     rospy.spin()

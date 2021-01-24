@@ -313,6 +313,13 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
     Update Methods
     '''
 
+    def late_construct_update(self):
+
+        if self.trace != None:
+            self.trace.late_construct_update()
+
+        super(Trajectory,self).late_construct_update()
+
     def deep_update(self):
 
         if self.trace != None:

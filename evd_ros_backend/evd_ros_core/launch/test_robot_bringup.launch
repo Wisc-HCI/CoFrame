@@ -16,7 +16,7 @@
   </include>
 
   <!-- System test code -->
-  <node if="$(arg run_test_script)" name="bringup_test" pkg="evd_ros_core" type="bringup_test.py"/>
+  <node if="$(arg run_test_script)" name="test_robot_bringup" pkg="evd_ros_core" type="test_robot_bringup.py"/>
 
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">

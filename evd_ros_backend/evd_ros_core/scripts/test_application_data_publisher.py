@@ -3,7 +3,7 @@
 import rospy
 import Tkinter as tk
 
-from ..interfaces.data_client_interface import DataClientInterface
+from evd_interfaces.data_client_interface import DataClientInterface
 
 
 class TestApplicationDataPublisher:
@@ -49,6 +49,8 @@ class TestApplicationDataPublisher:
         status, msg = self._data_client.save_application(False,self.filenameVar.get())
 
         print 'Saved: {0} - {1}'.format(status,msg)
+
+        self._get_options_cb() # Reload list of programs
 
     def _load_cb(self):
         if self.options_listBox.get(tk.ACTIVE) == '':

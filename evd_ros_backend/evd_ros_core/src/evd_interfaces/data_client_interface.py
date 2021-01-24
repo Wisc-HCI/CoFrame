@@ -82,6 +82,8 @@ class DataClientInterface(object):
             response = self._get_program_srv(True,'')
             if response.status:
                 self._program = Program.from_dct(json.loads(response.data))
+                self._program.late_construct_update()
+                self._program.changes_cb = self.__program_changed_cb
                 self._program_verison = VersionTag.from_ros(response.tag)
                 return self._program
             else:
@@ -103,6 +105,7 @@ class DataClientInterface(object):
         #TODO need to push these changes through the program update callback (just the changes!)
         try:
             self._program = Program.from_dct(json.loads(msg.data))
+            self._program.late_construct_update()
             self._program.changes_cb = self.__program_changed_cb
             self._program_verison = VersionTag.from_ros(msg.currentTag)
         except:
@@ -115,7 +118,7 @@ class DataClientInterface(object):
     def __program_changed_cb(self, trace):
         #TODO need to keep a manifest of all changed nodes
         # self._program_changes_manifest
-        print trace
+        pass
 
     '''
     Public Utilities

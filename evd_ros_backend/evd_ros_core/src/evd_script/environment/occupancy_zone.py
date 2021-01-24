@@ -190,7 +190,7 @@ class OccupancyZone(Node, VisualizeMarker):
     '''
 
     def deep_update(self):
-        super(ReachSphere,self).deep_update()
+        super(OccupancyZone,self).deep_update()
 
         self.updated_attribute('occupancy_type','update')
         self.updated_attribute('position_x','update')
@@ -200,7 +200,7 @@ class OccupancyZone(Node, VisualizeMarker):
         self.updated_attribute('height','update')
 
     def shallow_update(self):
-        super(ReachSphere,self).shallow_update()
+        super(OccupancyZone,self).shallow_update()
 
         self.updated_attribute('occupancy_type','update')
         self.updated_attribute('position_x','update')

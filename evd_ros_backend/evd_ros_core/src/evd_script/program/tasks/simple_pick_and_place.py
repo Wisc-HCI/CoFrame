@@ -10,15 +10,15 @@ class SimplePickAndPlace(Task):
     Data structure methods
     '''
 
-    def __init__(self, startLocUuid=None, pickLocUuid=None, placeLocUuid=None, type='', name='',
-                 uuid=None, parent=None, append_type=True, create_default=True, primitives=None, context=None):
+    def __init__(self, startLocUuid=None, pickLocUuid=None, placeLocUuid=None, thing_uuid=None,
+                 type='', name='', uuid=None, parent=None, append_type=True, primitives=None):
 
         if primitives == None:
             primitives = [
-                MoveTrajectory(startLocUuid,pickLocUuid,create_default=create_default),
-                CloseGripper(),
-                MoveTrajectory(pickLocUuid,placeLocUuid,create_default=create_default),
-                OpenGripper()
+                MoveTrajectory(startLocUuid,pickLocUuid),
+                CloseGripper(thing_uuid=thing_uuid),
+                MoveTrajectory(pickLocUuid,placeLocUuid),
+                OpenGripper(thing_uuid=thing_uuid)
             ]
 
         super(SimplePickAndPlace,self).__init__(
@@ -27,5 +27,4 @@ class SimplePickAndPlace(Task):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            context=context,
             primitives=primitives)

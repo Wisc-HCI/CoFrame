@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 
-class PinchPointGrader:
+class PerformanceGrader:
     pass

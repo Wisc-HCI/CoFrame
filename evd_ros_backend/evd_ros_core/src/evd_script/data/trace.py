@@ -357,6 +357,14 @@ class Trace(Node, VisualizeMarkers):
     Update Methods
     '''
 
+    def late_construct_update(self):
+
+        for key in self.data.keys():
+            for dp in self.data[key]:
+                dp.late_construct_update()
+
+        super(Trace,self).late_construct_update()
+
     def deep_update(self):
 
         for key in self.data.keys():

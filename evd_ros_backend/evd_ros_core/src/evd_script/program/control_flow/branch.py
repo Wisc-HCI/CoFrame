@@ -23,7 +23,7 @@ class Branch(Primitive):
     @classmethod
     def from_dct(self, value):
         from ..utility_functions import NodeParser
-        
+
         pass
 
     '''
@@ -51,6 +51,14 @@ class Branch(Primitive):
     '''
     Update Methods
     '''
+
+    def late_construct_update(self):
+
+        for e in self.entries:
+            e.condition.late_construct_update()
+            e.primitive.late_construct_update()
+
+        super(Branch,self).late_construct_update()
 
     def deep_update(self):
 

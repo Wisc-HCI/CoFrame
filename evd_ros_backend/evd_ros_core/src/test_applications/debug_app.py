@@ -107,13 +107,6 @@ def generate():
 
         trajectory.trace = Trace('ee',{'ee': datapoints})
 
-    #print '\n\n\n\n'
-    #print 'Cache Log'
-    #pprint.pprint(cache.utility_cache_stats())
-
-    #pprint.pprint(prog.context.to_dct())
-    #print json.dumps(prog.context.to_dct())
-
     #===========================================================================
     # Define Environment
     #===========================================================================
@@ -137,5 +130,26 @@ def generate():
         OccupancyZone(OccupancyZone.HUMAN_TYPE, posZ=-0.8, sclX=2, height=-0.77),
         OccupancyZone(OccupancyZone.ROBOT_TYPE, sclX=1.6, sclZ=1.2, height=-0.77)
     ]
+
+    #===========================================================================
+    # Repair all orphans and integrate all context patches
+    #===========================================================================
+
+    prog.late_construct_update() # This will force the entire program to undergo patch/repair
+
+    #===========================================================================
+    # Debug Logging
+    #===========================================================================
+
+    #print '\n\n\n\n'
+    #print 'Data Server - Cache Log'
+    #pprint.pprint(cache.utility_cache_stats())
+
+    #pprint.pprint(prog.context.to_dct())
+
+    #print 'Data Server - Context Trajectories'
+    #pprint.pprint(prog.context.trajectories)
+
+    #print '\n\n\n\n'
 
     return prog

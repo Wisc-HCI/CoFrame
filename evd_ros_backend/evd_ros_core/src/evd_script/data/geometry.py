@@ -128,6 +128,12 @@ class Pose(Node):
     Update Methods
     '''
 
+    def late_construct_update(self):
+        self.orientation.late_construct_update()
+        self.position.late_construct_update()
+
+        super(Pose,self).late_construct_update()
+
     def deep_update(self):
         self.orientation.deep_update()
         self.position.deep_update()

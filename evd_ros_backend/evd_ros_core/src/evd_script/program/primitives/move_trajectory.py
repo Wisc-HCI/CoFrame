@@ -9,14 +9,12 @@ class MoveTrajectory(Primitive):
     '''
 
     def __init__(self, startLocUuid=None, endLocUuid=None, trajectory=None, trajectory_uuid=None,
-                 runnableTrajUuid=None, type='', name='', uuid=None, parent=None,
-                 append_type=True, create_default=True):
+                 type='', name='', uuid=None, parent=None, append_type=True):
 
         self._context_patch = None
         self._start_location_uuid = None
         self._end_location_uuid = None
         self._trajectory_uuid = None
-        self._runnable_trajectory_uuid = None
 
         super(MoveTrajectory,self).__init__(
             type='move-trajectory.'+type if append_type else type,
@@ -38,6 +36,8 @@ class MoveTrajectory(Primitive):
             self.trajectory = Trajectory(self.start_location_uuid,self.end_location_uuid)
 
     def to_dct(self):
+        tmp = self.context # This guarantees that the patch is applied if possible
+
         msg = super(MoveTrajectory,self).to_dct()
         msg.update({
             'start_location_uuid': self.start_location_uuid,
@@ -48,7 +48,7 @@ class MoveTrajectory(Primitive):
             msg['trajectory_uuid'] = self.trajectory_uuid
         else:
             msg['trajectory'] = self.trajectory.to_dct()
-            
+
         return msg
 
     @classmethod
@@ -64,7 +64,6 @@ class MoveTrajectory(Primitive):
             trajectory_uuid=dct['trajectory_uuid'] if 'trajectory_uuid' in dct.keys() else None)
 
     def on_delete(self):
-
         self.context.delete_trajectory(self.trajectory_uuid)
 
         super(MoveTrajectory,self).on_delete()
@@ -79,7 +78,7 @@ class MoveTrajectory(Primitive):
         realContext = super(MoveTrajectory,self).context
         if realContext == None:
             if self._context_patch == None:
-                self._context_patch = ContextPatch()
+                self._context_patch = ContextPatch(self)
             return self._context_patch
         else:
             if self._context_patch != None:
@@ -97,7 +96,8 @@ class MoveTrajectory(Primitive):
             self._start_location_uuid = value
 
             t = self.context.get_trajectory(self.trajectory_uuid)
-            t.start_location_uuid = self._start_location_uuid
+            if t != None:
+                t.start_location_uuid = self._start_location_uuid
 
             self.updated_attribute('start_location_uuid','set')
 
@@ -111,7 +111,8 @@ class MoveTrajectory(Primitive):
             self._end_location_uuid = value
 
             t = self.context.get_trajectory(self.trajectory_uuid)
-            t.end_location_uuid = self._end_location_uuid
+            if t != None:
+                t.end_location_uuid = self._end_location_uuid
 
             self.updated_attribute('end_location_uuid','set')
 
@@ -139,14 +140,21 @@ class MoveTrajectory(Primitive):
                 raise Exception('Id must be defined')
 
             traj = self.context.get_trajectory(value)
-            if traj == None:
+            if traj == None and self._context_patch == None:
                 raise Exception('Id must have a trajectory already in context')
 
-            if traj.start_location_uuid != self.start_location_uuid:
-                raise Exception('Trajectory must have matching start location to primitive if set by id')
+            elif traj == None and self._context_patch != None:
+                self._context_patch.add_pending_trajectory(
+                    uuid=value,
+                    startLoc=self.start_location_uuid,
+                    endLoc=self.end_location_uuid)
 
-            if traj.end_location_uuid != self.end_location_uuid:
-                raise Exception('Trajectory must have matching end location to primitive if set by id')
+            elif traj != None:
+                if traj.start_location_uuid != self.start_location_uuid:
+                    raise Exception('Trajectory must have matching start location to primitive if set by id')
+
+                if traj.end_location_uuid != self.end_location_uuid:
+                    raise Exception('Trajectory must have matching end location to primitive if set by id')
 
             self._trajectory_uuid = value
             self.updated_attribute('trajectory_uuid','set')
@@ -170,7 +178,13 @@ class MoveTrajectory(Primitive):
     Update Methods
     '''
 
+    def late_construct_update(self):
+        tmp = self.context # This guarantees that the patch is applied if possible
+
+        super(MoveTrajectory,self).late_construct_update()
+
     def deep_update(self):
+        tmp = self.context # This guarantees that the patch is applied if possible
 
         super(MoveTrajectory,self).deep_update()
 
@@ -180,6 +194,8 @@ class MoveTrajectory(Primitive):
         self.updated_attribute('trajectory','update')
 
     def shallow_update(self):
+        tmp = self.context # This guarantees that the patch is applied if possible
+
         super(MoveTrajectory,self).shallow_update()
 
         self.updated_attribute('start_location_uuid','update')
@@ -187,15 +203,22 @@ class MoveTrajectory(Primitive):
         self.updated_attribute('trajectory_uuid','update')
         self.updated_attribute('trajectory','update')
 
-
 class ContextPatch(object):
 
-    def __init__(self):
+    def __init__(self, parent):
         self._trajectories = {}
+        self._parent = parent
+        self._pending = {}
+
+    @property
+    def parent(self):
+        return self._parent
 
     @property
     def trajectories(self):
-        return self._trajectories
+        traj = {uuid: self._trajectories[uuid] for uuid in self._trajectories.keys()} # copy
+        traj.update({uuid: 'pending' for uuid in self._pending.keys()})
+        return traj
 
     @trajectories.setter
     def trajectories(self, value):
@@ -210,6 +233,8 @@ class ContextPatch(object):
     def get_trajectory(self, uuid):
         if uuid in self._trajectories.keys():
             return self._trajectories[uuid]
+        elif uuid in self._pending.keys():
+            return 'pending'
         else:
             return None
 
@@ -220,9 +245,30 @@ class ContextPatch(object):
     def delete_trajectory(self, uuid):
         if uuid in self._trajectories.keys():
             self._trajectories.pop(uuid).remove_from_cache()
+        elif uuid in self._pending.keys():
+            self._pending.pop(uuid)
 
     def update_context(self, context):
+
         for traj in self._trajectories.values():
             context.add_trajectory(traj)
 
+        for uuid in self._pending.keys():
+            traj = context.get_trajectory(uuid)
+            if traj == None:
+                raise Exception('Pending trajectory was not found when context was assigned')
+
+            if traj.start_location_uuid != self._pending[uuid]['startLoc']:
+                raise Exception('Pending trajectory start location does not match one in context')
+
+            if traj.end_location_uuid != self._pending[uuid]['endLoc']:
+                raise Exception('Pending trajectory end location does not match one in context')
+
         self._trajectories = {}
+        self._pending = {}
+
+    def child_changed_event(self, attribute_trace):
+        self.parent.child_changed_event(attribute_trace)
+
+    def add_pending_trajectory(self, uuid, startLoc, endLoc):
+        self._pending[uuid] = {'startLoc': startLoc, 'endLoc': endLoc}

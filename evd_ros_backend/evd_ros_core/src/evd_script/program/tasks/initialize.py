@@ -11,7 +11,7 @@ class Initialize(Task):
     '''
 
     def __init__(self, homeLocUuid=None, machineUuids=[], type='', name='',
-                 uuid=None, parent=None, append_type=True, primitives=None, context=None):
+                 uuid=None, parent=None, append_type=True, primitives=None):
 
         if primitives == None:
             primitives = []
@@ -29,5 +29,4 @@ class Initialize(Task):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            context=context,
             primitives=primitives)

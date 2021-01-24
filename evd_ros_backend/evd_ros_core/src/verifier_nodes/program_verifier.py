@@ -3,8 +3,8 @@
 import json
 import rospy
 
-from interfaces.data_client_interface import DataClientInterface
-from interfaces.symbolic_program_runner import SymbolicProgramRunner
+from evd_interfaces.data_client_interface import DataClientInterface
+from evd_interfaces.symbolic_program_runner import SymbolicProgramRunner
 
 
 class Verifier:
@@ -16,7 +16,7 @@ class Verifier:
         self._data_client = DataClientInterface(on_program_update_cb=self._verify_program)
 
     def _verify_program(self):
-        
+
         # Run program symbolically to verify program logic (ie things are moved, machines are satisfied)
         pass
 

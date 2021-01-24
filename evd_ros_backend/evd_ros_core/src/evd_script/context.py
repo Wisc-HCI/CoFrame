@@ -1,3 +1,4 @@
+
 from .node import Node
 from .data.thing import Thing
 from .data.machine import Machine
@@ -15,8 +16,7 @@ class Context(Node):
     '''
 
     def __init__(self, locations=[], machines=[], things=[], waypoints=[], trajectories=[],
-                 parent_context=None, child_contexts=[], type='', name='', uuid=None,
-                 parent=None, append_type=True):
+                 type='', name='', uuid=None, parent=None, append_type=True):
 
         self._orphan_list = evd_orphan_list()
 
@@ -25,8 +25,6 @@ class Context(Node):
         self._things = {}
         self._waypoints = {}
         self._trajectories = {}
-        self._parent_context = None
-        self._child_contexts = child_contexts
 
         super(Context,self).__init__(
             type='context.'+type if append_type else type,
@@ -35,7 +33,6 @@ class Context(Node):
             parent=parent,
             append_type=append_type)
 
-        self.parent_context = parent_context
         self.locations = locations
         self.machines = machines
         self.things = things
@@ -192,13 +189,13 @@ class Context(Node):
 
     @property
     def trajectories(self):
-        return self._trajectories
+        return self._trajectories.values()
 
     @trajectories.setter
     def trajectories(self, value):
         uuids = []
 
-        for t in self._trajectories:
+        for t in self._trajectories.values():
             t.remove_from_cache()
             uuids.append(t.uuid)
 
@@ -215,55 +212,9 @@ class Context(Node):
 
         self.updated_attribute('trajectories','set')
 
-    @property
-    def parent_context(self):
-        return self._parent_context
-
-    @parent_context.setter
-    def parent_context(self, value):
-        if self._parent_context != value:
-            if self._parent_context != None:
-                self._parent_context.remove_child_context(self)
-
-            self._parent_context = value
-
-            if self._parent_context != None:
-                self._parent_context.add_child_context(self)
-
-            self.updated_attribute('parent_context','set')
-
-    def remove_child_context(self, child):
-
-        idx = None
-        for i in range(0,self.child_contexts):
-            if self.child_contexts[i].uuid == child.uuid:
-                idx = i
-
-        if idx != None:
-            self.child_contexts.pop(idx)
-
-        self.updated_attribute('child_contexts','delete',child.uuid)
-
-    def add_child_context(self, child):
-
-        idx = None
-        for i in range(0,self.child_contexts):
-            if self.child_contexts[i].uuid == child.uuid:
-                idx = i
-
-        if idx == None:
-            self.child_contexts.append(child)
-            self.updated_attribute('child_contexts','add',child.uuid)
-
-    @property
-    def child_contexts(self):
-        return self._child_contexts
-
     def get_location(self, uuid):
         if uuid in self._locations.keys():
             return self._locations[uuid]
-        elif self._parent_context != None:
-            return self._parent_context.get_location(uuid)
         else:
             return None
 
@@ -281,8 +232,6 @@ class Context(Node):
     def get_machine(self, uuid):
         if uuid in self._machines.keys():
             return self._machines[uuid]
-        elif self._parent_context != None:
-            return self._parent_context.get_machine(uuid)
         else:
             return None
 
@@ -300,8 +249,6 @@ class Context(Node):
     def get_thing(self, uuid):
         if uuid in self._things.keys():
             return self._things[uuid]
-        elif self._parent_context != None:
-            return self._parent_context.get_thing(uuid)
         else:
             return None
 
@@ -319,8 +266,6 @@ class Context(Node):
     def get_waypoint(self, uuid):
         if uuid in self._waypoints.keys():
             return self._waypoints[uuid]
-        elif self._parent_context != None:
-            return self._parent_context.get_waypoint(uuid)
         else:
             return None
 
@@ -338,8 +283,6 @@ class Context(Node):
     def get_trajectory(self, uuid):
         if uuid in self._trajectories.keys():
             return self._trajectories[uuid]
-        elif self._parent_context != None:
-            return self._parent_context.get_trajectory(uuid)
         else:
             return None
 
@@ -409,7 +352,7 @@ class Context(Node):
             w.add_to_cache()
 
         for t in self.trajectories:
-            t.remove_from_cache()
+            t.add_to_cache()
 
         super(Context,self).add_to_cache()
 
@@ -439,6 +382,25 @@ class Context(Node):
     '''
     Update Methods
     '''
+
+    def late_construct_update(self):
+
+        for l in self.locations:
+            l.late_construct_update()
+
+        for m in self.machines:
+            m.late_construct_update()
+
+        for t in self.things:
+            t.late_construct_update()
+
+        for w in self.waypoints:
+            w.late_construct_update()
+
+        for t in self.trajectories:
+            t.late_construct_update()
+
+        super(Context,self).late_construct_update()
 
     def deep_update(self):
 
@@ -473,79 +435,3 @@ class Context(Node):
         self.updated_attribute('things','update')
         self.updated_attribute('waypoints','update')
         self.updated_attribute('trajectory','update')
-
-    '''
-    Utility Methods
-    '''
-
-    def shallow_context_flatten(self):
-        locations = {l.uuid: l for l in self.locations}
-        machines = {m.uuid: m for m in self.machines}
-        things = {t.uuid: t for t in self.things}
-        waypoints = {w.uuid: w for w in self.waypoints}
-        trajectories = {t.uuid: t for t in self.trajectories}
-
-        for c in self._child_contexts:
-            for l in c.locations:
-                if l not in locations.keys():
-                    locations[l.uuid] = l
-
-            for m in c.machines:
-                if m not in machines.keys():
-                    machines[m.uuid] = m
-
-            for t in c.things:
-                if t not in things.keys():
-                    things[t.uuid] = t
-
-            for w in c.waypoints:
-                if w not in waypoints.keys():
-                    waypoints[w.uuid] = w
-
-            for t in c.trajectories:
-                if t not in trajectories.keys():
-                    trajectories[t.uuid] = t
-
-        return Context(
-            locations=locations.values(),
-            machines=machines.values(),
-            things=things.values(),
-            waypoints=waypoints.values(),
-            trajectories=trajectories.values())
-
-    def deep_context_flatten(self):
-        locations = {l.uuid: l for l in self.locations}
-        machines = {m.uuid: m for m in self.machines}
-        things = {t.uuid: t for t in self.things}
-        waypoints = {w.uuid: w for w in self.waypoints}
-        trajectories = {t.uuid: t for t in self.trajectories}
-
-        for c in self._child_contexts:
-            sub_context = c.deep_context_flatten())
-
-            for l in sub_context.locations:
-                if l not in locations.keys():
-                    locations[l.uuid] = l
-
-            for m in sub_context.machines:
-                if m not in machines.keys():
-                    machines[m.uuid] = m
-
-            for t in sub_context.things:
-                if t not in things.keys():
-                    things[t.uuid] = t
-
-            for w in sub_context.waypoints:
-                if w not in waypoints.keys():
-                    waypoints[w.uuid] = w
-
-            for t in sub_context.trajectories:
-                if t not in trajectories.keys():
-                    trajectories[t.uuid] = t
-
-        return Context(
-            locations=locations.values(),
-            machines=machines.values(),
-            things=things.values(),
-            waypoints=waypoints.values(),
-            trajectories=trajectories.values())

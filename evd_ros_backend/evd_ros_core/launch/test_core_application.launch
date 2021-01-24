@@ -3,9 +3,9 @@
 
   <arg name="ros_frame_id"/>
 
-  <arg name="run_program_vis" default="false" />
-  <arg name="run_environment_vis" default="false" />
-  <arg name="run_app_pub" default="false" />
+  <arg name="run_program_vis" default="true" />
+  <arg name="run_environment_vis" default="true" />
+  <arg name="run_app_pub" default="true" />
   <arg name="run_issues" default="true"/>
 
   <node if="$(arg run_program_vis)" name="test_program_data_visualizer" pkg="evd_ros_core" type="test_program_data_visualizer.py" output="screen">
@@ -20,6 +20,6 @@
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>
 
-  <node if="$(arg run_issues)" name="test_issue_server" pkg="evd_ros_core" type="test_issue_server.py" output="screen"/>
+  <node if="$(arg run_issues)" name="test_issues_server" pkg="evd_ros_core" type="test_issues_server.py" output="screen"/>
 
 </launch>

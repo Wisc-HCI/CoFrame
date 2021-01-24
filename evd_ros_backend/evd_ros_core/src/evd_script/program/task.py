@@ -1,5 +1,4 @@
 from .primitive import Primitive
-from ..context import Context
 
 
 class Task(Primitive):
@@ -8,11 +7,9 @@ class Task(Primitive):
     Data structure methods
     '''
 
-    def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
-                 append_type=True, context=None):
+    def __init__(self, primitives=[], type='', name='', uuid=None, parent=None, append_type=True):
 
         self._primitives = []
-        self._context = None
 
         super(Task,self).__init__(
             type='task.'+type if append_type else type,
@@ -21,15 +18,12 @@ class Task(Primitive):
             parent=parent,
             append_type=append_type)
 
-        self.context = context if context != None else Context()
-
         self.primitives = primitives
 
     def to_dct(self):
         msg = super(Task,self).to_dct()
         msg.update({
-            'primitives': [p.to_dct() for p in self.primitives],
-            'context': self.context.to_dct()
+            'primitives': [p.to_dct() for p in self.primitives]
         })
         return msg
 
@@ -42,29 +36,11 @@ class Task(Primitive):
             type=dct['type'],
             append_type=False,
             uuid=dct['uuid'],
-            primitives=[NodeParser(p) for p in dct['primitives']],
-            context=NodeParser(dct['context']) if dct['context'] != None else None)
+            primitives=[NodeParser(p) for p in dct['primitives']])
 
     '''
     Data accessor/modifier methods
     '''
-
-    @property
-    def context(self):
-        return self._context
-
-    @context.setter
-    def context(self, value):
-        if self._context != value:
-            if self._context != None:
-                raise Exception("Cannot overwrite an established context")
-
-            self._context = value
-            self._context.parent = self
-            if self.parent != None:
-                self._context.parent_context = self.parent.context
-
-            self.updated_attribute('context','set')
 
     @property
     def parent(self):
@@ -79,9 +55,6 @@ class Task(Primitive):
             self.add_to_cache()
 
             self.updated_attribute("parent","set")
-
-            if self.parent != None:
-                self._context.parent_context = self.parent.context
 
     @property
     def primitives(self):
@@ -154,15 +127,11 @@ class Task(Primitive):
         for p in self._primitives:
             p.remove_from_cache()
 
-        self.context.remove_from_cache()
-
         super(Task,self).remove_from_cache()
 
     def add_to_cache(self):
         for p in self._primitives:
             p.add_to_cache()
-
-        self.context.add_to_cache()
 
         super(Task,self).add_to_cache()
 
@@ -184,20 +153,23 @@ class Task(Primitive):
     Update Methods
     '''
 
+    def late_construct_update(self):
+
+        for p in self.primitives:
+            p.late_construct_update()
+
+        super(Task,self).late_construct_update()
+
     def deep_update(self):
 
         for p in self.primitives:
             p.deep_update()
 
-        self.context.deep_update()
-
         super(Task,self).deep_update()
 
         self.updated_attribute('primitives','update')
-        self.updated_attribute('context','update')
 
     def shallow_update(self):
         super(Task,self).shallow_update()
 
         self.updated_attribute('primitives','update')
-        self.updated_attribute('context','update')
