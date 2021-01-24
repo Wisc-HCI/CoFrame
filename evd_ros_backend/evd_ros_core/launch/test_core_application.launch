@@ -20,6 +20,6 @@
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>
 
-  <node if="$(arg run_isues)" name="test_issue_server" pkg="evd_ros_core" type="test_issue_server.py" output="screen"/>
+  <node if="$(arg run_issues)" name="test_issue_server" pkg="evd_ros_core" type="test_issue_server.py" output="screen"/>
 
 </launch>
