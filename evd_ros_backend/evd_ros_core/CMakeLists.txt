@@ -57,14 +57,16 @@ add_message_files(
   Issue.msg
   Version.msg
   UpdateData.msg
+  StringArray.msg
   ApplicationOption.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  SubmitJob.srv
-  PendingJobs.srv
+  GetPendingJobs.srv
+  SetPendingJobs.srv
+  ClearPendingJob.srv
   GetData.srv
   SetData.srv
   LoadData.srv

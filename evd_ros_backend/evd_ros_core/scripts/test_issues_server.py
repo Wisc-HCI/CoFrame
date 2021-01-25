@@ -5,6 +5,9 @@ import rospy
 from evd_ros_core.msg import Issue
 from evd_ros_core.srv import GetIssues, GetIssuesRequest, GetIssuesResponse
 from evd_ros_core.srv import ClearIssue, ClearIssueRequest, ClearIssueResponse
+from evd_ros_core.srv import GetPendingJobs, GetPendingJobsRequest, GetPendingJobsResponse
+from evd_ros_core.srv import SetPendingJobs, SetPendingJobsRequest, SetPendingJobsResponse
+from evd_ros_core.srv import ClearPendingJob, ClearPendingJobRequest, ClearPendingJobResponse
 
 
 class TestIssuesServer:
@@ -13,12 +16,23 @@ class TestIssuesServer:
         self._issue_submit_pub = rospy.Publisher('issue_server/issue_submit',Issue, queue_size=5)
         self._get_issues_srv = rospy.ServiceProxy('issue_server/get_issues',GetIssues)
         self._clear_issue_srv = rospy.ServiceProxy('issue_server/clear_issue',ClearIssue)
+        self._get_pending_jobs_srv = rospy.ServiceProxy('issue_server/get_pending_jobs',GetPendingJobs)
+        self._set_pending_jobs_srv = rospy.ServiceProxy('issue_server/set_pending_jobs',SetPendingJobs)
+        self._clear_pending_job_srv = rospy.ServiceProxy('issue_server/clear_pending_job',ClearPendingJob)
 
     def spin(self):
 
         # Give ROS some setup time
         rospy.sleep(5)
 
+        self._test_issues()
+
+        self._test_pending_jobs()
+
+        # done, let node rest
+        rospy.spin()
+
+    def _test_issues(self):
         # Sumbit a couple of issues
         issue1 = Issue()
         issue1.source = "test_issues_server"
@@ -72,11 +86,36 @@ class TestIssuesServer:
         issues = self._get_issues_srv(False,'',[],False,'').issues
         self._check_if_submitted_are_in_list(issues,'after clearing 1',False,False)
 
-        # done, let node rest
-        rospy.spin()
+    def _test_pending_jobs(self):
+        source = 'test_issues_server'
+        ids = ['1','2','3','4']
+        human_messages = ['','','','']
+        data = ['{}','{}','{}','{}']
+
+        resp = self._set_pending_jobs_srv(source, ids, human_messages, data)
+        if resp.status != True:
+            raise Exception('Setting pending jobs failed')
+
+        resp = self._get_pending_jobs_srv()
+        if resp.status != True:
+            raise Exception('Getting pending jobs failed - {0}'.format(resp.message))
+
+        print resp
+
+        for i in range(0,len(ids)):
+            resp = self._clear_pending_job_srv(source,ids[0])
+
+            if not resp.status:
+                raise Exception('Failed to clear pending job - {0} - {1}'.format(i,resp.message))
+
+        resp = self._get_pending_jobs_srv()
+        if resp.status != True:
+            raise Exception('Getting pending jobs failed - {0}'.format(resp.message))
+
+        print resp
 
     def _check_if_submitted_are_in_list(self, issues, condition_str='', should_find_1=True, should_find_2=True):
-        
+
         found1 = False
         found2 = False
         for i in issues:

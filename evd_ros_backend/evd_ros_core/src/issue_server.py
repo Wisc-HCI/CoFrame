@@ -7,19 +7,26 @@
 
 import rospy
 
-from evd_ros_core.msg import Issue
+from evd_ros_core.msg import Issue, StringArray
 from evd_ros_core.srv import GetIssues, GetIssuesRequest, GetIssuesResponse
 from evd_ros_core.srv import ClearIssue, ClearIssueRequest, ClearIssueResponse
+from evd_ros_core.srv import GetPendingJobs, GetPendingJobsRequest, GetPendingJobsResponse
+from evd_ros_core.srv import SetPendingJobs, SetPendingJobsRequest, SetPendingJobsResponse
+from evd_ros_core.srv import ClearPendingJob, ClearPendingJobRequest, ClearPendingJobResponse
 
 
 class IssueServer:
 
     def __init__(self):
         self.full_table = {}
+        self.pending_jobs = {}
 
         self._issue_sub = rospy.Subscriber('issue_server/issue_submit',Issue,self._issue_submit_cb)
         self._get_issue_srv = rospy.Service('issue_server/get_issues',GetIssues,self._get_issues_cb)
         self._clear_issue_srv = rospy.Service('issue_server/clear_issue',ClearIssue,self._clear_issue_cb)
+        self._get_pending_jobs_srv = rospy.Service('issue_server/get_pending_jobs',GetPendingJobs,self._get_pending_jobs_cb)
+        self._set_pending_jobs_srv = rospy.Service('issue_server/set_pending_jobs',SetPendingJobs,self._set_pending_jobs_cb)
+        self._clear_pending_job_srv = rospy.Service('issue_server/clear_pending_job',ClearPendingJob,self._clear_pending_job_cb)
 
     def _issue_submit_cb(self, msg):
 
@@ -65,6 +72,59 @@ class IssueServer:
                 response.status = True
                 response.message = ''
                 self.full_table[request.source].pop(request.id)
+            else:
+                response.message = 'ID not in table'
+        else:
+            response.message = 'Source not in table'
+
+        return response
+
+    def _get_pending_jobs_cb(self, request):
+        response = GetPendingJobsResponse()
+
+        for source in self.pending_jobs.keys():
+
+            ids = StringArray()
+            msgs = StringArray()
+            data = StringArray()
+            for id in self.pending_jobs[source].keys():
+                dct = self.pending_jobs[source][id]
+                ids.data.append(id)
+                msgs.data.append(dct['human_message'])
+                data.data.append(dct['data'])
+
+            response.sources.append(source)
+            response.ids.append(ids)
+            response.human_messages.append(msgs)
+            response.data.append(data)
+
+        response.message = ''
+        response.status = True
+        return response
+
+    def _set_pending_jobs_cb(self, request):
+
+        if request.source not in self.pending_jobs.keys():
+            self.pending_jobs[request.source] = {}
+
+        for i in range(0,len(request.ids)):
+            self.pending_jobs[request.source][request.ids[i]] = {
+                'human_message': request.human_messages[i],
+                'data': request.data[i]
+            }
+
+        response = SetPendingJobsResponse()
+        response.status = True
+        return response
+
+    def _clear_pending_job_cb(self, request):
+        response = ClearPendingJobResponse()
+        response.status = False
+
+        if request.source in self.pending_jobs.keys():
+            if request.id in self.pending_jobs[request.source].keys():
+                response.status = True
+                response.message = ''
             else:
                 response.message = 'ID not in table'
         else:

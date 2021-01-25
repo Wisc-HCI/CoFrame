@@ -35,8 +35,12 @@ class OrphanList(object):
         return len(self._orphan_uuids) == 0
 
 
-# Repairs the current cache with the orphan list - could be a time expensive process
+# Repairs the current program and cache with the orphan list - could be a time expensive process
 def evd_orphan_repair():
+    from .program.primitives.gripper import Gripper
+    from .program.primitives.move_trajectory import MoveTrajectory
+    from .program.machine_operations.machine_primitive import MachinePrimitive
+
     cache = get_evd_cache_obj()
 
     issues = []
@@ -45,31 +49,81 @@ def evd_orphan_repair():
         type = self._orphan_uuids[uuid]
 
         if type == 'location':
-            # See if a reference exists
-            referenceExists = False
-            for context in cache.contexts.values():
-                pass
+            found = False
+            for env in cache.environments.values():
+                for loc in env.locations:
+                    if loc.uuid == uuid:
+                        found = True
+                        break
 
-            # Iterate through all location users
-            nodeList = []
-            nodeList += cache.trajectories.values()
-            nodeList += cache.primitives.values()
-            for element in nodeList:
-                # If not in any context then purge from users
-                # If is in a context, then check if accessible
-                if referenceExists:
-                    pass
-                else:
-                    pass
+            if not found:
+                for traj in cache.trajectories.values():
+                    if traj.start_location_uuid == uuid:
+                        traj.start_location_uuid = None
+
+                    if traj.end_location_uuid == uuid:
+                        traj.end_location_uuid = None
+
+                for prim in cache.primitives.values():
+                    if isinstance(prim,MoveTrajectory):
+                        if prim.start_location_uuid == uuid:
+                            prim.start_location_uuid = None
+
+                        if prim.end_location_uuid == uuid:
+                            prim.end_location_uuid = None
 
         elif type == 'waypoint':
-            pass
+            found = False
+            for env in cache.environments.values():
+                for way in env.waypoints:
+                    if way.uuid == uuid:
+                        found = True
+                        break
+
+            if not found:
+                for traj in cache.trajectories.values():
+                    traj.delete_waypoint_uuid(uuid) # will do nothing if not there
 
         elif type == "machine":
-            pass
+            found = False
+            for env in cache.environments.values():
+                for mach in env.machines:
+                    if mach.uuid == uuid:
+                        found = True
+                        break
+
+            if not found:
+                for prim in cache.primitives.values():
+
+                    if isinstance(prim,MachinePrimitive):
+                        if prim.machine_uuid == uuid:
+                            prim.machine_uuid = None
 
         elif type == "thing":
-            pass
+
+            found = False
+            for env in cache.environments.values():
+                for thing in env.things:
+                    if thing.uuid == uuid:
+                        found = True
+                        break
+
+            if not found:
+                for prim in cache.primitives.values():
+
+                    if isinstance(prim,Gripper):
+                        if prim.thing_uuid == uuid:
+                            prim.thing_uuid = None
 
         elif type == "trajectory":
-            pass
+
+            shouldDelete = True
+            for prim in cache.primitives.values():
+                 if isinstance(prim,MoveTrajectory):
+                     if prim.trajectory_uuid == uuid:
+                         shouldNotDelete = False
+                         break
+
+            if shouldDelete:
+                for env in cache.environments.values():
+                    env.delete_trajectory(uuid)
