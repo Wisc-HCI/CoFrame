@@ -177,3 +177,13 @@ class Node(object):
         self.updated_attribute('name', 'update')
         self.updated_attribute('type', 'update')
         self.updated_attribute('uuid', 'update')
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        pass # Inplement the pre-post conditions directly
+
+    def realtime_execution(self, hooks):
+        pass # Implement the full real-time simulation

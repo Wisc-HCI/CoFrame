@@ -1,11 +1,7 @@
 
-orphan repair needs to be written
-
-# Node testing
-- Rerun program_visualizer_node
-- Rerun environment_visualizer_node
-- Rerun application_test_gui_node
-- Write and run an issue server test node
+# Robot Control Node
+- Update node itself
+-
 
 # Documentation
 - Nodes

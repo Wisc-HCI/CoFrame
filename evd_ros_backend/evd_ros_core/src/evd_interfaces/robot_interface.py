@@ -15,6 +15,7 @@ from evd_ros_core.msg import Stop, Servo, Move, Grip
 
 from evd_script.data.trajectory import *
 
+
 class RobotInterface:
 
     def __init__(self, prefix):
@@ -36,8 +37,7 @@ class RobotInterface:
         self._gripper_state_sub = rospy.Subscriber('{}/gripper/stat'.format(self._prefix), GripperStat, self._gripper_state_cb)
 
         self.move_trajectory_action = actionlib.SimpleActionClient('{}/robot_control/move_trajectory'.format(self._prefix),MoveTrajectoryAction)
-        #self.gripper_command_action = actionlib.SimpleActionClient('{}/gripper_command'.format(self._prefix),Grip)
-
+        
     def _joint_state_cb(self, msg):
         self._last_js_msg = msg
         self._last_js_msg_time = time.time()

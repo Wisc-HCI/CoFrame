@@ -1,4 +1,4 @@
-from .geometry import Pose
+from .geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker, ColorTable
 
 from visualization_msgs.msg import Marker
@@ -21,10 +21,11 @@ class Thing(Pose):
     '''
 
     def __init__(self, thing_type, safety_level=0, mesh_id=None, position=None, orientation=None,
-                 type='', name='', parent=None, uuid=None, append_type=True):
+                 weight=0, type='', name='', parent=None, uuid=None, append_type=True):
         self._thing_type = None
         self._safety_level = None
         self._mesh_id = None
+        self._weight = None
 
         super(Thing,self).__init__(
             position=position,
@@ -38,13 +39,15 @@ class Thing(Pose):
         self.thing_type = thing_type
         self.safety_level = safety_level
         self.mesh_id = mesh_id
+        self.weight = weight
 
     def to_dct(self):
         msg = super(Thing,self).to_dct()
         msg.update({
             'thing_type': self.thing_type,
             'safety_level': self.safety_level,
-            'mesh_id': self.mesh_id
+            'mesh_id': self.mesh_id,
+            'weight': self.weight
         })
         return msg
 
@@ -53,6 +56,9 @@ class Thing(Pose):
         return cls(thing_type=dct['thing_type'],
                    mesh_id=dct['mesh_id'],
                    safety_level=dct['safety_level'],
+                   weight=dct['weight'],
+                   position=Position.from_dct(dct['position']),
+                   orientation=Orientation.from_dct(dct['orientation']),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -115,6 +121,16 @@ class Thing(Pose):
             self._mesh_id = value
             self.updated_attribute('mesh_id','set')
 
+    @property
+    def weight(self):
+        return self._weight
+
+    @weight.setter
+    def weight(self, value):
+        if self._weight != value:
+            self._weight = value
+            self.updated_attribute('weight','set')
+
     def set(self, dct):
 
         if 'thing_type' in dct.keys():
@@ -125,6 +141,9 @@ class Thing(Pose):
 
         if 'mesh_id' in dct.keys():
             self.mesh_id = dct['mesh_id']
+
+        if 'weight' in dct.keys():
+            self.weight = dct['weight']
 
         super(Thing,self).set(dct)
 
@@ -151,6 +170,7 @@ class Thing(Pose):
         self.updated_attribute('thing_type','update')
         self.updated_attribute('safety_level','update')
         self.updated_attribute('mesh_id','update')
+        self.updated_attribute('weight','update')
 
     def shallow_update(self):
         super(Thing,self).shallow_update()
@@ -158,3 +178,4 @@ class Thing(Pose):
         self.updated_attribute('thing_type','update')
         self.updated_attribute('safety_level','update')
         self.updated_attribute('mesh_id','update')
+        self.updated_attribute('weight','update')

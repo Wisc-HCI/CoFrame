@@ -1,0 +1,90 @@
+#!/usr/bin/env python
+
+import rospy
+import Tkinter as tk
+
+from std_msgs.msg import Empty, Bool
+from evd_interfaces.robot_control_interface import RobotControlInterface
+
+
+class TestRobotControlServerNode:
+
+    def __init__(self):
+        self._root = tk.Tk()
+        frame = tk.Frame(self._root)
+        frame.pack()
+
+        self.use_phy_checkbox = tk.Checkbutton(frame, text='Use Physical', command=self._on_use_phy_cb)
+        self.use_phy_checkbox.pack()
+        self.use_sim_checkbox = tk.Checkbutton(frame, text='Use Simulated', command=self._on_use_sim_cb)
+        self.use_sim_checkbox.pack()
+        self.freedrive_checkbox = tk.Checkbutton(frame, text='Freedrive', command=self._on_freedrive_cb)
+        self.freedrive_checkbox.pack()
+
+        self.play_button = tk.Button(frame, text="Play", command=self._on_play_cb)
+        self.play_button.pack()
+        self.stop_button = tk.Button(frame, text="Stop", command=self._on_stop_cb)
+        self.stop_button.pack()
+        self.pause_button = tk.Button(frame, text="Pause", command=self._on_pause_cb)
+        self.pause_button.pack()
+        self.reset_button = tk.Button(frame, text="Reset", command=self._on_reset_cb)
+        self.reset_button.pack()
+        self.step_fwd_button = tk.Button(frame, text="Step Forward", command=self._on_step_forward_cb)
+        self.step_fwd_button.pack()
+        self.step_bkd_button = tk.Button(frame, text="Step Backward", command=self._on_step_backward_cb)
+        self.step_bkd_button.pack()
+
+        self._controls = RobotControlInterface()
+
+    def _on_use_phy_cb(self):
+        msg = Bool()
+        msg.data = self.use_phy_checkbox.state()
+        self._controls.use_physical_robot_pub(msg)
+
+    def _on_use_sim_cb(self):
+        msg = Bool()
+        msg.data = self.use_sim_checkbox.state()
+        self._controls.use_simulated_robot_pub(msg)
+
+    def _on_freedrive_cb(self):
+        msg = Bool()
+        msg.data = self.freedrive_checkbox.state()
+        self._controls.freedrive_pub(msg)
+
+    def _on_play_cb(self):
+        msg = Empty()
+        self._controls.play_pub(msg)
+
+    def _on_stop_cb(self):
+        msg = Empty()
+        self._controls.stop_pub(msg)
+
+    def _on_pause_cb(self):
+        msg = Empty()
+        self._controls.pause_pub(msg)
+
+    def _on_reset_cb(self):
+        msg = Empty()
+        self._controls.reset_pub(msg)
+
+    def _on_step_forward_cb(self):
+        msg = Empty()
+        self._controls.step_fwd_pub(msg)
+
+    def _on_step_backward_cb(self):
+        msg = Empty()
+        self._controls.step_bkd_pub(msg)
+
+    def spin(self):
+        rospy.on_shutdown(self._shutdown_cb)
+        self._root.mainloop()
+
+    def _shutdown_cb(self):
+        self._root.destroy()
+
+
+if __name__ == "__main__":
+    rospy.init_node('test_robot_control_server')
+
+    node = TestRobotControlServerNode()
+    node.spin()

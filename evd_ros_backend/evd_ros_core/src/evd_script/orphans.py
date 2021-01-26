@@ -43,8 +43,6 @@ def evd_orphan_repair():
 
     cache = get_evd_cache_obj()
 
-    issues = []
-
     for uuid in self._orphan_uuids.keys():
         type = self._orphan_uuids[uuid]
 

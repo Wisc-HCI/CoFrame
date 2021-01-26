@@ -7,6 +7,7 @@
   <arg name="run_environment_vis" default="true" />
   <arg name="run_app_pub" default="true" />
   <arg name="run_issues" default="true"/>
+  <arg name="run_robot_controls" default="true"/>
 
   <node if="$(arg run_program_vis)" name="test_program_data_visualizer" pkg="evd_ros_core" type="test_program_data_visualizer.py" output="screen">
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
@@ -21,5 +22,7 @@
   </node>
 
   <node if="$(arg run_issues)" name="test_issues_server" pkg="evd_ros_core" type="test_issues_server.py" output="screen"/>
+
+  <node if="$(arg run_robot_controls)" name="test_robot_control_server" pkg="evd_ros_core" type="test_robot_control_server.py" output="screen"/>
 
 </launch>

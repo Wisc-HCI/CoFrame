@@ -14,7 +14,6 @@ class RobotControlServer:
     def __init__(self):
         self._paused = False
         self._playing = False
-        self._program = None
         self._cmd_queue = []
         self._use_physical_robot = False
         self._use_simulated_robot = False
@@ -101,7 +100,7 @@ class RobotControlServer:
                             robots.append(self._physical_interface)
                         if self._use_simulated_robot:
                             robots.append(self._simulated_interface)
-                        self._program = ProgramRunner(self._data_interface.get_runnable_program(), robots)
+                        self._program = ProgramRunner(self._data_interface.program, robots)
                         self._program.start()
 
                 elif action == 'stop':
@@ -112,20 +111,20 @@ class RobotControlServer:
 
                 elif action == 'pause' and self._playing:
                     self._paused = True
-                    self.program.pause()
+                    self._program.pause()
 
                 elif action == 'reset':
                     self._reset_state()
 
                 elif action == 'step_forward' and self._playing:
-                    self.program.step_forward()
+                    self._program.step_forward()
 
                 elif action == 'step_backward' and self._playing:
-                    self.program.step_backward()
+                    self._program.step_backward()
 
             # Update underlying program state on robot
             if self._playing:
-                self.program.update()
+                self._program.update()
             rate.sleep()
 
     def _start_freedrive(self):

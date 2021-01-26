@@ -8,7 +8,7 @@ from evd_interfaces.data_client_interface import DataClientInterface
 
 class TestApplicationDataPublisher:
 
-    def __init__(self, _root=None):
+    def __init__(self):
 
         self._data_client = DataClientInterface(use_application_interface=True)
         self._options = None
