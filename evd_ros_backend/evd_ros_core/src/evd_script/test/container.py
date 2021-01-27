@@ -80,23 +80,23 @@ class Container(Node):
         self._values.append(value)
         self.updated_attribute('values','add',value.uuid)
 
-    def get(self, id):
-        return self._values[self.search_for_index(id)]
+    def get(self, uuid):
+        return self._values[self.search_for_index(uuid)]
 
-    def delete(self, id):
-        idx = self.search_for_index(id)
+    def delete(self, uuid):
+        idx = self.search_for_index(uuid)
         if idx == -1:
             raise Exception('Value not in container')
 
         self._values[idx].remove_from_cache()
         self._values.pop(idx)
 
-        self.updated_attribute('values','delete',id)
+        self.updated_attribute('values','delete',uuid)
 
-    def search_for_index(self, id):
+    def search_for_index(self, uuid):
         idx = -1
         for i in range(0,len(self.values)):
-            if self.values[i].uuid == id:
+            if self.values[i].uuid == uuid:
                 idx = i
                 break
         return idx
@@ -144,6 +144,13 @@ class Container(Node):
     '''
     Update Methods
     '''
+
+    def late_construct_update(self):
+
+        for v in self.values:
+            v.late_construct_update()
+
+        super(Container,self).late_construct_update()
 
     def deep_update(self):
 

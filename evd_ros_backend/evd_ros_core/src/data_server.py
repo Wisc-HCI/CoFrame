@@ -16,7 +16,7 @@ from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 from evd_ros_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
 
 from evd_script.program.program import Program
-from evd_script.version_tracking.history import *
+from evd_version_tracking import *
 
 import test_applications.debug_app as debug_app
 

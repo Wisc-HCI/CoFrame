@@ -220,7 +220,12 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
     def add_waypoint_uuid(self, uuid):
         self._waypoint_uuids.append(uuid)
         self.trace = None
-        self.updated_attribute('waypoints','add')
+        self.updated_attribute('waypoint_uuids','add',uuid)
+
+    def insert_waypoint_uuid(self, uuid, idx):
+        self._waypoint_uuids.insert(idx,uuid)
+        self.trace = None
+        self.updated_attribute('waypoint_uuids','add',uuid)
 
     def reorder_waypoint_uuids(self, uuid, shift):
         idx = None
@@ -236,7 +241,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
 
             copy = self._waypoint_uuids.pop(idx)
             self._waypoint_uuids.insert(shiftedIdx,copy) #TODO check to make sure not off by one
-            self.updated_attribute('waypoints','reorder')
+            self.updated_attribute('waypoint_uuids','reorder')
 
     def delete_waypoint_uuid(self, uuid):
         delIdx = None
@@ -248,7 +253,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         if delIdx != None:
             self._waypoints.pop(i)
             self.trace = None
-            self.updated_attribute('waypoints','delete')
+            self.updated_attribute('waypoint_uuids','delete',uuid)
 
     def set(self, dct):
 

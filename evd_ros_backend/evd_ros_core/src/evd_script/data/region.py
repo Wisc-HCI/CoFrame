@@ -76,6 +76,24 @@ class Region(Pose, VisualizeMarker):
     '''
 
     @property
+    def center_position(self):
+        return self.position
+
+    @center_position.setter
+    def center_position(self, value):
+        self.position = value
+        self.updated_attribute("center_position","set")
+
+    @property
+    def center_orientation(self):
+        return self.orientation
+
+    @center_orientation.setter
+    def center_orientation(self, value):
+        self.orientation = value
+        self.updated_attribute("center_orientation","set")
+
+    @property
     def free_orientation(self):
         return self._free_ort
 
@@ -133,6 +151,12 @@ class Region(Pose, VisualizeMarker):
             self.updated_attribute('uncertainty_orientation_alt_target','set')
 
     def set(self, dct):
+
+        if 'center_position' in dct.keys():
+            self.center_position = Position.from_dct(dct["center_position"])
+
+        if 'center_orientation' in dct.keys():
+            self.center_orientation = Orientation.from_dct(dct["center_orientation"])
 
         if 'free_orientation' in dct.keys():
             self.free_orientation = dct['free_orientation']
@@ -325,12 +349,6 @@ class CubeRegion(Region):
 
     def set(self, dct):
 
-        if 'center_position' in dct.keys():
-            self.position = Position.from_dct(dct['center_position'])
-
-        if 'center_orientation' in dct.keys():
-            self.orientation = Orientation.from_dct(dct['center_orientation'])
-
         if 'uncertainty_x' in dct.keys():
             self.uncertainty_x = dct['uncertainty_x']
 
@@ -462,12 +480,6 @@ class SphereRegion(Region):
             self.updated_attribute('uncertainty_radius','set')
 
     def set(self, dct):
-
-        if 'center_position' in dct.keys():
-            self.position = Position.from_dct(dct['center_position'])
-
-        if 'center_orientation' in dct.keys():
-            self.orientation = Orientation.from_dct(dct['center_orientation'])
 
         if 'uncertainty_radius' in dct.keys():
             self.uncertainty_radius = dct['uncertainty_radius']
