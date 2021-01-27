@@ -93,10 +93,10 @@ class TraceProcessor:
         append = new_uuids - update
 
         for uuid in remove:
-            for job is self._waypoint_jobs:
+            for job in self._waypoint_jobs:
                 if job['uuid'] == uuid:
-                    job['remove'] =
-                    self._issue_client.clear_pending_job_srv('trace_processor',uuid)
+                    job['remove'] = True
+                    self._issue_client.clear_pending_job('trace_processor',uuid)
                     break
         self._waypoint_jobs = [j for j in self._waypoint_jobs if 'remove' not in j.keys()]
 
@@ -109,11 +109,11 @@ class TraceProcessor:
         for uuid in append:
             self._waypoint_jobs.append({'uuid': uuid, 'data': self._data_client.cache.get(uuid,'waypoint')})
 
-        self._issue_client.set_pending_jobs_srv(
+        self._issue_client.set_pending_jobs(
             source='trace_processor',
             ids=append,
             human_messages=['Generating waypoint joints']*len(append),
-            data=[json.dumps(w.to_dct()) for w in self._data_client.cache.get(uuid,'waypoint') for uuid in append])
+            data=[json.dumps(self._data_client.cache.get(uuid,'waypoint').to_dct()) for uuid in append])
 
         # - then run all traces
         trajectories = self._data_client.cache.trajectories.values()
@@ -125,10 +125,10 @@ class TraceProcessor:
         append = new_uuids - update
 
         for uuid in remove:
-            for job is self._trace_jobs:
+            for job in self._trace_jobs:
                 if job['uuid'] == uuid:
                     job['remove'] = True
-                    self._issue_client.clear_pending_job_srv('trace_processor',uuid)
+                    self._issue_client.clear_pending_job('trace_processor',uuid)
                     break
         self._trace_jobs = [j for j in self._trace_jobs if 'remove' not in j.keys()]
 
@@ -141,14 +141,15 @@ class TraceProcessor:
         for uuid in append:
             self._trace_jobs.append({'uuid': uuid, 'data': self._data_client.cache.get(uuid,'trajectory')})
 
-        self._issue_client.set_pending_jobs_srv(
+        self._issue_client.set_pending_jobs(
             source='trace_processor',
             ids=append,
             human_messages=['Generating trace']*len(append),
-            data=[json.dumps(t.to_dct()) for t in self._data_client.cache.get(uuid,'trajectory') for uuid in append])
+            data=[json.dumps(self._data_client.cache.get(uuid,'trajectory').to_dct()) for uuid in append])
 
     def _js_cb(self, msg):
-        self._current_js_state = msg
+        if msg != None:
+            self._current_js_state = msg
 
     def generate_waypoint(self, evd_waypoint): # and location
 
@@ -220,12 +221,12 @@ class TraceProcessor:
             if len(self._waypoint_jobs) > 0:
                 job = self._waypoint_jobs.pop(0)
                 self.generate_waypoint(job['data'])
-                self._issue_client.clear_pending_job_srv('trace_processor',job['uuid'])
+                self._issue_client.clear_pending_job('trace_processor',job['uuid'])
 
             elif len(self._trace_jobs) > 0:
                 job = self._trace_jobs.pop(0)
                 self.generate_trace(job['data'])
-                self._issue_client.clear_pending_job_srv('trace_processor',job['uuid'])
+                self._issue_client.clear_pending_job('trace_processor',job['uuid'])
 
             rate.sleep()
 
