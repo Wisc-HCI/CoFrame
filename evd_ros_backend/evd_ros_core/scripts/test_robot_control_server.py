@@ -3,7 +3,7 @@
 import rospy
 import Tkinter as tk
 
-from std_msgs.msg import Empty, Bool
+
 from evd_interfaces.robot_control_interface import RobotControlInterface
 
 
@@ -37,43 +37,31 @@ class TestRobotControlServerNode:
         self._controls = RobotControlInterface()
 
     def _on_use_phy_cb(self):
-        msg = Bool()
-        msg.data = self.use_phy_checkbox.state()
-        self._controls.use_physical_robot_pub(msg)
+        self._controls.use_physical_robot(self.use_phy_checkbox.state())
 
     def _on_use_sim_cb(self):
-        msg = Bool()
-        msg.data = self.use_sim_checkbox.state()
-        self._controls.use_simulated_robot_pub(msg)
+        self._controls.use_simulated_robot(self.use_sim_checkbox.state())
 
     def _on_freedrive_cb(self):
-        msg = Bool()
-        msg.data = self.freedrive_checkbox.state()
-        self._controls.freedrive_pub(msg)
+        self._controls.freedrive(self.freedrive_checkbox.state())
 
     def _on_play_cb(self):
-        msg = Empty()
-        self._controls.play_pub(msg)
+        self._controls.play()
 
     def _on_stop_cb(self):
-        msg = Empty()
-        self._controls.stop_pub(msg)
+        self._controls.stop()
 
     def _on_pause_cb(self):
-        msg = Empty()
-        self._controls.pause_pub(msg)
+        self._controls.pause()
 
     def _on_reset_cb(self):
-        msg = Empty()
-        self._controls.reset_pub(msg)
+        self._controls.reset()
 
     def _on_step_forward_cb(self):
-        msg = Empty()
-        self._controls.step_fwd_pub(msg)
+        self._controls.step_forward()
 
     def _on_step_backward_cb(self):
-        msg = Empty()
-        self._controls.step_bkd_pub(msg)
+        self._controls.step_backward()
 
     def spin(self):
         rospy.on_shutdown(self._shutdown_cb)
