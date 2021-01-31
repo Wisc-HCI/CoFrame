@@ -222,6 +222,7 @@ class Machine(Node):
             for k in self._input_regions.keys():
                 self._input_regions[k].parent = self
 
+            self._compute_type()
             self.updated_attribute('input_regions','set')
 
     def add_input_region(self, thing_type, region, override=False):
@@ -236,6 +237,7 @@ class Machine(Node):
 
         region.parent = self
         self._input_regions[thing_type] = region
+        self._compute_type()
         self.updated_attribute('input_regions',verb,region.uuid)
 
     def delete_input_region(self, thing_type):
@@ -244,6 +246,7 @@ class Machine(Node):
 
         self._input_regions[thing_type].remove_from_cache()
         obj = self._input_regions.pop(thing_type)
+        self._compute_type()
         self.updated_attribute('input_regions','delete',obj.uuid)
 
     def get_input_region(self, thing_type):
@@ -273,6 +276,7 @@ class Machine(Node):
             for k in self._output_regions.keys():
                 self._output_regions[k].parent = self
 
+            self._compute_type()
             self.updated_attribute('output_regions','set')
 
     def add_output_region(self, thing_type, region):
@@ -287,6 +291,7 @@ class Machine(Node):
 
         region.parent = self
         self._output_regions[thing_type] = region
+        self._compute_type()
         self.updated_attribute('output_regions',verb,region.uuid)
 
     def delete_output_region(self, thing_type):
@@ -295,6 +300,7 @@ class Machine(Node):
 
         self._output_regions[thing_type].remove_from_cache()
         obj = self._output_regions.pop(thing_type)
+        self._compute_type()
         self.updated_attribute('output_regions','delete',obj.uuid)
 
     def get_output_region(self, thing_type):
