@@ -2225,15 +2225,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03fdb6bcaff4cce4697842fd715752c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ad350172cadf9544a0fe30135f242c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   TargetObject: {fileID: 761060294}
   MaxOffset: 2
-  MaxVerticalRotation: 45
-  MinVerticalRotation: -45
+  MaxVerticalRotation: 44
+  MinVerticalRotation: -60
   MaxZoom: 2
-  MinZoom: 0.01
+  MinZoom: 0.1
+  TranslateSpeedScale: {x: 0.25, y: 0.25}
+  RotateSpeedScale: {x: 5, y: 5}
+  ZoomSpeedScale: 1.5
 --- !u!1001 &1004513983
 PrefabInstance:
   m_ObjectHideFlags: 0
