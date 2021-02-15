@@ -14,7 +14,17 @@ namespace EvD
             /*
             * Constructors
             */
+            
+            public static new string TypeString()
+            {
+                return "location.";
+            }
 
+            public static new string FullTypeString()
+            {
+                return Waypoint.FullTypeString() + TypeString();
+            }
+            
             public Location(Position position = null, Orientation orientation = null, float[] joints = null, 
                             string type="", string name = "", string uuid = null, Node parent = null, 
                             bool appendType=true) 

@@ -16,6 +16,14 @@ class Environment(Context):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'environment.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Context.full_type_string() + cls.type_string()
+
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
                  locations=[], machines=[], things=[], waypoints=[], trajectories=[],
                  name='', type='', uuid=None, append_type=True):

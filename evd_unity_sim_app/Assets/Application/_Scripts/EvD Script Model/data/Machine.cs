@@ -23,6 +23,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "machine.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public Machine(Dictionary<string,Region> inputRegions = null, Dictionary<string,Region> outputRegions = null, 
                            MachineRecipe recipe = null, string type = "", string name = "", string uuid = null, 
                            Node parent = null, bool appendType = true )
@@ -509,6 +519,17 @@ namespace EvD
             /*
             * Constructors
             */
+
+            public static new string TypeString()
+            {
+                return "machine-recipe.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public MachineRecipe(float processTime = 0, Dictionary<string,int> inputThingQuantities = null, 
                                  Dictionary<string,int> outputThingQuantities = null, string type = "", string name = "", 
                                  string uuid = null, Node parent = null, bool appendType = true )

@@ -7,6 +7,14 @@ class Gripper(Primitive):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'gripper.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Primitive.full_type_string() + cls.type_string()
+
     def __init__(self, position=0, effort=0, speed=0, thing_uuid=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
 

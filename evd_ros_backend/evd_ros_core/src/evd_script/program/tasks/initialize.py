@@ -10,6 +10,14 @@ class Initialize(Task):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'initialize.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Task.full_type_string() + cls.type_string()
+
     def __init__(self, homeLocUuid=None, machineUuids=[], type='', name='',
                  uuid=None, parent=None, append_type=True, primitives=None):
 

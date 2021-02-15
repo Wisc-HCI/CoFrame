@@ -17,6 +17,14 @@ class Location(Waypoint):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'location.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Waypoint.full_type_string() + cls.type_string()
+
     def __init__(self, position=None, orientation=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
         super(Location,self).__init__(

@@ -20,6 +20,14 @@ class CollisionMesh(Node,VisualizeMarker):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'collision-mesh.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
+
     def __init__(self, mesh_id = None, pose_offset = None, link='', type='', name='',
                  parent=None, uuid=None, append_type=True):
         self._mesh_id = None

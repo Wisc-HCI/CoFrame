@@ -7,6 +7,14 @@ class Task(Primitive):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'task.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Primitive.full_type_string() + cls.type_string()
+
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None, append_type=True):
 
         self._primitives = []

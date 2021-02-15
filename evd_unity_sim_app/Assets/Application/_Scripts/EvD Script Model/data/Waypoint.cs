@@ -20,6 +20,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "waypoint.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Pose.FullTypeString() + TypeString();
+            }
+
             public Waypoint(Position position = null, Orientation orientation = null, float[] joints = null, 
                             string type = "", string name = "", string uuid = null, Node parent = null, 
                             bool appendType = true) 

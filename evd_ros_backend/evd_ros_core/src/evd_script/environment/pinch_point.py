@@ -20,6 +20,14 @@ class PinchPoint(Node, VisualizeMarker):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'pinch-point.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
+
     def __init__(self, axis='x', offset=None, link='', radius=0.05, length=0.2,
                  type='', name='', parent=None, uuid=None, append_type=True):
         self._axis = None

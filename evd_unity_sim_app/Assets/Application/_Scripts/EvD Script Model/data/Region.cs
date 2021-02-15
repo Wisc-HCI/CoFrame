@@ -28,6 +28,16 @@ namespace EvD
              * Constructors
              */
 
+            public static new string TypeString()
+            {
+                return "region.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Pose.FullTypeString() + TypeString();
+            }
+
             public Region(Position centerPosition = null, Orientation centerOrientation = null, bool freeOrientation = true,
                           float uncertaintyOrientationLimit = 1.0f, Orientation uncertaintyOrientationAltTarget = null,
                           string type = "", string name = "", string uuid = null, Node parent = null, bool appendType = true)
@@ -270,6 +280,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "cube-region.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Region.FullTypeString() + TypeString();
+            }
+
             public CubeRegion(Position centerPosition = null, Orientation centerOrientation = null, float uncertaintyX = 0.1f,
                               float uncertaintyY = 0.1f, float uncertaintyZ = 0.1f, bool freeOrientation = true, 
                               float uncertaintyOrientationLimit = 1.0f, Orientation uncertaintyOrientationAltTarget = null,
@@ -421,6 +441,16 @@ namespace EvD
             /*
             * Constructors
             */
+
+            public static new string TypeString()
+            {
+                return "sphere-region.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Region.FullTypeString() + TypeString();
+            }
 
             public SphereRegion(Position centerPosition = null, Orientation centerOrientation = null, float uncertaintyRadius = 0.1f,
                               bool freeOrientation = true, float uncertaintyOrientationLimit = 1.0f, Orientation uncertaintyOrientationAltTarget = null,

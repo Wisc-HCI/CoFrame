@@ -13,6 +13,14 @@ class Program(Task):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'program.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Task.full_type_string() + cls.type_string()
+
     def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None):
         self._orphan_list = evd_orphan_list()
         self.changes_cb = changes_cb

@@ -23,6 +23,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return string.Format("container<{0}>.", typeof(T).ToString());
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public Container(List<T> list = null, string itemType = null, string type = "", string name = "",
                             string uuid = null, Node parent = null, bool appendType = true)
             : base(appendType ? string.Format("container<{0}>.", typeof(T).ToString()) + type : type, name, uuid, parent, appendType)

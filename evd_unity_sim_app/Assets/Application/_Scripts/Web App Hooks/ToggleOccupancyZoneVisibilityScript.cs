@@ -5,12 +5,16 @@ using UnityEngine;
 public class ToggleOccupancyZoneVisibilityScript : MonoBehaviour
 {
 
-    public GameObject OccupancyZoneManager = null;   
-
+    public OccupancyZoneManagerScript OccupancyZoneManager = null;   
 
     public void ToggleVisibility(bool state)
     {
-        //TODO Command the manager to toggle the occupancy zones
-        Debug.Log(state);
+        OccupancyZoneManager.SetVisible(state);
+    }
+
+    public void ToggleVisibilitySpecific(string uuid) 
+    {
+        var state = !OccupancyZoneManager.GetVisible(uuid);
+        OccupancyZoneManager.SetVisible(uuid,state);
     }
 }

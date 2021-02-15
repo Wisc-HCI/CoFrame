@@ -21,6 +21,16 @@ namespace EvD
          * Constructors
          */
 
+        public static string TypeString()
+        {
+            return "node.";
+        }
+
+        public static string FullTypeString()
+        {
+            return TypeString();
+        }
+
         public Node(string type = "", string name = "", string uuid = null, Node parent = null, bool appendType = true)
         {
             this.uuid = (uuid == null) ? GenerateUuid(type) : uuid;

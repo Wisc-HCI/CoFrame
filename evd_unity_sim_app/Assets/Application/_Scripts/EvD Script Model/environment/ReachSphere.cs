@@ -31,6 +31,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "reach-sphere.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public ReachSphere(float radius = 0.5f, Position offset = null, string type = "", string name = "", 
                                string uuid = null, Node parent = null, bool appendType = true)
             : base(appendType ? "reach-sphere." + type : type, name, uuid, parent, appendType)

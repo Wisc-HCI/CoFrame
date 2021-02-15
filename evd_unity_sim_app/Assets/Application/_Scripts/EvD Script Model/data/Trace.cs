@@ -20,6 +20,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "trace-data-point.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Pose.FullTypeString() + TypeString();
+            }
+
             public TraceDataPoint(Position position, Orientation orientation, float grade, string type = "", 
                                 string name = "", string uuid = null, Node parent = null, bool appendType = true) 
             : base(position, orientation, appendType ? "trace-data-point." + type : type, name, uuid, parent, appendType)
@@ -114,6 +124,16 @@ namespace EvD
             /*
             * Constructors
             */
+
+            public static new string TypeString()
+            {
+                return "trace.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
 
             public Trace(string eePath, Dictionary<string, List<TraceDataPoint>> data, List<string> jPaths = null,
                         List<string> tPaths = null, List<string> cPaths = null, float time = 0, string type = "", 

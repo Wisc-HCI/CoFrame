@@ -22,6 +22,16 @@ namespace EvD
         /*
          * Constructors
          */
+
+        public static new string TypeString()
+        {
+            return "context.";
+        }
+
+        public static new string FullTypeString()
+        {
+            return Node.FullTypeString() + TypeString();
+        }
         
         public Context(List<Location> locations = null, List<Machine> machines = null, List<Thing> things = null, 
                        List<Waypoint> waypoints = null, List<Trajectory> trajectories = null, string type = "", 

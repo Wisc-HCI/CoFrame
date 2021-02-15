@@ -15,6 +15,14 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'trajectory.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
+
     def __init__(self, startLocUuid=None, endLocUuid=None, waypointUuids=[],
                  trace=None, move_type="joint", velocity=0, acceleration=0,
                  parent=None, type='', name='', uuid=None, append_type=True):
