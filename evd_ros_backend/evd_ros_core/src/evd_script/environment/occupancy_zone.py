@@ -19,6 +19,14 @@ class OccupancyZone(Node, VisualizeMarker):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'occupancy-zone.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
+
     def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, height = 0,
                  type='', name='', parent=None, uuid=None, append_type=True):
         self._occupancy_type = None

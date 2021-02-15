@@ -20,14 +20,25 @@ namespace EvD
             private List<PinchPoint> _pinchPoints = null;
             private List<CollisionMesh> _collisionMeshes = null;
             private List<OccupancyZone> _occupancyZones = null;
+            private System.Action<List<Dictionary<string,string>>> _changesCallback = null;
 
             /*
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "environment.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Context.FullTypeString() + TypeString();
+            }
+
             public EnvironmentContext(ReachSphere reachSphere, List<PinchPoint> pinchPoints, List<CollisionMesh> collisionMeshes,
                                List<OccupancyZone> occupancyZones, List<Location> locations, List<Machine> machines, List<Thing> things, 
-                               List<Trajectory> trajectories, List<Waypoint> waypoints,
+                               List<Trajectory> trajectories, List<Waypoint> waypoints, System.Action<List<Dictionary<string,string>>> changesCallback = null,
                                string type = "", string name = "", string uuid = null, Node parent = null, bool appendType = true)
             : base(locations, machines, things, waypoints, trajectories, appendType ? "environment." + type : type, name, uuid, parent, appendType)
             {
@@ -35,6 +46,8 @@ namespace EvD
                 this.pinchPoints = pinchPoints;
                 this.collisionMeshes = collisionMeshes;
                 this.occupancyZones = occupancyZones;
+
+                this.changesCallback = changesCallback;
             }
 
             public static EnvironmentContext FromDict(Dictionary<string, object> dct, System.Action<List<Dictionary<string, string>>> changesCallback = null)
@@ -96,6 +109,7 @@ namespace EvD
                     things: things,
                     waypoints: waypoints,
                     trajectories: trajectories,
+                    changesCallback: changesCallback,
                     type: (string)dct["type"],
                     name: (string)dct["name"],
                     uuid: (string)dct["uuid"],
@@ -135,6 +149,21 @@ namespace EvD
             /*
             * Accessors and Modifiers
             */
+
+            public System.Action<List<Dictionary<string,string>>> changesCallback
+            {
+                get 
+                {
+                    return _changesCallback;
+                }
+
+                set 
+                {
+                    if (_changesCallback != value) {
+                        _changesCallback = value;
+                    }
+                }
+            }
 
             public ReachSphere reachSphere
             {
@@ -424,6 +453,32 @@ namespace EvD
                 UpdatedAttribute("collision_meshes", "update");
                 UpdatedAttribute("pinch_points", "update");
                 UpdatedAttribute("reach_sphere", "update");
+            }
+
+            /*
+            * Utility Methods
+            */
+
+            public override void ChildChangedEvent(List<Dictionary<string, string>> attributeTrace)
+            {
+                if (changesCallback != null) 
+                {
+                    attributeTrace.Add(ChildChangedEventMsg(null, "callback"));
+                    changesCallback.Invoke(attributeTrace);
+                }
+            }
+
+            public override void UpdatedAttribute(string attribute, string verb, string childUuid = null)
+            {
+                var evnt = new List<Dictionary<string, string>>
+                    {
+                        ChildChangedEventMsg(attribute, verb, childUuid)
+                    };
+                
+                if (changesCallback != null) 
+                {   
+                    changesCallback.Invoke(evnt);
+                }
             }
         }
 

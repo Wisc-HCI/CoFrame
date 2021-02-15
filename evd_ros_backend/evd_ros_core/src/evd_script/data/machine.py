@@ -7,6 +7,14 @@ class MachineRecipe(Node):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'machine-recipe.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
+
     def __init__(self, process_time=0, input_thing_quantities={}, output_thing_quantities={},
                  type='', name='', uuid=None, parent=None, append_type=True):
         self._process_time = None
@@ -159,6 +167,14 @@ class Machine(Node):
     '''
     Data structure methods
     '''
+
+    @classmethod
+    def type_string(cls):
+        return 'machine.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
 
     def __init__(self, input_regions=None, output_regions=None,
                  recipe=None, type='', name='', uuid=None, parent=None, append_type=True):

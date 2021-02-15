@@ -21,6 +21,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "pose.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public Pose(Position position = null, Orientation orientation = null, string type = "", string name = "", 
                         string uuid = null, Node parent = null, bool appendType = true) 
             : base(appendType ? "pose." + type : type, name, uuid, parent, appendType)
@@ -202,6 +212,16 @@ namespace EvD
             /*
             * Constructors
             */
+
+            public static new string TypeString()
+            {
+                return "position.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
 
             public Position(float x = 0, float y = 0, float z = 0, bool inRosForm = true, string type = "",
                             string name = "", string uuid = null, Node parent = null, bool appendType = true)
@@ -387,6 +407,16 @@ namespace EvD
             /*
             * Constructors
             */
+
+            public static new string TypeString()
+            {
+                return "orientation.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
 
             public static Orientation Identity()
             {

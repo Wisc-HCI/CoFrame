@@ -7,6 +7,14 @@ class Loop(Task):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'loop.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Task.full_type_string() + cls.type_string()
+
     def __init__(self, primitives=[], condition=None, type='', name='', uuid=None, parent=None,
                  append_type=True):
         self._condition = None

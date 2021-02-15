@@ -28,6 +28,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "trajectory.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public Trajectory(string startLocUuid = null, string endLocUuid = null, List<string> waypointUuids = null, 
                             Trace trace = null, string moveType = "joint", float velocity = 0, float acceleration = 0, 
                             string type = "", string name = "", string uuid = null, Node parent = null, 

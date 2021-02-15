@@ -15,6 +15,14 @@ class Context(Node):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'context.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
+
     def __init__(self, locations=[], machines=[], things=[], waypoints=[], trajectories=[],
                  type='', name='', uuid=None, parent=None, append_type=True):
 

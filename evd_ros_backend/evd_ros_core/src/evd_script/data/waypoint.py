@@ -11,6 +11,14 @@ class Waypoint(Pose, VisualizeMarker):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'waypoint.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Pose.full_type_string() + cls.type_string()
+
     def __init__(self, position=None, orientation=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True):
 

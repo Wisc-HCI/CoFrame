@@ -32,6 +32,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "collision-mesh.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public CollisionMesh(string meshId = "", Pose poseOffset = null, string link = "app", string type = "", 
                                  string name = "", string uuid = null, Node parent = null, bool appendType = true)
             : base(appendType ? "collision-mesh." + type : type, name, uuid, parent, appendType)

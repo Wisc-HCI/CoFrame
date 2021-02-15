@@ -12,6 +12,14 @@ class TraceDataPoint(Pose, VisualizeMarker):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'trace-data-point.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Pose.full_type_string() + cls.type_string()
+
     def __init__(self, position=None, orientation=None, grade=0, type='',
                  name='', uuid=None, parent=None, append_type=True):
 
@@ -99,6 +107,14 @@ class Trace(Node, VisualizeMarkers):
     '''
     Data structure methods
     '''
+
+    @classmethod
+    def type_string(cls):
+        return 'trace.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
 
     def __init__(self, eePath=None, data={}, jPaths=[], tPaths=[], cPaths=[],
                  time=0, type='', name='', uuid=None, parent=None, append_type=True):

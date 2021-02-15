@@ -10,6 +10,14 @@ class Pose(Node):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'pose.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
+
     def __init__(self, position=None, orientation=None, type='', name='',
                  uuid=None, parent=None, append_type=True):
 
@@ -155,6 +163,14 @@ class Position(Node):
     '''
     Data structure methods
     '''
+
+    @classmethod
+    def type_string(cls):
+        return 'position.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
 
     def __init__(self, x, y, z, type='', name='', parent=None, uuid=None, append_type=True):
         self._x = None
@@ -313,6 +329,14 @@ class Orientation(Node):
     '''
     Data structure methods
     '''
+
+    @classmethod
+    def type_string(cls):
+        return 'orientation.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Node.full_type_string() + cls.type_string()
 
     @classmethod
     def Identity(cls):

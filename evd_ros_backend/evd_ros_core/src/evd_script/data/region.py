@@ -20,6 +20,14 @@ class Region(Pose, VisualizeMarker):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'region.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Pose.full_type_string() + cls.type_string()
+
     def __init__(self, center_position=None, center_orientation=None, free_orientation=True,
                  uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,
                  type='', name='', uuid=None, parent=None, append_type=True):
@@ -237,6 +245,14 @@ class CubeRegion(Region):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'cube-region.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Region.full_type_string() + cls.type_string()
+
     def __init__(self, center_position=None, center_orientation=None, uncertainty_x=0.1,
                  uncertainty_y=0.1, uncertainty_z=0.1, free_orientation=True,
                  uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,
@@ -395,12 +411,19 @@ class CubeRegion(Region):
         self.updated_attribute('uncertainty_z', 'update')
 
 
-
 class SphereRegion(Region):
 
     '''
     Data structure methods
     '''
+
+    @classmethod
+    def type_string(cls):
+        return 'sphere-region.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Region.full_type_string() + cls.type_string()
 
     def __init__(self, center_position=None, center_orientation=None, uncertainty_radius=0.1,
                  free_orientation=True, uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,

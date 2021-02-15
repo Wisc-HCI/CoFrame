@@ -34,6 +34,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "occupancy-zone.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public OccupancyZone(string occupancy_type, float posX = 0, float posZ = 0, float sclX = 1, float sclZ = 1, float height = -1,
                                 string type = "", string name = "", string uuid = null, Node parent = null, bool appendType = true)
             : base(appendType ? "occupancy-zone." + type : type, name, uuid, parent, appendType)

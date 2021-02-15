@@ -23,6 +23,9 @@ public class ReachSphereScript : MonoBehaviour
 
     private Animator animator;
     private Renderer sphereRenderer;
+    private EvD.Environment.ReachSphere _model;
+    private string _uuid;
+
 
     private void Start()
     {
@@ -51,6 +54,53 @@ public class ReachSphereScript : MonoBehaviour
             case ColorState.Error:
                 sphereRenderer.material.color = ERROR_COLOR_STATE_MATERIAL.color;
                 break;
+        }
+    }
+
+    public string uuid
+    {
+        get
+        {
+            return _uuid;
+        }
+
+        private set
+        {
+            if (_uuid != value)
+            {
+                _uuid = value;
+            }
+        }
+    }
+
+    public EvD.Environment.ReachSphere model
+    {
+        get
+        {
+            return _model;
+        }
+
+        set
+        {
+            if (value != null)
+            {
+                if (_model != value) 
+                {
+                    _model = value;
+                    uuid = _model.uuid;
+                    transform.position = _model.offset.ToUnity();
+                    var dim = 2 * _model.radius;
+                    transform.localScale = dim * new Vector3(1,1,1);
+                }
+            }
+            else
+            {
+                _model = null;
+                uuid = null;
+                transform.position = new Vector3(0,0,0);
+                expand = false;
+                transform.localScale = new Vector3(1,1,1);
+            }
         }
     }
 

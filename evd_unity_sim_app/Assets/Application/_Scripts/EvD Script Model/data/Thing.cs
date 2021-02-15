@@ -8,7 +8,7 @@ namespace EvD
     {
 
         [System.Serializable]
-        public class Thing : Node
+        public class Thing : Pose
         {
             /*
             * Private Members
@@ -23,9 +23,19 @@ namespace EvD
             * Constructors
             */
 
-            public Thing(string thingType, int safetyLevel, string meshId, float weight, string type = "", 
+            public static new string TypeString()
+            {
+                return "thing.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Pose.FullTypeString() + TypeString();
+            }
+
+            public Thing(string thingType, int safetyLevel, string meshId, Position position, Orientation orientation, float weight, string type = "", 
                          string name = "", string uuid = null, Node parent = null, bool appendType = true )
-            : base(appendType ? "thing." + type : type, name, uuid, parent, appendType)
+            : base(position, orientation, appendType ? "thing." + type : type, name, uuid, parent, appendType)
             {
                 this.thingType = thingType;
                 this.safetyLevel = safetyLevel;
@@ -39,6 +49,8 @@ namespace EvD
                     thingType: (string)dct["thing_type"],
                     safetyLevel: (int)dct["safety_level"],
                     meshId: (string)dct["mesh_id"],
+                    position: Position.FromDict((Dictionary<string,object>)dct["position"]),
+                    orientation: Orientation.FromDict((Dictionary<string,object>)dct["orientation"]),
                     weight: (float)dct["weight"],
                     type: dct.ContainsKey("type") ? (string)dct["type"] : "",
                     name: dct.ContainsKey("name") ? (string)dct["name"] : "",

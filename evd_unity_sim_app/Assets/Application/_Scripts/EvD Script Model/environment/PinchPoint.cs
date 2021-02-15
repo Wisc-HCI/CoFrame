@@ -34,6 +34,16 @@ namespace EvD
             * Constructors
             */
 
+            public static new string TypeString()
+            {
+                return "pinch-point.";
+            }
+
+            public static new string FullTypeString()
+            {
+                return Node.FullTypeString() + TypeString();
+            }
+
             public PinchPoint(Orientation axis = null, Position offset = null, string link = "", float radius = 0.05f, float length = 0.2f,
                               string type = "", string name = "", string uuid = null, Node parent = null, bool appendType = true) 
             : base(appendType ? "pinch-point." + type : type, name, uuid, parent, appendType)

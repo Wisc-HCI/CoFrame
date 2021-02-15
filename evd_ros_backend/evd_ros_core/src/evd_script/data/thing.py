@@ -20,6 +20,14 @@ class Thing(Pose):
     Data structure methods
     '''
 
+    @classmethod
+    def type_string(cls):
+        return 'thing.'
+
+    @classmethod
+    def full_type_string(cls):
+        return Pose.full_type_string() + cls.type_string()
+
     def __init__(self, thing_type, safety_level=0, mesh_id=None, position=None, orientation=None,
                  weight=0, type='', name='', parent=None, uuid=None, append_type=True):
         self._thing_type = None
