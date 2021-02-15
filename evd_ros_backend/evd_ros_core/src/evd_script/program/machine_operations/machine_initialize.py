@@ -16,3 +16,13 @@ class MachineInitialize(MachinePrimitive):
             uuid=uuid,
             parent=parent,
             append_type=append_type)
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        hooks.machine_initialize(self)
+
+    def realtime_execution(self, hooks):
+        hooks.machine_initialize(self)

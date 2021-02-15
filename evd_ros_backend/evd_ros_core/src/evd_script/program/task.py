@@ -173,3 +173,15 @@ class Task(Primitive):
         super(Task,self).shallow_update()
 
         self.updated_attribute('primitives','update')
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        for p in self.primitives:
+            p.symbolic_execution(hooks)
+
+    def realtime_execution(self, hooks):
+        for p in self.primitives:
+            p.realtime_execution(hooks)

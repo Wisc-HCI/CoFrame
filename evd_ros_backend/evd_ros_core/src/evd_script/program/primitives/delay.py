@@ -69,3 +69,13 @@ class Delay(Primitive):
         super(Delay,self).shallow_update()
 
         self.updated_attribute('duration','update')
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        hooks.delay(self)
+
+    def realtime_execution(self, hooks):
+        hooks.delay(self)

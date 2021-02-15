@@ -94,7 +94,7 @@ class Loop(Task):
         if self.condition != None:
             self.condition.late_construct_update()
 
-        super(Loop,self).late_construct_update() 
+        super(Loop,self).late_construct_update()
 
     def deep_update(self):
 
@@ -110,3 +110,25 @@ class Loop(Task):
         super(Loop,self).shallow_update()
 
         self.updated_attribute('condition','update')
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        run = True
+
+        while run:
+            for p in self.primitives:
+                p.symbolic_execution(hooks)
+
+            run = self.condition.symbolic_execution(hooks) if self.condition != None else True
+
+    def realtime_execution(self, hooks):
+        run = True
+
+        while run:
+            for p in self.primitives:
+                p.symbolic_execution(hooks)
+
+            run = self.condition.symbolic_execution(hooks) if self.condition != None else True

@@ -90,3 +90,13 @@ class MoveUnplanned(Primitive):
 
         self.updated_attribute('location_uuid','update')
         self.updated_attribute('manual_safety','update')
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        hooks.move_unplanned(self)
+
+    def realtime_execution(self, hooks):
+        hooks.move_unplanned(self)

@@ -31,7 +31,8 @@ class DataServer:
         self._application_meta = None
 
         if default_app == 'debug_app':
-            self._program = debug_app.generate()
+            dct = debug_app.generate()
+            self._program = dct["program"]
             self._application_meta = {
                 'filename': 'debug_app.json',
                 'name': 'Debug Application',
@@ -39,6 +40,7 @@ class DataServer:
                 'level': 0,
                 'custom': False
             }
+            self._default_objs = dct["default_objs"]
         else:
             self._program = Program()
             self._application_meta ={
@@ -48,6 +50,7 @@ class DataServer:
                 'level': 0,
                 'custom': False
             }
+            self._default_objs = []
 
         self._program.changes_cb = self.__program_updated_cb
 
@@ -68,6 +71,8 @@ class DataServer:
         self._get_prog_srv = rospy.Service('data_server/get_data',GetData,self._get_prog_cb)
         self._set_prog_srv = rospy.Service('data_server/set_data',SetData,self._set_prog_cb)
 
+        self._get_default_objs_srv = rospy.Service('data_server/get_default_objects',GetData,self._get_default_objs_cb)
+
     def _load_app_cb(self, request):
         response = LoadDataResponse()
         program_snapshot = self._program.to_dct()
@@ -87,8 +92,9 @@ class DataServer:
         try:
             rawData = json.loads(inStr)
             self._program.remove_from_cache()
-            self._program = Program.from_dct(rawData)
+            self._program = Program.from_dct(rawData["program"])
             self._program.changes_cb = self.__program_updated_cb
+            self._default_objs = NodeParser(rawData["default_objs"])
         except:
             traceback.print_exc()
             response.status = False
@@ -132,7 +138,7 @@ class DataServer:
             used_filepath = request.filename
 
         # Generate packaged representation of data
-        outData = self._program.to_dct()
+        outData = {"program": self._program.to_dct(), "default_objs": self._default_objs}
 
         # Try writing to file
         try:
@@ -316,7 +322,28 @@ class DataServer:
         self._update_prog_pub.publish(msg)
 
     def __program_updated_cb(self, attribute_trace):
-        pass
+        pass # maybe implement a repair routine here?
+
+    def _get_default_objs_cb(self, request):
+        errors = []
+        response = GetDataResponse()
+
+        outData = {}
+        if request.all:
+            for key in self._default_objs.keys():
+                outData[key] = [e.to_dct() for e in self._default_objs[key]]
+        else:
+            inData = json.loads(request.data.data)
+            for group in inData:
+                selected = self._default_objs[group] if group in self._default_objs.keys() else []
+                outData[group] = [e.to_dct() for e in selected]
+
+        response.data = json.dumps(outData, indent=4, sort_keys=True)
+        response.tag = VersionTag('data_server').to_ros()
+        response.status = len(errors) == 0
+        response.errors = json.dumps(errors, indent=4, sort_keys=True)
+        response.message = '' if response.status else 'error getting data'
+        return response
 
     def spin(self):
         # give nodes time before publishing initial state

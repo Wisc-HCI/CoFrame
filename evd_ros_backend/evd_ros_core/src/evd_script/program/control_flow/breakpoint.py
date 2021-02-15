@@ -14,3 +14,13 @@ class Breakpoint(Primitive):
             uuid=uuid,
             parent=parent,
             append_type=append_type)
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        hooks.break_point_set(self)
+
+    def realtime_execution(self, hooks):
+        hooks.break_point_set(self)

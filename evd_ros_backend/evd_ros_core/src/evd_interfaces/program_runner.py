@@ -9,6 +9,8 @@ class ProgramRunner:
     def __init__(self, raw_program):
         self._program = raw_program
 
+        # "reserved-machine-cnc"
+
         #TODO
 
     def start(self):
@@ -37,3 +39,7 @@ class ProgramRunner:
 
     def step_backward(self):
         pass #TODO
+
+
+class ProgramHooks:
+    pass

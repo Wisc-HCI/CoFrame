@@ -13,6 +13,10 @@ def generate():
     # Define Program
     #===========================================================================
     prog = Program()
+    default_objs = {
+        "machines": [],
+        "things": []
+    }
 
     # Define and add location
     home_loc = Location(Position(0,0.2,0),Orientation(x=0,y=0.7071068,z=0,w=0.7071068),name='home')
@@ -32,14 +36,16 @@ def generate():
     locations = [home_loc,pick_stock_loc,place_stock_loc,retract_loc,pick_final_loc,place_final_loc]
 
     # Define and add machines
-    cnc = Machine(name='cnc')
+    cnc = Machine(name='cnc',uuid="reserved-machine-cnc")
 
     prog.context.add_machine(cnc)
+    default_objs["machines"].append(cnc)
 
     # Define and add statically defined things
-    raw_stock = Thing('stock',mesh_id='package://evd_ros_core/markers/3DBenchy.stl',name='boat')
+    raw_stock = Thing('stock',mesh_id='package://evd_ros_core/markers/3DBenchy.stl',name='boat',uuid="reserved-thing-raw-stock")
 
     prog.context.add_thing(raw_stock)
+    default_objs["things"].append(raw_stock)
 
     # Define and add primitives
     prog.add_primitive(Initialize(
@@ -152,4 +158,4 @@ def generate():
 
     #print '\n\n\n\n'
 
-    return prog
+    return {"program": prog, "default_objects": default_objs}

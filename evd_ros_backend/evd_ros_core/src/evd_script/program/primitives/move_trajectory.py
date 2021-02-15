@@ -272,3 +272,13 @@ class ContextPatch(object):
 
     def add_pending_trajectory(self, uuid, startLoc, endLoc):
         self._pending[uuid] = {'startLoc': startLoc, 'endLoc': endLoc}
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        hooks.move_trajectory(self)
+
+    def realtime_execution(self, hooks):
+        hooks.move_trajectory(self)

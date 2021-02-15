@@ -15,3 +15,13 @@ class MachineStop(MachinePrimitive):
             uuid=uuid,
             parent=parent,
             append_type=append_type)
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        hooks.machine_stop(self)
+
+    def realtime_execution(self, hooks):
+        hooks.machine_stop(self)

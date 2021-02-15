@@ -131,3 +131,13 @@ class Gripper(Primitive):
         self.updated_attribute('position','update')
         self.updated_attribute('effort','update')
         self.updated_attribute('speed','update')
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        hooks.gripper(self)
+
+    def realtime_execution(self, hooks):
+        hooks.gripper(self)
