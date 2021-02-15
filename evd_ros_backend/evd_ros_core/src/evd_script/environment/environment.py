@@ -17,15 +17,13 @@ class Environment(Context):
     '''
 
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
-                 locations=[], machines=[], things=[], waypoints=[], trajectories=[], changes_cb=None,
+                 locations=[], machines=[], things=[], waypoints=[], trajectories=[],
                  name='', type='', uuid=None, append_type=True):
 
         self._reach_sphere = None
         self._pinch_points = None
         self._collision_meshes = None
         self._occupancy_zones = None
-
-        self.changes_cb = changes_cb
 
         super(Environment,self).__init__(
             locations=locations,
