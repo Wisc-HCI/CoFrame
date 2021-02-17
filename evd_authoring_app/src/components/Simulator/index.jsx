@@ -8,7 +8,7 @@ import {
   PrimaryButton,
 } from 'office-ui-fabric-react';
 
-import ExpertDetails from './ExpertDetails';
+import Controls from './Controls';
 
 const SAFETY_COLOR = '#54eb61';
 const QUALITY_COLOR = '#6c8feb';
@@ -371,7 +371,7 @@ class Simulator extends Component {
             />
           </Stack.Item>
 
-          <ExpertDetails />
+          <Controls />
         </Stack>
       </div>
     );

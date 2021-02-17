@@ -1,13 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-import { Stack } from 'office-ui-fabric-react';
-
-import { Provider } from 'react-redux';
-import store from './store';
-
 import Header from './components/Header';
-import Simulator from './components/Simulator';
+
+import Body from './components/Body';
 import ProgramEditor from './components/Blockly/ProgramEditor';
 import SettingsModal from './components/Modals/SettingsModal';
 import UploadModal from './components/Modals/UploadModal';
@@ -15,7 +11,9 @@ import DownloadModal from './components/Modals/DownloadModal';
 import OpenModal from './components/Modals/OpenModel';
 
 class App extends React.Component {
+
   static computeHeaderLayout(layoutObj) {
+
     const newLayoutObj = { ...layoutObj };
 
     // handle header layout
@@ -60,10 +58,14 @@ class App extends React.Component {
     this.state = {
       height: 0,
       width: 0,
+
       downloadModalOpen: false,
       uploadModalOpen: false,
       openModalOpen: false,
       settingsModalOpen: false,
+
+      filename: 'Untitled',
+      model: null
     };
 
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -122,13 +124,18 @@ class App extends React.Component {
   }
 
   render() {
+
     const {
+
       width,
       height,
+
       downloadModalOpen,
       uploadModalOpen,
       openModalOpen,
       settingsModalOpen,
+
+      filename
     } = this.state;
 
     const { theme } = this.props;
@@ -154,87 +161,56 @@ class App extends React.Component {
     layoutObj = App.computeMainLayout(layoutObj);
 
     return (
-      <Provider store={store}>
-        <Router>
-          <Route
-            exact
-            path="/"
-            render={() => (
-              <>
-                <Header
-                  theme={theme}
-                  width={layoutObj.headerWidth}
-                  height={layoutObj.headerHeight}
-                  filename="Untitled"
-                  onButtonClick={this.onHeaderButtonClicked}
-                />
+      <Router>
+        <Route
+          exact
+          path="/"
+          render={() => (
+            <React.Fragment>
 
-                <div
-                  style={{
-                    width: `${layoutObj.mainWidth}px`,
-                    height: `${layoutObj.mainHeight}px`,
-                  }}
-                >
-                  <Stack horizontal>
-                    <div
-                      style={{
-                        paddingTop: `${mainPadding}px`,
-                        paddingBottom: `${mainPadding}px`,
-                        paddingRight: `${mainPadding / 2}px`,
-                      }}
-                    >
-                      <ProgramEditor
-                        theme={theme}
-                        width={layoutObj.progamWidth - mainPadding / 2}
-                        height={layoutObj.programHeight - mainPadding}
-                      />
-                    </div>
+              <Header
+                theme={theme}
+                width={layoutObj.headerWidth}
+                height={layoutObj.headerHeight}
+                filename={filename}
+                onButtonClick={this.onHeaderButtonClicked}
+              />
 
-                    <div
-                      style={{
-                        paddingLeft: `${mainPadding / 2}px`,
-                        paddingTop: `${mainPadding}px`,
-                        paddingBottom: `${mainPadding}px`,
-                      }}
-                    >
-                      <Simulator
-                        theme={theme}
-                        width={layoutObj.simulatorWidth - mainPadding / 2}
-                        height={layoutObj.simulatorHeight - mainPadding}
-                      />
-                    </div>
-                  </Stack>
-                </div>
+              <Body 
+                layoutObj={layoutObj}
+                theme={theme}
+                mainPadding={mainPadding}
+              />
 
-                <DownloadModal
-                  open={downloadModalOpen}
-                  closeModal={this.closeModal}
-                  theme={theme}
-                  totalWidth={layoutObj.totalWidth}
-                />
-                <UploadModal
-                  open={uploadModalOpen}
-                  closeModal={this.closeModal}
-                  theme={theme}
-                  totalWidth={layoutObj.totalWidth}
-                />
-                <OpenModal
-                  open={openModalOpen}
-                  closeModal={this.closeModal}
-                  theme={theme}
-                  totalWidth={layoutObj.totalWidth}
-                />
-                <SettingsModal
-                  open={settingsModalOpen}
-                  closeModal={this.closeModal}
-                  theme={theme}
-                  totalWidth={layoutObj.totalWidth}
-                />
-              </>
-            )}
-          />
-        </Router>
-      </Provider>
+              <DownloadModal
+                open={downloadModalOpen}
+                closeModal={this.closeModal}
+                theme={theme}
+                totalWidth={layoutObj.totalWidth}
+              />
+              <UploadModal
+                open={uploadModalOpen}
+                closeModal={this.closeModal}
+                theme={theme}
+                totalWidth={layoutObj.totalWidth}
+              />
+              <OpenModal
+                open={openModalOpen}
+                closeModal={this.closeModal}
+                theme={theme}
+                totalWidth={layoutObj.totalWidth}
+              />
+              <SettingsModal
+                open={settingsModalOpen}
+                closeModal={this.closeModal}
+                theme={theme}
+                totalWidth={layoutObj.totalWidth}
+              />
+
+            </React.Fragment>
+          )}
+        />
+      </Router>
     );
   }
 }

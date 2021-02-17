@@ -1,9 +1,0 @@
-
-# Robot Control Node
-- Update node itself
--
-
-# Documentation
-- Nodes
-- Interfaces
-- EvD Script
