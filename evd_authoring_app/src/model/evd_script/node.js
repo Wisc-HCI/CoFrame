@@ -1,0 +1,200 @@
+
+import { v4 as uuidv4 } from 'uuid';
+import { getEvdCacheObject } from './cache';
+
+
+export class Node {
+
+    /*
+    * Data structure methods
+    */
+
+    static typeString() {
+        return 'node.';
+    }
+
+    static fullTypeString() {
+        return Node.typeString();
+    }
+
+    constructor(type='', name='', parent=null, appendType=true) {
+        this._parent = null;
+        this._type = null;
+        this._name = null;
+
+        if (uuid === null) {
+            this._uuid = Node._generateUuid(type);
+        } else {
+            this._uuid = uuid;
+        }
+
+        this.parent = parent;
+        this.type = (appendType) ? 'node.' + type : type;
+        this.name = name;
+    }
+
+    static fromDict(dct) {
+        return Node(
+            type= ('type' in dct) ? dct.type : '',
+            appendType= !('type' in dct),
+            uuid= ('uuid' in dct) ? dct.uuid : null,
+            name= ('name' in dct) ? dct.name : ''
+        );
+    }
+
+    toDict() {
+        return {
+            type: this.type,
+            name: this.name,
+            uuid: this.uuid
+        }
+    }
+
+    toBlockly() {
+        // Implement this for nodes that can (and should) be Blockly blocks
+        return null;
+    }
+
+    /*
+    * Data accessors/modifer methods
+    */
+
+    get context() {
+        if (this._parent !== null) {
+            return this._parent.context;
+        } else {
+            return null;
+        }
+    }
+
+    get uuid() {
+        return this._uuid;
+    }
+
+    get type() {
+        return this._type;
+    }
+
+    set type(value) {
+        if (this._type !== value) {
+            this._type = value;
+            this.updatedAttribute('type','set');
+        }
+    }
+
+    get name() {
+        return this_name;
+    }
+
+    set name(value) {
+        if (this._name !== value) {
+            this._name = value;
+            this.updatedAttribute('name','set');
+        }
+    }
+
+    get parent() {
+        return this._parent;
+    }
+
+    set parent() {
+        if (this._parent !== value) {
+            this.removeFromCache();
+            this._parent = value;
+            this.addToCache();
+
+            this.updatedAttribute('parent','set');
+        }
+    }
+
+    set(dct) {
+        // Note: cannot set uuid
+
+        if ('name' in dct) {
+            this.name = dct.name;
+        }
+
+        if ('type' in dct) {
+            this.type = dct.type;
+        }
+    }
+
+    /*
+    * Cache Methods
+    */
+
+    removeFromCache() {
+        getEvdCacheObject().remove(this.uuid);
+    }
+
+    addToCache() {
+        getEvdCacheObject().add(this.uuid);
+    }
+
+    refreshCacheEntry() {
+        this.removeFromCache();
+        this.addToCache();
+    }
+
+    /*
+    * Children methods (optional)
+    */
+
+    deleteChild(uuid) {
+        // Write this for each node that has a set of children
+        return true;
+    }
+
+    childChangedEvent(attributeTrace) {
+        if (this.parent !== null) {
+            attributeTrace.push(self._childChangedEventMsg(null,'callback'));
+            this._parent.childChangedEvent(attributeTrace);
+        }
+    }
+
+    /*
+    * Utility methods
+    */
+
+    static _generate_uuid(type) {
+        return `${type}-py-${uuidv4()}`;
+    }
+
+    _childChangedEventMsg(attribute, verb, childUuid=null) {
+        return {
+            type: this.type,
+            uuid: this.uuid,
+            attribute,
+            verb,
+            childUuid
+        }
+    }
+
+    /*
+    * Update Methods
+    */
+
+    lateConstructUpdate() {
+        // Implement if your class needs to update something after entire program is constructed
+    }
+
+    updatedAttribute(attribute, verb, childUuid=null) {
+        if (this.parent != null) {
+            this.parent.childChangedEvent([
+                this._childChangedEventMsg(attribute,verb,childUuid)
+            ]);
+        }
+    }
+
+    deepUpdate() {
+        this.updatedAttribute('name','update');
+        this.updatedAttribute('type','update');
+        this.updatedAttribute('uuid','update');
+    }
+
+    shallowUpdate() {
+        this.updatedAttribute('name','update');
+        this.updatedAttribute('type','update');
+        this.updatedAttribute('uuid','update');
+    }
+}

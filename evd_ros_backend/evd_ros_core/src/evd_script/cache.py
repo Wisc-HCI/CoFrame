@@ -107,6 +107,7 @@ class Cache(object):
     def clear(self):
         self.data = {}
         self.locations = {}
+        self.waypoints = {}
         self.trajectories = {}
         self.things = {}
         self.traces = {}
@@ -117,29 +118,32 @@ class Cache(object):
         self.contexts = {}
 
     def get(self, uuid, hint=None):
+        retVal = None;
 
         if hint == 'trajectory' and uuid in self.trajectories.keys():
-            return self.trajectories[uuid]
+            retVal = self.trajectories[uuid]
         elif hint == 'location' and uuid in self.locations.keys():
-            return self.locations[uuid]
+            retVal = self.locations[uuid]
         elif hint == 'waypoint' and uuid in self.waypoints.keys():
-            return self.waypoints[uuid]
+            retVal = self.waypoints[uuid]
         elif hint == 'thing' and uuid in self.things.keys():
-            return self.things[uuid]
+            retVal = self.things[uuid]
         elif hint == 'trace' and uuid in self.traces.keys():
-            return self.traces[uuid]
+            retVal = self.traces[uuid]
         elif hint == 'machine' and uuid in self.machines.keys():
-            return self.machines[uuid]
+            retVal = self.machines[uuid]
         elif hint == 'program' and uuid in self.programs.keys():
-            return self.programs[uuid]
+            retVal = self.programs[uuid]
         elif hint == 'environment' and uuid in self.environments.keys():
-            return self.environments[uuid]
+            retVal = self.environments[uuid]
         elif hint == 'primitive' and uuid in self.primitives.keys():
-            return self.primitives[uuid]
+            retVal = self.primitives[uuid]
         elif hint == 'context' and uuid in self.contexts.keys():
-            return self.contexts[uuid]
+            retVal = self.contexts[uuid]
         else:
-            return self.data[uuid]
+            retVal = self.data[uuid]
+
+        return retVal
 
     def set(self, uuid, dct, hint=None):
         self.get(uuid,hint).set(dct)

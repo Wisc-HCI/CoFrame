@@ -18,7 +18,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "react-unity-webgl": "^7.1.10",
-    "serve": "^11.3.2"
+    "serve": "^11.3.2",
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start": "react-scripts start",

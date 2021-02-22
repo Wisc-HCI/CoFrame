@@ -319,7 +319,7 @@ class Context(Node):
         if 'waypoints' in dct.keys():
             self.waypoints = [Waypoint.from_dct(w) for w in dct['waypoints']]
 
-        if 'trajectory' in dct.keys():
+        if 'trajectories' in dct.keys():
             self.trajectories = [Trajectory.from_dct(t) for t in dct['trajectories']]
 
         super(Context,self).set(dct)
@@ -369,21 +369,20 @@ class Context(Node):
     '''
 
     def delete_child(self, uuid):
-        success = False
+        success = True
 
         if uuid in [l.uuid for l in self.locations]:
             self.delete_location(uuid)
-            success = True
         elif uuid in [m.uuid for m in self.machines]:
             self.delete_machine(uuid)
-            success = True
         elif uuid in [t.uuid for t in self.things]:
             self.delete_thing(uuid)
-            success = True
         elif uuid in [w.uuid for w in self.waypoints]:
             self.delete_waypoint(uuid)
         elif uuid in [t.uuid for t in self.trajectories]:
             self.delete_trajectory(uuid)
+        else:
+            success = False
 
         return success
 
@@ -433,7 +432,7 @@ class Context(Node):
         self.updated_attribute('locations','update')
         self.updated_attribute('things','update')
         self.updated_attribute('waypoints','update')
-        self.updated_attribute('trajectory','update')
+        self.updated_attribute('trajectories','update')
 
     def shallow_update(self):
         super(Context,self).shallow_update()
@@ -442,4 +441,4 @@ class Context(Node):
         self.updated_attribute('locations','update')
         self.updated_attribute('things','update')
         self.updated_attribute('waypoints','update')
-        self.updated_attribute('trajectory','update')
+        self.updated_attribute('trajectories','update')
