@@ -1,14 +1,14 @@
 import { Pose, Position, Orientation } from './geometry';
 import { Location } from './location';
 import { Waypoint } from './waypoint';
-import { Machine } from './machine';
-import { Trace } from './trace';
+import { Machine, MachineRecipe } from './machine';
+import { Trace, TraceDataPoint } from './trace';
 import { Trajectory } from './trajectory';
 import { Region, CubeRegion, SphereRegion } from './region';
 import { Thing } from './thing';
 
 
-export const DataNodeParser = (exactType, dct) => {
+const DataNodeParser = (exactType, dct) => {
 
     let node = null;
 
@@ -62,5 +62,22 @@ export const DataNodeParser = (exactType, dct) => {
     }
 
     return node;
+};
 
+export {
+    Pose, 
+    Position, 
+    Orientation,
+    Location,
+    Waypoint,
+    Machine, 
+    MachineRecipe,
+    Trace, 
+    TraceDataPoint,
+    Trajectory,
+    Region, 
+    CubeRegion, 
+    SphereRegion,
+    Thing,
+    DataNodeParser
 };

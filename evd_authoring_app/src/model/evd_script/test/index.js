@@ -1,6 +1,6 @@
 import { Container } from './container';
 
-export const TestNodeParser = (exactType, dct) => {
+const TestNodeParser = (exactType, dct) => {
 
     let node = null;
 
@@ -14,3 +14,8 @@ export const TestNodeParser = (exactType, dct) => {
 
     return node;
 }
+
+export {
+    Container,
+    TestNodeParser
+};
