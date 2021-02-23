@@ -61,7 +61,7 @@ export class Context {
             name= dct.name,
             uuid= dct.uuid,
             type= dct.type,
-            appendType: false,
+            appendType= false,
             locations= dct.locations.map(l => Location.fromDict(l)),
             machines= dct.machines.map(m => Machine.fromDict(m)),
             things= dct.things.map(t => Thing.fromDict(t)),

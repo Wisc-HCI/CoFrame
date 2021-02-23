@@ -114,7 +114,7 @@ class Thing(Pose):
     def safety_level(self, value):
         if self._safety_level != value:
             if value > self.SAFE or value < self.DANGEROUS:
-                raise Exception('Safety levle must be within range ({0},{1})'.format(self.DANGEROUS,self.SAFE))
+                raise Exception('Safety level must be within range ({0},{1})'.format(self.DANGEROUS,self.SAFE))
 
             self._safety_level = value
             self.updated_attribute('safety_level','set')
@@ -154,18 +154,6 @@ class Thing(Pose):
             self.weight = dct['weight']
 
         super(Thing,self).set(dct)
-
-    '''
-    Cache methods
-    '''
-
-    def remove_from_cache(self):
-
-        super(Thing,self).remove_from_cache()
-
-    def add_to_cache(self):
-
-        super(Thing,self).add_to_cache()
 
     '''
     Update Methods

@@ -38,7 +38,7 @@ class Region(Pose, VisualizeMarker):
         super(Region,self).__init__(
             position=center_position,
             orientation=center_orientation,
-            type='abstract-region.'+type if append_type else type,
+            type='region.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

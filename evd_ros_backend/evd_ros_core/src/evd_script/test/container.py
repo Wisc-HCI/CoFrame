@@ -13,8 +13,8 @@ class Container(Node):
         return 'container<{}>.'.format(itemType)
 
     @classmethod
-    def full_type_string(cls):
-        return Node.full_type_string() + cls.type_string()
+    def full_type_string(cls, itemType='node.'):
+        return Node.full_type_string() + cls.type_string(itemType)
 
     def __init__(self, item_type, values=[], type='', name='', uuid=None, parent=None, append_type=True):
 
@@ -67,7 +67,7 @@ class Container(Node):
             for v in self._values:
                 v.remove_from_cache()
 
-            self._values = values
+            self._values = value
             for v in self._values:
                 v.parent = self
 

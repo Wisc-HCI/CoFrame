@@ -322,7 +322,7 @@ class Machine(Node):
     def get_output_region(self, thing_type):
         return self._output_regions[thing_type]
 
-    def find_input_region_thing_type(self, regionId):
+    def find_output_region_thing_type(self, regionId):
         type = None
 
         for k in self._output_regions.keys():

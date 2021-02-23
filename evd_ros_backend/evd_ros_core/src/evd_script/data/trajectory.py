@@ -259,7 +259,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
                 break
 
         if delIdx != None:
-            self._waypoints.pop(i)
+            self._waypoint_uuids.pop(i)
             self.trace = None
             self.updated_attribute('waypoint_uuids','delete',uuid)
 
