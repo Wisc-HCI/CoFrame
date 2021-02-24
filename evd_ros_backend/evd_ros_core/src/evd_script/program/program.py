@@ -92,6 +92,13 @@ class Program(Task):
             self.updated_attribute('context','set')
             self.updated_attribute('environment','set')
 
+    def set(self, dct):
+
+        if 'environment' in dct.keys():
+            self.environment = Environment.from_dct(dct['environment'])
+
+        super(Program,self).set(dct)
+
     '''
     Update Methods
     '''

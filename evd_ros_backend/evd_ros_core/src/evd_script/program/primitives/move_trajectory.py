@@ -202,14 +202,23 @@ class MoveTrajectory(Primitive):
         self.updated_attribute('trajectory','update')
 
     def shallow_update(self):
-        tmp = self.context # This guarantees that the patch is applied if possible
-
         super(MoveTrajectory,self).shallow_update()
 
         self.updated_attribute('start_location_uuid','update')
         self.updated_attribute('end_location_uuid','update')
         self.updated_attribute('trajectory_uuid','update')
         self.updated_attribute('trajectory','update')
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        hooks.move_trajectory(self)
+
+    def realtime_execution(self, hooks):
+        hooks.move_trajectory(self)
+
 
 class ContextPatch(object):
 
@@ -280,13 +289,3 @@ class ContextPatch(object):
 
     def add_pending_trajectory(self, uuid, startLoc, endLoc):
         self._pending[uuid] = {'startLoc': startLoc, 'endLoc': endLoc}
-
-    '''
-    Execution methods
-    '''
-
-    def symbolic_execution(self, hooks):
-        hooks.move_trajectory(self)
-
-    def realtime_execution(self, hooks):
-        hooks.move_trajectory(self)

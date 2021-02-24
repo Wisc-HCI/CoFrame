@@ -200,13 +200,7 @@ export class Trajectory extends Node {
     }
 
     reorderWaypointUuids(uuid, shift) {
-        let idx = null;
-        for (let i=0; i<this._waypointUuids.length; i++) {
-            if (this._waypointUuids[i] === uuid) {
-                idx = i;
-                break;
-            }
-        }
+        const idx = this.findWaypointIndex(uuid);
 
         if (idx !== null) {
             let shiftedIdx = idx + shift;
@@ -221,6 +215,16 @@ export class Trajectory extends Node {
     }
 
     deleteWaypointUuid(uuid) {
+        const idx = this.findWaypointIndex(uuid);
+
+        if (idx !== null) {
+            this._waypointUuids.splice(idx, 1);
+            this.trace = null;
+            this.updatedAttribute('waypoint_uuids','delete',uuid);
+        }
+    }
+
+    findWaypointIndex(uuid) {
         let idx = null;
         for (let i=0; i<this._waypointUuids.length; i++) {
             if (this._waypointUuids[i].uuid === uuid) {
@@ -228,12 +232,7 @@ export class Trajectory extends Node {
                 break;
             }
         }
-
-        if (idx !== null) {
-            this._waypointUuids.splice(idx, 1);
-            this.trace = null;
-            this.updatedAttribute('waypoint_uuids','delete',uuid);
-        }
+        return idx;
     }
 
     set(dct) {

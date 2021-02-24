@@ -83,7 +83,12 @@ class Task(Primitive):
     def add_primitive(self, prm):
         prm.parent = self
         self._primitives.append(prm)
-        self.updated_attribute('primitives','set')
+        self.updated_attribute('primitives','add')
+
+    def insert_primitive(self, prm):
+        prm.parent = self
+        self._primitives.insert(idx,prm)
+        self.updated_attribute('primitives','adds')
 
     def reorder_primitives(self, uuid, shift):
         idx = None
