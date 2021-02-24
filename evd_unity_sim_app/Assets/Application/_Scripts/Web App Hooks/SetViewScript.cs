@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SetViewScript : MonoBehaviour
 {
-    public CameraControlScript camera;
+    public new CameraControlScript camera;
     
     public void SetView(string data)
     {
