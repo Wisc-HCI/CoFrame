@@ -26,7 +26,7 @@ class Environment(Context):
 
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
                  locations=[], machines=[], things=[], waypoints=[], trajectories=[],
-                 name='', type='', uuid=None, append_type=True):
+                 name='', type='', uuid=None, parent=None, append_type=True):
 
         self._reach_sphere = None
         self._pinch_points = None
@@ -42,7 +42,7 @@ class Environment(Context):
             type='environment.'+type if append_type else type,
             name=name,
             uuid=uuid,
-            parent=None,
+            parent=parent,
             append_type=append_type)
 
         self.reach_sphere = reach_sphere if reach_sphere != None else ReachSphere()
@@ -87,7 +87,7 @@ class Environment(Context):
     @reach_sphere.setter
     def reach_sphere(self, value):
         if value == None:
-            raise Exception('reach sphere cannot be null')
+            raise Exception('reach sphere cannot be none')
 
         if self._reach_sphere != value:
             if self._reach_sphere != None:
@@ -104,7 +104,7 @@ class Environment(Context):
     @pinch_points.setter
     def pinch_points(self, value):
         if value == None:
-            raise Exception('pinch point list cannot be null')
+            raise Exception('pinch point list cannot be none')
 
         if self._pinch_points != value:
             if self._pinch_points != None:
@@ -124,7 +124,7 @@ class Environment(Context):
     @collision_meshes.setter
     def collision_meshes(self, value):
         if value == None:
-            raise Exception('collision meshes list cannot be null')
+            raise Exception('collision meshes list cannot be none')
 
         if self._collision_meshes != value:
             if self._collision_meshes != None:
@@ -144,7 +144,7 @@ class Environment(Context):
     @occupancy_zones.setter
     def occupancy_zones(self, value):
         if value == None:
-            raise Exception('occupancy zones list cannot be null')
+            raise Exception('occupancy zones list cannot be none')
 
         if self._occupancy_zones != value:
             if self._occupancy_zones != None:
