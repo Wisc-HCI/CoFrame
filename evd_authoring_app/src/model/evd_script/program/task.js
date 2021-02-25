@@ -39,7 +39,7 @@ export class Task extends Primitive {
     }
 
     static fromDict(dct) {
-        return Task(
+        return new Task(
             primitives= dct.primitives.map(p => NodeParser(p)),
             type= dct.type,
             name= dct.name,

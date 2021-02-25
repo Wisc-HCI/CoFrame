@@ -59,7 +59,7 @@ export class Region extends Pose {
     }
 
     static fromDict(dct) {
-        return Region(
+        return new Region(
             centerPosition= Position.fromDict(dct.center_position),
             centerOrientation= Orientation.fromDict(dct.center_orientation),
             freeOrientation= dct.free_orientation,
@@ -297,7 +297,7 @@ export class CubeRegion extends Region {
     }
 
     static fromDict(dct) {
-        return CubeRegion(
+        return new CubeRegion(
             centerPosition= dct.center_position,
             centerOrientation= dct.center_orientation,
             uncertaintyX= dct.uncertainty_x,
@@ -435,7 +435,7 @@ export class SphereRegion extends Region {
     }
 
     static fromDict(dct) {
-        return SphereRegion(
+        return new SphereRegion(
             centerPosition= dct.center_position,
             centerOrientation= dct.center_orientation,
             uncertaintyRadius= dct.uncertainty_radius,

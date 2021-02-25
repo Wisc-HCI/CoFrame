@@ -26,7 +26,7 @@ export class MachineStart extends MachinePrimitive {
     }
 
     static fromDict(dct) {
-        return MachineStart(
+        return new MachineStart(
             machineUuid= dct.machine_uuid,
             type= dct.type,
             appendType= false,

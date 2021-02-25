@@ -61,7 +61,7 @@ export class OccupancyZone extends Node {
     }
 
     static fromDict(dct) {
-        return OccupancyZone(
+        return new OccupancyZone(
             occupancyType= dct.occupancy_type,
             posX= dct.position_x,
             posZ= dct.position_z,

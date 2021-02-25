@@ -64,7 +64,7 @@ export class Trajectory extends Node {
     }
 
     static fromDict(dct) {
-        return Trajectory(
+        return new Trajectory(
             startLocUuid= dct.start_location_uuid,
             endLocUuid= dct.end_location_uuid,
             waypointUuids= dct.waypoint_uuids,

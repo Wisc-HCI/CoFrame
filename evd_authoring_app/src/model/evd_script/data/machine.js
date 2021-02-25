@@ -44,7 +44,7 @@ export class MachineRecipe extends Node {
     }
 
     static fromDict(dct) {
-        return MachineRecipe(
+        return new MachineRecipe(
             processTime= dct.process_time,
             inputThingQuantities= dct.input_thing_quantities,
             outputThingQuantities= dct.output_thing_quantities,
@@ -254,7 +254,7 @@ export class Machine extends Node {
             outputRegions[key] = NodeParser(value);
         }
 
-        return Machine(
+        return new Machine(
             inputRegions= inputRegions, 
             outputRegions= outputRegions, 
             recipe= MachineRecipe.fromDict(dct.recipe), 

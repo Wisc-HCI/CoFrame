@@ -41,7 +41,7 @@ export class Pose extends Node {
     }
 
     static fromDict(dct) {
-        return Pose(
+        return new Pose(
             position= Position.fromDict(dct.position),
             orientation = Orientation.fromDict(dct.orientation),
             type= dct.type,
@@ -199,7 +199,7 @@ export class Position extends Node {
     }
 
     static fromDict(dct) {
-        return Position(
+        return new Position(
             x= dct.x,
             y= dct.y,
             z= dct.z,
@@ -333,7 +333,7 @@ export class Orientation extends Node {
     }
 
     static fromDict(dct) {
-        return Position(
+        return new Position(
             x= dct.x,
             y= dct.y,
             z= dct.z,

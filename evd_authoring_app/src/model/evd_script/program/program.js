@@ -49,7 +49,7 @@ export class Program extends Task {
     }
 
     static fromDict(dct) {
-        return Program(
+        return new Program(
             name= dct.name,
             type= dct.type,
             appendType= false,

@@ -25,7 +25,7 @@ export class Breakpoint extends Primitive {
      }
 
     static fromDict(dct) {
-        return Breakpoint(
+        return new Breakpoint(
             type= dct.type,
             appendType=false,
             name= dct.name,

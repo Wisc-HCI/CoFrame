@@ -37,7 +37,7 @@ export class Delay extends Primitive {
     }
 
     static fromDict() {
-        return Delay(
+        return new Delay(
             duration= dct.duration,
             type= dct.type,
             name= dct.name,

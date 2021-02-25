@@ -1,4 +1,5 @@
 import { Task } from '../../task';
+import { NodeParser } from '../../utility_functions';
 import { MachineStart } from './machine_start';
 import { MachineStop } from './machine_stop';
 import { MachineWait } from './machine_wait';
@@ -35,6 +36,16 @@ export class MachineBlockingProcess extends Task {
             parent= parent,
             appendType= appendType,
             primtiives= primtiives
+        );
+    }
+
+    static fromDict(dct) {
+        return new MachineBlockingProcess(
+            type= dct.type,
+            appendType= false,
+            name= dct.name,
+            uuid= dct.uuid,
+            primitives= dct.primitives.map(p => NodeParser(p))
         );
     }
 }

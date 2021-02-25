@@ -26,7 +26,7 @@ export class MachineStop extends MachinePrimitive {
     }
 
     static fromDict(dct) {
-        return MachineStop(
+        return new MachineStop(
             machineUuid= dct.machine_uuid,
             type= dct.type,
             appendType= false,

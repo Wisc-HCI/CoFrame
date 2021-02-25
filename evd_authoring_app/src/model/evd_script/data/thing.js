@@ -56,7 +56,7 @@ export class Thing extends Pose {
     }
 
     static fromDict(dct) {
-        return Thing(
+        return new Thing(
             thingType= dct.thing_type,
             safetyLevel= dct.safety_level,
             meshId= dct.mesh_id,

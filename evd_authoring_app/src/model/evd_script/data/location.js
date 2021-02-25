@@ -29,7 +29,7 @@ export class Location extends Waypoint {
     }
 
     static fromDict(dct) {
-        return Location(
+        return new Location(
             position= Position.fromDict(dct.position),
             orientation= Orientation.fromDict(dct.orientation),
             joints= dct.joints,

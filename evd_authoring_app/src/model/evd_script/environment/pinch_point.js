@@ -59,7 +59,7 @@ export class PinchPoint extends Node {
     }
 
     static fromDict(dct) {
-        return PinchPoint(
+        return new PinchPoint(
             axis= dct.axis,
             offset= Position.fromDict(dct.offset),
             link= dct.link,

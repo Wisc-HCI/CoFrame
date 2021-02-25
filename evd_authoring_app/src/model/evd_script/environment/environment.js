@@ -61,7 +61,7 @@ export class Environment extends Context {
     }
 
     static fromDict(dct) {
-        return Environment(
+        return new Environment(
             reachSphere= ReachSphere.fromDict(dct.reach_sphere),
             pinchPoints= dct.pinch_points.map(p => PinchPoint.fromDict(p)),
             collisionMeshes= dct.collision_meshes.map(c => CollisionMesh.fromDict(c)),

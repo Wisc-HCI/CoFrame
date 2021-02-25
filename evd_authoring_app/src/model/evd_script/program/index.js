@@ -1,5 +1,5 @@
-import { Task } from '.task';
-import { Primitive } from '.primitive';
+import { Task } from './task';
+import { Primitive } from './primitive';
 import { Program } from './program';
 
 import * as evdTasks from './tasks';
@@ -8,26 +8,60 @@ import * as evdMachineOperations from './machine_operations';
 import * as evdControlFlow from './control_flow';
 
 
+const { 
+    CloseGripper,
+    Initialize,
+    OpenGripper,
+    SimplePickAndPlace,
+    TaskNodeParser
+} = evdTasks;
+
+const { 
+    Delay, 
+    Gripper, 
+    MoveTrajectory, 
+    MoveUnplanned, 
+    PrimitiveNodeParser 
+} = evdPrimitives;
+
+const {
+    MachineBlockingProcess,
+    MachineInitialize,
+    MachinePrimitive,
+    MachineStart,
+    MachineStop,
+    MachineWait,
+    MachineOperationsNodeParser
+} = evdMachineOperations;
+
+const {
+    Branch, 
+    Breakpoint, 
+    Loop, 
+    ControlFlowNodeParser 
+} = evdControlFlow;
+
+
 const ProgramNodeParser = (exactType, dct) => {
 
     let node = null;
 
-    node = evdTasks.TasksNodeParser(exactType,dct);
+    node = TasksNodeParser(exactType,dct);
     if (node !== null) {
         return node;
     }
 
-    node = evdPrimitives.PrimitivesNodeParser(exactType,dct);
+    node = PrimitivesNodeParser(exactType,dct);
     if (node !== null) {
         return node;
     }
 
-    node = evdMachineOperations.MachineOperationsNodeParser(exactType,dct);
+    node = MachineOperationsNodeParser(exactType,dct);
     if (node !== null) {
         return node;
     }
 
-    node = evdControlFlow.ControlFlowNodeParser(exactType,dct);
+    node = ControlFlowNodeParser(exactType,dct);
     if (node !== null) {
         return node;
     }
@@ -47,13 +81,38 @@ const ProgramNodeParser = (exactType, dct) => {
     return node;
 };
 
+
+
+
+
 export {
     Task,
     Primitive,
     Program,
-    evdTasks,
-    evdPrimitives,
-    evdMachineOperations,
-    evdControlFlow,
-    ProgramNodeParser
+    ProgramNodeParser,
+
+    CloseGripper,
+    Initialize,
+    OpenGripper,
+    SimplePickAndPlace,
+    TaskNodeParser,
+
+    Delay, 
+    Gripper, 
+    MoveTrajectory, 
+    MoveUnplanned, 
+    PrimitiveNodeParser,
+
+    MachineBlockingProcess,
+    MachineInitialize,
+    MachinePrimitive,
+    MachineStart,
+    MachineStop,
+    MachineWait,
+    MachineOperationsNodeParser,
+
+    Branch, 
+    Breakpoint, 
+    Loop, 
+    ControlFlowNodeParser
 };

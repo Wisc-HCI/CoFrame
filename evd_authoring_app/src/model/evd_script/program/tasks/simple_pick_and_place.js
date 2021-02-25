@@ -40,7 +40,7 @@ export class SimplePickAndPlace extends Task {
     }
 
     static fromDict(dct) {
-        return SimplePickAndPlace(
+        return new SimplePickAndPlace(
             type= dct.type,
             name= dct.name,
             uuid= dct.uuid,

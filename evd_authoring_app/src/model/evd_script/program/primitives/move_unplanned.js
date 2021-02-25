@@ -40,7 +40,7 @@ export class MoveUnplanned extends Primitive {
     }
 
     static fromDict(dct) {
-        return MoveUnplanned(
+        return new MoveUnplanned(
             name= dct.name,
             type= dct.type,
             appendType= false,

@@ -41,7 +41,7 @@ export class TraceDataPoint extends Pose {
     }
 
     static fromDict(dct) {
-        return TraceDataPoint(
+        return new TraceDataPoint(
             position= Position.fromDict(dct.position),
             orientation= Orientation.fromDict(dct.orientation),
             grade= dct.grade,
@@ -152,7 +152,7 @@ export class Trace extends Node {
             data[key] = value.map(v => TraceDataPoint.fromDict(v));
         }
 
-        return Trace(
+        return new Trace(
             uuid= dct.uuid,
             type= dct.type,
             name= dct.name,

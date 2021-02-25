@@ -26,7 +26,7 @@ export class MachineWait extends MachinePrimitive {
     }
 
     static fromDict(dct) {
-        return MachineWait(
+        return new MachineWait(
             machineUuid= dct.machine_uuid,
             type= dct.type,
             appendType= false,

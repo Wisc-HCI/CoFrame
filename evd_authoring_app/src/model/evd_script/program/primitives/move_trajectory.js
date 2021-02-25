@@ -64,7 +64,7 @@ export class MoveTrajectory extends Primitive {
     }
 
     static fromDict(dct) {
-        return MoveTrajectory(
+        return new MoveTrajectory(
             name= dct.name,
             type= dct.type,
             appendType= false,

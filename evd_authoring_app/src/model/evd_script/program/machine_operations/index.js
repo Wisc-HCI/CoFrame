@@ -39,7 +39,7 @@ export {
     MachineInitialize,
     MachinePrimitive,
     MachineStart,
-    MachineStart,
+    MachineStop,
     MachineWait,
     MachineOperationsNodeParser
 };

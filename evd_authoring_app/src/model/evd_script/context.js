@@ -57,7 +57,7 @@ export class Context {
     }
 
     static fromDict(dct) {
-        return Context(
+        return new Context(
             name= dct.name,
             uuid= dct.uuid,
             type= dct.type,

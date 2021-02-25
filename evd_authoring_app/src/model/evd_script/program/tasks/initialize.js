@@ -34,7 +34,7 @@ export class Initialize extends Task {
     }
 
     static fromDict(dct) {
-        return Initialize(
+        return new Initialize(
             type= dct.type,
             appendType= false,
             name= dct.name,

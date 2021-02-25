@@ -24,7 +24,7 @@ export class Branch extends Primitive {
     }
 
     static fromDict(dct) {
-        return Branch(); // TODO
+        return new Branch(); // TODO
     }
 
 }

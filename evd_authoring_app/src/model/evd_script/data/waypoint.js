@@ -40,7 +40,7 @@ export class Waypoint extends Pose {
     }
 
     static fromDict(dct) {
-        return Waypoint(
+        return new Waypoint(
             position= Position.fromDict(dct.position),
             orientation= Orientation.fromDict(dct.orientation),
             joints= dct.joints,

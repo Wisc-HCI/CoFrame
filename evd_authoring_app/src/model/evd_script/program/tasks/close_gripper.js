@@ -41,7 +41,7 @@ export class CloseGripper extends Task {
     }
 
     static fromDict(dct) {
-        return CloseGripper(
+        return new CloseGripper(
             type= dct.type,
             name= dct.name,
             uuid= dct.uuid,

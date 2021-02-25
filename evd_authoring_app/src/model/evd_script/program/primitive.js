@@ -26,7 +26,7 @@ export class Primitive extends Node {
     }
 
     static fromDict(dct) {
-        return Primitive(
+        return new Primitive(
             type= dct.type,
             name= dct.name,
             uuid= dct.uuid,

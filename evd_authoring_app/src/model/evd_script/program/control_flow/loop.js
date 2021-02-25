@@ -38,7 +38,7 @@ export class Loop extends Task {
     }
 
     static fromDict(dct) {
-        return Loop(
+        return new Loop(
             primitives= dct.primitives.map(p => NodeParser(p)),
             condition= (dct.condition !== null) ? NodeParser(dct.condition) : null,
             name= dct.name,

@@ -41,7 +41,7 @@ export class Container extends Node {
     }
 
     static fromDict(dct) {
-        return Container(
+        return new Container(
             itemType= dct.item_type,
             values= dct.values.map(v => NodeParser(v)),
             name= dct.name,

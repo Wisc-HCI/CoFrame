@@ -46,7 +46,7 @@ export class Gripper extends Primitive {
     }
 
     static fromDict(dct) {
-        return Gripper(
+        return new Gripper(
             position= dct.position,
             effort= dct.effort,
             speed= dct.speed,

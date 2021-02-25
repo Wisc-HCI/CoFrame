@@ -53,7 +53,7 @@ export class CollisionMesh extends Node {
     }
 
     static fromDict(dct) {
-        return CollisionMesh(
+        return new CollisionMesh(
             meshId= dct.mesh_id,
             poseOffset = Pose.fromDict(dct.pose_offset),
             link= dct.link,

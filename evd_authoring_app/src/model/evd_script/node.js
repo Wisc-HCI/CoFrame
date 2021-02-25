@@ -34,7 +34,7 @@ export class Node {
     }
 
     static fromDict(dct) {
-        return Node(
+        return new Node(
             type= ('type' in dct) ? dct.type : '',
             appendType= !('type' in dct),
             uuid= ('uuid' in dct) ? dct.uuid : null,
@@ -157,7 +157,7 @@ export class Node {
     */
 
     static _generate_uuid(type) {
-        return `${type}-py-${uuidv4()}`;
+        return `${type}-js-${uuidv4()}`;
     }
 
     _childChangedEventMsg(attribute, verb, childUuid=null) {

@@ -50,7 +50,7 @@ export class ReachSphere extends Node {
     }
 
     static fromDict(dct) {
-        return ReachSphere(
+        return new ReachSphere(
             radius= dct.radius,
             offset= Position.fromDict(dct.offset),
             type= dct.type,

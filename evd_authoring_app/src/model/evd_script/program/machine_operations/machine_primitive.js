@@ -37,7 +37,7 @@ export class MachinePrimitive extends Primitive {
     }
 
     static fromDict(dct) {
-        return MachinePrimitive(
+        return new MachinePrimitive(
             machineUuid= dct.machine_uuid,
             type= dct.type,
             name= dct.name,
