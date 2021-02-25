@@ -91,8 +91,8 @@ export class App extends React.Component {
             <React.Fragment>
                 <Header
                     theme={theme}
-                    width={layoutObj.headerWidth}
-                    height={layoutObj.headerHeight}
+                    width={layoutObj.header.width}
+                    height={layoutObj.header.height}
                     filename={filename}
                     onButtonClick={this.onHeaderButtonClicked}
                 />

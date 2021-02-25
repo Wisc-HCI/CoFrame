@@ -66,36 +66,36 @@ export const FrameButtons = (props) => {
     const { frame, callback } = props;
 
     return (
-      <Stack horizontal>
-        
-        <StyledButton 
-          text="Safety" 
-          frame="safety"
-          primary={frame === 'safety'} 
-          callback={() => callback('safety')}
-        />
+        <Stack horizontal>
+    
+            <StyledButton 
+                text="Safety" 
+                frame="safety"
+                primary={frame === 'safety'} 
+                callback={() => callback('safety')}
+            />
 
-        <StyledButton 
-          text="Program Quality" 
-          frame="quality"
-          primary={frame === 'quality'} 
-          callback={() => callback('quality')}
-        />
-        
-        <StyledButton 
-          text="Robot Performance" 
-          frame="performance"
-          primary={frame === 'performance'} 
-          callback={() => callback('performance')}
-        />
-        
-        <StyledButton
-          text="Buisness Objectives" 
-          frame="buisness"
-          primary={frame === 'buisness'} 
-          callback={() => callback('buisness')}
-        />
+            <StyledButton 
+                text="Program Quality" 
+                frame="quality"
+                primary={frame === 'quality'} 
+                callback={() => callback('quality')}
+            />
+            
+            <StyledButton 
+                text="Robot Performance" 
+                frame="performance"
+                primary={frame === 'performance'} 
+                callback={() => callback('performance')}
+            />
+            
+            <StyledButton
+                text="Buisness Objectives" 
+                frame="buisness"
+                primary={frame === 'buisness'} 
+                callback={() => callback('buisness')}
+            />
 
-      </Stack>
+        </Stack>
     );
 };

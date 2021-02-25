@@ -41,11 +41,12 @@ export class ProgramEditor extends Component {
     const { width, height } = this.props;
     const { toolboxCategories } = this.state;
 
-    const blocklyWidth = width;
-    const blocklyHeight = height;
+    const padding = 5;
+    const blocklyWidth = width - 2 * padding;
+    const blocklyHeight = height - 2 * padding;
 
     return (
-        <div className="fill-height">
+        <React.Fragment>
             <div
                 id="blockly"
                 style={{ height: `${blocklyHeight}px`, width: `${blocklyWidth}px` }}
@@ -53,22 +54,22 @@ export class ProgramEditor extends Component {
                 <ReactBlockly.BlocklyEditor
                     toolboxCategories={toolboxCategories}
                     workspaceConfiguration={{
-                    grid: {
-                        spacing: 20,
-                        length: 3,
-                        colour: '#ccc',
-                        snap: true,
-                    },
-                    scrollbars: false,
-                    trashcan: false,
-                    renderer: 'thrasos',
+                        grid: {
+                            spacing: 20,
+                            length: 3,
+                            colour: '#ccc',
+                            snap: true,
+                        },
+                        scrollbars: true,
+                        trashcan: false,
+                        renderer: 'thrasos',
                     }}
                     initialXml={ConfigFiles.INITIAL_XML}
                     wrapperDivClassName="fill-height"
                     workspaceDidChange={this.workspaceDidChange}
                 />
             </div>
-        </div>
+        </React.Fragment> 
     );
   }
 }

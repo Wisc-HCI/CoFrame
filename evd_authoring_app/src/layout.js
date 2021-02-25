@@ -2,66 +2,103 @@
 // All sizes in pixels
 const componentDesiredSizes = {
     programEditor: {
-        height: null,
-        width: 600
+        body: {
+            height: null,
+            width: 650,
+        },
+        header: {
+            height: 40,
+            width: null
+        }
     },
     header: {
         height: 55,
         width: null
     },
     checklist: {
-        height: null,
-        width: 400
+        body: {
+            height: null,
+            width: 350
+        },
+        header: {
+            height: 40,
+            width: null
+        }
+    },
+    simulator: {
+        header: {
+            height: null,
+            width: null,
+        },
+        body: {
+            height: null,
+            width: null
+        },
+        controls: {
+            height: null,
+            width: null
+        }
     }
 };
 
 
 const computeHeaderLayout = (layoutObj) => {
-    const newLayoutObj = { ...layoutObj };
 
     // handle header layout
-    newLayoutObj.headerHeight = componentDesiredSizes.header.height;
-    if (newLayoutObj.headerHeight > newLayoutObj.totalHeight) {
-        newLayoutObj.headerHeight = newLayoutObj.totalHeight;
+    layoutObj.header.height = componentDesiredSizes.header.height;
+    if (layoutObj.header.height > layoutObj.totalHeight) {
+        layoutObj.header.height = layoutObj.totalHeight;
     }
-    newLayoutObj.distanceFromTop += newLayoutObj.headerHeight;
-    newLayoutObj.remainingHeight -= newLayoutObj.headerHeight;
+    layoutObj.distanceFromTop += layoutObj.header.height;
+    layoutObj.remainingHeight -= layoutObj.header.height;
 
-    newLayoutObj.headerWidth = newLayoutObj.totalWidth;
+    layoutObj.header.width = layoutObj.totalWidth;
 
-    newLayoutObj.mainHeight = newLayoutObj.remainingHeight;
-    newLayoutObj.mainWidth = newLayoutObj.totalWidth;
+    layoutObj.body.height = layoutObj.remainingHeight;
+    layoutObj.body.width = layoutObj.totalWidth;
 
-    return newLayoutObj;
+    return layoutObj;
 }
 
 
 const computeMainLayout = (layoutObj) => {
-    const newLayoutObj = { ...layoutObj };
 
-    let remainingWidth = newLayoutObj.totalWidth;
+    layoutObj.remainingWidth = layoutObj.totalWidth;
 
     // handle program layout
-    newLayoutObj.programHeight = newLayoutObj.remainingHeight;
-    newLayoutObj.progamWidth = componentDesiredSizes.programEditor.width;
-    if (newLayoutObj.progamWidth > remainingWidth) {
-        newLayoutObj.progamWidth = remainingWidth;
+    layoutObj.body.program.height = layoutObj.remainingHeight;
+    layoutObj.body.program.width = componentDesiredSizes.programEditor.body.width;
+    if (layoutObj.body.program.width > layoutObj.remainingWidth) {
+        layoutObj.body.program.width = layoutObj.remainingWidth;
     }
-    remainingWidth -= newLayoutObj.progamWidth;
+    layoutObj.remainingWidth -= layoutObj.body.program.width;
+
+    layoutObj.body.program.header.height = 40;
+    layoutObj.body.program.header.width = layoutObj.body.program.width;
+
+    layoutObj.body.program.body.width = layoutObj.body.program.width;
+    layoutObj.body.program.body.height = layoutObj.body.program.height - layoutObj.body.program.header.height;
+
 
     // handle checklist layout
-    newLayoutObj.checklistHeight = newLayoutObj.remainingHeight;
-    newLayoutObj.checklistWidth = componentDesiredSizes.checklist.width;
-    if (newLayoutObj.checklistWidth > remainingWidth) {
-        newLayoutObj.checklistWidth = remainingWidth;
+    layoutObj.body.checklist.height = layoutObj.remainingHeight;
+    layoutObj.body.checklist.width = componentDesiredSizes.checklist.body.width;
+    if (layoutObj.body.checklist.width > layoutObj.remainingWidth) {
+        layoutObj.body.checklist.width = layoutObj.remainingWidth;
     }
-    remainingWidth -= newLayoutObj.checklistWidth;
+    layoutObj.remainingWidth -= layoutObj.body.checklist.width;
+
+    layoutObj.body.checklist.header.height = 70;
+    layoutObj.body.checklist.header.width = layoutObj.body.checklist.width;
+
+    layoutObj.body.checklist.body.width = layoutObj.body.checklist.width;
+    layoutObj.body.checklist.body.height = layoutObj.body.checklist.height - layoutObj.body.checklist.header.height;
 
     // handle simulator layout
-    newLayoutObj.simulatorWidth = remainingWidth;
-    newLayoutObj.simulatorHeight = newLayoutObj.remainingHeight;
+    layoutObj.body.simulator.width = layoutObj.remainingWidth;
+    layoutObj.body.simulator.height = layoutObj.remainingHeight;
 
-    return newLayoutObj;
+    return layoutObj;
 }
 
 
@@ -70,18 +107,46 @@ export const computeLayout = (width, height) => {
     let layoutObj = {
         distanceFromTop: 0,
         remainingHeight: height,
+        remainingWidth: width,
         totalHeight: height,
         totalWidth: width,
-        headerHeight: 0,
-        headerWidth: 0,
-        mainHeight: 0,
-        mainWidth: 0,
-        programHeight: 0,
-        programWidth: 0,
-        simulatorHeight: 0,
-        simulatorWidth: 0,
-        checklistHeight: 0,
-        checklistWidth: 0
+
+        header: {
+            height: 0,
+            width: 0
+        },
+        body: {
+            height: 0,
+            width: 0,
+            program: {
+                height: 0,
+                width: 0,
+                header: {
+                    height: 0,
+                    width: 0
+                },
+                body: {
+                    height: 0,
+                    width: 0
+                }
+            },
+            simulator: {
+                height: 0,
+                width: 0,
+            },
+            checklist: {
+                height: 0,
+                width: 0,
+                header: {
+                    height: 0,
+                    width: 0
+                },
+                body: {
+                    height: 0,
+                    width: 0
+                }
+            }
+        }
     };
 
     layoutObj = computeHeaderLayout(layoutObj);
