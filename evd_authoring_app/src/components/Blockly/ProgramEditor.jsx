@@ -24,63 +24,10 @@ class ProgramEditor extends Component {
   }
 
   componentDidMount = () => {
-    window.setTimeout(() => {
-      const { toolboxCategories } = this.state;
 
-      this.setState({
-        toolboxCategories: toolboxCategories.concat([
-          {
-            name: 'Text2',
-            blocks: [
-              { type: 'text' },
-              {
-                type: 'text_print',
-                values: {
-                  TEXT: {
-                    type: 'text',
-                    shadow: true,
-                    fields: {
-                      TEXT: 'abc',
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        ]),
-      });
-    }, 2000);
-
-    window.setTimeout(() => {
-      const { toolboxCategories } = this.state;
-
-      this.setState({
-        toolboxCategories: [
-          ...toolboxCategories.slice(0, toolboxCategories.length - 1),
-          {
-            ...toolboxCategories[toolboxCategories.length - 1],
-            blocks: [{ type: 'text' }],
-          },
-        ],
-      });
-    }, 4000);
-
-    window.setTimeout(() => {
-      const { toolboxCategories } = this.state;
-
-      this.setState({
-        toolboxCategories: toolboxCategories.slice(
-          0,
-          toolboxCategories.length - 1,
-        ),
-      });
-    }, 10000);
   };
 
   workspaceDidChange = (workspace) => {
-    console.log('In workspace did change callback');
-    console.log(workspace);
-
     /*
       workspace.registerButtonCallback('myFirstButtonPressed', () => {
           alert('button is pressed');

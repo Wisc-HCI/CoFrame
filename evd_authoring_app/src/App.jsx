@@ -73,7 +73,6 @@ class App extends React.Component {
     this.onHeaderButtonClicked = this.onHeaderButtonClicked.bind(this);
   }
 
-  // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
@@ -90,7 +89,6 @@ class App extends React.Component {
   onHeaderButtonClicked(button) {
     this.setState((prevState) => {
       return {
-        ...prevState,
         downloadModalOpen: button === 'download',
         uploadModalOpen: button === 'upload',
         openModalOpen: button === 'open',
@@ -102,13 +100,10 @@ class App extends React.Component {
   closeModal(modal) {
     this.setState((prevState) => {
       return {
-        ...prevState,
-        downloadModalOpen:
-          modal === 'download' ? false : prevState.downloadModalOpen,
+        downloadModalOpen: modal === 'download' ? false : prevState.downloadModalOpen,
         uploadModalOpen: modal === 'upload' ? false : prevState.uploadModalOpen,
         openModalOpen: modal === 'open' ? false : prevState.openModalOpen,
-        settingsModalOpen:
-          modal === 'settings' ? false : prevState.settingsModalOpen,
+        settingsModalOpen: modal === 'settings' ? false : prevState.settingsModalOpen,
       };
     });
   }
@@ -116,7 +111,6 @@ class App extends React.Component {
   updateWindowDimensions() {
     this.setState((prevState) => {
       return {
-        ...prevState,
         width: window.innerWidth,
         height: window.innerHeight,
       };
@@ -126,15 +120,12 @@ class App extends React.Component {
   render() {
 
     const {
-
       width,
       height,
-
       downloadModalOpen,
       uploadModalOpen,
       openModalOpen,
       settingsModalOpen,
-
       filename
     } = this.state;
 

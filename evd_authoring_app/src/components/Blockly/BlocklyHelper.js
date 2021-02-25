@@ -1,11 +1,6 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-param-reassign */
 
-/**
- * @param {string} xml
- */
 export default function parseWorkspaceXml(xml) {
+
   const arrayTags = [
     'name',
     'custom',
@@ -14,12 +9,15 @@ export default function parseWorkspaceXml(xml) {
     'blocks',
     'button',
   ];
+
   let xmlDoc = null;
+
   if (window.DOMParser) {
     xmlDoc = new DOMParser().parseFromString(xml, 'text/xml');
   } else if (window.ActiveXObject) {
     xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
     xmlDoc.async = false;
+
     if (!xmlDoc.loadXML(xml)) {
       throw new Error(
         `${xmlDoc.parseError.reason} ${xmlDoc.parseError.srcText}`,
@@ -33,10 +31,6 @@ export default function parseWorkspaceXml(xml) {
     return Object.prototype.toString.apply(o) === '[object Array]';
   }
 
-  /**
-   * @param {string} xmlNode
-   * @param {Array.<string>} result
-   */
   function parseNode(xmlNode, result) {
     if (xmlNode.nodeName === '#text') {
       const v = xmlNode.nodeValue;
@@ -84,6 +78,7 @@ function transformed(result) {
   const filteredResult = [];
   const { xml } = result;
   const categories = xml.category;
+  
   for (let i = 0; i < categories.length; i++) {
     const c = categories[i];
     const cNew = {};

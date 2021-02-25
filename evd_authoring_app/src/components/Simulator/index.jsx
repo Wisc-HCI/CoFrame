@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Unity, { UnityContent } from 'react-unity-webgl';
+import { ExpertChecklist } from './ExpertChecklist';
 
 import {
   Stack,
@@ -339,40 +340,49 @@ class Simulator extends Component {
         }}
       >
         <Stack>
-          {this.generateButtonLayout(frame)}
 
-          <div
-            style={{
-              padding: '5px',
-              backgroundColor: Simulator.getFrameColor(frame),
-            }}
-          >
-            <Unity unityContent={this.unityContent} />
-          </div>
+          <Stack.Item>
+            <Stack>
+              {this.generateButtonLayout(frame)}
 
-          <Stack.Item align="center">
-            <IconButton
-              iconProps={{ iconName: 'Refresh' }}
-              title="Reset"
-              ariaLabel="Reset"
-              onClick={this.onResetClicked}
-            />
-            <IconButton
-              iconProps={{ iconName: 'Play' }}
-              title="Play"
-              ariaLabel="Play"
-              onClick={this.onPlayClicked}
-            />
-            <IconButton
-              iconProps={{ iconName: 'Pause' }}
-              title="Pause"
-              ariaLabel="Pause"
-              onClick={this.onPauseClicked}
-            />
+              <div
+                style={{
+                  padding: '5px',
+                  backgroundColor: Simulator.getFrameColor(frame),
+                }}
+              >
+                <Unity unityContent={this.unityContent} />
+              </div>
+
+              <Stack.Item align="center">
+                <IconButton
+                  iconProps={{ iconName: 'Refresh' }}
+                  title="Reset"
+                  ariaLabel="Reset"
+                  onClick={this.onResetClicked}
+                />
+                <IconButton
+                  iconProps={{ iconName: 'Play' }}
+                  title="Play"
+                  ariaLabel="Play"
+                  onClick={this.onPlayClicked}
+                />
+                <IconButton
+                  iconProps={{ iconName: 'Pause' }}
+                  title="Pause"
+                  ariaLabel="Pause"
+                  onClick={this.onPauseClicked}
+                />
+              </Stack.Item>
+
+              <Controls />
+            </Stack>
           </Stack.Item>
 
-          <Controls />
+          <ExpertChecklist />
+
         </Stack>
+        
       </div>
     );
   }
