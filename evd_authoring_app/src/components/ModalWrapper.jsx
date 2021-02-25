@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { Modal, IconButton, Separator } from 'office-ui-fabric-react';
 
-class ModalWrapper extends Component {
+export class ModalWrapper extends Component {
   static generateHeaderStyle(theme) {
     return {
       borderTop: `4px solid ${theme.palette.themePrimary}`,
@@ -57,5 +57,3 @@ class ModalWrapper extends Component {
     );
   }
 }
-
-export default ModalWrapper;

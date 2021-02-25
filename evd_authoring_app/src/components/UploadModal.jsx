@@ -8,9 +8,9 @@ import {
   Spinner,
 } from 'office-ui-fabric-react';
 
-import ModalWrapper from './ModalWrapper';
+import { ModalWrapper } from './ModalWrapper';
 
-class UploadModal extends Component {
+export class UploadModal extends Component {
   constructor(props) {
     super(props);
 
@@ -189,5 +189,3 @@ class UploadModal extends Component {
     );
   }
 }
-
-export default UploadModal;

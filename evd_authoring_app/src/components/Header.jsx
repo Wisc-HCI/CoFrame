@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { Stack } from 'office-ui-fabric-react';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 
-import Logo from '../logo.svg';
+import Logo from '../content/logo.svg';
 
-class Header extends Component {
+export class Header extends Component {
   constructor(props) {
     super(props);
 
@@ -13,14 +13,7 @@ class Header extends Component {
     this.onDownload = this.onDownload.bind(this);
     this.onOpen = this.onOpen.bind(this);
     this.onSettings = this.onSettings.bind(this);
-  }
-
-  static getDesiredHeight() {
-    return 55; // px
-  }
-
-  static getDesiredWidth() {
-    return null;
+    this.onSave = this.onSave.bind(this);
   }
 
   onUpload() {
@@ -47,6 +40,12 @@ class Header extends Component {
     onButtonClick('settings');
   }
 
+  onSave() {
+      const { onButtonClick } = this.props;
+      console.log('On Save');
+      onButtonClick('save');
+  }
+
   createButtonList() {
     return [
       {
@@ -54,6 +53,12 @@ class Header extends Component {
         text: 'Open',
         iconProps: { iconName: 'OpenFolderHorizontal' },
         onClick: this.onOpen,
+      },
+      {
+          key: 'save',
+          text: 'Save',
+          iconProps: { iconName: 'Save' },
+          onClick: this.onSave,
       },
       {
         key: 'upload',
@@ -121,5 +126,3 @@ class Header extends Component {
     );
   }
 }
-
-export default Header;

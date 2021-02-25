@@ -1,1 +1,0 @@
-// TODO extract the vertical stack from Simulator-index

@@ -1,52 +1,94 @@
-import React from 'react';
-
+import React, { Component } from 'react';
 import { Stack } from 'office-ui-fabric-react';
 
-import Simulator from './components/Simulator';
-import ProgramEditor from './components/Blockly/ProgramEditor';
+import { Tile } from './Tile';
+import { Simulator } from './Simulator';
+import { ProgramEditor } from './ProgramEditor';
+import { FrameButtons } from './FrameButtons';
+import { ExpertChecklist } from './ExpertChecklist';
 
-function Body(props) {
+export class Body extends Component {
 
-    const { layoutObj, theme, mainPadding } = props;
+    constructor(props) {
+        super(props);
 
-    return (
-        <div
-            style={{
-                width: `${layoutObj.mainWidth}px`,
-                height: `${layoutObj.mainHeight}px`,
-            }}
-        >
-            <Stack horizontal>
-                <div
+        this.state = {
+            frame: 'safety',
+        };
+
+        this.onFrameButtonClicked = this.onFrameButtonClicked.bind(this);
+    }
+
+    onFrameButtonClicked(frame) {
+        this.setState({ frame });
+    }
+
+    render() {
+        const { frame } = this.state;
+        const { layoutObj, theme, mainPadding } = this.props;
+
+        return (
+            <div
                 style={{
-                    paddingTop: `${mainPadding}px`,
-                    paddingBottom: `${mainPadding}px`,
-                    paddingRight: `${mainPadding / 2}px`,
+                    width: `${layoutObj.mainWidth}px`,
+                    height: `${layoutObj.mainHeight}px`,
                 }}
-                >
-                <ProgramEditor
-                    theme={theme}
-                    width={layoutObj.progamWidth - mainPadding / 2}
-                    height={layoutObj.programHeight - mainPadding}
-                />
-                </div>
+            >
+                <Stack horizontal>
 
-                <div
-                style={{
-                    paddingLeft: `${mainPadding / 2}px`,
-                    paddingTop: `${mainPadding}px`,
-                    paddingBottom: `${mainPadding}px`,
-                }}
-                >
-                <Simulator
-                    theme={theme}
-                    width={layoutObj.simulatorWidth - mainPadding / 2}
-                    height={layoutObj.simulatorHeight - mainPadding}
-                />
-                </div>
-            </Stack>
-        </div>
-    );
+                    <div style={{
+                            paddingRight: `${mainPadding / 2}px`,
+                            paddingTop: `${mainPadding}px`,
+                            paddingBottom: `${mainPadding}px`,
+                        }}
+                    >
+                        <Tile
+                            theme={theme}
+                            width={layoutObj.checklistWidth - mainPadding / 2}
+                            height={layoutObj.checklistHeight - mainPadding}
+                        >
+                            <FrameButtons frame={frame} callback={this.onFrameButtonClicked} />
+                            <ExpertChecklist frame={frame} />
+                        </Tile>
+                    </div>
+
+                    <div
+                        style={{
+                            paddingLeft: `${mainPadding / 2}px`,
+                            paddingRight: `${mainPadding / 2}px`,
+                            paddingTop: `${mainPadding}px`,
+                            paddingBottom: `${mainPadding}px`,
+                        }}
+                    >
+                        <Tile
+                            theme={theme}
+                            width={layoutObj.simulatorWidth - mainPadding}
+                            height={layoutObj.simulatorHeight - mainPadding}
+                        >
+                            <Simulator frame={frame} />
+                        </Tile>     
+                    </div>
+
+                    <div
+                        style={{
+                            paddingTop: `${mainPadding}px`,
+                            paddingBottom: `${mainPadding}px`,
+                            paddingLeft: `${mainPadding / 2}px`,
+                        }}
+                    >
+                        <Tile 
+                            theme={theme}
+                            width={layoutObj.progamWidth - mainPadding / 2}
+                            height={layoutObj.programHeight - mainPadding}
+                        >
+                            <ProgramEditor />
+                        </Tile>  
+                    </div>
+
+                    
+                </Stack>
+            </div>
+        );
+    }
+    
 }
-
-export default Body;

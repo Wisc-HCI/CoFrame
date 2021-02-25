@@ -1,17 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 import { loadTheme, styled, classNamesFunction } from 'office-ui-fabric-react';
 
 // App styling
-import styles from './App.styles';
-import './styles.css';
+import styles from './styles';
+import './index.css';
 import dark from './themes/dark';
 import light from './themes/light';
 
 // Application
-import App from './App';
+import { App } from './App';
 import * as serviceWorker from './serviceWorker';
 
 initializeIcons();
@@ -25,39 +26,41 @@ loadTheme(currentTheme);
 
 // Toggles between the light & dark theme
 const toggleTheme = () => {
-  currentThemeName = currentThemeName === 'light' ? 'dark' : 'light';
+    currentThemeName = currentThemeName === 'light' ? 'dark' : 'light';
 
-  switch (currentThemeName) {
-    case 'light':
-      currentTheme = light;
-      break;
-    case 'dark':
-      currentTheme = dark;
-      break;
-    default:
-      currentThemeName = 'dark';
-      currentTheme = dark;
-      break;
-  }
+    switch (currentThemeName) {
+        case 'light':
+            currentTheme = light;
+            break;
+        case 'dark':
+            currentTheme = dark;
+            break;
+        default:
+            currentTheme = dark;
+            break;
+    }
 
-  loadTheme(currentTheme);
+    loadTheme(currentTheme);
 };
 
 function AppThemeWrapper(props) {
-  // eslint-disable-next-line no-shadow
-  const { styles, theme } = props;
 
-  const classNames = getClassNames(styles, theme);
+    const { styles, theme } = props;
+    const classNames = getClassNames(styles, theme);
 
-  return (
-    <div className={classNames.root}>
-      <App
-        theme={theme}
-        toggleTheme={toggleTheme}
-        themeName={currentThemeName}
-      />
-    </div>
-  );
+    return (
+        <div className={classNames.root}>
+            <Router>
+                <Route exact path="/" render={() => (
+                    <App
+                        theme={theme}
+                        toggleTheme={toggleTheme}
+                        themeName={currentThemeName}
+                    />
+                )}/>
+            </Router>
+        </div>
+    );
 }
 
 // Passes the theme and styles as props to our component

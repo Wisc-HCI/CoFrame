@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { saveAs } from 'file-saver';
 import { Stack, PrimaryButton } from 'office-ui-fabric-react';
 
-import ModalWrapper from './ModalWrapper';
+import { ModalWrapper } from './ModalWrapper';
 
-class DownloadModal extends Component {
+export class DownloadModal extends Component {
   constructor(props) {
     super(props);
 
@@ -83,5 +83,3 @@ class DownloadModal extends Component {
     );
   }
 }
-
-export default DownloadModal;

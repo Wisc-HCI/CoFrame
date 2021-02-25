@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 
 import { PrimaryButton, DefaultButton, Stack } from 'office-ui-fabric-react';
 
-import ModalWrapper from './ModalWrapper';
+import { ModalWrapper } from './ModalWrapper';
 
-class OpenModal extends Component {
+export class OpenModal extends Component {
   constructor(props) {
     super(props);
 
@@ -75,5 +75,3 @@ class OpenModal extends Component {
     );
   }
 }
-
-export default OpenModal;
