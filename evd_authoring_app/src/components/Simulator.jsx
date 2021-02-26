@@ -4,7 +4,7 @@ import { Separator } from 'office-ui-fabric-react';
 
 import Unity, { UnityContent } from 'react-unity-webgl';
 import Controls from './Controls';
-import styles from '../../frameStyles';
+import styles from '../frameStyles';
 
 export class Simulator extends Component {
 
