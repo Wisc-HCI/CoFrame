@@ -7,7 +7,7 @@ const componentDesiredSizes = {
             width: 650,
         },
         header: {
-            height: 40,
+            height: 55,
             width: null
         }
     },
@@ -21,20 +21,16 @@ const componentDesiredSizes = {
             width: 350
         },
         header: {
-            height: 40,
+            height: 90,
             width: null
         }
     },
     simulator: {
         header: {
-            height: null,
+            height: 55,
             width: null,
         },
         body: {
-            height: null,
-            width: null
-        },
-        controls: {
             height: null,
             width: null
         }
@@ -73,7 +69,7 @@ const computeMainLayout = (layoutObj) => {
     }
     layoutObj.remainingWidth -= layoutObj.body.program.width;
 
-    layoutObj.body.program.header.height = 40;
+    layoutObj.body.program.header.height = componentDesiredSizes.programEditor.header.height;
     layoutObj.body.program.header.width = layoutObj.body.program.width;
 
     layoutObj.body.program.body.width = layoutObj.body.program.width;
@@ -88,7 +84,7 @@ const computeMainLayout = (layoutObj) => {
     }
     layoutObj.remainingWidth -= layoutObj.body.checklist.width;
 
-    layoutObj.body.checklist.header.height = 70;
+    layoutObj.body.checklist.header.height = componentDesiredSizes.checklist.header.height;
     layoutObj.body.checklist.header.width = layoutObj.body.checklist.width;
 
     layoutObj.body.checklist.body.width = layoutObj.body.checklist.width;
@@ -97,6 +93,12 @@ const computeMainLayout = (layoutObj) => {
     // handle simulator layout
     layoutObj.body.simulator.width = layoutObj.remainingWidth;
     layoutObj.body.simulator.height = layoutObj.remainingHeight;
+
+    layoutObj.body.simulator.header.height = componentDesiredSizes.simulator.header.height;
+    layoutObj.body.simulator.header.width = layoutObj.body.simulator.width;
+
+    layoutObj.body.simulator.body.height = layoutObj.body.simulator.height - layoutObj.body.simulator.header.height;
+    layoutObj.body.simulator.body.width = layoutObj.body.simulator.width;
 
     return layoutObj;
 }
@@ -133,6 +135,14 @@ export const computeLayout = (width, height) => {
             simulator: {
                 height: 0,
                 width: 0,
+                header: {
+                    height: 0,
+                    width: 0
+                },
+                body: {
+                    height: 0,
+                    width: 0
+                }
             },
             checklist: {
                 height: 0,

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Stack } from 'office-ui-fabric-react';
+import { Stack, Separator } from 'office-ui-fabric-react';
 
 import { Tile } from './Tile';
 import { Simulator } from './Simulator';
@@ -59,10 +59,10 @@ export class Body extends Component {
                                     style={{
                                         fontSize: '25px',
                                         textAlign: 'center',
-                                        paddingBottom: '5px'
                                     }}
                                 >
                                     <i>Checklist</i>
+                                    <Separator />
                                 </div>
 
                                 <FrameButtons 
@@ -74,7 +74,7 @@ export class Body extends Component {
                             <ExpertChecklist 
                                 frame={frame}
                                 width={layoutObj.body.checklist.body.width - mainPadding }
-                                height={layoutObj.body.checklist.body.height - mainPadding / 2}
+                                height={layoutObj.body.checklist.body.height - mainPadding}
                             />
                         </Tile>
                     </div>
@@ -87,12 +87,31 @@ export class Body extends Component {
                             paddingBottom: `${mainPadding}px`,
                         }}
                     >
+
                         <Tile
                             theme={theme}
                             width={layoutObj.body.simulator.width - mainPadding}
                             height={layoutObj.body.simulator.height - mainPadding}
                         >
-                            <Simulator frame={frame} />
+                            <div
+                                style={{
+                                    fontSize: '25px',
+                                    textAlign: 'center',
+                                    width: layoutObj.body.simulator.header.width - 2 * mainPadding,
+                                    height: layoutObj.body.simulator.header.height
+                                }}
+                            >
+                                <i>Simulation</i>
+                                <Separator />
+                            </div>
+                            <div 
+                                style={{
+                                    width: layoutObj.body.simulator.body.width - 2 * mainPadding,
+                                    height: layoutObj.body.simulator.body.height,
+                                }}
+                            >
+                                <Simulator frame={frame} />
+                            </div>
                         </Tile>     
                     </div>
 
@@ -117,6 +136,7 @@ export class Body extends Component {
                                 }}
                             >
                                 <i>Program</i>
+                                <Separator />
                             </div>
 
                             <ProgramEditor 

@@ -35,6 +35,7 @@ export class App extends React.Component {
 
     UNSAFE_componentWillMount() {
         this.updateWindowDimensions();
+        console.log({width: window.innerWidth, height: window.innerHeight})
         window.addEventListener("resize", this.updateWindowDimensions);
     }
 

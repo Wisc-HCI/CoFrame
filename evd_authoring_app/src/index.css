@@ -6,4 +6,6 @@ body {
     top: 0;
     bottom: 0;
     overflow: hidden;
+    min-height: 900;
+    min-width: 1900;
 }

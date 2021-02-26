@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 
+import { Separator } from 'office-ui-fabric-react';
+
 import Unity, { UnityContent } from 'react-unity-webgl';
 import Controls from './Controls';
 import styles from '../../frameStyles';
-
-import { Stack } from 'office-ui-fabric-react';
-
 
 export class Simulator extends Component {
 
@@ -26,7 +25,7 @@ export class Simulator extends Component {
     const frameColor = styles.colors[frame];
 
     return (
-        <Stack>
+        <React.Fragment>
               
             <div
                 style={{
@@ -37,9 +36,11 @@ export class Simulator extends Component {
                 <Unity unityContent={this.unityContent} />
             </div>
 
+            <Separator />
+
             <Controls frame={frame}/>
 
-        </Stack>
+        </React.Fragment>
     );
   }
 }
