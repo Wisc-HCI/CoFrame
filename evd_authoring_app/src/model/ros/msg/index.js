@@ -1,6 +1,7 @@
 import { ApplicationOption, ApplicationOptionUnwrapped } from './application_option';
 import { UpdateData, UpdateDataUnwrapped } from './update_data';
 import { Version, VersionUnwrapped } from './version';
+import { Issue, IssueUnwrapped } from './issue';
 
 export {
     ApplicationOption,
@@ -8,5 +9,7 @@ export {
     UpdateData,
     UpdateDataUnwrapped,
     Version,
-    VersionUnwrapped
+    VersionUnwrapped,
+    Issue,
+    IssueUnwrapped
 };

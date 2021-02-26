@@ -7,7 +7,9 @@ const {
     UpdateData,
     UpdateDataUnwrapped,
     Version,
-    VersionUnwrapped
+    VersionUnwrapped,
+    Issue,
+    IssueUnwrapped
 } = msg;
 
 const {
@@ -34,6 +36,8 @@ export {
     UpdateDataUnwrapped,
     Version,
     VersionUnwrapped,
+    Issue,
+    IssueUnwrapped,
     
     GetDataRequest, 
     GetDataRequestUnwrapped,
