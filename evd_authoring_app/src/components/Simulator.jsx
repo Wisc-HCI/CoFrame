@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
-import { Separator } from 'office-ui-fabric-react';
-
 import Unity, { UnityContent } from 'react-unity-webgl';
-import Controls from './Controls';
 import styles from '../frameStyles';
 
 export class Simulator extends Component {
@@ -21,26 +18,20 @@ export class Simulator extends Component {
   }
 
   render() {
-    const { frame } = this.props;
+    const { frame, width, height } = this.props;
     const frameColor = styles.colors[frame];
 
     return (
-        <React.Fragment>
-              
-            <div
-                style={{
-                    padding: '5px',
-                    backgroundColor: frameColor,
-                }}
-            >
-                <Unity unityContent={this.unityContent} />
-            </div>
-
-            <Separator />
-
-            <Controls frame={frame}/>
-
-        </React.Fragment>
+        <div
+            style={{
+                padding: '5px',
+                backgroundColor: frameColor,
+                width: width,
+                height: height
+            }}
+        >
+            <Unity unityContent={this.unityContent} />
+        </div>
     );
   }
 }

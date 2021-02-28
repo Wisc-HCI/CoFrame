@@ -32,7 +32,7 @@ const componentDesiredSizes = {
         },
         body: {
             height: null,
-            width: null
+            width: 900
         }
     }
 };
@@ -61,20 +61,13 @@ const computeMainLayout = (layoutObj) => {
 
     layoutObj.remainingWidth = layoutObj.totalWidth;
 
-    // handle program layout
+    // handle program main layout
     layoutObj.body.program.height = layoutObj.remainingHeight;
     layoutObj.body.program.width = componentDesiredSizes.programEditor.body.width;
     if (layoutObj.body.program.width > layoutObj.remainingWidth) {
         layoutObj.body.program.width = layoutObj.remainingWidth;
     }
     layoutObj.remainingWidth -= layoutObj.body.program.width;
-
-    layoutObj.body.program.header.height = componentDesiredSizes.programEditor.header.height;
-    layoutObj.body.program.header.width = layoutObj.body.program.width;
-
-    layoutObj.body.program.body.width = layoutObj.body.program.width;
-    layoutObj.body.program.body.height = layoutObj.body.program.height - layoutObj.body.program.header.height;
-
 
     // handle checklist layout
     layoutObj.body.checklist.height = layoutObj.remainingHeight;
@@ -90,15 +83,41 @@ const computeMainLayout = (layoutObj) => {
     layoutObj.body.checklist.body.width = layoutObj.body.checklist.width;
     layoutObj.body.checklist.body.height = layoutObj.body.checklist.height - layoutObj.body.checklist.header.height;
 
-    // handle simulator layout
-    layoutObj.body.simulator.width = layoutObj.remainingWidth;
+    // handle simulator main layout
     layoutObj.body.simulator.height = layoutObj.remainingHeight;
+    layoutObj.body.simulator.width = componentDesiredSizes.simulator.body.width;
+    if (layoutObj.body.simulator.width > layoutObj.remainingWidth) {
+        layoutObj.body.simulator.width = layoutObj.remainingWidth;;
+    } 
+    layoutObj.remainingWidth -= layoutObj.body.simulator.width;
 
+    // adjust the flex amount
+    const flexSim = Math.round(0.333 * layoutObj.remainingWidth);
+    layoutObj.body.simulator.width += flexSim;
+
+    const flexProg = Math.round(0.666 * layoutObj.remainingWidth);
+    layoutObj.body.program.width += flexProg;
+
+    // Handle program internal layout
+    layoutObj.body.program.header.height = componentDesiredSizes.programEditor.header.height;
+    layoutObj.body.program.header.width = layoutObj.body.program.width;
+
+    layoutObj.body.program.body.width = layoutObj.body.program.width;
+    layoutObj.body.program.body.height = layoutObj.body.program.height - layoutObj.body.program.header.height;
+
+    // Handle simulator internal layout
     layoutObj.body.simulator.header.height = componentDesiredSizes.simulator.header.height;
     layoutObj.body.simulator.header.width = layoutObj.body.simulator.width;
 
     layoutObj.body.simulator.body.height = layoutObj.body.simulator.height - layoutObj.body.simulator.header.height;
     layoutObj.body.simulator.body.width = layoutObj.body.simulator.width;
+
+    layoutObj.body.simulator.body.controls.width = layoutObj.body.simulator.body.width;
+    layoutObj.body.simulator.body.unity.width = layoutObj.body.simulator.body.width;
+
+    layoutObj.body.simulator.body.controls.height = Math.round(0.333 * layoutObj.body.simulator.height);
+
+    layoutObj.body.simulator.body.unity.height = Math.round(0.666 * layoutObj.body.simulator.height);
 
     return layoutObj;
 }
@@ -141,7 +160,15 @@ export const computeLayout = (width, height) => {
                 },
                 body: {
                     height: 0,
-                    width: 0
+                    width: 0,
+                    unity: {
+                        height: 0,
+                        width: 0
+                    },
+                    controls: {
+                        height: 0,
+                        width: 0
+                    }
                 }
             },
             checklist: {
