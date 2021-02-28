@@ -6,7 +6,7 @@ import { Location } from './data/location';
 import { Trajectory } from './data/trajectory';
 
 
-export class Context {
+export class Context extends Node {
 
     /*
     * Data structure methods
@@ -23,19 +23,19 @@ export class Context {
     constructor(locations=[], machines=[], things=[], waypoints=[], trajectories=[],
                 type='', name='', uuid=null, parent=null, appendType=null) 
     {
+        super(
+            (appendType) ? 'context.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._locations = {};
         this._machines = {};
         this._things = {};
         this._waypoints = {};
         this._trajectories = {};
-        
-        super(
-            type= (appendType) ? 'context.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.locations = locations;
         this.machines = machines;
@@ -58,15 +58,16 @@ export class Context {
 
     static fromDict(dct) {
         return new Context(
-            name= dct.name,
-            uuid= dct.uuid,
-            type= dct.type,
-            appendType= false,
-            locations= dct.locations.map(l => Location.fromDict(l)),
-            machines= dct.machines.map(m => Machine.fromDict(m)),
-            things= dct.things.map(t => Thing.fromDict(t)),
-            waypoints= dct.waypoints.map(w => Waypoint.fromDict(w)),
-            trajectories= dct.trajectories.map(t => Trajectory.fromDict(t))
+            dct.locations.map(l => Location.fromDict(l)),
+            dct.machines.map(m => Machine.fromDict(m)),
+            dct.things.map(t => Thing.fromDict(t)),
+            dct.waypoints.map(w => Waypoint.fromDict(w)),
+            dct.trajectories.map(t => Trajectory.fromDict(t)),
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

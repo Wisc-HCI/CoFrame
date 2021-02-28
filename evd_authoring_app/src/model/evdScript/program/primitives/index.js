@@ -4,7 +4,7 @@ import { MoveTrajectory } from './moveTrajectory';
 import { MoveUnplanned } from './moveUnplanned';
 
 
-const PrimitiveNodeParser = (exactType, dct) => {
+const PrimitivesNodeParser = (exactType, dct) => {
 
     let node = null;
 
@@ -21,6 +21,8 @@ const PrimitiveNodeParser = (exactType, dct) => {
         case 'gripper':
             node = Gripper.fromDict(dct);
             break;
+        default:
+            break;
     }
 
     return node;
@@ -31,5 +33,5 @@ export {
     Gripper,
     MoveTrajectory,
     MoveUnplanned,
-    PrimitiveNodeParser
+    PrimitivesNodeParser
 };

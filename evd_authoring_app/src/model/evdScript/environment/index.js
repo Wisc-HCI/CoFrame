@@ -25,6 +25,8 @@ const EnvironmentNodeParser = (exactType, dct) => {
         case 'environment':
             node = Environment.fromDict(dct);
             break;
+        default:
+            break;
     }
 
     return node;

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { IconButton } from 'office-ui-fabric-react';
 
-import styles from '../../frameStyles';
+//import styles from '../../frameStyles';
 
 class Controls extends Component {
 
@@ -28,7 +28,7 @@ class Controls extends Component {
 
   render() {
 
-    const { frame } = this.props;
+    //const { frame } = this.props;
 
     return (
         <div style={{paddingLeft: '10px', paddingRight: '10px'}}>

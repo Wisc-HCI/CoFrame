@@ -16,18 +16,20 @@ export class MachineRecipe extends Node {
         return Node.fullTypeString() + MachineRecipe.typeString();
     }
 
-    constructor(processTime=0, inputThingQuantities={}, outputThingQuantities={}, type='', name='', uuid=null, parent=null, appendType=true) {
-        this._processTime = null,
-        this._inputQuantities = null,
-        this._outputQuantities = null
-
+    constructor(processTime=0, inputThingQuantities={}, outputThingQuantities={}, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
         super(
-            type= (appendType) ? 'machine-recipe'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            (appendType) ? 'machine-recipe'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
+
+        this._processTime = null;
+        this._inputQuantities = null;
+        this._outputQuantities = null;
 
         this.processTime = processTime;
         this.inputThingQuantities = inputThingQuantities;
@@ -41,17 +43,19 @@ export class MachineRecipe extends Node {
             input_thing_quantities: this.inputThingQuantities,
             output_thing_quantities: this.outputThingQuantities
         };
+        return msg;
     }
 
     static fromDict(dct) {
         return new MachineRecipe(
-            processTime= dct.process_time,
-            inputThingQuantities= dct.input_thing_quantities,
-            outputThingQuantities= dct.output_thing_quantities,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.process_time,
+            dct.input_thing_quantities,
+            dct.output_thing_quantities,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -97,7 +101,7 @@ export class MachineRecipe extends Node {
     }
 
     deleteInputThingQuantity(thingType) {
-        if (! thingType in this._inputQuantities) {
+        if (! (thingType in this._inputQuantities)) {
             throw new Error(`No such ${thingType} in input quantities`);
         }
 
@@ -136,7 +140,7 @@ export class MachineRecipe extends Node {
     }
 
     deleteOutputThingQuantity(thingType) {
-        if (! thingType in this._outputQuantities) {
+        if (! (thingType in this._outputQuantities)) {
             throw new Error(`No such ${thingType} in output quantities`);
         }
 
@@ -201,20 +205,21 @@ export class Machine extends Node {
         return Node.fullTypeString() + Machine.type();
     }
 
-    constructor(inputRegions=null, outputRegions=null, recipe=null, type='', name='', uuid=null, parent=null, appendType=true) {
+    constructor(inputRegions=null, outputRegions=null, recipe=null, type='', 
+                name='', uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            (appendType) ? 'machine'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
 
         this._inputRegions = null;
         this._outputRegions = null;
         this._machineType = null;
         this._recipe = null;
-
-        super(
-            type= (appendType) ? 'machine'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.inputRegions = inputRegions;
         this.outputRegions = outputRegions;
@@ -223,12 +228,12 @@ export class Machine extends Node {
 
     toDict() {
 
-        dctInputRegions = {};
+        let dctInputRegions = {};
         for (const [key, value] of Object.entries(this.inputRegions)) {
             dctInputRegions[key] = value.toDict();
         }
 
-        dctOutputRegions = {};
+        let dctOutputRegions = {};
         for (const [key, value] of Object.entries(this.outputRegions)) {
             dctOutputRegions[key] = value.toDict();
         }
@@ -255,13 +260,14 @@ export class Machine extends Node {
         }
 
         return new Machine(
-            inputRegions= inputRegions, 
-            outputRegions= outputRegions, 
-            recipe= MachineRecipe.fromDict(dct.recipe), 
-            type= dct.type, 
-            name= dct.name, 
-            uuid= dct.uuid, 
-            appendType=false
+            inputRegions, 
+            outputRegions, 
+            MachineRecipe.fromDict(dct.recipe), 
+            dct.type, 
+            dct.name, 
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -305,12 +311,12 @@ export class Machine extends Node {
     set inputRegions(value) {
         if (this._inputRegions !== value) {
 
-            for ( const [type, region] of Object.entries(this._inputRegions)) {
+            for ( const region in Object.values(this._inputRegions)) {
                 region.removeFromCache();
             }
 
             this._inputRegions = value;
-            for (const [type, region] of Object.entries(this._inputRegions)) {
+            for ( const region in Object.values(this._inputRegions)) {
                 region.parent = this;
             }
 
@@ -338,7 +344,7 @@ export class Machine extends Node {
     }
 
     deleteInputRegion(thingType) {
-        if (! thingType in this._inputRegions) {
+        if (! (thingType in this._inputRegions)) {
             throw new Error(`No such thing ${thingType} in input regions`);
         }
 
@@ -373,12 +379,12 @@ export class Machine extends Node {
     set outputRegions(value) {
         if (this._outputRegions !== value) {
 
-            for ( const [type, region] of Object.entries(this._outputRegions)) {
+            for ( const region in Object.values(this._outputRegions)) {
                 region.removeFromCache();
             }
 
             this._outputRegions = value;
-            for (const [type, region] of Object.entries(this._outputRegions)) {
+            for ( const region in Object.values(this._outputRegions)) {
                 region.parent = this;
             }
 
@@ -406,7 +412,7 @@ export class Machine extends Node {
     }
 
     deleteOutputRegion(thingType) {
-        if (! thingType in this._outputRegions) {
+        if (! (thingType in this._outputRegions)) {
             throw new Error(`No such thing ${thingType} in output regions`);
         }
 
@@ -470,13 +476,13 @@ export class Machine extends Node {
     removeFromCache() {
 
         if (this.inputRegions !== null) {
-            for ( const [type, region] of Object.entries(this.inputRegions)) {
+            for ( const region in Object.values(this.inputRegions)) {
                 region.removeFromCache();
             }
         }
 
         if (this.outputRegions !== null) {
-            for ( const [type, region] of Object.entries(this.outputRegions)) {
+            for ( const region in Object.values(this.outputRegions)) {
                 region.removeFromCache();
             }
         }
@@ -488,13 +494,13 @@ export class Machine extends Node {
     addToCache() {
 
         if (this.inputRegions !== null) {
-            for ( const [type, region] of Object.entries(this.inputRegions)) {
+            for ( const region in Object.values(this.inputRegions)) {
                 region.addToCache();
             }
         }
 
         if (this.outputRegions !== null) {
-            for ( const [type, region] of Object.entries(this.outputRegions)) {
+            for ( const region in Object.values(this.outputRegions)) {
                 region.addToCache();
             }
         }
@@ -510,13 +516,13 @@ export class Machine extends Node {
     lateConstructUpdate() {
 
         if (this.inputRegions !== null) {
-            for ( const [type, region] of Object.entries(this.inputRegions)) {
+            for ( const region in Object.values(this.inputRegions)) {
                 region.lateConstructUpdate();
             }
         }
 
         if (this.outputRegions !== null) {
-            for ( const [type, region] of Object.entries(this.outputRegions)) {
+            for ( const region in Object.values(this.outputRegions)) {
                 region.lateConstructUpdate();
             }
         }
@@ -529,13 +535,13 @@ export class Machine extends Node {
     deepUpdate() {
 
         if (this.inputRegions !== null) {
-            for ( const [type, region] of Object.entries(this.inputRegions)) {
+            for ( const region in Object.values(this.inputRegions)) {
                 region.deepUpdate();
             }
         }
 
         if (this.outputRegions !== null) {
-            for ( const [type, region] of Object.entries(this.outputRegions)) {
+            for ( const region in Object.values(this.outputRegions)) {
                 region.deepUpdate();
             }
         }

@@ -19,7 +19,9 @@ export class Initialize extends Task {
         return Task.fullTypeString() + Initialize.typeString();
     }
 
-    constructor(homeLocUuid=null, machineUuids=[], type='', name='', uuid=null, parent=null, appendType=true, primitives=null) {
+    constructor(homeLocUuid=null, machineUuids=[], type='', name='', uuid=null, 
+                parent=null, appendType=true, primitives=null) 
+    {
 
         if (primitives === null) {
             primitives = [];
@@ -31,15 +33,27 @@ export class Initialize extends Task {
                 OpenGripper()
             ];
         }
+
+        super(
+            primitives,
+            type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
     }
 
     static fromDict(dct) {
         return new Initialize(
-            type= dct.type,
-            appendType= false,
-            name= dct.name,
-            uuid= dct.uuid,
-            primitives= dct.primitives.map(p => NodeParser(p))
+            null,
+            [],
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false,
+            dct.primitives.map(p => NodeParser(p))
         );
     }
 }

@@ -16,10 +16,9 @@ export class Program extends Task {
         return Task.fullTypeString() + Program.typeString();
     }
 
-    constructor(primitives=[], environment=null, changesCB=null, name='', type='', uuid=null, appendType=true) {
-        this.changesCb = changesCB;
-        this._environment = null;
-
+    constructor(primitives=[], environment=null, changesCB=null, name='', type='', 
+                uuid=null, appendType=true) 
+    {
         if (environment === null) {
             environment = new Environment();
         }
@@ -29,13 +28,16 @@ export class Program extends Task {
         }
 
         super(
-            type= (appendType) ? 'program.'+ type : type,
-            name= name,
-            uuid= uuid,
-            parent= null,
-            appendType= appendType,
-            primitives= primitives
+            primitives,
+            (appendType) ? 'program.'+ type : type,
+            name,
+            uuid,
+            null,
+            appendType
         );
+
+        this.changesCb = changesCB;
+        this._environment = null;
 
         this.environment = environment;
     }
@@ -50,17 +52,18 @@ export class Program extends Task {
 
     static fromDict(dct) {
         return new Program(
-            name= dct.name,
-            type= dct.type,
-            appendType= false,
-            uuid= dct.uuid,
-            primitives= dct.primitives.map(p => NodeParser(p)),
-            environment= NodeParser(dct.environment)
+            dct.primitives.map(p => NodeParser(p)),
+            NodeParser(dct.environment),
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false 
         );
     }
 
     /*
-    *
+    * Access/modifier methods
     */
 
     get context() {

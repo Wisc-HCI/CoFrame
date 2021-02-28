@@ -1,5 +1,5 @@
 import { Task } from '../task';
-import { Gripper } from '../primitive';
+import { Gripper } from '../primitives';
 import { NodeParser } from '../../utilityFunctions';
 
 
@@ -17,36 +17,43 @@ export class OpenGripper extends Task {
         return Task.fullTypeString() + OpenGripper.typeString();
     }
 
-    constructor(position=0, effort=100, speed=100, thingUuid=null, type='', name='', uuid=null, parent=null, appendType=true, primitives=null) {
+    constructor(thingUuid=null, position=0, effort=100, speed=100, type='', name='', 
+                uuid=null, parent=null, appendType=true, primitives=null) 
+    {
 
         if (primitives !== null) {
             primitives = [
                 Gripper(
-                    thingUuid= thingUuid,
-                    position= position,
-                    effort= effort,
-                    speed= speed
+                    thingUuid,
+                    position,
+                    effort,
+                    speed
                 )
             ];
         }
 
         super(
-            type= (appendType) ? 'open-gripper.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType,
-            primitives= primitives
+            primitives,
+            (appendType) ? 'open-gripper.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
     }
 
     static fromDict(dct) {
         return new OpenGripper(
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false,
-            primitives= dct.primitives.map(p => NodeParser(p))
+            null,
+            0,
+            100,
+            100,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false,
+            dct.primitives.map(p => NodeParser(p))
         );
     }
 }

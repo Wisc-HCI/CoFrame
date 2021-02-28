@@ -5,7 +5,7 @@ export class AttributeTraceProcessor {
     }
 
     subscribeToType(type, callback) {
-        if (! type in this._subscribers) {
+        if (! (type in this._subscribers)) {
             this._subscribers[type] = [];
         }
 
@@ -13,7 +13,7 @@ export class AttributeTraceProcessor {
     }
 
     unsubscribeToType(type, callback) {
-        if (! type in this._subscribers) {
+        if (! (type in this._subscribers)) {
             return false;
         }
 

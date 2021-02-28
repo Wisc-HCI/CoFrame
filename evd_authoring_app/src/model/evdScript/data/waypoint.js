@@ -15,18 +15,20 @@ export class Waypoint extends Pose {
         return Pose.fullTypeString() + Waypoint.typeString();
     }
 
-    constructor(position=null, orientation=null, joints=null, type='', name='', uuid=null, parent=null, appendType=true) {
-        this._joints = null;
-
+    constructor(position=null, orientation=null, joints=null, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
         super(
-            position= position,
-            orientation= orientation,
-            type= (appendType) ? 'waypoint.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            position,
+            orientation,
+            (appendType) ? 'waypoint.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
+
+        this._joints = null;
 
         this.joints = joints;
     }
@@ -41,13 +43,14 @@ export class Waypoint extends Pose {
 
     static fromDict(dct) {
         return new Waypoint(
-            position= Position.fromDict(dct.position),
-            orientation= Orientation.fromDict(dct.orientation),
-            joints= dct.joints,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            Position.fromDict(dct.position),
+            Orientation.fromDict(dct.orientation),
+            dct.joints,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

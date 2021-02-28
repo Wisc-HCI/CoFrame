@@ -1,6 +1,5 @@
 import { Node } from '../node';
-import { Waypoint } from './waypoint';
-import { Trace, TraceDataPoint } from './trace';
+import { Trace } from './trace';
 
 
 export class Trajectory extends Node {
@@ -23,7 +22,18 @@ export class Trajectory extends Node {
         return Node.fullTypeString() + Trajectory.typeString();
     }
 
-    constructor(startLocUuid=null, endLocUuid=null, waypointUuids=[], trace=null, moveType='joint', velocity=0, acceleration=0, parent=null, type='', name='', uuid=null, appendType=true) {
+    constructor(startLocUuid=null, endLocUuid=null, waypointUuids=[], trace=null, 
+                moveType='joint', velocity=0, acceleration=0, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            (appendType) ? 'trajectory.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._startLocationUuid = null;
         this._endLocationUuid = null;
         this._waypointUuids = null;
@@ -31,14 +41,6 @@ export class Trajectory extends Node {
         this._acceleration = null;
         this._trace = null;
         this._moveType = null;
-
-        super(
-            type= (appendType) ? 'trajectory.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.startLocationUuid = startLocUuid;
         this.endLocationUuid = endLocUuid;
@@ -65,17 +67,18 @@ export class Trajectory extends Node {
 
     static fromDict(dct) {
         return new Trajectory(
-            startLocUuid= dct.start_location_uuid,
-            endLocUuid= dct.end_location_uuid,
-            waypointUuids= dct.waypoint_uuids,
-            trace= (dct.trace !== null) ? Trace.fromDict(dct.trace) : null,
-            name= dct.name,
-            uuid= dct.uuid,
-            type= dct.type,
-            appendType= false,
-            velocity= dct.velocity,
-            acceleration= dct.acceleration,
-            moveType= dct.move_type
+            dct.start_location_uuid,
+            dct.end_location_uuid,
+            dct.waypoint_uuids,
+            (dct.trace !== null) ? Trace.fromDict(dct.trace) : null,
+            dct.move_type,
+            dct.velocity,
+            dct.acceleration,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -177,7 +180,7 @@ export class Trajectory extends Node {
 
     set moveType(value) {
         if (this._moveType !== value) {
-            if (! value in Trajectory.TYPES) {
+            if (! (value in Trajectory.TYPES)) {
                 throw new Error('Invalid moveType provided');
             }
 

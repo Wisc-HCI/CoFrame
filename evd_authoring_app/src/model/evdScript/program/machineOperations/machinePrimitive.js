@@ -15,15 +15,15 @@ export class MachinePrimitive extends Primitive {
     }
 
     constructor(machineUuid=null, type='', name='', uuid=null, parent=null, appendType=true) {
-        this._machineUuid = null;
-
         super(
-            type= (appendType) ? 'machine-primitive.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            (appendType) ? 'machine-primitive.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
+
+        this._machineUuid = null;
 
         this.machineUuid = machineUuid;
     }
@@ -38,11 +38,12 @@ export class MachinePrimitive extends Primitive {
 
     static fromDict(dct) {
         return new MachinePrimitive(
-            machineUuid= dct.machine_uuid,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.machine_uuid,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

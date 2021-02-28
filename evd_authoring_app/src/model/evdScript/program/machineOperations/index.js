@@ -29,6 +29,8 @@ const MachineOperationsNodeParser = (exactType, dct) => {
         case 'machine-blocking-process':
             node = MachineBlockingProcess.fromDict(dct);
             break;
+        default:
+            break;
     }
 
     return node;

@@ -1,6 +1,5 @@
 import { Primitive } from '../primitive';
 import { Trajectory } from '../../data/trajectory';
-import { Context } from '../../context';
 
 
 export class MoveTrajectory extends Primitive {
@@ -17,19 +16,21 @@ export class MoveTrajectory extends Primitive {
         return Primitive.fullTypeString() + MoveTrajectory.typeString();
     }
 
-    constructor(startLocUuid=null, endLocUuid=null, trajectory=null, trajectoryUuid=null, type='', name='', uuid=null, parent=null, appendType=true) {
+    constructor(startLocUuid=null, endLocUuid=null, trajectory=null, trajectoryUuid=null, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            (appendType) ? 'move-trajectory.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._contextPatch = null;
         this._startLocationUuid = null;
         this._endLocationUuid = null;
         this._trajectoryUuid = null;
-
-        super(
-            type= (appendType) ? 'move-trajectory.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.startLocationUuid = startLocUuid;
         this.endLocationUuid = endLocUuid;
@@ -46,7 +47,7 @@ export class MoveTrajectory extends Primitive {
     }
 
     toDict() {
-        const tmp = this.context; // force a context update before serialization
+        this.refreshContext(); // force a context update before serialization
 
         let msg = {
             ...super.toDict(),
@@ -65,14 +66,15 @@ export class MoveTrajectory extends Primitive {
 
     static fromDict(dct) {
         return new MoveTrajectory(
-            name= dct.name,
-            type= dct.type,
-            appendType= false,
-            uuid= dct.uuid,
-            startLocUuid= dct.start_location_uuid,
-            endLocUuid = dct.end_location_uuid,
-            trajectory= ('trajectory' in dct) ? Trajectory.fromDict(dct.trajectory) : null,
-            trajectoryUuid= ('trajectory_uuid' in dct) ? dct.trajectory_uuid : null 
+            dct.start_location_uuid,
+            dct.end_location_uuid,
+            ('trajectory' in dct) ? Trajectory.fromDict(dct.trajectory) : null,
+            ('trajectory_uuid' in dct) ? dct.trajectory_uuid : null,
+            dct.name,
+            dct.type,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -80,20 +82,13 @@ export class MoveTrajectory extends Primitive {
     * Accessor/modifier methods
     */
 
-    context() {
+    get context() {
         // Need to patch context when none exists
-        const realContext = super.context;
-        if (realContext === null) {
-            if (this._contextPatch === null) {
-                this._contextPatch = new ContextPatch();
-            }
+        this.refreshContext();
+        if (this._contextPatch !== null) {
             return this._contextPatch;
         } else {
-            if (this._contextPatch !== null) {
-                this._contextPatch.updateContext(realContext);
-                this._contextPatch = null;
-            }
-            return realContext;
+            return super.context;
         }
     }
 
@@ -158,9 +153,9 @@ export class MoveTrajectory extends Primitive {
                 throw new Error('Id must have a trajectory already in context');
             } else if (traj === null && this._contextPatch !== null) {
                 this._contextPatch.addPendingTrajectory(
-                    uuid=value,
-                    startLoc=this.startLocationUuid,
-                    endLoc=this.endLocationUuid
+                    value,
+                    this.startLocationUuid,
+                    this.endLocationUuid
                 );
             } else if (traj !== null) {
                 if (traj.startLocationUuid !== this.startLocationUuid) {
@@ -203,13 +198,13 @@ export class MoveTrajectory extends Primitive {
     */
 
     lateConstructUpdate() {
-        const tmp = this.context; // force update context;
+        this.refreshContext();
 
         super.lateConstructUpdate();
     }
 
     deepUpdate() {
-        const tmp = this.context; // force update context
+        this.refreshContext();
 
         super.deepUpdate();
 
@@ -226,6 +221,22 @@ export class MoveTrajectory extends Primitive {
         this.updatedAttribute('end_location_uuid','update');
         this.updatedAttribute('trajectory_uuid','update');
         this.updatedAttribute('trajectory','update');
+    }
+
+    /*
+    * Utility methods
+    */
+
+    refreshContext() {
+        const realContext = super.context;
+        if (realContext === null) {
+            this._contextPatch = new ContextPatch();
+        } else {
+            if (this._contextPatch !== null) {
+                this._contextPatch.updateContext(realContext);
+                this._contextPatch = null;
+            }
+        }
     }
 }
 
@@ -251,7 +262,7 @@ class ContextPatch {
     }
 
     set trajectories(value) {
-        for (const [uuid, t] of Object.entries(this._trajctories)) {
+        for (const t in Object.values(this._trajctories)) {
             t.removeFromCache();
         }
         this._trajctories = {};
@@ -288,7 +299,7 @@ class ContextPatch {
 
     updateContext(context) {
 
-        for (const [uuid, t] of Object.entries(this._trajctories)) {
+        for (const t in Object.values(this._trajctories)) {
             context.addTrajectory(t);
         }
 

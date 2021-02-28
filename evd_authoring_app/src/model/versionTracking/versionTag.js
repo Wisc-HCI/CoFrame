@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { Version, VersionUnwrapped } from '../ros/msg/version';
-
+import { TimeNowUnwrapped } from '../ros/msg/time';
 
 export class VersionTag {
 
@@ -11,7 +11,7 @@ export class VersionTag {
         } else {
             this.uuid = this._generateUuid('version-tag');
         }
-        this.timestamp = (timestamp !== null) ? timestamp : this._generateTimestamp();
+        this.timestamp = (timestamp !== null) ? timestamp : TimeNowUnwrapped();
         this.source = source
     }
 
@@ -59,12 +59,4 @@ export class VersionTag {
     static _generateUuid(type) {
         return `${type}-js-${uuidv4()}`;
     }
-
-    static _generateTimestamp() {
-        const currentTime = new Date();
-        const secs = Math.floor(currentTime.getTime() / 1000);
-        const nsecs = Math.round(1000000000*(currentTime.getTime()/1000-secs));
-        return {secs, nsecs};
-    }
-
 }

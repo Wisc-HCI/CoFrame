@@ -17,6 +17,8 @@ const ControlFlowNodeParser = (exactType, dct) => {
         case 'breakpoint':
             node = Breakpoint.fromDict(dct);
             break;
+        default:
+            break;
     }
 
     return node;

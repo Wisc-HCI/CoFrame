@@ -1,6 +1,6 @@
 
 import { Trajectory } from './data/trajectory';
-import { Location } from './data/Location';
+import { Location } from './data/location';
 import { Waypoint } from './data/waypoint';
 import { Thing } from './data/thing';
 import { Trace } from './data/trace';
@@ -13,9 +13,9 @@ import { Context } from './context';
 
 
 // Cache is global so that we can keep a UUID list for NodeParser
-cacheObj = null;
+let cacheObj = null;
 export const getEvdCacheObject = () => {
-    if (cacheObj == null || cacheObj == undefined) {
+    if (cacheObj === null || cacheObj === undefined) {
         cacheObj = Cache();
     }
     return cacheObj;
@@ -82,7 +82,7 @@ export class Cache {
     }
 
     remove(uuid) {
-        node = this.data[uuid];
+        let node = this.data[uuid];
         delete this.data[uuid];
 
         if (node instanceof Trajectory) {
@@ -176,7 +176,7 @@ export class Cache {
     }
 
     utilityCacheStats() {
-        log = {
+        let log = {
             data: {},
             num_trajectories: 0,
             num_locations: 0,
@@ -189,7 +189,7 @@ export class Cache {
         }
 
         Object.values(this.data).forEach((node) => {
-            if (! node.constructor.name in log.data) {
+            if (! (node.constructor.name in log.data)) {
                 log.data[node.constructor.name] = 0;
             }
             log.data[node.constructor.name] += 1;

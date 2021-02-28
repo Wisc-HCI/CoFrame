@@ -14,19 +14,21 @@ export class Gripper extends Primitive {
         return Primitive.fullTypeString() + Gripper.typeString();
     }
 
-    constructor(position=0, effort=0, speed=0, thingUuid=null, type='', name='', uuid=null, parent=null, appendType=true) {
+    constructor(thingUuid=null, position=0, effort=0, speed=0, type='', name='', 
+                uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            (appendType) ? 'gripper.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._thingUuid = null;
         this._position = null;
         this._effort = null;
         this._speed = null;
-
-        super(
-            type= (appendType) ? 'gripper.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.thingUuid = thingUuid;
         this.position = position;
@@ -47,14 +49,15 @@ export class Gripper extends Primitive {
 
     static fromDict(dct) {
         return new Gripper(
-            position= dct.position,
-            effort= dct.effort,
-            speed= dct.speed,
-            thingUuid= dct.thing_uuid,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.thing_uuid,
+            dct.position,
+            dct.effort,
+            dct.speed,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

@@ -1,5 +1,5 @@
-import { ApplicationOption, ApplicationOptionUnwrapped } from './application_option';
-import { UpdateData, UpdateDataUnwrapped } from './update_data';
+import { ApplicationOption, ApplicationOptionUnwrapped } from './applicationOption';
+import { UpdateData, UpdateDataUnwrapped } from './updateData';
 import { Version, VersionUnwrapped } from './version';
 import { Issue, IssueUnwrapped } from './issue';
 

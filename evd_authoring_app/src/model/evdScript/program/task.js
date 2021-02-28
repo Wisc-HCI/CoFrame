@@ -1,6 +1,6 @@
 import { Primitive } from './primitive';
 import { NodeParser } from '../utilityFunctions';
-
+import Blockly from 'blockly';
 
 export class Task extends Primitive {
 
@@ -17,15 +17,15 @@ export class Task extends Primitive {
     }
 
     constructor(primitives=[], type='', name='', uuid=null, parent=null, appendType=true) {
-        this._primitives = [];
-
         super(
-            type= (appendType) ? 'task.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            (appendType) ? 'task.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
+
+        this._primitives = [];
 
         this.primitives = primitives;
     }
@@ -40,12 +40,48 @@ export class Task extends Primitive {
 
     static fromDict(dct) {
         return new Task(
-            primitives= dct.primitives.map(p => NodeParser(p)),
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.primitives.map(p => NodeParser(p)),
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
+    }
+
+    static BlocklyBlock(expanded=false) {
+
+        let data = null;
+        if (expanded) {
+            data = {
+                init: function() {
+                    this.appendDummyInput()
+                        .appendField("Task")
+                        .appendField(new Blockly.FieldTextInput("unnamed"), "name");
+                    this.appendStatementInput("children")
+                        .setCheck(null);
+                    this.setPreviousStatement(true, null);
+                    this.setNextStatement(true, null);
+                    this.setColour(210);
+                    this.setTooltip("task");
+                    this.setHelpUrl("task");
+                }
+            };
+        } else {
+            data = {
+                init: function() {
+                    this.appendDummyInput()
+                        .appendField("Task")
+                        .appendField(new Blockly.FieldTextInput("unnamed"), "name");
+                    this.setPreviousStatement(true, null);
+                    this.setNextStatement(true, null);
+                    this.setColour(210);
+                this.setTooltip("task");
+                this.setHelpUrl("task");
+                }
+            };
+        }
+        return {'task': data};
     }
 
     /*

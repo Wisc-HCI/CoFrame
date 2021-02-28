@@ -8,7 +8,7 @@ import { Machine } from '../data/machine';
 import { Thing } from '../data/thing';
 import { Waypoint } from '../data/waypoint';
 import { Trajectory } from '../data/trajectory';
-import { EnvironmentNodeParser } from '.';
+
 
 export class Environment extends Context {
 
@@ -24,24 +24,27 @@ export class Environment extends Context {
         return Context.fullTypeString() + Environment.typeString();
     }
 
-    constructor(reachSphere=null, pinchPoints=[], collisionMeshes=[], occupancyZones=[], locations=[], machines=[], things=[], waypoints=[], trajectories=[], name='', type='', uuid=null, parent=null, appendType=true) {
+    constructor(reachSphere=null, pinchPoints=[], collisionMeshes=[], occupancyZones=[], 
+                locations=[], machines=[], things=[], waypoints=[], trajectories=[], 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            locations,
+            machines,
+            things,
+            waypoints,
+            trajectories,
+            (appendType) ? 'environment.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._reachSphere = null;
         this._pinchPoints = null;
         this._collisionMeshes = null;
         this._occupancyZones = null;
-
-        super(
-            locations= locations,
-            machines= machines,
-            things= things,
-            waypoints= waypoints,
-            trajectories= trajectories,
-            type= (appendType) ? 'environement.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.reachSphere = reachSphere;
         this.pinchPoints = pinchPoints;
@@ -62,19 +65,20 @@ export class Environment extends Context {
 
     static fromDict(dct) {
         return new Environment(
-            reachSphere= ReachSphere.fromDict(dct.reach_sphere),
-            pinchPoints= dct.pinch_points.map(p => PinchPoint.fromDict(p)),
-            collisionMeshes= dct.collision_meshes.map(c => CollisionMesh.fromDict(c)),
-            occupancyZones= dct.occupancy_zones.map(o => OccupancyZone.fromDict(o)),
-            locations= dct.locations.map(l => Location.fromDict(l)),
-            machines= dct.machines.map(m => Machine.fromDict(m)),
-            things= dct.things.map(t => Thing.fromDict(t)),
-            waypoints= dct.waypoints.map(w => Waypoint.fromDict(w)),
-            trajectories= dct.trajectories.map(t => Trajectory.fromDict(t)),
-            type= dct.type,
-            uuid= dct.uuid,
-            name= dct.name,
-            appendType= false
+            ReachSphere.fromDict(dct.reach_sphere),
+            dct.pinch_points.map(p => PinchPoint.fromDict(p)),
+            dct.collision_meshes.map(c => CollisionMesh.fromDict(c)),
+            dct.occupancy_zones.map(o => OccupancyZone.fromDict(o)),
+            dct.locations.map(l => Location.fromDict(l)),
+            dct.machines.map(m => Machine.fromDict(m)),
+            dct.things.map(t => Thing.fromDict(t)),
+            dct.waypoints.map(w => Waypoint.fromDict(w)),
+            dct.trajectories.map(t => Trajectory.fromDict(t)),
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

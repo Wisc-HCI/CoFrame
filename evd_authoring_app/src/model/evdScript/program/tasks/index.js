@@ -3,7 +3,7 @@ import { Initialize } from './initialize';
 import { OpenGripper } from './openGripper';
 import { SimplePickAndPlace } from './simplePickAndPlace';
 
-const TaskNodeParser = (exactType, dct) => {
+const TasksNodeParser = (exactType, dct) => {
 
     let node = null;
 
@@ -20,6 +20,8 @@ const TaskNodeParser = (exactType, dct) => {
         case 'initialize':
             node = Initialize.fromDict(dct);
             break;
+        default:
+            break;
     }
 
     return node;
@@ -30,5 +32,5 @@ export {
     Initialize,
     OpenGripper,
     SimplePickAndPlace,
-    TaskNodeParser
+    TasksNodeParser
 };

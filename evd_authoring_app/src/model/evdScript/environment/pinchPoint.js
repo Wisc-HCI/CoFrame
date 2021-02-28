@@ -24,20 +24,22 @@ export class PinchPoint extends Node {
         return Node.fullTypeString() + PinchPoint.typeString();
     }
 
-    constructor(axis='x', offset=null, link='', radius=0.5, length=0.2, type='', name='', parent=null, uuid=null, appendType=true) {
+    constructor(axis='x', offset=null, link='', radius=0.5, length=0.2, 
+                type='', name='', parent=null, uuid=null, appendType=true) 
+    {
+        super(
+            (appendType) ? 'pinch-point.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._axis = null;
         this._offset = null;
         this._link = null;
         this._radius = null;
         this._length = null;
-
-        super(
-            type= (appendType) ? 'pinch-point.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.axis = axis;
         this.offset = offset;
@@ -60,15 +62,16 @@ export class PinchPoint extends Node {
 
     static fromDict(dct) {
         return new PinchPoint(
-            axis= dct.axis,
-            offset= Position.fromDict(dct.offset),
-            link= dct.link,
-            radius= dct.radius,
-            length= dct.length,
-            type= dct.type,
-            uuid= dct.uuid,
-            name= dct.name,
-            appendType= false
+            dct.axis,
+            Position.fromDict(dct.offset),
+            dct.link,
+            dct.radius,
+            dct.length,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

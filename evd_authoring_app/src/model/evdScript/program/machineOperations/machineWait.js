@@ -16,22 +16,23 @@ export class MachineWait extends MachinePrimitive {
 
     constructor(machineUuid=null, type='', name='', uuid=null, parent=null, appendType=true) {
         super(
-            machineUuid= machineUuid,
-            type= (appendType) ? 'machine-wait'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            machineUuid,
+            (appendType) ? 'machine-wait'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
     }
 
     static fromDict(dct) {
         return new MachineWait(
-            machineUuid= dct.machine_uuid,
-            type= dct.type,
-            appendType= false,
-            name= dct.name,
-            uuid= dct.uuid
+            dct.machine_uuid,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 }

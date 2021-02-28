@@ -16,16 +16,16 @@ export class Pose extends Node {
     }
 
     constructor(position=null, orientation=null, type='', name='', uuid=null, parent=null, appendType=true) {
+        super(
+            (appendType) ? 'pose.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._position = null;
         this._orientation = null;
-
-        super(
-            type= (appendType) ? 'pose.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.position = (position !== null) ? position : new Position(0,0,0);
         this.orientation = (orientation !== null) ? orientation : new Orientation(0,0,0,1);
@@ -42,12 +42,13 @@ export class Pose extends Node {
 
     static fromDict(dct) {
         return new Pose(
-            position= Position.fromDict(dct.position),
-            orientation = Orientation.fromDict(dct.orientation),
-            type= dct.type,
-            appendType= false,
-            uuid= dct.uuid,
-            name= dct.name
+            Position.fromDict(dct.position),
+            Orientation.fromDict(dct.orientation),
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -81,7 +82,7 @@ export class Pose extends Node {
 
     set orientation(value) {
         if (this._orientation !== value) {
-            if (value === null || value == undefined) {
+            if (value === null || value === undefined) {
                 throw new Error('Orienation cannot be null or undefined');
             }
 
@@ -170,18 +171,17 @@ export class Position extends Node {
     }
 
     constructor(x, y, z, type='', name='', parent=null, uuid=null, appendType=true) {
+        super(
+            (appendType) ? 'position.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
 
         this._x = null;
         this._y = null;
         this._z = null;
-
-        super(
-            type= (appendType) ? 'position.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.x = x;
         this.y = y;
@@ -200,13 +200,14 @@ export class Position extends Node {
 
     static fromDict(dct) {
         return new Position(
-            x= dct.x,
-            y= dct.y,
-            z= dct.z,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.x,
+            dct.y,
+            dct.z,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -301,19 +302,18 @@ export class Orientation extends Node {
     }
 
     constructor(x, y, z, w, type='', name='', parent=null, uuid=null, appendType=true) {
+        super(
+            (appendType) ? 'orientation.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
 
         this._x = null;
         this._y = null;
         this._z = null;
         this._w = null;
-
-        super(
-            type= (appendType) ? 'orientation.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.x = x;
         this.y = y;
@@ -334,14 +334,15 @@ export class Orientation extends Node {
 
     static fromDict(dct) {
         return new Position(
-            x= dct.x,
-            y= dct.y,
-            z= dct.z,
-            w= dct.w,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.x,
+            dct.y,
+            dct.z,
+            dct.w,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

@@ -44,12 +44,15 @@ export const NodeParser = (dct) => {
         return node;
     }
 
-    if (exactType === 'node') {
-        node = Node.fromDict(dct);
-    } else if (exactType === 'context') {
-        node = Context.fromDict(dct);
-    } else {
-        throw new Error(`Could not parse object supplied with type: ${exactType}`);
+    switch(exactType) {
+        case 'node':
+            node = Node.fromDict(dct);
+            break;
+        case 'context':
+            node = Context.fromDict(dct);
+            break;
+        default:
+            throw new Error(`Could not parse object supplied with type: ${exactType}`);
     }
 
     return node;

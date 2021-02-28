@@ -16,16 +16,16 @@ export class Loop extends Task {
     }
 
     constructor(primitives=[], condition=null, type='', name='', uuid=null, parent=null, appendType=true) {
-        this._condition = null;
-
         super(
-            type= (appendType) ? 'loop.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType,
-            primitives= primitives
+            primitives,
+            (appendType) ? 'loop.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
+
+        this._condition = null;
 
         this.condition = condition;
     }
@@ -35,16 +35,18 @@ export class Loop extends Task {
             ...super.toDict(),
             condition: (this.condition !== null) ? this.condition.toDict() : null
         };
+        return msg;
     }
 
     static fromDict(dct) {
         return new Loop(
-            primitives= dct.primitives.map(p => NodeParser(p)),
-            condition= (dct.condition !== null) ? NodeParser(dct.condition) : null,
-            name= dct.name,
-            uuid= dct.uuid,
-            type= dct.type,
-            appendType= false
+            dct.primitives.map(p => NodeParser(p)),
+            (dct.condition !== null) ? NodeParser(dct.condition) : null,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

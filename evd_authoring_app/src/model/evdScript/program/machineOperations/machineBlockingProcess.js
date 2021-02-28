@@ -1,4 +1,4 @@
-import { Task } from '../../task';
+import { Task } from '../task';
 import { NodeParser } from '../../utilityFunctions';
 import { MachineStart } from './machineStart';
 import { MachineStop } from './machineStop';
@@ -30,22 +30,24 @@ export class MachineBlockingProcess extends Task {
         }
 
         super(
-            type= (appendType) ? 'machine-blocking-process'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType,
-            primtiives= primtiives
+            primtiives,
+            (appendType) ? 'machine-blocking-process'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
     }
 
     static fromDict(dct) {
         return new MachineBlockingProcess(
-            type= dct.type,
-            appendType= false,
-            name= dct.name,
-            uuid= dct.uuid,
-            primitives= dct.primitives.map(p => NodeParser(p))
+            null,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false,
+            dct.primitives.map(p => NodeParser(p))
         );
     }
 }

@@ -24,18 +24,20 @@ export class CollisionMesh extends Node {
         return Node.fullTypeString() + CollisionMesh.typeString();
     }
 
-    constructor(meshId=null, poseOffset=null, link='', type='', name='', parent=null, uuid=null, appendType=true) {
+    constructor(meshId=null, poseOffset=null, link='', type='', name='', parent=null,
+                uuid=null, appendType=true) 
+    {
+        super(
+            (appendType) ? 'collision-mesh.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._meshId = null;
         this._poseOffset = null;
         this._link = null;
-
-        super(
-            type= (appendType) ? 'collision-mesh.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.meshId = meshId;
         this.poseOffset = poseOffset;
@@ -54,13 +56,14 @@ export class CollisionMesh extends Node {
 
     static fromDict(dct) {
         return new CollisionMesh(
-            meshId= dct.mesh_id,
-            poseOffset = Pose.fromDict(dct.pose_offset),
-            link= dct.link,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.mesh_id,
+            Pose.fromDict(dct.pose_offset),
+            dct.link,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

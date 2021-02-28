@@ -16,18 +16,20 @@ export class TraceDataPoint extends Pose {
         return Pose.fullTypeString() + TraceDataPoint.typeString();
     }
 
-    constructor(position=null, orientation=null, grade=0, type='', name='', uuid=null, parent=null, appendType=true) {
-        this._grade = null;
-
+    constructor(position=null, orientation=null, grade=0, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
         super(
-            position= position,
-            orientation= orientation,
-            type= (appendType) ? 'trace-data-point.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            position,
+            orientation,
+            (appendType) ? 'trace-data-point.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
+
+        this._grade = null;
 
         this.grade = grade;
     }
@@ -42,13 +44,14 @@ export class TraceDataPoint extends Pose {
 
     static fromDict(dct) {
         return new TraceDataPoint(
-            position= Position.fromDict(dct.position),
-            orientation= Orientation.fromDict(dct.orientation),
-            grade= dct.grade,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            Position.fromDict(dct.position),
+            Orientation.fromDict(dct.orientation),
+            dct.grade,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -61,8 +64,8 @@ export class TraceDataPoint extends Pose {
     }
 
     set grade(value) {
-        if (this._grade != value) {
-            this._grade = grade;
+        if (this._grade !== value) {
+            this._grade = value;
             this.updatedAttribute('grade','set');
         }
     }
@@ -107,7 +110,16 @@ export class Trace extends Node {
         return Node.fullTypeString() + Trace.typeString();
     }
 
-    constructor(eePath=null, data={}, jPaths=[], tPaths=[], cPaths=[], time=0, type='', name='', uuid=null, parent=null, appendType=true) {
+    constructor(eePath=null, data={}, jPaths=[], tPaths=[], cPaths=[], time=0, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            (appendType) ? 'trace.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
 
         this._data = {};
         this._time = null;
@@ -115,14 +127,6 @@ export class Trace extends Node {
         this._jointPaths = null;
         this._toolPaths = null;
         this._componentPaths = null;
-
-        super(
-            type= (appendType) ? 'trace.'+type : type,
-            name= name,
-            uuuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.data = data;
         this.time = time;
@@ -153,16 +157,17 @@ export class Trace extends Node {
         }
 
         return new Trace(
-            uuid= dct.uuid,
-            type= dct.type,
-            name= dct.name,
-            appendType= false,
-            data= data,
-            eePath= dct.end_effector_path,
-            jPaths= dct.joint_paths,
-            tPaths= dct.tool_paths,
-            cPaths= dct.component_paths,
-            time= dct.time
+            data,
+            dct.end_effector_path,
+            dct.joint_paths,
+            dct.tool_paths,
+            dct.component_paths,
+            dct.time,
+            dct.uuid,
+            dct.type,
+            dct.name,
+            null,
+            false,
         );       
     }
 
@@ -177,14 +182,14 @@ export class Trace extends Node {
     set data(value) {
         if (this._data !== value) {
 
-            for (const [key,l] of Object.entries(this._data)) {
+            for (const l in Object.values(this._data)) {
                 for (const d in l) {
                     d.removeFromCache();
                 }
             }
 
             this._data = value;
-            for (const [key,l] of Object.entries(this._data)) {
+            for (const l in Object.values(this._data)) {
                 for (const d in l) {
                     d.parent = this;
                 }
@@ -250,7 +255,7 @@ export class Trace extends Node {
     addDataPoint(dp, group) {
         dp.parent = this;
 
-        if (! group in this._data) {
+        if (! (group in this._data)) {
             this._data[group] = [];
         }
         this._data[group].push(dp);
@@ -319,9 +324,9 @@ export class Trace extends Node {
 
     removeFromCache() {
 
-        for (const [key, l] of Object.entries(this._data)) {
+        for (const l in Object.values(this._data)) {
             for (const d in l) {
-                l.removeFromCache();
+                d.removeFromCache();
             }
         }
 
@@ -330,9 +335,9 @@ export class Trace extends Node {
 
     addToCache() {
 
-        for (const [key, l] of Object.entries(this._data)) {
+        for (const l in Object.values(this._data)) {
             for (const d in l) {
-                l.addToCache();
+                d.addToCache();
             }
         }
 
@@ -345,7 +350,7 @@ export class Trace extends Node {
 
     deleteChild(uuid) {
         let group = null;
-        for (const [key, l] of Object.entries(this._data)) {
+        for (const [key,l] of Object.entries(this._data)) {
             for (const d in l) {
                 if (d.uuid === uuid) {
                     group = key;
@@ -372,7 +377,7 @@ export class Trace extends Node {
 
     lateConstructUpdate() {
 
-        for (const [key, l] of Object.entries(this._data)) {
+        for (const l in Object.values(this._data)) {
             for (const d in l) {
                 d.lateConstructUpdate();
             }
@@ -383,7 +388,7 @@ export class Trace extends Node {
 
     deepUpdate() {
 
-        for (const [key, l] of Object.entries(this._data)) {
+        for (const l in Object.values(this._data)) {
             for (const d in l) {
                 d.deepUpdate();
             }

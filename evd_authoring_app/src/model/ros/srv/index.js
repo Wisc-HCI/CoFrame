@@ -1,10 +1,10 @@
-import { GetDataRequest, GetDataRequestUnwrapped } from './get_data';
-import { GetIssuesRequest, GetIssuesRequestUnwrapped } from './get_issues';
-import { GetOptionsRequest, GetOptionsRequestUnwrapped } from './get_options';
-import { GetPendingRequest, GetPendingRequestUnwrapped } from './get_pending';
-import { LoadDataRequest, LoadDataRequestUnwrapped } from './load_data';
-import { SaveDataRequest, SaveDataRequestUnwrapped } from './save_data';
-import { SetDataRequest, SetDataRequestUnwrapped } from './set_data';
+import { GetDataRequest, GetDataRequestUnwrapped } from './getData';
+import { GetIssuesRequest, GetIssuesRequestUnwrapped } from './getIssues';
+import { GetOptionsRequest, GetOptionsRequestUnwrapped } from './getOptions';
+import { GetPendingRequest, GetPendingRequestUnwrapped } from './getPending';
+import { LoadDataRequest, LoadDataRequestUnwrapped } from './loadData';
+import { SaveDataRequest, SaveDataRequestUnwrapped } from './saveData';
+import { SetDataRequest, SetDataRequestUnwrapped } from './setData';
 
 export {
     GetDataRequest, 

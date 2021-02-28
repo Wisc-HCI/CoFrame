@@ -16,20 +16,21 @@ export class Breakpoint extends Primitive {
 
      constructor(type='', name='', uuid=null, parent=null, appendType=true) {
          super(
-            type= (appendType) ? 'breakpoint.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            (appendType) ? 'breakpoint.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
          );
      }
 
     static fromDict(dct) {
         return new Breakpoint(
-            type= dct.type,
-            appendType=false,
-            name= dct.name,
-            uuid= dct.uuid
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 }

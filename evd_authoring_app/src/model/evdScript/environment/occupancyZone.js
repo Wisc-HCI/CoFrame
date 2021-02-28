@@ -1,5 +1,4 @@
 import { Node } from '../node';
-import { Pose, Position } from '../data/geometry';
 
 
 export class OccupancyZone extends Node {
@@ -23,21 +22,23 @@ export class OccupancyZone extends Node {
         return Node.fullTypeString() + OccupancyZone.typeString();
     }
 
-    constructor(occupancyType, posX=0, posZ=0, sclX=1, sclZ=1, height=0, type='', name='', parent=null, uuid=null, appendType=true) {
+    constructor(occupancyType, posX=0, posZ=0, sclX=1, sclZ=1, height=0, 
+                type='', name='', parent=null, uuid=null, appendType=true) 
+    {
+        super(
+            (appendType) ? 'occupancy-zone.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._occupancyType = null;
         this._positionX = null;
         this._positionZ = null;
         this._scaleX = null;
         this._scaleZ = null;
         this._height = null;
-
-        super(
-            type= (appendType) ? 'occupancy-zone.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.occupancyType = occupancyType;
         this.positionX = posX;
@@ -62,16 +63,17 @@ export class OccupancyZone extends Node {
 
     static fromDict(dct) {
         return new OccupancyZone(
-            occupancyType= dct.occupancy_type,
-            posX= dct.position_x,
-            posZ= dct.position_z,
-            sclX= dct.scale_x,
-            sclZ= dct.scale_z,
-            height= dct.height,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.occupancy_type,
+            dct.position_x,
+            dct.position_z,
+            dct.scale_x,
+            dct.scale_z,
+            dct.height,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

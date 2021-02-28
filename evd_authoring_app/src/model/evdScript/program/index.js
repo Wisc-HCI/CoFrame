@@ -13,7 +13,7 @@ const {
     Initialize,
     OpenGripper,
     SimplePickAndPlace,
-    TaskNodeParser
+    TasksNodeParser
 } = evdTasks;
 
 const { 
@@ -21,7 +21,7 @@ const {
     Gripper, 
     MoveTrajectory, 
     MoveUnplanned, 
-    PrimitiveNodeParser 
+    PrimitivesNodeParser 
 } = evdPrimitives;
 
 const {
@@ -76,14 +76,12 @@ const ProgramNodeParser = (exactType, dct) => {
         case 'program':
             node = Program.fromDict(dct);
             break;
+        default:
+            break;
     }
 
     return node;
 };
-
-
-
-
 
 export {
     Task,
@@ -95,13 +93,13 @@ export {
     Initialize,
     OpenGripper,
     SimplePickAndPlace,
-    TaskNodeParser,
+    TasksNodeParser,
 
     Delay, 
     Gripper, 
     MoveTrajectory, 
     MoveUnplanned, 
-    PrimitiveNodeParser,
+    PrimitivesNodeParser,
 
     MachineBlockingProcess,
     MachineInitialize,

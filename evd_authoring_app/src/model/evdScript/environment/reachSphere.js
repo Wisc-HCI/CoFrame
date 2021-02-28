@@ -24,17 +24,19 @@ export class ReachSphere extends Node {
         return Node.fullTypeString() + ReachSphere.typeString();
     }
 
-    constructor(radius=1, offset=null, type='', name='', parent=null, uuid=null, appendType=true) {
+    constructor(radius=1, offset=null, type='', name='', parent=null, uuid=null, 
+                appendType=true) 
+    {
+        super(
+            (appendType) ? 'reach-sphere.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._radius = null;
         this._offset = null;
-
-        super(
-            type= (appendType) ? 'reach-sphere.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.radius = radius;
         this.offset = (offset !== null) ? offset : new Position(0,0,0);
@@ -51,12 +53,13 @@ export class ReachSphere extends Node {
 
     static fromDict(dct) {
         return new ReachSphere(
-            radius= dct.radius,
-            offset= Position.fromDict(dct.offset),
-            type= dct.type,
-            uuid= dct.uuid,
-            name= dct.name,
-            appendType= false
+            dct.radius,
+            Position.fromDict(dct.offset),
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

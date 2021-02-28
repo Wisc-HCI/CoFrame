@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import ReactBlockly from 'react-blockly';
-import Blockly from 'blockly';
 
-import ConfigFiles from './content/programContent';
-import parseWorkspaceXml from './BlocklyHelper';
+import { evdScriptBlocklyToolbox } from '../../model/evdScript';
 
 import './index.css';
+
+
+const DEFAULT_PROGRAM_XML = '<xml xmlns="http://www.w3.org/1999/xhtml">\n</xml>';
+
 
 export class ProgramEditor extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      toolboxCategories: parseWorkspaceXml(ConfigFiles.INITIAL_TOOLBOX_XML),
+      toolbox: evdScriptBlocklyToolbox(),
     };
   }
 
@@ -39,7 +42,7 @@ export class ProgramEditor extends Component {
 
   render() {
     const { width, height } = this.props;
-    const { toolboxCategories } = this.state;
+    const { toolbox } = this.state;
 
     const padding = 5;
     const blocklyWidth = width - 2 * padding;
@@ -52,7 +55,7 @@ export class ProgramEditor extends Component {
                 style={{ height: `${blocklyHeight}px`, width: `${blocklyWidth}px` }}
             >
                 <ReactBlockly.BlocklyEditor
-                    toolboxCategories={toolboxCategories}
+                    toolboxCategories={toolbox}
                     workspaceConfiguration={{
                         grid: {
                             spacing: 20,
@@ -64,7 +67,7 @@ export class ProgramEditor extends Component {
                         trashcan: false,
                         renderer: 'thrasos',
                     }}
-                    initialXml={ConfigFiles.INITIAL_XML}
+                    initialXml={DEFAULT_PROGRAM_XML}
                     wrapperDivClassName="fill-height"
                     workspaceDidChange={this.workspaceDidChange}
                 />

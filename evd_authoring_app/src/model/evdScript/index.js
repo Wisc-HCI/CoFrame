@@ -2,8 +2,8 @@ import { getEvdCacheObject, Cache } from './cache';
 
 import { Node } from './node';
 import { Context } from './context';
-import { NodeParser, getExactType } from './utility_functions';
-import { AttributeTraceProcessor } from './attribute_trace_processor';
+import { NodeParser, getExactType } from './utilityFunctions';
+import { AttributeTraceProcessor } from './attributeTraceProcessor';
 
 import * as evdData from './data';
 import * as evdProgram from './program';
@@ -37,12 +37,12 @@ const {
     Initialize,
     OpenGripper,
     SimplePickAndPlace,
-    TaskNodeParser,
+    TasksNodeParser,
     Delay, 
     Gripper, 
     MoveTrajectory, 
     MoveUnplanned, 
-    PrimitiveNodeParser,
+    PrimitivesNodeParser,
     MachineBlockingProcess,
     MachineInitialize,
     MachinePrimitive,
@@ -70,6 +70,65 @@ const {
     TestNodeParser
 } = evdTest;
 
+
+const INITIAL_TOOLBOX = {
+    contents: [
+        {
+            kind: "category",
+            name: "Locations",
+            colour: "260",
+            blocks: []
+        },
+        {
+            kind: "category",
+            name: "Wayponts",
+            colour: "290",
+            blocks: []
+        },
+        {
+            kind: "category",
+            name: "Trajectories",
+            colour: "330",
+            blocks: []
+        },
+        {
+            kind: "category",
+            name: "Machines",
+            colour: "50",
+            blocks: []
+        },
+        {
+            kind: "category",
+            name: "Things",
+            colour: "20",
+            blocks: []
+        },
+        {
+            kind: "category",
+            name: "Tasks",
+            colour: "210",
+            blocks: []
+        },
+        {
+            kind: "category",
+            name: "Primitives",
+            colour: "120",
+            blocks: []
+        },
+        {
+            kind: "category",
+            name: "Control Flow",
+            colour: "160",
+            blocks: []
+        }
+    ]
+};
+
+const evdScriptBlocklyToolbox = () => {
+    return INITIAL_TOOLBOX.contents;
+};
+
+
 export {
     getEvdCacheObject,
     Cache,
@@ -78,6 +137,7 @@ export {
     NodeParser,
     getExactType,
     AttributeTraceProcessor,
+    evdScriptBlocklyToolbox,
     
     Pose, 
     Position, 
@@ -103,12 +163,12 @@ export {
     Initialize,
     OpenGripper,
     SimplePickAndPlace,
-    TaskNodeParser,
+    TasksNodeParser,
     Delay, 
     Gripper, 
     MoveTrajectory, 
     MoveUnplanned, 
-    PrimitiveNodeParser,
+    PrimitivesNodeParser,
     MachineBlockingProcess,
     MachineInitialize,
     MachinePrimitive,

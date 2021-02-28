@@ -59,6 +59,9 @@ const DataNodeParser = (exactType, dct) => {
         case 'sphere-region':
             node = SphereRegion.fromDict(dct);
             break;
+
+        default:
+            break;
     }
 
     return node;

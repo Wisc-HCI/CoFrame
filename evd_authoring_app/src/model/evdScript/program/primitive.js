@@ -17,20 +17,21 @@ export class Primitive extends Node {
 
     constructor(type='', name='', uuid=null, parent=null, appendType=true) {
         super(
-            type= (appendType) ? 'primitive.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            (appendType) ? 'primitive.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
     }
 
     static fromDict(dct) {
         return new Primitive(
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

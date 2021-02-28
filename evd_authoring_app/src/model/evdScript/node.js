@@ -17,7 +17,7 @@ export class Node {
         return Node.typeString();
     }
 
-    constructor(type='', name='', parent=null, appendType=true) {
+    constructor(type='', name='', uuid=null, parent=null, appendType=true) {
         this._parent = null;
         this._type = null;
         this._name = null;
@@ -35,10 +35,11 @@ export class Node {
 
     static fromDict(dct) {
         return new Node(
-            type= ('type' in dct) ? dct.type : '',
-            appendType= !('type' in dct),
-            uuid= ('uuid' in dct) ? dct.uuid : null,
-            name= ('name' in dct) ? dct.name : ''
+            ('type' in dct) ? dct.type : '',
+            ('name' in dct) ? dct.name : '',
+            ('uuid' in dct) ? dct.uuid : null,
+            null,
+            !('type' in dct)
         );
     }
 
@@ -53,6 +54,14 @@ export class Node {
     toBlockly() {
         // Implement this for nodes that can (and should) be Blockly blocks
         return null;
+    }
+
+    static BlocklyBlock(expanded=false) {
+        return null;
+    }
+
+    static BlocklyToolbox() {
+        
     }
 
     /*
@@ -83,7 +92,7 @@ export class Node {
     }
 
     get name() {
-        return this_name;
+        return this._name;
     }
 
     set name(value) {
@@ -97,7 +106,7 @@ export class Node {
         return this._parent;
     }
 
-    set parent() {
+    set parent(value) {
         if (this._parent !== value) {
             this.removeFromCache();
             this._parent = value;
@@ -147,7 +156,7 @@ export class Node {
 
     childChangedEvent(attributeTrace) {
         if (this.parent !== null) {
-            attributeTrace.push(self._childChangedEventMsg(null,'callback'));
+            attributeTrace.push(this._childChangedEventMsg(null,'callback'));
             this._parent.childChangedEvent(attributeTrace);
         }
     }

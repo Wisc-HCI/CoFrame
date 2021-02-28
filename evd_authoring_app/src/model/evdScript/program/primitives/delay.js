@@ -15,15 +15,15 @@ export class Delay extends Primitive {
     }
 
     constructor(duration=0, type='', name='', uuid=null, parent=null, appendType=true) {
-        this._duration = null;
-
         super(
-            type= (appendType) ? 'delay.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            (appendType) ? 'delay.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
+
+        this._duration = null;
 
         this.duration = duration;
     }
@@ -36,13 +36,14 @@ export class Delay extends Primitive {
         return msg;
     }
 
-    static fromDict() {
+    static fromDict(dct) {
         return new Delay(
-            duration= dct.duration,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.duration,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -59,7 +60,7 @@ export class Delay extends Primitive {
              this._duration = value;
          }
 
-         super.set(dct);
+         super.updatedAttribute('duration','set');
      }
 
      set(dct) {

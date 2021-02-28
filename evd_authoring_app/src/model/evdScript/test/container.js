@@ -15,17 +15,19 @@ export class Container extends Node {
         return Node.fullTypeString() + Container.typeString();
     }
 
-    constructor(itemType, values=[], type='', name='', uuid=null, parent=null, appendType=true) {
+    constructor(itemType, values=[], type='', name='', uuid=null, parent=null, 
+                appendType=true) 
+    {
+        super(
+            (appendType) ? `container<${itemType}>`+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._values = null;
         this._itemType = null;
-
-        super(
-            type= (appendType) ? `container<${itemType}>`+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.values = values;
         this.itemType = itemType;
@@ -42,12 +44,13 @@ export class Container extends Node {
 
     static fromDict(dct) {
         return new Container(
-            itemType= dct.item_type,
-            values= dct.values.map(v => NodeParser(v)),
-            name= dct.name,
-            uuid= dct.uuid,
-            type= dct.type,
-            appendType= false
+            dct.item_type,
+            dct.values.map(v => NodeParser(v)),
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -60,7 +63,7 @@ export class Container extends Node {
     }
 
     set values(value) {
-        if (this._values != value) {
+        if (this._values !== value) {
 
             this._values.forEach(element => {
                 element.removeFromCache();
@@ -86,8 +89,8 @@ export class Container extends Node {
     }
 
     deleteValue(uuid) {
-        const idx = searchForValueIndex(uuid);
-        if (idx == -1) {
+        const idx = this.searchForValueIndex(uuid);
+        if (idx === -1) {
             throw new Error('Value not in container');
         }
 
@@ -99,7 +102,7 @@ export class Container extends Node {
     searchForValueIndex(uuid) {
         let idx = -1;
         this._values.forEach((v,i) => {
-            if (v.uuid == uuid) {
+            if (v.uuid === uuid) {
                 idx = i;
             }
         });
@@ -111,7 +114,7 @@ export class Container extends Node {
     }
 
     set itemType(value) {
-        if (this._itemType != value) {
+        if (this._itemType !== value) {
             this._itemType = value;
             this.updatedAttribute('item_type','set');
         }

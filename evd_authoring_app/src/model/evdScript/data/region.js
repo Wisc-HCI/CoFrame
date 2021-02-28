@@ -18,23 +18,26 @@ export class Region extends Pose {
     }
 
     static fullTypeString() {
-        return Pose.fullTypeString() + registerIcons.typeString();
+        return Pose.fullTypeString() + Region.typeString();
     }
 
-    constructor(centerPosition=null, centerOrientation=null, freeOrientation=true, uncertaintyOrientationLimit=1, uncertaintyOrientationAltTarget=null, type='', name='', uuid=null, parent=null, appendType=true) {
+    constructor(centerPosition=null, centerOrientation=null, freeOrientation=true, 
+                uncertaintyOrientationLimit=1, uncertaintyOrientationAltTarget=null, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            centerPosition,
+            centerOrientation,
+            (appendType) ? 'region.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._freeOrt = null;
         this._uncertOrtLim = null;
         this._uncertOrtTarget = null;
-
-        super(
-            position= centerPosition,
-            orientation= centerOrientation,
-            type= (appendType) ? 'region.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.freeOrientation = freeOrientation;
         this.uncertaintyOrientationLimit = uncertaintyOrientationLimit;
@@ -60,15 +63,16 @@ export class Region extends Pose {
 
     static fromDict(dct) {
         return new Region(
-            centerPosition= Position.fromDict(dct.center_position),
-            centerOrientation= Orientation.fromDict(dct.center_orientation),
-            freeOrientation= dct.free_orientation,
-            uncertaintyOrientationLimit= dct.uncertainty_orientation_limit,
-            uncertaintyOrientationAltTarget= Orientation.fromDict(dct.uncertainty_orientation_alt_target),
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            Position.fromDict(dct.center_position),
+            Orientation.fromDict(dct.center_orientation),
+            dct.free_orientation,
+            dct.uncertainty_orientation_limit,
+            Orientation.fromDict(dct.uncertainty_orientation_alt_target),
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -85,7 +89,7 @@ export class Region extends Pose {
         return this.position;
     }
 
-    set centerOrientation(value) {
+    set centerPosition(value) {
         this.position = value;
         this.updatedAttribute('center_position','set');
     }
@@ -100,7 +104,7 @@ export class Region extends Pose {
     }
 
     get freeOrientation() {
-        return self._freeOrt;
+        return this._freeOrt;
     }
 
     set freeOrientation(value) {
@@ -263,23 +267,27 @@ export class CubeRegion extends Region {
         return Region.fullTypeString() + CubeRegion.type();
     }
 
-    constructor(centerPosition=null, centerOrientation=null, uncertaintyX=1, uncertaintyY=0, uncertaintyZ=0, freeOrientation=true, uncertaintyOrientationLimit=1, uncertaintyOrientationAltTarget=null, type='', name='', uuid=null, parent=null, appendType=true) {
+    constructor(centerPosition=null, centerOrientation=null, uncertaintyX=1, 
+                uncertaintyY=0, uncertaintyZ=0, freeOrientation=true, 
+                uncertaintyOrientationLimit=1, uncertaintyOrientationAltTarget=null, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            centerPosition,
+            centerOrientation,
+            freeOrientation,
+            uncertaintyOrientationLimit,
+            uncertaintyOrientationAltTarget,
+            (appendType) ? 'cube-region.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._uncertaintyX = null;
         this._uncertaintyY = null;
         this._uncertaintyZ = null;
-
-        super(
-            centerPosition= centerPosition,
-            centerOrientation= centerOrientation,
-            freeOrientation= freeOrientation,
-            uncertaintyOrientationLimit= uncertaintyOrientationLimit,
-            uncertaintyOrientationAltTarget= uncertaintyOrientationAltTarget,
-            type= (appendType) ? 'cube-region.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.uncertaintyX = uncertaintyX;
         this.uncertaintyY = uncertaintyY;
@@ -298,18 +306,19 @@ export class CubeRegion extends Region {
 
     static fromDict(dct) {
         return new CubeRegion(
-            centerPosition= dct.center_position,
-            centerOrientation= dct.center_orientation,
-            uncertaintyX= dct.uncertainty_x,
-            uncertaintyY= dct.uncertainty_y,
-            uncertaintyZ= dct.uncertainty_z,
-            freeOrientation= dct.free_orientation,
-            uncertaintyOrientationLimit= dct.uncertainty_orientation_limit,
-            uncertaintyOrientationAltTarget= dct.uncertainty_orientation_alt_target,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.center_position,
+            dct.center_orientation,
+            dct.uncertainty_x,
+            dct.uncertainty_y,
+            dct.uncertainty_z,
+            dct.free_orientation,
+            dct.uncertainty_orientation_limit,
+            dct.uncertainty_orientation_alt_target,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
@@ -407,21 +416,24 @@ export class SphereRegion extends Region {
         return Region.fullTypeString() + SphereRegion.type();
     }
 
-    constructor(centerPosition=null, centerOrientation=null, uncertaintyRadius=1, freeOrientation=true, uncertaintyOrientationLimit=1, uncertaintyOrientationAltTarget=null, type='', name='', uuid=null, parent=null, appendType=true) {
-        this._uncertaintyRadius = null;
-
+    constructor(centerPosition=null, centerOrientation=null, uncertaintyRadius=1, 
+                freeOrientation=true, uncertaintyOrientationLimit=1, uncertaintyOrientationAltTarget=null, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
         super(
-            centerPosition= centerPosition,
-            centerOrientation= centerOrientation,
-            freeOrientation= freeOrientation,
-            uncertaintyOrientationLimit= uncertaintyOrientationLimit,
-            uncertaintyOrientationAltTarget= uncertaintyOrientationAltTarget,
-            type= (appendType) ? 'sphere-region.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
+            centerPosition,
+            centerOrientation,
+            freeOrientation,
+            uncertaintyOrientationLimit,
+            uncertaintyOrientationAltTarget,
+            (appendType) ? 'sphere-region.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
         );
+
+        this._uncertaintyRadius = null;
 
         this.uncertaintyRadius = uncertaintyRadius;
     }
@@ -436,16 +448,17 @@ export class SphereRegion extends Region {
 
     static fromDict(dct) {
         return new SphereRegion(
-            centerPosition= dct.center_position,
-            centerOrientation= dct.center_orientation,
-            uncertaintyRadius= dct.uncertainty_radius,
-            freeOrientation= dct.free_orientation,
-            uncertaintyOrientationLimit= dct.uncertainty_orientation_limit,
-            uncertaintyOrientationAltTarget= dct.uncertainty_orientation_alt_target,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.center_position,
+            dct.center_orientation,
+            dct.uncertainty_radius,
+            dct.free_orientation,
+            dct.uncertainty_orientation_limit,
+            dct.uncertainty_orientation_alt_target,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 

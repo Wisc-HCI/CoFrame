@@ -15,16 +15,16 @@ export class MoveUnplanned extends Primitive {
     }
 
     constructor(locUuid, manualSafety=true, type='', name='', uuid=null, parent=null, appendType=true) {
+        super(
+            (appendType) ? 'move-unplanned.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._locationUuid = null;
         this._manualSafety = null;
-
-        super(
-            type= (appendType) ? 'move-unplanned.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.manualSafety = manualSafety;
         this.locationUuid = locUuid;
@@ -41,12 +41,13 @@ export class MoveUnplanned extends Primitive {
 
     static fromDict(dct) {
         return new MoveUnplanned(
-            name= dct.name,
-            type= dct.type,
-            appendType= false,
-            uuid= dct.uuid,
-            locUuid= dct.location_uuid,
-            manualSafety= dct.manual_safety
+            dct.location_uuid,
+            dct.manual_safety,
+            dct.name,
+            dct.type,
+            dct.uuid,
+            null,
+            false
         );
     }
 

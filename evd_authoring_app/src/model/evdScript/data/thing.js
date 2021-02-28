@@ -22,21 +22,23 @@ export class Thing extends Pose {
         return Pose.fullTypeString() + Thing.typeString();
     }
 
-    constructor(thingType, safetyLevel, meshId, position=null, orientation=null, weight=0, type='', name='', parent=null, uuid=null, appendType=true) {
+    constructor(thingType, safetyLevel, meshId, position=null, orientation=null, weight=0, 
+                type='', name='', uuid=null, parent=null, appendType=true) 
+    {
+        super(
+            position,
+            orientation,
+            (appendType) ? 'thing.'+type : type,
+            name,
+            uuid,
+            parent,
+            appendType
+        );
+
         this._thingType = null;
         this._safetyLevel = null;
         this._meshId = null;
         this._weight = null;
-
-        super(
-            position= position,
-            orientation= orientation,
-            type= (appendType) ? 'thing.'+type : type,
-            name= name,
-            uuid= uuid,
-            parent= parent,
-            appendType= appendType
-        );
 
         this.thingType = thingType;
         this.safetyLevel = safetyLevel;
@@ -57,16 +59,17 @@ export class Thing extends Pose {
 
     static fromDict(dct) {
         return new Thing(
-            thingType= dct.thing_type,
-            safetyLevel= dct.safety_level,
-            meshId= dct.mesh_id,
-            position= Position.fromDict(dct.position),
-            orientation= Orientation.fromDict(dct.orientation),
-            weight= dct.weight,
-            type= dct.type,
-            name= dct.name,
-            uuid= dct.uuid,
-            appendType= false
+            dct.thing_type,
+            dct.safety_level,
+            dct.mesh_id,
+            Position.fromDict(dct.position),
+            Orientation.fromDict(dct.orientation),
+            dct.weight,
+            dct.type,
+            dct.name,
+            dct.uuid,
+            null,
+            false
         );
     }
 
