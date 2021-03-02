@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import ReactBlockly from 'react-blockly';
+import Blockly from 'blockly';
 
 import { 
     evdScriptBlocklyToolbox, 
-    evdScriptBlocklyInitialize, 
     evdScriptBlocklyInitialXML 
 } from '../../model/evdScript';
 
@@ -14,17 +14,11 @@ export class ProgramEditor extends Component {
   constructor(props) {
     super(props);
 
-    evdScriptBlocklyInitialize();
-
     this.state = {
       toolbox: evdScriptBlocklyToolbox(),
       initialXml: evdScriptBlocklyInitialXML()
     };
   }
-
-  componentDidMount = () => {
-    // TODO
-  };
 
   workspaceDidChange = (workspace) => {
     /*
@@ -52,31 +46,31 @@ export class ProgramEditor extends Component {
     const blocklyWidth = width - 2 * padding;
     const blocklyHeight = height - 2 * padding;
 
+    console.log(Blockly);
+
     return (
-        <React.Fragment>
-            <div
-                id="blockly"
-                style={{ height: `${blocklyHeight}px`, width: `${blocklyWidth}px` }}
-            >
-                <ReactBlockly.BlocklyEditor
-                    toolboxCategories={toolbox}
-                    workspaceConfiguration={{
-                        grid: {
-                            spacing: 20,
-                            length: 3,
-                            colour: '#ccc',
-                            snap: true,
-                        },
-                        scrollbars: true,
-                        trashcan: false,
-                        renderer: 'thrasos',
-                    }}
-                    initialXml={initialXml}
-                    wrapperDivClassName="fill-height"
-                    workspaceDidChange={this.workspaceDidChange}
-                />
-            </div>
-        </React.Fragment> 
+        <div
+            id="blockly"
+            style={{ height: `${blocklyHeight}px`, width: `${blocklyWidth}px` }}
+        >
+            <ReactBlockly.BlocklyEditor
+                toolboxCategories={toolbox}
+                workspaceConfiguration={{
+                    grid: {
+                        spacing: 20,
+                        length: 3,
+                        colour: '#ccc',
+                        snap: true,
+                    },
+                    scrollbars: true,
+                    trashcan: false,
+                    renderer: 'thrasos',
+                }}
+                initialXml={initialXml}
+                wrapperDivClassName="fill-height"
+                workspaceDidChange={this.workspaceDidChange}
+            />
+        </div>
     );
   }
 }

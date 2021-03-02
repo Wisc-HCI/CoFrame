@@ -66,8 +66,8 @@ export class Waypoint extends Pose {
                 this.appendDummyInput()
                     .appendField(new Blockly.FieldDropdown([["unnamed","default"]]), "name");
                 this.setInputsInline(true);
-                this.setPreviousStatement(true, null);
-                this.setNextStatement(true, null);
+                this.setPreviousStatement(true, ["trajectory", "waypoint"]);
+                this.setNextStatement(true, ["trajectory", "waypoint"]);
                 this.setColour(290);
                 this.setTooltip("waypoint");
                 this.setHelpUrl("waypoint");

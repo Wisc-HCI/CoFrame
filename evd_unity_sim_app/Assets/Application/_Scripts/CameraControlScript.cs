@@ -25,6 +25,12 @@ public class CameraControlScript : MonoBehaviour
 
     private float Zoom = 1;
 
+    void Start() {
+        #if !UNITY_EDITOR && UNITY_WEBGL
+            WebGLInput.captureAllKeyboardInput = false;
+        #endif    
+    }
+
     // Update is called once per frame
     void Update()
     {

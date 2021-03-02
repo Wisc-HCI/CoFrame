@@ -13,8 +13,24 @@ export class Simulator extends Component {
         './simulator/Build/UnityLoader.js',
         {
             adjustOnWindowResize: true,
-        },
-    );    
+        }
+    );
+    
+    this.recaptureInputAndFocus = this.recaptureInputAndFocus.bind(this);
+  }
+
+  recaptureInputAndFocus() {
+    const canvas = document.getElementById("#canvas");
+    if(canvas) {
+        canvas.setAttribute("tabindex", "1");
+        canvas.focus(); 
+    } else {
+        setTimeout(this.recaptureInputAndFocus, 100);
+    }
+  }
+
+  onComponentDidMount() {
+    this.recaptureInputAndFocus();
   }
 
   render() {

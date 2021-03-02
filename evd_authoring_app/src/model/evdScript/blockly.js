@@ -118,70 +118,73 @@ export const evdScriptBlocklyInitialize = () => {
     let tmp = null;
 
     tmp = Location.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Waypoint.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Machine.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Trajectory.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Thing.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Task.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Program.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = CloseGripper.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Initialize.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = OpenGripper.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = SimplePickAndPlace.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Delay.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Gripper.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = MoveTrajectory.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
     
     tmp = MoveUnplanned.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = MachineBlockingProcess.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = MachineInitialize.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = MachineStart.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = MachineStop.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = MachineWait.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Breakpoint.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Loop.BlocklyBlock();
-    Blockly.Block[tmp.key] = tmp.data;
+    Blockly.Blocks[tmp.key] = tmp.data;
+
+    console.log(Blockly);
+    console.log("Finished initializing custom blocks Blockly");
 };
 
 export const evdScriptBlocklyInitialXML = (program = null) => {
@@ -189,7 +192,7 @@ export const evdScriptBlocklyInitialXML = (program = null) => {
 
     let xml = null;
     if (program === null) {
-        xml = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="program></block></xml>';
+        xml = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="program" x="30" y="30"></block></xml>';
     }
 
     return xml;

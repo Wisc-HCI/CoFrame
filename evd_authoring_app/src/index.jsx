@@ -15,14 +15,30 @@ import light from './themes/light';
 import { App } from './App';
 import * as serviceWorker from './serviceWorker';
 
+// Model
+import { evdScriptBlocklyInitialize } from './model/evdScript';
+
+
+evdScriptBlocklyInitialize();
+
+
+
+
+
+
+
+
 initializeIcons();
 
+
 const getClassNames = classNamesFunction();
+
 
 // Loads the light theme by default
 let currentThemeName = 'dark';
 let currentTheme = dark;
 loadTheme(currentTheme);
+
 
 // Toggles between the light & dark theme
 const toggleTheme = () => {
@@ -42,6 +58,7 @@ const toggleTheme = () => {
 
     loadTheme(currentTheme);
 };
+
 
 function AppThemeWrapper(props) {
 
