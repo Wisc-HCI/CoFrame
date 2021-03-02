@@ -1,6 +1,6 @@
 {
-"companyName": "DefaultCompany",
-"productName": "unity-web-test",
+"companyName": "WISC-HCI",
+"productName": "evd_unity_sim_app",
 "productVersion": "0.1",
 "dataUrl": "Build.data.unityweb",
 "wasmCodeUrl": "Build.wasm.code.unityweb",
