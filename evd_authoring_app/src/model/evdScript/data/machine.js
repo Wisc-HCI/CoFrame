@@ -1,6 +1,6 @@
 import { Node } from '../node';
 import { NodeParser } from '../utilityFunctions';
-
+import Blockly from 'blockly';
 
 export class MachineRecipe extends Node {
 
@@ -271,11 +271,26 @@ export class Machine extends Node {
         );
     }
 
-    toBlockly() {
-        // TODO implement
-        return {};
+    static BlocklyToolbox() {
+        return { type: 'machine' };
     }
 
+    static BlocklyBlock() {
+        return { key: 'machine', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Machine");
+                this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([["untitled","defaul"]]), "name");
+                this.setInputsInline(true);
+                this.setOutput(true, null);
+                this.setColour(50);
+                this.setTooltip("machine");
+                this.setHelpUrl("machine");
+            }
+        }};
+    }
+    
     /*
     * Data accessor/modifier methods
     */

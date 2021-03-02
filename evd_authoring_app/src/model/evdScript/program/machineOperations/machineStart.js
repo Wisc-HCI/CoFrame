@@ -35,4 +35,25 @@ export class MachineStart extends MachinePrimitive {
             false
         );
     }
+
+    static BlocklyToolbox() {
+        return { type: 'machine_start' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'machine_start', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Machine Start");
+                this.appendValueInput("machine")
+                    .setCheck("machine")
+                    .appendField("Machine");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("machine-start");
+                this.setHelpUrl("machine-start");
+            }
+        }};
+    }
 }

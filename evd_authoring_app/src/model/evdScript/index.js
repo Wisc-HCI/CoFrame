@@ -1,14 +1,17 @@
+import * as evdData from './data';
+import * as evdProgram from './program';
+import * as evdEnvironment from './environment';
+import * as evdTest from './test';
+
 import { getEvdCacheObject, Cache } from './cache';
 
 import { Node } from './node';
 import { Context } from './context';
 import { NodeParser, getExactType } from './utilityFunctions';
+import { evdScriptBlocklyToolbox, evdScriptBlocklyInitialize, evdScriptBlocklyInitialXML } from './blockly';
 import { AttributeTraceProcessor } from './attributeTraceProcessor';
 
-import * as evdData from './data';
-import * as evdProgram from './program';
-import * as evdEnvironment from './environment';
-import * as evdTest from './test';
+
 
 const {
     Pose, 
@@ -71,63 +74,6 @@ const {
 } = evdTest;
 
 
-const INITIAL_TOOLBOX = {
-    contents: [
-        {
-            kind: "category",
-            name: "Locations",
-            colour: "260",
-            blocks: []
-        },
-        {
-            kind: "category",
-            name: "Wayponts",
-            colour: "290",
-            blocks: []
-        },
-        {
-            kind: "category",
-            name: "Trajectories",
-            colour: "330",
-            blocks: []
-        },
-        {
-            kind: "category",
-            name: "Machines",
-            colour: "50",
-            blocks: []
-        },
-        {
-            kind: "category",
-            name: "Things",
-            colour: "20",
-            blocks: []
-        },
-        {
-            kind: "category",
-            name: "Tasks",
-            colour: "210",
-            blocks: []
-        },
-        {
-            kind: "category",
-            name: "Primitives",
-            colour: "120",
-            blocks: []
-        },
-        {
-            kind: "category",
-            name: "Control Flow",
-            colour: "160",
-            blocks: []
-        }
-    ]
-};
-
-const evdScriptBlocklyToolbox = () => {
-    return INITIAL_TOOLBOX.contents;
-};
-
 
 export {
     getEvdCacheObject,
@@ -137,7 +83,10 @@ export {
     NodeParser,
     getExactType,
     AttributeTraceProcessor,
+
     evdScriptBlocklyToolbox,
+    evdScriptBlocklyInitialize,
+    evdScriptBlocklyInitialXML,
     
     Pose, 
     Position, 

@@ -1,4 +1,5 @@
 import { Primitive } from '../primitive';
+import Blockly from 'blockly';
 
 export class Delay extends Primitive {
 
@@ -45,6 +46,28 @@ export class Delay extends Primitive {
             null,
             false
         );
+    }
+
+    static BlocklyToolbox() {
+        return { type: 'delay' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'delay', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Delay");
+                this.appendDummyInput()
+                    .appendField("Duration")
+                    .appendField(new Blockly.FieldNumber(1, 0), "duration")
+                    .appendField("seconds");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("delay");
+                this.setHelpUrl("delay");
+            }
+        }};
     }
 
     /*

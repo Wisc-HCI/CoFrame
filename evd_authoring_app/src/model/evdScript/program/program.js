@@ -62,6 +62,24 @@ export class Program extends Task {
         );
     }
 
+    static BlocklyToolbox() {
+        return { type: 'program' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'program', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Program");
+                this.appendStatementInput("children")
+                    .setCheck(null);
+                this.setColour(160);
+                this.setTooltip("Program");
+                this.setHelpUrl("Program");
+            }
+        }};
+    }
+
     /*
     * Access/modifier methods
     */

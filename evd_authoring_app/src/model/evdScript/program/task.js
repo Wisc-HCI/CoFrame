@@ -1,5 +1,6 @@
 import { Primitive } from './primitive';
 import { NodeParser } from '../utilityFunctions';
+
 import Blockly from 'blockly';
 
 export class Task extends Primitive {
@@ -49,39 +50,25 @@ export class Task extends Primitive {
         );
     }
 
-    static BlocklyBlock(expanded=false) {
+    static BlocklyToolbox() {
+        return { type: 'task' };
+    }
 
-        let data = null;
-        if (expanded) {
-            data = {
-                init: function() {
-                    this.appendDummyInput()
-                        .appendField("Task")
-                        .appendField(new Blockly.FieldTextInput("unnamed"), "name");
-                    this.appendStatementInput("children")
-                        .setCheck(null);
-                    this.setPreviousStatement(true, null);
-                    this.setNextStatement(true, null);
-                    this.setColour(210);
-                    this.setTooltip("task");
-                    this.setHelpUrl("task");
-                }
-            };
-        } else {
-            data = {
-                init: function() {
-                    this.appendDummyInput()
-                        .appendField("Task")
-                        .appendField(new Blockly.FieldTextInput("unnamed"), "name");
-                    this.setPreviousStatement(true, null);
-                    this.setNextStatement(true, null);
-                    this.setColour(210);
+    static BlocklyBlock() {
+        return { key: 'task', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Task")
+                    .appendField(new Blockly.FieldTextInput("unnamed"), "name");
+                this.appendStatementInput("children")
+                    .setCheck(null);
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
                 this.setTooltip("task");
                 this.setHelpUrl("task");
-                }
-            };
-        }
-        return {'task': data};
+            }
+        }};
     }
 
     /*

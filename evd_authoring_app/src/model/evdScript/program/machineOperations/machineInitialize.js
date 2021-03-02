@@ -37,4 +37,25 @@ export class MachineInitialize extends MachinePrimitive {
         );
     }
 
+    static BlocklyToolbox() {
+        return { type: 'machine_initialize' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'machine_initialize', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Machine Initialize");
+                this.appendValueInput("machine")
+                    .setCheck("machine")
+                    .appendField("Machine");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("machine-initialize");
+                this.setHelpUrl("machine-initialize");
+            }
+        }};
+    }
+
 }

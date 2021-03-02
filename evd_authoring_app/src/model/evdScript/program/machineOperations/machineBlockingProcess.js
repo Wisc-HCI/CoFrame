@@ -50,4 +50,25 @@ export class MachineBlockingProcess extends Task {
             dct.primitives.map(p => NodeParser(p))
         );
     }
+
+    static BlocklyToolbox() {
+        return { type: 'machine_blocking_process' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'machine_blocking_process', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Machine Blocking Process");
+                this.appendValueInput("machine")
+                    .setCheck(null)
+                    .appendField("Machine");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
+                this.setTooltip("machine-blocking-process");
+                this.setHelpUrl("machine-blocking-process");
+            }
+        }};
+    }
 }

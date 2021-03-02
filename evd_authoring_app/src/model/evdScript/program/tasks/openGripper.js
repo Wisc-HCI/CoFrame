@@ -1,6 +1,7 @@
 import { Task } from '../task';
 import { Gripper } from '../primitives';
 import { NodeParser } from '../../utilityFunctions';
+import Blockly from 'blockly';
 
 
 export class OpenGripper extends Task {
@@ -55,5 +56,39 @@ export class OpenGripper extends Task {
             false,
             dct.primitives.map(p => NodeParser(p))
         );
+    }
+
+    static BlocklyToolbox() {
+        return { type: 'open_gripper' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'open_gripper', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Open Gripper");
+                this.appendValueInput("thing")
+                    .setCheck("thing")
+                    .appendField("Thing");
+                this.appendDummyInput()
+                    .appendField("Position")
+                    .appendField(new Blockly.FieldNumber(0, 0, 0), "position")
+                    .appendField("%");
+                this.appendDummyInput()
+                    .appendField("Effort")
+                    .appendField(new Blockly.FieldNumber(100, 0, 100), "effort")
+                    .appendField("%");
+                this.appendDummyInput()
+                    .appendField("Speed")
+                    .appendField(new Blockly.FieldNumber(100, 0, 100), "speed")
+                    .appendField("%");
+                this.setInputsInline(false);
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
+                this.setTooltip("open-gripper");
+                this.setHelpUrl("open-gripper");
+            }
+        }};
     }
 }

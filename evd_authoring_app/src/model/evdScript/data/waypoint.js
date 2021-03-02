@@ -1,5 +1,5 @@
 import { Pose, Position, Orientation } from './geometry';
-
+import Blockly from 'blockly';
 
 export class Waypoint extends Pose {
 
@@ -54,9 +54,25 @@ export class Waypoint extends Pose {
         );
     }
 
-    toBlockly() {
-        // TODO implement this
-        return {};
+    static BlocklyToolbox() {
+        return { type: 'waypoint' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'waypoint', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Waypoint");
+                this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([["unnamed","default"]]), "name");
+                this.setInputsInline(true);
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(290);
+                this.setTooltip("waypoint");
+                this.setHelpUrl("waypoint");
+            }
+        }};
     }
 
     /*

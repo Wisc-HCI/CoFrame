@@ -1,5 +1,6 @@
 import { Waypoint } from './waypoint';
 import { Position, Orientation } from './geometry';
+import Blockly from 'blockly';
 
 export class Location extends Waypoint {
 
@@ -43,8 +44,23 @@ export class Location extends Waypoint {
         );
     }
 
-    toBlockly() {
-        //TODO implement this
-        return {};
+    static BlocklyToolbox() {
+        return { type: 'location' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'location', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Location");
+                this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([["unnamed","default"]]), "name");
+                this.setInputsInline(true);
+                this.setOutput(true, null);
+                this.setColour(260);
+                this.setTooltip("location");
+                this.setHelpUrl("location");
+            }
+        }};
     }
 }

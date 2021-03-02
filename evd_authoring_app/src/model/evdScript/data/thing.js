@@ -1,5 +1,5 @@
 import { Pose, Position, Orientation } from './geometry';
-
+import Blockly from 'blockly';
 
 export class Thing extends Pose {
 
@@ -73,9 +73,24 @@ export class Thing extends Pose {
         );
     }
 
-    toBlockly() {
-        // TODO implement this
-        return {};
+    static BlocklyToolbox() {
+        return { type: 'thing' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'thing', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Thing");
+                this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([["unnamed","default"]]), "name");
+                this.setInputsInline(true);
+                this.setOutput(true, null);
+                this.setColour(20);
+                this.setTooltip("thing");
+                this.setHelpUrl("thing");
+            }
+        }};
     }
 
     /*

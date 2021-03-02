@@ -1,7 +1,5 @@
 
 import { v4 as uuidv4 } from 'uuid';
-import { getEvdCacheObject } from './cache';
-
 
 export class Node {
 
@@ -18,6 +16,11 @@ export class Node {
     }
 
     constructor(type='', name='', uuid=null, parent=null, appendType=true) {
+        this._cacheFunction = null;
+        import('./cache').then((module) => {
+            this._cacheFunction = module.getEvdCacheObject;
+        });
+        
         this._parent = null;
         this._type = null;
         this._name = null;
@@ -56,12 +59,12 @@ export class Node {
         return null;
     }
 
-    static BlocklyBlock(expanded=false) {
+    static BlocklyBlock() {
         return null;
     }
 
     static BlocklyToolbox() {
-        
+        return null;
     }
 
     /*
@@ -133,11 +136,15 @@ export class Node {
     */
 
     removeFromCache() {
-        getEvdCacheObject().remove(this.uuid);
+        if (this._cacheFunction !== null) {
+            this._cacheFunction().remove(this.uuid);
+        }
     }
 
     addToCache() {
-        getEvdCacheObject().add(this.uuid);
+        if (this._cacheFunction !== null) {
+            this._cacheFunction().add(this.uuid);
+        }
     }
 
     refreshCacheEntry() {

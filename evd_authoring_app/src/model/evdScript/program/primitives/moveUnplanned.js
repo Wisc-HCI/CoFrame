@@ -51,6 +51,27 @@ export class MoveUnplanned extends Primitive {
         );
     }
 
+    static BlocklyToolbox() {
+        return { type: 'move_unplanned' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'move_unplanned', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Move Unplanned");
+                this.appendValueInput("location")
+                    .setCheck("location")
+                    .appendField("To Location");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("move-unplanned");
+                this.setHelpUrl("move-unplanned");
+            }
+        }};
+    }
+
     /*
     * Data accessor / modifier methods
     */

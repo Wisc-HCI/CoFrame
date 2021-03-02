@@ -78,6 +78,28 @@ export class MoveTrajectory extends Primitive {
         );
     }
 
+    static BlocklyToolbox() {
+        return { type: 'move_trajectory' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'move_trajectory', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Move Trajectory");
+                this.appendValueInput("trajectory")
+                    .setCheck("trajectory")
+                    .appendField("Trajectory");
+                this.setInputsInline(false);
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("move-trajectory");
+                this.setHelpUrl("move-trajectory");
+            }
+        }};
+    }
+
     /*
     * Accessor/modifier methods
     */

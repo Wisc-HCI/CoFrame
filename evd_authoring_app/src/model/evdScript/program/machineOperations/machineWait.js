@@ -35,4 +35,25 @@ export class MachineWait extends MachinePrimitive {
             false
         );
     }
+
+    static BlocklyToolbox() {
+        return { type: 'machine_wait' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'machine_wait', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Machine Wait");
+                this.appendValueInput("machine")
+                    .setCheck("machine")
+                    .appendField("Machine");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("machine-wait");
+                this.setHelpUrl("machine-wait");
+            }
+        }};
+    }
 }

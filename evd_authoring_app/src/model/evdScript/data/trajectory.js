@@ -1,7 +1,6 @@
 import { Node } from '../node';
 import { Trace } from './trace';
 
-
 export class Trajectory extends Node {
 
     /*
@@ -82,9 +81,30 @@ export class Trajectory extends Node {
         );
     }
 
-    toBlockly() {
-        // TODO implement
-        return {};
+    static BlocklyToolbox() {
+        return { type: 'trajectory' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'trajectory', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Trajectory");
+                this.appendValueInput("start-location")
+                    .setCheck("location")
+                    .appendField("Start Location");
+                this.appendStatementInput("waypoints")
+                    .setCheck("waypoint")
+                    .appendField("Waypoints");
+                this.appendValueInput("end-location")
+                    .setCheck("location")
+                    .appendField("End Location");
+                this.setOutput(true, null);
+                this.setColour(330);
+                this.setTooltip("trajectory");
+                this.setHelpUrl("trajectory");
+            }
+        }};
     }
 
     /*

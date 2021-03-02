@@ -1,4 +1,5 @@
 import { Primitive } from '../primitive';
+import Blockly from 'blockly';
 
 export class Gripper extends Primitive {
 
@@ -59,6 +60,40 @@ export class Gripper extends Primitive {
             null,
             false
         );
+    }
+
+    static BlocklyToolbox() {
+        return { type: 'gripper' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'gripper', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Gripper");
+                this.appendValueInput("thing")
+                    .setCheck("thing")
+                    .appendField("Thing");
+                this.appendDummyInput()
+                    .appendField("Position")
+                    .appendField(new Blockly.FieldNumber(50, 0, 100), "position")
+                    .appendField("%");
+                this.appendDummyInput()
+                    .appendField("Effort")
+                    .appendField(new Blockly.FieldNumber(100, 0, 100), "effort")
+                    .appendField("%");
+                this.appendDummyInput()
+                    .appendField("Speed")
+                    .appendField(new Blockly.FieldNumber(100, 0, 100), "speed")
+                    .appendField("%");
+                this.setInputsInline(false);
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("gripper");
+                this.setHelpUrl("gripper");
+            }
+        }};
     }
 
      /**

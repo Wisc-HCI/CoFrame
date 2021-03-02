@@ -56,4 +56,34 @@ export class SimplePickAndPlace extends Task {
             dct.primitives.map(p => NodeParser(p))
         );
     }
+
+    static BlocklyToolbox() {
+        return { type: 'simple_pick_and_place' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'simple_pick_and_place', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Simple Pick and Place");
+                this.appendValueInput("thing")
+                    .setCheck("thing")
+                    .appendField("Thing");
+                this.appendValueInput("start-location")
+                    .setCheck("location")
+                    .appendField("Start Location");
+                this.appendValueInput("pick-location")
+                    .setCheck("location")
+                    .appendField("Pick Location");
+                this.appendValueInput("place-location")
+                    .setCheck("location")
+                    .appendField("Place Location");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
+                this.setTooltip("simple-pick-and-place");
+                this.setHelpUrl("simple-pick-and-place");
+            }
+        }};
+    }
 }

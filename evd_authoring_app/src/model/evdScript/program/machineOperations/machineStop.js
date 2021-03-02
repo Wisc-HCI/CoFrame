@@ -35,4 +35,25 @@ export class MachineStop extends MachinePrimitive {
             false
         );
     }
+
+    static BlocklyToolbox() {
+        return { type: 'machine_stop' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'machine_stop', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Machine Stop");
+                this.appendValueInput("machine")
+                    .setCheck("machine")
+                    .appendField("Machine");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+                this.setTooltip("machine-stop");
+                this.setHelpUrl("machine-stop");
+            }
+        }};
+    }
 }

@@ -56,4 +56,25 @@ export class Initialize extends Task {
             dct.primitives.map(p => NodeParser(p))
         );
     }
+
+    static BlocklyToolbox() {
+        return { type: 'initialize' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'initialize', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Initialize");
+                this.appendValueInput("home-location")
+                    .setCheck(null)
+                    .appendField("Home Location");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
+                this.setTooltip("initialize");
+                this.setHelpUrl("initialize");
+            }
+        }};
+    }
 }

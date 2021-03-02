@@ -50,6 +50,26 @@ export class Loop extends Task {
         );
     }
 
+    static BlocklyToolbox() {
+        return { type: 'loop' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'loop', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Loop")
+                this.appendStatementInput("children")
+                    .setCheck(null);
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(160);
+                this.setTooltip("loop");
+                this.setHelpUrl("loop");
+            }
+        }};
+    }
+
     /*
     * Data accessor/modifier methods
     */

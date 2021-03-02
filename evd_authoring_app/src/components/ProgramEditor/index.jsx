@@ -1,20 +1,24 @@
 import React, { Component } from 'react';
 import ReactBlockly from 'react-blockly';
 
-import { evdScriptBlocklyToolbox } from '../../model/evdScript';
+import { 
+    evdScriptBlocklyToolbox, 
+    evdScriptBlocklyInitialize, 
+    evdScriptBlocklyInitialXML 
+} from '../../model/evdScript';
 
 import './index.css';
-
-
-const DEFAULT_PROGRAM_XML = '<xml xmlns="http://www.w3.org/1999/xhtml">\n</xml>';
 
 
 export class ProgramEditor extends Component {
   constructor(props) {
     super(props);
 
+    evdScriptBlocklyInitialize();
+
     this.state = {
       toolbox: evdScriptBlocklyToolbox(),
+      initialXml: evdScriptBlocklyInitialXML()
     };
   }
 
@@ -42,7 +46,7 @@ export class ProgramEditor extends Component {
 
   render() {
     const { width, height } = this.props;
-    const { toolbox } = this.state;
+    const { toolbox, initialXml } = this.state;
 
     const padding = 5;
     const blocklyWidth = width - 2 * padding;
@@ -67,7 +71,7 @@ export class ProgramEditor extends Component {
                         trashcan: false,
                         renderer: 'thrasos',
                     }}
-                    initialXml={DEFAULT_PROGRAM_XML}
+                    initialXml={initialXml}
                     wrapperDivClassName="fill-height"
                     workspaceDidChange={this.workspaceDidChange}
                 />

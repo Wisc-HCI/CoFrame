@@ -33,4 +33,22 @@ export class Breakpoint extends Primitive {
             false
         );
     }
+
+    static BlocklyToolbox() {
+        return { type: 'breakpoint' };
+    }
+
+    static BlocklyBlock() {
+        return { key: 'breakpoint', data: {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField("Breakpoint");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(160);
+                this.setTooltip("breakpoint");
+                this.setHelpUrl("breakpoint");
+            }
+        }};
+    }
 }
