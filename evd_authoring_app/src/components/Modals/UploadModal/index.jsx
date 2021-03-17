@@ -7,8 +7,9 @@ import {
     Spinner,
 } from 'office-ui-fabric-react';
 
-import { ModalWrapper } from './ModalWrapper';
-import { ModalControlButtons } from './ModalControlButtons';
+import { MetaData } from './MetaData';
+import { ModalWrapper } from '../ModalWrapper';
+import { ModalControlButtons } from '../ModalControlButtons';
 
 
 export class UploadModal extends React.Component {
@@ -117,7 +118,7 @@ export class UploadModal extends React.Component {
             metaData = (<Spinner label="Uploading" />);
         } else if (data !== null) {
             if (fileSuccessfullyParsed) {
-                metaData = (<p>META DATA : Work in progress</p>);
+                metaData = (<MetaData data={data} />);
             } else {
                 metaData = (
                     <Stack.Item align="center">
