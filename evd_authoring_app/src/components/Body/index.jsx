@@ -1,12 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
+
 import { Stack } from 'office-ui-fabric-react';
 
 import { ChecklistTile } from './ChecklistTile';
 import { SimulatorTile } from './SimulatorTile';
 import { ProgramTile } from './ProgramTile';
 
+import { FrameContext } from "../../contexts";
 
-export class Body extends Component {
+
+export class Body extends React.Component {
 
     constructor(props) {
         super(props);
@@ -15,51 +18,55 @@ export class Body extends Component {
             frame: 'safety',
         };
 
-        this.onFrameButtonClicked = this.onFrameButtonClicked.bind(this);
+        this.onFrameChangeCallback = this.onFrameChangeCallback.bind(this);
     }
 
-    onFrameButtonClicked(frame) {
+    onFrameChangeCallback(frame) {
         this.setState({ frame });
     }
 
     render() {
         const { frame } = this.state;
-        const { layoutObj, theme, mainPadding } = this.props;
-
-        console.log(layoutObj);
+        
+        const { 
+            layoutObj, 
+            mainPadding 
+        } = this.props;
 
         return (
-            <div
-                style={{
-                    width: `${layoutObj.body.width}px`,
-                    height: `${layoutObj.body.height}px`,
+            <FrameContext.Provider
+                value={{
+                    frame: frame,
+                    changeFrame: this.onFrameChangeCallback
                 }}
             >
-                <Stack horizontal>
+                <div
+                    style={{
+                        width: `${layoutObj.body.width}px`,
+                        height: `${layoutObj.body.height}px`,
+                    }}
+                >
+                    <Stack horizontal>
 
-                    <ChecklistTile
-                        frame={frame}
-                        mainPadding={mainPadding}
-                        theme={theme}
-                        layoutChecklist={layoutObj.body.checklist}
-                        onFrameButtonCallback={this.onFrameButtonClicked}
-                    />
+                        <ChecklistTile
+                            mainPadding={mainPadding}
+                            layoutChecklist={layoutObj.body.checklist}
+                        />
 
-                    <SimulatorTile 
-                        frame={frame}
-                        mainPadding={mainPadding}
-                        theme={theme}
-                        layoutSimulator={layoutObj.body.simulator}
-                    />
+                        <SimulatorTile 
+                            mainPadding={mainPadding}
+                            layoutSimulator={layoutObj.body.simulator}
+                        />
 
-                    <ProgramTile
-                        mainPadding={mainPadding}
-                        theme={theme}
-                        layoutProgram={layoutObj.body.program}                
-                    />
+                        <ProgramTile
+                            mainPadding={mainPadding}
+                            layoutProgram={layoutObj.body.program}                
+                        />
 
-                </Stack>
-            </div>
+                    </Stack>
+                </div>
+            </FrameContext.Provider>
+            
         );
     }
     

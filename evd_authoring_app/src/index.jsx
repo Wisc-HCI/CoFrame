@@ -10,6 +10,7 @@ import styles from './styles';
 import './index.css';
 import dark from './themes/dark';
 import light from './themes/light';
+import * as frameStyles from './frameStyles';
 
 // Application
 import { App } from './App';
@@ -20,14 +21,6 @@ import { evdScriptBlocklyInitialize } from './model/evdScript';
 
 
 evdScriptBlocklyInitialize();
-
-
-
-
-
-
-
-
 initializeIcons();
 
 
@@ -71,6 +64,7 @@ function AppThemeWrapper(props) {
                 <Route exact path="/" render={() => (
                     <App
                         theme={theme}
+                        frameStyles={frameStyles.default}
                         toggleTheme={toggleTheme}
                         themeName={currentThemeName}
                     />

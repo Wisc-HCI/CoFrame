@@ -1,8 +1,4 @@
 import ROSLIB from 'roslib';
-import {
-    
-} from '../model/ros';
-
 
 class RosService {
 
@@ -11,6 +7,7 @@ class RosService {
         this._url = null;
         this.ros = null;
         this._connected = false;
+        this._loadCb = null;
 
         this.onLoad = this.onLoad.bind(this);
         this.onRosConnection = this.onRosConnection.bind(this);
@@ -18,8 +15,8 @@ class RosService {
         this.onRosError = this.onRosError.bind(this);
     }
 
-    onLoad(url='ws://localhost:9090') {
-        
+    onLoad(url='ws://localhost:9090', cb=null) {
+        this._loadCb = cb;
         this.url = url;
         this.ros = new ROSLIB.Ros({ url });
         this.connected = false;
@@ -32,6 +29,9 @@ class RosService {
     onRosConnection() {
         window.alert('ROS is now connected');
         this.connected = true;
+        if (this._loadCb !== null) {
+            this._loadCb(this.ros);
+        }
     }
 
     onRosError(error) {

@@ -3,8 +3,7 @@ import {
     
 } from '../model/ros';
 
-
-export class EvDScriptService {
+class EvDScriptService {
 
     constructor() {
 
@@ -18,7 +17,6 @@ export class EvDScriptService {
         this.getProgramSrv = null;
         this.setProgramSrv = null;
         this.getDefaultObjectsSrv = null;
-
     }
 
     setup(ros) {
@@ -49,3 +47,4 @@ export const GetEvDScriptServiceSingleton = () => {
 
     return singleton;
 };
+

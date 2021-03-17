@@ -23,7 +23,9 @@ public class CameraControlScript : MonoBehaviour
     private float VerticalAngle = 0;
     private float HorizontalAngle = 0;
 
-    private float Zoom = 1;
+    private float ZoomVal = 1;
+
+    private string activeControl = "rotate";
 
     void Start() {
         #if !UNITY_EDITOR && UNITY_WEBGL
@@ -34,43 +36,124 @@ public class CameraControlScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var x = Input.GetAxis("Horizontal");
-        var y = Input.GetAxis("Vertical");
+        var x = Input.GetAxis("Mouse X");
+        var y = Input.GetAxis("Mouse Y");
         var z = Input.GetAxis("Mouse ScrollWheel");
         var btn = Input.GetButton("Fire1");
 
-        //handle zoom
-        var zoom = ZoomBounding(-1 * z);
-        Zoom += zoom;
+        if (btn) 
+        {
+            switch(activeControl) 
+            {
+                case "rotate":
+                    RotateControl(x,y);
+                    ZoomControl(z);
+                    break;
+                case "translate":
+                    TranslateControl(x,y);
+                    ZoomControl(z);
+                    break;
+                default:
+                    activeControl = "rotate";
+                    break;
+            }
+        }
+    }
+
+    public void SetView(float z, float tx, float ty, float rx, float ry) 
+    {
+        // Set Raw Zoom
+        if (z > MaxZoom)
+        {
+            z -= (z - MaxZoom);
+        }
+        else if (z < MinZoom)
+        {
+            z -= (z - MinZoom);
+        }
+
+        ZoomVal = z;
         var move = (TargetObject.transform.position + Offset) - this.transform.position;
         var dist = Mathf.Sqrt(Mathf.Pow(move.x,2) + Mathf.Pow(move.y,2) + Mathf.Pow(move.z,2));
-        var dif = dist - Zoom;
+        var dif = dist - ZoomVal;
         var normMove = move / dist;
         this.transform.position = (normMove * dif) + this.transform.position;
 
-        // Translate or Rotate?
-        if (btn) 
-        {
-            // Translate
-            var angleCompensatedDelta = Quaternion.AngleAxis(HorizontalAngle, Vector3.up) * new Vector3(-1 * y,0,x);
-            var delta = OffsetDeltaBounding(angleCompensatedDelta);
-            Offset += delta;
-            this.transform.position += delta;
-        }
-        else
-        {
-            // Horizontal Rotation
-            var hAngle = HorizontalAngleBounding(x); // deg
-            HorizontalAngle += hAngle;
-            transform.RotateAround(TargetObject.transform.position + Offset, Vector3.up, hAngle);
+        // Set Raw Translate
+        Vector3 rawTranslate = new Vector3(tx,0,ty);
 
-            // Rotate Vertical
-            var vAngle = VerticalAngleBounding(-1 * y); //deg
-            VerticalAngle += vAngle;
-            transform.RotateAround(TargetObject.transform.position + Offset, Quaternion.AngleAxis(HorizontalAngle, Vector3.up) * Vector3.forward, vAngle);
+        var rad = Mathf.Sqrt(Mathf.Pow(rawTranslate.x,2) + Mathf.Pow(rawTranslate.z,2));
+        var normTemp = rawTranslate / rad;
 
-            this.transform.LookAt(TargetObject.transform.position + Offset);
+        if (rad > MaxOffset) 
+        {
+            normTemp.x -= normTemp.x * (rad - MaxOffset);
+            normTemp.z -= normTemp.z * (rad - MaxOffset);
         }
+
+        Offset = normTemp;
+        this.transform.position = normTemp;
+
+        // Set Raw Rotate
+        var deltaRx = HorizontalAngle - rx;
+        HorizontalAngle = rx;
+        transform.RotateAround(TargetObject.transform.position + Offset, Vector3.up, deltaRx);
+
+        if (ry > MaxVerticalRotation)
+        {
+            ry -= (ry - MaxVerticalRotation);
+        }
+        else if (ry < MinVerticalRotation)
+        {
+            ry -= (ry - MinVerticalRotation);
+        }
+
+        var deltaRy = VerticalAngle - ry;
+        VerticalAngle = ry;
+        transform.RotateAround(TargetObject.transform.position + Offset, Quaternion.AngleAxis(HorizontalAngle, Vector3.up) * Vector3.forward, deltaRy);
+
+        this.transform.LookAt(TargetObject.transform.position + Offset);
+    }
+
+    public void ChangeActiveControl(string controlName) 
+    {
+        activeControl = controlName;
+    }
+
+    private void ZoomControl(float z) 
+    {
+        //handle zoom
+        var zoom = ZoomBounding(-1 * z);
+        ZoomVal += zoom;
+        var move = (TargetObject.transform.position + Offset) - this.transform.position;
+        var dist = Mathf.Sqrt(Mathf.Pow(move.x,2) + Mathf.Pow(move.y,2) + Mathf.Pow(move.z,2));
+        var dif = dist - ZoomVal;
+        var normMove = move / dist;
+        this.transform.position = (normMove * dif) + this.transform.position;
+    }
+
+    private void TranslateControl(float x, float y) 
+    {
+        // Translate
+        var angleCompensatedDelta = Quaternion.AngleAxis(HorizontalAngle, Vector3.up) * new Vector3(-1 * y,0,x);
+        var delta = OffsetDeltaBounding(angleCompensatedDelta);
+        Offset += delta;
+        this.transform.position += delta;
+    }
+
+    private void RotateControl(float x, float y) 
+    {
+        // Horizontal Rotation
+        var hAngle = HorizontalAngleBounding(x); // deg
+        HorizontalAngle += hAngle;
+        transform.RotateAround(TargetObject.transform.position + Offset, Vector3.up, hAngle);
+
+        // Rotate Vertical
+        var vAngle = VerticalAngleBounding(-1 * y); //deg
+        VerticalAngle += vAngle;
+        transform.RotateAround(TargetObject.transform.position + Offset, Quaternion.AngleAxis(HorizontalAngle, Vector3.up) * Vector3.forward, vAngle);
+
+        this.transform.LookAt(TargetObject.transform.position + Offset);
     }
 
     private Vector3 OffsetDeltaBounding(Vector3 delta)
@@ -118,7 +201,7 @@ public class CameraControlScript : MonoBehaviour
     {
         zoom *= ZoomSpeedScale;
 
-        var temp = Zoom + zoom;
+        var temp = ZoomVal + zoom;
         if (temp > MaxZoom)
         {
             zoom -= (temp - MaxZoom);

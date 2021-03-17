@@ -3,13 +3,17 @@ import React from 'react';
 import { Separator } from 'office-ui-fabric-react';
 
 import { Tile } from './Tile';
+import { TileHeader } from './TileHeader';
 import { Simulator } from '../Simulator';
 import { Controls } from '../Controls';
 
 
 export const SimulatorTile = (props) => {
 
-    const {frame, mainPadding, theme, layoutSimulator} = props;
+    const {
+        mainPadding, 
+        layoutSimulator
+    } = props;
 
     return (
         <div
@@ -17,28 +21,20 @@ export const SimulatorTile = (props) => {
                 paddingLeft: `${mainPadding / 2}px`,
                 paddingRight: `${mainPadding / 2}px`,
                 paddingTop: `${mainPadding}px`,
-                paddingBottom: `${mainPadding}px`,
+                paddingBottom: `${mainPadding}px`
             }}
         >
 
             <Tile
-                theme={theme}
                 width={layoutSimulator.width - mainPadding}
                 height={layoutSimulator.height - mainPadding}
             >
-                <div
-                    style={{
-                        fontSize: '25px',
-                        textAlign: 'center',
-                        width: layoutSimulator.header.width - 2 * mainPadding,
-                        height: layoutSimulator.header.height
-                    }}
-                >
-                    <i>Simulation</i>
+                <TileHeader 
+                    title="Simulation"
+                    width={layoutSimulator.header.width - 2 * mainPadding}
+                    height={layoutSimulator.header.height}
+                />
 
-                    <Separator />
-                    
-                </div>
                 <div 
                     style={{
                         width: layoutSimulator.body.width - 2 * mainPadding,
@@ -46,7 +42,6 @@ export const SimulatorTile = (props) => {
                     }}
                 >
                     <Simulator 
-                        frame={frame} 
                         width={layoutSimulator.body.unity.width - 3 * mainPadding}
                         height={layoutSimulator.body.unity.height}
                     />
@@ -54,7 +49,6 @@ export const SimulatorTile = (props) => {
                     <Separator />
 
                     <Controls 
-                        frame={frame}
                         width={layoutSimulator.body.controls.width - 3 * mainPadding}
                         height={layoutSimulator.body.controls.height}
                     />

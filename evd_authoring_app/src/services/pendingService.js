@@ -5,7 +5,7 @@ import {
 } from '../model/ros';
 
 
-export class PendingService {
+class PendingService {
 
     constructor() {
 
@@ -58,7 +58,7 @@ export class PendingService {
         return await new Promise((resolve, reject) => {
             this.getPendingJobs(request, (result) => {
 
-                jobs = {};
+                let jobs = {};
                 for (let i=0; i<result.sources.length; i++) {
                     const src = result.sources[i];
                     jobs[src] = [];

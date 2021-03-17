@@ -4,7 +4,7 @@ const componentDesiredSizes = {
     programEditor: {
         body: {
             height: null,
-            width: 650,
+            width: 800,
         },
         header: {
             height: 55,
@@ -32,7 +32,7 @@ const componentDesiredSizes = {
         },
         body: {
             height: null,
-            width: 900
+            width: 750
         }
     }
 };

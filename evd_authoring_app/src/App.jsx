@@ -5,10 +5,13 @@ import { computeLayout } from "./layout";
 import { Header } from "./components/Header";
 import { Body } from "./components/Body";
 
-import { SettingsModal } from "./components/SettingsModal";
-import { UploadModal } from "./components/UploadModal";
-import { DownloadModal } from "./components/DownloadModal";
-import { OpenModal } from "./components/OpenModel";
+import { SettingsModal } from "./components/Modals/SettingsModal";
+import { UploadModal } from "./components/Modals/UploadModal";
+import { DownloadModal } from "./components/Modals/DownloadModal";
+import { OpenModal } from "./components/Modals/OpenModel";
+
+import { ThemeContext } from "./contexts";
+
 
 export class App extends React.Component {
 
@@ -18,14 +21,10 @@ export class App extends React.Component {
         this.state = {
             height: 0,
             width: 0,
-
             downloadModalOpen: false,
             uploadModalOpen: false,
             openModalOpen: false,
-            settingsModalOpen: false,
-
-            filename: "Untitled",
-            model: null
+            settingsModalOpen: true
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -56,7 +55,7 @@ export class App extends React.Component {
         });
     }
 
-    closeModal(modal) {
+    closeModal() {
         this.setState({
             downloadModalOpen: false,
             uploadModalOpen: false,
@@ -79,56 +78,62 @@ export class App extends React.Component {
             downloadModalOpen,
             uploadModalOpen,
             openModalOpen,
-            settingsModalOpen,
-            filename,
+            settingsModalOpen
         } = this.state;
 
-        const { theme } = this.props;
+        const { 
+            theme, 
+            frameStyles, 
+            toggleTheme, 
+            themeName 
+        } = this.props;
 
         const mainPadding = 10;
         const layoutObj = computeLayout(width, height);
         
         return (
-            <React.Fragment>
+            <ThemeContext.Provider 
+                value={{
+                    theme: theme,
+                    frameStyles: frameStyles,
+                    toggleTheme: toggleTheme,
+                    themeName: themeName
+                }}
+            >
                 <Header
-                    theme={theme}
+                    filename="Untitled"
                     width={layoutObj.header.width}
                     height={layoutObj.header.height}
-                    filename={filename}
                     onButtonClick={this.onHeaderButtonClicked}
                 />
 
                 <Body 
                     layoutObj={layoutObj} 
-                    theme={theme} 
                     mainPadding={mainPadding} 
                 />
 
                 <DownloadModal
                     open={downloadModalOpen}
                     closeModal={this.closeModal}
-                    theme={theme}
                     totalWidth={layoutObj.totalWidth}
                 />
                 <UploadModal
                     open={uploadModalOpen}
                     closeModal={this.closeModal}
-                    theme={theme}
                     totalWidth={layoutObj.totalWidth}
                 />
                 <OpenModal
                     open={openModalOpen}
                     closeModal={this.closeModal}
-                    theme={theme}
                     totalWidth={layoutObj.totalWidth}
                 />
                 <SettingsModal
                     open={settingsModalOpen}
                     closeModal={this.closeModal}
-                    theme={theme}
                     totalWidth={layoutObj.totalWidth}
                 />
-            </React.Fragment>
+                
+            </ThemeContext.Provider>                
         );
     }
 }

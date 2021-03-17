@@ -39,19 +39,27 @@ export class ProgramEditor extends Component {
   };
 
   render() {
-    const { width, height } = this.props;
-    const { toolbox, initialXml } = this.state;
+    const { 
+        width, 
+        height 
+    } = this.props;
+    
+    const { 
+        toolbox, 
+        initialXml 
+    } = this.state;
 
     const padding = 5;
     const blocklyWidth = width - 2 * padding;
     const blocklyHeight = height - 2 * padding;
 
-    console.log(Blockly);
-
     return (
         <div
             id="blockly"
-            style={{ height: `${blocklyHeight}px`, width: `${blocklyWidth}px` }}
+            style={{ 
+                height: `${blocklyHeight}px`, 
+                width: `${blocklyWidth}px` 
+            }}
         >
             <ReactBlockly.BlocklyEditor
                 toolboxCategories={toolbox}

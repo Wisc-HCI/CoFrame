@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import { IconButton } from 'office-ui-fabric-react';
 
-import styles from '../../frameStyles';
 
-export class Controls extends Component {
+export class Controls extends React.Component {
 
   constructor(props) {
     super(props);
@@ -28,7 +27,10 @@ export class Controls extends Component {
 
   render() {
 
-    const { frame, width, height } = this.props;
+    const { 
+        width, 
+        height 
+    } = this.props;
 
     return (
         <div 

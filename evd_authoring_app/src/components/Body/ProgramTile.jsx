@@ -1,14 +1,57 @@
 import React from 'react';
 
-import { Separator } from 'office-ui-fabric-react';
+import { DefaultButton } from 'office-ui-fabric-react';
 
 import { Tile } from './Tile';
+import { TileHeader } from './TileHeader';
 import { ProgramEditor } from '../ProgramEditor';
+import { SetupEditor } from '../SetupEditor';
 
 
 export const ProgramTile = (props) => {
 
-    const { mainPadding, theme, layoutProgram } = props;
+    const { 
+        mainPadding, 
+        layoutProgram 
+    } = props;
+
+    const [
+        buttonState, 
+        setButtonState
+    ] = React.useState(false);
+
+    let button = null;
+    let content = null;
+    let title = null;
+    if (buttonState) {
+        button = (
+            <DefaultButton 
+                text="Switch to Editor" 
+                onClick={() => { setButtonState(false); }}
+            />
+        );
+        content = (
+            <SetupEditor
+                width={layoutProgram.body.width - mainPadding / 2}
+                height={layoutProgram.body.height - mainPadding /2}
+            />
+        );
+        title = 'Program Setup';
+    } else {
+        button = (
+            <DefaultButton 
+                text="Switch to Setup" 
+                onClick={() => { setButtonState(true); }}
+            />
+        );
+        content = (
+            <ProgramEditor 
+                width={layoutProgram.body.width - mainPadding / 2}
+                height={layoutProgram.body.height - mainPadding /2}
+            />
+        );
+        title = 'Program Editor';
+    }
 
     return (
         <div
@@ -19,28 +62,28 @@ export const ProgramTile = (props) => {
             }}
         >
             <Tile 
-                theme={theme}
                 width={layoutProgram.width - mainPadding / 2}
                 height={layoutProgram.height - mainPadding}
             >
-                <div
-                    style={{
-                        height: `${layoutProgram.header.height}px`,
-                        width: `${layoutProgram.header.width - mainPadding / 2}px`,
-                        fontSize: '25px',
-                        textAlign: 'center'
-                    }}
+                <TileHeader
+                    title={title}
+                    height={layoutProgram.header.height}
+                    width={layoutProgram.header.width - mainPadding / 2}
                 >
-                    <i>Program</i>
+                    <div 
+                        style={{
+                            position: 'absolute',
+                            top: '3px',
+                            right: '13px',
+                            zIndex: 1
+                        }}
+                    >
+                        {button}    
+                    </div>
+                </TileHeader>
 
-                    <Separator />
-                    
-                </div>
-
-                <ProgramEditor 
-                    width={layoutProgram.body.width - mainPadding / 2}
-                    height={layoutProgram.body.height - mainPadding /2}
-                />
+                {content}
+                
             </Tile>  
         </div>
     );

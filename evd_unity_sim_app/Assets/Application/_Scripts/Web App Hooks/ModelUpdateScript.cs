@@ -40,6 +40,7 @@ public class ModelUpdateScript : MonoBehaviour
 
     public void DefineTestEnvironment()
     {
+        /*
         // Simple test program for checking the managers
         var reachSphere = new ReachSphere(0.75f, new Position(0,0,0));
         
@@ -73,13 +74,13 @@ public class ModelUpdateScript : MonoBehaviour
 
         List<Waypoint> waypoints = new List<Waypoint>();
 
-
         environment = new EnvironmentContext(reachSphere, points, meshes, zones, locations, 
                                              machines, things, trajectories, waypoints, 
                                              changesProcessor.ProcessTrace);
-
+        
         environment.LateConstructUpdate();
         environment.DeepUpdate();
+        */
     }
 
     public void ReachSphereUpdated(Dictionary<string, string> trace)
