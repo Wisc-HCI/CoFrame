@@ -43,7 +43,7 @@ export class SetupEditor extends React.Component {
             { name: 'Regions', key: 'regions' },
             { name: 'Things', key: 'things' },
             { name: 'Machines', key: 'machines' },
-            { name: 'environment', key: 'environment' }
+            { name: 'Environment', key: 'environment' }
         ];
 
 
@@ -93,7 +93,7 @@ export class SetupEditor extends React.Component {
                                 onClick={e => this.onLinkClick(entry.key)} 
                                 style={{
                                     cursor: 'pointer', 
-                                    background: (entry.key === activeField) ? '#1f1f1f' : 'inherit'
+                                    background: (entry.key === activeField) ? '#2f2f2f' : 'inherit'
                                 }}
                             >
                                 <Text variant='xLarge' 

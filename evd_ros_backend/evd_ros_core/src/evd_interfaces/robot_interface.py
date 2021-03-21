@@ -1,6 +1,8 @@
 '''
-
+Wraps the robot bringup subsystem for each robot instance. This is expected to
+interact with a UR robot using URScript.
 '''
+
 
 import time
 import rospy
@@ -37,7 +39,7 @@ class RobotInterface:
         self._gripper_state_sub = rospy.Subscriber('{}/gripper/stat'.format(self._prefix), GripperStat, self._gripper_state_cb)
 
         self.move_trajectory_action = actionlib.SimpleActionClient('{}/robot_control/move_trajectory'.format(self._prefix),MoveTrajectoryAction)
-        
+
     def _joint_state_cb(self, msg):
         self._last_js_msg = msg
         self._last_js_msg_time = time.time()

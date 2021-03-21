@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+'''
+Data server is the source of program "truth" in EvD.
+'''
+
 import os
 import json
 import rospy

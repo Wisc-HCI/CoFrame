@@ -11,6 +11,8 @@ import { MetaData } from './MetaData';
 import { ModalWrapper } from '../ModalWrapper';
 import { ModalControlButtons } from '../ModalControlButtons';
 
+import { ApplicationContext } from '../../../contexts';
+
 
 export class UploadModal extends React.Component {
 
@@ -58,8 +60,10 @@ export class UploadModal extends React.Component {
             const { open } = this.props;
 
             if (open) {
+
                 let data = null;
                 let success = null;
+
                 try {
                     data = JSON.parse(e.target.result);
                     success = true;
@@ -90,10 +94,8 @@ export class UploadModal extends React.Component {
         });
     }
 
-    submitClicked() {
-        // TODO submit data action
-        console.log('Submit Clicked');
-
+    submitClicked(service) {
+        service.loadFromFile(this.state.data, this.state.filename.split('.').slice(0, -1).join('.'))
         this.hideModal();
     }
 
@@ -119,17 +121,20 @@ export class UploadModal extends React.Component {
         } else if (data !== null) {
             if (fileSuccessfullyParsed) {
                 metaData = (<MetaData data={data} />);
+
             } else {
                 metaData = (
                     <Stack.Item align="center">
                         <p>Failed to parse file</p>
+                        <br />
+                        <p>Please upload a valid EvD JSON file</p>
                     </Stack.Item>
                 );
             }
         } else {
             metaData = (
                 <Stack.Item align="center">
-                    <p>Please upload file</p>
+                    <p>Please upload JSON file</p>
                 </Stack.Item>
             );
         }
@@ -141,6 +146,7 @@ export class UploadModal extends React.Component {
                 hideModal={this.hideModal}
                 width={width}
             >
+
                 <input
                     type="file"
                     id="fileupload"
@@ -171,17 +177,23 @@ export class UploadModal extends React.Component {
                     <br />
 
                     <Stack.Item align="center">
-                        <ModalControlButtons 
-                            order={['submit','cancel']} 
-                            callbacks={{
-                                'submit': this.submitClicked, 
-                                'cancel': this.hideModal
-                            }}
-                            isPrimary={{
-                                'submit': true, 
-                                'cancel': false
-                            }}
-                        />
+                        <ApplicationContext.Consumer>
+                            { appValue => (
+                                <ModalControlButtons 
+                                    order={['submit','cancel']} 
+                                    callbacks={{
+                                        'submit': () => {this.submitClicked(appValue.service)}, 
+                                        'cancel': this.hideModal
+                                    }}
+                                    isPrimary={{
+                                        'submit': true, 
+                                        'cancel': false
+                                    }}
+                                    disabled={{'submit': !fileSuccessfullyParsed}}
+                                />
+                            )}
+                        </ApplicationContext.Consumer> 
+                        
                     </Stack.Item>
                 </Stack>
             </ModalWrapper>

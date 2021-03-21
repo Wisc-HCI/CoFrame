@@ -1,3 +1,8 @@
+'''
+This application is used to demonstrate EvDScript's modeling ability.
+'''
+
+
 import json
 import pprint
 

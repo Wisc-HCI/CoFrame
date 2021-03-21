@@ -1,3 +1,10 @@
+'''
+Captures an instance of program state.
+
+Used to revert changes in the data server.
+'''
+
+
 from .version_tag import VersionTag
 
 

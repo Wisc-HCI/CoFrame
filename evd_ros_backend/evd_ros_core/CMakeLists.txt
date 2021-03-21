@@ -57,6 +57,7 @@ add_message_files(
   Issue.msg
   Version.msg
   UpdateData.msg
+  ExpertCheck.msg
   StringArray.msg
   ApplicationOption.msg
 )
@@ -64,16 +65,17 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  GetPendingJobs.srv
-  SetPendingJobs.srv
-  ClearPendingJob.srv
   GetData.srv
   SetData.srv
   LoadData.srv
   SaveData.srv
-  GetOptions.srv
-  ClearIssue.srv
   GetIssues.srv
+  ClearIssue.srv
+  GetOptions.srv
+  GetPendingJobs.srv
+  SetPendingJobs.srv
+  ClearPendingJob.srv
+  GetExpertChecklist.srv
 )
 
 ## Generate actions in the 'action' folder

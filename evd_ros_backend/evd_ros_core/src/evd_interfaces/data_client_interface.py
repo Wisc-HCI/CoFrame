@@ -1,6 +1,17 @@
 '''
+Data client interface wraps the interaction with the data server for any other node.
 
+This is needed as EvD has a "heavy" model on each client (a full copy of the program tree).
+Doing it this way makes it nice to edit locally before commiting changes but will make the
+actual change manifest much harder to enforce manually. Hence, wrapping that behavior
+for the user in this node.
+
+We also support application level interface for loading / saving whole programs if
+needed by the node.
+
+Note: Currently the setting changes back to data server is broken.
 '''
+
 
 import json
 import rospy
@@ -22,6 +33,7 @@ from evd_version_tracking import *
 class DataClientInterface(object):
 
     def __init__(self, use_application_interface=False, on_program_update_cb=None):
+        self._server_has_updated = False
 
         self._use_application_interface = use_application_interface
         self._cache = get_evd_cache_obj()
@@ -113,6 +125,8 @@ class DataClientInterface(object):
             traceback.print_exc()
             return #Error parsing, ignore for now
 
+        self._server_has_updated = True
+
         if self._on_program_update_cb != None:
             self._on_program_update_cb()
 
@@ -120,6 +134,12 @@ class DataClientInterface(object):
         #TODO need to keep a manifest of all changed nodes
         # self._program_changes_manifest
         pass
+
+    @property
+    def server_has_updated(self):
+        val = self._server_has_updated
+        self._server_has_updated = False
+        return val
 
     '''
     Public Utilities

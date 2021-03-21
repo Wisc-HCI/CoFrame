@@ -1,3 +1,10 @@
+'''
+Wraps the interaction with the high-level robot control server.
+
+This interface allows the client to quickly trigger a program to run and switch
+allowed agents.
+'''
+
 
 import rospy
 

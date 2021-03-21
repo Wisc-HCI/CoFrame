@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 
 '''
-Planner server generates traces from trajectories using
+Trace processor generates traces from trajectories using
 - RelaxedIK
 
-Planner traces trajectories using
+Traces trajectories using
 - URSim
 
-Planner creates full visualizations for trajectories
+Creates full visualizations for trajectories
 - end-effector-path
 - occupancy volume mesh
 - joint-link-paths (more general form of end-effector path)
+
+Generates waypoint joints
 '''
 
 #TODO Planner integration

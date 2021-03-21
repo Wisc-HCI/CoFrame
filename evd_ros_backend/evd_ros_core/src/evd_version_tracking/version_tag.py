@@ -1,3 +1,8 @@
+'''
+The data server needs some way of determining truth. We can resolve change order
+with uniquely identifiable timestamps.
+'''
+
 
 import uuid
 import rospy

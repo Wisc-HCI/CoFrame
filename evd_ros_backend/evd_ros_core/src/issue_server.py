@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
 '''
+Provide pending jobs and issues in the EvD system.
 '''
 
-#TODO provide pending job notices as well
+#TODO
 
 import rospy
 
+from std_msgs.mgs import Bool
 from evd_ros_core.msg import Issue, StringArray
+
 from evd_ros_core.srv import GetIssues, GetIssuesRequest, GetIssuesResponse
 from evd_ros_core.srv import ClearIssue, ClearIssueRequest, ClearIssueResponse
 from evd_ros_core.srv import GetPendingJobs, GetPendingJobsRequest, GetPendingJobsResponse
@@ -21,7 +24,10 @@ class IssueServer:
         self.full_table = {}
         self.pending_jobs = {}
 
+        self._updated_issues_pub = rospy.Publisher('issue_server/updated_issues',Bool, queue_size=10)
+        self._updated_pending_pub = rospy.Publisher('issue_server/updated_pending_jobs',Bool,queue_size=10)
         self._issue_sub = rospy.Subscriber('issue_server/issue_submit',Issue,self._issue_submit_cb)
+
         self._get_issue_srv = rospy.Service('issue_server/get_issues',GetIssues,self._get_issues_cb)
         self._clear_issue_srv = rospy.Service('issue_server/clear_issue',ClearIssue,self._clear_issue_cb)
         self._get_pending_jobs_srv = rospy.Service('issue_server/get_pending_jobs',GetPendingJobs,self._get_pending_jobs_cb)
@@ -34,6 +40,7 @@ class IssueServer:
             self.full_table[msg.source] = {}
 
         self.full_table[msg.source][msg.id] = msg
+        self._updated_issues_pub.publish(Bool(True))
 
     def _get_issues_cb(self, request):
         response = GetIssuesResponse()
@@ -72,6 +79,8 @@ class IssueServer:
                 response.status = True
                 response.message = ''
                 self.full_table[request.source].pop(request.id)
+
+                self._updated_issues_pub.publish(Bool(True))
             else:
                 response.message = 'ID not in table'
         else:
@@ -113,6 +122,8 @@ class IssueServer:
                 'data': request.data[i]
             }
 
+        self._updated_pending_pub.publish(Bool(True))
+
         response = SetPendingJobsResponse()
         response.status = True
         return response
@@ -125,6 +136,8 @@ class IssueServer:
             if request.id in self.pending_jobs[request.source].keys():
                 response.status = True
                 response.message = ''
+
+                self._updated_pending_pub.publish(Bool(True))
             else:
                 response.message = 'ID not in table'
         else:

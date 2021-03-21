@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+'''
+GUI provides controls for robot server.
+
+- Controls to switch between robots
+- *Freedrive not expected to be implemented
+- Play controls
+'''
+
+
 import rospy
 import Tkinter as tk
 

@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { 
-    Stack, 
     TextField,
     Label,
     Toggle,
@@ -9,51 +8,92 @@ import {
     SpinnerSize
 } from 'office-ui-fabric-react';
 
+import { RosConnectButton } from './RosConnectButton';
 
-export const RosSettings = (props) => {
+import { RosContext } from '../../../contexts';
 
-    const { state, textCallback, btnCallback } = props;
 
-    let spinner = null;
-    if (state === "loading") {
-        spinner = (<Spinner size={SpinnerSize.medium} />);
+export class RosSettings extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            connectionState: 'connect'
+        };
+        
+        this.textChanged = this.textChanged.bind(this);
+        this.connectEvent = this.connectEvent.bind(this);
     }
 
-    return (
-        <React.Fragment>
-            <Stack horizontal tokens={{ childrenGap: '20' }}>
+    textChanged() {
+        this.setState({
+            connectionState: 'connect'
+        });
+    }
 
-                <Label>ROS Server:</Label>
+    connectEvent(service) {
+        this.setState({
+            connectionState: 'loading'
+        });
 
-                <TextField 
-                    prefix="ws://"
-                    onChange={textCallback}
-                    defaultValue={'localhost:9090'}
-                    disabled={state === "loading"}
-                />
+        const url = document.getElementById("ros-url").value;
+        service.onLoad(url, (val) => {
+            this.setState({
+                connectionState: (val) ? 'refresh' : 'connect'
+            });
+        });
+    }
 
-                <RosConnectButton state={state} callback={btnCallback} />
+    render() {
 
-                {spinner}
-                
-            </Stack>
+        const { connectionState } = this.state;
+    
+        return (
+            <RosContext.Consumer>
+                { rosValue => (
+                    <table className="settings-layout">
+                        <tr>
+                            <td className="settings-layout-first-cell">
+                                <Label>Server:</Label>
+                            </td>
+                            <td>
+                                <TextField id="ros-url"
+                                    onChange={this.textChanged}
+                                    defaultValue={rosValue.url}
+                                    disabled={connectionState === "loading"}
+                                />
+                            </td>
+                            <td>
+                                <RosConnectButton 
+                                    state={connectionState} 
+                                    callback={() => {this.connectEvent(rosValue.service)}} 
+                                />
+                            </td>
+                            <td>
+                                {
+                                    (connectionState === "loading") ? (<Spinner size={SpinnerSize.medium} />): null
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className="settings-layout-first-cell">
+                                <Label>Status:</Label>
+                            </td>
+                            <td>
+                                <Toggle 
+                                    checked={rosValue.connected}
+                                    disabled 
+                                    onText="Connected" 
+                                    offText="Disconnected" 
+                                />
+                            </td>
+                        </tr>
+                    </table>
+                )}
+            </RosContext.Consumer>
+        );
+    }
+} 
 
-            <br />
 
-            <Stack horizontal tokens={{ childrenGap: '20' }} style={{paddingLeft: '2rem'}}>
-                <Label>Status:</Label>
-                <Toggle disabled onText="Connected" offText="Disconnected" />
-            </Stack>
-
-            <Stack horizontal tokens={{ childrenGap: '20' }} style={{paddingLeft: '2rem'}}>
-                <Label>Root Frame:</Label>
-
-                <TextField 
-                    defaultValue={'app'}
-                    disabled
-                />
-            </Stack>
-           
-        </React.Fragment>
-    );
-};

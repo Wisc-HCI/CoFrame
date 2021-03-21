@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+'''
+High-level control of robot instance subsystems.
+'''
+
+
 import json
 import rospy
 

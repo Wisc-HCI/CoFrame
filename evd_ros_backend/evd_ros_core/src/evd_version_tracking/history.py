@@ -1,3 +1,6 @@
+'''
+Collection of HistoryEntry objects.
+'''
 
 
 class History(object):

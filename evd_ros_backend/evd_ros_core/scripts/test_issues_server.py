@@ -1,5 +1,18 @@
 #!/usr/bin/env python
 
+'''
+Uses a simple script to confirm behavior of Issues Server.
+
+Checks:
+- Submission of issues
+- Clearing of issues
+- Getting issues
+- Submission of pending jobs
+- Clearing pending jobs
+- Getting pending jobs
+'''
+
+
 import rospy
 
 from evd_interfaces.issue_client_interface import Issue, IssueClientInterface

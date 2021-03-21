@@ -10,7 +10,16 @@ import { UploadModal } from "./components/Modals/UploadModal";
 import { DownloadModal } from "./components/Modals/DownloadModal";
 import { OpenModal } from "./components/Modals/OpenModel";
 
-import { ThemeContext } from "./contexts";
+import { 
+    GetRosServiceSingleton,
+    GetApplicationServiceSingleton 
+} from './services';
+
+import { 
+    ThemeContext,
+    ApplicationContext,
+    RosContext
+} from "./contexts";
 
 
 export class App extends React.Component {
@@ -18,18 +27,31 @@ export class App extends React.Component {
     constructor(props) {
         super(props);
 
+        const rosService = GetRosServiceSingleton();
+        const appService =  GetApplicationServiceSingleton();
+
         this.state = {
             height: 0,
             width: 0,
+            mounted: false,
             downloadModalOpen: false,
             uploadModalOpen: false,
             openModalOpen: false,
-            settingsModalOpen: true
+            settingsModalOpen: true,
+            rosService: rosService,
+            appService: appService,
+            rosState: rosService.state,
+            appState: appService.state
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.onHeaderButtonClicked = this.onHeaderButtonClicked.bind(this);
+        this.rosStateUpdated = this.rosStateUpdated.bind(this);
+        this.appStateUpdated = this.appStateUpdated.bind(this);
+
+        rosService.stateSetCallback = this.rosStateUpdated;
+        appService.stateSetCallback = this.appStateUpdated;
     }
 
     UNSAFE_componentWillMount() {
@@ -40,10 +62,12 @@ export class App extends React.Component {
 
     componentDidMount() {
         this.updateWindowDimensions();
+        this.setState({ mounted: true });
     }
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateWindowDimensions);
+        this.setState({ mounted: false });
     }
 
     onHeaderButtonClicked(button) {
@@ -71,6 +95,18 @@ export class App extends React.Component {
         });
     }
 
+    rosStateUpdated(newState) {
+        this.setState({
+            rosState: newState
+        });
+    }
+
+    appStateUpdated(newState) {
+        this.setState({
+            appState: newState
+        });
+    }
+
     render() {
         const {
             width,
@@ -78,7 +114,11 @@ export class App extends React.Component {
             downloadModalOpen,
             uploadModalOpen,
             openModalOpen,
-            settingsModalOpen
+            settingsModalOpen,
+            rosService,
+            appService,
+            rosState,
+            appState
         } = this.state;
 
         const { 
@@ -100,39 +140,54 @@ export class App extends React.Component {
                     themeName: themeName
                 }}
             >
-                <Header
-                    filename="Untitled"
-                    width={layoutObj.header.width}
-                    height={layoutObj.header.height}
-                    onButtonClick={this.onHeaderButtonClicked}
-                />
+                <RosContext.Provider
+                    value={{
+                        service: rosService,
+                        ...rosState
+                    }}
+                >
+                    <ApplicationContext.Provider
+                        value={{
+                            service: appService,
+                            ...appState 
+                        }}
+                    >
 
-                <Body 
-                    layoutObj={layoutObj} 
-                    mainPadding={mainPadding} 
-                />
+                        <Header
+                            filename="Untitled"
+                            width={layoutObj.header.width}
+                            height={layoutObj.header.height}
+                            onButtonClick={this.onHeaderButtonClicked}
+                        />
 
-                <DownloadModal
-                    open={downloadModalOpen}
-                    closeModal={this.closeModal}
-                    totalWidth={layoutObj.totalWidth}
-                />
-                <UploadModal
-                    open={uploadModalOpen}
-                    closeModal={this.closeModal}
-                    totalWidth={layoutObj.totalWidth}
-                />
-                <OpenModal
-                    open={openModalOpen}
-                    closeModal={this.closeModal}
-                    totalWidth={layoutObj.totalWidth}
-                />
-                <SettingsModal
-                    open={settingsModalOpen}
-                    closeModal={this.closeModal}
-                    totalWidth={layoutObj.totalWidth}
-                />
-                
+                        <Body 
+                            layoutObj={layoutObj} 
+                            mainPadding={mainPadding} 
+                        />
+
+                        <DownloadModal
+                            open={downloadModalOpen}
+                            closeModal={this.closeModal}
+                            totalWidth={layoutObj.totalWidth}
+                        />
+                        <UploadModal
+                            open={uploadModalOpen}
+                            closeModal={this.closeModal}
+                            totalWidth={layoutObj.totalWidth}
+                        />
+                        <OpenModal
+                            open={openModalOpen}
+                            closeModal={this.closeModal}
+                            totalWidth={layoutObj.totalWidth}
+                        />
+                        <SettingsModal
+                            open={settingsModalOpen}
+                            closeModal={this.closeModal}
+                            totalWidth={layoutObj.totalWidth}
+                        />
+
+                    </ApplicationContext.Provider>
+                </RosContext.Provider>        
             </ThemeContext.Provider>                
         );
     }

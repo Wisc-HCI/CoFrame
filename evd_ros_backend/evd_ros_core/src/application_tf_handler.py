@@ -2,6 +2,11 @@
 
 '''
 Generates transforms to connect external application into ros frame
+
+Frames:
+- application_camera
+- application (ros frame)
+- control_target
 '''
 
 #TODO update for new UI system

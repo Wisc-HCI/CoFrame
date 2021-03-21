@@ -7,13 +7,7 @@ class EvDScriptService {
 
     constructor() {
 
-        // General file settings
         this.updateProgramSub = null;
-        this.loadAppSrv = null;
-        this.saveAppSrv = null;
-        this.getAppOptions = null;
-
-        // EvD Script
         this.getProgramSrv = null;
         this.setProgramSrv = null;
         this.getDefaultObjectsSrv = null;
@@ -23,18 +17,19 @@ class EvDScriptService {
 
         this.updateProgramSub = null;
 
-        this.loadAppSrv = null;
-
-        this.saveAppSrv = null;
-
-        this.getAppOptions = null;
-
         this.getProgramSrv = null;
 
         this.setProgramSrv = null;
 
         this.getDefaultObjectsSrv = null;
 
+    }
+
+    teardown() {
+        this.updateProgramSub = null;
+        this.getProgramSrv = null;
+        this.setProgramSrv = null;
+        this.getDefaultObjectsSrv = null;
     }
 
 }

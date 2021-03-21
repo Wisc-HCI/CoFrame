@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 
+'''
+Tests the program behavior of EvD with an RViz Visualization.
+
+Checks:
+- Locations
+- Trajectories
+- Waypoints
+- Things
+'''
+
+
 import rospy
 import pprint
 

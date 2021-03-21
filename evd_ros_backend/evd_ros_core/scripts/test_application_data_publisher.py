@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+'''
+Tests application data behavior with a simple GUI interface.
+
+Allows
+- Getting Application Options
+- Saving (allows creation of new)
+- Loading
+'''
+
+
 import rospy
 import Tkinter as tk
 

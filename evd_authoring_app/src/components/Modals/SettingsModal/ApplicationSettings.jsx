@@ -1,28 +1,63 @@
 import React from 'react';
 
 import { 
-    Stack, 
     TextField,
     Label
 } from 'office-ui-fabric-react';
 
+import { ApplicationContext } from '../../../contexts';
 
-export const ApplicationSettings = (props) => {
 
-    const { textCallback } = props;
+export class ApplicationSettings extends React.Component {
 
-    return (
-        <React.Fragment>
-            <Stack horizontal tokens={{ childrenGap: '20' }}>
+    constructor(props) {
+        super(props);
 
-                <Label>Project Name:</Label>
+        this.state = {
+            timeout: null
+        }
 
-                <TextField 
-                    onChange={textCallback}
-                    defaultValue={'Untitled'}
-                />
+        this.textChanged = this.textChanged.bind(this);
+    }
 
-            </Stack>
-        </React.Fragment>
-    );
-};
+    textChanged(service) {
+
+        if (this.state.timeout !== null) {
+            clearTimeout(this.state.timeout);
+        }
+
+        this.setState({
+            timeout: setTimeout(() => {
+                service.filename = document.getElementById('project-name').value;
+                this.setState({ timeout: null });
+            }, 500)
+        })
+    }
+
+    render() {
+
+        return (
+            <ApplicationContext.Consumer>
+                { appValue => (
+                    
+                    <table className="settings-layout">
+                        <tr>
+                            <td className="settings-layout-first-cell">
+                                <Label>Project Name:</Label>
+                            </td>
+                            <td>
+                                <TextField id="project-name"
+                                    onChange={(e) => {this.textChanged(appValue.service)}}
+                                    defaultValue={appValue.filename}
+                                />
+                            </td>
+                        </tr>
+                    </table>
+    
+                )}
+            </ApplicationContext.Consumer>
+        );
+    }
+}
+
+

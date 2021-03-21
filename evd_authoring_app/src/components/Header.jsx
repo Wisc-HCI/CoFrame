@@ -5,7 +5,10 @@ import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 
 import Logo from '../content/logo.svg';
 
-import { ThemeContext } from "../contexts";
+import { 
+    ThemeContext,
+    ApplicationContext
+} from "../contexts";
 
 
 
@@ -14,7 +17,6 @@ export const Header = (props) => {
     const { 
         width, 
         height, 
-        filename, 
         onButtonClick 
     } = props;
 
@@ -70,7 +72,11 @@ export const Header = (props) => {
                         />
 
                         <Stack.Item align="start">
-                            <h2><b><i>Expert View Dashboard - {filename}</i></b></h2>
+                            <ApplicationContext.Consumer>
+                                { appValue => (
+                                    <h2><b><i>Expert View Dashboard - {appValue.filename}</i></b></h2>
+                                )}
+                            </ApplicationContext.Consumer>
                         </Stack.Item>
 
                         <Stack.Item grow align="center">

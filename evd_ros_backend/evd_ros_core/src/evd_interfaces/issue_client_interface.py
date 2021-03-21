@@ -1,8 +1,19 @@
+'''
+Wraps the issue server interaction for the client user.
+
+This interface provides a simplified interaction scheme for the user to make
+changes to the issue server and/or get current state of the server.
+
+Both pending jobs and active issues are supported.
+'''
+
 
 import json
 import rospy
 
+from std_msgs.msg import Bool
 from evd_ros_core.msg import Issue
+
 from evd_ros_core.srv import GetIssues, GetIssuesRequest, GetIssuesResponse
 from evd_ros_core.srv import ClearIssue, ClearIssueRequest, ClearIssueResponse
 from evd_ros_core.srv import GetPendingJobs, GetPendingJobsRequest, GetPendingJobsResponse
@@ -12,9 +23,17 @@ from evd_ros_core.srv import ClearPendingJob, ClearPendingJobRequest, ClearPendi
 
 class IssueClientInterface(object):
 
-    def __init__(self):
+    def __init__(self, on_pending_jobs_updated_cb=None, on_issues_updated_cb=None):
         self._cached_issues = None
         self._cached_pending_jobs = None
+        self._has_updated_pending_jobs = False
+        self._has_updated_issues = False
+
+        self._on_pending_jobs_updated_cb = on_pending_jobs_updated_cb
+        self._on_issues_updated_cb = on_issues_updated_cb
+
+        self._updated_pending_sub = rospy.Subscriber('issue_server/updated_pending_jobs', Bool, self._updated_pending_cb)
+        self._updated_issues_sub = rospy.Subscriber('issue_server/updated_issues', Bool, self._updated_issues_cb)
 
         self.issue_submit_pub = rospy.Publisher('issue_server/issue_submit',Issue,queue_size=10)
 
@@ -23,6 +42,30 @@ class IssueClientInterface(object):
         self.get_pending_jobs_srv = rospy.ServiceProxy('issue_server/get_pending_jobs',GetPendingJobs)
         self.set_pending_jobs_srv = rospy.ServiceProxy('issue_server/set_pending_jobs',SetPendingJobs)
         self.clear_pending_job_srv = rospy.ServiceProxy('issue_server/clear_pending_job',ClearPendingJob)
+
+    def _updated_pending_cb(self, msg):
+        self._has_updated_pending_jobs = msg.data
+
+        if self._on_pending_jobs_updated_cb != None:
+            self._on_pending_jobs_updated_cb()
+
+    @property
+    def server_has_updated_pending_jobs(self, msg):
+        tmp = self._has_updated_pending_jobs
+        self._has_updated_pending_jobs = False
+        return tmp
+
+    def _updated_issues_cb(self, msg):
+        self._has_updated_issues = msg.data
+
+        if self._on_issues_updated_cb != None:
+            self._on_issues_updated_cb()
+
+    @property
+    def server_has_updated_issues(self):
+        tmp = self._has_updated_issues
+        self._has_updated_issues = False
+        return tmp
 
     def submit_issue(self, source, id, level, data, message):
         msg = self.pack_issue_msg(source,id,level,data,message)

@@ -1,5 +1,20 @@
 #!/usr/bin/env python
 
+'''
+Tests the environment behavior of EvD with an RViz Visualization.
+
+Checks:
+- Locations
+- Trajectories
+- Waypoints
+- Things
+- ReachSphere
+- Occupancy Zones
+- Pinch Points
+- Collision Meshes
+'''
+
+
 import rospy
 import pprint
 

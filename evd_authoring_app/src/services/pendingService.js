@@ -31,6 +31,11 @@ class PendingService {
         });
     }
 
+    teardown() {
+        this.getIssuesSrv = null;
+        this.getPendingJobsSrv = null;
+    }
+
     get cachedPendingJobs() {
         return this._pendingJobs;
     }
@@ -82,6 +87,10 @@ class PendingService {
                 });
             });
         }).catch((err) => {throw err});
+    }
+
+    get state() {
+        return null;
     }
 
 }

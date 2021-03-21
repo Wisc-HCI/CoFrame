@@ -10,11 +10,12 @@ class UnityService {
         this.cameraPoseFramePub = null;
         this.controlTargetPosePub = null;
 
-        // Unity Robot Controls
+        // Robot Control Feedback
         this.atStartSub = null;
         this.atEndSub = null;
         this.lockoutSub = null;
 
+        // Unity Robot Controls
         this.useSimulatedRobotPub = null;
         this.usePhysicalRobotPub = null;
         this.freedrivePub = null;
@@ -121,7 +122,26 @@ class UnityService {
             name: 'robot_control_server/step_backward',
             messageType: 'std_msgs/Empty'
         });
+    }
 
+    teardown() {
+        this.rosFramePub = null;
+        this.cameraPoseFramePub = null;
+        this.controlTargetPosePub = null;
+
+        this.atStartSub = null;
+        this.atEndSub = null;
+        this.lockoutSub = null;
+
+        this.useSimulatedRobotPub = null;
+        this.usePhysicalRobotPub = null;
+        this.freedrivePub = null;
+        this.playPub = null;
+        this.stopPub = null;
+        this.pausePub = null;
+        this.resetPub = null;
+        this.stepForwardPub = null;
+        this.stepBackwardPub = null;
     }
 
     publishRosFrame(poseMsg) {

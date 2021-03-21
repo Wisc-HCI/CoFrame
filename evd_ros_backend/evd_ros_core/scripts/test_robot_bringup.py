@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+'''
+Simple script to confirm URSim or physical robot is working as expected.
+'''
+
+
 import time
 import rospy
 import actionlib
