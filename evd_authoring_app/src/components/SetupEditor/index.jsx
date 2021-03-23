@@ -6,6 +6,14 @@ import {
     Text 
 } from 'office-ui-fabric-react';
 
+import { LocationSet } from './LocationSet';
+import { WaypointSet } from './WaypointSet';
+import { RegionSet } from './RegionSet';
+import { ThingSet } from './ThingSet';
+import { MachineSet } from './MachineSet';
+import { EnvironmentSet } from './EnvironmentSet';
+
+
 
 export class SetupEditor extends React.Component {
 
@@ -38,38 +46,16 @@ export class SetupEditor extends React.Component {
 
 
         const groups = [
-            { name: 'Locations', key: 'locations' },
-            { name: 'Waypoints', key: 'waypoints' },
-            { name: 'Regions', key: 'regions' },
-            { name: 'Things', key: 'things' },
-            { name: 'Machines', key: 'machines' },
-            { name: 'Environment', key: 'environment' }
+            { name: 'Locations', key: 'locations', content: (<LocationSet />) },
+            { name: 'Waypoints', key: 'waypoints', content: (<WaypointSet />) },
+            { name: 'Regions', key: 'regions', content: (<RegionSet />) },
+            { name: 'Things', key: 'things', content: (<ThingSet />) },
+            { name: 'Machines', key: 'machines', content: (<MachineSet />) },
+            { name: 'Environment', key: 'environment', content: (<EnvironmentSet />) }
         ];
 
 
-        let content = null;
-        switch (activeField) {
-            case "locations":
-                content = "locations";
-                break;
-            case "waypoints":
-                content = "waypoints";
-                break;
-            case "regions":
-                content = "regions";
-                break;
-            case "things":
-                content = "things";
-                break;
-            case "machines":
-                content = "machines";
-                break;
-            case "environment":
-                content = "environment";
-                break;
-            default:
-                break;
-        }
+        let content = groups.find(x => x.key === activeField).content;
 
         return (
             <div
@@ -110,7 +96,7 @@ export class SetupEditor extends React.Component {
                     <Separator vertical />
 
                     {content}
-
+                    
                 </Stack>
                 
             </div>

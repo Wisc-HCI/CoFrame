@@ -1,41 +1,53 @@
 import React from 'react';
 
 import { 
-    IconButton,
-    TooltipHost
+    TooltipHost,
+    PrimaryButton
 } from 'office-ui-fabric-react';
 import { useId } from '@uifabric/react-hooks';
+
+import { ThemeContext } from "../../contexts";
 
 
 export const AddButton = (props) => {
 
-    const { 
+    const {
         type, 
         callback 
     } = props;
 
-    const tooltipId = useId('tooltip');
+    const tooltipId = useId('add-tooltip');
 
     return (
-        <TooltipHost
-            content={`Add a new ${type}`}
-            id={tooltipId}
-            calloutProps={{ gapSpace: 0 }}
-            styles={{
-                root: { display: 'inline-block' }
-            }}
-        >
-            <IconButton 
-                primary={true}
-                title={`Add ${type}`}
-                iconProps={{ iconName: 'CirclePlus' }}
-                styles={{
-                    root: {
-                        fontSize: '50px'
-                    }
-                }}
-                onClick={callback}
-            /> 
-        </TooltipHost>
+        <ThemeContext.Consumer>
+            { value => (
+                
+                <TooltipHost
+                    content={`Add a new ${type}`}
+                    id={tooltipId}
+                    calloutProps={{ gapSpace: 0 }}
+                    styles={{
+                        root: {
+                            backgroundColor: value.theme.semanticColors.bodyBackground,
+                            display: 'inline-block',
+                            width: '100%',
+                            boxShadow: '3px 3px 3px #000'
+                        }
+                    }}
+                >
+                    <PrimaryButton
+                        text={`Add New ${type}`}
+                        styles={{
+                            root: {
+                                width: '100%'
+                            }
+                        }}
+                        onClick={callback}
+                    /> 
+                </TooltipHost>
+                    
+            )}
+        </ThemeContext.Consumer> 
+        
     );
 };
