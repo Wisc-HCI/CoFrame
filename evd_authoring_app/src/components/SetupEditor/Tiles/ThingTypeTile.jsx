@@ -2,26 +2,24 @@ import React from 'react';
 
 import { 
     Stack,
-    TextField,
-    PrimaryButton
+    TextField
 } from 'office-ui-fabric-react';
 
-import { DeleteButton } from './DeleteButton';
-import { ElementTile } from './ElementTile';
+import { DeleteButton } from '../DeleteButton';
+import { ElementTile } from '../ElementTile';
 
+export const ThingTypeTile = (props) => {
 
-export const LocationTile = (props) => {
-
-    const { style, name, uuid, deleteCallback, canDelete } = props;
+    const { style, name, uuid, deleteCallback, mesh, canDelete } = props;
 
     return (
         <ElementTile style={style}>
             <Stack horizontal tokens={{childrenGap: '50px'}}>
                 <Stack.Item grow styles={{root: { marginLeft: '10px'}}}>
-                    <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}}/>
+                    <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}} />
                 </Stack.Item>
-                <Stack.Item align="center">
-                    <PrimaryButton text="Edit" onClick={() => {}} />
+                <Stack.Item grow >
+                    <TextField label="Mesh:" onChange={() => {}} defaultValue={mesh} styles={{root: { maxWidth: '400px'}}} />
                 </Stack.Item>
                 <Stack.Item align="center" styles={{root: { marginRight: '10px'}}}>
                     <DeleteButton type="Waypoint" callback={() => { deleteCallback(uuid) }} disabled={!canDelete} />

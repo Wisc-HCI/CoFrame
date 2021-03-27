@@ -4,6 +4,8 @@ export const ThemeContext = React.createContext(null);
 
 export const FrameContext = React.createContext(null);
 
+export const ControlsContext = React.createContext(null);
+
 export const ApplicationContext = React.createContext(null);
 
 export const RosContext = React.createContext(null);

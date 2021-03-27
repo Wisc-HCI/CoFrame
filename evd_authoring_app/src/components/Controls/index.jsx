@@ -2,6 +2,7 @@ import React from 'react';
 
 import { IconButton } from 'office-ui-fabric-react';
 
+import { ControlsContext } from '../../contexts';
 
 export class Controls extends React.Component {
 
@@ -33,37 +34,43 @@ export class Controls extends React.Component {
     } = this.props;
 
     return (
-        <div 
-            style={{
-                paddingLeft: '10px', 
-                paddingRight: '10px',
-                width: width,
-                height: height
-            }}
-        >
-            <i style={{fontSize: '18px'}}>Controls</i>
+        <ControlsContext.Consumer>
+            { controlsValue => (
+                <div 
+                    style={{
+                        paddingLeft: '10px', 
+                        paddingRight: '10px',
+                        width: width,
+                        height: height
+                    }}
+                >
+                    <i style={{fontSize: '18px'}}>{`Controls ~ ${controlsValue.inSetup ? 'Program Setup' : 'Expert Checklist'}`}</i>
 
-            <br />
+                    <br />
 
-            <IconButton
-                iconProps={{ iconName: 'Refresh' }}
-                title="Reset"
-                ariaLabel="Reset"
-                onClick={this.onResetClicked}
-            />
-            <IconButton
-                iconProps={{ iconName: 'Play' }}
-                title="Play"
-                ariaLabel="Play"
-                onClick={this.onPlayClicked}
-            />
-            <IconButton
-                iconProps={{ iconName: 'Pause' }}
-                title="Pause"
-                ariaLabel="Pause"
-                onClick={this.onPauseClicked}
-            />
-        </div>
+                    <IconButton
+                        iconProps={{ iconName: 'Refresh' }}
+                        title="Reset"
+                        ariaLabel="Reset"
+                        onClick={this.onResetClicked}
+                    />
+                    <IconButton
+                        iconProps={{ iconName: 'Play' }}
+                        title="Play"
+                        ariaLabel="Play"
+                        onClick={this.onPlayClicked}
+                    />
+                    <IconButton
+                        iconProps={{ iconName: 'Pause' }}
+                        title="Pause"
+                        ariaLabel="Pause"
+                        onClick={this.onPauseClicked}
+                    />
+
+                    {controlsValue.checklistItem}
+                </div>
+            )}
+        </ControlsContext.Consumer> 
     );
   }
 }

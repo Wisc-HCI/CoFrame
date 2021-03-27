@@ -6,13 +6,13 @@ import {
     PrimaryButton
 } from 'office-ui-fabric-react';
 
-import { DeleteButton } from './DeleteButton';
-import { ElementTile } from './ElementTile';
+import { DeleteButton } from '../DeleteButton';
+import { ElementTile } from '../ElementTile';
 
 
-export const WaypointTile = (props) => {
+export const LocationTile = (props) => {
 
-    const { style, name, uuid, deleteCallback } = props;
+    const { style, name, uuid, deleteCallback, canDelete, canEdit } = props;
 
     return (
         <ElementTile style={style}>
@@ -21,10 +21,10 @@ export const WaypointTile = (props) => {
                     <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}}/>
                 </Stack.Item>
                 <Stack.Item align="center">
-                    <PrimaryButton text="Edit" onClick={() => {}} />
+                    <PrimaryButton text="Edit Pose" onClick={() => {}}  disabled={!canEdit} />
                 </Stack.Item>
                 <Stack.Item align="center" styles={{root: { marginRight: '10px'}}}>
-                    <DeleteButton type="Waypoint" callback={() => { deleteCallback(uuid); }} />
+                    <DeleteButton type="Waypoint" callback={() => { deleteCallback(uuid) }} disabled={!canDelete} />
                 </Stack.Item>
             </Stack>
         </ElementTile>

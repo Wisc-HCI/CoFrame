@@ -2,7 +2,8 @@ import React from 'react';
 
 import { 
     ThemeContext, 
-    FrameContext 
+    FrameContext,
+    ControlsContext
 } from '../../contexts';
 
 // Fill with the four possible checklist
@@ -24,24 +25,29 @@ export const ExpertChecklist = (props) => {
             { themeValue => (
                 <FrameContext.Consumer>
                     { frameValue => (
-                        <div 
-                            style={{
-                                width: `${innerWidth}px`,
-                                height: `${innerHeight}px`
-                            }}
-                        >
-                            <div 
-                                style={{
-                                    borderStyle: 'solid',
-                                    borderWidth: '2px',
-                                    borderColor: themeValue.frameStyles.colors[frameValue.frame],
-                                    height: '100%',
-                                    width: '100%'
-                                }}
-                            >
-                                Content
-                            </div>
-                        </div>
+                        <ControlsContext.Consumer>
+                            { controlsValue => (
+                                <div 
+                                    style={{
+                                        width: `${innerWidth}px`,
+                                        height: `${innerHeight}px`
+                                    }}
+                                >
+                                    <div 
+                                        style={{
+                                            borderStyle: 'solid',
+                                            borderWidth: '2px',
+                                            borderColor: controlsValue.inSetup ? undefined : themeValue.frameStyles.colors[frameValue.frame],
+                                            height: '100%',
+                                            width: '100%'
+                                        }}
+                                    >
+                                        Content
+                                        {controlsValue.inSetup ? 'true' : 'false'}
+                                    </div>
+                                </div>
+                            )}
+                        </ControlsContext.Consumer> 
                     )}
                 </FrameContext.Consumer>
             )}

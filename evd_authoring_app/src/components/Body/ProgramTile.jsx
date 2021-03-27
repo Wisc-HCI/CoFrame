@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 
 import { DefaultButton } from 'office-ui-fabric-react';
 
@@ -6,6 +6,8 @@ import { Tile } from './Tile';
 import { TileHeader } from './TileHeader';
 import { ProgramEditor } from '../ProgramEditor';
 import { SetupEditor } from '../SetupEditor';
+
+import { ControlsContext } from '../../contexts';
 
 
 export const ProgramTile = (props) => {
@@ -15,41 +17,49 @@ export const ProgramTile = (props) => {
         layoutProgram 
     } = props;
 
-    const [
-        buttonState, 
-        setButtonState
-    ] = React.useState(false);
+    const controlsValue = useContext(ControlsContext);
 
     let button = null;
     let content = null;
     let title = null;
-    if (buttonState) {
+    if (controlsValue.inSetup) {
+
         button = (
             <DefaultButton 
                 text="Switch to Editor" 
-                onClick={() => { setButtonState(false); }}
+                onClick={() => { 
+                    controlsValue.changeSetupState(false); 
+                }}
             />
         );
+
         content = (
             <SetupEditor
                 width={layoutProgram.body.width - mainPadding / 2}
                 height={layoutProgram.body.height - mainPadding /2}
             />
         );
+
         title = 'Program Setup';
+
     } else {
+
         button = (
             <DefaultButton 
                 text="Switch to Setup" 
-                onClick={() => { setButtonState(true); }}
+                onClick={() => { 
+                    controlsValue.changeSetupState(true); 
+                }}
             />
         );
+
         content = (
             <ProgramEditor 
                 width={layoutProgram.body.width - mainPadding / 2}
                 height={layoutProgram.body.height - mainPadding /2}
             />
         );
+        
         title = 'Program Editor';
     }
 
