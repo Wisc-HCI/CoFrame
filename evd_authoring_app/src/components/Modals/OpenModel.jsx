@@ -1,78 +1,57 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 
 import { Stack } from 'office-ui-fabric-react';
 
 import { ModalWrapper } from './ModalWrapper';
 import { ModalControlButtons } from './ModalControlButtons';
 
+import { ModalContext } from '../../contexts';
 
-export class OpenModal extends React.Component {
-    
-    constructor(props) {
-        super(props);
 
-        this.state = {
-            selectedOption: null,
-        }
+export const OpenModal = (props) => {
 
-        this.submitClicked = this.submitClicked.bind(this);
+    const { totalWidth } = props;
+
+    const [selectedOption, setSelectedOption] = useState(null);
+
+    const modalContext = useContext(ModalContext);
+
+    let visibleBtns = [];
+    if (selectedOption !== null) {
+        visibleBtns.push('submit');
     }
+    visibleBtns.push('cancel');
 
-    submitClicked() {
-        // TODO submit selected file action
+    return (
+        <ModalWrapper
+            name="open"
+            title="Open"
+            totalWidth={totalWidth}
+        >
+            <Stack>
+                <br />
 
-        this.props.closeModal('open');
-    }
+                <Stack.Item align="center">
+                    <p>Open options menu coming soon!</p>
+                </Stack.Item>
 
-    render() {
-        const { 
-            open, 
-            totalWidth,
-            closeModal
-        } = this.props;
+                <br />
 
-        const { selectedOption } = this.state;
+                <Stack.Item align="center">
 
-        const width = totalWidth / 2;
-
-        let visibleBtns = [];
-        if (selectedOption !== null) {
-            visibleBtns.push('submit');
-        }
-        visibleBtns.push('cancel');
-
-        return (
-            <ModalWrapper
-                open={open}
-                title="Open"
-                hideModal={() => {closeModal('open')}}
-                width={width}
-            >
-                <Stack>
-                    <br />
-
-                    <Stack.Item align="center">
-                        <p>Open options menu coming soon!</p>
-                    </Stack.Item>
-
-                    <br />
-
-                    <Stack.Item align="center">
-
-                        <ModalControlButtons 
-                            order={visibleBtns} 
-                            callbacks={{
-                                'submit': this.submitClicked, 
-                                'cancel': () => {closeModal('open')}
-                            }}
-                            isPrimary={{
-                                'submit': true, 
-                                'cancel': false
-                            }}
-                        />
-                    </Stack.Item>
-                </Stack>
-            </ModalWrapper>
-        );
-    }
+                    <ModalControlButtons 
+                        order={visibleBtns} 
+                        callbacks={{
+                            'submit': () => { modalContext.closeModal('open') }, 
+                            'cancel': () => { modalContext.closeModal('open') }
+                        }}
+                        isPrimary={{
+                            'submit': true, 
+                            'cancel': false
+                        }}
+                    />
+                </Stack.Item>
+            </Stack>
+        </ModalWrapper>
+    );
 }

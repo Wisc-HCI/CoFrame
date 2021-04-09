@@ -32,6 +32,12 @@ class EvDScriptService {
         this.getDefaultObjectsSrv = null;
     }
 
+    get state() {
+        return {
+            program: null,
+        };
+    }
+
 }
 
 let singleton = null;

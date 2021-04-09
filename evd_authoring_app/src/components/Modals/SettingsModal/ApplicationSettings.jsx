@@ -28,7 +28,7 @@ export class ApplicationSettings extends React.Component {
 
         this.setState({
             timeout: setTimeout(() => {
-                service.filename = document.getElementById('project-name').value;
+                service.filename = document.getElementById('settings-project-name').value;
                 this.setState({ timeout: null });
             }, 500)
         })
@@ -46,7 +46,7 @@ export class ApplicationSettings extends React.Component {
                                 <Label>Project Name:</Label>
                             </td>
                             <td>
-                                <TextField id="project-name"
+                                <TextField id="settings-project-name"
                                     onChange={(e) => {this.textChanged(appValue.service)}}
                                     defaultValue={appValue.filename}
                                 />

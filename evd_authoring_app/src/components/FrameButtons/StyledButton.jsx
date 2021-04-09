@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment, useContext } from 'react';
 
 import {
     DefaultButton,
@@ -8,56 +8,53 @@ import {
 import { ThemeContext } from "../../contexts";
 
 
-export class StyledButton extends React.Component {
+export const StyledButton = (props) => {
 
-    static contextType = ThemeContext;
+    const { 
+        primary, 
+        callback, 
+        frame, 
+        text
+    } = props;
 
-    render() {
-        const { 
-            primary, 
-            callback, 
-            frame, 
-            text
-        } = this.props;
+    const theme = useContext(ThemeContext);
+    const frameColor = theme.frameStyles.colors[frame];
 
-        const frameColor = this.context.frameStyles.colors[frame];
-
-        let styles = null;
-        if (primary) {
-            styles = {
-                root: {
-                    backgroundColor: frameColor,
-                    borderColor: frameColor,
-                    borderRadius: '0'
-                },
-                rootHovered: {
-                    backgroundColor: frameColor,
-                    borderColor: frameColor
-                },
-                rootPressed: {
-                    backgroundColor: frameColor,
-                    borderColor: frameColor
-                }
-            }
-        } else {
-            styles = {
-                root: {
-                    color: frameColor,
-                    borderRadius: '0'
-                }
+    let styles = null;
+    if (primary) {
+        styles = {
+            root: {
+                backgroundColor: frameColor,
+                borderColor: frameColor,
+                borderRadius: '0'
+            },
+            rootHovered: {
+                backgroundColor: frameColor,
+                borderColor: frameColor
+            },
+            rootPressed: {
+                backgroundColor: frameColor,
+                borderColor: frameColor
             }
         }
+    } else {
+        styles = {
+            root: {
+                color: frameColor,
+                borderRadius: '0'
+            }
+        }
+    }
 
-        const btnProps = {
-            text: text,
-            onClick: callback,
-            styles: styles
-        };
+    const btnProps = {
+        text: text,
+        onClick: callback,
+        styles: styles
+    };
 
     return (
-        <React.Fragment>
+        <Fragment>
             {(primary) ? <PrimaryButton {...btnProps} /> : <DefaultButton {...btnProps} />}
-        </React.Fragment>
+        </Fragment>
     );
-}
 }

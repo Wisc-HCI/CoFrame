@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { 
     Label,
@@ -12,23 +12,22 @@ import { ModalControlButtons } from '../ModalControlButtons';
 
 import './index.css';
 
+import { ModalContext } from '../../../contexts';
+
 
 export const SettingsModal = (props) => {
 
-    const { 
-        open,
-        totalWidth,
-        closeModal
+    const {
+        totalWidth
     } = props;
 
-    const width = totalWidth / 2;
+    const modalContext = useContext(ModalContext);
 
     return (
         <ModalWrapper
-            open={open}
+            name="settings"
             title="Settings"
-            hideModal={() => {closeModal('settings')}}
-            width={width}
+            totalWidth={totalWidth}
         >
             <Stack>
 
@@ -48,7 +47,7 @@ export const SettingsModal = (props) => {
                 <Stack.Item align="center">
                     <ModalControlButtons 
                         order={['close']} 
-                        callbacks={{'close': () => {closeModal('settings')}}}
+                        callbacks={{'close': () => {modalContext.closeModal('settings')}}}
                         isPrimary={{'close': true}}
                     />
                 </Stack.Item>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import Unity, { UnityContent } from 'react-unity-webgl';
 
@@ -11,7 +11,7 @@ import {
 } from "../../contexts";
 
 
-export class Simulator extends React.Component {
+export class Simulator extends Component {
 
   constructor(props) {
     super(props);

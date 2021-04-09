@@ -1,4 +1,4 @@
-import React  from 'react';
+import React, { useState, useContext }  from 'react';
 
 import { saveAs } from 'file-saver';
 
@@ -7,85 +7,60 @@ import { Stack } from 'office-ui-fabric-react';
 import { ModalWrapper } from './ModalWrapper';
 import { ModalControlButtons } from './ModalControlButtons';
 
+import { ApplicationContext, EvDScriptContext, ModalContext } from '../../contexts';
 
-export class DownloadModal extends React.Component {
 
-    constructor(props) {
-        super(props);
+export const DownloadModal = (props) => {
 
-        this.state = {
-            downloading: false,
-            text: '{}',
-            filename: 'untitled.json',
-        };
+    const { 
+        totalWidth
+    } = props;
 
-        this.hideModal = this.hideModal.bind(this);
+    const [downloading, setDownloading] = useState(false);
+    
+    const appContext = useContext(ApplicationContext);
+    const evdContext = useContext(EvDScriptContext);
+    const modalContext = useContext(ModalContext);
+
+    if (modalContext.state['download'] && !downloading) {
+
+        const program = evdContext.program;
+        const text = JSON.stringify((program === null) ? {} : program.toDict());
+
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        saveAs(blob, `${appContext.filename}.json`);
+        setDownloading(true);
     }
 
-    hideModal() {
-        this.setState((prevState) => {
-            return {
-                ...prevState,
-                downloading: false,
-            };
-        });
+    const closeFnt = () => {
+        modalContext.closeModal('download');
+        setDownloading(false);
+    };
 
-        const { closeModal } = this.props;
-        closeModal('download');
-    }
+    return (
+        <ModalWrapper
+            name="download"
+            title="Download"
+            totalWidth={totalWidth}
+            closeCb={closeFnt}
+        >
+            <Stack>
+                <br />
 
-    render() {
+                <Stack.Item align="center">
+                    <p>File is downloading. Press the <i><b>Close</b></i> button to return to design.</p>
+                </Stack.Item>
 
-        const { 
-            open, 
-            totalWidth 
-        } = this.props;
-        
-        const { 
-            downloading, 
-            text, 
-            filename 
-        } = this.state;
+                <br />
 
-        const width = totalWidth / 2;
-
-        if (open && !downloading) {
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-            saveAs(blob, filename);
-
-            this.setState((prevState) => {
-                return {
-                    ...prevState,
-                    downloading: true,
-                };
-            });
-        }
-
-        return (
-            <ModalWrapper
-                open={open}
-                title="Download"
-                hideModal={this.hideModal}
-                width={width}
-            >
-                <Stack>
-                    <br />
-
-                    <Stack.Item align="center">
-                        <p>File is downloading. Press the <i><b>Close</b></i> button to return to design.</p>
-                    </Stack.Item>
-
-                    <br />
-
-                    <Stack.Item align="center">
-                        <ModalControlButtons 
-                            order={['close']} 
-                            callbacks={{'close': this.hideModal}}
-                            isPrimary={{'close': true}}
-                        />
-                    </Stack.Item>
-                </Stack>
-            </ModalWrapper>
-        );
-    }
+                <Stack.Item align="center">
+                    <ModalControlButtons 
+                        order={['close']} 
+                        callbacks={{'close': closeFnt}}
+                        isPrimary={{'close': true}}
+                    />
+                </Stack.Item>
+            </Stack>
+        </ModalWrapper>
+    );
 }

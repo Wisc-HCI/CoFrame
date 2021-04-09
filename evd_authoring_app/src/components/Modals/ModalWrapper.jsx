@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { 
     Modal, 
@@ -6,70 +6,81 @@ import {
     Separator 
 } from 'office-ui-fabric-react';
 
-import { ThemeContext } from '../../contexts';
+import { 
+    ModalContext, 
+    ThemeContext 
+} from '../../contexts';
 
 
 export const ModalWrapper = (props) => {
 
-    const { 
-        open, 
+    const {
+        name,
         title, 
         children, 
-        hideModal, 
-        width 
+        totalWidth,
+        closeCb
     } = props;
 
+    const width = totalWidth / 2;
+
+    const themeContext = useContext(ThemeContext);
+    const modalContext = useContext(ModalContext);
+
+    const closeFnt = () => {
+        if (closeCb) {
+            closeCb();
+        } else {
+            modalContext.closeModal(name);
+        }
+    }
+
     return (
-        <ThemeContext.Consumer>
-            { value => (
-                <Modal
-                    isOpen={open}
-                    onDismiss={hideModal}
-                    isBlocking
-                    styles={{ 
-                        main: { 
-                            width: `${width}px` 
-                        } 
+        <Modal
+            isOpen={modalContext.state[name]}
+            onDismiss={closeFnt}
+            isBlocking
+            styles={{ 
+                main: { 
+                    width: `${width}px` 
+                } 
+            }}
+        >
+            <div 
+                style={{
+                    borderTop: `4px solid ${themeContext.theme.palette.themePrimary}`,
+                    color: themeContext.theme.palette.neutralPrimary,
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '12px 12px 14px 24px',
+                }}
+            >
+                <h2>{title}</h2>
+                
+                <IconButton
+                    styles={{
+                        root: {
+                            marginLeft: 'auto',
+                            marginTop: '4px',
+                            marginRight: '2px',
+                        },
+                        rootHovered: { color: themeContext.theme.palette.neutralDark },
                     }}
-                >
-                    <div 
-                        style={{
-                            borderTop: `4px solid ${value.theme.palette.themePrimary}`,
-                            color: value.theme.palette.neutralPrimary,
-                            display: 'flex',
-                            alignItems: 'center',
-                            padding: '12px 12px 14px 24px',
-                        }}
-                    >
-                        <h2>{title}</h2>
-                        
-                        <IconButton
-                            styles={{
-                                root: {
-                                    marginLeft: 'auto',
-                                    marginTop: '4px',
-                                    marginRight: '2px',
-                                },
-                                rootHovered: { color: value.theme.palette.neutralDark },
-                            }}
-                            iconProps={{ iconName: 'Cancel' }}
-                            ariaLabel="Close popup modal"
-                            onClick={hideModal}
-                        />
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div 
-                        style={{
-                            padding: '0 24px 24px 24px',
-                            overflowY: 'hidden'
-                        }}
-                    >
-                        {children}
-                    </div>
-                </Modal>
-            )}
-        </ThemeContext.Consumer>
+                    iconProps={{ iconName: 'Cancel' }}
+                    onClick={closeFnt}
+                />
+            </div>
+            
+            <Separator />
+            
+            <div 
+                style={{
+                    padding: '0 24px 24px 24px',
+                    overflowY: 'hidden'
+                }}
+            >
+                {children}
+            </div>
+        </Modal>
     );
 }

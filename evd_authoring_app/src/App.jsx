@@ -1,57 +1,73 @@
-import React from "react";
+import React, { Component } from "react";
 
 import { computeLayout } from "./layout";
 
 import { Header } from "./components/Header";
 import { Body } from "./components/Body";
-
-import { SettingsModal } from "./components/Modals/SettingsModal";
-import { UploadModal } from "./components/Modals/UploadModal";
-import { DownloadModal } from "./components/Modals/DownloadModal";
-import { OpenModal } from "./components/Modals/OpenModel";
+import { Modals } from "./components/Modals";
 
 import { 
     GetRosServiceSingleton,
-    GetApplicationServiceSingleton 
+    GetApplicationServiceSingleton ,
+    GetEvDScriptServiceSingleton,
+    GetPendingServiceSingleton,
+    GetUnityServiceSingleton
 } from './services';
 
 import { 
     ThemeContext,
     ApplicationContext,
-    RosContext
+    RosContext,
+    EvDScriptContext,
+    PendingContext,
+    UnityContext,
+    ModalContext
 } from "./contexts";
 
 
-export class App extends React.Component {
+export class App extends Component {
 
     constructor(props) {
         super(props);
 
         const rosService = GetRosServiceSingleton();
         const appService =  GetApplicationServiceSingleton();
+        const evdService = GetEvDScriptServiceSingleton();
+        const pendingService = GetPendingServiceSingleton();
+        const unityService = GetUnityServiceSingleton();
 
         this.state = {
             height: 0,
             width: 0,
             mounted: false,
-            downloadModalOpen: false,
-            uploadModalOpen: false,
-            openModalOpen: false,
-            settingsModalOpen: true,
+            modalState: { 'settings': true },
+
             rosService: rosService,
             appService: appService,
+            evdService: evdService,
+            pendingService: pendingService,
+            unityService: unityService,
+
             rosState: rosService.state,
-            appState: appService.state
+            appState: appService.state,
+            evdState: evdService.state,
+            pendingState: pendingService.state,
+            unityState: unityService.state
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.onHeaderButtonClicked = this.onHeaderButtonClicked.bind(this);
+
         this.rosStateUpdated = this.rosStateUpdated.bind(this);
         this.appStateUpdated = this.appStateUpdated.bind(this);
+        this.evdStateUpdated = this.evdStateUpdated.bind(this);
+        this.pendingStateUpdated = this.pendingStateUpdated.bind(this);
+        this.unityStateUpdated = this.unityStateUpdated.bind(this);
 
         rosService.stateSetCallback = this.rosStateUpdated;
         appService.stateSetCallback = this.appStateUpdated;
+        evdService.stateSetCallback = this.evdStateUpdated;
+        pendingService.stateSetCallback = this.pendingStateUpdated;
+        unityService.stateSetCallback = this.unityStateUpdated;
     }
 
     UNSAFE_componentWillMount() {
@@ -68,24 +84,6 @@ export class App extends React.Component {
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateWindowDimensions);
         this.setState({ mounted: false });
-    }
-
-    onHeaderButtonClicked(button) {
-        this.setState({
-            downloadModalOpen: button === "download",
-            uploadModalOpen: button === "upload",
-            openModalOpen: button === "open",
-            settingsModalOpen: button === "settings",
-        });
-    }
-
-    closeModal() {
-        this.setState({
-            downloadModalOpen: false,
-            uploadModalOpen: false,
-            openModalOpen: false,
-            settingsModalOpen: false,
-        });
     }
 
     updateWindowDimensions() {
@@ -107,18 +105,41 @@ export class App extends React.Component {
         });
     }
 
+    evdStateUpdated(newState) {
+        this.setState({
+            evdState: newState
+        });
+    }
+
+    pendingStateUpdated(newState) {
+        this.setState({
+            pendingState: newState
+        });
+    }
+
+    unityStateUpdated(newState) {
+        this.setState({
+            unityState: newState
+        });
+    }
+
     render() {
         const {
             width,
             height,
-            downloadModalOpen,
-            uploadModalOpen,
-            openModalOpen,
-            settingsModalOpen,
+            modalState,
+
             rosService,
             appService,
+            evdService,
+            pendingService,
+            unityService,
+            
             rosState,
-            appState
+            appState,
+            evdState,
+            pendingState,
+            unityState
         } = this.state;
 
         const { 
@@ -152,40 +173,64 @@ export class App extends React.Component {
                             ...appState 
                         }}
                     >
+                        <EvDScriptContext.Provider
+                            value={{
+                                service: evdService,
+                                ...evdState
+                            }}
+                        >
+                            <PendingContext.Provider 
+                                value={{
+                                    service: pendingService,
+                                    ...pendingState
+                                }}
+                            >
+                                <UnityContext.Provider 
+                                    value={{
+                                        service: unityService,
+                                        ...unityState
+                                    }}
+                                >
+                                    <ModalContext.Provider 
+                                        value={{
+                                            openModal: (name) => {
+                                                console.log('Open Modal',name);
+                                                this.setState(prev => {
+                                                    const newState = { ...prev.modalState};
+                                                    newState[name] = true;
+                                                    return {modalState: newState};
+                                                })
+                                            },
+                                            closeModal: (name) => {
+                                                console.log('Close modal',name);
+                                                this.setState(prev => {
+                                                    const newState = { ...prev.modalState};
+                                                    newState[name] = false;
+                                                    return {modalState: newState};
+                                                })
+                                            },
+                                            state: modalState
+                                        }}
+                                    >
+                                        
+                                        <Header
+                                            width={layoutObj.header.width}
+                                            height={layoutObj.header.height}
+                                        />
+                                        
+                                        <Body 
+                                            layoutObj={layoutObj} 
+                                            mainPadding={mainPadding} 
+                                        />
 
-                        <Header
-                            filename="Untitled"
-                            width={layoutObj.header.width}
-                            height={layoutObj.header.height}
-                            onButtonClick={this.onHeaderButtonClicked}
-                        />
+                                        <Modals
+                                            totalWidth={layoutObj.body.width}
+                                        />          
 
-                        <Body 
-                            layoutObj={layoutObj} 
-                            mainPadding={mainPadding} 
-                        />
-
-                        <DownloadModal
-                            open={downloadModalOpen}
-                            closeModal={this.closeModal}
-                            totalWidth={layoutObj.totalWidth}
-                        />
-                        <UploadModal
-                            open={uploadModalOpen}
-                            closeModal={this.closeModal}
-                            totalWidth={layoutObj.totalWidth}
-                        />
-                        <OpenModal
-                            open={openModalOpen}
-                            closeModal={this.closeModal}
-                            totalWidth={layoutObj.totalWidth}
-                        />
-                        <SettingsModal
-                            open={settingsModalOpen}
-                            closeModal={this.closeModal}
-                            totalWidth={layoutObj.totalWidth}
-                        />
-
+                                    </ModalContext.Provider> 
+                                </UnityContext.Provider>
+                            </PendingContext.Provider>
+                        </EvDScriptContext.Provider>
                     </ApplicationContext.Provider>
                 </RosContext.Provider>        
             </ThemeContext.Provider>                

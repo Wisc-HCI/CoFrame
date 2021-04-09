@@ -7,7 +7,8 @@ import Logo from '../content/logo.svg';
 
 import { 
     ThemeContext,
-    ApplicationContext
+    ApplicationContext,
+    ModalContext
 } from "../contexts";
 
 
@@ -16,8 +17,7 @@ export const Header = (props) => {
 
     const { 
         width, 
-        height, 
-        onButtonClick 
+        height
     } = props;
 
     const items = [
@@ -80,16 +80,20 @@ export const Header = (props) => {
                         </Stack.Item>
 
                         <Stack.Item grow align="center">
-                            <CommandBar
-                                items={items.map(entry => {
-                                    return {
-                                        key: entry.key,
-                                        text: entry.name,
-                                        iconProps: { iconName: entry.iconName },
-                                        onClick: () => {onButtonClick(entry.key)}
-                                    };
-                                })}
-                            />
+                            <ModalContext.Consumer>
+                                    { modalValue => (
+                                        <CommandBar
+                                            items={items.map(entry => {
+                                                return {
+                                                    key: entry.key,
+                                                    text: entry.name,
+                                                    iconProps: { iconName: entry.iconName },
+                                                    onClick: () => {modalValue.openModal(entry.key)}
+                                                };
+                                            })}
+                                        />
+                                    )}
+                            </ModalContext.Consumer>
                         </Stack.Item>
                     </Stack>
                 </header>

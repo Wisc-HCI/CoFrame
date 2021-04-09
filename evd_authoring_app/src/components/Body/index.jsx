@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import { Stack } from 'office-ui-fabric-react';
 
@@ -6,10 +6,13 @@ import { ChecklistTile } from './ChecklistTile';
 import { SimulatorTile } from './SimulatorTile';
 import { ProgramTile } from './ProgramTile';
 
-import { FrameContext, ControlsContext } from "../../contexts";
+import { 
+    FrameContext, 
+    ControlsContext 
+} from "../../contexts";
 
 
-export class Body extends React.Component {
+export class Body extends Component {
 
     constructor(props) {
         super(props);
