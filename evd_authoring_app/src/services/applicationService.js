@@ -10,6 +10,7 @@ class ApplicationService {
         this._filename = "Untitled";
         this._filenameChanged = false;
         this._stateSetCallback = null;
+        this._fileOptions = [];
 
         this.loadAppSrv = null;
         this.saveAppSrv = null;
@@ -18,12 +19,23 @@ class ApplicationService {
 
     setup(ros) {
 
-        this.loadAppSrv = null;
+        this.loadAppSrv = new ROSLIB.Service({
+            ros: ros,
+            name: 'data_server/load_application_data',
+            serviceType: 'evd_ros_core/LoadData'
+        });
 
-        this.saveAppSrv = null;
+        this.saveAppSrv = new ROSLIB.Service({
+            ros: ros,
+            name: 'data_server/save_application_data',
+            serviceType: 'evd_ros_core/SaveData'
+        });
 
-        this.getAppOptionsSrv = null;
-
+        this.getAppOptionsSrv = new ROSLIB.Service({
+            ros: ros,
+            name: 'data_server/get_application_options',
+            serviceType: 'evd_ros_core/GetOptions'
+        });
     }
 
     loadFromFile(data, filename) { //data is a JSON object
@@ -41,9 +53,21 @@ class ApplicationService {
         }
     }
 
+    loadFromOption(optionName) {
+        // Command server to load backend option
+    }
+
     saveToFile() {
         // Get data from EvD script service
 
+        // Save application to file on server
+    }
+
+    getOptions() {
+        // Triggers an update on the options available on server
+        this.getAppOptionsSrv(request, (result) => {
+            
+        });
     }
 
     teardown() {
@@ -73,10 +97,15 @@ class ApplicationService {
         this._stateSetCallback = value;
     }
 
+    get fileOptions() {
+        return this._fileOptions;
+    }
+
     get state() {
         return {
             filename: this._filename,
-            filenameHasChanged: this._filenameChanged
+            filenameHasChanged: this._filenameChanged,
+            fileOptions: this._fileOptions
         };
     }
 }
