@@ -44,7 +44,7 @@ class PendingService {
         return this._issues;
     }
 
-    getIssues(request) { // Trigger an update on issues in state
+    getIssues() { // Trigger an update on issues in state
         const request = GetIssuesRequest();
         
         this.getIssuesSrv.callService(request, (result) => {

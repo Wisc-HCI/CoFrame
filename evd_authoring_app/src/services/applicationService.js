@@ -64,6 +64,7 @@ class ApplicationService {
     }
 
     getOptions() {
+        const request = null;
         // Triggers an update on the options available on server
         this.getAppOptionsSrv(request, (result) => {
             

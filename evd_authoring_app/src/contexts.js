@@ -24,7 +24,7 @@ export const FrameContext = React.createContext(null);
 /*
 ControlsContext :
 {
-    inSetup: <bool true is in setup, false is in checklist>
+    inSetup: <bool true is in setup, false is in editor>
     checklistItem: <string "uuid of checklist item">
     setupItem: <string "uuid of setup item">
     changeSetupState: <fnt(bool) sets inSetup>

@@ -74,6 +74,7 @@ function AppThemeWrapper(props) {
                         frameStyles={frameStyles.default}
                         toggleTheme={toggleTheme}
                         themeName={currentThemeName}
+                        useChecklist={true}
                     />
                 )}/>
             </Router>

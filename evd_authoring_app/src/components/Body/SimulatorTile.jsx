@@ -12,13 +12,14 @@ export const SimulatorTile = (props) => {
 
     const {
         mainPadding, 
-        layoutSimulator
+        layoutSimulator,
+        checklistExists
     } = props;
 
     return (
         <div
             style={{
-                paddingLeft: `${mainPadding / 2}px`,
+                paddingLeft: checklistExists ? `${mainPadding / 2}px` : '0',
                 paddingRight: `${mainPadding / 2}px`,
                 paddingTop: `${mainPadding}px`,
                 paddingBottom: `${mainPadding}px`

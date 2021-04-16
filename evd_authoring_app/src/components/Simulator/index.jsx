@@ -58,28 +58,25 @@ export class Simulator extends Component {
             { themeValue => (
                 <FrameContext.Consumer>
                     { frameValue => (
-                        <ControlsContext.Consumer>
-                            { controlsValue => (
-                                <div
-                                    style={{
-                                        padding: '5px',
-                                        backgroundColor: controlsValue.inSetup ? undefined : themeValue.frameStyles.colors[frameValue.frame],
-                                        width: width,
-                                        height: height
-                                    }}
-                                >
-                                    <Unity unityContent={this.unityContent}  />
-                                    <div className="simulator-tooltray-container" >
-                                        <div className="simulator-tooltray">
-                                            <Tooltray 
-                                                active="rotate" 
-                                                callback={this.controlSelected}
-                                            />
-                                        </div>
-                                    </div>    
-                                </div> 
-                            )}
-                        </ControlsContext.Consumer> 
+
+                        <div
+                            style={{
+                                padding: '5px',
+                                backgroundColor: themeValue.frameStyles.colors[frameValue.frame],
+                                width: width,
+                                height: height
+                            }}
+                        >
+                            <Unity unityContent={this.unityContent}  />
+                            <div className="simulator-tooltray-container" >
+                                <div className="simulator-tooltray">
+                                    <Tooltray 
+                                        active="rotate" 
+                                        callback={this.controlSelected}
+                                    />
+                                </div>
+                            </div>    
+                        </div> 
                     )}
                 </FrameContext.Consumer>
             )}

@@ -146,11 +146,12 @@ export class App extends Component {
             theme, 
             frameStyles, 
             toggleTheme, 
-            themeName 
+            themeName,
+            useChecklist
         } = this.props;
 
         const mainPadding = 10;
-        const layoutObj = computeLayout(width, height);
+        const layoutObj = computeLayout(width, height, useChecklist);
         
         return (
             <ThemeContext.Provider 

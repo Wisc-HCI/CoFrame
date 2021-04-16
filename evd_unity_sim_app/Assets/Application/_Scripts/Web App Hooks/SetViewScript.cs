@@ -13,9 +13,4 @@ public class SetViewScript : MonoBehaviour
 
         camera.SetView(1,0,0,0,0);
     }
-
-    public void ChangeActiveControl(string controlName) 
-    {
-        camera.ChangeActiveControl(controlName);
-    }
 }

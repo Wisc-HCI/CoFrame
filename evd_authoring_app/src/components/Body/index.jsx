@@ -77,7 +77,7 @@ export class Body extends Component {
                         changeSetupItem: this.onSetupItemChangeCallback
                     }}
                 >
-
+                    
                     <div
                         style={{
                             width: `${layoutObj.body.width}px`,
@@ -86,14 +86,20 @@ export class Body extends Component {
                     >
                         <Stack horizontal>
 
-                            <ChecklistTile
-                                mainPadding={mainPadding}
-                                layoutChecklist={layoutObj.body.checklist}
-                            />
+                            {layoutObj.body.checklist.display 
+                                ? (
+                                    <ChecklistTile
+                                        mainPadding={mainPadding}
+                                        layoutChecklist={layoutObj.body.checklist}
+                                    />
+                                ) 
+                                : undefined 
+                            }
 
                             <SimulatorTile 
                                 mainPadding={mainPadding}
                                 layoutSimulator={layoutObj.body.simulator}
+                                checklistExists={layoutObj.body.checklist.display}
                             />
 
                             <ProgramTile

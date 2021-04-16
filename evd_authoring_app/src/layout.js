@@ -57,7 +57,7 @@ const computeHeaderLayout = (layoutObj) => {
 }
 
 
-const computeMainLayout = (layoutObj) => {
+const computeMainLayout = (layoutObj, useChecklist) => {
 
     layoutObj.remainingWidth = layoutObj.totalWidth;
 
@@ -70,19 +70,21 @@ const computeMainLayout = (layoutObj) => {
     layoutObj.remainingWidth -= layoutObj.body.program.width;
 
     // handle checklist layout
-    layoutObj.body.checklist.height = layoutObj.remainingHeight;
-    layoutObj.body.checklist.width = componentDesiredSizes.checklist.body.width;
-    if (layoutObj.body.checklist.width > layoutObj.remainingWidth) {
-        layoutObj.body.checklist.width = layoutObj.remainingWidth;
+    if (useChecklist) {
+        layoutObj.body.checklist.height = layoutObj.remainingHeight;
+        layoutObj.body.checklist.width = componentDesiredSizes.checklist.body.width;
+        if (layoutObj.body.checklist.width > layoutObj.remainingWidth) {
+            layoutObj.body.checklist.width = layoutObj.remainingWidth;
+        }
+        layoutObj.remainingWidth -= layoutObj.body.checklist.width;
+
+        layoutObj.body.checklist.header.height = componentDesiredSizes.checklist.header.height;
+        layoutObj.body.checklist.header.width = layoutObj.body.checklist.width;
+
+        layoutObj.body.checklist.body.width = layoutObj.body.checklist.width;
+        layoutObj.body.checklist.body.height = layoutObj.body.checklist.height - layoutObj.body.checklist.header.height;
     }
-    layoutObj.remainingWidth -= layoutObj.body.checklist.width;
-
-    layoutObj.body.checklist.header.height = componentDesiredSizes.checklist.header.height;
-    layoutObj.body.checklist.header.width = layoutObj.body.checklist.width;
-
-    layoutObj.body.checklist.body.width = layoutObj.body.checklist.width;
-    layoutObj.body.checklist.body.height = layoutObj.body.checklist.height - layoutObj.body.checklist.header.height;
-
+    
     // handle simulator main layout
     layoutObj.body.simulator.height = layoutObj.remainingHeight;
     layoutObj.body.simulator.width = componentDesiredSizes.simulator.body.width;
@@ -92,10 +94,14 @@ const computeMainLayout = (layoutObj) => {
     layoutObj.remainingWidth -= layoutObj.body.simulator.width;
 
     // adjust the flex amount
-    const flexSim = Math.round(0.333 * layoutObj.remainingWidth);
+    const simulatorFraction = (useChecklist) ? 0.333 : 0.5;
+    const programFraction = (useChecklist) ? 0.666 : 0.5;
+
+
+    const flexSim = Math.round(simulatorFraction * layoutObj.remainingWidth);
     layoutObj.body.simulator.width += flexSim;
 
-    const flexProg = Math.round(0.666 * layoutObj.remainingWidth);
+    const flexProg = Math.round(programFraction * layoutObj.remainingWidth);
     layoutObj.body.program.width += flexProg;
 
     // Handle program internal layout
@@ -123,7 +129,7 @@ const computeMainLayout = (layoutObj) => {
 }
 
 
-export const computeLayout = (width, height) => {
+export const computeLayout = (width, height, useChecklist) => {
 
     let layoutObj = {
         distanceFromTop: 0,
@@ -172,6 +178,7 @@ export const computeLayout = (width, height) => {
                 }
             },
             checklist: {
+                display: useChecklist,
                 height: 0,
                 width: 0,
                 header: {
@@ -187,7 +194,7 @@ export const computeLayout = (width, height) => {
     };
 
     layoutObj = computeHeaderLayout(layoutObj);
-    layoutObj = computeMainLayout(layoutObj);
+    layoutObj = computeMainLayout(layoutObj, useChecklist);
 
     return layoutObj;
 }

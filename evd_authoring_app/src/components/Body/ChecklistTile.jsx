@@ -47,7 +47,7 @@ export const ChecklistTile = (props) => {
 
             </Tile>
 
-            <ControlsContext.Consumer>
+            {/*<ControlsContext.Consumer>
                 { controlsValue => (
                     <div
                         style={{
@@ -63,7 +63,7 @@ export const ChecklistTile = (props) => {
                         }}
                     ></div>
                 )}
-            </ControlsContext.Consumer>  
+                    </ControlsContext.Consumer> */}
         </div>
     );
 };

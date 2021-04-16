@@ -37,7 +37,7 @@ export const ExpertChecklist = (props) => {
                                         style={{
                                             borderStyle: 'solid',
                                             borderWidth: '2px',
-                                            borderColor: controlsValue.inSetup ? undefined : themeValue.frameStyles.colors[frameValue.frame],
+                                            borderColor: themeValue.frameStyles.colors[frameValue.frame],
                                             height: '100%',
                                             width: '100%'
                                         }}

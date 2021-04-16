@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
-import { ChoiceGroup } from 'office-ui-fabric-react/lib/ChoiceGroup';
+import { useId } from '@uifabric/react-hooks';
+import { FontIcon } from '@fluentui/react/lib/Icon';
+import { TooltipHost, TooltipDelay, DirectionalHint } from '@fluentui/react';
 
 import { ThemeContext } from "../../contexts";
 
@@ -9,33 +11,41 @@ import './index.css';
 
 export const Tooltray = (props) => {
 
-    const { 
-        active, 
-        callback 
-    } = props;
-    
-    const options = [
-        { key: 'rotate', text: 'Rotate' },
-        { key: 'translate', text: 'Translate' }
-    ];
+    const tooltipId = useId('simulator-tooltip');
 
     return (
         <ThemeContext.Consumer>
             { value => (
                 <div 
                     style={{
-                        padding: '5px 10px 0 10px',
                         background: value.theme.semanticColors.bodyBackground, 
-                        boxShadow: '3px 3px 3px #000'
+                        boxShadow: '3px 3px 3px #000',
+                        paddingLeft: '10px',
+                        paddingRight: '9px',
+                        paddingTop: '10px',
+                        paddingBottom: '5px'
                     }}
                 >
-                    <i>Camera</i>
-                    <ChoiceGroup
-                        className="simulator-tooltray-choicegroup"
-                        defaultSelectedKey={active}
-                        options={options}
-                        onChange={callback}
-                    />
+                    
+                    <TooltipHost
+                        delay={TooltipDelay.zero}
+                        directionalHint={DirectionalHint.topCenter}
+                        styles={{root: {display: 'inline-block'}}}
+                        tooltipId={tooltipId}
+                        tooltipProps={{
+                            onRenderContent: () => (
+                                <Fragment>
+                                    <i>Camera Controls</i>
+                                    <p>Left Click - Rotate</p>
+                                    <p>Right Click - Pan</p>
+                                    <p>Scroll - Zoom</p>
+                                </Fragment>
+                            )
+                        }}
+                    >
+                        <FontIcon iconName="Help" styles={{root: { fontSize: 50 }}} />
+                    </TooltipHost>
+
                 </div>
             )}
         </ThemeContext.Consumer>

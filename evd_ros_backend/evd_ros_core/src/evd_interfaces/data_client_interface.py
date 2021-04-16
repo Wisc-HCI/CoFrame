@@ -44,6 +44,7 @@ class DataClientInterface(object):
             self._get_app_options_srv = rospy.ServiceProxy('data_server/get_application_options',GetOptions)
 
         self._program = None
+        self._default_objs= []
         self._program_verison = None
         self._program_changes_manifest = []
         self._on_program_update_cb = on_program_update_cb
@@ -52,6 +53,7 @@ class DataClientInterface(object):
 
         self._get_srv = rospy.ServiceProxy('data_server/get_data',GetData)
         self._set_srv = rospy.ServiceProxy('data_server/set_data',SetData)
+        self._get_default_objs_srv = rospy.ServiceProxy('data_server/get_default_objects',GetData)
 
     '''
     Application Interface
@@ -108,6 +110,17 @@ class DataClientInterface(object):
         # set service with manifest
         # TODO  determine manifest structure
         return None
+
+    def get_default_objects(self, fetch=False):
+        if fetch:
+            response = self._get_default_objs_srv(True,'')
+            if response.status:
+                self._default_objs = json.loads(response.data)
+                return self._default_objs
+            else:
+                raise Exception(response.message)
+        else:
+            return self._default_objs
 
     '''
     Private - Utility

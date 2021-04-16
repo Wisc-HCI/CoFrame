@@ -25,8 +25,6 @@ public class CameraControlScript : MonoBehaviour
 
     private float ZoomVal = 1;
 
-    private string activeControl = "rotate";
-
     void Start() {
         #if !UNITY_EDITOR && UNITY_WEBGL
             WebGLInput.captureAllKeyboardInput = false;
@@ -39,25 +37,17 @@ public class CameraControlScript : MonoBehaviour
         var x = Input.GetAxis("Mouse X");
         var y = Input.GetAxis("Mouse Y");
         var z = Input.GetAxis("Mouse ScrollWheel");
-        var btn = Input.GetButton("Fire1");
+        var btn1 = Input.GetButton("Fire1");
+        var btn2 = Input.GetButton("Fire2");
 
-        if (btn) 
+        if (btn1) 
         {
-            switch(activeControl) 
-            {
-                case "rotate":
-                    RotateControl(x,y);
-                    ZoomControl(z);
-                    break;
-                case "translate":
-                    TranslateControl(x,y);
-                    ZoomControl(z);
-                    break;
-                default:
-                    activeControl = "rotate";
-                    break;
-            }
+            RotateControl(x,y);
+        } else if (btn2) {
+            TranslateControl(x,y);
         }
+
+        ZoomControl(z);
     }
 
     public void SetView(float z, float tx, float ty, float rx, float ry) 
@@ -115,11 +105,6 @@ public class CameraControlScript : MonoBehaviour
         this.transform.LookAt(TargetObject.transform.position + Offset);
     }
 
-    public void ChangeActiveControl(string controlName) 
-    {
-        activeControl = controlName;
-    }
-
     private void ZoomControl(float z) 
     {
         //handle zoom
@@ -135,7 +120,7 @@ public class CameraControlScript : MonoBehaviour
     private void TranslateControl(float x, float y) 
     {
         // Translate
-        var angleCompensatedDelta = Quaternion.AngleAxis(HorizontalAngle, Vector3.up) * new Vector3(-1 * y,0,x);
+        var angleCompensatedDelta = Quaternion.AngleAxis(HorizontalAngle, Vector3.up) * new Vector3(y,0,-1 * x);
         var delta = OffsetDeltaBounding(angleCompensatedDelta);
         Offset += delta;
         this.transform.position += delta;

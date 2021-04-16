@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "@uifabric/react-hooks": "^7.14.0",
     "blockly": "^3.20200625.2",
     "file-saver": "^2.0.2",
     "office-ui-fabric-react": "^7.133.0",

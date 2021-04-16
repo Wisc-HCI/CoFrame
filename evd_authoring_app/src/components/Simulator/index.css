@@ -1,8 +1,8 @@
 .simulator-tooltray {
     position: absolute;
     z-index: 1;
-    bottom:5px;
-    right:4px;
+    bottom: 5px;
+    right: 5px;
 }
 
 .simulator-tooltray-choicegroup .ms-ChoiceField {
