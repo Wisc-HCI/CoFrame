@@ -12,7 +12,7 @@ const {
 } = evdData;
 
 const {
-    Task,
+    Skill,
     Program,
     CloseGripper,
     Initialize,
@@ -76,10 +76,10 @@ export const evdScriptBlocklyToolbox = () => {
         },
         {
             kind: "category",
-            name: "Tasks",
+            name: "Skills",
             colour: "210",
             blocks: [
-                Task.BlocklyToolbox(),
+                Skill.BlocklyToolbox(),
                 Initialize.BlocklyToolbox(),
                 CloseGripper.BlocklyToolbox(),
                 OpenGripper.BlocklyToolbox(),
@@ -132,7 +132,7 @@ export const evdScriptBlocklyInitialize = () => {
     tmp = Thing.BlocklyBlock();
     Blockly.Blocks[tmp.key] = tmp.data;
 
-    tmp = Task.BlocklyBlock();
+    tmp = Skill.BlocklyBlock();
     Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Program.BlocklyBlock();

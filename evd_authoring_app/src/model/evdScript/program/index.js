@@ -1,8 +1,8 @@
-import { Task } from './task';
+import { Skill } from './skill';
 import { Primitive } from './primitive';
 import { Program } from './program';
 
-import * as evdTasks from './tasks';
+import * as evdSkills from './skills';
 import * as evdPrimitives from './primitives';
 import * as evdMachineOperations from './machineOperations';
 import * as evdControlFlow from './control_flow';
@@ -13,8 +13,8 @@ const {
     Initialize,
     OpenGripper,
     SimplePickAndPlace,
-    TasksNodeParser
-} = evdTasks;
+    SkillsNodeParser
+} = evdSkills;
 
 const { 
     Delay, 
@@ -46,7 +46,7 @@ const ProgramNodeParser = (exactType, dct) => {
 
     let node = null;
 
-    node = TasksNodeParser(exactType,dct);
+    node = SkillsNodeParser(exactType,dct);
     if (node !== null) {
         return node;
     }
@@ -67,8 +67,8 @@ const ProgramNodeParser = (exactType, dct) => {
     }
 
     switch(exactType) {
-        case 'task':
-            node = Task.fromDict(dct);
+        case 'skill':
+            node = Skill.fromDict(dct);
             break;
         case 'primitive':
             node = Primitive.fromDict(dct);
@@ -84,7 +84,7 @@ const ProgramNodeParser = (exactType, dct) => {
 };
 
 export {
-    Task,
+    Skill,
     Primitive,
     Program,
     ProgramNodeParser,
@@ -93,7 +93,7 @@ export {
     Initialize,
     OpenGripper,
     SimplePickAndPlace,
-    TasksNodeParser,
+    SkillsNodeParser,
 
     Delay, 
     Gripper, 

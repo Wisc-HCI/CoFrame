@@ -1,10 +1,10 @@
-from ..task import Task
+from ..skill import Skill
 from .machine_start import MachineStart
 from .machine_stop import MachineStop
 from .machine_wait import MachineWait
 
 
-class MachineBlockingProcess(Task):
+class MachineBlockingProcess(Skill):
 
     '''
     Data structure methods
@@ -16,7 +16,7 @@ class MachineBlockingProcess(Task):
 
     @classmethod
     def full_type_string(cls):
-        return Task.full_type_string() + cls.type_string()
+        return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True, primitives=None):

@@ -1,10 +1,10 @@
-import { Task } from '../task';
+import { Skill } from '../skill';
 import { Gripper } from '../primitives';
 import { NodeParser } from '../../utilityFunctions';
 import Blockly from 'blockly';
 
 
-export class OpenGripper extends Task {
+export class OpenGripper extends Skill {
 
     /*
     * Data structure methods
@@ -15,7 +15,7 @@ export class OpenGripper extends Task {
     }
 
     static fullTypeString() {
-        return Task.fullTypeString() + OpenGripper.typeString();
+        return Skill.fullTypeString() + OpenGripper.typeString();
     }
 
     constructor(thingUuid=null, position=0, effort=100, speed=100, type='', name='', 

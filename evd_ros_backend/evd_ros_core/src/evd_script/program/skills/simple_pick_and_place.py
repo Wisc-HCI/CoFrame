@@ -1,10 +1,10 @@
-from ..task import Task
+from ..skill import Skill
 from ..primitives import MoveTrajectory
 from .open_gripper import OpenGripper
 from .close_gripper import CloseGripper
 
 
-class SimplePickAndPlace(Task):
+class SimplePickAndPlace(Skill):
 
     '''
     Data structure methods
@@ -16,7 +16,7 @@ class SimplePickAndPlace(Task):
 
     @classmethod
     def full_type_string(cls):
-        return Task.full_type_string() + cls.type_string()
+        return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, startLocUuid=None, pickLocUuid=None, placeLocUuid=None, thing_uuid=None,
                  type='', name='', uuid=None, parent=None, append_type=True, primitives=None):

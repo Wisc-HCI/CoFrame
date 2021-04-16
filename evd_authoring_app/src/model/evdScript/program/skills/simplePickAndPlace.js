@@ -1,11 +1,11 @@
 import { MoveTrajectory } from '../primitives';
 import { CloseGripper } from './closeGripper';
 import { OpenGripper } from './openGripper';
-import { Task } from '../task';
+import { Skill } from '../skill';
 import { NodeParser } from '../../utilityFunctions';
 
 
-export class SimplePickAndPlace extends Task {
+export class SimplePickAndPlace extends Skill {
 
     /*
     * Data structure methods
@@ -16,7 +16,7 @@ export class SimplePickAndPlace extends Task {
     }
 
     static fullTypeString() {
-        return Task.fullTypeString() + SimplePickAndPlace.typeString();
+        return Skill.fullTypeString() + SimplePickAndPlace.typeString();
     }
 
     constructor(startLocUuid=null, pickLocUuid=null, placeLocUuid=null, thingUuid=null, 

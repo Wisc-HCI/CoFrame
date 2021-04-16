@@ -2,10 +2,10 @@ import { OpenGripper } from '.';
 import { NodeParser } from '../../utilityFunctions';
 import { MachineInitialize } from '../machineOperations';
 import { MoveUnplanned } from '../primitives';
-import { Task } from '../task';
+import { Skill } from '../skill';
 
 
-export class Initialize extends Task {
+export class Initialize extends Skill {
 
     /*
     * Data structure methods
@@ -16,7 +16,7 @@ export class Initialize extends Task {
     }
 
     static fullTypeString() {
-        return Task.fullTypeString() + Initialize.typeString();
+        return Skill.fullTypeString() + Initialize.typeString();
     }
 
     constructor(homeLocUuid=null, machineUuids=[], type='', name='', uuid=null, 

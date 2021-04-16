@@ -3,7 +3,7 @@ import { Initialize } from './initialize';
 import { OpenGripper } from './openGripper';
 import { SimplePickAndPlace } from './simplePickAndPlace';
 
-const TasksNodeParser = (exactType, dct) => {
+const SkillsNodeParser = (exactType, dct) => {
 
     let node = null;
 
@@ -32,5 +32,5 @@ export {
     Initialize,
     OpenGripper,
     SimplePickAndPlace,
-    TasksNodeParser
+    SkillsNodeParser
 };

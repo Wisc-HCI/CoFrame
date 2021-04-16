@@ -3,23 +3,24 @@ import { NodeParser } from '../utilityFunctions';
 
 import Blockly from 'blockly';
 
-export class Task extends Primitive {
+
+export class Skill extends Primitive {
 
     /*
     * data structure methods
     */
 
     static typeString() {
-        return 'task.';
+        return 'skill.';
     }
 
     static fullTypeString() {
-        return Primitive.fullTypeString() + Task.typeString();
+        return Primitive.fullTypeString() + Skill.typeString();
     }
 
     constructor(primitives=[], type='', name='', uuid=null, parent=null, appendType=true) {
         super(
-            (appendType) ? 'task.'+type : type,
+            (appendType) ? 'skill.'+type : type,
             name,
             uuid,
             parent,
@@ -40,7 +41,7 @@ export class Task extends Primitive {
     }
 
     static fromDict(dct) {
-        return new Task(
+        return new Skill(
             dct.primitives.map(p => NodeParser(p)),
             dct.type,
             dct.name,
@@ -51,22 +52,22 @@ export class Task extends Primitive {
     }
 
     static BlocklyToolbox() {
-        return { type: 'task' };
+        return { type: 'skill' };
     }
 
     static BlocklyBlock() {
-        return { key: 'task', data: {
+        return { key: 'skill', data: {
             init: function() {
                 this.appendDummyInput()
-                    .appendField("Task")
+                    .appendField("Skill")
                     .appendField(new Blockly.FieldTextInput("unnamed"), "name");
                 this.appendStatementInput("children")
                     .setCheck(null);
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setColour(210);
-                this.setTooltip("task");
-                this.setHelpUrl("task");
+                this.setTooltip("skill");
+                this.setHelpUrl("skill");
             }
         }};
     }

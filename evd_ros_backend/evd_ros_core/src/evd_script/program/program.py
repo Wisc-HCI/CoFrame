@@ -2,12 +2,12 @@
 
 '''
 
-from .task import Task
+from .skill import Skill
 from ..environment import Environment
 from ..orphans import *
 
 
-class Program(Task):
+class Program(Skill):
 
     '''
     Data structure methods
@@ -19,7 +19,7 @@ class Program(Task):
 
     @classmethod
     def full_type_string(cls):
-        return Task.full_type_string() + cls.type_string()
+        return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None):
         self._orphan_list = evd_orphan_list()

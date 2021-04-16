@@ -1,8 +1,8 @@
-from ..task import Task
+from ..skill import Skill
 from ..primitives import Gripper
 
 
-class CloseGripper(Task):
+class OpenGripper(Skill):
 
     '''
     Data structure methods
@@ -10,13 +10,13 @@ class CloseGripper(Task):
 
     @classmethod
     def type_string(cls):
-        return 'close-gripper.'
+        return 'open-gripper.'
 
     @classmethod
     def full_type_string(cls):
-        return Task.full_type_string() + cls.type_string()
+        return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, position=100, effort=100, speed=100, thing_uuid=None, type='',
+    def __init__(self, position=0, effort=100, speed=100, thing_uuid=None, type='',
                  name='', uuid=None, parent=None, append_type=True, primitives=None):
 
         if primitives == None:
@@ -28,8 +28,8 @@ class CloseGripper(Task):
                     speed=speed)
             ]
 
-        super(CloseGripper,self).__init__(
-            type='close-gripper.'+type if append_type else type,
+        super(OpenGripper,self).__init__(
+            type='open-gripper.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

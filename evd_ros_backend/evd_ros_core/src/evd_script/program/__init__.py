@@ -1,8 +1,8 @@
-from .task import Task
+from .skill import Skill
 from .primitive import Primitive
 from .program import Program
 
-from .tasks import *
+from .skills import *
 from .primitives import *
 from .machine_operations import *
 from .control_flow import *
@@ -22,14 +22,14 @@ def ProgramNodeParser(exactType, dct):
     if node != None:
         return node
 
-    node  = TasksNodeParser(exactType, dct)
+    node  = SkillsNodeParser(exactType, dct)
     if node != None:
         return node
 
     if exactType == "program":
         node = Program.from_dct(dct)
-    elif exactType == "task":
-        node = Task.from_dct(dct)
+    elif exactType == "skill":
+        node = Skill.from_dct(dct)
     elif exactType == "primitive":
         node = Primitive.from_dct(dct)
 

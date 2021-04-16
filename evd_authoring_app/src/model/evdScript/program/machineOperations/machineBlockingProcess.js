@@ -1,11 +1,11 @@
-import { Task } from '../task';
+import { Skill } from '../skill';
 import { NodeParser } from '../../utilityFunctions';
 import { MachineStart } from './machineStart';
 import { MachineStop } from './machineStop';
 import { MachineWait } from './machineWait';
 
 
-export class MachineBlockingProcess extends Task {
+export class MachineBlockingProcess extends Skill {
 
     /*
     * Data structre methods
@@ -16,7 +16,7 @@ export class MachineBlockingProcess extends Task {
     }
 
     static fullTypeString() {
-        return Task.fullTypeString() + MachineBlockingProcess.typeString();
+        return Skill.fullTypeString() + MachineBlockingProcess.typeString();
     }
 
     constructor(machineUuid=null, type='', name='', uuid=null, parent=null, appendType=true, primtiives=null) {

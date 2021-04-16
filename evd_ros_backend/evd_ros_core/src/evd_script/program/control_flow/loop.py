@@ -1,7 +1,7 @@
-from ..task import Task
+from ..skill import Skill
 
 
-class Loop(Task):
+class Loop(Skill):
 
     '''
     Data structure methods
@@ -13,7 +13,7 @@ class Loop(Task):
 
     @classmethod
     def full_type_string(cls):
-        return Task.full_type_string() + cls.type_string()
+        return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, primitives=[], condition=None, type='', name='', uuid=None, parent=None,
                  append_type=True):

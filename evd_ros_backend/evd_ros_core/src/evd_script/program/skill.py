@@ -1,7 +1,7 @@
 from .primitive import Primitive
 
 
-class Task(Primitive):
+class Skill(Primitive):
 
     '''
     Data structure methods
@@ -9,7 +9,7 @@ class Task(Primitive):
 
     @classmethod
     def type_string(cls):
-        return 'task.'
+        return 'skill.'
 
     @classmethod
     def full_type_string(cls):
@@ -19,8 +19,8 @@ class Task(Primitive):
 
         self._primitives = []
 
-        super(Task,self).__init__(
-            type='task.'+type if append_type else type,
+        super(Skill,self).__init__(
+            type='skill.'+type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -29,7 +29,7 @@ class Task(Primitive):
         self.primitives = primitives
 
     def to_dct(self):
-        msg = super(Task,self).to_dct()
+        msg = super(Skill,self).to_dct()
         msg.update({
             'primitives': [p.to_dct() for p in self.primitives]
         })
@@ -130,7 +130,7 @@ class Task(Primitive):
         if 'primitives' in dct.keys():
             self.primitives = [NodeParser(p) for p in dct['primitives']]
 
-        super(Task,self).set(dct)
+        super(Skill,self).set(dct)
 
     '''
     Cache methods
@@ -140,13 +140,13 @@ class Task(Primitive):
         for p in self._primitives:
             p.remove_from_cache()
 
-        super(Task,self).remove_from_cache()
+        super(Skill,self).remove_from_cache()
 
     def add_to_cache(self):
         for p in self._primitives:
             p.add_to_cache()
 
-        super(Task,self).add_to_cache()
+        super(Skill,self).add_to_cache()
 
     '''
     Children methods
@@ -171,19 +171,19 @@ class Task(Primitive):
         for p in self.primitives:
             p.late_construct_update()
 
-        super(Task,self).late_construct_update()
+        super(Skill,self).late_construct_update()
 
     def deep_update(self):
 
         for p in self.primitives:
             p.deep_update()
 
-        super(Task,self).deep_update()
+        super(Skill,self).deep_update()
 
         self.updated_attribute('primitives','update')
 
     def shallow_update(self):
-        super(Task,self).shallow_update()
+        super(Skill,self).shallow_update()
 
         self.updated_attribute('primitives','update')
 

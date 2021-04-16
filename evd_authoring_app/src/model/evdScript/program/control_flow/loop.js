@@ -1,7 +1,7 @@
-import { Task } from '../task';
+import { Skill } from '../skill';
 import { NodeParser } from '../../utilityFunctions';
 
-export class Loop extends Task {
+export class Loop extends Skill {
 
     /*
     * Data structure methods
@@ -12,7 +12,7 @@ export class Loop extends Task {
     }
 
     static fullTypeString() {
-        return Task.fullTypeString() + Loop.typeString();
+        return Skill.fullTypeString() + Loop.typeString();
     }
 
     constructor(primitives=[], condition=null, type='', name='', uuid=null, parent=null, appendType=true) {

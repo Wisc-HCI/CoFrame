@@ -4,7 +4,7 @@ from .open_gripper import OpenGripper
 from .simple_pick_and_place import SimplePickAndPlace
 
 
-def TasksNodeParser(exactType, dct):
+def SkillsNodeParser(exactType, dct):
 
     node = None
 

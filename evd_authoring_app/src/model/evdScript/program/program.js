@@ -1,8 +1,9 @@
-import { Task } from './task';
+import { Skill } from './skill';
 import { Environment } from '../environment/environment';
 import { NodeParser } from '../utilityFunctions';
 
-export class Program extends Task {
+
+export class Program extends Skill {
 
     /*
     * Data structure methods
@@ -13,7 +14,7 @@ export class Program extends Task {
     }
 
     static fullTypeString() {
-        return Task.fullTypeString() + Program.typeString();
+        return Skill.fullTypeString() + Program.typeString();
     }
 
     constructor(primitives=[], environment=null, changesCB=null, name='', type='', 

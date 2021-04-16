@@ -1,10 +1,10 @@
-from ..task import Task
+from ..skill import Skill
 from ..machine_operations import MachineInitialize
 from ..primitives import MoveUnplanned
 from .open_gripper import OpenGripper
 
 
-class Initialize(Task):
+class Initialize(Skill):
 
     '''
     Data structure methods
@@ -16,7 +16,7 @@ class Initialize(Task):
 
     @classmethod
     def full_type_string(cls):
-        return Task.full_type_string() + cls.type_string()
+        return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, homeLocUuid=None, machineUuids=[], type='', name='',
                  uuid=None, parent=None, append_type=True, primitives=None):
