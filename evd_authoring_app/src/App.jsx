@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { UnityContent } from 'react-unity-webgl';
 
 import { computeLayout } from "./layout";
 
@@ -52,7 +53,15 @@ export class App extends Component {
             appState: appService.state,
             evdState: evdService.state,
             pendingState: pendingService.state,
-            unityState: unityService.state
+            unityState: unityService.state,
+
+            unitySimulator: new UnityContent(
+                './simulator/Build/Build.json',
+                './simulator/Build/UnityLoader.js',
+                {
+                    adjustOnWindowResize: true,
+                }
+            )
         };
 
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -139,7 +148,9 @@ export class App extends Component {
             appState,
             evdState,
             pendingState,
-            unityState
+            unityState,
+
+            unitySimulator
         } = this.state;
 
         const { 
@@ -189,7 +200,8 @@ export class App extends Component {
                                 <UnityContext.Provider 
                                     value={{
                                         service: unityService,
-                                        ...unityState
+                                        ...unityState,
+                                        simulator: unitySimulator
                                     }}
                                 >
                                     <ModalContext.Provider 

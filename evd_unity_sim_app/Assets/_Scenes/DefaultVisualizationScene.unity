@@ -6709,7 +6709,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OccupancyZoneManager: {fileID: 1593782604}
-  ReachSphereManager: {fileID: 0}
+  ReachSphereManager: {fileID: 1890381353}
   CollisionMeshManager: {fileID: 2044770822}
   PinchPointManager: {fileID: 554271224}
   TrajectoriesManager: {fileID: 2134281801}

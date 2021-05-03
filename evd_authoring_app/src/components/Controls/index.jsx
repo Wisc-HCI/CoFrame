@@ -1,8 +1,11 @@
 import React from 'react';
 
-import { IconButton } from 'office-ui-fabric-react';
+import { IconButton, Toggle } from 'office-ui-fabric-react';
 
-import { ControlsContext } from '../../contexts';
+import { 
+    ControlsContext,
+    UnityContext
+ } from '../../contexts';
 
 export class Controls extends React.Component {
 
@@ -36,39 +39,57 @@ export class Controls extends React.Component {
     return (
         <ControlsContext.Consumer>
             { controlsValue => (
-                <div 
-                    style={{
-                        paddingLeft: '10px', 
-                        paddingRight: '10px',
-                        width: width,
-                        height: height
-                    }}
-                >
-                    <i style={{fontSize: '18px'}}>{`Controls ~ ${controlsValue.inSetup ? 'Program Setup' : 'Expert Checklist'}`}</i>
+                <UnityContext.Consumer>
+                    { unityValue => (
 
-                    <br />
+                        <div 
+                            style={{
+                                paddingLeft: '10px', 
+                                paddingRight: '10px',
+                                width: width,
+                                height: height
+                            }}
+                        >
+                        <i style={{fontSize: '18px'}}>{`Controls ~ ${controlsValue.inSetup ? 'Program Setup' : 'Expert Checklist'}`}</i>
 
-                    <IconButton
-                        iconProps={{ iconName: 'Refresh' }}
-                        title="Reset"
-                        ariaLabel="Reset"
-                        onClick={this.onResetClicked}
-                    />
-                    <IconButton
-                        iconProps={{ iconName: 'Play' }}
-                        title="Play"
-                        ariaLabel="Play"
-                        onClick={this.onPlayClicked}
-                    />
-                    <IconButton
-                        iconProps={{ iconName: 'Pause' }}
-                        title="Pause"
-                        ariaLabel="Pause"
-                        onClick={this.onPauseClicked}
-                    />
+                        <br />
 
-                    {controlsValue.checklistItem}
-                </div>
+                        <IconButton
+                            iconProps={{ iconName: 'Refresh' }}
+                            title="Reset"
+                            ariaLabel="Reset"
+                            onClick={this.onResetClicked}
+                        />
+                        <IconButton
+                            iconProps={{ iconName: 'Play' }}
+                            title="Play"
+                            ariaLabel="Play"
+                            onClick={this.onPlayClicked}
+                        />
+                        <IconButton
+                            iconProps={{ iconName: 'Pause' }}
+                            title="Pause"
+                            ariaLabel="Pause"
+                            onClick={this.onPauseClicked}
+                        />
+
+                        {controlsValue.checklistItem}
+
+                        <Toggle label="Reach Sphere" onText="On" offText="Off" 
+                            onChange={() => { 
+                                const u  = unityValue.simulator.unityInstance;
+                                u.SendMessage("ToggleReachSphereScript","ToggleVisibility", "true");
+                            }} 
+                        />
+
+                        <Toggle label="Occupancy Zones" onText="On" offText="Off" onChange={() => { 
+                            unityValue.simulator.SendMessage("ToggleOccupancyZoneVisibilityScript","ToggleVisibility", "true")}} 
+                        />
+
+                        </div>
+
+                    )}
+                </UnityContext.Consumer>
             )}
         </ControlsContext.Consumer> 
     );

@@ -67,6 +67,7 @@ class DataServer:
         ))
 
         self._update_prog_pub = rospy.Publisher('data_server/update',UpdateData, queue_size=10, latch=True)
+        self._update_default_objs_sub = rospy.Subscribers('data_server/update_default_objs', String, self._update_default_objs_cb)
 
         self._load_app_srv = rospy.Service('data_server/load_application_data',LoadData,self._load_app_cb)
         self._save_app_srv = rospy.Service('data_server/save_application_data',SaveData,self._save_app_cb)
@@ -349,6 +350,10 @@ class DataServer:
         response.errors = json.dumps(errors, indent=4, sort_keys=True)
         response.message = '' if response.status else 'error getting data'
         return response
+
+    def _update_default_objs_cb(self, msg):
+        raw = json.dumps(msg.data)
+        self._default_objs = {key: [NodeParser(e) for e in raw[key]] for key in raw.keys()}
 
     def spin(self):
         # give nodes time before publishing initial state

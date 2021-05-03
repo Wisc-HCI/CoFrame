@@ -9,8 +9,6 @@ Frames:
 - control_target
 '''
 
-#TODO update for new UI system
-
 import tf
 import rospy
 

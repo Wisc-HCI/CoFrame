@@ -1,20 +1,7 @@
 {
-    "description": "Teaches the basics of machine tending with a collaborative robot", 
-    "name": "3D Printer Machine Tending Task", 
+    "description": "Teaches the basics of machine tending with a collaborative robot",
+    "name": "3D Printer Machine Tending Task",
     "options": [
-        {
-            "custom": true, 
-            "description": "", 
-            "filename": "debug_app.json", 
-            "level": 0, 
-            "name": ""
-        }, 
-        {
-            "custom": true, 
-            "description": "", 
-            "filename": "test.json", 
-            "level": 0, 
-            "name": ""
-        }
+
     ]
 }

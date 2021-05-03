@@ -1,5 +1,6 @@
 # evd_ros_backend
-EvD is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's understanding.
+EvD is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's.
+We aim to improve understanding of the task such that operators can make informed changes to their program.
 
 These packages compose the ROS backend for the EvD project.
 
@@ -9,6 +10,8 @@ These packages compose the ROS backend for the EvD project.
 - [evd_ros_ur_bringup](./evd_ros_ur_bringup/README.md): Interface for UR robot
 
 System overview for both Frontend and Backend is [here](../README.md).
+
+At this time only the UR3e is supported. Future work may extend this to other robots.
 
 ## Dependencies
 
@@ -27,8 +30,9 @@ System overview for both Frontend and Backend is [here](../README.md).
   - Needed to for successful build, though we don't use it directly
 - [joint_state_publisher_gui](http://wiki.ros.org/joint_state_publisher) via 'sudo apt install ros-<VERSION>-joint-state-publisher-gui'
 - [UniversalRobots/Universal_Robots_ROS_Driver](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver)
+  - Follow their install directions!
 - [fmauch/universal_robot](https://github.com/fmauch/universal_robot)
 
-## Not used right now (but probably will in the future)
+## Not used right now (but may in the future)
 - [ros-perception/ar_track_alvar](https://github.com/ros-perception/ar_track_alvar.git)
 - [rosserial_arduio](http://wiki.ros.org/rosserial_arduino) via `sudo apt install ros-<VERSION>-rosserial-arduino`

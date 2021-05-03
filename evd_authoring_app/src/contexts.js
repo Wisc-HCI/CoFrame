@@ -75,6 +75,7 @@ UnityContext :
 {
     service: <unityService obj>
     ...unityService.state
+    simulator: <unitySimulator obj>
 }
 */
 export const UnityContext = React.createContext(null);

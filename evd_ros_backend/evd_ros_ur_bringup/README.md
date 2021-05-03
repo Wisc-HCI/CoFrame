@@ -1,4 +1,6 @@
 # evd_ros_ur_bringup
+EvD is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's.
+We aim to improve understanding of the task such that operators can make informed changes to their program.
 
 This configuration can be used to connect the EvD core infrastructure to
 either a physical UR robot or to a URSim application. The URSim may either be
@@ -34,7 +36,6 @@ roslaunch evd_ros_ur_bringup main.launch type:=<TYPE-STRING>
 ```
 
 ### Type
-There are three types expected by evd_ros_core:
+There are two types expected by evd_ros_core:
 - physical : this connects to a real robot or the real robot's simulation.
 - simulated : this is used for the interactive robot marker on the front-end interface.
-- planner : this is used by evd_ros_core's planner subsystem for generating and testing trajectories.
