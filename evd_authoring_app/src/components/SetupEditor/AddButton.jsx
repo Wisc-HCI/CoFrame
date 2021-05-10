@@ -13,7 +13,8 @@ export const AddButton = (props) => {
 
     const {
         type, 
-        callback 
+        callback,
+        disabled 
     } = props;
 
     const tooltipId = useId('add-tooltip');
@@ -43,6 +44,7 @@ export const AddButton = (props) => {
                             }
                         }}
                         onClick={callback}
+                        disabled={disabled}
                     /> 
                 </TooltipHost>
                     

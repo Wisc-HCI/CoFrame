@@ -27,7 +27,7 @@ export const Set = (props) => {
             >
                 <Sticky>
                     <div style={{fontSize: '25px', paddingBottom: '5px'}}>{s.name}</div>
-                    <AddButton type={s.type} callback={() => {}} />
+                    <AddButton type={s.type} callback={() => {}} disabled={ s.addable === undefined ? false : !s.addable} />
                     <br />
                 </Sticky>
 

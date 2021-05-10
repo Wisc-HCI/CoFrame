@@ -28,7 +28,7 @@ class Breakpoint(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.break_point_set(self)
+        pass
 
     def realtime_execution(self, hooks):
-        hooks.break_point_set(self)
+        pass

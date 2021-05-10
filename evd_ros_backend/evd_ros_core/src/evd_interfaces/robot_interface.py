@@ -61,6 +61,13 @@ class RobotInterface:
     def get_last_gripper_state(self):
         return self._last_gstat_msg, self._last_gstat_msg_time
 
+    def estop(self):
+        msg = RobotInterface.pack_robot_stop_joint()
+        self.stop_pub.publish(msg)
+
+    def pause(self, state):
+        pass
+
     @classmethod
     def pack_robot_move_joint(cls, joints, radius=Move.STD_RADIUS, acceleration=Move.JOINT_ACCELERATION, velocity=Move.JOINT_VELOCITY):
         move = Move()

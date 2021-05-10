@@ -16,7 +16,19 @@ import { ElementTile } from '../ElementTile';
 
 export const MachineTile = (props) => {
 
-    const { style, name, uuid, deleteCallback, canDelete, canEdit, mesh, inputs, outputs, thingTypes, regions } = props;
+    const { 
+        style, 
+        name, 
+        uuid, 
+        mesh, 
+        inputs, 
+        outputs, 
+        thingTypes, 
+        regions,
+        deleteCallback, 
+        canDelete, 
+        canEdit
+    } = props;
 
     return (
         <ElementTile style={style}>
@@ -25,7 +37,7 @@ export const MachineTile = (props) => {
 
                 <Stack horizontal tokens={{childrenGap: '50px'}}>
                     <Stack.Item grow>
-                        <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}}/>
+                        <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}} disabled={!canEdit}/>
                     </Stack.Item>
                     <Stack.Item align="center">
                         <PrimaryButton text="Edit Pose" onClick={() => {}}  disabled={!canEdit} />
@@ -35,7 +47,7 @@ export const MachineTile = (props) => {
                     </Stack.Item>
                 </Stack>
 
-                <TextField label="Mesh:" onChange={() => {}} defaultValue={mesh} styles={{root: { maxWidth: '400px'}}} />
+                <TextField label="Mesh:" onChange={() => {}} defaultValue={mesh} styles={{root: { maxWidth: '400px'}}} disabled={!canEdit}/>
 
                 <Separator />
 
@@ -49,6 +61,7 @@ export const MachineTile = (props) => {
                         label="Process Time:"
                         min={0}
                         step={0.5}
+                        disabled={!canEdit}
                     />
 
                 </Stack>
@@ -63,11 +76,17 @@ export const MachineTile = (props) => {
                             quantity={entry.quantity}
                             regions={regions}
                             selectedRegion={entry.selectedRegion}
+                            canEdit={canEdit}
+                            canDelete={canDelete}
                         />
                     ))}
 
                     <Stack.Item align="center">
-                        <PrimaryButton text="Add Input" onClick={() => {}}/>
+                        <PrimaryButton text="Add Input" onClick={() => {
+                            inputs.push({
+                                
+                            })
+                        }} disabled={!canEdit}/>
                     </Stack.Item>
                 </Stack>
 
@@ -82,26 +101,19 @@ export const MachineTile = (props) => {
                             quantity={entry.quantity}
                             regions={regions}
                             selectedRegion={entry.selectedRegion}
+                            canEdit={canEdit}
+                            canDelete={canDelete}
                         />
                     ))}
 
                     <Stack.Item align="center">
-                        <PrimaryButton text="Add Output" onClick={() => {}}/>
+                        <PrimaryButton text="Add Output" onClick={() => {}} disabled={!canEdit}/>
                     </Stack.Item>
                 </Stack>
 
                 <br />
 
             </div>
-
-            
-
-            
-
-            
-
-            
-
 
         </ElementTile>
     );

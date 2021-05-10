@@ -29,7 +29,7 @@ class MachineStop(MachinePrimitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.machine_stop(self)
+        pass
 
     def realtime_execution(self, hooks):
-        hooks.machine_stop(self)
+        pass

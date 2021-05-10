@@ -29,7 +29,7 @@ class MachineWait(MachinePrimitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.machine_wait(self)
+        pass
 
     def realtime_execution(self, hooks):
-        hooks.machine_wait(self)
+        pass

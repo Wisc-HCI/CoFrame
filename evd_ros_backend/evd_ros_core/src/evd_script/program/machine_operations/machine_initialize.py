@@ -30,7 +30,22 @@ class MachineInitialize(MachinePrimitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.machine_initialize(self)
+        hooks.active_primitive = self
+        hooks.tokens[self.machine_uuid]['state'] = 'initialized'
+        return self.parent
 
     def realtime_execution(self, hooks):
-        hooks.machine_initialize(self)
+        hooks.active_primitive = self
+        next = self
+
+        if not self.uuid in hooks.state.keys():
+            hooks.tokens[self.machine_uuid]['state'] = 'pending'
+            hooks.machine_initialize(self.machine_uuid)
+            hooks.state[self.uuid] = 'pending'
+        else:
+            if hooks.machine_get_status(self.machine_uuid) == 'done':
+                hooks.tokens[self.machine_uuid]['state'] = 'initialized'
+                del hooks.state[self.uuid]
+                next = self.parent
+
+        return next

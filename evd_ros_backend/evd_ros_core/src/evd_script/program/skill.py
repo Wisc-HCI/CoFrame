@@ -192,9 +192,20 @@ class Skill(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        for p in self.primitives:
-            p.symbolic_execution(hooks)
+        hooks.active_primitive = self
+
+        if not self.uuid in hooks.state.keys():
+            hooks.state[self.uuid] = { 'index': 0 }
+
+        next = None
+        index = hooks.state[self.uuid]['index']
+        if index < len(self.primitives):
+            next = self.primitives[index]
+            hooks.state[self.uuid]['index'] = index + 1
+        else:
+            next = self.parent
+            del hooks.state[self.uuid]
+        return next
 
     def realtime_execution(self, hooks):
-        for p in self.primitives:
-            p.realtime_execution(hooks)
+        return symbolic_execution(hooks)
