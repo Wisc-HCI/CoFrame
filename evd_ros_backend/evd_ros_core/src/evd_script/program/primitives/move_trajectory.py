@@ -214,10 +214,10 @@ class MoveTrajectory(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.move_trajectory(self)
+        pass
 
     def realtime_execution(self, hooks):
-        hooks.move_trajectory(self)
+        pass
 
 
 class ContextPatch(object):

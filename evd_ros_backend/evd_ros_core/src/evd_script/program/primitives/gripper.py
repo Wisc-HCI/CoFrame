@@ -145,7 +145,7 @@ class Gripper(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.gripper(self)
+        pass
 
     def realtime_execution(self, hooks):
-        hooks.gripper(self)
+        pass

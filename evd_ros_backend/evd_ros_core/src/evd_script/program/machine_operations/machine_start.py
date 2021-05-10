@@ -29,7 +29,7 @@ class MachineStart(MachinePrimitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.machine_start(self)
+        pass
 
     def realtime_execution(self, hooks):
-        hooks.machine_start(self)
+        pass

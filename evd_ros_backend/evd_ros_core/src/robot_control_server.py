@@ -17,7 +17,6 @@ from evd_interfaces.program_runner import ProgramRunner
 class RobotControlServer:
 
     def __init__(self):
-        self._paused = False
         self._playing = False
         self._cmd_queue = []
         self._use_physical_robot = False
@@ -30,11 +29,6 @@ class RobotControlServer:
         self._simulated_interface = RobotInterface('simulated')
         self._physical_interface = RobotInterface('physical')
 
-        # Control Panel Feedback
-        self._at_start_pub = rospy.Publisher('robot_control_server/at_start',Bool, queue_size=10, latch=True)
-        self._at_end_pub = rospy.Publisher('robot_control_server/at_end',Bool, queue_size=10, latch=True)
-        self._lockout_pub = rospy.Publisher('robot_control_server/lockout',Bool, queue_size=10, latch=True)
-
         # Robot Controls
         self._use_simulated_robot_sub = rospy.Subscriber('robot_control_server/use_simulated_robot',Bool,self._use_simulated_robot_cb)
         self._use_physical_robot_sub = rospy.Subscriber('robot_control_server/use_physical_robot',Bool,self._use_physical_robot_cb)
@@ -43,8 +37,6 @@ class RobotControlServer:
         self._stop_sub = rospy.Subscriber('robot_control_server/stop',Empty,self._stop_cb)
         self._pause_sub = rospy.Subscriber('robot_control_server/pause',Empty,self._pause_cb)
         self._reset_sub = rospy.Subscriber('robot_control_server/reset',Empty,self._reset_cb)
-        self._step_fwd_sub = rospy.Subscriber('robot_control_server/step_forward',Empty,self._step_fwd_cb)
-        self._step_bkd_sub = rospy.Subscriber('robot_control_server/step_backward',Empty,self._step_bkd_cb)
 
     def _use_simulated_robot_cb(self, msg):
         self._use_simulated_robot = msg.data
@@ -70,12 +62,6 @@ class RobotControlServer:
     def _reset_cb(self, noop):
         self._cmd_queue.append('reset')
 
-    def _step_fwd_cb(self, noop):
-        self._cmd_queue.append('step_forward')
-
-    def _step_bkd_cb(self, noop):
-        self._cmd_queue.append('step_backward')
-
     def spin(self):
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
@@ -88,44 +74,29 @@ class RobotControlServer:
                     if self._playing:
                         self._program.stop()
                         self._playing = False
-                        self._paused = False
                     self._start_freedrive()
 
                 elif action == 'stop_freedrive' and not self._playing:
                     self._stop_freedrive()
 
                 elif action == 'play':
-                    if self._paused:
-                        self._program.unpause()
-                        self._paused = False
-
+                    if self._program.pause:
+                        self._program.pause = False
                     else:
-                        robots = []
-                        if self._use_physical_robot:
-                            robots.append(self._physical_interface)
-                        if self._use_simulated_robot:
-                            robots.append(self._simulated_interface)
-                        self._program = ProgramRunner(self._data_interface.program, robots)
+                        physical = self._physical_interface if self._use_physical_robot else None
+                        simulated = self._simulated_interface if self._use_simulated_robot else None
+                        self._program = ProgramRunner(self._data_interface.program, physical, simulated)
                         self._program.start()
 
-                elif action == 'stop':
-                    if self._playing:
-                        self._program.stop()
-                        self._playing = False
-                        self._paused = False
+                elif action == 'stop' and self._playing:
+                    self._program.stop()
+                    self._playing = False
 
                 elif action == 'pause' and self._playing:
-                    self._paused = True
-                    self._program.pause()
+                    self._program.pause = True
 
                 elif action == 'reset':
                     self._reset_state()
-
-                elif action == 'step_forward' and self._playing:
-                    self._program.step_forward()
-
-                elif action == 'step_backward' and self._playing:
-                    self._program.step_backward()
 
             # Update underlying program state on robot
             if self._playing:

@@ -198,22 +198,27 @@ export class SetupEditor extends React.Component {
             { name: 'Machines', key: 'machines', content: (
                 <Set 
                     sets={[
-                        { name: 'Machines', type: 'Machine', content: machines.map(m => (
-                            <div key={m.uuid} style={{ paddingBottom: '10px' }}>
-                                <MachineTile 
-                                    uuid={m.uuid} 
-                                    name={m.name} 
-                                    deleteCallback={(uuid) => {}} 
-                                    canDelete={m.canDelete}
-                                    canEdit={m.canEdit}
-                                    mesh={m.mesh}
-                                    inputs={m.inputs}
-                                    outputs={m.outputs}
-                                    thingTypes={thingTypes}
-                                    regions={regions}
-                                />
-                            </div>
-                        ))}
+                        { 
+                            name: 'Machines', 
+                            type: 'Machine', 
+                            addable: false,
+                            content: machines.map(m => (
+                                <div key={m.uuid} style={{ paddingBottom: '10px' }}>
+                                    <MachineTile 
+                                        uuid={m.uuid} 
+                                        name={m.name} 
+                                        deleteCallback={(uuid) => {}} 
+                                        canDelete={m.canDelete}
+                                        canEdit={m.canEdit}
+                                        mesh={m.mesh}
+                                        inputs={m.inputs}
+                                        outputs={m.outputs}
+                                        thingTypes={thingTypes}
+                                        regions={regions}
+                                    />
+                                </div>
+                            ))
+                        }
                     ]}
                 />
             )},

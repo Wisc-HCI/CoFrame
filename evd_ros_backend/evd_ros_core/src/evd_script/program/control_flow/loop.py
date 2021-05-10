@@ -124,8 +124,9 @@ class Loop(Skill):
     '''
 
     def symbolic_execution(self, hooks):
-        run = True
+        hooks.active_primitive = self
 
+        run = True
         while run:
             for p in self.primitives:
                 p.symbolic_execution(hooks)
@@ -133,8 +134,9 @@ class Loop(Skill):
             run = self.condition.symbolic_execution(hooks) if self.condition != None else True
 
     def realtime_execution(self, hooks):
-        run = True
+        hooks.active_primitive = self
 
+        run = True
         while run:
             for p in self.primitives:
                 p.symbolic_execution(hooks)

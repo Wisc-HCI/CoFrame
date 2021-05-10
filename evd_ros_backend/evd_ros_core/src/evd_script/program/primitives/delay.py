@@ -84,7 +84,7 @@ class Delay(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.delay(self)
+        pass
 
     def realtime_execution(self, hooks):
-        hooks.delay(self)
+        pass

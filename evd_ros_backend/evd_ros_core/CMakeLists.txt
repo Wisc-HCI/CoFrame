@@ -60,6 +60,7 @@ add_message_files(
   ExpertCheck.msg
   StringArray.msg
   ApplicationOption.msg
+  ProgramRunnerStatus.msg
 )
 
 ## Generate services in the 'srv' folder
