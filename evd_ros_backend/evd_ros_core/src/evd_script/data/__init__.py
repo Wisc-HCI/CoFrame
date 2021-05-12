@@ -2,9 +2,12 @@ from .geometry import Pose, Position, Orientation
 from .location import Location
 from .waypoint import Waypoint
 from .machine import Machine, MachineRecipe
-from .trace import Trace, TraceDataPoint
+from .trace import Trace
+from .trace_data_point import TraceDataPoint
 from .trajectory import Trajectory
-from .region import Region, CubeRegion, SphereRegion
+from .region import Region
+from .cube_region import CubeRegion
+from .sphere_region import SphereRegion
 from .thing import Thing
 
 

@@ -3,7 +3,7 @@
 '''
 
 
-class GraderInterface:
+class GraderTemplate:
     pass
 
 '''

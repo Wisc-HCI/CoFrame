@@ -71,6 +71,8 @@ class Loop(Skill):
     def set(self, dct):
 
         if 'condition' in dct.keys():
+            from ...utility_functions import NodeParser
+            
             self.condition = NodeParser(dct['condition']) if dct['condition'] != None else None
 
         super(Loop,self).set(dct)

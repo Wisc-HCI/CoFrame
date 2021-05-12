@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Convert ur_mode and gripper_stat to a consistent interface for robot_interface

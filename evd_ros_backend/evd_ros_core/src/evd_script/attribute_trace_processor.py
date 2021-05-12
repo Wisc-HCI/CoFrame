@@ -20,7 +20,7 @@ class AttributeTraceProcessor:
         self._subscribers[type].remove(callback)
         return True
 
-    def process_trace(attributeTrace):
+    def process_trace(self, attributeTrace):
         for entry in attributeTrace:
             if entry["type"] in self._subscribers.keys():
                 for cb in self._subscribers[entry["type"]]:

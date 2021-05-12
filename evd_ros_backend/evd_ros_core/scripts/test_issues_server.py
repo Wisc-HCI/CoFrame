@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Uses a simple script to confirm behavior of Issues Server.
@@ -103,7 +103,7 @@ class TestIssuesServer:
         if status != True:
             raise Exception('Getting pending jobs failed - {0}'.format(message))
 
-        print jobs
+        print(jobs)
 
         for i in range(0,len(ids)):
             status, message = self._issue_client.clear_pending_job(source,ids[0])
@@ -115,7 +115,7 @@ class TestIssuesServer:
         if status != True:
             raise Exception('Getting pending jobs failed - {0}'.format(message))
 
-        print jobs
+        print(jobs)
 
     def _check_if_submitted_are_in_list(self, issues, condition_str='', should_find_1=True, should_find_2=True):
 

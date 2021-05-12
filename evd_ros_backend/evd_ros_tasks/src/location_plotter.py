@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import tf
 import json
@@ -33,7 +33,7 @@ class LocationPlotter:
         self._listener = tf.TransformListener()
 
     def _marker_feedback(self, feedback):
-        print "Marker Feedback:", feedback, "\n\n"
+        print("Marker Feedback:", feedback, "\n\n")
         self._target_marker.pose = feedback.pose
 
     def spin(self):

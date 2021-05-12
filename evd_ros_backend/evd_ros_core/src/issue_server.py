@@ -1,10 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Provide pending jobs and issues in the EvD system.
 '''
-
-#TODO
 
 import rospy
 

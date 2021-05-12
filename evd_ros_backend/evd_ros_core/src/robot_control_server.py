@@ -1,11 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 High-level control of robot instance subsystems.
 '''
 
-
-import json
 import rospy
 
 from std_msgs.msg import Empty, Bool

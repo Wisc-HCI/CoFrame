@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import time
 import rospy
@@ -38,10 +38,10 @@ class SystemTest:
         self._received_msg_count += 1
 
     def run(self):
-        print 'Prefix:', self._system_prefix
+        print('Prefix:', self._system_prefix)
 
         # Delay according to setting
-        print 'Delaying test for {} seconds'.format(self._test_start_delay)
+        print('Delaying test for {} seconds'.format(self._test_start_delay))
         rospy.sleep(self._test_start_delay)
 
         # Define Start Move Trajectory
@@ -122,53 +122,53 @@ class SystemTest:
         gripper_close_goal.speed = 1
 
         # Waiting for UR Controller
-        print 'Waiting for Move Trajectory Server for UR Controller to connect'
+        print('Waiting for Move Trajectory Server for UR Controller to connect')
         self._move_trajectory_ac.wait_for_server()
 
         # Interact with UR Controller
-        print 'Sending move trajectory to start location'
+        print('Sending move trajectory to start location')
         self._move_trajectory_ac.send_goal(start_trajectory_goal)
         self._move_trajectory_ac.wait_for_result()
         result = self._move_trajectory_ac.get_result()
-        print 'Status: {}, Message: {}'.format(result.status,result.message)
+        print('Status: {}, Message: {}'.format(result.status,result.message))
 
-        print 'Sending freedrive active, (waiting 30 seconds)'
+        print('Sending freedrive active, (waiting 30 seconds)')
         self._freedrive_pub.publish(Bool(True))
         rospy.sleep(30)
 
-        print 'Sending freedrive disabled, (waiting 30 seconds)'
+        print('Sending freedrive disabled, (waiting 30 seconds)')
         self._freedrive_pub.publish(Bool(False))
         rospy.sleep(30)
 
-        print 'Sending servoing command'
+        print('Sending servoing command')
         self._servoing_pub.publish(servo)
         rospy.sleep(5)
 
-        print 'Sending move trajectory to stop location'
+        print('Sending move trajectory to stop location')
         self._move_trajectory_ac.send_goal(stop_trajectory_goal)
         self._move_trajectory_ac.wait_for_result()
         result = self._move_trajectory_ac.get_result()
-        print 'Status: {}, Message: {}'.format(result.status,result.message)
+        print('Status: {}, Message: {}'.format(result.status,result.message))
         rospy.sleep(1.25)
 
-        print 'Sending stop command'
+        print('Sending stop command')
         self._stop_pub.publish(stop)
         rospy.sleep(1)
 
         # Interact with Gripper
-        print 'Sending a close gripper command'
+        print('Sending a close gripper command')
         self._gripper_pub.publish(gripper_close_goal)
         rospy.sleep(5)
 
-        print 'Sending an open gripper command'
+        print('Sending an open gripper command')
         self._gripper_pub.publish(gripper_open_goal)
         rospy.sleep(5)
 
         # Verifying joint position is being published
-        print 'Checking that joint state messages are being published'
-        print 'Number of messages received:', self._received_msg_count
-        print 'Last message receive', '{} seconds ago'.format(time.time() - self._last_js_msg_time) if self._last_js_msg_time != None else 'never'
-        print 'Contents of last message', self._last_js_msg
+        print('Checking that joint state messages are being published')
+        print('Number of messages received:', self._received_msg_count)
+        print('Last message receive', '{} seconds ago'.format(time.time() - self._last_js_msg_time) if self._last_js_msg_time != None else 'never')
+        print('Contents of last message', self._last_js_msg)
 
 
 if __name__ == "__main__":

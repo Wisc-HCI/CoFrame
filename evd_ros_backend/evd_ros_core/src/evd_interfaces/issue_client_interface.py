@@ -121,7 +121,7 @@ class IssueClientInterface(object):
 
     def set_pending_jobs(self, source='', ids=[], human_messages=[], data=[]):
 
-        if len(ids) != len(human_messages) || len(ids) != len(data):
+        if len(ids) != len(human_messages) or len(ids) != len(data):
             raise Exception('Lengths must match for all list parameters')
 
         serializedData = [json.dumps(d) for d in data]

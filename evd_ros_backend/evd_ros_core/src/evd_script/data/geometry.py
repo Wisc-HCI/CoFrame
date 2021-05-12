@@ -1,4 +1,5 @@
 import tf
+import math
 import geometry_msgs.msg as ros_msgs
 
 from ..node import Node
@@ -63,7 +64,7 @@ class Pose(Node):
                    name=dct['name'] if 'name' in dct.keys() else '')
 
     @classmethod
-    def from_ros(self, obj):
+    def from_ros(cls, obj):
         return cls(position=Position.from_ros(obj.position),
                    orientation=Orientation.from_ros(obj.orientation))
 
@@ -414,7 +415,7 @@ class Orientation(Node):
                 z=lst[3],
                 w=lst[0])
 
-    def to_euler():
+    def to_euler(self):
         quaternion = self.to_list('xyzw')
         euler = tf.transformations.euler_from_quaternion(quaternion)
         return euler

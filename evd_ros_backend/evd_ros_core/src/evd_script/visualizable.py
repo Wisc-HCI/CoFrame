@@ -1,19 +1,17 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 from std_msgs.msg import ColorRGBA
 
 # Please pick just one of these to implement per object as a general rule of thumb
 
-class VisualizeMarker:
-    __metaclass__ = ABCMeta
+class VisualizeMarker(ABC):
 
     @abstractmethod
     def to_ros_marker(self, frame_id, id=0):
         pass # Returns single marker
 
 
-class VisualizeMarkers:
-    __metaclass__ = ABCMeta
+class VisualizeMarkers(ABC):
 
     @abstractmethod
     def to_ros_markers(self, frame_id, id_start=0):

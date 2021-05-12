@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Trace processor generates traces from trajectories using
@@ -19,6 +19,7 @@ Generates waypoint joints
 
 import tf
 import json
+import time
 import rospy
 
 from std_msgs.msg import Bool
@@ -156,7 +157,7 @@ class TraceProcessor:
     def generate_waypoint(self, evd_waypoint): # and location
 
         # set state of robot
-        print 'setting state of robot'
+        print('setting state of robot')
         pose = evd_waypoint.to_ros()
         _m, result = self.set_robot_pose(pose)
 
@@ -172,17 +173,17 @@ class TraceProcessor:
     def generate_trace(self, evd_trajectory):
 
         # generate trajectory path for robot
-        print 'generating full trajectory path'
+        print('generating full trajectory path')
         fullTraj = self.pack_robot_trajectory(evd_trajectory)
 
         # reset state of robot to initial joint state
-        print 'resetting state of robot'
+        print('resetting state of robot')
         startLoc = evd_trajectory.context.get_location(evd_trajectory.start_location_uuid)
         self.set_robot_joints(startLoc.joints)
 
         # run trace, collecting links of interest at sample frequency
-        print 'running full trajectory and capturing trace data'
-        self._tf_samples = {gorup:[] for group in self._link_groups.keys()}
+        print('running full trajectory and capturing trace data')
+        self._tf_samples = {group:[] for group in self._link_groups.keys()}
 
         self.start_sample_timer()
         start_time = time.time()
@@ -191,10 +192,10 @@ class TraceProcessor:
         self.stop_sample_timer()
 
         timeVal = end_time - start_time
-        print result
+        print(result)
 
         # package and save trace
-        print 'processing trace data'
+        print('processing trace data')
         evd_trace = self.pack_evd_trace(self._tf_samples,timeVal)
         evd_trajectory.trace = evd_trace
 

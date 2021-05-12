@@ -35,17 +35,17 @@ class RobotControlInterface:
         self.lockout_sub = rospy.Subscriber('robot_control_server/lockout',Bool,self._lockout_cb)
 
     def _at_start_cb(self, msg):
-        print 'At Start', msg
+        print('At Start', msg)
         if self._user_at_start_cb != None:
             self._user_at_start_cb(msg.data)
 
     def _at_end_cb(self, msg):
-        print 'At End', msg
+        print('At End', msg)
         if self._user_at_end_cb != None:
             self._user_at_end_cb(msg.data)
 
     def _lockout_cb(self, msg):
-        print 'Lockout', msg
+        print('Lockout', msg)
         if self._user_lockout_cb != None:
             self._user_lockout_cb(msg.data)
 

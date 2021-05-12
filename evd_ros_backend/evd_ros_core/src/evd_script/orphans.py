@@ -34,7 +34,6 @@ class OrphanList(object):
     def empty(self):
         return len(self._orphan_uuids) == 0
 
-
 # Repairs the current program and cache with the orphan list - could be a time expensive process
 def evd_orphan_repair():
     from .program.primitives.gripper import Gripper
@@ -43,8 +42,8 @@ def evd_orphan_repair():
 
     cache = get_evd_cache_obj()
 
-    for uuid in self._orphan_uuids.keys():
-        type = self._orphan_uuids[uuid]
+    for uuid in orphanList._orphan_uuids.keys():
+        type = orphanList._orphan_uuids[uuid]
 
         if type == 'location':
             found = False
@@ -117,10 +116,10 @@ def evd_orphan_repair():
 
             shouldDelete = True
             for prim in cache.primitives.values():
-                 if isinstance(prim,MoveTrajectory):
-                     if prim.trajectory_uuid == uuid:
-                         shouldNotDelete = False
-                         break
+                if isinstance(prim,MoveTrajectory):
+                    if prim.trajectory_uuid == uuid:
+                        shouldNotDelete = False
+                        break
 
             if shouldDelete:
                 for env in cache.environments.values():

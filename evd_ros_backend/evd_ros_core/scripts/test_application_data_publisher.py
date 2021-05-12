@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Tests application data behavior with a simple GUI interface.
@@ -58,16 +58,16 @@ class TestApplicationDataPublisher:
     def _save_cb(self):
         status, msg = self._data_client.save_application(False,self.filenameVar.get())
 
-        print 'Saved: {0} - {1}'.format(status,msg)
+        print('Saved: {0} - {1}'.format(status,msg))
 
         self._get_options_cb() # Reload list of programs
 
     def _load_cb(self):
         if self.options_listBox.get(tk.ACTIVE) == '':
-            print 'Cannot load what is not selected'
+            print('Cannot load what is not selected')
         else:
             status, msg = self._data_client.load_application(self.options_listBox.get(tk.ACTIVE),'','',0)
-            print 'Loaded: {0} - {1}'.format(status,msg)
+            print('Loaded: {0} - {1}'.format(status,msg))
 
     def spin(self):
         rospy.on_shutdown(self._shutdown_cb)

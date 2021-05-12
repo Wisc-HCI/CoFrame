@@ -85,7 +85,7 @@ class Skill(Primitive):
         self._primitives.append(prm)
         self.updated_attribute('primitives','add')
 
-    def insert_primitive(self, prm):
+    def insert_primitive(self, idx, prm):
         prm.parent = self
         self._primitives.insert(idx,prm)
         self.updated_attribute('primitives','adds')
@@ -208,4 +208,4 @@ class Skill(Primitive):
         return next
 
     def realtime_execution(self, hooks):
-        return symbolic_execution(hooks)
+        return self.symbolic_execution(hooks)

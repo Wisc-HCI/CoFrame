@@ -2,11 +2,10 @@ import uuid
 
 from .cache import *
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 
-class Node(object):
-    __metaclass__ = ABCMeta
+class Node(ABC):
 
     '''
     Data structure methods

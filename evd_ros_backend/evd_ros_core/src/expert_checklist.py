@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Expert Checklist generates all relevant questions / checks for an operator.

@@ -9,12 +9,12 @@ class Container(Node):
     '''
 
     @classmethod
-    def type_string(cls, itemType='node.'):
-        return 'container<{}>.'.format(itemType)
+    def type_string(cls, item_type='node.'):
+        return 'container<{}>.'.format(item_type)
 
     @classmethod
-    def full_type_string(cls, itemType='node.'):
-        return Node.full_type_string() + cls.type_string(itemType)
+    def full_type_string(cls, item_type='node.'):
+        return Node.full_type_string() + cls.type_string(item_type)
 
     def __init__(self, item_type, values=[], type='', name='', uuid=None, parent=None, append_type=True):
 
@@ -22,7 +22,7 @@ class Container(Node):
         self._item_type = None
 
         super(Container,self).__init__(
-            type='container<{}>.'.format(itemType) + type if append_type else type,
+            type='container<{}>.'.format(item_type) + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -75,7 +75,7 @@ class Container(Node):
 
     @property
     def item_type(self):
-        return _item_type
+        return self._item_type
 
     @item_type.setter
     def item_type(self, value):

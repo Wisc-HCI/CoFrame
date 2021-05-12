@@ -1,5 +1,5 @@
 from .data_client_interface import DataClientInterface
-from .grader_interface import GraderInterface
+from .grader_template import GraderTemplate
 from .program_runner import ProgramRunner
 from .robot_interface import RobotInterface
 from .issue_client_interface import IssueClientInterface
