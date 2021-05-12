@@ -1,3 +1,4 @@
+from .grade import Grade
 from .geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker, ColorTable
 
@@ -19,10 +20,10 @@ class TraceDataPoint(Pose, VisualizeMarker):
     def full_type_string(cls):
         return Pose.full_type_string() + cls.type_string()
 
-    def __init__(self, position=None, orientation=None, grade=0, type='',
+    def __init__(self, position=None, orientation=None, grades={}, type='',
                  name='', uuid=None, parent=None, append_type=True):
 
-        self._grade = None
+        self._grades = {}
 
         super(TraceDataPoint,self).__init__(
             position=position,
@@ -33,12 +34,12 @@ class TraceDataPoint(Pose, VisualizeMarker):
             parent=parent,
             append_type=append_type)
 
-        self.grade = grade
+        self.grades = grades
 
     def to_dct(self):
         msg = super(TraceDataPoint,self).to_dct()
         msg.update({
-            'grade': self.grade
+            'grades': {key: self.grades[key].to_dct() for key in self.grades.keys()}
         })
         return msg
 
@@ -51,7 +52,7 @@ class TraceDataPoint(Pose, VisualizeMarker):
             append_type=False,
             name=dct['name'],
             uuid=dct['uuid'],
-            grade=dct['grade'])
+            grades={key: Grade.from_dct(dct['grades'][key]) for key in dct['grades'].keys()})
 
     def to_ros_marker(self, frame_id, id=0):
         marker = Marker()
@@ -70,19 +71,26 @@ class TraceDataPoint(Pose, VisualizeMarker):
     '''
 
     @property
-    def grade(self):
-        return self._grade
+    def grades(self):
+        return self._grades
 
-    @grade.setter
-    def grade(self, value):
-        if self._grade != value:
-            self._grade = value
-            self.updated_attribute('grade','set')
+    @grades.setter
+    def grades(self, value):
+        if self._grades != value:
+
+            for grade in self._grades.values():
+                grade.remove_from_cache()
+            
+            self._grades = value
+            for grade in self._grades.values():
+                grade.parent = self
+
+            self.updated_attribute('grades','set')
 
     def set(self, dct):
-        grade = dct.get('grade',None)
-        if grade != None:
-            self.grade = grade
+
+        if 'grades' in dct.keys():
+            self.grades = {key: Grade.from_dct(dct['grades'][key]) for key in dct['grades'].keys()}
 
         super(TraceDataPoint,self).set(dct)
 
@@ -93,9 +101,12 @@ class TraceDataPoint(Pose, VisualizeMarker):
     def deep_update(self):
         super(TraceDataPoint,self).deep_update()
 
-        self.updated_attribute('grade','update')
+        for grade in self.grades.values():
+            grade.deep_update()
+
+        self.updated_attribute('grades','update')
 
     def shallow_update(self):
         super(TraceDataPoint,self).shallow_update()
 
-        self.updated_attribute('grade','update')
+        self.updated_attribute('grades','update')
