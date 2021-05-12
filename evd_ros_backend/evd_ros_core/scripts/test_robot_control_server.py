@@ -10,7 +10,7 @@ GUI provides controls for robot server.
 
 
 import rospy
-import Tkinter as tk
+import tkinter as tk
 
 
 from evd_interfaces.robot_control_interface import RobotControlInterface
@@ -38,10 +38,6 @@ class TestRobotControlServerNode:
         self.pause_button.pack()
         self.reset_button = tk.Button(frame, text="Reset", command=self._on_reset_cb)
         self.reset_button.pack()
-        self.step_fwd_button = tk.Button(frame, text="Step Forward", command=self._on_step_forward_cb)
-        self.step_fwd_button.pack()
-        self.step_bkd_button = tk.Button(frame, text="Step Backward", command=self._on_step_backward_cb)
-        self.step_bkd_button.pack()
 
         self._controls = RobotControlInterface()
 
@@ -65,12 +61,6 @@ class TestRobotControlServerNode:
 
     def _on_reset_cb(self):
         self._controls.reset()
-
-    def _on_step_forward_cb(self):
-        self._controls.step_forward()
-
-    def _on_step_backward_cb(self):
-        self._controls.step_backward()
 
     def spin(self):
         rospy.on_shutdown(self._shutdown_cb)

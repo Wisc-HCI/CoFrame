@@ -12,7 +12,6 @@ Checks:
 
 
 import rospy
-import pprint
 
 from visualization_msgs.msg import Marker, MarkerArray
 from evd_interfaces.data_client_interface import DataClientInterface

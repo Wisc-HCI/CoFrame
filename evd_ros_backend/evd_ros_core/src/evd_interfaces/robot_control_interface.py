@@ -27,25 +27,20 @@ class RobotControlInterface:
         self.stop_pub = rospy.Publisher('robot_control_server/stop',Empty,queue_size=10)
         self.pause_pub = rospy.Publisher('robot_control_server/pause',Empty,queue_size=10)
         self.reset_pub = rospy.Publisher('robot_control_server/reset',Empty,queue_size=10)
-        self.step_fwd_pub = rospy.Publisher('robot_control_server/step_forward',Empty,queue_size=10)
-        self.step_bkd_pub = rospy.Publisher('robot_control_server/step_backward',Empty,queue_size=10)
 
         self.at_start_sub = rospy.Subscriber('robot_control_server/at_start',Bool,self._at_start_cb)
         self.at_end_sub = rospy.Subscriber('robot_control_server/at_end',Bool,self._at_end_cb)
         self.lockout_sub = rospy.Subscriber('robot_control_server/lockout',Bool,self._lockout_cb)
 
     def _at_start_cb(self, msg):
-        print('At Start', msg)
         if self._user_at_start_cb != None:
             self._user_at_start_cb(msg.data)
 
     def _at_end_cb(self, msg):
-        print('At End', msg)
         if self._user_at_end_cb != None:
             self._user_at_end_cb(msg.data)
 
     def _lockout_cb(self, msg):
-        print('Lockout', msg)
         if self._user_lockout_cb != None:
             self._user_lockout_cb(msg.data)
 
@@ -69,9 +64,3 @@ class RobotControlInterface:
 
     def reset(self):
         self.reset_pub.publish(Empty())
-
-    def step_forward(self):
-        self.step_fwd_pub.publish(Empty())
-
-    def step_backward(self):
-        self.step_bkd_pub.publish(Empty())

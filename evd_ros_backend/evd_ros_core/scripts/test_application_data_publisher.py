@@ -11,7 +11,7 @@ Allows
 
 
 import rospy
-import Tkinter as tk
+import tkinter as tk
 
 from evd_interfaces.data_client_interface import DataClientInterface
 
