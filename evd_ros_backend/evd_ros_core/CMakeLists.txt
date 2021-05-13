@@ -50,10 +50,18 @@ catkin_python_setup()
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  Grip.msg
-  Move.msg
-  Stop.msg
-  Servo.msg
+  RobotGrip.msg
+  RobotMove.msg
+  RobotStop.msg
+  RobotServo.msg
+  
+  MachineAck.msg
+  MachineInitialize.msg
+  MachinePause.msg
+  MachineStart.msg
+  MachineStatus.msg
+  MachineStop.msg
+
   Issue.msg
   Version.msg
   UpdateData.msg
