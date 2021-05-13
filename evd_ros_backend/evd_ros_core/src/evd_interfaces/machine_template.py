@@ -14,7 +14,8 @@ class MachineTemplate:
     ]
 
 
-    def __init__(self, uuid='', prefix=None, init_fnt=None, start_fnt=None, stop_fnt=None, pause_fnt=None):
+    def __init__(self, uuid='', prefix=None, init_fnt=None, start_fnt=None, 
+                 stop_fnt=None, pause_fnt=None):
         self.uuid = uuid
         self._prefix = prefix
         prefix_fmt = prefix+'/' if prefix != None else ''
