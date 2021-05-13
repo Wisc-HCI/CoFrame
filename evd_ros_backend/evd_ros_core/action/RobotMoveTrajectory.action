@@ -1,5 +1,5 @@
 #goal definition
-evd_ros_core/Move[] moves
+evd_ros_core/RobotMove[] moves
 bool wait_for_finish
 ---
 #result definition
