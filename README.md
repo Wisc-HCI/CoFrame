@@ -5,7 +5,7 @@ for collaborative robotic workcells.
 We accomplish this with an authoring tool that incorporates a Blockly-based visual
 programming language called EvD-Script, a simulation environment built in Unity,
 and an expert checklist that directs the operator to think in four frames:
-Safety, Program Quality, Performance, and Buisness Objectives.
+Safety, Program Quality, Robot Performance, and Buisness Objectives.
 
 ## System Architecture
 TODO
@@ -14,7 +14,7 @@ TODO
 
 
 ## Installation
-Unfortuntly, EvD relies on many different components to get it working. Below,
+EvD relies on many different components to get it working. Below,
 installation is described for each subsystem.
 
 ### evd_authoring_app
@@ -26,17 +26,20 @@ npm install
 ```
 
 ### evd_ros_backend
-First install ROS (one) either kinetic or melodic, preferrably full desktop install.
+First install ROS (one) noetic, preferrably full desktop install.
 
 Then clone this repo into your catkin workspace. You will also need to
 install the following packages.
 
-- [rosbridge_suite](http://wiki.ros.org/rosbridge_suite)
+Wisc-HCI Specific Dependencies
 - [Wisc-HCI/robotiq_85_gripper](https://github.com/Wisc-HCI/robotiq_85_gripper)
-- [industrial_core](http://wiki.ros.org/industrial_core) via `sudo apt install ros-<VERSION>-industrial-core`
-- [UniversalRobots/Universal_Robots_ROS_Driver](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver)
-- [fmauch/universal_robot](https://github.com/fmauch/universal_robot)
 - [Wisc-HCI/robot_configurations](https://github.com/Wisc-HCI/robot_configurations)
+
+General ROS Dependencies
+- [rosbridge_suite](http://wiki.ros.org/rosbridge_suite)
+    - Via `sudo apt-get install ros-noetic-rosbridge-server`
+- [UniversalRobots/Universal_Robots_ROS_Driver](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver)
+    - Please follow their installation instructions!
 
 We also need to install the following python modules.
 
