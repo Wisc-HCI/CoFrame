@@ -44,7 +44,7 @@ class DataServer:
                 'level': 0,
                 'custom': False
             }
-            self._default_objs = dct["default_objs"]
+            self._default_objs = dct["default_objects"]
         else:
             self._program = Program()
             self._application_meta ={
@@ -67,7 +67,7 @@ class DataServer:
         ))
 
         self._update_prog_pub = rospy.Publisher('data_server/update',UpdateData, queue_size=10, latch=True)
-        self._update_default_objs_sub = rospy.Subscribers('data_server/update_default_objs', String, self._update_default_objs_cb)
+        self._update_default_objs_sub = rospy.Subscriber('data_server/update_default_objs', String, self._update_default_objs_cb)
 
         self._load_app_srv = rospy.Service('data_server/load_application_data',LoadData,self._load_app_cb)
         self._save_app_srv = rospy.Service('data_server/save_application_data',SaveData,self._save_app_cb)

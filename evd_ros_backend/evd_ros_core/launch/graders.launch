@@ -15,7 +15,7 @@
 
   </node>
 
-  <node name="performance_grader" pkg="evd_ros_core" type="performance_grader.py" output="screen">
+  <node name="speed_grader" pkg="evd_ros_core" type="speed_grader.py" output="screen">
 
   </node>
 

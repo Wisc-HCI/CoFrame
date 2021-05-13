@@ -1,6 +1,7 @@
 from ..node import Node
-from waypoint import Waypoint
-from trace import Trace, TraceDataPoint
+from .waypoint import Waypoint
+from .trace import Trace
+from .trace_data_point import TraceDataPoint
 from ..visualizable import VisualizeMarkers, VisualizeMarker, ColorTable
 
 from visualization_msgs.msg import Marker

@@ -1,4 +1,5 @@
 from ..node import Node
+from .trace_data_point import TraceDataPoint
 from ..visualizable import VisualizeMarkers, ColorTable
 
 from visualization_msgs.msg import Marker
