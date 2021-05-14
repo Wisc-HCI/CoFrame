@@ -4,7 +4,7 @@ import json
 import rospy
 
 from evd_interfaces.data_client_interface import DataClientInterface
-from evd_interfaces.symbolic_program_runner import SymbolicProgramRunner
+#from evd_interfaces.symbolic_program_runner import SymbolicProgramRunner
 
 
 class Verifier:

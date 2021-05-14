@@ -24,12 +24,12 @@ import rospy
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
-from evd_ros_core.msg import Stop, Servo, Move
-from evd_ros_core.msg import MoveTrajectoryGoal
+from evd_ros_core.msg import RobotStop, RobotServo, RobotMove
+from evd_ros_core.msg import RobotMoveTrajectoryGoal
 from trajectory_msgs.msg import JointTrajectoryPoint
 from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
-from evd_ros_core.srv import SubmitJob, SubmitJobRequest, SubmitJobResponse
-from evd_ros_core.srv import PendingJobs, PendingJobsRequest, PendingJobsResponse
+from evd_ros_core.srv import SetPendingJobs, SetPendingJobsRequest, SetPendingJobsResponse
+from evd_ros_core.srv import GetPendingJobs, GetPendingJobsRequest, GetPendingJobsResponse
 
 from evd_interfaces.robot_interface import RobotInterface
 from evd_interfaces.data_client_interface import DataClientInterface
@@ -189,7 +189,7 @@ class TraceProcessor:
         start_time = time.time()
         result = self.perform_robot_trajectory(fullTraj)
         end_time = time.time()
-        self.stop_sample_timer()
+        self.RobotStop_sample_timer()
 
         timeVal = end_time - start_time
         print(result)
@@ -211,7 +211,7 @@ class TraceProcessor:
     def start_sample_timer(self, sample_rate=0.1):
         self._timer = rospy.Timer(rospy.Duration(sample_rate),self._sample_cb)
 
-    def stop_sample_timer(self):
+    def RobotStop_sample_timer(self):
         self._timer.shutdown()
         self._timer = None
 
@@ -288,7 +288,7 @@ class TraceProcessor:
 
             moves = self.run_planner(startLoc.to_ros(), waypoints, endLoc.to_ros())
 
-        full_traj = MoveTrajectoryGoal()
+        full_traj = RobotMoveTrajectoryGoal()
         full_traj.moves = moves
         full_traj.wait_for_finish = True
         return full_traj
@@ -305,7 +305,7 @@ class TraceProcessor:
     def set_robot_joints(self, joints, run=True):
         move = self._ursim.pack_robot_move_joint(joints)
 
-        trajectory = MoveTrajectoryGoal()
+        trajectory = RobotMoveTrajectoryGoal()
         trajectory.moves = [move]
         trajectory.wait_for_finish = True
 
@@ -319,7 +319,7 @@ class TraceProcessor:
     def set_robot_pose(self, pose, run=True):
         move = self._ursim.pack_robot_move_pose_linear(pose)
 
-        trajectory = MoveTrajectoryGoal()
+        trajectory = RobotMoveTrajectoryGoal()
         trajectory.moves = [move]
         trajectory.wait_for_finish = True
 

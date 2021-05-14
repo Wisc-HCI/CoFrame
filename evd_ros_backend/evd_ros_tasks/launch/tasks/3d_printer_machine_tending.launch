@@ -48,4 +48,13 @@
     <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
   </group>
 
+  <!-- 3D Printer -->
+  <node name="physical_printer" type="3d_printer_machine.py" pkg="evd_ros_tasks" output="screen">
+    <param name="prefix" value="physical"/>
+  </node>
+
+  <node name="simulated_printer" type="3d_printer_machine.py" pkg="evd_ros_tasks" output="screen">
+    <param name="prefix" value="simulated"/>
+  </node>
+
 </launch>

@@ -6,7 +6,7 @@ Provide pending jobs and issues in the EvD system.
 
 import rospy
 
-from std_msgs.mgs import Bool
+from std_msgs.msg import Bool
 from evd_ros_core.msg import Issue, StringArray
 
 from evd_ros_core.srv import GetIssues, GetIssuesRequest, GetIssuesResponse

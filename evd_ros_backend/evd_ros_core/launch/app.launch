@@ -24,6 +24,8 @@
 
   </node>
 
+  <node name="expert_checklist" pkg="evd_ros_core" type="expert_checklist.py" output="screen" />
+
   <include file="$(find evd_ros_core)/launch/graders.launch">
     <arg name="app_filepath" value="$(arg app_filepath)"/>
     <arg name="ros_frame_id" value="$(arg ros_frame_id)"/>

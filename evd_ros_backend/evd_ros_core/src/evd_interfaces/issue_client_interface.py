@@ -107,8 +107,8 @@ class IssueClientInterface(object):
             for j in range(0,len(response.ids[i].data)):
                 jobs[src].append({
                     'source': src,
-                    'id': response.id[i].data[j],
-                    'human_message': respnse.human_message[i].data[j],
+                    'id': response.ids[i].data[j],
+                    'human_message': response.human_messages[i].data[j],
                     'data': json.loads(response.data[i].data[j])
                 })
 
