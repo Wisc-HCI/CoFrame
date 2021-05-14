@@ -11,8 +11,6 @@ Safety, Program Quality, Robot Performance, and Buisness Objectives.
 TODO
 
 
-
-
 ## Installation
 EvD relies on many different components to get it working. Below,
 installation is described for each subsystem.
@@ -97,7 +95,20 @@ npm start
 ```
 
 ### evd_ros_backend
+EvD's backend is broken into a library `evd_ros_core` and the user's application space `evd_ros_tasks`. 
+To runthe backend, just launch the following with the specific task as an arguement.
 
+```
+roslaunch evd_ros_tasks main.launch task:="<TASK NAME>"
+```
+
+Or just skip the pretext and call the specific task launch file. For example,
+
+```
+roslaunch evd_ros_tasks 3d_printer_machine_tending.launch
+```
+
+Under the hood, this will hook into the core launch files and will launch task specific nodes.
 
 ### evd_unity_sim_app
 Please don't run this code directly. There is a test build available but the best

@@ -15,24 +15,32 @@ At this time only the UR3e is supported. Future work may extend this to other ro
 
 ## Dependencies
 
-- [RobotWebTools/rosbridge_suite](https://github.com/RobotWebTools/rosbridge_suite)
-  - [GT-RAIL/rosauth](https://github.com/GT-RAIL/rosauth)
-    - First try the package manager `sudo apt install ros-<VERSION>-rosauth`
-  - Can try to install via `sudo apt install ros-<VERSION>-rosbridge-suite`
-  - If cloning from Github, make sure to checkout `master` branch
-  - I have `tornado==4.5.3`, it might work on a different version.
-- [uwgraphics/relaxed_ik](https://github.com/uwgraphics/relaxed_ik)
+Wisc-HCI Specific Dependencies
 - [Wisc-HCI/robotiq_85_gripper](https://github.com/Wisc-HCI/robotiq_85_gripper)
-- [industrial_core](wiki.ros.org/industrial_core) via `sudo apt install ros-<VERSION>-industrial-core`
-- [dwhit/ros-sharp](https://github.com/dwhit/ros-sharp)
-- [MoriKen254/timed_roslaunch](https://github.com/MoriKen254/timed_roslaunch)
-- [moveit](https://moveit.ros.org/) via `sudo apt install ros-<VERSION>-moveit`
-  - Needed to for successful build, though we don't use it directly
-- [joint_state_publisher_gui](http://wiki.ros.org/joint_state_publisher) via 'sudo apt install ros-<VERSION>-joint-state-publisher-gui'
-- [UniversalRobots/Universal_Robots_ROS_Driver](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver)
-  - Follow their install directions!
-- [fmauch/universal_robot](https://github.com/fmauch/universal_robot)
+- [Wisc-HCI/robot_configurations](https://github.com/Wisc-HCI/robot_configurations)
 
-## Not used right now (but may in the future)
-- [ros-perception/ar_track_alvar](https://github.com/ros-perception/ar_track_alvar.git)
-- [rosserial_arduio](http://wiki.ros.org/rosserial_arduino) via `sudo apt install ros-<VERSION>-rosserial-arduino`
+General ROS Dependencies
+- [rosbridge_suite](http://wiki.ros.org/rosbridge_suite)
+    - Via `sudo apt-get install ros-noetic-rosbridge-server`
+- [UniversalRobots/Universal_Robots_ROS_Driver](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver)
+    - Please follow their installation instructions!
+
+We also need to install the following python modules.
+
+- [scipy](https://pypi.org/project/scipy/)
+
+## Deploy
+EvD's backend is broken into a library `evd_ros_core` and the user's application space `evd_ros_tasks`. 
+To runthe backend, just launch the following with the specific task as an arguement.
+
+```
+roslaunch evd_ros_tasks main.launch task:="<TASK NAME>"
+```
+
+Or just skip the pretext and call the specific task launch file. For example,
+
+```
+roslaunch evd_ros_tasks 3d_printer_machine_tending.launch
+```
+
+Under the hood, this will hook into the core launch files and will launch task specific nodes.
