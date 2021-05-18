@@ -10,7 +10,7 @@ class CloseGripper(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'close-gripper' + '.' if trailing_delim else ''
+        return 'close-gripper' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

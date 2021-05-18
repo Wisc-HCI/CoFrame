@@ -1,7 +1,7 @@
 from .region import Region
-from ..node_parser import NodeParser
-from ..visualizable import ColorTable
-from .geometry import Position, Orientation
+from ...node_parser import NodeParser
+from ...visualizable import ColorTable
+from ..geometry import Position, Orientation
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -15,7 +15,7 @@ class CubeRegion(Region):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'cube-region' + '.' if trailing_delim else ''
+        return 'cube-region' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

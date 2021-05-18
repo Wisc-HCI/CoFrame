@@ -12,7 +12,7 @@ class Initialize(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'initialize' + '.' if trailing_delim else ''
+        return 'initialize' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

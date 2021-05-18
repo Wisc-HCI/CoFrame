@@ -9,7 +9,7 @@ class Delay(Primitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'delay' + '.' if trailing_delim else ''
+        return 'delay' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

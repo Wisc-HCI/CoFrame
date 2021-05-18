@@ -14,7 +14,7 @@ class Waypoint(Pose, VisualizeMarker):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'waypoint' + '.' if trailing_delim else ''
+        return 'waypoint' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

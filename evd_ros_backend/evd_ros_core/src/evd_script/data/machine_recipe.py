@@ -9,7 +9,7 @@ class MachineRecipe(Node):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'machine-recipe' + '.' if trailing_delim else ''
+        return 'machine-recipe' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

@@ -9,7 +9,7 @@ class Skill(Primitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'skill' + '.' if trailing_delim else ''
+        return 'skill' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

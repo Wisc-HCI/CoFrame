@@ -8,7 +8,7 @@
   <arg name="enable_robot_drivers" default="true"/>
 
   <!-- Launch Robot Bringup -->
-  <include file="$(find evd_ros_core)/launch/robot_bringup.launch">
+  <include file="$(find evd_ros_tasks)/launch/robot_bringup.launch">
     <arg name="simulate_physical_robot" value="$(arg enable_robot_drivers)"/>
     <arg name="active_physical" value="$(arg enable_robot_drivers)"/>
     <arg name="active_simulated" value="$(arg enable_robot_drivers)"/>
@@ -16,7 +16,7 @@
   </include>
 
   <!-- System test code -->
-  <node if="$(arg run_test_script)" name="test_robot_bringup" pkg="evd_ros_core" type="test_robot_bringup.py"/>
+  <node if="$(arg run_test_script)" name="test_robot_bringup" pkg="evd_ros_tasks" type="test_robot_bringup.py"/>
 
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">

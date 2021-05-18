@@ -11,7 +11,7 @@ class MoveTrajectory(Primitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'move-trajectory' + '.' if trailing_delim else ''
+        return 'move-trajectory' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

@@ -9,7 +9,7 @@ class MachinePrimitive(Primitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'machine-primitive' + '.' if trailing_delim else ''
+        return 'machine-primitive' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

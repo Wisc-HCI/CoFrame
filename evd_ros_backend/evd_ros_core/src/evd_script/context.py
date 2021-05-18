@@ -17,7 +17,7 @@ class Context(Node):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'context' + '.' if trailing_delim else ''
+        return 'context' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

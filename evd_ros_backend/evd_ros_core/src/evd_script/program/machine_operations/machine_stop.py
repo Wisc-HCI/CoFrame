@@ -9,7 +9,7 @@ class MachineStop(MachinePrimitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'machine-stop' + '.' if trailing_delim else ''
+        return 'machine-stop' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

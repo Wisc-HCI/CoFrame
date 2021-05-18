@@ -19,7 +19,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'trajectory' + '.' if trailing_delim else ''
+        return 'trajectory' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

@@ -9,7 +9,7 @@ class Loop(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'loop' + '.' if trailing_delim else ''
+        return 'loop' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

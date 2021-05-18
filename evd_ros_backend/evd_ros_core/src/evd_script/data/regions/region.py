@@ -1,6 +1,6 @@
-from ..node_parser import NodeParser
-from .geometry import Pose, Position, Orientation
-from ..visualizable import VisualizeMarker
+from ...node_parser import NodeParser
+from ..geometry import Pose, Position, Orientation
+from ...visualizable import VisualizeMarker
 
 # Regions are just poses with uncertain positions and orientations
 
@@ -18,7 +18,7 @@ class Region(Pose, VisualizeMarker):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'region' + '.' if trailing_delim else ''
+        return 'region' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

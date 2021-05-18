@@ -12,7 +12,7 @@ class Node(ABC):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'node' + '.' if trailing_delim else ''
+        return 'node' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

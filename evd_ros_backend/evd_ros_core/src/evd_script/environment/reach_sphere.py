@@ -25,7 +25,7 @@ class ReachSphere(Node, VisualizeMarker):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'reach-sphere' + '.' if trailing_delim else ''
+        return 'reach-sphere' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

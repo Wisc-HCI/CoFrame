@@ -17,7 +17,7 @@
   </joint>
 
   <!-- Robot -->
-  <xacro:include filename="$(find evd_ros_core)/description/robot.urdf.xacro"/>
+  <xacro:include filename="$(find evd_ros_tasks)/description/robot.urdf.xacro"/>
   <joint name="app_robot_common_joint" type="fixed">
     <parent link="app"/>
     <child link="robot_common"/>

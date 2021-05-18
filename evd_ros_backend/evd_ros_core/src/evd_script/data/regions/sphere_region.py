@@ -1,7 +1,7 @@
 from .region import Region
-from ..node_parser import NodeParser
-from .geometry import Position, Orientation
-from ..visualizable import ColorTable
+from ...node_parser import NodeParser
+from ..geometry import Position, Orientation
+from ...visualizable import ColorTable
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -15,7 +15,7 @@ class SphereRegion(Region):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'sphere-region' + '.' if trailing_delim else ''
+        return 'sphere-region' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

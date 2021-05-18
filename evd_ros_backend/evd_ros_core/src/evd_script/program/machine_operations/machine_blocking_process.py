@@ -12,7 +12,7 @@ class MachineBlockingProcess(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'machine-blocking-process' + '.' if trailing_delim else ''
+        return 'machine-blocking-process' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

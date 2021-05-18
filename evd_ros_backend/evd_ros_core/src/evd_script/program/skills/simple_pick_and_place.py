@@ -12,7 +12,7 @@ class SimplePickAndPlace(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'simple-pick-and-place' + '.' if trailing_delim else ''
+        return 'simple-pick-and-place' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

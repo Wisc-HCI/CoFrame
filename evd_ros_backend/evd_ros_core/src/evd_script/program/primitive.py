@@ -9,7 +9,7 @@ class Primitive(Node):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'primitive' + '.' if trailing_delim else ''
+        return 'primitive' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

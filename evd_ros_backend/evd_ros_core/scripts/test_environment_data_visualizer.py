@@ -112,11 +112,12 @@ class TestEnvironmentDataVisualizer:
 
         # display reach sphere
         reach_sphere = self._data_client.program.environment.reach_sphere
-        #print '\n\nReach Sphere', reach_sphere.uuid
-        marker = reach_sphere.to_ros_marker(self._ros_frame_id,self._count)
-        markerArray.markers.append(marker)
-        self._count += 1
-        updated_markers[reach_sphere.uuid] = marker
+        if reach_sphere != None:
+            #print '\n\nReach Sphere', reach_sphere.uuid
+            marker = reach_sphere.to_ros_marker(self._ros_frame_id,self._count)
+            markerArray.markers.append(marker)
+            self._count += 1
+            updated_markers[reach_sphere.uuid] = marker
 
         # display occupancy zones
         zones = self._data_client.program.environment.occupancy_zones
