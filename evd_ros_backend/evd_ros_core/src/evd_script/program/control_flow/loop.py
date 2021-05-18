@@ -8,7 +8,7 @@ class Loop(Skill):
     '''
 
     @classmethod
-    def type_string(cls, trailing_delim):
+    def type_string(cls, trailing_delim=True):
         return 'loop' + '.' if trailing_delim else ''
 
     @classmethod

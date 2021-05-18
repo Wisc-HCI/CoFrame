@@ -21,7 +21,7 @@ class PinchPoint(Node, VisualizeMarker):
     '''
 
     @classmethod
-    def type_string(cls, trailing_delim):
+    def type_string(cls, trailing_delim=True):
         return 'pinch-point' + '.' if trailing_delim else ''
 
     @classmethod

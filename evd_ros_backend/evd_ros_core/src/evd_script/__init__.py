@@ -3,6 +3,7 @@ from .orphans import *
 
 from .node import Node
 from .context import Context
+from .node_parser import NodeParser
 from .utility_functions import NodeParser, get_exact_type
 from .attribute_trace_processor import AttributeTraceProcessor
 from .visualizable import VisualizeMarker, VisualizeMarkers, ColorTable

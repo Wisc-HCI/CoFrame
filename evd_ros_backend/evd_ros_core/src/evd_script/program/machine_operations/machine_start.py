@@ -8,7 +8,7 @@ class MachineStart(MachinePrimitive):
     '''
 
     @classmethod
-    def type_string(cls, traling_delim=True):
+    def type_string(cls, trailing_delim=True):
         return 'machine-start' + '.' if trailing_delim else ''
 
     @classmethod

@@ -327,7 +327,7 @@ class DataServer:
 
     def __create_meta_file_structure(self, task_name=''):
         return {
-            'description': 'Default workspace config file for EvD'
+            'description': 'Default workspace config file for EvD',
             'name': task_name,
             'options': []
         }
@@ -341,13 +341,13 @@ class DataServer:
             'custom': custom
         }
 
-    def __create_meta_file_entry_from_request(self, request):
+    def __create_meta_file_entry_from_request(self, request, custom=True):
         return {
             'filename': request.filename,
             'name': request.name,
             'description': request.description,
             'level': request.level,
-            'custom': request.custom
+            'custom': custom
         }
 
     def __generate_meta_file(self, override_existing=False):

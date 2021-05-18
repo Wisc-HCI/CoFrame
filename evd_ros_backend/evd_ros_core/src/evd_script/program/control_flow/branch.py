@@ -8,7 +8,7 @@ class Branch(Primitive):
     '''
 
     @classmethod
-    def type_string(cls, traling_delim=True):
+    def type_string(cls, trailing_delim=True):
         return 'branch' + '.' if trailing_delim else ''
 
     @classmethod

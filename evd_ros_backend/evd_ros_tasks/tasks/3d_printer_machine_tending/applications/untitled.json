@@ -1,0 +1,33 @@
+{
+    "environment": {
+        "collision_meshes": [],
+        "locations": [],
+        "machines": [],
+        "name": "",
+        "occupancy_zones": [],
+        "pinch_points": [],
+        "reach_sphere": {
+            "name": "",
+            "offset": {
+                "name": "",
+                "type": "node.position.",
+                "uuid": "position.-py-0b3d0164b7f011ebab174d6312e06755",
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "radius": 1,
+            "type": "node.reach-sphere.",
+            "uuid": "reach-sphere.-py-0b3d0163b7f011ebab174d6312e06755"
+        },
+        "things": [],
+        "trajectories": [],
+        "type": "node.context.environment.",
+        "uuid": "context.environment.-py-0b3d0162b7f011ebab174d6312e06755",
+        "waypoints": []
+    },
+    "name": "",
+    "primitives": [],
+    "type": "node.primitive.skill.program.",
+    "uuid": "primitive.skill.program.-py-0b3d0165b7f011ebab174d6312e06755"
+}

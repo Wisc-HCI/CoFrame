@@ -16,7 +16,7 @@ class Context(Node):
     '''
 
     @classmethod
-    def type_string(cls, trailing_delim):
+    def type_string(cls, trailing_delim=True):
         return 'context' + '.' if trailing_delim else ''
 
     @classmethod
