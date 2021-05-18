@@ -16,8 +16,8 @@ class Context(Node):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'context.'
+    def type_string(cls, trailing_delim):
+        return 'context' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -35,7 +35,7 @@ class Context(Node):
         self._trajectories = {}
 
         super(Context,self).__init__(
-            type='context.'+type if append_type else type,
+            type=Context.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -60,16 +60,18 @@ class Context(Node):
 
     @classmethod
     def from_dct(cls, dct):
+        from .utility_functions import NodeParser
+
         return Context(
             name=dct['name'],
             uuid=dct['uuid'],
             type=dct['type'],
             append_type=False,
-            locations=[Location.from_dct(l) for l in dct['locations']],
-            machines=[Machine.from_dct(m) for m in dct['machines']],
-            things=[Thing.from_dct(t) for t in dct['things']],
-            waypoints=[Waypoint.from_dct(w) for w in dct['waypoints']],
-            trajectories=[Trajectory.from_dct(t) for t in dct['trajectories']])
+            locations=[NodeParser(l, enforce_type=Location.type_string(trailing_delim=False)) for l in dct['locations']],
+            machines=[NodeParser(m, enforce_type=Machine.type_string(trailing_delim=False)) for m in dct['machines']],
+            things=[NodeParser(t, enforce_type=Thing.type_string(trailing_delim=False)) for t in dct['things']],
+            waypoints=[NodeParser(w, enforce_type=Waypoint.type_string(trailing_delim=False)) for w in dct['waypoints']],
+            trajectories=[NodeParser(t, enforce_type=Trajectory.type_string(trailing_delim=False)) for t in dct['trajectories']])
 
     def on_delete(self):
 
@@ -306,21 +308,22 @@ class Context(Node):
             self.updated_attribute('trajectories','delete',uuid)
 
     def set(self, dct):
+        from .utility_functions import NodeParser
 
         if 'locations' in dct.keys():
-            self.locations = [Location.from_dct(l) for l in dct['locations']]
+            self.locations = [NodeParser(l, enforce_type=Location.type_string(trailing_delim=False)) for l in dct['locations']]
 
         if 'machines' in dct.keys():
-            self.machines = [Machine.from_dct(m) for m in dct['machines']]
+            self.machines = [NodeParser(m, enforce_type=Machine.type_string(trailing_delim=False)) for m in dct['machines']]
 
         if 'things' in dct.keys():
-            self.things = [Thing.from_dct(t) for t in dct['things']]
+            self.things = [NodeParser(t, enforce_type=Thing.type_string(trailing_delim=False)) for t in dct['things']]
 
         if 'waypoints' in dct.keys():
-            self.waypoints = [Waypoint.from_dct(w) for w in dct['waypoints']]
+            self.waypoints = [NodeParser(w, enforce_type=Waypoint.type_string(trailing_delim=False)) for w in dct['waypoints']]
 
         if 'trajectories' in dct.keys():
-            self.trajectories = [Trajectory.from_dct(t) for t in dct['trajectories']]
+            self.trajectories = [NodeParser(t, enforce_type=Trajectory.type_string(trailing_delim=False)) for t in dct['trajectories']]
 
         super(Context,self).set(dct)
 

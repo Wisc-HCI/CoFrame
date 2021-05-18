@@ -9,8 +9,8 @@ class MoveTrajectory(Primitive):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'move-trajectory.'
+    def type_string(cls, trailing_delim=True):
+        return 'move-trajectory' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -25,7 +25,7 @@ class MoveTrajectory(Primitive):
         self._trajectory_uuid = None
 
         super(MoveTrajectory,self).__init__(
-            type='move-trajectory.'+type if append_type else type,
+            type=MoveTrajectory.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

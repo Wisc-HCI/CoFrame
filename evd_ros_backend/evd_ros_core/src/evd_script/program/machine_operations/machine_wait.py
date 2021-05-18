@@ -8,8 +8,8 @@ class MachineWait(MachinePrimitive):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'machine-wait.'
+    def type_string(cls, trailing_delim=True):
+        return 'machine-wait' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -18,7 +18,7 @@ class MachineWait(MachinePrimitive):
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
         super(MachineWait,self).__init__(
             machineUuid=machineUuid,
-            type='machine-wait.'+type if append_type else type,
+            type=MachineWait.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

@@ -21,8 +21,8 @@ class PinchPoint(Node, VisualizeMarker):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'pinch-point.'
+    def type_string(cls, trailing_delim):
+        return 'pinch-point' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -37,7 +37,7 @@ class PinchPoint(Node, VisualizeMarker):
         self._length = None
 
         super(PinchPoint,self).__init__(
-            type='pinch-point.'+type if append_type else type,
+            type=PinchPoint.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

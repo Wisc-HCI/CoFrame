@@ -8,8 +8,8 @@ class Branch(Primitive):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'branch.'
+    def type_string(cls, traling_delim=True):
+        return 'branch' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -19,7 +19,7 @@ class Branch(Primitive):
                  parent=None, append_type=True):
 
         super(Branch,self).__init__(
-            type='branch.'+type if append_type else type,
+            type=Branch.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

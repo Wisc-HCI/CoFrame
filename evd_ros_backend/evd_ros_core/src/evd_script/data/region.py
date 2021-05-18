@@ -16,8 +16,8 @@ class Region(Pose, VisualizeMarker):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'region.'
+    def type_string(cls, trailing_delim=True):
+        return 'region' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -33,7 +33,7 @@ class Region(Pose, VisualizeMarker):
         super(Region,self).__init__(
             position=center_position,
             orientation=center_orientation,
-            type='region.'+type if append_type else type,
+            type=Region.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -232,4 +232,3 @@ class Region(Pose, VisualizeMarker):
         self.updated_attribute('free_orientation','update')
         self.updated_attribute('uncertainty_orientation_limit','update')
         self.updated_attribute('uncertainty_orientation_alt_target','update')
-

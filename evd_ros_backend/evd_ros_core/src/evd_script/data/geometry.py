@@ -12,8 +12,8 @@ class Pose(Node):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'pose.'
+    def type_string(clss, trailing_delim=True):
+        return 'pose' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -26,7 +26,7 @@ class Pose(Node):
         self._orientation = None
 
         super(Pose,self).__init__(
-            type='pose.'+type if append_type else type,
+            type=Pose.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -166,8 +166,8 @@ class Position(Node):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'position.'
+    def type_string(cls, trailing_delim=True):
+        return 'position' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -179,7 +179,7 @@ class Position(Node):
         self._z = None
 
         super(Position,self).__init__(
-            type='position.'+type if append_type else type,
+            type=Position.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -332,8 +332,8 @@ class Orientation(Node):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'orientation.'
+    def type_string(cls, trailing_delim=True):
+        return 'orientation' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -350,7 +350,7 @@ class Orientation(Node):
         self._w = None
 
         super(Orientation,self).__init__(
-            type='orientation.'+type if append_type else type,
+            type=Orientation.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

@@ -8,8 +8,8 @@ class Skill(Primitive):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'skill.'
+    def type_string(cls, trailing_delim=True):
+        return 'skill' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -20,7 +20,7 @@ class Skill(Primitive):
         self._primitives = []
 
         super(Skill,self).__init__(
-            type='skill.'+type if append_type else type,
+            type=Skill.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

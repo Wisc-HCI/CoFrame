@@ -14,8 +14,8 @@ class Program(Skill):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'program.'
+    def type_string(cls, trailing_delim=True):
+        return 'program' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -33,7 +33,7 @@ class Program(Skill):
             raise Exception('Program level context must be an environment')
 
         super(Program,self).__init__(
-            type='program.'+type if append_type else type,
+            type=Program.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=None,

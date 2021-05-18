@@ -4,8 +4,6 @@ Collection of HistoryEntry objects.
 
 
 class History(object):
-    #TODO do history lookup
-    #TODO store buffer for future with undo
 
     def __init__(self, history_depth=10):
         self._history = []
@@ -33,3 +31,25 @@ class History(object):
             return self._history[-2].version
         else:
             return None
+
+    @property
+    def entries(self):
+        return self._history
+
+    def get_entry(self,version):
+        for entry in self._history:
+            if entry.version == version:
+                return entry
+        raise Exception('No entry with that version tag found')
+
+    def to_dct(self):
+        return {
+            'depth': self._history_depth,
+            'entries': [e.to_dct() for e in self.entries]
+        }
+
+    @classmethod
+    def from_dct(cls, dct):
+        obj = cls(dct['depth'])
+        obj._history = [HistoryEntry.from_dct(e) for e in dct['entries']]
+        return obj

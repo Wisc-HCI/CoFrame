@@ -21,8 +21,8 @@ class Thing(Pose):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'thing.'
+    def type_string(cls, trailing_delim=True):
+        return 'thing' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -38,7 +38,7 @@ class Thing(Pose):
         super(Thing,self).__init__(
             position=position,
             orientation=orientation,
-            type='thing.'+type if append_type else type,
+            type=Thing.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

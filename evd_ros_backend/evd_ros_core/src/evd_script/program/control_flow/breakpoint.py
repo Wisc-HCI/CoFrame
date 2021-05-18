@@ -8,8 +8,8 @@ class Breakpoint(Primitive):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'breakpoint.'
+    def type_string(cls, trailing_delim=True):
+        return 'breakpoint' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -17,7 +17,7 @@ class Breakpoint(Primitive):
 
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
         super(Breakpoint,self).__init__(
-            type='breakpoint.'+type if append_type else type,
+            type=Breakpoint.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

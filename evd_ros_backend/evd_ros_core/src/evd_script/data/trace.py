@@ -13,8 +13,8 @@ class Trace(Node, VisualizeMarkers):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'trace.'
+    def type_string(cls, trailing_delim=True):
+        return 'trace' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -31,7 +31,7 @@ class Trace(Node, VisualizeMarkers):
         self._component_paths = None
 
         super(Trace,self).__init__(
-            type='trace.'+type if append_type else type,
+            type=Trace.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

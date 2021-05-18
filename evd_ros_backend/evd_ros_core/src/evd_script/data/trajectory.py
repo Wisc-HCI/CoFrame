@@ -17,8 +17,8 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'trajectory.'
+    def type_string(cls, trailing_delim=True):
+        return 'trajectory' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -37,7 +37,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         self._move_type = None
 
         super(Trajectory,self).__init__(
-            type='trajectory.'+type if append_type else type,
+            type=Trajectory.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

@@ -11,8 +11,8 @@ class MachineBlockingProcess(Skill):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'machine-blocking-process.'
+    def type_string(cls, trailing_delim=True):
+        return 'machine-blocking-process' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -29,7 +29,7 @@ class MachineBlockingProcess(Skill):
             ]
 
         super(MachineBlockingProcess,self).__init__(
-            type='machine-blocking-process.'+type if append_type else type,
+            type=MachineBlockingProcess.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

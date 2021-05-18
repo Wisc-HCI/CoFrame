@@ -13,8 +13,8 @@ class CubeRegion(Region):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'cube-region.'
+    def type_string(cls, trailing_delim=True):
+        return 'cube-region' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -34,7 +34,7 @@ class CubeRegion(Region):
             free_orientation=free_orientation,
             uncertainty_orientation_limit=uncertainty_orientation_limit,
             uncertainty_orientation_alt_target=uncertainty_orientation_alt_target,
-            type='cube-region.'+type if append_type else type,
+            type=CubeRegion.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -57,7 +57,7 @@ class CubeRegion(Region):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            center_position=Position.from_dct(dct['center_position']),
+            center_position=NodeParser(dct['center_position'], enforce_type=Position.type_string(trailing_delim=False)),
             center_orientation=Orientation.from_dct(dct['center_orientation']),
             uncertainty_x=dct['uncertainty_x'],
             uncertainty_y=dct['uncertainty_y'],
@@ -176,4 +176,3 @@ class CubeRegion(Region):
         self.updated_attribute('uncertainty_x', 'update')
         self.updated_attribute('uncertainty_y', 'update')
         self.updated_attribute('uncertainty_z', 'update')
-

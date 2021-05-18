@@ -11,11 +11,11 @@ def ControlFlowNodeParser(exactType, dct):
     if node != None:
         return node
 
-    if exactType == "loop":
+    if exactType == Loop.type_string(trailing_delim=False):
         node = Loop.from_dct(dct)
-    elif exactType == "branch":
+    elif exactType == Branch.type_string(trailing_delim=False):
         node = Branch.from_dct(dct)
-    elif exactType == "breakpoint":
+    elif exactType == Breakpoint.type_string(trailing_delim=False):
         node = Breakpoint.from_dct(dct)
 
     return node

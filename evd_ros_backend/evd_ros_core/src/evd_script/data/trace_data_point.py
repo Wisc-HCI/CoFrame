@@ -13,8 +13,8 @@ class TraceDataPoint(Pose, VisualizeMarker):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'trace-data-point.'
+    def type_string(cls, trailing_delim=True):
+        return 'trace-data-point' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -28,7 +28,7 @@ class TraceDataPoint(Pose, VisualizeMarker):
         super(TraceDataPoint,self).__init__(
             position=position,
             orientation=orientation,
-            type='trace-data-point.'+type if append_type else type,
+            type=TraceDataPoint.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -80,7 +80,7 @@ class TraceDataPoint(Pose, VisualizeMarker):
 
             for grade in self._grades.values():
                 grade.remove_from_cache()
-            
+
             self._grades = value
             for grade in self._grades.values():
                 grade.parent = self

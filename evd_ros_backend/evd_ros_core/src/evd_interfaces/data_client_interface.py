@@ -32,8 +32,9 @@ from evd_version_tracking import *
 
 class DataClientInterface(object):
 
-    def __init__(self, use_application_interface=False, on_program_update_cb=None):
+    def __init__(self, use_application_interface=False, on_program_update_cb=None, store_program=True):
         self._server_has_updated = False
+        self._store_program = store_program
 
         self._use_application_interface = use_application_interface
         self._cache = get_evd_cache_obj()
@@ -44,16 +45,15 @@ class DataClientInterface(object):
             self._get_app_options_srv = rospy.ServiceProxy('data_server/get_application_options',GetOptions)
 
         self._program = None
-        self._default_objs= []
+        self._history = None
         self._program_verison = None
         self._program_changes_manifest = []
         self._on_program_update_cb = on_program_update_cb
 
         self._update_sub = rospy.Subscriber('data_server/update',UpdateData, self._update_cb)
-
-        self._get_srv = rospy.ServiceProxy('data_server/get_data',GetData)
-        self._set_srv = rospy.ServiceProxy('data_server/set_data',SetData)
-        self._get_default_objs_srv = rospy.ServiceProxy('data_server/get_default_objects',GetData)
+        self._get_program_srv = rospy.ServiceProxy('data_server/get_program',GetData)
+        self._set_program_srv = rospy.ServiceProxy('data_server/set_program',SetData)
+        self._get_history_srv = rospy.ServiceProxy('data_server/get_history',GetData)
 
     '''
     Application Interface
@@ -85,79 +85,131 @@ class DataClientInterface(object):
     '''
 
     @property
-    def program(self):
-        return self._program
-
-    @property
-    def has_local_changes(self):
-        return len(self._program_changes_manifest) > 0
-
-    def get_data(self, fetch=False):
-        if fetch:
-            response = self._get_program_srv(True,'')
-            if response.status:
-                self._program = Program.from_dct(json.loads(response.data))
-                self._program.late_construct_update()
-                self._program.changes_cb = self.__program_changed_cb
-                self._program_verison = VersionTag.from_ros(response.tag)
-                return self._program
-            else:
-                raise Exception(response.message)
-        else:
-            return self._program
-
-    def push_changes(self):
-        # set service with manifest
-        # TODO  determine manifest structure
-        return None
-
-    def get_default_objects(self, fetch=False):
-        if fetch:
-            response = self._get_default_objs_srv(True,'')
-            if response.status:
-                self._default_objs = json.loads(response.data)
-                return self._default_objs
-            else:
-                raise Exception(response.message)
-        else:
-            return self._default_objs
-
-    '''
-    Private - Utility
-    '''
-
-    def _update_cb(self, msg):
-        #TODO need to do a smarter version of this where if our tag matches previous tag then only perform the update to current tag
-        #TODO need to push these changes through the program update callback (just the changes!)
-        try:
-            self._program = Program.from_dct(json.loads(msg.data))
-            self._program.late_construct_update()
-            self._program.changes_cb = self.__program_changed_cb
-            self._program_verison = VersionTag.from_ros(msg.currentTag)
-        except:
-            traceback.print_exc()
-            return #Error parsing, ignore for now
-
-        self._server_has_updated = True
-
-        if self._on_program_update_cb != None:
-            self._on_program_update_cb()
-
-    def __program_changed_cb(self, trace):
-        #TODO need to keep a manifest of all changed nodes
-        # self._program_changes_manifest
-        pass
-
-    @property
     def server_has_updated(self):
         val = self._server_has_updated
         self._server_has_updated = False
         return val
 
-    '''
-    Public Utilities
-    '''
-
     @property
     def cache(self):
-        return self._cache
+        if self._store_program:
+            return self._cache
+        else:
+            raise Exception('Not storing program')
+
+    @property
+    def program(self):
+        if self._store_program:
+            return self._program
+        else:
+            raise Exception('Not storing program')
+
+    @property
+    def has_local_changes(self):
+        if self._store_program:
+            return len(self._program_changes_manifest) > 0
+        else:
+            raise Exception('Not storing program')
+
+    def get_program(self, fetch=False):
+        if fetch:
+            response = self._get_program_srv(True,'')
+            if response.status:
+                program = Program.from_dct(json.loads(response.data))
+                program.late_construct_update()
+
+                if self._store_program:
+                    self._program = program
+                    self._program.changes_cb = self.__program_changed_cb
+                    self._program_verison = VersionTag.from_ros(response.tag)
+
+                return program
+            else:
+                raise Exception(response.message)
+        elif self._store_program:
+            return self._program
+        else:
+            raise Exception('Not storing program')
+
+    def get_program_partials(self, uuids=[]):
+        response = self._get_program_srv(False,json.dumps(uuids))
+
+        if not response.status:
+            return False, json.loads(response.errors)
+
+        raw = json.loads(response.data)
+        partials = { key: NodeParser(raw[key], no_cache=True) for key in raw.keys()}
+
+        return True, partials
+
+    def push_changes(self):
+        if self._store_program:
+            # set service with manifest
+            # TODO  determine manifest structure
+            return None
+        else:
+            raise Exception('Not storing program')
+
+    def _update_cb(self, msg):
+        if self._store_program:
+            #TODO need to do a smarter version of this where if our tag matches previous tag then only perform the update to current tag
+            #TODO need to push these changes through the program update callback (just the changes!)
+            try:
+                self._program = Program.from_dct(json.loads(msg.data))
+                self._program.late_construct_update()
+                self._program.changes_cb = self.__program_changed_cb
+                self._program_verison = VersionTag.from_ros(msg.currentTag)
+            except:
+                traceback.print_exc()
+                return #Error parsing, ignore for now
+
+        self._server_has_updated = True
+        if self._on_program_update_cb != None:
+            self._on_program_update_cb()
+
+    def __program_changed_cb(self, trace):
+        # This only runs if program saved
+        '''
+        trace = [{
+            type: node.type
+            uuid: node.uuid
+            attribute: 'property' or none
+            verb: [set, add, delete, callback]
+            child_uuid: none (if set, callback) or child.uuid (if add, delete)
+        },...]
+        '''
+
+        #TODO need to keep a manifest of all changed nodes
+        # self._program_changes_manifest
+        pass
+
+    def get_history(self, fetch=False):
+        if fetch:
+            response = self._get_history_srv(True,'')
+            if response.status:
+                history = History.from_dct(json.loads(response.data))
+
+                if self._store_program:
+                    self._history = history
+
+                return history
+            else:
+                raise Exception(response.message)
+        elif self._store_program:
+            return self._history
+        else:
+            raise Exception('Not storing program')
+
+    def get_history_partials(self, tags=[]):
+        response = self._get_history_srv(False,json.dumps(tags))
+
+        if not response.status:
+            return False, json.loads(response.errors)
+
+        raw = json.loads(response.data)
+        partials = { key: HistoryEntry.from_dct(raw[key]) for key in raw.keys() }
+
+        return True, partials
+
+    def _manifest_entry(self):
+        pass

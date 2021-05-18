@@ -8,8 +8,8 @@ class MachineInitialize(MachinePrimitive):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'machine-initialize.'
+    def type_string(cls, trailing_delim=True):
+        return 'machine-initialize' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -19,7 +19,7 @@ class MachineInitialize(MachinePrimitive):
                  append_type=True):
         super(MachineInitialize,self).__init__(
             machineUuid=machineUuid,
-            type='machine-initialize.'+type if append_type else type,
+            type=MachineInitialize.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

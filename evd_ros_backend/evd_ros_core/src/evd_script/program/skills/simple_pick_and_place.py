@@ -11,8 +11,8 @@ class SimplePickAndPlace(Skill):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'simple-pick-and-place.'
+    def type_string(cls, trailing_delim=True):
+        return 'simple-pick-and-place' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -30,7 +30,7 @@ class SimplePickAndPlace(Skill):
             ]
 
         super(SimplePickAndPlace,self).__init__(
-            type='simple-pick-and-place.'+type if append_type else type,
+            type=SimplePickAndPlace.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

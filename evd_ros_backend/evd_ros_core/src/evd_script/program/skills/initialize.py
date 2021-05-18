@@ -11,8 +11,8 @@ class Initialize(Skill):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'initialize.'
+    def type_string(cls, trailing_delim=True):
+        return 'initialize' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -32,7 +32,7 @@ class Initialize(Skill):
             ]
 
         super(Initialize,self).__init__(
-            type='initialize.'+type if append_type else type,
+            type=Initialize.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

@@ -20,8 +20,8 @@ class OccupancyZone(Node, VisualizeMarker):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'occupancy-zone.'
+    def type_string(cls, trailing_delim):
+        return 'occupancy-zone' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -37,7 +37,7 @@ class OccupancyZone(Node, VisualizeMarker):
         self._height = None
 
         super(OccupancyZone,self).__init__(
-            type='occupancy-zone.'+type if append_type else type,
+            type=OccupancyZone.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

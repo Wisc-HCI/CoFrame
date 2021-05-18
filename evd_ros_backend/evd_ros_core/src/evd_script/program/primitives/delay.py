@@ -8,8 +8,8 @@ class Delay(Primitive):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'delay.'
+    def type_string(cls, trailing_delim=True):
+        return 'delay' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -19,7 +19,7 @@ class Delay(Primitive):
         self._duration = None
 
         super(Delay,self).__init__(
-            type='delay.'+type if append_type else type,
+            type=Delay.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

@@ -21,8 +21,8 @@ class ReachSphere(Node, VisualizeMarker):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'reach-sphere.'
+    def type_string(cls, trailing_delim):
+        return 'reach-sphere' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -34,7 +34,7 @@ class ReachSphere(Node, VisualizeMarker):
         self._offset = None
 
         super(ReachSphere,self).__init__(
-            type='reach-sphere.'+type if append_type else type,
+            type=ReachSphere.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

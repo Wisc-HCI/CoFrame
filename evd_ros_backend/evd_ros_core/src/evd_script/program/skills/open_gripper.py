@@ -9,8 +9,8 @@ class OpenGripper(Skill):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'open-gripper.'
+    def type_string(cls, trailing_delim=True):
+        return 'open-gripper' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -29,7 +29,7 @@ class OpenGripper(Skill):
             ]
 
         super(OpenGripper,self).__init__(
-            type='open-gripper.'+type if append_type else type,
+            type=OpenGripper.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

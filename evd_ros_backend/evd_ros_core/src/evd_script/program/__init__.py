@@ -26,11 +26,11 @@ def ProgramNodeParser(exactType, dct):
     if node != None:
         return node
 
-    if exactType == "program":
+    if exactType == Program.type_string(trailing_delim=False):
         node = Program.from_dct(dct)
-    elif exactType == "skill":
+    elif exactType == Skill.type_string(trailing_delim=False):
         node = Skill.from_dct(dct)
-    elif exactType == "primitive":
+    elif exactType == Primitive.type_string(trailing_delim=False):
         node = Primitive.from_dct(dct)
 
     return node

@@ -10,17 +10,17 @@ def MachineOperationsNodeParser(exactType, dct):
 
     node = None
 
-    if exactType == "machine-primitive":
+    if exactType == MachinePrimitive.type_string(trailing_delim=False):
         node = MachinePrimitive.from_dct(dct)
-    elif exactType == "machine-start":
+    elif exactType == MachineStart.type_string(trailing_delim=False):
         node = MachineStart.from_dct(dct)
-    elif exactType == "machine-wait":
+    elif exactType == MachineWait.type_string(trailing_delim=False):
         node = MachineWait.from_dct(dct)
-    elif exactType == "machine-stop":
+    elif exactType == MachineStop.type_string(trailing_delim=False):
         node = MachineStop.from_dct(dct)
-    elif exactType == "machine-initialize":
+    elif exactType == MachineInitialize.type_string(trailing_delim=False):
         node = MachineInitialize.from_dct(dct)
-    elif exactType =="machine-blocking-process":
+    elif exactType == MachineBlockingProcess.type_string(trailing_delim=False):
         node = MachineBlockingProcess.from_dct(dct)
 
     return node

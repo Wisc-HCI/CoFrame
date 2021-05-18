@@ -8,8 +8,8 @@ class Loop(Skill):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'loop.'
+    def type_string(cls, trailing_delim):
+        return 'loop' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -20,7 +20,7 @@ class Loop(Skill):
         self._condition = None
 
         super(Loop,self).__init__(
-            type='loop.'+type if append_type else type,
+            type=Loop.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -72,7 +72,7 @@ class Loop(Skill):
 
         if 'condition' in dct.keys():
             from ...utility_functions import NodeParser
-            
+
             self.condition = NodeParser(dct['condition']) if dct['condition'] != None else None
 
         super(Loop,self).set(dct)

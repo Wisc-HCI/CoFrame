@@ -14,37 +14,37 @@ from .thing import Thing
 def DataNodeParser(exactType, dct):
     node = None
 
-    if exactType == "waypoint":
+    if exactType == Waypoint.type_string(trailing_delim=False):
         node = Waypoint.from_dct(dct)
-    elif exactType == "location":
+    elif exactType == Location.type_string(trailing_delim=False):
         node = Location.from_dct(dct)
-    elif exactType == "trajectory":
+    elif exactType == Trajectory.type_string(trailing_delim=False):
         node = Trajectory.from_dct(dct)
-    elif exactType == "trace":
+    elif exactType == Trace.type_string(trailing_delim=False):
         node = Trace.from_dct(dct)
-    elif exactType == "trace-data-point":
+    elif exactType == TraceDataPoint.type_string(trailing_delim=False):
         node = TraceDataPoint.from_dct(dct)
 
-    elif exactType == "pose":
+    elif exactType == Pose.type_string(trailing_delim=False):
         node = Pose.from_dct(dct)
-    elif exactType == "position":
+    elif exactType == Position.type_string(trailing_delim=False):
         node = Position.from_dct(dct)
-    elif exactType == "orientation":
+    elif exactType == Orientation.type_string(trailing_delim=False):
         node = Orientation.from_dct(dct)
 
-    elif exactType == "machine":
+    elif exactType == Machine.type_string(trailing_delim=False):
         node = Machine.from_dct(dct)
-    elif exactType == "machine-recipe":
+    elif exactType == MachineRecipe.type_string(trailing_delim=False):
         node  = MachineRecipe.from_dct(dct)
 
-    elif exactType == "thing":
+    elif exactType == Thing.type_string(trailing_delim=False):
         node = Thing.from_dct(dct)
 
-    elif exactType == "region":
+    elif exactType == Region.type_string(trailing_delim=False):
         node = Region.from_dct(dct)
-    elif exactType == "cube-region":
+    elif exactType == CubeRegion.type_string(trailing_delim=False):
         node = CubeRegion.from_dct(dct)
-    elif exactType == "sphere-region":
+    elif exactType == SphereRegion.type_string(trailing_delim=False):
         node = SphereRegion.from_dct(dct)
 
     return node

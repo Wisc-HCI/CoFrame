@@ -18,8 +18,8 @@ class Location(Waypoint):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'location.'
+    def type_string(cls, trailing_delim=True):
+        return 'location' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -31,7 +31,7 @@ class Location(Waypoint):
             position=position,
             orientation=orientation,
             joints=joints,
-            type='location.'+type if append_type else type,
+            type=Location.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

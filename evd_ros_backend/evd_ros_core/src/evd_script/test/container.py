@@ -9,8 +9,8 @@ class Container(Node):
     '''
 
     @classmethod
-    def type_string(cls, item_type='node.'):
-        return 'container<{}>.'.format(item_type)
+    def type_string(cls, item_type='node.', trailing_delim=True):
+        return 'container<{}>'.format(item_type) + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls, item_type='node.'):
@@ -22,7 +22,7 @@ class Container(Node):
         self._item_type = None
 
         super(Container,self).__init__(
-            type='container<{}>.'.format(item_type) + type if append_type else type,
+            type=Container.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -45,7 +45,7 @@ class Container(Node):
 
         return cls(
             item_type=dct['item_type'],
-            values=[NodeParser(x) for x in dct['values']],
+            values=[NodeParser(x, enforce_type=item_type) for x in dct['values']],
             type=dct['type'],
             append_type=False,
             name=dct['name'],

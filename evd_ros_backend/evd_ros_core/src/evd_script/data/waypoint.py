@@ -12,8 +12,8 @@ class Waypoint(Pose, VisualizeMarker):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'waypoint.'
+    def type_string(cls, trailing_delim=True):
+        return 'waypoint' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -27,7 +27,7 @@ class Waypoint(Pose, VisualizeMarker):
         super(Waypoint,self).__init__(
             position=position,
             orientation=orientation,
-            type='waypoint.'+type if append_type else type,
+            type=Waypoint.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

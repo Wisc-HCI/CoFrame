@@ -8,13 +8,13 @@ def SkillsNodeParser(exactType, dct):
 
     node = None
 
-    if exactType == "close-gripper":
+    if exactType == CloseGripper.type_string(trailing_delim=False):
         node = CloseGripper.from_dct(dct)
-    elif exactType == "open-gripper":
+    elif exactType == OpenGripper.type_string(trailing_delim=False):
         node = OpenGripper.from_dct(dct)
-    elif exactType == "simple-pick-and-place":
+    elif exactType == SimplePickAndPlace.type_string(trailing_delim=False):
         node = SimplePickAndPlace.from_dct(dct)
-    elif exactType == "initialize":
+    elif exactType == Initialize.type_string(trailing_delim=False):
         node = Initialize.from_dct(dct)
 
     return node

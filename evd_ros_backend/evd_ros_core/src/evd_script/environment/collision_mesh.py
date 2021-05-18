@@ -21,8 +21,8 @@ class CollisionMesh(Node,VisualizeMarker):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'collision-mesh.'
+    def type_string(cls, trailing_delim=True):
+        return 'collision-mesh' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -35,7 +35,7 @@ class CollisionMesh(Node,VisualizeMarker):
         self._link = None
 
         super(CollisionMesh,self).__init__(
-            type='collision-mesh.'+type if append_type else type,
+            type=CollisionMesh.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

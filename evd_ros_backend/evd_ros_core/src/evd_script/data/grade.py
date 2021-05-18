@@ -9,8 +9,8 @@ class Grade(Node):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'grade.'
+    def type_string(cls, trailing_delim=True):
+        return 'grade' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -21,12 +21,12 @@ class Grade(Node):
         self._grade_type = None
 
         super(Grade,self).__init__(
-            type='grade.'+type if append_type else type,
+            type=Grade.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
             append_type=append_type)
-        
+
         self.value = value
         self.grade_type = grade_type
 
@@ -61,7 +61,7 @@ class Grade(Node):
         if self._value != value:
             self._value = value
             self.updated_attribute('value','set')
-    
+
     @property
     def grade_type(self):
         return self._grade_type
@@ -73,7 +73,7 @@ class Grade(Node):
             self.updated_attribute('grade_type','set')
 
     def set(self, dct):
-        
+
         if 'value' in dct.keys():
             self.value = dct['value']
 
@@ -94,6 +94,6 @@ class Grade(Node):
 
     def shallow_update(self):
         super(Grade,self).shallow_update()
-        
+
         self.updated_attribute('value','update')
         self.updated_attribute('grade_type','update')

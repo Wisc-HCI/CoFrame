@@ -8,8 +8,8 @@ class MachineStop(MachinePrimitive):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'machine-stop.'
+    def type_string(cls, trailing_delim=True):
+        return 'machine-stop' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -18,7 +18,7 @@ class MachineStop(MachinePrimitive):
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
         super(MachineStop,self).__init__(
             machineUuid=machineUuid,
-            type='machine-stop.'+type if append_type else type,
+            type=MachineStop.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

@@ -8,8 +8,8 @@ class MachineRecipe(Node):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'machine-recipe.'
+    def type_string(cls, trailing_delim=True):
+        return 'machine-recipe' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -22,7 +22,7 @@ class MachineRecipe(Node):
         self._output_quantities = None
 
         super(MachineRecipe,self).__init__(
-            type='machine-recipe.'+type if append_type else type,
+            type=MachineRecipe.type_string + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

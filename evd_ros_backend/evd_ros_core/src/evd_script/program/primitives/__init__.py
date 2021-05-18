@@ -8,13 +8,13 @@ def PrimitivesNodeParser(exactType, dct):
 
     node = None
 
-    if exactType == "move-trajectory":
+    if exactType == MoveTrajectory.type_string(trailing_delim=False):
         node = MoveTrajectory.from_dct(dct)
-    elif exactType == "move-unplanned":
+    elif exactType == MoveUnplanned.type_string(trailing_delim=False):
         node = MoveUnplanned.from_dct(dct)
-    elif exactType == "delay":
+    elif exactType == Delay.type_string(trailing_delim=False):
         node = Delay.from_dct(dct)
-    elif exactType == "gripper":
+    elif exactType == Gripper.type_string(trailing_delim=False):
         node = Gripper.from_dct(dct)
 
     return node

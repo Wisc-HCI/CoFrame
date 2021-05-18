@@ -9,8 +9,8 @@ class Machine(Node):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'machine.'
+    def type_string(cls, trailing_delim=True):
+        return 'machine' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -24,7 +24,7 @@ class Machine(Node):
         self._recipe = None
 
         super(Machine,self).__init__(
-            type='machine.'+type if append_type else type,
+            type=Machine.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,

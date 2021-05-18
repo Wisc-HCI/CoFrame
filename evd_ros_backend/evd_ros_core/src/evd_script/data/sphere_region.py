@@ -13,8 +13,8 @@ class SphereRegion(Region):
     '''
 
     @classmethod
-    def type_string(cls):
-        return 'sphere-region.'
+    def type_string(cls, trailing_delim=True):
+        return 'sphere-region' + '.' if trailing_delim else ''
 
     @classmethod
     def full_type_string(cls):
@@ -31,7 +31,7 @@ class SphereRegion(Region):
             free_orientation=free_orientation,
             uncertainty_orientation_limit=uncertainty_orientation_limit,
             uncertainty_orientation_alt_target=uncertainty_orientation_alt_target,
-            type='sphere-region.'+type if append_type else type,
+            type=SphereRegion.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
