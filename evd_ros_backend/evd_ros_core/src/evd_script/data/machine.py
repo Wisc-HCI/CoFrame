@@ -1,4 +1,5 @@
 from ..node import Node
+from ..node_parser import NodeParser
 from .machine_recipe import MachineRecipe
 
 
@@ -50,7 +51,7 @@ class Machine(Node):
         return cls(
             input_regions={k: NodeParser(dct[k]) for k in dct['input_regions'].keys()} if dct['input_regions'] != None else None,
             output_regions={k: NodeParser(dct[k]) for k in dct['output_regions'].keys()} if dct['output_regions'] != None else None,
-            recipe=MachineRecipe.from_dct(dct['recipe']),
+            recipe=NodeParser(dct['recipe'], enforce_type=MachineRecipe.type_string(trailing_delim=False)),
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -199,7 +200,7 @@ class Machine(Node):
             self.output_regions = {k: NodeParser(dct[k]) for k in dct['output_regions'].keys()}
 
         if 'recipe' in dct.keys():
-            self.recipe = MachineRecipe.from_dct(dct['recipe'])
+            self.recipe = NodeParser(dct['recipe'], enforce_type=MachineRecipe.type_string(trailing_delim=False))
 
         super(Machine,self).set(dct)
 

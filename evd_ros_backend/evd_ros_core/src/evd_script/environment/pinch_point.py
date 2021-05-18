@@ -1,6 +1,8 @@
 from ..node import Node
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Orientation, Position
+from ..node_parser import NodeParser
+
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -63,7 +65,7 @@ class PinchPoint(Node, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(axis=dct['axis'],
-                   offset=Position.from_dct(dct['offset']),
+                   offset=NodeParser(dct['offset'], enforce_type=Position.type_string(trailing_delim=False)),
                    link=dct['link'],
                    radius=dct['radius'],
                    length=dct['length'],
@@ -169,7 +171,7 @@ class PinchPoint(Node, VisualizeMarker):
             self.axis = dct['axis']
 
         if 'offset' in dct.keys():
-            self.offset = Position.from_dct(dct['offset'])
+            self.offset = NodeParser(dct['offset'], enforce_type=Position.type_string(trailing_delim=False))
 
         if 'link' in dct.keys():
             self.link = dct['link']

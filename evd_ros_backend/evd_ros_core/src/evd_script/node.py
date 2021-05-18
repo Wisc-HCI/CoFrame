@@ -1,8 +1,7 @@
 import uuid
 
+from abc import ABC
 from .cache import *
-
-from abc import ABC, abstractmethod
 
 
 class Node(ABC):

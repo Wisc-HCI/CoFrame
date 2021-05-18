@@ -1,4 +1,5 @@
 from ..primitive import Primitive
+from ...node_parser import NodeParser
 
 
 class Branch(Primitive):
@@ -30,8 +31,6 @@ class Branch(Primitive):
 
     @classmethod
     def from_dct(self, value):
-        from ..utility_functions import NodeParser
-
         pass
 
     '''

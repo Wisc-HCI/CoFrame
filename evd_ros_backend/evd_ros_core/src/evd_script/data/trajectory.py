@@ -1,3 +1,4 @@
+from ..node_parser import NodeParser
 from ..node import Node
 from .waypoint import Waypoint
 from .trace import Trace
@@ -70,7 +71,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             startLocUuid=dct['start_location_uuid'],
             endLocUuid=dct['end_location_uuid'],
             waypointUuids=dct['waypoint_uuids'],
-            trace=Trace.from_dct(dct['trace']) if dct['trace'] != None else None,
+            trace=NodeParser(dct['trace'], enforce_type=Trace.type_string(trailing_delim=False)) if dct['trace'] != None else None,
             name=dct['name'],
             uuid=dct['uuid'],
             type=dct['type'],
@@ -288,7 +289,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             self.move_type = move_type
 
         if 'trace' in dct.keys():
-            self.trace = Trace.from_dct(dct['trace']) if dct['trace'] != None else None
+            self.trace = NodeParser(dct['trace'], enforce_type=Trace.type_string(trailing_delim=False)) if dct['trace'] != None else None
 
         super(Trajectory,self).set(dct)
 

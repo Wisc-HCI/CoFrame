@@ -7,7 +7,7 @@ from .data.location import Location
 from .data.trajectory import Trajectory
 
 from .orphans import *
-
+from .node_parser import NodeParser
 
 class Context(Node):
 
@@ -60,8 +60,6 @@ class Context(Node):
 
     @classmethod
     def from_dct(cls, dct):
-        from .utility_functions import NodeParser
-
         return Context(
             name=dct['name'],
             uuid=dct['uuid'],
@@ -308,8 +306,6 @@ class Context(Node):
             self.updated_attribute('trajectories','delete',uuid)
 
     def set(self, dct):
-        from .utility_functions import NodeParser
-
         if 'locations' in dct.keys():
             self.locations = [NodeParser(l, enforce_type=Location.type_string(trailing_delim=False)) for l in dct['locations']]
 

@@ -9,10 +9,10 @@ from .context import Context
 
 
 def NodeParser(dct, no_cache=False, enforce_type=None):
-
     type = dct["type"].split('.')
     exactType = type[len(type) - 2]
 
+    # Enforce type of input matches expected type
     if enforce_type != None and exactType != enforce_type:
         raise Exception('Type provided in dict does not match type enforced')
 
@@ -24,11 +24,15 @@ def NodeParser(dct, no_cache=False, enforce_type=None):
             node = None
 
         if node != None:
+
+            # Enforce type of node matches the expected type
             type = node.type.split('.')
             exactType = type[len(type) - 2]
             if enforce_type != None and exactType != enforce_type:
                 raise Exception('Type of node found in cache does not match type enforced')
 
+            # Repair node with input
+            node.set(dct)
             return node
 
     ## Must create a new object

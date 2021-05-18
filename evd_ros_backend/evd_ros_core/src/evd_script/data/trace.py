@@ -1,3 +1,4 @@
+from ..node_parser import NodeParser
 from ..node import Node
 from .trace_data_point import TraceDataPoint
 from ..visualizable import VisualizeMarkers, ColorTable
@@ -63,7 +64,7 @@ class Trace(Node, VisualizeMarkers):
             type=dct['type'],
             name=dct['name'],
             append_type=False,
-            data={key: [TraceDataPoint.from_dct(dct['data'][key][i]) for i in range(0,len(dct['data'][key]))] for key in dct['data'].keys()},
+            data={key: [NodeParser(dct['data'][key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False)) for i in range(0,len(dct['data'][key]))] for key in dct['data'].keys()},
             eePath=dct['end_effector_path'],
             jPaths=dct['joint_paths'],
             tPaths=dct['tool_paths'],
@@ -215,7 +216,7 @@ class Trace(Node, VisualizeMarkers):
     def set(self, dct):
         data = dct.get('data',None)
         if data != None:
-            self.data = data
+            self.data = {key: [NodeParser(data[key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False)) for i in range(0,len(data[key]))] for key in data.keys()}
 
         time = dct.get('time',None)
         if time != None:

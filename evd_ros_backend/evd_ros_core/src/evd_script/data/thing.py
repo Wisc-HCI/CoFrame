@@ -1,3 +1,4 @@
+from ..node_parser import NodeParser
 from .geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker, ColorTable
 
@@ -65,8 +66,8 @@ class Thing(Pose):
                    mesh_id=dct['mesh_id'],
                    safety_level=dct['safety_level'],
                    weight=dct['weight'],
-                   position=Position.from_dct(dct['position']),
-                   orientation=Orientation.from_dct(dct['orientation']),
+                   position=NodeParser(dct['position'], enforce_type=Position.type_string(trailing_delim=False)),
+                   orientation=NodeParser(dct['orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,

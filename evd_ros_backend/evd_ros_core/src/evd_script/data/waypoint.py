@@ -1,3 +1,4 @@
+from ..node_parser import NodeParser
 from .geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker, ColorTable
 
@@ -45,8 +46,8 @@ class Waypoint(Pose, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            position=Position.from_dct(dct['position']),
-            orientation=Orientation.from_dct(dct['orientation']),
+            position=NodeParser(dct['position'], enforce_type=Position.type_string(trailing_delim=False)),
+            orientation=NodeParser(dct['orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
             type=dct['type'],
             append_type=False,
             name=dct['name'],

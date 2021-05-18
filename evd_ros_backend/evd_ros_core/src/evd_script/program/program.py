@@ -3,7 +3,9 @@
 '''
 
 from .skill import Skill
+from ..node_parser import NodeParser
 from ..environment import Environment
+
 from ..orphans import *
 
 
@@ -59,7 +61,7 @@ class Program(Skill):
             append_type=False,
             uuid=dct['uuid'],
             primitives=[NodeParser(p) for p in dct['primitives']],
-            environment=NodeParser(dct['environment']))
+            environment=NodeParser(dct['environment'], enforce_type=Environment.type_string(trailing_delim=False)))
 
     '''
     Data accessor/modifier methods
@@ -95,7 +97,7 @@ class Program(Skill):
     def set(self, dct):
 
         if 'environment' in dct.keys():
-            self.environment = Environment.from_dct(dct['environment'])
+            self.environment = NodeParser(dct['environment'], enforce_type=Environment.type_string(trailing_delim=False))
 
         super(Program,self).set(dct)
 

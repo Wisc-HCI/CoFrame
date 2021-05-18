@@ -1,6 +1,7 @@
 from .region import Region
-from .geometry import Position, Orientation
+from ..node_parser import NodeParser
 from ..visualizable import ColorTable
+from .geometry import Position, Orientation
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -58,13 +59,13 @@ class CubeRegion(Region):
     def from_dct(cls, dct):
         return cls(
             center_position=NodeParser(dct['center_position'], enforce_type=Position.type_string(trailing_delim=False)),
-            center_orientation=Orientation.from_dct(dct['center_orientation']),
+            center_orientation=NodeParser(dct['center_orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
             uncertainty_x=dct['uncertainty_x'],
             uncertainty_y=dct['uncertainty_y'],
             uncertainty_z=dct['uncertainty_z'],
             free_orientation=dct['free_orientation'],
             uncertainty_orientation_limit=dct['uncertainty_orientation_limit'],
-            uncertainty_orientation_alt_target=Orientation.from_dct(dct['uncertainty_orientation_alt_target']),
+            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_type=Orientation.type_string(trailing_delim=False)),
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,

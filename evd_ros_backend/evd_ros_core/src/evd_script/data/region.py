@@ -1,3 +1,4 @@
+from ..node_parser import NodeParser
 from .geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker
 
@@ -61,11 +62,11 @@ class Region(Pose, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            center_position=Position.from_dct(dct['center_position']),
-            center_orientation=Orientation.from_dct(dct['center_orientation']),
+            center_position=NodeParser(dct['center_position'], enforce_type=Position.type_string(trailing_delim=False)),
+            center_orientation=NodeParser(dct['center_orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
             free_orientation=dct['free_orientation'],
             uncertainty_orientation_limit=dct['uncertainty_orientation_limit'],
-            uncertainty_orientation_alt_target=Orientation.from_dct(dct['uncertainty_orientation_alt_target']),
+            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_type=Orientation.type_string(trailing_delim=False)),
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -156,10 +157,10 @@ class Region(Pose, VisualizeMarker):
     def set(self, dct):
 
         if 'center_position' in dct.keys():
-            self.center_position = Position.from_dct(dct["center_position"])
+            self.center_position = NodeParser(dct["center_position"], enforce_type=Position.type_string(trailing_delim=False))
 
         if 'center_orientation' in dct.keys():
-            self.center_orientation = Orientation.from_dct(dct["center_orientation"])
+            self.center_orientation = NodeParser(dct["center_orientation"], enforce_type=Orientation.type_string(trailing_delim=False))
 
         if 'free_orientation' in dct.keys():
             self.free_orientation = dct['free_orientation']
@@ -168,7 +169,7 @@ class Region(Pose, VisualizeMarker):
             self.uncertainty_orientation_limit = dct['uncertainty_orientation_limit']
 
         if 'uncertainty_orientation_alt_target' in dct.keys():
-            self.uncertainty_orientation_alt_target = Orientation.from_dct(dct['uncertainty_orientation_alt_target']) if dct['uncertainty_orientation_alt_target'] != None else None
+            self.uncertainty_orientation_alt_target = NodeParser(dct['uncertainty_orientation_alt_target'], enforce_type=Orientation.type_string(trailing_delim=False)) if dct['uncertainty_orientation_alt_target'] != None else None
 
         super(Region,self).set(dct)
 

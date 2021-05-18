@@ -1,5 +1,6 @@
 from ..node import Node
 from ..data.geometry import Pose
+from ..node_parser import NodeParser
 from ..visualizable import VisualizeMarker, ColorTable
 
 from visualization_msgs.msg import Marker
@@ -57,7 +58,7 @@ class CollisionMesh(Node,VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(mesh_id=dct['mesh_id'],
-                   pose_offset=Pose.from_dct(dct['pose_offset']),
+                   pose_offset=NodeParser(dct['pose_offset'], enforce_type=Pose.type_string(trailing_delim=False)),
                    link=dct['link'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
@@ -138,7 +139,7 @@ class CollisionMesh(Node,VisualizeMarker):
             self.mesh_id = dct['mesh_id']
 
         if 'pose_offset' in dct.keys():
-            self.pose_offset = Pose.from_dct(dct['pose_offset'])
+            self.pose_offset = NodeParser(dct['pose_offset'], enforce_type=Pose.type_string(trailing_delim=False))
 
         if 'link' in dct.keys():
             self.link = dct['link']

@@ -1,6 +1,9 @@
+
 from ..node import Node
 from ..data.geometry import Position
 from ..visualizable import VisualizeMarker, ColorTable
+from ..node_parser import NodeParser
+
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -54,7 +57,7 @@ class ReachSphere(Node, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(radius=dct['radius'],
-                   offset=Position.from_dct(dct['offset']),
+                   offset=NodeParser(dct['offset'], enforce_type=Position.type_string(trailing_delim=False)),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -121,7 +124,7 @@ class ReachSphere(Node, VisualizeMarker):
             self.radius = dct['radius']
 
         if 'offset' in dct.keys():
-            self.offset = Position.from_dct(dct['offset'])
+            self.offset = NodeParser(dct['offset'], enforce_type=Position.type_string(trailing_delim=False))
 
         super(ReachSphere,self).set(dct)
 

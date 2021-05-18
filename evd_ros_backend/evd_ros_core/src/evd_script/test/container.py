@@ -1,5 +1,6 @@
 
 from ..node import Node
+from ..node_parser import NodeParser
 
 
 class Container(Node):
@@ -41,11 +42,9 @@ class Container(Node):
 
     @classmethod
     def from_dct(cls, dct):
-        from ..utility_functions import NodeParser
-
         return cls(
             item_type=dct['item_type'],
-            values=[NodeParser(x, enforce_type=item_type) for x in dct['values']],
+            values=[NodeParser(x, enforce_type=dct['item_type']) for x in dct['values']],
             type=dct['type'],
             append_type=False,
             name=dct['name'],
@@ -110,13 +109,11 @@ class Container(Node):
         return idx
 
     def set(self, dct):
-        from ..utility_functions import NodeParser
-
         if 'item_type' in dct.keys():
             self.item_type = dct.get('item_type')
 
         if 'values' in dct.keys():
-            self.values = [NodeParser(x) for x in dct['values']]
+            self.values = [NodeParser(x, enforce_type=self.item_type) for x in dct['values']]
 
         super(Container,self).set(dct)
 

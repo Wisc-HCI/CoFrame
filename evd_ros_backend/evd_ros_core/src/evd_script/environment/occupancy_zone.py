@@ -2,6 +2,7 @@ from ..node import Node
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Position
 
+
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
