@@ -5,6 +5,11 @@ import {
 } from '../model/ros';
 
 
+/**
+ * Not wed to this structure of Context, Service, and local State
+ * It might be better to convert all these services into a singular large store
+ */
+
 class PendingService {
 
     constructor() {

@@ -31,6 +31,14 @@ export class App extends Component {
     constructor(props) {
         super(props);
 
+        // Remove these one you have stores!
+        // The services are broken - better to check with Andy and Curt
+        // Unity service will be removed with robotSceneManager
+        //  Backend -- ROSService -- SceneStore
+        // Note to Curt: Write that node for backend robot scene support (steal from Unity)
+        // - Trajectories w/ heatmaps
+        // - Andy's intuition is to do it all in frontend?
+        // - Frontend signals & hook into zustand evdscript store -> scenestore
         const rosService = GetRosServiceSingleton();
         const appService =  GetApplicationServiceSingleton();
         const evdService = GetEvDScriptServiceSingleton();
@@ -173,6 +181,8 @@ export class App extends Component {
                     themeName: themeName
                 }}
             >
+                {/*Above Keep theme context */}
+                {/* Any context with service we want to change */}
                 <RosContext.Provider
                     value={{
                         service: rosService,

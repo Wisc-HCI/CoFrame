@@ -48,6 +48,8 @@ export class RosSettings extends React.Component {
     render() {
 
         const { connectionState } = this.state;
+
+        // You can remove the consumers and useContexts
     
         return (
             <RosContext.Consumer>

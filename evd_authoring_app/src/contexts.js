@@ -1,5 +1,23 @@
 import React from 'react';
 
+/**
+ * Contexts to keep
+ * - ThemeContext
+ * - FrameContext
+ * - ControlsContext
+ * - ModalContext
+ * 
+ * Contexts to convert to Zustand
+ * - ApplicationContext
+ * - ROSContext
+ * - EvDScriptContext
+ * - PendingJobsContext
+ * 
+ * Contexts to completely rethink (w/ robot scene)
+ * - UnityContext
+ */
+
+
 
 /*
 ThemeContext : 
