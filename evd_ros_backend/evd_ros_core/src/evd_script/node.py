@@ -128,13 +128,16 @@ class Node(ABC):
     '''
 
     def delete_child(self, uuid):
-        # write this for each sub-node type that has children
-        return True #no children in root node to delete
+        # write this for each sub-node type that has set of deletable children
+        return False #no children in root node to delete
 
-    def child_changed_event(self, attribute_trace):
-        if self._parent != None:
-            attribute_trace.append(self._child_changed_event_msg(None,'callback'))
-            self._parent.child_changed_event(attribute_trace)
+    def add_child(self, dct):
+        # write this for each sub-node type that has set of addable children
+        return False #no children in root node can be added
+
+    def insert_child(self, dct, idx):
+        # write this for each sub-node type that has addable children and ordered lists
+        return False # no children in root node can be inserted
 
     '''
     Utility methods
@@ -143,6 +146,11 @@ class Node(ABC):
     @staticmethod
     def _generate_uuid(type):
         return '{}-py-{}'.format(type,uuid.uuid1().hex)
+
+    def child_changed_event(self, attribute_trace):
+        if self._parent != None:
+            attribute_trace.append(self._child_changed_event_msg(None,'callback'))
+            self._parent.child_changed_event(attribute_trace)
 
     def _child_changed_event_msg(self, attribute, verb, child_uuid = None):
         return {

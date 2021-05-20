@@ -383,7 +383,23 @@ class Context(Node):
         else:
             success = False
 
-        return success
+        if not success:
+            return super(Context,self).delete_child(uuid)
+        else:
+            return success
+
+    def add_child(self, dct):
+        success = True
+
+        type = dct["type"].split('.')
+        exactType = type[len(type) - 2]
+
+        #if exactType == 
+
+        if not success:
+            return super(Context,self).add_child(uuid)
+        else:
+            return success
 
     '''
     Update Methods

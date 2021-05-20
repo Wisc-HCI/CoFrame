@@ -81,6 +81,7 @@ add_service_files(
   GetIssues.srv
   ClearIssue.srv
   GetOptions.srv
+  GetHistory.srv
   GetPendingJobs.srv
   SetPendingJobs.srv
   ClearPendingJob.srv

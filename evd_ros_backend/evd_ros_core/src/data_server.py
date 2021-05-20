@@ -16,6 +16,7 @@ from evd_ros_core.srv import SetData, SetDataRequest, SetDataResponse
 from evd_ros_core.srv import LoadData, LoadDataRequest, LoadDataResponse
 from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
 from evd_ros_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
+from evd_ros_core.srv import GetHistory, GetHistoryRequest, GetHistoryResponse
 
 from evd_script.program.program import Program
 from evd_script.cache import get_evd_cache_obj
@@ -50,7 +51,7 @@ class DataServer:
         self._get_app_opts_srv = rospy.Service('data_server/get_application_options',GetOptions,self._get_app_opts_cb)
         self._get_prog_srv = rospy.Service('data_server/get_program',GetData,self._get_prog_cb)
         self._set_prog_srv = rospy.Service('data_server/set_program',SetData,self._set_prog_cb)
-        self._get_history_srv = rospy.Service('data_server/get_history',GetData,self._get_history_cb)
+        self._get_history_srv = rospy.Service('data_server/get_history',GetHistory,self._get_history_cb)
 
     def spin(self):
         # give nodes time before publishing initial state
@@ -224,7 +225,7 @@ class DataServer:
 
             if request.all:
                 try:
-                    program = Program.from_dct(inData)
+                    self._program = Program.from_dct(inData)
                 except:
                     errors.append(None)
             else:
@@ -235,11 +236,17 @@ class DataServer:
 
                     try:
                         if action == 'set':
+                            # data is dct of node with id == uuid
                             # We need to make sure to hit the node parser for everything!
                             self._program_cache.set(uuid,data)
                         elif action == 'delete':
-                            pass
+                            # data is the uuid of child node
+                            self._program_cache.get(uuid).delete_child(data)
                         elif action == 'add':
+                            # data is dct of child node
+                            self._program_cache.get(uuid).add_child(data)
+                        elif action == 'repair':
+                            #TODO
                             pass
 
                     except:
@@ -295,21 +302,35 @@ class DataServer:
     # - Get
     #===========================================================================
 
-    def _get_history_cb(self, resquest):
+    def _get_history_cb(self, request):
         errors = []
         response = GetDataResponse()
 
-        if request.all:
+        outData = None
+        if request.all and not request.from_provided_tag:
+            # Get entire history
             outData = self._program_history.to_dct()
-        else:
-            outData = {}
-            inData = json.loads(request.data)
-            for tag in inData:
-                try:
-                    version = VersionTag.from_dct(tag)
-                    outData[version.uuid] = self._program_history.get_entry(version).to_dct()
-                except:
-                    errors.append(tag)
+
+        elif request.all and request.from_provided_tag:
+            # Get history from tag provided to current
+            try:
+                version = VersionTag.from_ros(request.tag)
+                entries = self._program_history.get_entries_from(version)
+                outData = [e.to_dct() for e in entries]
+            except:
+                errors.append(request.tag.uuid)
+
+        elif not request.all and request.from_provided_tag:
+            # Get only for the tag specified
+            try:
+                version = VersionTag.from_ros(request.tag)
+                outData = self._program_history.get_entry(version).to_dct()
+            except:
+                errors.append(request.tag.uuid)
+
+        else: #not request.all and not request.from_provided_tag
+            # Get current entry only
+            outData = self._program_history.get_current_entry().to_dct()
 
         response.data = self.__formatted_json_dump(outData)
         response.tag = self._program_history.get_current_version().to_ros()
@@ -317,6 +338,7 @@ class DataServer:
         response.errors = self.__formatted_json_dump(errors)
         response.message = '' if response.status else 'error getting data'
         return response
+        
 
     #===========================================================================
     #   Meta File Utilities
@@ -410,6 +432,7 @@ class DataServer:
 
     def __formatted_json_dump(self, dct, sort_keys=True):
         return json.dumps(dct, indent=4, sort_keys=sort_keys)
+
 
 if __name__ == '__main__':
     rospy.init_node('data_server')

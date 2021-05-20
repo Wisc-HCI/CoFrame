@@ -211,5 +211,7 @@ class DataClientInterface(object):
 
         return True, partials
 
-    def _manifest_entry(self):
-        pass
+    def _create_manifest_entry(self):
+        return {
+            
+        }
