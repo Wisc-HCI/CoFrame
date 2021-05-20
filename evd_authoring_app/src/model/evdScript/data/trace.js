@@ -2,6 +2,14 @@ import { Node } from '../node';
 import { Pose, Position, Orientation } from './geometry';
 
 
+/**
+ * This has changed in the python (dev) variant
+ * Key difference is that grades are not singular and there is grade object stored key-value
+ * 
+ * Note to Curt: Make sure to document this. 
+ */
+
+
 export class TraceDataPoint extends Pose {
 
     /*
@@ -95,6 +103,10 @@ export class TraceDataPoint extends Pose {
         this.updatedAttribute('grade','update');
     }
 }
+
+
+// list_of_traceData = trace.data['eePath]
+// list_of_traceData[idx].grades['pinch-points'] # returns a number 0-1 -> colormap
 
 export class Trace extends Node {
 
