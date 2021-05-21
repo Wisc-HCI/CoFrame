@@ -1,10 +1,8 @@
 import React, { useContext } from 'react';
 
-import { 
-    Modal, 
-    IconButton, 
-    Separator 
-} from 'office-ui-fabric-react';
+import { Separator } from '@fluentui/react/lib/Separator';
+import { Modal } from '@fluentui/react';
+import { IconButton } from '@fluentui/react/lib/Button';
 
 import { 
     ModalContext, 

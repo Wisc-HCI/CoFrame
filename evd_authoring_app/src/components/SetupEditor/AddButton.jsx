@@ -1,10 +1,8 @@
 import React from 'react';
 
-import { 
-    TooltipHost,
-    PrimaryButton
-} from 'office-ui-fabric-react';
-import { useId } from '@uifabric/react-hooks';
+import { PrimaryButton } from '@fluentui/react/lib/Button';
+import { TooltipHost } from '@fluentui/react/lib/Tooltip';
+import { useId } from '@fluentui/react-hooks';
 
 import { ThemeContext } from "../../contexts";
 

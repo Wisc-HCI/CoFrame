@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Stack } from 'office-ui-fabric-react';
-import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { CommandBar } from '@fluentui/react/lib/CommandBar';
 
 import Logo from '../content/logo.svg';
 

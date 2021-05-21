@@ -5,12 +5,8 @@ import {
     Route 
 } from 'react-router-dom';
 
-import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
-import { 
-    loadTheme, 
-    styled, 
-    classNamesFunction 
-} from 'office-ui-fabric-react';
+import { initializeIcons } from '@fluentui/react/lib/Icons';
+import { loadTheme, styled, classNamesFunction } from '@fluentui/react';
 
 // App styling
 import styles from './styles';

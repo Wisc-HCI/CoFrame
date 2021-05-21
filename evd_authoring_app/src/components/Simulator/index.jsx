@@ -1,78 +1,47 @@
 import React, { Component } from 'react';
 
-import Unity from 'react-unity-webgl';
+// import Unity from 'react-unity-webgl';
+import useGuiStore from '../../stores/GuiStore';
+import {Scene} from 'robot-scene';
 
 import { Tooltray } from './Tooltray';
 
 import { 
-    ThemeContext,
-    FrameContext,
-    UnityContext
+    ThemeContext
 } from "../../contexts";
 
 
-export class Simulator extends Component {
+export function Simulator(props) {
 
-  constructor(props) {
-    super(props);
-    
-    this.recaptureInputAndFocus = this.recaptureInputAndFocus.bind(this);
-  }
+  const {height, width} = props;
 
-  recaptureInputAndFocus() {
-    const canvas = document.getElementById("#canvas");
-    if(canvas) {
-        canvas.setAttribute("tabindex", "1");
-        canvas.focus(); 
-    } else {
-        setTimeout(this.recaptureInputAndFocus, 100);
-    }
-  }
+  const frame = useGuiStore(state => state.frame);
 
-  onComponentDidMount() {
-    this.recaptureInputAndFocus();
-  }
-
-  render() {
-
-    const { 
-        width, 
-        height 
-    } = this.props;
-
-
-
-    return (
-        <ThemeContext.Consumer>
-            { themeValue => (
-                <FrameContext.Consumer>
-                    { frameValue => (
-                        <UnityContext.Consumer>
-                            { unityValue => (
-                                <div
-                                    style={{
-                                        padding: '5px',
-                                        backgroundColor: themeValue.frameStyles.colors[frameValue.frame],
-                                        width: width,
-                                        height: height
-                                    }}
-                                >
-                                    <Unity unityContent={unityValue.simulator}  />
-                                    <div className="simulator-tooltray-container" >
-                                        <div className="simulator-tooltray">
-                                            <Tooltray 
-                                                active="rotate" 
-                                                callback={this.controlSelected}
-                                            />
-                                        </div>
-                                    </div>    
-                                </div> 
-                            )}
-                        </UnityContext.Consumer>
-                    )}
-                </FrameContext.Consumer>
-            )}
-        </ThemeContext.Consumer>
-    );
-  }
+  return (
+    <ThemeContext.Consumer>
+        { themeValue => (
+            <div style={{
+                padding: '5px',
+                backgroundColor: themeValue.frameStyles.colors[frame],
+                height:height,
+                width:width
+            }}>
+                <Scene 
+                    displayTfs={true}
+                    displayGrid={true}
+                    isPolar={false}
+                    backgroundColor='#1e1e1e'
+                    planeColor='#141414'
+                    highlightColor='#ffffff'/>
+                <div className="simulator-tooltray-container" >
+                    <div className="simulator-tooltray">
+                        <Tooltray 
+                            active="rotate"
+                        />
+                    </div>
+                </div>
+            </div>
+        )}
+    </ThemeContext.Consumer>
+);
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Stack } from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
 
 import { ChecklistTile } from './ChecklistTile';
 import { SimulatorTile } from './SimulatorTile';

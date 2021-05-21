@@ -1,9 +1,7 @@
 import React from 'react';
 
-import { 
-    Stack,
-    TextField
-} from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { TextField } from '@fluentui/react/lib/TextField';
 
 import { DeleteButton } from '../DeleteButton';
 import { ElementTile } from '../ElementTile';

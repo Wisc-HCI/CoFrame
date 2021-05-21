@@ -1,4 +1,4 @@
-import ROSLIB from 'roslib';
+import ROSLIB from '@robostack/roslib';
 
 import { GetApplicationServiceSingleton } from './applicationService';
 import { GetEvDScriptServiceSingleton } from './evdScriptService';

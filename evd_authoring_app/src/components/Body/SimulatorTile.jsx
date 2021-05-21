@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Separator } from 'office-ui-fabric-react';
+import { Separator } from '@fluentui/react/lib/Separator';
 
 import { Tile } from './Tile';
 import { TileHeader } from './TileHeader';

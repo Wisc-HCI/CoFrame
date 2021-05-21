@@ -1,4 +1,4 @@
-import ROSLIB from 'roslib';
+import ROSLIB from '@robostack/roslib';
 
 export const GetDataRequestUnwrapped = (all=true, data='') => {
     return {

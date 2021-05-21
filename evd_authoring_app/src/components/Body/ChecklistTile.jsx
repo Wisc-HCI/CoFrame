@@ -5,7 +5,11 @@ import { TileHeader } from './TileHeader';
 import { FrameButtons } from '../FrameButtons';
 import { ExpertChecklist } from '../ExpertChecklist';
 
+import { Pivot, PivotItem } from '@fluentui/react';
+
 import { ControlsContext } from '../../contexts';
+
+import frameColors from '../../frameStyles';
 
 
 export const ChecklistTile = (props) => {
@@ -18,16 +22,38 @@ export const ChecklistTile = (props) => {
     const maskWidth = layoutChecklist.body.width - mainPadding / 2;
     const maskHeight = layoutChecklist.body.height + layoutChecklist.header.height;
 
+    const frames = [
+        {
+            key:'safety',
+            title:'Safety',
+            content: <div>Safety Frame Content</div>
+        },
+        {
+            key:'quality',
+            title:'Quality',
+            content: <div>Program Quality Frame Content</div>
+        },
+        {
+            key:'performance',
+            title:'Performance',
+            content: <div>Robot Performance Frame Content</div>
+        },
+        {
+            key:'business',
+            title:'Business',
+            content: <div>Business Objectives Frame Content</div>
+        }
+    ]
+
     return (
         <div 
             style={{
                 paddingRight: `${mainPadding / 2}px`,
                 paddingTop: `${mainPadding}px`,
-                paddingBottom: `${mainPadding}px`,
                 position: 'relative'
             }}
         >
-
+            
             <Tile
                 width={layoutChecklist.width - mainPadding / 2}
                 height={layoutChecklist.height - mainPadding}
@@ -37,13 +63,38 @@ export const ChecklistTile = (props) => {
                     width={layoutChecklist.header.width - 1.5 * mainPadding}
                     height={layoutChecklist.header.height}
                 >
-                    <FrameButtons />
-                </TileHeader>
                 
-                <ExpertChecklist 
-                    width={layoutChecklist.body.width - mainPadding }
-                    height={layoutChecklist.body.height - mainPadding}
-                />
+                    <Pivot linkFormat="tabs">
+                        {frames.map((frame,i)=>(
+                            <PivotItem
+                                key={frame.key}
+                                headerText={frame.title}
+                                headerButtonProps={{
+                                    'data-order': i,
+                                    'data-title': frame.title,
+                                    'style':{
+                                        root: {
+                                            backgroundColor: frameColors[frame.key],
+                                            borderColor: frameColors[frame.key]
+                                        },
+                                        rootHovered: {
+                                            backgroundColor: frameColors[frame.key],
+                                            borderColor: frameColors[frame.key]
+                                        },
+                                        rootPressed: {
+                                            backgroundColor: frameColors[frame.key],
+                                            borderColor: frameColors[frame.key]
+                                        }
+                                    }
+                                }}
+                            >
+                                <div style={{backgroundColor:frameColors[frame.key]}}>
+                                    {frame.content}
+                                </div>
+                            </PivotItem>
+                        ))}
+                    </Pivot>
+                </TileHeader>
 
             </Tile>
 

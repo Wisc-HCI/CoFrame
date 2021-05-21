@@ -1,11 +1,9 @@
 import React, { useContext, useState } from 'react';
 
-import {
-    TextField,
-    PrimaryButton,
-    Stack,
-    Spinner,
-} from 'office-ui-fabric-react';
+import { TextField } from '@fluentui/react/lib/TextField';
+import { PrimaryButton } from '@fluentui/react/lib/Button';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { Spinner } from '@fluentui/react/lib/Spinner';
 
 import { MetaData } from './MetaData';
 import { ModalWrapper } from '../ModalWrapper';

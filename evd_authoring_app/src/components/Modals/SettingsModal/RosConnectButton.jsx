@@ -1,9 +1,6 @@
 import React from 'react';
 
-import { 
-    PrimaryButton, 
-    DefaultButton
-} from 'office-ui-fabric-react';
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 
 
 export const RosConnectButton = (props) => {

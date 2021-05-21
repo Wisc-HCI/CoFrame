@@ -1,9 +1,6 @@
 import React, { Fragment, useContext } from 'react';
 
-import {
-    DefaultButton,
-    PrimaryButton,
-} from 'office-ui-fabric-react';
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 
 import { ThemeContext } from "../../contexts";
 

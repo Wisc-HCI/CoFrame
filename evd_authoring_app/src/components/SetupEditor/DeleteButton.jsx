@@ -1,10 +1,8 @@
 import React from 'react';
 
-import {
-    IconButton,
-    TooltipHost
-} from 'office-ui-fabric-react';
-import { useId } from '@uifabric/react-hooks';
+import { TooltipHost } from '@fluentui/react/lib/Tooltip';
+import { IconButton } from '@fluentui/react/lib/Button';
+import { useId } from '@fluentui/react-hooks';
 
 
 export const DeleteButton = (props) => {

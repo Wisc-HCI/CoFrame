@@ -1,4 +1,4 @@
-import ROSLIB from 'roslib';
+import ROSLIB from '@robostack/roslib';
 
 export const ApplicationOption = (filename, name, description, level, custom) => {
     return new ROSLIB.Message(ApplicationOptionUnwrapped(filename,name,description,level,custom));

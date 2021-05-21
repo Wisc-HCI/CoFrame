@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import ReactBlockly from 'react-blockly';
-import Blockly from 'blockly';
+// import ReactBlockly from 'react-blockly';
 
 import { 
     evdScriptBlocklyToolbox, 
@@ -52,6 +51,15 @@ export class ProgramEditor extends Component {
     const padding = 5;
     const blocklyWidth = width - 2 * padding;
     const blocklyHeight = height - 2 * padding;
+
+    return (
+      <div 
+        id="blockly"
+        style={{ 
+          height: `${blocklyHeight}px`, 
+          width: `${blocklyWidth}px` 
+      }}/>
+    )
 
     return (
         <div

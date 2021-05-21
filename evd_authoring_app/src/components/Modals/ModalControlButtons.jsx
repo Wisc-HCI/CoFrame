@@ -1,11 +1,7 @@
 import React from 'react';
 
-import { 
-    Stack,
-    PrimaryButton,
-    DefaultButton
-} from 'office-ui-fabric-react';
-
+import { Stack } from '@fluentui/react/lib/Stack';
+import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 
 const nameLookup = {
     'close': 'Close',

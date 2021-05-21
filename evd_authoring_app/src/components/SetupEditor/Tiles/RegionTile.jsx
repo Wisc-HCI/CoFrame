@@ -1,11 +1,9 @@
 import React from 'react';
 
-import {
-    Stack,
-    TextField,
-    PrimaryButton,
-    Dropdown
-} from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { TextField } from '@fluentui/react/lib/TextField';
+import { PrimaryButton } from '@fluentui/react/lib/Button';
+import { Dropdown } from '@fluentui/react/lib/Dropdown';
 
 import { DeleteButton } from '../DeleteButton';
 import { ElementTile } from '../ElementTile';

@@ -1,9 +1,7 @@
 import React, { useContext } from 'react';
 
-import { 
-    Stack,
-    TextField
-} from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { TextField } from '@fluentui/react/lib/TextField';
 
 import { ModalWrapper } from './ModalWrapper';
 import { ModalControlButtons } from './ModalControlButtons';

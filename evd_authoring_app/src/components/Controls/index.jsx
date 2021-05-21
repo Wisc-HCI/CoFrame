@@ -1,6 +1,6 @@
 import React from 'react';
-
-import { IconButton, Toggle } from 'office-ui-fabric-react';
+import { IconButton } from '@fluentui/react/lib/Button';
+import { Toggle } from '@fluentui/react/lib/Toggle';
 
 import { 
     ControlsContext,

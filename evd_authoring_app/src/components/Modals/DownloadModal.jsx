@@ -2,7 +2,7 @@ import React, { useState, useContext }  from 'react';
 
 import { saveAs } from 'file-saver';
 
-import { Stack } from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
 
 import { ModalWrapper } from './ModalWrapper';
 import { ModalControlButtons } from './ModalControlButtons';

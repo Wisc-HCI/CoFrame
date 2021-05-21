@@ -1,4 +1,4 @@
-import ROSLIB from 'roslib';
+import ROSLIB from '@robostack/roslib';
 
 export const Version = (timestamp, uuid, source) => {
     return new ROSLIB.Message(VersionUnwrapped(timestamp, uuid, source));

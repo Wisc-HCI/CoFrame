@@ -1,4 +1,4 @@
-import ROSLIB from 'roslib';
+import ROSLIB from '@robostack/roslib';
 
 export const UpdateData = (data, action, changes, currentTagUnwrapped, previousTagUnwrapped) => {
     return new ROSLIB.Message(UpdateDataUnwrapped(data,action,changes,currentTagUnwrapped,previousTagUnwrapped));

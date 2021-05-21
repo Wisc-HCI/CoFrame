@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 
-import { Stack } from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
 
 import { ModalWrapper } from './ModalWrapper';
 import { ModalControlButtons } from './ModalControlButtons';

@@ -1,9 +1,7 @@
 import React from 'react';
 
-import { 
-    TextField,
-    Label
-} from 'office-ui-fabric-react';
+import { TextField } from '@fluentui/react/lib/TextField';
+import { Label } from '@fluentui/react/lib/Label';
 
 import { ApplicationContext } from '../../../contexts';
 

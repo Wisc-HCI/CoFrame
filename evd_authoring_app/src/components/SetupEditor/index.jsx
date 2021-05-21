@@ -1,10 +1,8 @@
 import React from 'react';
 
-import { 
-    Stack, 
-    Separator, 
-    Text 
-} from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { Separator } from '@fluentui/react/lib/Separator';
+import { Text } from '@fluentui/react/lib/Text';
 
 import { Set } from './Set';
 

@@ -1,12 +1,9 @@
 import React from 'react';
 
-import { 
-    TextField,
-    Label,
-    Toggle,
-    Spinner, 
-    SpinnerSize
-} from 'office-ui-fabric-react';
+import { TextField } from '@fluentui/react/lib/TextField';
+import { Label } from '@fluentui/react/lib/Label';
+import { Toggle } from '@fluentui/react/lib/Toggle';
+import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner';
 
 import { RosConnectButton } from './RosConnectButton';
 

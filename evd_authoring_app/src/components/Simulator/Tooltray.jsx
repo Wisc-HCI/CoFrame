@@ -1,9 +1,8 @@
 import React, { Fragment } from 'react';
 
-import { useId } from '@uifabric/react-hooks';
 import { FontIcon } from '@fluentui/react/lib/Icon';
 import { TooltipHost, TooltipDelay, DirectionalHint } from '@fluentui/react';
-
+import { useId } from '@fluentui/react-hooks';
 import { ThemeContext } from "../../contexts";
 
 import './index.css';

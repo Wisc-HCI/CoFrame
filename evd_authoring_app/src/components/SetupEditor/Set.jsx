@@ -1,10 +1,8 @@
 import React from 'react';
 
-import { 
-    Stack,
-    Sticky,
-    ScrollablePane 
-} from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { ScrollablePane } from '@fluentui/react/lib/ScrollablePane';
+// Sticky not available? Was used in Stack.Item but might have to look at what to swap that out with
 
 import { AddButton } from './AddButton';
 import { ThemeContext } from '../../contexts';
@@ -25,11 +23,11 @@ export const Set = (props) => {
                     }
                 }}
             >
-                <Sticky>
+                <>
                     <div style={{fontSize: '25px', paddingBottom: '5px'}}>{s.name}</div>
                     <AddButton type={s.type} callback={() => {}} disabled={ s.addable === undefined ? false : !s.addable} />
                     <br />
-                </Sticky>
+                </>
 
                 {s.content}
 

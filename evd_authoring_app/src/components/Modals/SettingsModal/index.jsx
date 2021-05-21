@@ -1,9 +1,7 @@
 import React, { useContext } from 'react';
 
-import { 
-    Label,
-    Stack 
-} from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { Label } from '@fluentui/react/lib/Label';
 
 import { RosSettings} from './RosSettings';
 import { ModalWrapper } from '../ModalWrapper';

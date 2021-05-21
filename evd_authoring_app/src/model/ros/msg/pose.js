@@ -1,4 +1,4 @@
-import ROSLIB from 'roslib';
+import ROSLIB from '@robostack/roslib';
 import { HeaderUnwrapped } from './header';
 
 export const PositionUnwrapped = (x=0, y=0, z=0) => {

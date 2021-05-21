@@ -1,4 +1,4 @@
-import ROSLIB from 'roslib';
+import ROSLIB from '@robostack/roslib';
 
 export const GetIssuesRequestUnwrapped = (filterBySource=false, source='', ids=[], filterByLevel=false, level=0) => {
     return {

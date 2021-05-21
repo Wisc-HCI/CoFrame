@@ -1,13 +1,11 @@
 import React from 'react';
 
-import {
-    Label,
-    Stack,
-    PrimaryButton,
-    TextField,
-    Separator,
-    SpinButton
-} from 'office-ui-fabric-react';
+import { Stack } from '@fluentui/react/lib/Stack';
+import { TextField } from '@fluentui/react/lib/TextField';
+import { PrimaryButton } from '@fluentui/react/lib/Button';
+import { Label } from '@fluentui/react/lib/Label';
+import { Separator } from '@fluentui/react/lib/Separator';
+import { SpinButton } from '@fluentui/react/lib/SpinButton';
 
 import { RecipeEntryTile } from './RecipeEntryTile';
 import { DeleteButton } from '../DeleteButton';

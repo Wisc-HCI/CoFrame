@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { DefaultButton } from 'office-ui-fabric-react';
+import { DefaultButton } from '@fluentui/react/lib/Button';
 
 import { Tile } from './Tile';
 import { TileHeader } from './TileHeader';
