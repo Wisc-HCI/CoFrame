@@ -6,7 +6,7 @@ const immer = (config) => (set, get, api) =>
 
 const store = (set) => ({
     frame: 'safety',
-    setFrame: (frame) => set({frame:frame})
+    setFrame: (frame) => set((_)=>({frame:frame}))
 });
 
 const useGuiStore = create(immer(store));

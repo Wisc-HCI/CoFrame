@@ -11,6 +11,8 @@ import { ControlsContext } from '../../contexts';
 
 import frameColors from '../../frameStyles';
 
+import useGuiStore from '../../stores/GuiStore';
+
 
 export const ChecklistTile = (props) => {
 
@@ -18,6 +20,9 @@ export const ChecklistTile = (props) => {
         mainPadding, 
         layoutChecklist
     } = props;
+
+    const {frameId, setFrame} = useGuiStore(state=>({frameId:state.frame,setFrame:state.setFrame}));
+    console.log(frameId);
 
     const maskWidth = layoutChecklist.body.width - mainPadding / 2;
     const maskHeight = layoutChecklist.body.height + layoutChecklist.header.height;
@@ -64,31 +69,39 @@ export const ChecklistTile = (props) => {
                     height={layoutChecklist.header.height}
                 >
                 
-                    <Pivot linkFormat="tabs">
+                    <Pivot linkFormat="tabs" selectedKey={frameId} onLinkClick={(e)=>setFrame(e.props.itemKey)}>
                         {frames.map((frame,i)=>(
                             <PivotItem
+                                itemKey={frame.key}
                                 key={frame.key}
                                 headerText={frame.title}
                                 headerButtonProps={{
                                     'data-order': i,
                                     'data-title': frame.title,
-                                    'style':{
-                                        root: {
+                                    'styles':frame.key === frameId ? {
+                                        root:{
                                             backgroundColor: frameColors[frame.key],
                                             borderColor: frameColors[frame.key]
                                         },
-                                        rootHovered: {
+                                        rootHovered:{
                                             backgroundColor: frameColors[frame.key],
                                             borderColor: frameColors[frame.key]
                                         },
-                                        rootPressed: {
+                                        rootPressed:{
                                             backgroundColor: frameColors[frame.key],
                                             borderColor: frameColors[frame.key]
+                                        }
+                                    } : {
+                                        root:{
+                                            color: frameColors[frame.key]
+                                        },
+                                        textContainer:{
+                                            color: frameColors[frame.key]
                                         }
                                     }
                                 }}
                             >
-                                <div style={{backgroundColor:frameColors[frame.key]}}>
+                                <div style={{height:'100%',borderWidth:5,color:frameColors[frame.key]}}>
                                     {frame.content}
                                 </div>
                             </PivotItem>
