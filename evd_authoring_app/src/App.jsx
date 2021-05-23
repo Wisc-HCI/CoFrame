@@ -10,10 +10,13 @@ import { Body } from "./components/Body";
 import { ChecklistTile } from "./components/Body/ChecklistTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
+import { CommandBar } from '@fluentui/react/lib/CommandBar';
+import { ActionButton } from '@fluentui/react/lib/Button';
 
 import { Modals } from "./components/Modals";
 
 import useApplicationStore from "./stores/ApplicationStore";
+import useGuiStore from "./stores/GuiStore";
 
 import Logo from './content/logo.svg';
 
@@ -38,6 +41,7 @@ import {
 export function App(props) {
 
     const filename = useApplicationStore(state=>state.filename);
+    const setActiveModal = useGuiStore(state=>state.setActiveModal);
     const { 
         theme, 
         frameStyles, 
@@ -45,8 +49,36 @@ export function App(props) {
         themeName
     } = props;
 
-    const {mounted, setMounted} = useState(false);
-    const {modalState, setModalState} = useState({ 'settings': true });
+    // const {mounted, setMounted} = useState(false);
+    // const {modalState, setModalState} = useState({ 'settings': true });
+
+    const menuItems = [
+        {
+            key: 'open',
+            name: 'Open',
+            iconName: 'OpenFolderHorizontal'
+        },
+        {
+            key: 'save',
+            name: 'Save',
+            iconName: 'Save'
+        },
+        {
+            key: 'upload',
+            name: 'Upload',
+            iconName: 'Upload'
+        },
+        {
+            key: 'download',
+            name: 'Download',
+            iconName: 'Download'
+        },
+        {
+            key: 'settings',
+            name: 'Settings',
+            iconName: 'Settings'
+        }
+    ];
 
     return (
         <ThemeContext.Provider 
@@ -68,8 +100,17 @@ export function App(props) {
                             height: '30pt'
                         }}
                     />
-                    <h2 style={{paddingLeft:20,color:theme.semanticColors.bodyText}}><b><i>Expert View Dashboard - {filename}</i></b></h2>
-                    <p>TODO: ADD BACK MODAL BUTTONS</p>
+                    <Row align={'middle'} justify={'space-between'}>
+                        <h2 style={{paddingLeft:20,color:theme.semanticColors.bodyText}}><b>Expert View Dashboard<i> - {filename}</i></b></h2>
+                        <span style={{float:'right'}} >
+                        {menuItems.map(entry => (
+                            <ActionButton iconProps={{iconName:entry.iconName}} allowDisabledFocus onClick={()=>setActiveModal(entry.key)}>
+                                {entry.name}
+                            </ActionButton>
+                        ))}
+                        </span>
+                        
+                    </Row>
                 </Layout.Header>
                 <Layout>
                     <Layout.Sider width='25vw'>

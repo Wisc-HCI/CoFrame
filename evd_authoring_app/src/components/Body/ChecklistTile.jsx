@@ -42,7 +42,7 @@ export const ChecklistTile = (_) => {
     ]
 
     return (
-        <div style={{height:'100%',padding:10}}>
+        <div style={{height:'100%',paddingLeft:10,paddingRight:10,paddingBottom:10}}>
             <Card
                 style={{height:'100%'}}
                 bodyStyle={{padding:0,display:'flex',flexDirection:'column',height:'100%'}}

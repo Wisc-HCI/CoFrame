@@ -8,7 +8,7 @@ import useApplicationStore from '../../../stores/ApplicationStore';
 
 export function ApplicationSettings(props) {
 
-    const {filename, setFilename} = useApplicationStore(state=({
+    const {filename, setFilename} = useApplicationStore(state=>({
         filename:state.filename,
         setFilename:state.setFilename
     }))
