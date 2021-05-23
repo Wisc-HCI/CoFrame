@@ -53,8 +53,8 @@ export const Header = (props) => {
             { value => (
                 <header
                     style={{
-                        width: `${width}px`,
-                        height: `${height}px`,
+                        width: `${width}`,
+                        height: `${height}`,
                         backgroundColor: value.theme.semanticColors.bodyBackground,
                         boxShadow: '3px 3px 3px #000'
                     }}

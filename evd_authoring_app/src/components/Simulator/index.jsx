@@ -13,18 +13,14 @@ import {
 
 export function Simulator(props) {
 
-  const {height, width} = props;
-
   const frame = useGuiStore(state => state.frame);
 
   return (
     <ThemeContext.Consumer>
         { themeValue => (
             <div style={{
-                padding: '5px',
                 backgroundColor: themeValue.frameStyles.colors[frame],
-                height:height,
-                width:width
+                padding: 5
             }}>
                 <Scene 
                     displayTfs={true}

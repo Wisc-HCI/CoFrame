@@ -36,11 +36,6 @@ export class SetupEditor extends React.Component {
 
     render() {
 
-        const { 
-            width, 
-            height 
-        } = this.props;
-        
         const { activeField } = this.state;
 
         //===========================================
@@ -235,9 +230,8 @@ export class SetupEditor extends React.Component {
         return (
             <div
                 style={{ 
-                    height: `${height}px`, 
-                    width: `${width}px`,
-                    padding: '5px'
+                    height: 'calc(100vh-64px)', 
+                    width: '45vw'
                 }}
             >
                 <Stack horizontal 

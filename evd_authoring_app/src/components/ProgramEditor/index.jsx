@@ -39,25 +39,18 @@ export class ProgramEditor extends Component {
 
   render() {
     const { 
-        width, 
-        height 
-    } = this.props;
-    
-    const { 
         toolbox, 
         initialXml 
     } = this.state;
 
     const padding = 5;
-    const blocklyWidth = width - 2 * padding;
-    const blocklyHeight = height - 2 * padding;
-
+    
     return (
       <div 
         id="blockly"
         style={{ 
-          height: `${blocklyHeight}px`, 
-          width: `${blocklyWidth}px` 
+          height: 'calc(100vh-64px)', 
+          width: '45vw'
       }}/>
     )
 
@@ -65,8 +58,8 @@ export class ProgramEditor extends Component {
         <div
             id="blockly"
             style={{ 
-                height: `${blocklyHeight}px`, 
-                width: `${blocklyWidth}px` 
+              height: 'calc(100vh-64px)', 
+              width: '45vw'
             }}
         >
             <ReactBlockly.BlocklyEditor

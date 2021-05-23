@@ -7,9 +7,7 @@ export const TileHeader = (props) => {
 
     const { 
         children, 
-        title, 
-        width, 
-        height 
+        title
     } = props;
 
     return (
@@ -18,8 +16,6 @@ export const TileHeader = (props) => {
                 fontSize: '25px',
                 textAlign: 'center',
                 fontStyle: 'italic',
-                width: `${width}px`,
-                height: `${height}px`,
                 position: 'relative'
             }}
         >

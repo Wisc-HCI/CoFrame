@@ -9,30 +9,18 @@ import { SaveModal } from "./SaveModal";
 
 export const Modals = (props) => {
 
-    const { totalWidth } = props;
-
     return (
         <Fragment>
             
-            <DownloadModal
-                totalWidth={totalWidth}
-            />
+            <DownloadModal/>
 
-            <SaveModal 
-                totalWidth={totalWidth}
-            />
+            <SaveModal/>
 
-            <UploadModal
-                totalWidth={totalWidth}
-            />
+            <UploadModal/>
 
-            <OpenModal
-                totalWidth={totalWidth}
-            />
+            <OpenModal/>
 
-            <SettingsModal
-                totalWidth={totalWidth}
-            />
+            <SettingsModal/>
 
         </Fragment>
     );

@@ -78,34 +78,12 @@ export class Body extends Component {
                     }}
                 >
                     
-                    <div
-                        style={{
-                            width: `${layoutObj.body.width}px`,
-                            height: `${layoutObj.body.height}px`,
-                        }}
-                    >
+                    <div>
                         <Stack horizontal>
 
-                            {layoutObj.body.checklist.display 
-                                ? (
-                                    <ChecklistTile
-                                        mainPadding={mainPadding}
-                                        layoutChecklist={layoutObj.body.checklist}
-                                    />
-                                ) 
-                                : undefined 
-                            }
+                            <SimulatorTile/>
 
-                            <SimulatorTile 
-                                mainPadding={mainPadding}
-                                layoutSimulator={layoutObj.body.simulator}
-                                checklistExists={layoutObj.body.checklist.display}
-                            />
-
-                            <ProgramTile
-                                mainPadding={mainPadding}
-                                layoutProgram={layoutObj.body.program}                
-                            />
+                            <ProgramTile/>
 
                         </Stack>
                     </div>

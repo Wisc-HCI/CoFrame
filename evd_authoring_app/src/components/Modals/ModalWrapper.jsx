@@ -5,9 +5,10 @@ import { Modal } from '@fluentui/react';
 import { IconButton } from '@fluentui/react/lib/Button';
 
 import { 
-    ModalContext, 
     ThemeContext 
 } from '../../contexts';
+
+import useGuiStore from '../../stores/GuiStore';
 
 
 export const ModalWrapper = (props) => {
@@ -15,33 +16,32 @@ export const ModalWrapper = (props) => {
     const {
         name,
         title, 
-        children, 
-        totalWidth,
+        children,
         closeCb
     } = props;
 
-    const width = totalWidth / 2;
-
     const themeContext = useContext(ThemeContext);
-    const modalContext = useContext(ModalContext);
+
+    const {activeModal, closeModal} = useGuiStore(state=>({
+        activeModal:state.activeModal,
+        closeModal:state.closeModal
+    }))
 
     const closeFnt = () => {
         if (closeCb) {
             closeCb();
         } else {
-            modalContext.closeModal(name);
+            closeModal(name);
         }
     }
 
     return (
         <Modal
-            isOpen={modalContext.state[name]}
+            isOpen={activeModal !== null}
             onDismiss={closeFnt}
             isBlocking
             styles={{ 
-                main: { 
-                    width: `${width}px` 
-                } 
+                main: {width: `50vw`} 
             }}
         >
             <div 

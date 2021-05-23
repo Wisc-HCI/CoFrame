@@ -6,43 +6,27 @@ import { TextField } from '@fluentui/react/lib/TextField';
 import { ModalWrapper } from './ModalWrapper';
 import { ModalControlButtons } from './ModalControlButtons';
 
-import { 
-    ModalContext, 
-    ApplicationContext 
-} from '../../contexts';
+import useApplicationStore from '../../stores/ApplicationStore';
+import useGuiStore from '../../stores/GuiStore';
 
 
 export const SaveModal = (props) => {
 
-    const { totalWidth } = props;
-
-    const modalContext = useContext(ModalContext);
-    const appContext = useContext(ApplicationContext);
-
-    const saveFnt = () => {
-        appContext.service.saveToFile();
-    };
-
-    const closeFnt = () => {
-        modalContext.closeModal('saveas');
-        modalContext.closeModal('save');
-    };
-
-    if (modalContext.state['save']) {
-        if (!appContext.filenameHasChanged && !modalContext.state['saveas']) {
-            modalContext.openModal('saveas');
-        } else {
-            saveFnt();
-            modalContext.closeModal('save');
-        }
-    }
+    const {save, filename, setFilename} = useApplicationStore(state=>({
+        save:state.save,
+        filename:state.filename,
+        setFilename:state.setFilename,
+    }));
+    const {closeModal} = useGuiStore(state=>({
+        setActiveModal:state.setActiveModal,
+        closeModal:state.closeModal
+    }))
 
     return (
         <ModalWrapper
             name="saveas"
             title="Save As"
-            totalWidth={totalWidth}
-            closeCb={closeFnt}
+            closeCb={closeModal}
         >
             <Stack>
                 <br />
@@ -50,7 +34,7 @@ export const SaveModal = (props) => {
                 <Stack.Item align="center">
                     <TextField 
                         id="saveas-project-name"
-                        defaultValue={appContext.filename} 
+                        defaultValue={filename} 
                     />
                 </Stack.Item>
 
@@ -61,12 +45,12 @@ export const SaveModal = (props) => {
                     <ModalControlButtons 
                         order={['submit','cancel']} 
                         callbacks={{
-                            'submit': () => { 
-                                appContext.service.filename = document.getElementById('saveas-project-name').value;
-                                saveFnt();
-                                closeFnt(); 
+                            'submit': () => {
+                                setFilename(document.getElementById('saveas-project-name').value);
+                                save();
+                                closeModal(); 
                             }, 
-                            'cancel': closeFnt
+                            'cancel': closeModal
                         }}
                         isPrimary={{
                             'submit': true, 

@@ -9,9 +9,12 @@ const immer = (config) => (set, get, api) =>
 const store = (set) => ({
     url: 'ws://localhost:9090',
     // SetURL resets ROS
-    setUrl: (url) => set({url:url,connected:false,ros:null}),
+    setUrl: (url) => set({url:url,connected:false,ros:null,loadAppSrv:null, saveAppSrv:null, getAppOptionsSrv:null}),
     ros: null,
     connected: false,
+    loadAppSrv: null,
+    saveAppSrv: null,
+    getApOptionsSrv: null,
     onConnection: ()=>{},
     onError: ()=>{},
     onClose: ()=>{},
@@ -20,29 +23,48 @@ const store = (set) => ({
         ros.on('connection', state.onConnection);
         ros.on('error', state.onError);
         ros.on('close',state.onClose);
+
         await ros.connect({url: state.url})
         set({ros: ros})
     }
 });
 
-const useGuiStore = create(immer(store));
+const useRosStore = create(immer(store));
 
 const onConnection = () => {
-    useGuiStore.setState({connected:true});
+    const ros = useRosStore.getState().ros;
+    const loadAppSrv = new ROSLIB.Service({
+        ros: ros,
+        name: 'data_server/load_application_data',
+        serviceType: 'evd_ros_core/LoadData'
+    });
+
+    const saveAppSrv = new ROSLIB.Service({
+        ros: ros,
+        name: 'data_server/save_application_data',
+        serviceType: 'evd_ros_core/SaveData'
+    });
+
+    const getAppOptionsSrv = new ROSLIB.Service({
+        ros: ros,
+        name: 'data_server/get_application_options',
+        serviceType: 'evd_ros_core/GetOptions'
+    });
+    useRosStore.setState({connected:true,loadAppSrv:loadAppSrv, saveAppSrv:saveAppSrv, getAppOptionsSrv:getAppOptionsSrv});
     window.alert('ROS is now connected');
 }
 
 const onError = (error) => {
-    useGuiStore.setState({connected:false});
+    useRosStore.setState({connected:false});
     window.alert('ROS encountered an error!');
     console.log('ros connection encountered an error', error);
 }
 
 const onClose = () => {
-    useGuiStore.setState({connected:false});
+    useRosStore.setState({connected:false});
     window.alert('ROS connection is closed');
 }
 
-useGuiStore.setState({onConnection:onConnection,onError:onError,onClose:onClose})
+useRosStore.setState({onConnection:onConnection,onError:onError,onClose:onClose})
 
-export default useGuiStore;
+export default useRosStore;
