@@ -1,3 +1,8 @@
+'''
+Commands machine to start running a routine. Actual implemenation subject
+to application engineer.
+'''
+
 from .machine_primitive import MachinePrimitive
 
 

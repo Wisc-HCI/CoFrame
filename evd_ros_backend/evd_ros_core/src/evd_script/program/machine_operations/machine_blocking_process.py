@@ -1,3 +1,9 @@
+'''
+Machine Blocking Process simplifies the generalzied machining process for a robot. The 
+machining could be a pre-written CNC routine that gets invoked by this primitive, then
+waits until that routine finishes, and will perform any "cleanup" at end of the process.
+'''
+
 from ..skill import Skill
 from .machine_start import MachineStart
 from .machine_stop import MachineStop

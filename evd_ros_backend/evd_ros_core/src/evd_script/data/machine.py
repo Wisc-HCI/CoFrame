@@ -1,3 +1,23 @@
+'''
+A machine is an "agent" that is neither human nor the robot executing the program.
+Each machine can generate and/or consume things.
+
+Machine could be something "smart" like a CNC mill or a 3D printer, but it could also be
+a simple machine like a feeder. Additionally, vision systems can be a machine that
+"generates" things by finding them in the real environment. 
+
+A machine allows for a set of input regions that take in a thing of a particular type and a set of output
+regions that generate things of a certain type. Machines also use a recipe to define the number of input
+things at the input regions that can be converted into a number of output things at the output regions.
+
+Machines can be purely generators (they don't have any inputs), purely consumers (no outputs), or 
+transformers (that have inputs and outputs).
+
+NOTE, currently regions are not a supported type for robot planning. Robot's use locations so arbitrary
+position is not supported. This is fine for the studies at this time but more complex use will require
+handling this disconnect.
+'''
+
 from ..node import Node
 from ..node_parser import NodeParser
 from .machine_recipe import MachineRecipe
@@ -46,8 +66,6 @@ class Machine(Node):
 
     @classmethod
     def from_dct(cls, dct):
-        from ..utility_functions import NodeParser
-
         return cls(
             input_regions={k: NodeParser(dct[k]) for k in dct['input_regions'].keys()} if dct['input_regions'] != None else None,
             output_regions={k: NodeParser(dct[k]) for k in dct['output_regions'].keys()} if dct['output_regions'] != None else None,
@@ -191,7 +209,6 @@ class Machine(Node):
             self.updated_attribute('recipe','set')
 
     def set(self, dct):
-        from ..utility_functions import NodeParser
 
         if 'input_regions' in dct.keys():
             self.input_regions = {k: NodeParser(dct[k]) for k in dct['input_regions'].keys()}

@@ -1,3 +1,8 @@
+'''
+Semantically meaningful waypoints that a robot can operate on as
+start/end points in a trajectory.
+'''
+
 from .waypoint import Waypoint
 
 from geometry_msgs.msg import Vector3

@@ -1,3 +1,7 @@
+'''
+TODO Intention is to have a "switch" node dependent on results of conditional
+'''
+
 from ..primitive import Primitive
 from ...node_parser import NodeParser
 

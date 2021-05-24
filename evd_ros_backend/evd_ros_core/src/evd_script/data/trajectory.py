@@ -1,8 +1,14 @@
-from ..node_parser import NodeParser
+'''
+Trajectory is used to expose robot movement plannning in EvD. 
+
+A trajectory is composed of a start location, an ordered set of waypoints, and an
+end location. When a trajectory is planned it produces a trace. Any change to the
+trajectory will result in a new trace needing to be computed.
+'''
+
 from ..node import Node
-from .waypoint import Waypoint
 from .trace import Trace
-from .trace_data_point import TraceDataPoint
+from ..node_parser import NodeParser
 from ..visualizable import VisualizeMarkers, VisualizeMarker, ColorTable
 
 from visualization_msgs.msg import Marker
@@ -235,7 +241,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
     def insert_waypoint_uuid(self, uuid, idx):
         self._waypoint_uuids.insert(idx,uuid)
         self.trace = None
-        self.updated_attribute('waypoint_uuids','add',uuid)
+        self.updated_attribute('waypoint_uuids','reorder',uuid)
 
     def reorder_waypoint_uuids(self, uuid, shift):
         idx = None

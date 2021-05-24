@@ -1,3 +1,12 @@
+'''
+Trace Data Point provides a sample of robot state during execution of a trajectory.
+Each data point should be stored within a trace data structure.
+
+TODO record joint values on each
+TODO record time from start
+TODO expand on grader properties and methods here
+'''
+
 from .grade import Grade
 from ..node_parser import NodeParser
 from .geometry import Pose, Position, Orientation

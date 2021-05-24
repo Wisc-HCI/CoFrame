@@ -1,3 +1,9 @@
+'''
+Gripper exposes the robot's grasping behavior in a generalized fashion. 
+Position, speed, and effort paramters ought to be supplied. Internal kinematics 
+of the gripper is handled at the implementation level.
+'''
+
 from ..primitive import Primitive
 
 

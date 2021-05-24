@@ -1,3 +1,10 @@
+'''
+Machine Primitive extends primitive to simplify the later definition of specific machine primitives.
+
+A machine primitive is a way to generalize machine behavior in EvD. The actual behavior needs to be
+supplied externally and is hooked into the EvD program runner.
+'''
+
 from ..primitive import Primitive
 
 

@@ -1,9 +1,14 @@
-import tf
+'''
+Provides a conveinent interface between low-level position implementations 
+(like ROS) and the EvD AST.
+
+Convience methods are provided.
+'''
+
 import math
 import geometry_msgs.msg as ros_msgs
 
 from ...node import Node
-from ...node_parser import NodeParser
 
 
 class Position(Node):

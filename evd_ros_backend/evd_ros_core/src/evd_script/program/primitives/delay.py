@@ -1,3 +1,7 @@
+'''
+Simple primitive that delays the cobot's behavior for a fixed amount of time.
+'''
+
 from ..primitive import Primitive
 
 

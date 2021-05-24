@@ -1,4 +1,14 @@
+'''
+Loop is a sub-skill structure that allows for rerunning a list of nodes. 
+
+At this point, loop only supports infinite looping but in the future conditional looping
+is desired.
+
+TODO support conditional looping
+'''
+
 from ..skill import Skill
+from ...node_parser import NodeParser
 
 
 class Loop(Skill):
@@ -38,8 +48,6 @@ class Loop(Skill):
 
     @classmethod
     def from_dct(cls, dct):
-        from ...utility_functions import NodeParser
-
         return cls(
             primitives=[NodeParser(p) for p in dct['primitives']],
             condition=NodeParser(dct['condition']) if dct['condition'] != None else None,
@@ -71,8 +79,6 @@ class Loop(Skill):
     def set(self, dct):
 
         if 'condition' in dct.keys():
-            from ...utility_functions import NodeParser
-
             self.condition = NodeParser(dct['condition']) if dct['condition'] != None else None
 
         super(Loop,self).set(dct)

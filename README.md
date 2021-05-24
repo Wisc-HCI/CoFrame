@@ -38,6 +38,7 @@ General ROS Dependencies
     - Via `sudo apt-get install ros-noetic-rosbridge-server`
 - [UniversalRobots/Universal_Robots_ROS_Driver](https://github.com/UniversalRobots/Universal_Robots_ROS_Driver)
     - Please follow their installation instructions!
+    - Refactoring seems to be occuring in that project and upstream dependencies, for instance, you may need to install [ur_msgs](http://wiki.ros.org/ur_msgs) separately.
 
 Please also install the following python modules.
 

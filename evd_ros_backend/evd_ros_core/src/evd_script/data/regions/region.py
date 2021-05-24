@@ -1,8 +1,13 @@
+'''
+Regions are just poses with uncertain orientation (and potentially position in child-types)
+
+NOTE, right now regions are on parallel development to waypoints/locations and these two do
+not mingle when discussing robots. Future work should address this.
+'''
+
 from ...node_parser import NodeParser
 from ..geometry import Pose, Position, Orientation
 from ...visualizable import VisualizeMarker
-
-# Regions are just poses with uncertain positions and orientations
 
 class Region(Pose, VisualizeMarker):
 

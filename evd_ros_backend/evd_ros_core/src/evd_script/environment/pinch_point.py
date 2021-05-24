@@ -1,3 +1,11 @@
+'''
+Pinch point is an area on the robot that through actuation of a particular joint
+will result in unsafe operation. I.e. a human could get pinched within the robot.
+
+This does not handle robot & collision-mesh pinches which are really just a generalization
+on collision itself.
+'''
+
 from ..node import Node
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Orientation, Position

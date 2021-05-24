@@ -1,3 +1,8 @@
+'''
+Commands a machine to be initialized. Actual implemenation is up to the 
+application engineer.
+'''
+
 from .machine_primitive import MachinePrimitive
 
 

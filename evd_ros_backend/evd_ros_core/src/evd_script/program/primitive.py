@@ -1,3 +1,7 @@
+'''
+Primitive is a sub-type of node that indicates it can be executed in a program.
+'''
+
 from ..node import Node
 
 

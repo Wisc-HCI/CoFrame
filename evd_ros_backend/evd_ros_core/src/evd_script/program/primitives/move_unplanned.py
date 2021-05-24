@@ -1,3 +1,9 @@
+'''
+Jogs the robot to a location without pre-planning a trajectory within EvD.
+
+THIS IS AN UNSAFE PRIMITIVE! Only use within the context of initialization.
+'''
+
 from ..primitive import Primitive
 
 

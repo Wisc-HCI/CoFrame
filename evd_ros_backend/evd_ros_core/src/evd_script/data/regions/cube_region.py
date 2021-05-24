@@ -1,3 +1,7 @@
+'''
+A region with a position uncertainty defined by a cuboid.
+'''
+
 from .region import Region
 from ...node_parser import NodeParser
 from ...visualizable import ColorTable

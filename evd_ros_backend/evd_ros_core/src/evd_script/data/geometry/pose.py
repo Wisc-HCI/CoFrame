@@ -1,5 +1,8 @@
-import tf
-import math
+'''
+Provides a conveinent interface between low-level pose implementations (like ROS) and
+the EvD AST.
+'''
+
 import geometry_msgs.msg as ros_msgs
 
 from ...node import Node

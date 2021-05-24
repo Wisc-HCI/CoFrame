@@ -1,6 +1,11 @@
 '''
 Provides access to any node within EvD by UUID. This is a flattend structure
 that is kept coherent with EvDScript's AST.
+
+All nodes can be accessed without a type hint. Additionally, major types can
+be more quickly accessed by supplying their hint. Though if a hint is supplied
+and the type is not found there is not a fall back to untyped search. Instead,
+the same lookup will need to be requested again but under the un-hinted condition.
 '''
 
 

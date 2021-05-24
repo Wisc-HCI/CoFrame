@@ -1,3 +1,9 @@
+'''
+Machine recipe defines the number of things inputed to produce a number of things
+outputed during a machining process. The process should also provide a static 
+time estimate.
+'''
+
 from ..node import Node
 
 

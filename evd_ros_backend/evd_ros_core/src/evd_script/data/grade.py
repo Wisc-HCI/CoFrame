@@ -1,4 +1,10 @@
-#TODO generalize the grade structure
+'''
+Grade provides a grade name and value. This will be used in trace data points.
+
+There can be multiple grades for a given point, each provided by a separate grader.
+
+TODO better generalize grade structure
+'''
 from ..node import Node
 
 

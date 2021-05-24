@@ -1,9 +1,15 @@
+'''
+Provides a conveinent interface between low-level orientation implementations 
+(like ROS) and the EvD AST.
+
+Convience methods are provided.
+'''
+
 import tf
 import math
 import geometry_msgs.msg as ros_msgs
 
 from ...node import Node
-from ...node_parser import NodeParser
 
 
 class Orientation(Node):

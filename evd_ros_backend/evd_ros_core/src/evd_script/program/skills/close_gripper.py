@@ -1,3 +1,7 @@
+'''
+Simplified parameterization for gripper primitive to fully closed
+'''
+
 from ..skill import Skill
 from ..primitives import Gripper
 

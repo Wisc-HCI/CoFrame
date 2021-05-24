@@ -1,3 +1,8 @@
+'''
+Moves a robot according to a preplanned trajectory. This wraps the trajectory
+data structure with additional movement parameterization needed to actually
+execute on the robot.
+'''
 
 from ..primitive import Primitive
 from ...data.trajectory import Trajectory

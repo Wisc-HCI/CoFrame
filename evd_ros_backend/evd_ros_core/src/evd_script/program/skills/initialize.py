@@ -1,3 +1,8 @@
+'''
+Initialize should be the first skill evoked in the program to 
+configure all machines and jog cobot to initial position.
+'''
+
 from ..skill import Skill
 from ..machine_operations import MachineInitialize
 from ..primitives import MoveUnplanned

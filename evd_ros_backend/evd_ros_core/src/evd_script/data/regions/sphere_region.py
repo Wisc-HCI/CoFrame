@@ -1,3 +1,7 @@
+'''
+A region with position uncertainty defined by a sphere.
+'''
+
 from .region import Region
 from ...node_parser import NodeParser
 from ..geometry import Position, Orientation

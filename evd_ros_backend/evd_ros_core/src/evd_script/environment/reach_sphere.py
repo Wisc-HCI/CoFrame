@@ -1,3 +1,9 @@
+'''
+Simplification of the joint-configuration space that a robot can reach. 
+
+We can think of the robot's max reach as being bounded by a sphere. Tuning of
+this sphere can further restrict the reachability region.
+'''
 
 from ..node import Node
 from ..data.geometry import Position

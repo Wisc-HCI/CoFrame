@@ -1,3 +1,10 @@
+'''
+Container provides a generalized set of nodes. 
+
+This is only really useful for testing the AST's internal behavior when storing data.
+It is better to rely on semantic structures like Context, Skill, etc. to store various
+sub-nodes.
+'''
 
 from ..node import Node
 from ..node_parser import NodeParser

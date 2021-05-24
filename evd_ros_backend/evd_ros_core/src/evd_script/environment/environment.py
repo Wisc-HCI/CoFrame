@@ -1,3 +1,8 @@
+'''
+Environment extends context to provide additional global lookup of environment
+types. This node is directly used by program to expose top-level state.
+'''
+
 from ..context import Context
 from .reach_sphere import ReachSphere
 from .collision_mesh import CollisionMesh

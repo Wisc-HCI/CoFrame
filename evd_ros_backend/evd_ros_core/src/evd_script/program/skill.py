@@ -1,4 +1,13 @@
+'''
+Skill wraps a set of primitives that should be executed in order.
+
+In hierarchical task analysis (and/or those familiar with Authr) this is a "task".
+The purpose of a skill is to abstract the base-primitives into more semantically 
+meaningful behaviors. 
+'''
+
 from .primitive import Primitive
+from ..node_parser import NodeParser
 
 
 class Skill(Primitive):
@@ -37,8 +46,6 @@ class Skill(Primitive):
 
     @classmethod
     def from_dct(cls, dct):
-        from ..utility_functions import NodeParser
-
         return cls(
             name=dct['name'],
             type=dct['type'],
@@ -88,7 +95,7 @@ class Skill(Primitive):
     def insert_primitive(self, idx, prm):
         prm.parent = self
         self._primitives.insert(idx,prm)
-        self.updated_attribute('primitives','adds')
+        self.updated_attribute('primitives','reorder')
 
     def reorder_primitives(self, uuid, shift):
         idx = None
@@ -125,8 +132,7 @@ class Skill(Primitive):
         return None
 
     def set(self, dct):
-        from ..utility_functions import NodeParser
-
+        
         if 'primitives' in dct.keys():
             self.primitives = [NodeParser(p) for p in dct['primitives']]
 

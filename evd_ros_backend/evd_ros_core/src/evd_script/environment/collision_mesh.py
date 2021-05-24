@@ -1,3 +1,8 @@
+'''
+Collision mesh represents a static fixture in the environment that a robot
+ought to avoid.
+'''
+
 from ..node import Node
 from ..data.geometry import Pose
 from ..node_parser import NodeParser

@@ -1,12 +1,17 @@
+'''
+Waypoints are poses that a robot can achieve. As such, once planned they
+have an associated set of joints.
+'''
+
 from ..node_parser import NodeParser
 from .geometry import Pose, Position, Orientation
-from ..visualizable import VisualizeMarker, ColorTable
+from ..visualizable import ColorTable
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class Waypoint(Pose, VisualizeMarker):
+class Waypoint(Pose):
 
     '''
     Data structure methods

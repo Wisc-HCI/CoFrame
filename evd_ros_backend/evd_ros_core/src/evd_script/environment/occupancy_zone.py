@@ -1,3 +1,11 @@
+'''
+Occupancy zone defines a region that an agent will potentially occupy during the
+task. A zone can be either for the robot (represented as a reach sphere shadow cast 
+onto the environment) or a human (as a rectangular area).
+
+Parameterization only makes sense for human agent zones.
+'''
+
 from ..node import Node
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Position

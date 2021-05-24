@@ -1,3 +1,11 @@
+'''
+Pick-and-place is a very common activity for collaborative robots.
+
+This is a simplified (non-conditional/error-handling) implementation that
+commands an end-effector to move to a target object, grasp it, move to final
+location, and then release it.
+'''
+
 from ..skill import Skill
 from ..primitives import MoveTrajectory
 from .open_gripper import OpenGripper

@@ -1,3 +1,12 @@
+'''
+Commands machine to stop running a routine. Actual implemenation subject
+to application engineer.
+
+This might not do anything if the process is already done (and that is fine).
+Of course stopping a process early might be problematic so care should be taken
+when implementing this in an application.
+'''
+
 from .machine_primitive import MachinePrimitive
 
 

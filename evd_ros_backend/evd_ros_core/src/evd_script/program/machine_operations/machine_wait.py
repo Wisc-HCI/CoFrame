@@ -1,3 +1,11 @@
+'''
+Stalls robot's execution until the machine signals that it has completed its
+process.
+
+This behavior is required on implemetation of a machine lest programs assume
+a static timing (bad programming).
+'''
+
 from .machine_primitive import MachinePrimitive
 
 

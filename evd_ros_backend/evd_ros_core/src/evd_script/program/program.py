@@ -1,5 +1,7 @@
 '''
-
+Program is a top-level skill that wraps execution of robot behavior and provides
+hook to global Environment/Context. Additionally, all change traces end at this
+root node in the AST. Users can hook into this with a change callback.
 '''
 
 from .skill import Skill
@@ -53,8 +55,6 @@ class Program(Skill):
 
     @classmethod
     def from_dct(cls, dct):
-        from ..utility_functions import NodeParser
-
         return cls(
             name=dct['name'],
             type=dct['type'],
@@ -104,6 +104,7 @@ class Program(Skill):
     '''
     Update Methods
     '''
+
     def late_construct_update(self):
 
         self.environment.late_construct_update()

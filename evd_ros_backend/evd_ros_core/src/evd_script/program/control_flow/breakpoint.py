@@ -1,3 +1,9 @@
+'''
+Breakpoint exposes pause behavior in the runner to the program. 
+
+This is useful for debugging code.
+'''
+
 from ..primitive import Primitive
 
 

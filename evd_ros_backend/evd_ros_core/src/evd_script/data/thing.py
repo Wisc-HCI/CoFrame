@@ -1,3 +1,11 @@
+'''
+Things are objects being manipulated by the robot and/or produced consumed by machines.
+
+These act as tokens within the simulator and may be useful for verification in the future.
+
+The thinking behind things is much the same as it was in Authr.
+'''
+
 from ..node_parser import NodeParser
 from .geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker, ColorTable
@@ -5,10 +13,8 @@ from ..visualizable import VisualizeMarker, ColorTable
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
-# Things are objects being processed in the environment. They can be generated and consumed by machines.
-# Useful as a token for verification.
 
-class Thing(Pose):
+class Thing(Pose, VisualizeMarker):
 
     '''
     Class Constants
