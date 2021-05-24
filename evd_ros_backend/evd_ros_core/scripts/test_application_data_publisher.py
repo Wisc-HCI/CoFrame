@@ -5,8 +5,8 @@ Tests application data behavior with a simple GUI interface.
 
 Allows
 - Getting Application Options
-- Saving (allows creation of new)
-- Loading
+- Saving (allows creation of new application)
+- Loading Application
 '''
 
 

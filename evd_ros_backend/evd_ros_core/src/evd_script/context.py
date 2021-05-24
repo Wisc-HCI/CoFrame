@@ -1,3 +1,12 @@
+'''
+Contexts at as a local "cache" for data within the program. At this point, EvD
+is architected to have a single context at the root program though in theory this
+could be used elsewhere.
+
+Nodes that reference data should do so through the context if they do not want to
+own the data with encapsulation.
+'''
+
 
 from .node import Node
 from .data.thing import Thing
@@ -394,10 +403,10 @@ class Context(Node):
         type = dct["type"].split('.')
         exactType = type[len(type) - 2]
 
-        #if exactType == 
+        #TODO
 
         if not success:
-            return super(Context,self).add_child(uuid)
+            return super(Context,self).add_child(dct)
         else:
             return success
 

@@ -1,3 +1,9 @@
+'''
+Provides access to any node within EvD by UUID. This is a flattend structure
+that is kept coherent with EvDScript's AST.
+'''
+
+
 # Cache is global so that we can keep a UUID list for NodeParser
 cacheObj = None
 def get_evd_cache_obj():

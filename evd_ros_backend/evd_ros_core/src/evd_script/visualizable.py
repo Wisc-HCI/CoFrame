@@ -1,8 +1,15 @@
+'''
+Visualizable defines interfaces for nodes that produce RVIZ visualizations
+
+Generally just pick either the singular or multiple marker method variant to impelement.
+A color table is also provided to standardize the coloring of different nodes though this
+can be adjusted depending on goals.
+'''
+
 from abc import ABC, abstractmethod
 
 from std_msgs.msg import ColorRGBA
 
-# Please pick just one of these to implement per object as a general rule of thumb
 
 class VisualizeMarker(ABC):
 

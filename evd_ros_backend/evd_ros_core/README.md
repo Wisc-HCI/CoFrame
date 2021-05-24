@@ -1,18 +1,19 @@
 # evd_ros_core
-EvD is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's.
-We aim to improve understanding of the task such that operators can make informed changes to their program.
+Expert View Dashboard (EvD) is an educational environment used to train operators
+for collaborative robotic workcells.
 
-This package is the ROS backend server that runs an implemented task.
+This package is the ROS backend server that runs an implemented task. Consider this package
+to be a library to hook into when building your specific applications.
 
-To see the system overview check out the repository [README](../README.md).
+To see the system overview check out the repository [README](../../README.md).
 
 ## Core Architecture
 The goal of the core package is to centralize Evd behavior between multiple tasks.
 If one is writing one-off code then it should not go here. Likewise, very low-level
-cobot control probably should implemented in here (see evd_ros_ur_bringup as an example).
+cobot control probably should not be implemented in here.
 
 The curx of Core is the data_server. This node maintains the current EvDscript state
-for the entire EvD environment. Access to this data_server is easibly achieved with
+for the entire EvD environment. Access to this data_server is easily achieved with
 the data client interface.
 
 EvD also provides a trace processor and its asociated graders to convert trajectories
