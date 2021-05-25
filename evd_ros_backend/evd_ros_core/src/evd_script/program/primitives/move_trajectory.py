@@ -2,6 +2,9 @@
 Moves a robot according to a preplanned trajectory. This wraps the trajectory
 data structure with additional movement parameterization needed to actually
 execute on the robot.
+
+TODO implement real-time move trajectory behavior
+TODO implement thing token movement behavior
 '''
 
 from ..primitive import Primitive
@@ -220,10 +223,20 @@ class MoveTrajectory(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        pass
+        hooks.active_primitive = self
+
+        loc = self.context.get_location(self.end_location_uuid)
+        hooks.tokens['robot']['state']['position'] = loc.position.to_simple_dct()
+        hooks.tokens['robot']['state']['orientation'] = loc.orientation.to_simple_dct()
+        hooks.tokens['robot']['state']['joints'] = loc.joints
+
+        return self.parent
 
     def realtime_execution(self, hooks):
-        pass
+
+        # TODO actually execute move trajectory behavior
+
+        return self.symbolic_execution(hooks)
 
 
 class ContextPatch(object):

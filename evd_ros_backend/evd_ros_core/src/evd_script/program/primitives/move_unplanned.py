@@ -2,6 +2,9 @@
 Jogs the robot to a location without pre-planning a trajectory within EvD.
 
 THIS IS AN UNSAFE PRIMITIVE! Only use within the context of initialization.
+
+TODO implement real-time move unplanned behavior
+TODO implement thing token movement behavior
 '''
 
 from ..primitive import Primitive
@@ -110,7 +113,17 @@ class MoveUnplanned(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.move_unplanned(self)
+        hooks.active_primitive = self
+
+        loc = self.context.get_location(self.location_uuid)
+        hooks.tokens['robot']['state']['position'] = loc.position.to_simple_dct()
+        hooks.tokens['robot']['state']['orientation'] = loc.orientation.to_simple_dct()
+        hooks.tokens['robot']['state']['joints'] = loc.joints
+
+        return self.parent
 
     def realtime_execution(self, hooks):
-        hooks.move_unplanned(self)
+
+        # TODO actually execute move unplanned behavior
+
+        return self.symbolic_execution(hooks)

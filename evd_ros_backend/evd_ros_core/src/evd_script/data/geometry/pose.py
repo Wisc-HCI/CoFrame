@@ -9,6 +9,9 @@ from ...node import Node
 from .position import Position
 from .orientation import Orientation
 from ...node_parser import NodeParser
+from evd_ros_backend.evd_ros_core.src.evd_script.data.geometry import position
+
+from evd_ros_backend.evd_ros_core.src.evd_script.data.geometry import orientation
 
 
 class Pose(Node):
@@ -56,6 +59,12 @@ class Pose(Node):
         })
         return msg
 
+    def to_simple_dct(self):
+        return {
+            'position': self.position.to_simple_dct(),
+            'orientation': self.orientation.to_simple_dct()
+        }
+
     def to_ros(self):
         return ros_msgs.Pose(position=self.position.to_ros(),
                     orientation=self.orientation.to_ros())
@@ -68,6 +77,11 @@ class Pose(Node):
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
+
+    @classmethod
+    def from_simple_dct(cls, dct):
+        return cls(position=Position.from_simple_dct(dct['position']),
+                   orientation=Orientation.from_simple_dct(dct['orientation']))
 
     @classmethod
     def from_ros(cls, obj):

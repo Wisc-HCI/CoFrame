@@ -58,6 +58,14 @@ class Orientation(Node):
         })
         return msg
 
+    def to_simple_dct(self):
+        return {
+            'x': self.x,
+            'y': self.y,
+            'z': self.z,
+            'w': self.w
+        }
+
     def to_list(self, order='xyzw'):
         if order == 'xyzw':
             return [self.x,self.y,self.z,self.w]
@@ -78,6 +86,14 @@ class Orientation(Node):
             append_type=not 'type' in dct.keys(),
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
             name=dct['name'] if 'name' in dct.keys() else '')
+
+    @classmethod
+    def from_simple_dct(cls, dct):
+        return cls(
+            x=dct['x'],
+            y=dct['y'],
+            z=dct['z'],
+            w=dct['w'])
 
     @classmethod
     def from_ros(cls, obj):

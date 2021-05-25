@@ -108,7 +108,14 @@ class ProgramRunner(object):
         self._state = {}
 
         # fill in tokens (with unknown states)
-        self._tokens = { 'robot': {'type': 'robot', 'state': {'position': {'x':'?','y':'?','z':'?'}, 'orientation': {'x':'?','y':'?','z':'?','w':'?'}}} }
+        self._tokens = { 'robot': {
+            'type': 'robot', 'state': {
+                'position': {'x':'?','y':'?','z':'?'}, 
+                'orientation': {'x':'?','y':'?','z':'?','w':'?'},
+                'joints': ['?'],
+                'gripper': {'position': '?', 'effort': '?', 'grasped_thing': None, 'ambiguous_flag': False}
+            }
+        }}
         for e in self._program.context.machines:
             self._tokens[e.uuid] = {'type': 'machine', 'state': '?'}
         for e in self._program.context.things:

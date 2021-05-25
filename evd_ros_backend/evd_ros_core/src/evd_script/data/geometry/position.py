@@ -50,6 +50,13 @@ class Position(Node):
         })
         return msg
 
+    def to_simple_dct(self):
+        return {
+            'x': self.x,
+            'y': self.y,
+            'z': self.z
+        }
+
     def to_list(self):
         return [self.x,self.y,self.z]
 
@@ -66,6 +73,13 @@ class Position(Node):
             append_type=not 'type' in dct.keys(),
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
             name=dct['name'] if 'name' in dct.keys() else '')
+
+    @classmethod
+    def from_simple_dct(cls, dct):
+        return cls(
+            x=dct['x'],
+            y=dct['y'],
+            z=dct['z'])
 
     @classmethod
     def from_ros(cls, obj):
