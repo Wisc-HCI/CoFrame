@@ -43,3 +43,25 @@ class Initialize(Skill):
             parent=parent,
             append_type=append_type,
             primitives=primitives)
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        next = super(Initialize,self).symbolic_execution(hooks)
+
+        # Since we are initializing state, the ambigous movement is expected and does not
+        # warrant special consideration
+        hooks.tokens['robot']['state']['gripper']['ambiguous_flag'] = False
+
+        return next
+
+    def realtime_execution(self, hooks):
+        next = super(Initialize,self).realtime_execution(hooks)
+
+        # Since we are initializing state, the ambigous movement is expected and does not
+        # warrant special consideration
+        hooks.tokens['robot']['state']['gripper']['ambiguous_flag'] = False
+
+        return next

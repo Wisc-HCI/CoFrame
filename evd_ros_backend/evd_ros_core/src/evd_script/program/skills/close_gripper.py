@@ -27,6 +27,7 @@ class CloseGripper(Skill):
             primitives=[
                 Gripper(
                     thing_uuid=thing_uuid,
+                    semantic=Gripper.SEMANTIC_GRASPING if thing_uuid != None else Gripper.SEMANTIC_AMBIGUOUS,
                     position=position,
                     effort=effort,
                     speed=speed)
