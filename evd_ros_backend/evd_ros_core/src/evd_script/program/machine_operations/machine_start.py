@@ -55,6 +55,6 @@ class MachineStart(MachinePrimitive):
                     del hooks.state[self.uuid]
                     next = self.parent
                 else:
-                    raise Exception('Machine NACKed'.format(self.machine_uuid))
+                    raise Exception('Machine NACKed - {}'.format(self.machine_uuid))
 
         return next

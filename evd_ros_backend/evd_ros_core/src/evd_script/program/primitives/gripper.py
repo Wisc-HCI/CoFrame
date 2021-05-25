@@ -201,7 +201,6 @@ class Gripper(Primitive):
         hooks.active_primitive = self
 
         hooks.tokens['robot']['state']['gripper']['position'] = self.position
-        hooks.tokens['robot']['state']['gripper']['effort'] = self.effort
         
         if self.thing_uuid != None:
             if self.semantic == self.SEMANTIC_GRASPING:
@@ -215,7 +214,33 @@ class Gripper(Primitive):
         return self.parent
 
     def realtime_execution(self, hooks):
-        
-        #TODO implement real-time grasping behavior
+        hooks.active_primitive = self
+        next = self
 
-        return self.symbolic_execution(hooks)
+        if not self.uuid in hooks.state.keys():
+            hooks.state[self.uuid] = 'pending'
+            hooks.robot_interface.grip_async(self.position, self.speed, self.effort)
+        
+        else:
+            resp = hooks.robot_interface.is_acked('gripper')
+            if resp != None:
+                if resp:
+                    del hooks.state[self.uuid]
+                    next = self.parent
+
+                    if self.thing_uuid != None:
+                        if self.semantic == self.SEMANTIC_GRASPING:
+                            hooks.tokens['robot']['state']['gripper']['grasped_thing'] = self.thing_uuid
+                        elif self.semantic == self.SEMANTIC_RELEASING:
+                            hooks.tokens['robot']['state']['gripper']['grasped_thing'] = None
+                    else:
+                        hooks.tokens['robot']['state']['gripper']['grasped_thing'] = None
+                        hooks.tokens['robot']['state']['gripper']['ambiguous_flag'] = True
+
+                else:
+                    raise Exception('Robot NACKed')
+            
+        status = hooks.robot_interface.get_status()
+        hooks.tokens['robot']['state']['gripper']['position'] = status.gripper_position
+
+        return next

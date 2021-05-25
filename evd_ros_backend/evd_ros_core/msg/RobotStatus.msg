@@ -1,3 +1,5 @@
+geometry_msgs/Pose arm_pose
+
 float32[] arm_joints
 float32[] arm_joints_requested
 

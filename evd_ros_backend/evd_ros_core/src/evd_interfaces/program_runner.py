@@ -113,7 +113,7 @@ class ProgramRunner(object):
                 'position': {'x':'?','y':'?','z':'?'}, 
                 'orientation': {'x':'?','y':'?','z':'?','w':'?'},
                 'joints': ['?'],
-                'gripper': {'position': '?', 'effort': '?', 'grasped_thing': None, 'ambiguous_flag': False}
+                'gripper': {'position': '?', 'grasped_thing': None, 'ambiguous_flag': False}
             }
         }}
         for e in self._program.context.machines:

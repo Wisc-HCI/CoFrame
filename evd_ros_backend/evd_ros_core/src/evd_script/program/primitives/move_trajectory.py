@@ -7,6 +7,8 @@ TODO implement real-time move trajectory behavior
 TODO implement thing token movement behavior
 '''
 
+from ...data.geometry.position import Position
+from ...data.geometry.orientation import Orientation
 from ..primitive import Primitive
 from ...data.trajectory import Trajectory
 from ...node_parser import NodeParser
@@ -230,14 +232,36 @@ class MoveTrajectory(Primitive):
         hooks.tokens['robot']['state']['orientation'] = loc.orientation.to_simple_dct()
         hooks.tokens['robot']['state']['joints'] = loc.joints
 
+        #TODO handle thing movement
+
         return self.parent
 
     def realtime_execution(self, hooks):
+        hooks.active_primitive = self
+        next = self
 
-        # TODO actually execute move trajectory behavior
+        if not self.uuid in hooks.state.keys():
+            hooks.state[self.uuid] = 'pending'
+            hooks.robot_interface.move_trajectory_async(self.trajectory)
 
-        return self.symbolic_execution(hooks)
+        else:
+            resp = hooks.robot_interface.is_acked('arm')
+            if resp != None:
+                if resp:
+                    del hooks.state[self.uuid]
+                    next = self.parent
 
+                else:
+                    raise Exception('Robot NACKed')
+
+        status = hooks.robot_interface.get_status()
+        hooks.tokens['robot']['state']['position'] = Position.from_ros(status.arm_pose.position).to_simple_dct()
+        hooks.tokens['robot']['state']['orientation'] = Orientation.from_ros(status.arm_pose.orientation).to_simple_dct()
+        hooks.tokens['robot']['state']['joints'] = status.arm_joints
+
+        #TODO handle thing movement
+
+        return next
 
 class ContextPatch(object):
 
