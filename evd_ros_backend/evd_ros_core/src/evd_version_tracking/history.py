@@ -1,6 +1,9 @@
 '''
-Collection of HistoryEntry objects.
+Collection of HistoryEntry objects. This acts as a change buffer, which in theory
+can be reversed by deserializing the snapshots.
 '''
+
+from .history_entry import HistoryEntry
 
 
 class History(object):

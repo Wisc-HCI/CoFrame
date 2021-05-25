@@ -1,7 +1,7 @@
 '''
 Captures an instance of program state.
 
-Used to revert changes in the data server.
+Theoretical can be used to revert changes in the data server.
 '''
 
 

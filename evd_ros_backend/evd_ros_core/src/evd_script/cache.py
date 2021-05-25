@@ -129,7 +129,7 @@ class Cache(object):
         self.contexts = {}
 
     def get(self, uuid, hint=None):
-        retVal = None;
+        retVal = None
 
         if hint == 'trajectory' and uuid in self.trajectories.keys():
             retVal = self.trajectories[uuid]

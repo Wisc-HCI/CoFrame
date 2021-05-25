@@ -7,9 +7,9 @@ actual change manifest much harder to enforce manually. Hence, wrapping that beh
 for the user in this node.
 
 We also support application level interface for loading / saving whole programs if
-needed by the node.
+needed by the node. This is an optional feature that can be enabled.
 
-Note: Currently the setting changes back to data server is broken.
+TODO Currently the setting changes back to data server is broken / needs implementation.
 '''
 
 
@@ -17,17 +17,17 @@ import json
 import rospy
 import traceback
 
-from std_msgs.msg import String
-from evd_ros_core.msg import UpdateData, Version
+from evd_ros_core.msg import UpdateData
 
-from evd_ros_core.srv import GetData, GetDataRequest, GetDataResponse
-from evd_ros_core.srv import SetData, SetDataRequest, SetDataResponse
-from evd_ros_core.srv import LoadData, LoadDataRequest, LoadDataResponse
-from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
-from evd_ros_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
+from evd_ros_core.srv import GetData
+from evd_ros_core.srv import SetData
+from evd_ros_core.srv import LoadData
+from evd_ros_core.srv import SaveData
+from evd_ros_core.srv import GetOptions
 
-from evd_script import *
-from evd_version_tracking import *
+from evd_script import Program, NodeParser
+from evd_script.cache import get_evd_cache_obj
+from evd_version_tracking import History, HistoryEntry, VersionTag
 
 
 class DataClientInterface(object):

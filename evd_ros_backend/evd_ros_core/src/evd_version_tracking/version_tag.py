@@ -1,6 +1,8 @@
 '''
 The data server needs some way of determining truth. We can resolve change order
-with uniquely identifiable timestamps.
+with uniquely identifiable timestamps. VersionTags perform this role by "tagging"
+changes in the code with its origin, timestamp, and a uuid (not to be confused with
+evdscript uuids).
 '''
 
 

@@ -1,4 +1,7 @@
-# TODO this abstracts the publishing to machines (all task machines should use this!)
+'''
+This abstracts the publishing to machines (all task machines should use use this!)
+'''
+
 import rospy
 
 from evd_ros_core.msg import MachineAck, MachineInitialize, MachinePause, MachineStart, MachineStop, MachineStatus
