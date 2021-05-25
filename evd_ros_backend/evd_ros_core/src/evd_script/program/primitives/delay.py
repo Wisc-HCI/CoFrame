@@ -2,6 +2,8 @@
 Simple primitive that delays the cobot's behavior for a fixed amount of time.
 '''
 
+import time
+
 from ..primitive import Primitive
 
 
@@ -85,10 +87,31 @@ class Delay(Primitive):
 
     '''
     Execution methods
+    (uses default node behavior for symbolic)
     '''
 
-    def symbolic_execution(self, hooks):
-        pass
-
     def realtime_execution(self, hooks):
-        pass
+        hooks.active_primitive = self
+
+        # initialize state
+        if not self.uuid in hooks.state.keys():
+            hooks.state[self.uuid] = {'start_time': time.time(), 'paused_start_time': [], 'paused_end_time': [], 'in_pause': False}
+        
+        # handle timing for when program is paused
+        if hooks.pause and not hooks.state[self.uuid]['in_pause']:
+            hooks.state[self.uuid]['paused_start_time'].append(time.time())
+        elif not hooks.pause and hooks.state[self.uuid]['in_pause']:
+            hooks.state[self.uuid]['paused_end_time'].append(time.time())
+
+        # enforce duration
+        if not hooks.pause:
+            total = time.time() - hooks.state[self.uuid]['start_time']
+
+            for i in range(0,len(hooks.state[self.uuid]['paused_start_time'])):
+                total -= hooks.state[self.uuid]['paused_end_time'][i] - hooks.state[self.uuid]['paused_start_time'][i]
+
+            if total >= self.duration:
+                next = self.parent
+                del hooks.state[self.uuid]
+
+        return next

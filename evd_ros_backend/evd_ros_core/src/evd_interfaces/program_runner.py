@@ -8,6 +8,10 @@ It allows breakpoints to pause execution. And it provides both a state scratchpa
 nodes and a token tracker for persistent state across nodes.
 
 Each executable node should implement symbolic and realtime execution methods. 
+
+Real-time execution runs a simulation that actually runs through the execution pipeline.
+Whereas the symbolic execution merely manipulate the symbols needed to achieve 
+post-conditions from pre-conditions.
 '''
 
 import time
@@ -21,9 +25,10 @@ class ProgramRunner(object):
     # Program Runner External Interface
     #===========================================================================
 
-    def __init__(self, raw_program, symbolic=False, robot=None, machine=None, player=None):
+    def __init__(self, full_program, root_node, symbolic=False, robot=None, machine=None, player=None):
         self._symbolic = symbolic
-        self._program = raw_program
+        self._program = full_program
+        self._root_node = root_node
         self._robot_interface = robot
         self._machine_interface = machine
         self._player_interface = player
@@ -31,8 +36,8 @@ class ProgramRunner(object):
         self._state = {} # nodes can place internal state here, indexed by their node UUID
         self._tokens = {} # tokens are currently things, machine state
         self._pause = False
-        self._active_node = None
-        self._next_node = None
+        self._active_node = None # hooked into by the nodes themselves (really just a flagging mechanism)
+        self._next_node = None # node that drives the execution state machine
 
         self._start_time = -1
         self._prev_time = -1
@@ -41,7 +46,7 @@ class ProgramRunner(object):
 
     @property
     def root_uuid(self):
-        return self._program.uuid
+        return self._root_node.uuid
 
     @property
     def pause(self):
@@ -63,10 +68,16 @@ class ProgramRunner(object):
         if not self._symbolic:
             self._player_interface.set_lockout(True)
 
-        self.reset() # initialize state
-        self.update()
-        if not self._symbolic:
-            self._player_interface.set_at_start(False)
+        # initialize state
+        error = self.reset()
+        
+        # Give initial step of program execution
+        if not error:
+            self.update()
+            if not self._symbolic:
+                self._player_interface.set_at_start(False)
+
+        return error
 
     def stop(self):
         self._stop_time = time.time()
@@ -92,21 +103,33 @@ class ProgramRunner(object):
         self._start_time = self._curr_time
         self._stop_time = -1
 
-        self._active_node = None
-        self._next_node = self._program
+        self._active_node = None 
+        self._next_node = self._root_node 
         self._state = {}
 
         # fill in tokens (with unknown states)
-        # TODO generate reasonable start state given an arbitrary node
         self._tokens = { 'robot': {'type': 'robot', 'state': {'position': {'x':'?','y':'?','z':'?'}, 'orientation': {'x':'?','y':'?','z':'?','w':'?'}}} }
         for e in self._program.context.machines:
             self._tokens[e.uuid] = {'type': 'machine', 'state': '?'}
         for e in self._program.context.things:
             self._tokens[e.uuid] = {'type': 'thing', 'state': {'position': e.position.to_dct(), 'orientation': e.orientation.to_dct()}}
 
+        # generate reasonable start state given an arbitrary node (must symbolically execute up to root_node)
+        # result will be a token table with up-to-date values
+        error = False
+        next_node = self._program
+        while next_node != self._root_node and not error:
+            next_node = next_node.symbolic_execution(self)
+            error = next_node == None
+
         if not self._symbolic:
             self._player_interface.set_at_start(True)
             self._player_interface.set_at_end(False)
+            
+            if error:
+                self._player_interface.set_error('Reset could not move state to root node')
+        
+        return error
 
     def update(self):
         self._prev_time = self._curr_time
@@ -122,6 +145,12 @@ class ProgramRunner(object):
                     self._next_node = self._next_node.symbolic_execution(self)
                 else:
                     self._next_node = self._next_node.realtime_execution(self)
+
+                # When root node is not the root program, we must stop subtree execution when 
+                # it tries to execute the parent above the root node.
+                if self._next_node != None and self._next_node == self._root_node.parent:
+                    self._next_node = None # on the next update, we will find that we ended the program
+
             else:
                 # At Program End
                 if not self._symbolic:

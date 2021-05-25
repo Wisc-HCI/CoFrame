@@ -134,19 +134,40 @@ class Loop(Skill):
     def symbolic_execution(self, hooks):
         hooks.active_primitive = self
 
-        run = True
-        while run:
-            for p in self.primitives:
-                p.symbolic_execution(hooks)
+        if not self.uuid in hooks.state.keys():
+            hooks.state[self.uuid] = { 'index': 0, 'checked_cond': False }
 
-            run = self.condition.symbolic_execution(hooks) if self.condition != None else True
+        next = None
+        if not hooks.state[self.uuid]['checked_cond']:
+            # Check condition
+            hooks.state[self.uuid]['checked_cond'] = True
+            
+            if self.condition != None:
+                next = self.condition
+            else:
+                next = self # infinite loop
+
+        elif hooks.state[self.uuid]['checked_cond'] and self.condition != None and not hooks.state[self.condition.uuid]['result']:
+            # Exit based on condition (if no condition supplied then infinite loop)
+            next = self.parent
+            del hooks.state[self.uuid]
+            del hooks.state[self.condition.uuid]
+
+        else:
+            # Run through inner contents of loop
+
+            index = hooks.state[self.uuid]['index']
+            if index < len(self.primitives):
+                # Index through primitives in list
+                next = self.primitives[index]
+                hooks.state[self.uuid]['index'] = index + 1
+            
+            else:
+                # Try next iteration of loop
+                next = self
+                hooks.state[self.uuid]['checked_cond'] = False
+
+        return next
 
     def realtime_execution(self, hooks):
-        hooks.active_primitive = self
-
-        run = True
-        while run:
-            for p in self.primitives:
-                p.symbolic_execution(hooks)
-
-            run = self.condition.symbolic_execution(hooks) if self.condition != None else True
+        return self.symbolic_execution(hooks)

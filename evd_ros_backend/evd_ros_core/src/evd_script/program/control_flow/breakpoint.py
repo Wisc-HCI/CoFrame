@@ -34,7 +34,11 @@ class Breakpoint(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        pass
+        # breakpoints do nothing in symbolic mode
+        hooks.active_primitive = self
+        return self.parent
 
     def realtime_execution(self, hooks):
-        pass
+        hooks.active_primitive = self
+        hooks.pause = True
+        return self.parent

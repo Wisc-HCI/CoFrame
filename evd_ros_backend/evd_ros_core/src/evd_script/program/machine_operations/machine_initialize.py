@@ -36,7 +36,7 @@ class MachineInitialize(MachinePrimitive):
 
     def symbolic_execution(self, hooks):
         hooks.active_primitive = self
-        hooks.tokens[self.machine_uuid]['state'] = 'initialized'
+        hooks.tokens[self.machine_uuid]['state'] = 'idle'
         return self.parent
 
     def realtime_execution(self, hooks):
@@ -44,13 +44,18 @@ class MachineInitialize(MachinePrimitive):
         next = self
 
         if not self.uuid in hooks.state.keys():
+            hooks.machine_interface.is_acked(self.machine_uuid) # clear prev ack
             hooks.tokens[self.machine_uuid]['state'] = 'pending'
-            hooks.machine_initialize(self.machine_uuid)
+            hooks.machine_inferface.initialize(self.machine_uuid)
             hooks.state[self.uuid] = 'pending'
         else:
-            if hooks.machine_get_status(self.machine_uuid) == 'done':
-                hooks.tokens[self.machine_uuid]['state'] = 'initialized'
-                del hooks.state[self.uuid]
-                next = self.parent
+            resp = hooks.machine_interface.is_acked(self.machine_uuid)
+            if resp != None:
+                if resp:
+                    hooks.tokens[self.machine_uuid]['state'] = 'idle'
+                    del hooks.state[self.uuid]
+                    next = self.parent
+                else:
+                    raise Exception('Machine NACKed - {}'.format(self.machine_uuid))
 
         return next

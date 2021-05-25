@@ -1,3 +1,9 @@
+'''
+This abstracts controlling a machine in EvD. All machines should follow this interface (for instance 
+by using the template).
+
+Machine primitives are specifically written with this interface in mind.
+'''
 
 import rospy
 

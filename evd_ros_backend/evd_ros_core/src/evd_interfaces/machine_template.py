@@ -1,5 +1,10 @@
 '''
-This abstracts the publishing to machines (all task machines should use use this!)
+This abstracts controlling machines (all task machines should use use this!)
+
+Specifically, this template should be extended by task specific software to expose
+machines in EvD.
+
+#TODO handle machine registration
 '''
 
 import rospy

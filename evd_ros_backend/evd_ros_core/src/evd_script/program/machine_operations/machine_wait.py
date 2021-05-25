@@ -37,7 +37,19 @@ class MachineWait(MachinePrimitive):
     '''
 
     def symbolic_execution(self, hooks):
-        pass
+        hooks.active_primitive = self
+        hooks.tokens[self.machine_uuid]['state'] = 'idle'
+        return self.parent
 
     def realtime_execution(self, hooks):
-        pass
+        hooks.active_primitive = self
+        next = self
+
+        status = hooks.machine_interface.get_status(self.machine_uuid)
+        if not status['running']:
+            if status['status'] == 'idle':
+                next = self.parent
+            elif status['status'] == 'error':
+                raise Exception('Machine status in error, failed waiting')
+            
+        return next

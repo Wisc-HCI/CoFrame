@@ -219,7 +219,11 @@ class Node(ABC):
     '''
 
     def symbolic_execution(self, hooks):
-        pass # Inplement the pre-post conditions directly
+        # Inplement the pre-post conditions directly
+        hooks.active_primitive = self
+        return self.parent # Node itself does nothing
 
     def realtime_execution(self, hooks):
-        pass # Implement the full real-time simulation
+        # Implement the full real-time simulation
+        hooks.active_primitive = self
+        return self.parent # Node itself does nothing

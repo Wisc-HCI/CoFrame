@@ -14,11 +14,11 @@ import rospy
 from std_msgs.msg import Bool
 from evd_ros_core.msg import Issue
 
-from evd_ros_core.srv import GetIssues, GetIssuesRequest, GetIssuesResponse
-from evd_ros_core.srv import ClearIssue, ClearIssueRequest, ClearIssueResponse
-from evd_ros_core.srv import GetPendingJobs, GetPendingJobsRequest, GetPendingJobsResponse
-from evd_ros_core.srv import SetPendingJobs, SetPendingJobsRequest, SetPendingJobsResponse
-from evd_ros_core.srv import ClearPendingJob, ClearPendingJobRequest, ClearPendingJobResponse
+from evd_ros_core.srv import GetIssues
+from evd_ros_core.srv import ClearIssue
+from evd_ros_core.srv import GetPendingJobs
+from evd_ros_core.srv import SetPendingJobs
+from evd_ros_core.srv import ClearPendingJob
 
 
 class IssueClientInterface(object):

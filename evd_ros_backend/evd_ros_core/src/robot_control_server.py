@@ -136,7 +136,8 @@ class RobotControlServer:
                         # otherwise we need to stop and report an error
                         if node != None:
                             self._program = ProgramRunner(
-                                raw_program=node,
+                                full_program=self._data_interface.program,
+                                root_node=node,
                                 symbolic=False,
                                 robot=self._robot_interface,
                                 machine=self._machine_interface,
