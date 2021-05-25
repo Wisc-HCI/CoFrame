@@ -35,7 +35,7 @@ class MachineTemplate:
         self._pause_fnt = pause_fnt
 
         self.ack_pub = rospy.Publisher('{0}machine/ack'.format(prefix_fmt), MachineAck, queue_size=10)
-        self.status_pub = rospy.Publisher('{0}machine/wait'.format(prefix_fmt), MachineStatus, queue_size=10)
+        self.status_pub = rospy.Publisher('{0}machine/status'.format(prefix_fmt), MachineStatus, queue_size=10)
 
         self.initialize_sub = rospy.Subscriber('{0}machine/initialize'.format(prefix_fmt), MachineInitialize, self._initialize_cb)
         self.start_sub = rospy.Subscriber('{0}machine/start'.format(prefix_fmt), MachineStart, self._start_cb)

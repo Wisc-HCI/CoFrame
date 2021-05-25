@@ -17,7 +17,7 @@ from geometry_msgs.msg import Vector3
 
 class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
 
-    TYPES = ['joint', 'linear', 'planner']
+    TYPES = ['joint', 'ee_ik']
 
     '''
     Data structure methods
@@ -32,14 +32,13 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, startLocUuid=None, endLocUuid=None, waypointUuids=[],
-                 trace=None, move_type="joint", velocity=0, acceleration=0,
+                 trace=None, move_type="joint", velocity=0,
                  parent=None, type='', name='', uuid=None, append_type=True):
 
         self._start_location_uuid = None
         self._end_location_uuid = None
         self._waypoint_uuids = None
         self._velocity = None
-        self._acceleration = None
         self._trace = None
         self._move_type = None
 
@@ -54,7 +53,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         self.end_location_uuid = endLocUuid
         self.waypoint_uuids = waypointUuids
         self.velocity = velocity
-        self.acceleration = acceleration
         self.move_type = move_type
         self.trace = trace
 
@@ -66,7 +64,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             'waypoint_uuids': self.waypoint_uuids,
             'trace': self.trace.to_dct() if self.trace != None else None,
             'velocity': self.velocity,
-            'acceleration': self.acceleration,
             'move_type': self.move_type
         })
         return msg
@@ -83,7 +80,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             type=dct['type'],
             append_type=False,
             velocity=dct['velocity'],
-            acceleration=dct['acceleration'],
             move_type=dct['move_type'])
 
     def to_ros_markers(self, frame_id, id_start=0):
@@ -117,9 +113,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         return lineMarker, waypoint_markers, waypoint_uuids
 
     def to_ros_marker(self, frame_id, id=0):
-        waypoint_markers = []
-        waypoint_uuids = []
-
         lineMarker = Marker()
         lineMarker.header.frame_id = frame_id
         lineMarker.type = Marker.LINE_STRIP
@@ -208,17 +201,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             self.updated_attribute('velocity','set')
 
     @property
-    def acceleration(self):
-        return self._acceleration
-
-    @acceleration.setter
-    def acceleration(self, value):
-        if self._acceleration != value:
-            self._acceleration = value
-            self.trace = None
-            self.updated_attribute('acceleration','set')
-
-    @property
     def move_type(self):
         return self._move_type
 
@@ -286,10 +268,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         if velocity != None:
             self.velocity = velocity
 
-        acceleration = dct.get('acceleration',None)
-        if acceleration != None:
-            self.acceleration = acceleration
-
         move_type = dct.get('move_type',None)
         if move_type != None:
             self.move_type = move_type
@@ -352,7 +330,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         self.updated_attribute('end_location_uuid','update')
         self.updated_attribute('waypoint_uuids','update')
         self.updated_attribute('velocity','update')
-        self.updated_attribute('acceleration','update')
         self.updated_attribute('move_type','update')
         self.updated_attribute('trace','update')
 
@@ -363,6 +340,5 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         self.updated_attribute('end_location_uuid','update')
         self.updated_attribute('waypoint_uuids','update')
         self.updated_attribute('velocity','update')
-        self.updated_attribute('acceleration','update')
         self.updated_attribute('move_type','update')
         self.updated_attribute('trace','update')
