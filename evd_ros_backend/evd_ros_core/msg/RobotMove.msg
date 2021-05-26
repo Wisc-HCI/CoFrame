@@ -15,3 +15,6 @@ float32 velocity
 # otherwise will try to oblige sampling timestep
 float32 STD_TIMESTEP = 0
 float32 timestep
+
+# enforce a user manual override to run behavior
+bool manual_safety

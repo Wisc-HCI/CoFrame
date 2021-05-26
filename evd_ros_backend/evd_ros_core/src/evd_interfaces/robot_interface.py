@@ -39,16 +39,22 @@ class RobotInterface:
     def pause(self, state):
         self.pause_pub.publish(RobotPause(True))
 
-    def move_trajectory_async(self, evd_trajectory):
+    def move_async(self, evd_waypoint, move_type='ee_ik', velocity=None, manual_safety=False):
         pass
 
-    def move_trajectory_sync(self, evd_trajectory):
+    def move_sync(self, evd_waypoint, move_type='ee_ik', velocity=None, manual_safety=False):
         pass
 
-    def grip_async(self, position, speed, effort):
+    def move_trajectory_async(self, evd_trajectory, manual_safety=False):
         pass
 
-    def grip_sync(self, position, speed, effort):
+    def move_trajectory_sync(self, evd_trajectory, manual_safety=False):
+        pass
+
+    def grip_async(self, position, speed, effort, manual_safety=False):
+        pass
+
+    def grip_sync(self, position, speed, effort, manual_safety=False):
         pass
 
     def servo_ik(self, pose):
