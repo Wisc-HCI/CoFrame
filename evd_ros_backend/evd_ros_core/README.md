@@ -20,8 +20,7 @@ EvD also provides a trace processor and its asociated graders to convert traject
 and waypoint/locations into traces and joint states, respectively.
 
 EvD also tracks issues and pending jobs, whcih can be routed into the frontend
-interface. Similarly, EvD provides a checklist generator that provides all
-frame checklist items that an operator should work through.
+interface.
 
 ## Core Interfaces
 ### Data Client Interface
@@ -47,12 +46,10 @@ TODO
 ### Application TF Handler
 This node generates transforms to connect external application into ros frame.
 
-Publishers:
-- tf
-  - Frames
-    - application_camera
-    - application (ros frame)
-    - control_target
+TF Frames:
+- application_camera
+- application (ros frame)
+- control_target
 
 Subscribers:
 - application/ros_frame
@@ -64,51 +61,44 @@ Subscribers:
     - header.frame_id should == 'app'
 - application/control_target_pose
   - PoseStamped
-    - header.frame_id sould == 'app'
+    - header.frame_id should == 'app'
 
 ### Data Server
-Handles the evd_script storage and implementation logic.
+Handles the evd_script application storage and program implementation logic.
+
+Interfaces:
+- *IssueClientInterface*
 
 Publishers:
 - data_server/update
   - evd_ros_core/UpdateData
-- IssueClientInterface
-  - Updates issues on set + program state
-
-Subscribers:
-- data_server/update_default_objs
-  - String
-    - Serialized default objects available (should be published from task)
+    - Pushes entire program out on changes in the data_server
+- data_server/has_changes
+  - evd_ros_core/UpdateData
+    - Pushes flag information out on changes in data_server but does not push out program (computationally lighter).
 
 Services:
 - data_server/load_application_data
   - evd_ros_core/LoadData
+    - Loads a program from local file on the backend. Filenames can be retrieved with get_application_options
 - data_server/save_application_data
   - evd_ros_core/SaveData
+    - Saves a program to local file on the backend. 
 - data_server/get_application_options
   - evd_ros_core/GetOptions
-- data_server/get_data
+    - Gets all programs stored locally on backend. Provides meta-data for use in loading programs. 
+- data_server/get_program
   - evd_ros_core/GetData
-- data_server/set_data
+    - Gets currently loaded program and/or partial programs by UUID. 
+- data_server/set_prorgam
   - evd_ros_core/SetData
-- data_server/get_default_objects
+    - Sets a new program into data_server and/or partial programs by change manifest. 
+- data_server/get_history
+  - evd_ros_core/GetHistory
+    - Gets current serialized history buffer and/or specific entires from server
+- data_server/get_uuids
   - evd_ros_core/GetData
-
-### Expert Checklist
-Generates all relevant questions / checks for an operator.
-
-Publishers:
-- expert_checklist/updated
-  - Bool
-    - Signal to fronend that changes to list happened
-
-Subscribers:
-- DataClientInterface
-- IssueClientInterface
-
-Services:
-- expert_checklist/get
-  - evd_ros_core/GetExpertChecklist
+    - Gets current list of uuids (either all or filtered by type)     
 
 ### Issue Server
 Provide pending jobs and issues in the EvD system.
@@ -124,80 +114,86 @@ Publishers:
 Subscribers:
 - issue_server/issue_submit
   - evd_ros_core/Issue
+    - Nodes may submit a new issue at any time. This will trigger updated_issues to publish.  
 
 Services:
 - issue_server/get_issues
   - evd_ros_core/GetIssues
+    - Gets all issues and/or filtered list of issues
 - issue_server/clear_issue
   - evd_ros_core/ClearIssue
+    - Clears an issue from the server
 - issue_server/get_pending_jobs
   - evd_ros_core/GetPendingJobs
+    - Gets all pending jobs running in the backend (graders/planners) and/or filtered subset of jobs. 
 - issue_server/set_pending_jobs
   - evd_ros_core/SetPendingJobs
+    - Adds a list of pending jobs into the server
 - issue_server/clear_pending_job
   - evd_ros_core/ClearPendingJob
+    - Clears a specific job from the server's list  
 
 ### Robot Control Server
 High-level control of robot instance subsystems.
 
+Interfaces:
+- *RobotInterface*
+- *ProgramRunner*
+- *MachineInterface*
+- *DataClientInterface*
+
 Publishers:
-- RobotInterface
-  - Controls either simulated or physical robot
-- robot_control_server/at_start
+- `robot_control_server/at_start`
   - Bool
     - Program runner at start
-- robot_control_server/at_end
+- `robot_control_server/at_end`
   - Bool
     - Program runner at end
-- robot_control_server/lockout
+- `robot_control_server/lockout`
   - Bool
     - Program runner is currently executing
+- `robot_control_server/status`
+  - evd_ros_core/ProgramRunnerStatus
+    - Provides current operation of the program runner
+- `robot_control_server/tokens`
+  - String
+    - Serialized JSON with all active tokens (robot, things, machines) in program.
+- `robot_control_server/errors`
+  - String
+    - Publishes errors encountered during execution of program and controls in human readable form    
 
 Subscribers:
-- robot_control_server/use_simulated_robot
-  - Bool
-    - Toogle whether to command the simulated robot (should generally be set as true)
-- robot_control_server/use_physical_robot
-  - Bool
-    - Toogle whether to command the physical robot (should generally be set as false)
-- robot_control_server/freedrive
-  - Bool
-    - Toogle robot into freedrive / gravity compensated mode. (prevents execution)
-- robot_control_server/play
+- `robot_control_server/play`
   - Empty
     - Commands program runner to play
-- robot_control_server/stop
+- `robot_control_server/stop`
   - Empty
     - Commands program runner to stop
-- robot_control_server/pause
+- `robot_control_server/pause`
   - Empty
     - Commands program runner to pause
-- robot_control_server/reset
+- `robot_control_server/reset`
   - Empty
     - Commands program runner to reset (to start)
-- robot_control_server/step_forward
-  - Empty
-    - Commands program to skip to next program node
-- robot_control_server/step_backward
-  - Empty
-    - Commands program to step back to last program node
-    -
+
+Services:
+- `robot_control_server/set_root_node`
+  - evd_ros_core/SetRootNode
+    - Change the root executable node in the program (send an empty string as default to program).
+- `robot_control_server/get_root_node1`
+  - evd_ros_core/GetRootNode
+    - Get the current root node uuid (or empty string if default program behavior)  
 
 ### Trace Processor
 Trace processor generates traces from trajectories and joint states from waypoints.
 
-Publishers:
-- DataClientInterface
-  - Updates trajectories, adds traces, and updates waypoints with joints
-- graders/submit_job
-  - Strong (serialized trace)
-- IssueClientInterface
-  - Updates pending jobs and errors on failed trace
+Interfaces:
+- *DataClientInterface*
+- *IssueClientInterface
 
-Subscribers:
-- DataClientInterface
-  - Looks for trajectories without traces
-  - Looks for waypints/locations without joints
+Publishers:
+- `graders/submit_job`
+  - Strong (serialized trace)
 
 ### Graders
 There are several graders that follow a standard interface. Each grader takes
