@@ -3,8 +3,6 @@ This abstracts controlling machines (all task machines should use use this!)
 
 Specifically, this template should be extended by task specific software to expose
 machines in EvD.
-
-#TODO handle machine registration
 '''
 
 import rospy
@@ -48,7 +46,7 @@ class MachineTemplate:
             # Call machine routine
             ack = True
             if self._init_fnt != None:
-                ack = self._init_fnt() == True
+                ack = self._init_fnt(msg.emergency) == True
 
             # Generate ACK/NACK
             retmsg = MachineAck(self.uuid,ack)

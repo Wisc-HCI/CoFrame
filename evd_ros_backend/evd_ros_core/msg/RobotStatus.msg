@@ -1,10 +1,6 @@
 geometry_msgs/Pose arm_pose
-
 float32[] arm_joints
-float32[] arm_joints_requested
-
 float32 gripper_position
-float32 gripper_position_requested
 
 bool is_real_robot
 bool is_in_emergency_stop

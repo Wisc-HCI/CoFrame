@@ -81,15 +81,22 @@ add_service_files(
   SetData.srv
   LoadData.srv
   SaveData.srv
-  GetIssues.srv
-  ClearIssue.srv
   GetOptions.srv
   GetHistory.srv
-  SetRootNode.srv
+
+  GetIssues.srv
+  ClearIssue.srv
   GetPendingJobs.srv
   SetPendingJobs.srv
   ClearPendingJob.srv
+
   GetExpertChecklist.srv
+
+  SetRootNode.srv
+
+  SetRobotGrip.srv
+  SetRobotMove.srv
+  SetRobotMoveTrajectory.srv
 )
 
 ## Generate actions in the 'action' folder
