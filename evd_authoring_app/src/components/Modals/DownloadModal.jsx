@@ -2,29 +2,26 @@ import React, { useState, useContext }  from 'react';
 
 import { saveAs } from 'file-saver';
 
-import { Stack } from '@fluentui/react/lib/Stack';
-
-import { ModalWrapper } from './ModalWrapper';
-import { ModalControlButtons } from './ModalControlButtons';
+import { Modal, Result, Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 import useApplicationStore from '../../stores/ApplicationStore';
 import useGuiStore from '../../stores/GuiStore';
 import useEvdStore from '../../stores/EvdStore';
 
-import { ApplicationContext, EvDScriptContext, ModalContext } from '../../contexts';
 
-
-export const DownloadModal = (props) => {
+export const DownloadModal = (_) => {
 
     const [downloading, setDownloading] = useState(false);
+
+    const {activeModal, closeModal} = useGuiStore(state=>({
+        activeModal:state.activeModal,
+        closeModal:state.closeModal
+    }));
     
-    const {activeModal, closeModal, filename} = useApplicationStore(state=>(
-        {
-            activeModal:state.activeModal,
-            closeModal:state.closeModal,
-            filename:state.filename
-        }));
+    const filename = useApplicationStore(state=>state.filename);
     const evdProgram = useEvdStore(state=>state.program);
+    
 
 
     if (activeModal === 'download' && !downloading) {
@@ -37,33 +34,12 @@ export const DownloadModal = (props) => {
         setDownloading(true);
     }
 
-    const closeFnt = () => {
-        closeModal();
-        setDownloading(false);
-    };
-
     return (
-        <ModalWrapper
-            name="download"
-            title="Download"closeCb={closeFnt}
-        >
-            <Stack>
-                <br />
-
-                <Stack.Item align="center">
-                    <p>File is downloading. Press the <i><b>Close</b></i> button to return to design.</p>
-                </Stack.Item>
-
-                <br />
-
-                <Stack.Item align="center">
-                    <ModalControlButtons 
-                        order={['close']} 
-                        callbacks={{'close': closeFnt}}
-                        isPrimary={{'close': true}}
-                    />
-                </Stack.Item>
-            </Stack>
-        </ModalWrapper>
+        <Modal title="Download" visible={activeModal === 'download'} onOk={closeModal} onCancel={closeModal}>
+            <Result
+                title={<p>File is downloading. Press the <i><b>Close</b></i> button to return to design.</p>}
+                icon={<Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}/>}
+            />,
+        </Modal>
     );
 }

@@ -60,27 +60,27 @@ export function App(props) {
 
     const menuItems = [
         {
-            key: 'open',
+            modalKey: 'open',
             name: 'Open',
             icon: <FolderOpenOutlined />
         },
         {
-            key: 'save',
+            modalKey: 'save',
             name: 'Save',
             icon: <SaveOutlined />
         },
         {
-            key: 'upload',
+            modalKey: 'upload',
             name: 'Upload',
             icon: <UploadOutlined />
         },
         {
-            key: 'download',
+            modalKey: 'download',
             name: 'Download',
             icon: <DownloadOutlined />
         },
         {
-            key: 'settings',
+            modalKey: 'settings',
             name: 'Settings',
             icon: <SettingOutlined />
         }
@@ -104,7 +104,7 @@ export function App(props) {
                         <h2 style={{paddingLeft:20}}><b>Expert View Dashboard<i> - {filename}</i></b></h2>
                         <span style={{float:'right'}} >
                         {menuItems.map(entry => (
-                            <Button type='text' icon={entry.icon} onClick={()=>setActiveModal(entry.key)}>
+                            <Button type='text' icon={entry.icon} onClick={()=>{console.log(entry.modalKey);setActiveModal(entry.modalKey)}}>
                                 {entry.name}
                             </Button>
                         ))}
