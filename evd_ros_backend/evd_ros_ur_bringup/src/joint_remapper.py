@@ -2,7 +2,6 @@
 
 '''
 Joint Remapper
-Date: 11-5-19
 
 Provides joint renaming behavior for custom URDFs.
 
