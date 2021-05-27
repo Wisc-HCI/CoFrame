@@ -10,6 +10,8 @@ We also support application level interface for loading / saving whole programs 
 needed by the node. This is an optional feature that can be enabled.
 
 TODO Currently the setting changes back to data server is broken / needs implementation.
+TODO Update history get partials to use new message format
+TODO Make use of additional attributes in UpdateData on has_changes sub
 '''
 
 
@@ -19,11 +21,9 @@ import traceback
 
 from evd_ros_core.msg import UpdateData
 
-from evd_ros_core.srv import GetData
-from evd_ros_core.srv import SetData
-from evd_ros_core.srv import LoadData
-from evd_ros_core.srv import SaveData
-from evd_ros_core.srv import GetOptions
+from evd_ros_core.srv import GetHistory
+from evd_ros_core.srv import GetData, SetData
+from evd_ros_core.srv import LoadData, SaveData,GetOptions
 
 from evd_script import Program, NodeParser
 from evd_script.cache import get_evd_cache_obj
@@ -32,9 +32,10 @@ from evd_version_tracking import History, HistoryEntry, VersionTag
 
 class DataClientInterface(object):
 
-    def __init__(self, use_application_interface=False, on_program_update_cb=None, store_program=True):
+    def __init__(self, use_application_interface=False, sub_to_update=True, on_program_update_cb=None, store_program=True):
         self._server_has_updated = False
         self._store_program = store_program
+        self.sub_to_update = sub_to_update
 
         self._use_application_interface = use_application_interface
         self._cache = get_evd_cache_obj()
@@ -50,10 +51,14 @@ class DataClientInterface(object):
         self._program_changes_manifest = []
         self._on_program_update_cb = on_program_update_cb
 
-        self._update_sub = rospy.Subscriber('data_server/update',UpdateData, self._update_cb)
+        if self.sub_to_update:
+            self._update_sub = rospy.Subscriber('data_server/update',UpdateData, self._update_cb)
+        self._has_changes_pub = rospy.Subscriber('data_server/has_changes',UpdateData, self._has_changes_cb)
+        
         self._get_program_srv = rospy.ServiceProxy('data_server/get_program',GetData)
         self._set_program_srv = rospy.ServiceProxy('data_server/set_program',SetData)
-        self._get_history_srv = rospy.ServiceProxy('data_server/get_history',GetData)
+        self._get_history_srv = rospy.ServiceProxy('data_server/get_history',GetHistory)
+        self._get_uuids_srv = rospy.ServiceProxy('data_server/get_uuids',GetData)
 
     '''
     Application Interface
@@ -163,10 +168,6 @@ class DataClientInterface(object):
                 traceback.print_exc()
                 return #Error parsing, ignore for now
 
-        self._server_has_updated = True
-        if self._on_program_update_cb != None:
-            self._on_program_update_cb()
-
     def __program_changed_cb(self, trace):
         # This only runs if program saved
         '''
@@ -182,6 +183,13 @@ class DataClientInterface(object):
         #TODO need to keep a manifest of all changed nodes
         # self._program_changes_manifest
         pass
+
+    def _has_changes_cb(self, msg):
+        #TODO do things with action, changes, and tags
+        #NOTE data is purposefully empty here
+        self._server_has_updated = True
+        if self._on_program_update_cb != None:
+            self._on_program_update_cb()
 
     def get_history(self, fetch=False):
         if fetch:
@@ -201,6 +209,7 @@ class DataClientInterface(object):
             raise Exception('Not storing program')
 
     def get_history_partials(self, tags=[]):
+        #TODO this needs to be updated
         response = self._get_history_srv(False,json.dumps(tags))
 
         if not response.status:

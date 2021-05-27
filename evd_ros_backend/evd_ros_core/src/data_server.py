@@ -2,6 +2,10 @@
 
 '''
 Data server is the source of program "truth" in EvD.
+
+TODO get_uuids implement
+TODO has_changes publish implement
+TODO handle orphaning (submit issues to issue server)
 '''
 
 import os
@@ -9,18 +13,19 @@ import json
 import rospy
 import traceback
 
-from std_msgs.msg import String
 from evd_ros_core.msg import UpdateData, Version, ApplicationOption
-from evd_ros_core.srv import GetData, GetDataRequest, GetDataResponse
-from evd_ros_core.srv import SetData, SetDataRequest, SetDataResponse
-from evd_ros_core.srv import LoadData, LoadDataRequest, LoadDataResponse
-from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
-from evd_ros_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
-from evd_ros_core.srv import GetHistory, GetHistoryRequest, GetHistoryResponse
+from evd_ros_core.srv import GetData, GetDataResponse
+from evd_ros_core.srv import SetData, SetDataResponse
+from evd_ros_core.srv import LoadData, LoadDataResponse
+from evd_ros_core.srv import SaveData, SaveDataResponse
+from evd_ros_core.srv import GetOptions, GetOptionsResponse
+from evd_ros_core.srv import GetHistory, GetHistoryResponse
 
 from evd_script.program.program import Program
 from evd_script.cache import get_evd_cache_obj
+from evd_script.orphans import evd_orphan_repair
 from evd_version_tracking import HistoryEntry, History, VersionTag
+from evd_interfaces import IssueClientInterface
 
 
 class DataServer:
@@ -46,12 +51,15 @@ class DataServer:
 
         # Setup ROS Interface
         self._update_prog_pub = rospy.Publisher('data_server/update',UpdateData, queue_size=10, latch=True)
+        self._has_changes_pub = rospy.Publisher('data_server/has_changes',UpdateData, queue_size=10, latch=True)
+
         self._load_app_srv = rospy.Service('data_server/load_application_data',LoadData,self._load_app_cb)
         self._save_app_srv = rospy.Service('data_server/save_application_data',SaveData,self._save_app_cb)
         self._get_app_opts_srv = rospy.Service('data_server/get_application_options',GetOptions,self._get_app_opts_cb)
         self._get_prog_srv = rospy.Service('data_server/get_program',GetData,self._get_prog_cb)
         self._set_prog_srv = rospy.Service('data_server/set_program',SetData,self._set_prog_cb)
         self._get_history_srv = rospy.Service('data_server/get_history',GetHistory,self._get_history_cb)
+        self._get_uuids_srv = rospy.Service('data_server/get_uuids',GetData,self._get_uuids_cb)
 
     def spin(self):
         # give nodes time before publishing initial state
@@ -143,7 +151,7 @@ class DataServer:
 
         return response
 
-    def _get_app_opts_cb(self, request):
+    def _get_app_opts_cb(self, _):
         response = GetOptionsResponse()
 
         # Try opening meta file
@@ -295,7 +303,8 @@ class DataServer:
         self._update_prog_pub.publish(msg)
 
     def __program_updated_cb(self, attribute_trace):
-        pass # maybe implement a repair routine here?
+        pass # maybe implement the repair routine here?
+        # Run orphan check
 
     #===========================================================================
     #   History Level ROS Callbacks
@@ -304,7 +313,7 @@ class DataServer:
 
     def _get_history_cb(self, request):
         errors = []
-        response = GetDataResponse()
+        response = GetHistoryResponse()
 
         outData = None
         if request.all and not request.from_provided_tag:
@@ -404,7 +413,7 @@ class DataServer:
         # Find if entry already exists
         idx = None
         for i in range(0,len(meta_data['options'])):
-            if request.filename == meta_data['options'][i]['filename']:
+            if entry.filename == meta_data['options'][i]['filename']:
                 idx = i
                 break
 

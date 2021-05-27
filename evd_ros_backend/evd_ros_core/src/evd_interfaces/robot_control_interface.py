@@ -7,9 +7,9 @@ This interface reduces the boilerplate to control the robot/program execution.
 import json
 import rospy
 
-from evd_ros_core.srv import SetRootNode
 from std_msgs.msg import Empty, Bool, String
 from evd_ros_core.msg import ProgramRunnerStatus
+from evd_ros_core.srv import SetRootNode, GetRootNode
 
 
 class RobotControlInterface:
@@ -23,7 +23,8 @@ class RobotControlInterface:
         self._user_status_cb = status_cb
         self._user_error_cb = error_cb
 
-        self.root_node_srv = rospy.serviceProxy('robot_control_server/set_root_node',SetRootNode)
+        self.set_root_node_srv = rospy.serviceProxy('robot_control_server/set_root_node',SetRootNode)
+        self.get_root_node_srv = rospy.serviceProxy('robot_control_server/get_root_node',GetRootNode)
 
         self.play_pub = rospy.Publisher('robot_control_server/play',Empty,queue_size=10)
         self.stop_pub = rospy.Publisher('robot_control_server/stop',Empty,queue_size=10)
@@ -62,8 +63,11 @@ class RobotControlInterface:
             self._user_error_cb(msg.data)
 
     def set_root_node(self, uuid):
-        response = self.root_node_srv(uuid)
+        response = self.set_root_node_srv(uuid)
         return response.status, response.message
+
+    def get_root_node(self):
+        return self.get_root_node_srv().uuid
 
     def play(self):
         self.play_pub.publish(Empty())

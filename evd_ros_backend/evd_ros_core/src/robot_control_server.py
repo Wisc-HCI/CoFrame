@@ -10,6 +10,7 @@ import rospy
 from std_msgs.msg import Empty, Bool, String
 from evd_ros_core.msg import ProgramRunnerStatus
 from evd_ros_core.srv import SetRootNode, SetRootNodeResponse
+from evd_ros_core.srv import GetRootNode, GetRootNodeResponse
 
 from evd_interfaces.program_runner import ProgramRunner
 from evd_interfaces.robot_interface import RobotInterface
@@ -37,7 +38,10 @@ class RobotControlServer:
         self._stop_sub = rospy.Subscriber('robot_control_server/stop',Empty,self._stop_cb)
         self._pause_sub = rospy.Subscriber('robot_control_server/pause',Empty,self._pause_cb)
         self._reset_sub = rospy.Subscriber('robot_control_server/reset',Empty,self._reset_cb)
-        self.root_node_srv = rospy.Service('robot_control_server/set_root_node',SetRootNode,self._root_node_cb)
+        
+        # Program execution point
+        self.set_root_node_srv = rospy.Service('robot_control_server/set_root_node',SetRootNode,self._set_root_node_cb)
+        self.get_root_node_srv = rospy.Service('robot_control_server/get_root_node',GetRootNode,self._get_root_node_cb)
 
         # Player Feedback
         self._at_start_pub = rospy.Publisher('robot_control_server/at_start',Bool, queue_size=10, latch=True)
@@ -47,19 +51,19 @@ class RobotControlServer:
         self._tokens_pub = rospy.Publisher('robot_control_server/tokens',String, queue_size=10)
         self._errors_pub = rospy.Publisher('robot_control_server/error',String,queue_size=10)
 
-    def _play_cb(self, noop):
+    def _play_cb(self, _):
         self._cmd_queue.append('play')
 
-    def _stop_cb(self, noop):
+    def _stop_cb(self, _):
         self._cmd_queue.append('stop')
 
-    def _pause_cb(self, noop):
+    def _pause_cb(self, _):
         self._cmd_queue.append('pause')
 
-    def _reset_cb(self, noop):
+    def _reset_cb(self, _):
         self._cmd_queue.append('reset')
 
-    def _root_node_cb(self, request):
+    def _set_root_node_cb(self, request):
         response = SetRootNodeResponse()
 
         if self._playing:
@@ -75,6 +79,9 @@ class RobotControlServer:
             response.message = ''
 
         return response
+
+    def _get_root_node_cb(self, _):
+        return GetRootNodeResponse(self._root_node_uuid)
 
     def set_at_start(self,state):
         self._at_start_pub.publish(Bool(state))

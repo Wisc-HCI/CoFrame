@@ -68,7 +68,6 @@ add_message_files(
   Issue.msg
   Version.msg
   UpdateData.msg
-  ExpertCheck.msg
   StringArray.msg
   ApplicationOption.msg
   ProgramRunnerStatus.msg
@@ -90,9 +89,8 @@ add_service_files(
   SetPendingJobs.srv
   ClearPendingJob.srv
 
-  GetExpertChecklist.srv
-
   SetRootNode.srv
+  GetRootNode.srv
 
   SetRobotGrip.srv
   SetRobotMove.srv
