@@ -15,26 +15,40 @@ import frameStyles from '../../frameStyles';
 export const SimulatorTile = (props) => {
 
     const frame = useGuiStore(state => state.frame);
-    
+
     return (
-        <div style={{height:'100%',padding:10}}>
-            <Card 
-                style={{height:'100%'}}
-                bodyStyle={{padding:0,display:'flex',flexDirection:'column',height:'100%'}}
+        <div style={{height:'800px',padding:10}}>
+            <Card
+                style={{flex:1,height:'890px'}}
+                bodyStyle={{padding:0,height:'890px'}}
                 title="Simulator">
-                    <div style={{flex:4, backgroundColor: frameStyles.colors[frame], padding: 5}}>
-                        <Scene 
+                    <div style={{position:'relative',height:'830px', backgroundColor: frameStyles.colors[frame], padding: 5}}>
+
+                        <Scene
                             displayTfs={true}
                             displayGrid={true}
                             isPolar={false}
                             backgroundColor='#1e1e1e'
                             planeColor='#141414'
                             highlightColor='#ffffff'
+                            height = "700px"
+                            style={{position:'relative'}}
+
                         />
+
+                        <Card size="small" style ={{ position:'absolute',bottom: '-24px',left:'50%',transform: 'translate(-50%, -50%)'}}>
+                        <Controls style={{ float: 'center'}}/>
+
+                        </Card>
+
+
+
                     </div>
-                    
-                    
-                    <div style={{flex:1, width:'100%',padding:15}}>CONTROLS HERE</div>
+
+
+
+
+
             </Card>
         </div>
     );

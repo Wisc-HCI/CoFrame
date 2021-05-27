@@ -1,11 +1,10 @@
 import React from 'react';
-import { IconButton } from '@fluentui/react/lib/Button';
-import { Toggle } from '@fluentui/react/lib/Toggle';
 
-import { 
-    ControlsContext,
-    UnityContext
- } from '../../contexts';
+import { Toggle } from '@fluentui/react/lib/Toggle';
+import {CaretRightFilled,PauseOutlined,RollbackOutlined  } from '@ant-design/icons';
+import { Button, Radio , Space,Tooltip,Switch} from 'antd';
+
+
 
 export class Controls extends React.Component {
 
@@ -31,67 +30,60 @@ export class Controls extends React.Component {
 
   render() {
 
-    const { 
-        width, 
-        height 
+    const {
+        width,
+        height
     } = this.props;
 
     return (
-        <ControlsContext.Consumer>
-            { controlsValue => (
-                <UnityContext.Consumer>
-                    { unityValue => (
 
-                        <div 
-                            style={{
-                                paddingLeft: '10px', 
-                                paddingRight: '10px',
-                                width: width,
-                                height: height
-                            }}
-                        >
-                        <i style={{fontSize: '18px'}}>{`Controls ~ ${controlsValue.inSetup ? 'Program Setup' : 'Expert Checklist'}`}</i>
+                        <div>
 
-                        <br />
+                      
+                        <Space>
+                         <Tooltip placement="topLeft" title="Play">
+                        <Button ghost
+                            type = "primary"
+                            shape = "circle"
 
-                        <IconButton
-                            iconProps={{ iconName: 'Refresh' }}
-                            title="Reset"
-                            ariaLabel="Reset"
-                            onClick={this.onResetClicked}
+                            icon= {<CaretRightFilled />}
+                            onClick={() => this.onPlayClicked}
                         />
-                        <IconButton
-                            iconProps={{ iconName: 'Play' }}
-                            title="Play"
-                            ariaLabel="Play"
-                            onClick={this.onPlayClicked}
+                        </Tooltip>
+                        <Tooltip placement="topLeft" title="Pause">
+                        <Button ghost
+                        type = "primary"
+                        shape = "circle"
+                        icon= {<PauseOutlined />}
+                        onClick={() => this.onPauseClicked}
                         />
-                        <IconButton
-                            iconProps={{ iconName: 'Pause' }}
-                            title="Pause"
-                            ariaLabel="Pause"
-                            onClick={this.onPauseClicked}
+                        </Tooltip>
+                        <Tooltip placement="topLeft" title="Refresh">
+                        <Button ghost
+                        type = "primary"
+                        shape = "circle"
+                        icon= {<RollbackOutlined />}
+                        onClick={() => this.onResetClicked}
                         />
+                        </Tooltip>
 
-                        {controlsValue.checklistItem}
 
-                        <Toggle label="Reach Sphere" onText="On" offText="Off" 
-                            onChange={() => { 
-                                const u  = unityValue.simulator.unityInstance;
-                                u.SendMessage("ToggleReachSphereScript","ToggleVisibility", "true");
-                            }} 
-                        />
 
-                        <Toggle label="Occupancy Zones" onText="On" offText="Off" onChange={() => { 
-                            unityValue.simulator.SendMessage("ToggleOccupancyZoneVisibilityScript","ToggleVisibility", "true")}} 
-                        />
+
+
+                        </Space>
+
+
+
+
+
+
 
                         </div>
 
-                    )}
-                </UnityContext.Consumer>
-            )}
-        </ControlsContext.Consumer> 
+
+
+
     );
   }
 }
