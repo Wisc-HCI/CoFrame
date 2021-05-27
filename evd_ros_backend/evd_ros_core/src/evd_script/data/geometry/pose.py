@@ -9,9 +9,6 @@ from ...node import Node
 from .position import Position
 from .orientation import Orientation
 from ...node_parser import NodeParser
-from evd_ros_backend.evd_ros_core.src.evd_script.data.geometry import position
-
-from evd_ros_backend.evd_ros_core.src.evd_script.data.geometry import orientation
 
 
 class Pose(Node):

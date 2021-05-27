@@ -16,7 +16,7 @@ to use them outside of this interface.
 
 import rospy
 
-from evd_ros_backend.srv import SetRobotMove, SetRobotMoveTrajectory, SetRobotGrip
+from evd_ros_core.srv import SetRobotMove, SetRobotMoveTrajectory, SetRobotGrip
 from evd_ros_core.msg import RobotAck, RobotStatus, RobotStop, RobotPause, RobotMove, RobotMoveTrajectory, RobotGrip
 
 

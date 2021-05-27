@@ -23,8 +23,8 @@ class RobotControlInterface:
         self._user_status_cb = status_cb
         self._user_error_cb = error_cb
 
-        self.set_root_node_srv = rospy.serviceProxy('robot_control_server/set_root_node',SetRootNode)
-        self.get_root_node_srv = rospy.serviceProxy('robot_control_server/get_root_node',GetRootNode)
+        self.set_root_node_srv = rospy.ServiceProxy('robot_control_server/set_root_node',SetRootNode)
+        self.get_root_node_srv = rospy.ServiceProxy('robot_control_server/get_root_node',GetRootNode)
 
         self.play_pub = rospy.Publisher('robot_control_server/play',Empty,queue_size=10)
         self.stop_pub = rospy.Publisher('robot_control_server/stop',Empty,queue_size=10)

@@ -304,7 +304,10 @@ class DataServer:
 
     def __program_updated_cb(self, attribute_trace):
         pass # maybe implement the repair routine here?
-        # Run orphan check
+        # TODO Run orphan check
+
+    def _get_uuids_cb(self, request):
+        return GetDataResponse() #TODO implement this
 
     #===========================================================================
     #   History Level ROS Callbacks

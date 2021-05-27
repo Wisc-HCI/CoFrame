@@ -14,6 +14,8 @@ from evd_interfaces.robot_control_interface import RobotControlInterface
 class TestRobotControlServerNode:
 
     def __init__(self):
+        self._root = tk.Tk()
+        self._root.resizable(True, True)
 
         self.var_error_msg = tk.StringVar()
         self.var_tokens_msg = tk.StringVar()
@@ -23,47 +25,72 @@ class TestRobotControlServerNode:
         self.var_status_curr_time = tk.StringVar()
         self.var_status_stop_time = tk.StringVar()
 
-        self._root = tk.Tk()
-        controlFrame = tk.LabelFrame(self._root, text="Controls")
-        controlFrame.pack()
+        mainFrame = tk.Frame(self._root)
+        mainFrame.grid(row=0)
+
+        controlFrame = tk.LabelFrame(mainFrame, text="Controls")
+        controlFrame.pack(side=tk.LEFT, fill=tk.Y)
 
         self.play_button = tk.Button(controlFrame, text="Play", command=self._on_play_cb)
-        self.play_button.pack()
+        self.play_button.pack(fill=tk.X)
         self.stop_button = tk.Button(controlFrame, text="Stop", command=self._on_stop_cb)
-        self.stop_button.pack()
+        self.stop_button.pack(fill=tk.X)
         self.pause_button = tk.Button(controlFrame, text="Pause", command=self._on_pause_cb)
-        self.pause_button.pack()
+        self.pause_button.pack(fill=tk.X)
         self.reset_button = tk.Button(controlFrame, text="Reset", command=self._on_reset_cb)
-        self.reset_button.pack()
+        self.reset_button.pack(fill=tk.X)
 
-        feedbackFrame = tk.LabelFrame(self._root, text="Feedback")
-        feedbackFrame.pack()
+        feedbackFrame = tk.LabelFrame(mainFrame, text="Feedback")
+        feedbackFrame.pack(side=tk.LEFT, fill=tk.Y)
 
         self.at_start_checkbox = tk.Checkbutton(feedbackFrame, state=tk.DISABLED, text="At Start")
-        self.at_start_checkbox.pack()
+        self.at_start_checkbox.pack(fill=tk.X)
         self.at_end_checkbox = tk.Checkbutton(feedbackFrame, state=tk.DISABLED, text="At End")
-        self.at_end_checkbox.pack()
+        self.at_end_checkbox.pack(fill=tk.X)
         self.lockout_checkbox = tk.Checkbutton(feedbackFrame, state=tk.DISABLED, text="In Lockout")
-        self.lockout_checkbox.pack()
-        self.error_message = tk.Message(feedbackFrame, state=tk.DISABLED, text="Current Error", textvariable=self.var_error_msg)
-        self.error_message.pack()
-        self.token_message = tk.Message(feedbackFrame, state=tk.DISABLED, text="Current Tokens", textvariable=self.var_tokens_msg)
-        self.token_message.pack()
+        self.lockout_checkbox.pack(fill=tk.X)
 
-        statusFrame = tk.LabelFrame(self._root, text="Status")
-        statusFrame.pack()
+        statusFrame = tk.LabelFrame(mainFrame, text="Status")
+        statusFrame.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.status_uuid = tk.Entry(statusFrame, state=tk.DISABLED, text="UUID", textvariable=self.var_status_uuid)
-        self.status_uuid.pack()
-        self.status_start_time = tk.Entry(statusFrame, state=tk.DISABLED, text="Start Time", textvariable=self.var_status_start_time)
-        self.status_start_time.pack()
-        self.status_previous_time = tk.Entry(statusFrame, state=tk.DISABLED, text="Previous Time", textvariable=self.var_status_prev_time)
-        self.status_previous_time.pack()
-        self.status_current_time = tk.Entry(statusFrame, state=tk.DISABLED, text="Current Time", textvariable=self.var_status_curr_time)
-        self.status_current_time.pack()
-        self.status_stop_time = tk.Entry(statusFrame, state=tk.DISABLED, text="Stop Time", textvariable=self.var_status_stop_time)
-        self.status_stop_time.pack()
+        status_uuid_lbl = tk.Label(statusFrame, text="UUID")
+        status_uuid_lbl.grid(row=0, column=0)
+        self.status_uuid = tk.Entry(statusFrame, state=tk.DISABLED, textvariable=self.var_status_uuid)
+        self.status_uuid.grid(row=0, column=1)
 
+        status_start_time_lbl = tk.Label(statusFrame, text="Start Time")
+        status_start_time_lbl.grid(row=1, column=0)
+        self.status_start_time = tk.Entry(statusFrame, state=tk.DISABLED, textvariable=self.var_status_start_time)
+        self.status_start_time.grid(row=1, column=1)
+
+        status_previous_time_lbl = tk.Label(statusFrame, text="Previous Time")
+        status_previous_time_lbl.grid(row=2, column=0)
+        self.status_previous_time = tk.Entry(statusFrame, state=tk.DISABLED, textvariable=self.var_status_prev_time)
+        self.status_previous_time.grid(row=2, column=1)
+
+        status_current_time_lbl = tk.Label(statusFrame, text="Current Time")
+        status_current_time_lbl.grid(row=3, column=0)
+        self.status_current_time = tk.Entry(statusFrame, state=tk.DISABLED, textvariable=self.var_status_curr_time)
+        self.status_current_time.grid(row=3, column=1)
+
+        status_stop_time_lbl = tk.Label(statusFrame, text="Stop Time")
+        status_stop_time_lbl.grid(row=4, column=0)
+        self.status_stop_time = tk.Entry(statusFrame, state=tk.DISABLED, textvariable=self.var_status_stop_time)
+        self.status_stop_time.grid(row=4, column=1)
+
+        messageFrame = tk.LabelFrame(self._root, text="Message")
+        messageFrame.grid(row=1, sticky='EWNS')
+
+        error_message_lbl = tk.Label(messageFrame, text="Current Error")
+        error_message_lbl.pack()
+        self.error_message = tk.Entry(messageFrame, state=tk.DISABLED, textvariable=self.var_error_msg)
+        self.error_message.pack(expand=True, fill=tk.X)
+
+        token_message_lbl = tk.Label(messageFrame, text="Current Tokens")
+        token_message_lbl.pack()
+        self.token_message = tk.Entry(messageFrame, state=tk.DISABLED, textvariable=self.var_tokens_msg)
+        self.token_message.pack(expand=True, fill=tk.X)
+        
         self._controls = RobotControlInterface(
             at_start_cb=self._at_start_cb, 
             at_end_cb=self._at_end_cb, 

@@ -24,6 +24,8 @@ class TestApplicationDataPublisher:
         self._options = None
 
         self._root = tk.Tk()
+        self._root.resizable(True, True)
+        
         frame = tk.Frame(self._root)
         frame.pack()
 
