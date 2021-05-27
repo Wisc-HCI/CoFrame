@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { DefaultButton } from '@fluentui/react/lib/Button';
-import { Card } from 'antd';
+import { Card, Button } from 'antd';
 import { Tile } from './Tile';
 import { TileHeader } from './TileHeader';
 import { ProgramEditor } from '../ProgramEditor';
@@ -23,16 +22,15 @@ export const ProgramTile = (props) => {
         <div style={{height:'100%',paddingRight:10,paddingTop:10,paddingBottom:10}}>
             <Card 
                 extra={
-                    <DefaultButton 
-                        text={editorPane === 'setup' ? "Switch to Editor" : "Switch to Setup"}
-                        onClick={() => { 
-                            if (editorPane === 'setup') {
-                                setEditorPane('editor')
-                            } else {
-                                setEditorPane('setup')
-                            }
-                        }}
-                    />
+                    <Button onClick={() => { 
+                        if (editorPane === 'setup') {
+                            setEditorPane('editor')
+                        } else {
+                            setEditorPane('setup')
+                        }
+                    }}>
+                        {editorPane === 'setup' ? "Switch to Editor" : "Switch to Setup"}
+                    </Button>
                 }
                 style={{height:'100%'}}
                 bodyStyle={{padding:0,display:'flex',flexDirection:'column',height:'100%'}}

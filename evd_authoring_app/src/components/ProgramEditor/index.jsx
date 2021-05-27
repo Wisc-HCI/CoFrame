@@ -49,37 +49,11 @@ export class ProgramEditor extends Component {
       <div 
         id="blockly"
         style={{ 
-          height: 'calc(100vh-64px)', 
-          width: '45vw'
-      }}/>
+          height: '100%', 
+          width: '100%'
+      }}>
+        BLOCKLY HERE
+      </div>
     )
-
-    return (
-        <div
-            id="blockly"
-            style={{ 
-              height: 'calc(100vh-64px)', 
-              width: '45vw'
-            }}
-        >
-            <ReactBlockly.BlocklyEditor
-                toolboxCategories={toolbox}
-                workspaceConfiguration={{
-                    grid: {
-                        spacing: 20,
-                        length: 3,
-                        colour: '#ccc',
-                        snap: true,
-                    },
-                    scrollbars: true,
-                    trashcan: false,
-                    renderer: 'thrasos',
-                }}
-                initialXml={initialXml}
-                wrapperDivClassName="fill-height"
-                workspaceDidChange={this.workspaceDidChange}
-            />
-        </div>
-    );
   }
 }

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@craco/craco": "^5.9.0",
     "@fluentui/react": "^8.14.13",
     "@fluentui/react-hooks": "^8.2.1",
     "@robostack/roslib": "^1.1.1",
@@ -11,8 +12,11 @@
     "@testing-library/user-event": "^13.1.9",
     "antd": "^4.15.6",
     "blockly": "^5.20210325.1",
+    "craco-less": "^1.17.1",
     "file-saver": "^2.0.2",
     "immer": "^9.0.2",
+    "less": "^3.13.1",
+    "less-loader": "^6.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-lorem-ipsum": "^1.4.5",
@@ -25,10 +29,13 @@
     "zustand": "^3.5.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
   },
   "browserslist": {
     "production": [

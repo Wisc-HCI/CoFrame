@@ -1,12 +1,13 @@
 import create from "zustand";
 import produce from "immer";
+import ROSLIB from '@robostack/roslib';
 
 const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
 
 
 
-const store = (set) => ({
+const store = (set, get) => ({
     url: 'ws://localhost:9090',
     // SetURL resets ROS
     setUrl: (url) => set({url:url,connected:false,ros:null,loadAppSrv:null, saveAppSrv:null, getAppOptionsSrv:null}),
@@ -20,11 +21,11 @@ const store = (set) => ({
     onClose: ()=>{},
     connect: async () => {
         const ros = new ROSLIB.Ros();
-        ros.on('connection', state.onConnection);
-        ros.on('error', state.onError);
-        ros.on('close',state.onClose);
+        ros.on('connection', get().onConnection);
+        ros.on('error', get().onError);
+        ros.on('close',get().onClose);
 
-        await ros.connect({url: state.url})
+        await ros.connect({url: get().url})
         set({ros: ros})
     }
 });

@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 // import { UnityContent } from 'react-unity-webgl';
-import 'antd/dist/antd.css';
-import 'antd/dist/antd.dark.css';
 // import { computeLayout } from "./layout";
-import { Layout, Row, Col } from 'antd';
-
-import { Header } from "./components/Header";
-import { Body } from "./components/Body";
+import { Layout, Row, Col, Button } from 'antd';
+import { FolderOpenOutlined, SaveOutlined, 
+         UploadOutlined, DownloadOutlined, 
+         SettingOutlined } from '@ant-design/icons';
+import './themes/safety.less';
+import './themes/quality.less';
+import './themes/performance.less';
+import './themes/business.less';
 import { ChecklistTile } from "./components/Body/ChecklistTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
-import { CommandBar } from '@fluentui/react/lib/CommandBar';
-import { ActionButton } from '@fluentui/react/lib/Button';
 
 import { Modals } from "./components/Modals";
 
@@ -20,75 +20,74 @@ import useGuiStore from "./stores/GuiStore";
 
 import Logo from './content/logo.svg';
 
-import { 
-    GetRosServiceSingleton,
-    GetApplicationServiceSingleton ,
-    GetEvDScriptServiceSingleton,
-    GetPendingServiceSingleton
-} from './services';
-
-import { 
-    ThemeContext,
-    ApplicationContext,
-    RosContext,
-    EvDScriptContext,
-    PendingContext,
-    UnityContext,
-    ModalContext
-} from "./contexts";
+import frameStyles from './frameStyles';
+import { formProperties } from "@fluentui/utilities";
 
 
 export function App(props) {
 
     const filename = useApplicationStore(state=>state.filename);
     const setActiveModal = useGuiStore(state=>state.setActiveModal);
-    const { 
-        theme, 
-        frameStyles, 
-        toggleTheme, 
-        themeName
-    } = props;
+    const frame = useGuiStore(state=>state.frame);
+
+    useEffect(() => {
+        if (frame === 'safety') {
+            document.body.classList.remove('business');
+            document.body.classList.remove('performance');
+            document.body.classList.remove('quality');
+            document.body.classList.add('safety');
+        } else if (frame === 'quality') {
+            document.body.classList.remove('business');
+            document.body.classList.remove('performance');
+            document.body.classList.remove('safety');
+            document.body.classList.add('quality');
+        } else if (frame === 'performance') {
+            document.body.classList.remove('business');
+            document.body.classList.remove('quality');
+            document.body.classList.remove('safety');
+            document.body.classList.add('performance');
+        } else if (frame === 'business') {
+            document.body.classList.remove('performance');
+            document.body.classList.remove('quality');
+            document.body.classList.remove('safety');
+            document.body.classList.add('business');
+        }
+      }, [frame])
 
     // const {mounted, setMounted} = useState(false);
     // const {modalState, setModalState} = useState({ 'settings': true });
+    const hat = true;
 
     const menuItems = [
         {
             key: 'open',
             name: 'Open',
-            iconName: 'OpenFolderHorizontal'
+            icon: <FolderOpenOutlined />
         },
         {
             key: 'save',
             name: 'Save',
-            iconName: 'Save'
+            icon: <SaveOutlined />
         },
         {
             key: 'upload',
             name: 'Upload',
-            iconName: 'Upload'
+            icon: <UploadOutlined />
         },
         {
             key: 'download',
             name: 'Download',
-            iconName: 'Download'
+            icon: <DownloadOutlined />
         },
         {
             key: 'settings',
             name: 'Settings',
-            iconName: 'Settings'
+            icon: <SettingOutlined />
         }
     ];
 
     return (
-        <ThemeContext.Provider 
-                value={{
-                    theme: theme,
-                    frameStyles: frameStyles,
-                    toggleTheme: toggleTheme,
-                    themeName: themeName
-                }}
-            >
+        <>
             <Layout style={{height:'100vh',width:'100vw'}}>
                 <Layout.Header className="header">
                     <img
@@ -100,13 +99,14 @@ export function App(props) {
                             height: '30pt'
                         }}
                     />
-                    <Row align={'middle'} justify={'space-between'}>
-                        <h2 style={{paddingLeft:20,color:theme.semanticColors.bodyText}}><b>Expert View Dashboard<i> - {filename}</i></b></h2>
+
+                    <Row align={'middle'} justify='space-between'>
+                        <h2 style={{paddingLeft:20}}><b>Expert View Dashboard<i> - {filename}</i></b></h2>
                         <span style={{float:'right'}} >
                         {menuItems.map(entry => (
-                            <ActionButton iconProps={{iconName:entry.iconName}} allowDisabledFocus onClick={()=>setActiveModal(entry.key)}>
+                            <Button type='text' icon={entry.icon} onClick={()=>setActiveModal(entry.key)}>
                                 {entry.name}
-                            </ActionButton>
+                            </Button>
                         ))}
                         </span>
                         
@@ -132,6 +132,6 @@ export function App(props) {
             </Layout>
 
             <Modals/>         
-        </ThemeContext.Provider>
+        </>
     )
 }
