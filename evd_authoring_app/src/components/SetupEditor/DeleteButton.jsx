@@ -3,6 +3,9 @@ import React from 'react';
 import { TooltipHost } from '@fluentui/react/lib/Tooltip';
 import { IconButton } from '@fluentui/react/lib/Button';
 import { useId } from '@fluentui/react-hooks';
+import {Button,Tooltip} from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+
 
 
 export const DeleteButton = (props) => {
@@ -16,25 +19,22 @@ export const DeleteButton = (props) => {
     const tooltipId = useId('delete-tooltip');
 
     return (
-        <TooltipHost
-            content={(disabled) ? `Cannot Delete ${type}` : `Delete ${type}`}
+        <Tooltip
+            title={(disabled) ? `Cannot Delete ${type}` : `Delete ${type}`}
             id={tooltipId}
             calloutProps={{ gapSpace: 0 }}
-            styles={{
-                root: { display: 'inline-block', textAlign: 'right' }
-            }}
         >
-            <IconButton 
-                primary={true}
-                iconProps={{ iconName: 'Delete' }}
-                styles={{
-                    root: {
-                        fontSize: '50px', textAlign: 'right' 
-                    }
-                }}
+            <Button
+                type = 'primary'
+
+                icon={ <DeleteOutlined />}
+
                 onClick={callback}
                 disabled={disabled}
-            /> 
-        </TooltipHost>
+            >
+            Delete
+
+            </Button>
+        </Tooltip>
     );
 };
