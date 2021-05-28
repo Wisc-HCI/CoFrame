@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { Stack } from '@fluentui/react/lib/Stack';
-import { Separator } from '@fluentui/react/lib/Separator';
-import { Text } from '@fluentui/react/lib/Text';
+
+import {Tabs} from 'antd';
+
+
 
 import { Set } from './Set';
 
@@ -68,7 +69,7 @@ export class SetupEditor extends React.Component {
                 canEdit: ! (i % 4 === 0)
             });
         }
-        
+
         let machines = [];
         for (let i=0; i<30; i++) {
             machines.push({
@@ -107,14 +108,14 @@ export class SetupEditor extends React.Component {
 
         const groups = [
             { name: 'Locations', key: 'locations', content: (
-                <Set 
+                <Set
                     sets={[
                         { name: 'Locations', type: 'Location', content: locations.map(l => (
                             <div key={l.uuid} style={{ paddingBottom: '10px' }}>
-                                <LocationTile 
-                                    uuid={l.uuid} 
-                                    name={l.name} 
-                                    deleteCallback={(uuid) => {}} 
+                                <LocationTile
+                                    uuid={l.uuid}
+                                    name={l.name}
+                                    deleteCallback={(uuid) => {}}
                                     canDelete={l.canDelete}
                                     canEdit={l.canEdit}
                                 />
@@ -125,14 +126,14 @@ export class SetupEditor extends React.Component {
             )},
 
             { name: 'Waypoints', key: 'waypoints', content: (
-                <Set 
+                <Set
                     sets={[
                         { name: 'Waypoints', type: 'Waypoint', content: waypoints.map(w => (
                             <div key={w.uuid} style={{ paddingBottom: '10px' }}>
-                                <WaypointTile 
-                                    uuid={w.uuid} 
-                                    name={w.name} 
-                                    deleteCallback={(uuid) => {}} 
+                                <WaypointTile
+                                    uuid={w.uuid}
+                                    name={w.name}
+                                    deleteCallback={(uuid) => {}}
                                 />
                             </div>
                         ))}
@@ -141,14 +142,14 @@ export class SetupEditor extends React.Component {
             )},
 
             { name: 'Regions', key: 'regions', content: (
-                <Set  
+                <Set
                     sets={[
                         { name: 'Regions', type: 'Region', content: regions.map(r => (
                             <div key={r.uuid} style={{ paddingBottom: '10px' }}>
-                                <RegionTile 
-                                    uuid={r.uuid} 
-                                    name={r.name} 
-                                    deleteCallback={(uuid) => {}} 
+                                <RegionTile
+                                    uuid={r.uuid}
+                                    name={r.name}
+                                    deleteCallback={(uuid) => {}}
                                     canDelete={r.canDelete}
                                     canEdit={r.canEdit}
                                 />
@@ -159,11 +160,11 @@ export class SetupEditor extends React.Component {
             )},
 
             { name: 'Things', key: 'things', content: (
-                <Set 
+                <Set
                     sets={[
                         { name: 'Thing Types', type: "Type", content: thingTypes.map(t => (
                             <div key={t.uuid} style={{ paddingBottom: '10px' }}>
-                                <ThingTypeTile 
+                                <ThingTypeTile
                                     uuid={t.uuid}
                                     name={t.name}
                                     deleteCallback={(uuid) => {}}
@@ -174,7 +175,7 @@ export class SetupEditor extends React.Component {
                         ))},
                         { name: 'Thing Instances', type: "Instance", content: things.map(t => (
                             <div key={t.uuid} style={{ paddingBottom: '10px' }}>
-                                <ThingTile 
+                                <ThingTile
                                     uuid={t.uuid}
                                     name={t.name}
                                     deleteCallback={(uuid) => {}}
@@ -189,18 +190,18 @@ export class SetupEditor extends React.Component {
             )},
 
             { name: 'Machines', key: 'machines', content: (
-                <Set 
+                <Set
                     sets={[
-                        { 
-                            name: 'Machines', 
-                            type: 'Machine', 
+                        {
+                            name: 'Machines',
+                            type: 'Machine',
                             addable: false,
                             content: machines.map(m => (
                                 <div key={m.uuid} style={{ paddingBottom: '10px' }}>
-                                    <MachineTile 
-                                        uuid={m.uuid} 
-                                        name={m.name} 
-                                        deleteCallback={(uuid) => {}} 
+                                    <MachineTile
+                                        uuid={m.uuid}
+                                        name={m.name}
+                                        deleteCallback={(uuid) => {}}
                                         canDelete={m.canDelete}
                                         canEdit={m.canEdit}
                                         mesh={m.mesh}
@@ -217,7 +218,7 @@ export class SetupEditor extends React.Component {
             )},
 
             { name: 'Environment', key: 'environment', content: (
-                <Set 
+                <Set
                     sets={[
                         { name: 'Collision Objects', type: 'Object', content: []},
                         { name: 'Pinch Points', type: 'Point', content: []},
@@ -226,48 +227,33 @@ export class SetupEditor extends React.Component {
                 />
             )}
         ];
-
+        const {TabPane} = Tabs;
         return (
             <div
-                style={{ 
-                    height: 'calc(100vh-64px)', 
+                style={{
+                    height: 'calc(100vh-64px)',
                     width: '45vw'
                 }}
             >
-                <Stack horizontal 
-                    style={{
-                        height: '100%', 
-                        width: '100%'
-                    }}
-                >
+            <Tabs tabPosition= 'left' >
+            {groups.map(entry =>(
+            <TabPane onChange={e => this.onLinkClick(entry.key) } tab={<span>
 
-                    <Stack.Item>
-                        {groups.map(entry => (
-                            <div 
-                                key={entry.key} 
-                                onClick={e => this.onLinkClick(entry.key)} 
-                                style={{
-                                    cursor: 'pointer', 
-                                    background: (entry.key === activeField) ? '#2f2f2f' : 'inherit'
-                                }}
-                            >
-                                <Text variant='xLarge' 
-                                    style={{
-                                        margin: '10px'
-                                    }}
-                                >
-                                    {entry.name}
-                                </Text>
-                            </div>
-                        ))}
-                    </Stack.Item>
-                    
-                    <Separator vertical />
+          {entry.name}
+           </span>} key={entry.key} style={{height : '700px'}}>
 
-                    {groups.find(x => x.key === activeField).content}
-                    
-                </Stack>
-                
+             {entry.content}
+
+
+
+
+
+            </TabPane>
+            ))}
+
+
+
+            </Tabs>
             </div>
         );
     }
