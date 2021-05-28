@@ -9,5 +9,5 @@ float32 speed
 float32 STD_EFFORT = 1
 float32 effort
 
-# enforce a user manual override to run behavior
+# enforce a user manual override to run behavior (may not be enforced)
 bool manual_safety

@@ -56,6 +56,7 @@ add_message_files(
   RobotStop.msg
   RobotPause.msg
   RobotStatus.msg
+  RobotInitialize.msg
   RobotMoveTrajectory.msg
   
   MachineAck.msg

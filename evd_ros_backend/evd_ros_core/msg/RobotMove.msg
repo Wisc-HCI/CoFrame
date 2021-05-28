@@ -16,5 +16,5 @@ float32 velocity
 float32 STD_TIMESTEP = 0
 float32 timestep
 
-# enforce a user manual override to run behavior
+# enforce a user manual override to run behavior (may not be enforced)
 bool manual_safety

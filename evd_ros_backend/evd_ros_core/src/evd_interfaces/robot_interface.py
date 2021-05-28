@@ -17,7 +17,7 @@ to use them outside of this interface.
 import rospy
 
 from evd_ros_core.srv import SetRobotMove, SetRobotMoveTrajectory, SetRobotGrip
-from evd_ros_core.msg import RobotAck, RobotStatus, RobotStop, RobotPause, RobotMove, RobotMoveTrajectory, RobotGrip
+from evd_ros_core.msg import RobotAck, RobotStatus, RobotStop, RobotPause, RobotMove, RobotMoveTrajectory, RobotGrip, RobotInitialize
 
 
 class RobotInterface:
@@ -28,6 +28,7 @@ class RobotInterface:
         self._latest_status = None
         self._ack_table = {}
 
+        self.init_pub = rospy.Publisher('{0}robot/initialize'.format(prefix_fmt), RobotInitialize, queue_size=10)
         self.estop_pub = rospy.Publisher('{0}robot/estop'.format(prefix_fmt), RobotStop, queue_size=10)
         self.pause_pub = rospy.Publisher('{0}robot/pause'.format(prefix_fmt), RobotPause, queue_size=10)
         self.move_pub = rospy.Publisher('{0}robot/move'.format(prefix_fmt), RobotMove, queue_size=10)
@@ -46,6 +47,18 @@ class RobotInterface:
 
     def _status_cb(self, msg):
         self._latest_status = msg
+
+    '''
+    Public Methods
+        - Exposes robot behavior
+        - Some methods (e.g., pause may not be implemented for all robots)
+    '''
+
+    def initialize(self, gripper_position=None, arm_joints=None):
+        msg = RobotInitialize()
+        msg.gripper_position = gripper_position if gripper_position != None else -1
+        msg.arm_joints = arm_joints if arm_joints != None else []
+        self.init_pub.publish(msg)
 
     def estop(self):
         self.estop_pub.publish(RobotStop(True))
@@ -90,6 +103,10 @@ class RobotInterface:
 
     def get_status(self):
         return self._latest_status
+    
+    '''
+    State Properties (from last status message)
+    '''
 
     @property
     def current_pose(self):
@@ -122,6 +139,11 @@ class RobotInterface:
     @property
     def status_flag(self):
         return self._latest_status.status
+
+    '''
+    Class Methods
+        - Pack messages
+    '''
 
     @classmethod
     def pack_move_trajectory(cls, evd_trajectory, manual_safety=False):

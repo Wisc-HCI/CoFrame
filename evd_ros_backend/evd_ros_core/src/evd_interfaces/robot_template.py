@@ -19,7 +19,7 @@ from geometry_msgs.msg import Pose
 from evd_ros_core.srv import SetRobotMove, SetRobotMoveResponse
 from evd_ros_core.srv import SetRobotMoveTrajectory, SetRobotMoveTrajectoryResponse
 from evd_ros_core.srv import SetRobotGrip, SetRobotGripResponse
-from evd_ros_core.msg import RobotAck, RobotStatus, RobotStop, RobotPause, RobotMove, RobotMoveTrajectory, RobotGrip
+from evd_ros_core.msg import RobotAck, RobotStatus, RobotStop, RobotPause, RobotMove, RobotMoveTrajectory, RobotGrip, RobotInitialize
 
 
 class RobotTemplate:
@@ -31,11 +31,12 @@ class RobotTemplate:
         RobotStatus.STATUS_ERROR
     ]
 
-    def __init__(self, prefix=None, real_robot=False, estop_fnt=None, pause_fnt=None, 
+    def __init__(self, prefix=None, real_robot=False, init_fnt=None, estop_fnt=None, pause_fnt=None, 
                  move_fnt=None, move_traj_fnt=None, grip_fnt=None):
         self._prefix = prefix
         prefix_fmt = prefix+'/' if prefix != None else ''
 
+        self._init_fnt = init_fnt
         self._estop_fnt = estop_fnt
         self._pause_fnt = pause_fnt
         self._move_fnt = move_fnt
@@ -54,15 +55,37 @@ class RobotTemplate:
         self.ack_pub = rospy.Publisher('{0}robot/ack'.format(prefix_fmt), RobotAck, queue_size=10)
         self.status_pub = rospy.Publisher('{0}robot/wait'.format(prefix_fmt), RobotStatus, queue_size=10)
 
-        self.estop_sub = rospy.Publisher('{0}robot/estop'.format(prefix_fmt), RobotStop, self._estop_cb)
-        self.pause_sub = rospy.Publisher('{0}robot/pause'.format(prefix_fmt), RobotPause, self._pause_cb)
-        self.move_sub = rospy.Publisher('{0}robot/move'.format(prefix_fmt), RobotMove, self._move_async_cb)
-        self.move_trajectory_sub = rospy.Publisher('{0}robot/move_trajectory'.format(prefix_fmt), RobotMoveTrajectory, self._move_trajectory_async_cb)
-        self.grip_sub = rospy.Publisher('{0}robot/grip'.format(prefix_fmt), RobotGrip, self._grip_async_cb)
+        self.init_sub = rospy.Subscriber('{0}robot/initialize'.format(prefix_fmt),RobotInitialize, self._init_cb)
+        self.estop_sub = rospy.Subscriber('{0}robot/estop'.format(prefix_fmt), RobotStop, self._estop_cb)
+        self.pause_sub = rospy.Subscriber('{0}robot/pause'.format(prefix_fmt), RobotPause, self._pause_cb)
+        self.move_sub = rospy.Subscriber('{0}robot/move'.format(prefix_fmt), RobotMove, self._move_async_cb)
+        self.move_trajectory_sub = rospy.Subscriber('{0}robot/move_trajectory'.format(prefix_fmt), RobotMoveTrajectory, self._move_trajectory_async_cb)
+        self.grip_sub = rospy.Subscriber('{0}robot/grip'.format(prefix_fmt), RobotGrip, self._grip_async_cb)
 
         self.move_srv = rospy.Service('{0}robot/set_move',SetRobotMove, self._move_sync_cb)
         self.move_trajectory_srv = rospy.Service('{0}robot/set_move_trajectory',SetRobotMoveTrajectory, self._move_trajectory_sync_cb)
         self.grip_srv = rospy.Service('{0}robot/set_grip',SetRobotGrip, self._grip_sync_cb)
+
+    def _init_cb(self, msg):
+        ack = False
+
+        set_gripper = msg.gripper_position != -1
+        set_arm = len(msg.arm_joints) > 0
+
+        if self._init_fnt != None:
+            ack = self._init_fnt(
+                set_gripper = set_gripper,
+                gripper_position=msg.gripper_position,
+                set_arm = set_arm,
+                arm_joints=msg.arm_joints)
+        
+        if set_arm:
+            retmsg = RobotAck('arm',ack)
+            self.ack_pub.publish(retmsg)
+
+        if set_gripper:
+            retmsg = RobotAck('grip',ack)
+            self.ack_pub.publish(retmsg)
 
     def _estop_cb(self, msg):
         ack = False
