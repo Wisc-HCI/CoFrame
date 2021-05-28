@@ -1,47 +1,66 @@
 import React from 'react';
 
-import { Stack } from '@fluentui/react/lib/Stack';
-import { TextField } from '@fluentui/react/lib/TextField';
-import { PrimaryButton } from '@fluentui/react/lib/Button';
-import { Dropdown } from '@fluentui/react/lib/Dropdown';
+
+
 
 import { DeleteButton } from '../DeleteButton';
 import { ElementTile } from '../ElementTile';
+import { Card,List, Typography, Divider,Input,Button,Dropdown ,Menu } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 
 
 export const RegionTile = (props) => {
 
     const { style, name, uuid, deleteCallback, canDelete, canEdit } = props;
 
-    const options = [
-        { key: 'orientation', text: 'Orientation-Uncertainty-Only'},
-        { key: 'box', text: 'Box-Pose-Uncertainty'},
-        { key: 'sphere', text: 'Sphere-Pose-Uncertainty'}
-    ];
+
 
     const selectedOption = "orientation";
+    const menu = (
+  <Menu>
+    <Menu.Item key="orientation" >
+    Orientation-Uncertainty-Only
+    </Menu.Item>
+    <Menu.Item key="box">
+      Box-Pose-Uncertainty
+    </Menu.Item>
+    <Menu.Item key="sphere" >
+    Sphere-Pose-Uncertainty
+    </Menu.Item>
+  </Menu>
+);
 
     return (
-        <ElementTile style={style}>
-            <Stack horizontal tokens={{childrenGap: '50px'}}>
-                <Stack.Item grow styles={{root: { marginLeft: '10px'}}}>
-                    <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}}/>
-                </Stack.Item>
-                <Stack.Item>
-                    <Dropdown 
-                        label="Type"
-                        selectedKey={selectedOption}
-                        onChange={() => {}}
-                        options={options}
-                    />
-                </Stack.Item>
-                <Stack.Item align="center">
-                    <PrimaryButton text="Edit Pose" onClick={() => {}}  disabled={!canEdit} />
-                </Stack.Item>
-                <Stack.Item align="center" styles={{root: { marginRight: '10px'}}}>
+        <List.Item>
+
+
+                    Name:<Input onChange={() => {}} placeholder={name} styles={{width: '400px'}}/>
+                    <br/>
+                    <br/>
+
+
+
+                    Type:<Dropdown
+
+                        overlay={menu}
+
+
+
+                    >
+                    <Button   style={{right: "-10px" }}>
+                       Dropdown <DownOutlined />
+                     </Button>
+
+                    </Dropdown>
+
+
+                    <Button type='primary'onClick={() => {}}  disabled={!canEdit}>
+                      Edit Pose
+                    </Button>
+
                     <DeleteButton type="Region" callback={() => { deleteCallback(uuid) }} disabled={!canDelete} />
-                </Stack.Item>
-            </Stack>
-        </ElementTile>
+
+
+        </List.Item>
     );
 };
