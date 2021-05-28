@@ -1,30 +1,32 @@
 import React from 'react';
 
-import { Stack } from '@fluentui/react/lib/Stack';
-import { TextField } from '@fluentui/react/lib/TextField';
-import { PrimaryButton } from '@fluentui/react/lib/Button';
+
 
 import { DeleteButton } from '../DeleteButton';
 import { ElementTile } from '../ElementTile';
+import { Card,List, Typography, Divider,Input,Button  } from 'antd';
 
 
 export const LocationTile = (props) => {
 
     const { style, name, uuid, deleteCallback, canDelete, canEdit } = props;
 
+
     return (
-        <ElementTile style={style}>
-            <Stack horizontal tokens={{childrenGap: '50px'}}>
-                <Stack.Item grow styles={{root: { marginLeft: '10px'}}}>
-                    <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}}/>
-                </Stack.Item>
-                <Stack.Item align="center">
-                    <PrimaryButton text="Edit Pose" onClick={() => {}}  disabled={!canEdit} />
-                </Stack.Item>
-                <Stack.Item align="center" styles={{root: { marginRight: '10px'}}}>
+        <List.Item  >
+
+
+                    <Input label="Name:" placeholder={name}/>
+
+
+                    <Button style={{width : '100px'}}type="primary" text="Edit Pose" disabled={!canEdit}>
+                      Edit Pose
+                    </Button>
+
+
                     <DeleteButton type="Waypoint" callback={() => { deleteCallback(uuid) }} disabled={!canDelete} />
-                </Stack.Item>
-            </Stack>
-        </ElementTile>
+
+
+        </List.Item>
     );
 };
