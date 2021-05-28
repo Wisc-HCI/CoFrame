@@ -32,10 +32,11 @@ from evd_version_tracking import History, HistoryEntry, VersionTag
 
 class DataClientInterface(object):
 
-    def __init__(self, use_application_interface=False, sub_to_update=True, on_program_update_cb=None, store_program=True):
+    def __init__(self, use_application_interface=False, sub_to_update=True, on_program_update_cb=None, store_program=True, track_local_changes=True):
         self._server_has_updated = False
         self._store_program = store_program
         self.sub_to_update = sub_to_update
+        self.track_local_changes = track_local_changes
 
         self._use_application_interface = use_application_interface
         self._cache = get_evd_cache_obj()

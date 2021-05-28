@@ -100,32 +100,32 @@ class Machine(Node):
             self._compute_type()
             self.updated_attribute('input_regions','set')
 
-    def add_input_region(self, thing_type, region, override=False):
+    def add_input_region(self, thing_type_uuid, region, override=False):
         verb = 'add'
 
-        if thing_type in self._input_regions.keys():
+        if thing_type_uuid in self._input_regions.keys():
             if not override:
                 raise Exception('Thing Region is about to be overrided, override is not allowed')
             else:
-                self._input_regions[thing_type].remove_from_cache()
+                self._input_regions[thing_type_uuid].remove_from_cache()
                 verb = 'update'
 
         region.parent = self
-        self._input_regions[thing_type] = region
+        self._input_regions[thing_type_uuid] = region
         self._compute_type()
         self.updated_attribute('input_regions',verb,region.uuid)
 
-    def delete_input_region(self, thing_type):
-        if not thing_type in self._input_regions.keys():
-            raise Exception('No such thing `{0}` in input_regions'.format(thing_type))
+    def delete_input_region(self, thing_type_uuid):
+        if not thing_type_uuid in self._input_regions.keys():
+            raise Exception('No such thing `{0}` in input_regions'.format(thing_type_uuid))
 
-        self._input_regions[thing_type].remove_from_cache()
-        obj = self._input_regions.pop(thing_type)
+        self._input_regions[thing_type_uuid].remove_from_cache()
+        obj = self._input_regions.pop(thing_type_uuid)
         self._compute_type()
         self.updated_attribute('input_regions','delete',obj.uuid)
 
-    def get_input_region(self, thing_type):
-        return self._input_regions[thing_type]
+    def get_input_region(self, thing_type_uuid):
+        return self._input_regions[thing_type_uuid]
 
     def find_input_region_thing_type(self, regionId):
         type = None
@@ -154,32 +154,32 @@ class Machine(Node):
             self._compute_type()
             self.updated_attribute('output_regions','set')
 
-    def add_output_region(self, thing_type, region, override=False):
+    def add_output_region(self, thing_type_uuid, region, override=False):
         verb = 'add'
 
-        if thing_type in self._output_regions.keys():
+        if thing_type_uuid in self._output_regions.keys():
             if not override:
                 raise Exception('Thing Region is about to be overrided, override is not allowed')
             else:
-                self._output_regions[thing_type].remove_from_cache()
+                self._output_regions[thing_type_uuid].remove_from_cache()
                 verb = 'update'
 
         region.parent = self
-        self._output_regions[thing_type] = region
+        self._output_regions[thing_type_uuid] = region
         self._compute_type()
         self.updated_attribute('output_regions',verb,region.uuid)
 
-    def delete_output_region(self, thing_type):
-        if not thing_type in self._output_regions.keys():
-            raise Exception('No such thing `{0}` in output_regions'.format(thing_type))
+    def delete_output_region(self, thing_type_uuid):
+        if not thing_type_uuid in self._output_regions.keys():
+            raise Exception('No such thing `{0}` in output_regions'.format(thing_type_uuid))
 
-        self._output_regions[thing_type].remove_from_cache()
-        obj = self._output_regions.pop(thing_type)
+        self._output_regions[thing_type_uuid].remove_from_cache()
+        obj = self._output_regions.pop(thing_type_uuid)
         self._compute_type()
         self.updated_attribute('output_regions','delete',obj.uuid)
 
-    def get_output_region(self, thing_type):
-        return self._output_regions[thing_type]
+    def get_output_region(self, thing_type_uuid):
+        return self._output_regions[thing_type_uuid]
 
     def find_output_region_thing_type(self, regionId):
         type = None

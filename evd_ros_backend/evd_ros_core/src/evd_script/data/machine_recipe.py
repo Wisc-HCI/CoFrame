@@ -82,27 +82,27 @@ class MachineRecipe(Node):
             self._input_quantities = value
             self.updated_attribute('input_thing_quantities','set')
 
-    def add_input_thing_quantity(self, thing_type, quantity, override=False):
+    def add_input_thing_quantity(self, thing_type_uuid, quantity, override=False):
         verb = 'add'
 
-        if thing_type in self._input_quantities.keys():
+        if thing_type_uuid in self._input_quantities.keys():
             if not override:
                 raise Exception('Thing Quantity is about to be overrided, override is not allowed')
             else:
                 verb = 'update'
 
-        self._input_quantities[thing_type] = quantity
+        self._input_quantities[thing_type_uuid] = quantity
         self.updated_attribute('input_thing_quantities',verb)
 
-    def delete_input_thing_quantity(self, thing_type):
-        if not thing_type in self._input_quantities.keys():
-            raise Exception('No such thing `{0}` in input_quantities'.format(thing_type))
+    def delete_input_thing_quantity(self, thing_type_uuid):
+        if not thing_type_uuid in self._input_quantities.keys():
+            raise Exception('No such thing `{0}` in input_quantities'.format(thing_type_uuid))
 
-        obj = self._input_quantities.pop(thing_type)
+        obj = self._input_quantities.pop(thing_type_uuid)
         self.updated_attribute('input_thing_quantities','delete')
 
-    def get_input_thing_quantity(self, thing_type):
-        return self._input_quantities[thing_type]
+    def get_input_thing_quantity(self, thing_type_uuid):
+        return self._input_quantities[thing_type_uuid]
 
     @property
     def output_thing_quantities(self):
@@ -114,27 +114,27 @@ class MachineRecipe(Node):
             self._output_quantities = value
             self.updated_attribute('output_thing_quantities','set')
 
-    def add_output_thing_quantity(self, thing_type, quantity, override=False):
+    def add_output_thing_quantity(self, thing_type_uuid, quantity, override=False):
         verb = 'add'
 
-        if thing_type in self._output_quantities.keys():
+        if thing_type_uuid in self._output_quantities.keys():
             if not override:
                 raise Exception('Thing Quantity is about to be overrided, override is not allowed')
             else:
                 verb = 'update'
 
-        self._output_quantities[thing_type] = quantity
+        self._output_quantities[thing_type_uuid] = quantity
         self.updated_attribute('output_thing_quantities',verb)
 
-    def delete_output_thing_quantity(self, thing_type):
-        if not thing_type in self._output_quantities.keys():
-            raise Exception('No such thing `{0}` in output_quantities'.format(thing_type))
+    def delete_output_thing_quantity(self, thing_type_uuid):
+        if not thing_type_uuid in self._output_quantities.keys():
+            raise Exception('No such thing `{0}` in output_quantities'.format(thing_type_uuid))
 
-        obj = self._output_quantities.pop(thing_type)
+        obj = self._output_quantities.pop(thing_type_uuid)
         self.updated_attribute('output_thing_quantities','delete')
 
-    def get_output_thing_quantity(self, thing_type):
-        return self._output_quantities[thing_type]
+    def get_output_thing_quantity(self, thing_type_uuid):
+        return self._output_quantities[thing_type_uuid]
 
     def set(self, dct):
 

@@ -5,6 +5,8 @@ Once a major change is complete, the orphan repair process should be run to clea
 any additional state associated with the now non-existent nodes.
 '''
 
+#TODO finish writing this routine!
+
 from .cache import *
 
 from evd_ros_core.msg import Issue
@@ -25,6 +27,10 @@ def evd_orphan_repair():
     from .program.primitives.move_trajectory import MoveTrajectory
     from .program.primitives.move_unplanned import MoveUnplanned
     from .program.machine_operations.machine_primitive import MachinePrimitive
+    from .data.thing import Thing
+    from .data.machine import Machine
+    from .data.machine_recipe import MachineRecipe
+    #TODO handle deletion of thing_types
 
     cache = get_evd_cache_obj()
 
