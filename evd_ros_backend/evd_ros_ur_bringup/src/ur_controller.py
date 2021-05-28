@@ -16,10 +16,10 @@ import rospy
 
 from std_msgs.msg import Bool, String
 from sensor_msgs.msg import JointState
-from evd_ros_core.msg import RobotMove, RobotStatus
 from ur_msgs.msg import RobotModeDataMsg
 from robotiq_85_msgs.msg import GripperCmd, GripperStat
 from geometry_msgs.msg import Pose, Position, Quaternion
+from evd_ros_core.msg import RobotMove, RobotStatus, RobotGrip
 
 from evd_interface.robot_template import RobotTemplate
 
@@ -44,6 +44,7 @@ class URController(RobotTemplate):
     def __init__(self, prefix=None, real_robot=False, rate=5, end_effector_link='ee_link', base_link='base_link'):
         super(URController,self).__init__(
             prefix, real_robot,
+            init_fnt=self.initialize,
             estop_fnt=self.estop,
             pause_fnt=self.pause,
             move_fnt=self.move,
@@ -148,6 +149,24 @@ class URController(RobotTemplate):
     '''
     Robot Template Behavior
     '''
+
+    def initialize(self, set_gripper=False, gripper_position=None, set_arm=False, arm_joints=None):
+        # Behavior is not instantaneous. Must jog robot to position.
+        grip_status = True
+        if set_gripper:
+            msg = RobotGrip()
+            msg.position = gripper_position
+            grip_status = self.grip(msg)
+
+        arm_status = True
+        if set_arm:
+            msg = RobotMove()
+            msg.motion_type = RobotMove.JOINT
+            msg.target_joints = arm_joints
+            msg.velocity = RobotMove.JOINT_VELOCITY
+            arm_status = self.move(msg)
+
+        return grip_status and arm_status # ACK / NACK
 
     def estop(self, emergency):
         self.status = RobotStatus.STATUS_ERROR if emergency else RobotStatus.STATUS_IDLE
