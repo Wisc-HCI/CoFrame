@@ -82,7 +82,7 @@ class RobotTemplate:
 
     def _move_async_cb(self, msg):
         ack = False
-        if self._move_fnt != None:
+        if self.is_running and self._move_fnt != None:
             ack = self._move_fnt(msg) == True
         
         retmsg = RobotAck('arm',ack)
@@ -90,7 +90,7 @@ class RobotTemplate:
 
     def _move_sync_cb(self, request):
         status = False
-        if self._move_fnt != None:
+        if self.is_running and self._move_fnt != None:
             status = self._move_fnt(request.goal) == True
 
         response = SetRobotMoveResponse()
@@ -99,16 +99,16 @@ class RobotTemplate:
 
     def _move_trajectory_async_cb(self, msg):
         ack = False
-        if self._move_traj_fnt != None:
-            ack = self._move_traj_fnt(msg) == True
+        if self.is_running and self._move_traj_fnt != None:
+            ack = self._move_traj_fnt(msg.moves) == True
         
         retmsg = RobotAck('arm',ack)
         self.ack_pub.publish(retmsg)
 
     def _move_trajectory_sync_cb(self, request):
         status = False
-        if self._move_traj_fnt != None:
-            status = self._move_traj_fnt(request.goal) == True
+        if self.is_running and self._move_traj_fnt != None:
+            status = self._move_traj_fnt(request.goal.moves) == True
         
         response = SetRobotMoveTrajectoryResponse()
         response.status = status
@@ -116,7 +116,7 @@ class RobotTemplate:
 
     def _grip_async_cb(self, msg):
         ack = False
-        if self._grip_fnt != None:
+        if self.is_running and self._grip_fnt != None:
             ack = self._grip_fnt(msg) == True
         
         retmsg = RobotAck('grip',ack)
@@ -124,10 +124,10 @@ class RobotTemplate:
 
     def _grip_sync_cb(self, request):
         status = False
-        if self._grip_fnt != None:
+        if self.is_running and self._grip_fnt != None:
             status = self._grip_fnt(request.goal) == True
         
-        response = SetRobotGrip()
+        response = SetRobotGripResponse()
         response.status = status
         return response
 

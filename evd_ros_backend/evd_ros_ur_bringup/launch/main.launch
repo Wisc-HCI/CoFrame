@@ -6,11 +6,6 @@
   <arg name="reverse_port" default="50001"/>
   <arg name="fake_gripper" default="true"/>
 
-  <arg name="timestep" default="0.12"/>
-  <arg name="lookahead" default="0.1"/>
-  <arg name="gain" default="100"/>
-  <arg name="time_scalars" default="[100,100,100,100,100,100]"/>
-
   <arg name="kinematics_config" default="$(find ur_description)/config/ur3_default.yaml"/>
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_e_description)/urdf/ur3e_robot.urdf.xacro' kinematics_config:=$(arg kinematics_config)"/>
@@ -54,14 +49,6 @@
   </node>
 
   <!-- Higher-level controller for communication with evd_ros -->
-  <node name="ur_controller" pkg="evd_ros_ur_bringup" type="ur_controller.py" output="screen">
-
-    <!-- Servoing parameters -->
-    <param name="timestep" value="$(arg timestep)"/>
-    <param name="lookahead" value="$(arg lookahead)"/>
-    <param name="gain" value="$(arg gain)"/>
-    <rosparam param="time_scalars" subst_value="true">$(arg time_scalars)</rosparam>
-
-  </node>
+  <node name="ur_controller" pkg="evd_ros_ur_bringup" type="ur_controller.py" output="screen"/>
 
 </launch>
