@@ -1,44 +1,46 @@
 import React from 'react';
 
-import { PrimaryButton } from '@fluentui/react/lib/Button';
-import { TooltipHost } from '@fluentui/react/lib/Tooltip';
 import { useId } from '@fluentui/react-hooks';
+import {Button,Tooltip} from 'antd';
 
 
 export const AddButton = (props) => {
 
     const {
-        type, 
+        type,
         callback,
-        disabled 
+        disabled
     } = props;
 
     const tooltipId = useId('add-tooltip');
 
     return (
-        <TooltipHost
-            content={`Add a new ${type}`}
+        <Tooltip
+            title={`Add a new ${type}`}
             id={tooltipId}
             calloutProps={{ gapSpace: 0 }}
             styles={{
-                root: {
+
                     display: 'inline-block',
-                    width: '100%',
+                    width: '90%',
                     boxShadow: '3px 3px 3px #000'
-                }
+
             }}
         >
-            <PrimaryButton
-                text={`Add New ${type}`}
+            <Button
+                type="primary"
+
                 styles={{
-                    root: {
-                        width: '100%'
-                    }
+
+                        width: '90%'
+
                 }}
                 onClick={callback}
                 disabled={disabled}
-            /> 
-        </TooltipHost>
-        
+            >
+                 {`Add New ${type}`}
+            </Button>
+        </Tooltip>
+
     );
 };
