@@ -1,74 +1,77 @@
 import React from 'react';
 
-import { Stack } from '@fluentui/react/lib/Stack';
-import { TextField } from '@fluentui/react/lib/TextField';
-import { PrimaryButton } from '@fluentui/react/lib/Button';
-import { Label } from '@fluentui/react/lib/Label';
-import { Separator } from '@fluentui/react/lib/Separator';
-import { SpinButton } from '@fluentui/react/lib/SpinButton';
 
 import { RecipeEntryTile } from './RecipeEntryTile';
 import { DeleteButton } from '../DeleteButton';
 import { ElementTile } from '../ElementTile';
+import { Card,List, Typography, Divider,Input,Button  } from 'antd';
 
 
 export const MachineTile = (props) => {
 
-    const { 
-        style, 
-        name, 
-        uuid, 
-        mesh, 
-        inputs, 
-        outputs, 
-        thingTypes, 
+    const {
+        style,
+        name,
+        uuid,
+        mesh,
+        inputs,
+        outputs,
+        thingTypes,
         regions,
-        deleteCallback, 
-        canDelete, 
+        deleteCallback,
+        canDelete,
         canEdit
     } = props;
 
     return (
-        <ElementTile style={style}>
+      <List.Item>
 
             <div style={{paddingLeft: '10px', paddingRight: '10px'}}>
 
-                <Stack horizontal tokens={{childrenGap: '50px'}}>
-                    <Stack.Item grow>
-                        <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}} disabled={!canEdit}/>
-                    </Stack.Item>
-                    <Stack.Item align="center">
-                        <PrimaryButton text="Edit Pose" onClick={() => {}}  disabled={!canEdit} />
-                    </Stack.Item>
-                    <Stack.Item align="center">
+
+
+
+                        Names:<Input onChange={() => {}} placeholder={name} styles={{ width: '400px'}} disabled={!canEdit}/>
+
+
+                        <Button type = "primary" onClick={() => {}}  disabled={!canEdit} >
+                          Edit Pose
+                        </Button>
+
+
                         <DeleteButton type="Region" callback={() => { deleteCallback(uuid) }} disabled={!canDelete} />
-                    </Stack.Item>
-                </Stack>
 
-                <TextField label="Mesh:" onChange={() => {}} defaultValue={mesh} styles={{root: { maxWidth: '400px'}}} disabled={!canEdit}/>
 
-                <Separator />
 
-                <Stack horizontal tokens={{childrenGap: '50px'}}>
-                    <Stack.Item grow >
-                        <Label>Recipe:</Label>
-                    </Stack.Item>
+                 <Divider/>
 
-                    <SpinButton 
-                        defaultValue="0"
-                        label="Process Time:"
-                        min={0}
-                        step={0.5}
+                Meshes:<Input onChange={() => {}} placeholder={mesh} styles={{width: '400px'}} disabled={!canEdit}/>
+
+
+
+
+
+              Recipe:
+              <Card>
+
+
+                    Process Time:<Button
+                    type= "primary"
+                    style={{right :"-10px"}}
+
                         disabled={!canEdit}
-                    />
+                    >
+                      0
+                    </Button>
 
-                </Stack>
 
-                <Label>Inputs:</Label>
-                <Stack>
+             <br/>
+              <br/>
+                Inputs:
+
 
                     {inputs.map(entry => (
-                        <RecipeEntryTile 
+                        <RecipeEntryTile
                             thingTypes={thingTypes}
                             selectedThing={entry.selectedThing}
                             quantity={entry.quantity}
@@ -79,21 +82,24 @@ export const MachineTile = (props) => {
                         />
                     ))}
 
-                    <Stack.Item align="center">
-                        <PrimaryButton text="Add Input" onClick={() => {
+
+                        <Button   style={{right :"-10px"}} type= "primary" text="Add Input" onClick={() => {
                             inputs.push({
-                                
+
                             })
-                        }} disabled={!canEdit}/>
-                    </Stack.Item>
-                </Stack>
+                        }} disabled={!canEdit}>
+                          Add Input
+                        </Button>
 
 
-                <Label>Outputs:</Label>
-                <Stack>
+
+                <br/>
+                <br/>
+                Outputs:
+
 
                     {outputs.map(entry => (
-                        <RecipeEntryTile 
+                        <RecipeEntryTile
                             thingTypes={thingTypes}
                             selectedThing={entry.selectedThing}
                             quantity={entry.quantity}
@@ -104,15 +110,17 @@ export const MachineTile = (props) => {
                         />
                     ))}
 
-                    <Stack.Item align="center">
-                        <PrimaryButton text="Add Output" onClick={() => {}} disabled={!canEdit}/>
-                    </Stack.Item>
-                </Stack>
 
-                <br />
+                        <Button style={{right: "-10px"}}onClick={() => {}} disabled={!canEdit}>
+                          Add Output
+                        </Button>
 
-            </div>
+                </Card>
+                </div>
 
-        </ElementTile>
+          </List.Item>
+
+
+
     );
 };
