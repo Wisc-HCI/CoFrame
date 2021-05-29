@@ -5,7 +5,7 @@ We can think of the robot's max reach as being bounded by a sphere. Tuning of
 this sphere can further restrict the reachability region.
 '''
 
-from ..node import Node
+from .environment_node import EnvironmentNode
 from ..data.geometry import Position
 from ..visualizable import VisualizeMarker, ColorTable
 from ..node_parser import NodeParser
@@ -15,7 +15,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class ReachSphere(Node, VisualizeMarker):
+class ReachSphere(EnvironmentNode, VisualizeMarker):
 
     '''
     Constants
@@ -35,7 +35,7 @@ class ReachSphere(Node, VisualizeMarker):
 
     @classmethod
     def full_type_string(cls):
-        return Node.full_type_string() + cls.type_string()
+        return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, radius=1, offset=None, type='', name='',
                  parent=None, uuid=None, append_type=True):

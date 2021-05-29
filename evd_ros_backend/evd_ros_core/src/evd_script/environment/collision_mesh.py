@@ -3,7 +3,7 @@ Collision mesh represents a static fixture in the environment that a robot
 ought to avoid.
 '''
 
-from ..node import Node
+from .environment_node import EnvironmentNode
 from ..data.geometry import Pose
 from ..node_parser import NodeParser
 from ..visualizable import VisualizeMarker, ColorTable
@@ -12,7 +12,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class CollisionMesh(Node,VisualizeMarker):
+class CollisionMesh(EnvironmentNode,VisualizeMarker):
 
     '''
     Constants
@@ -32,7 +32,7 @@ class CollisionMesh(Node,VisualizeMarker):
 
     @classmethod
     def full_type_string(cls):
-        return Node.full_type_string() + cls.type_string()
+        return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, mesh_id = None, pose_offset = None, link='', type='', name='',
                  parent=None, uuid=None, append_type=True):

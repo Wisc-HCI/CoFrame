@@ -26,11 +26,6 @@ class PrinterMachineNode(MachineTemplate):
             stop_fnt=self._stop,
             pause_fnt=self._pause)
 
-        self._data_client = DataClientInterface(
-            sub_to_update=False, 
-            store_program=False,
-            on_program_update_cb=self._on_server_program_push)
-
         self._evd_thing_type = ThingType(
             type_name='print',
             is_safe=True,
@@ -62,6 +57,12 @@ class PrinterMachineNode(MachineTemplate):
         self._paused = False
         self._rate = rate
         self._simulated = simulated
+
+        self._data_client = DataClientInterface(
+            sub_to_update=False, 
+            store_program=False,
+            track_local_changes=False,
+            on_program_update_cb=self._on_server_program_push)
 
     def spin(self):
         rate = rospy.Rate(self._rate)
@@ -113,10 +114,23 @@ class PrinterMachineNode(MachineTemplate):
 
     '''
     Data Server Registration
+    - On any update from the server, confirm data is already in there. If not push
+      changes back to server
     '''
 
     def _on_server_program_push(self):
-        pass #TODO retrieve UUIDs to check if printer is in list
+        uuids = self._data_client.get_uuids(False)
+
+        data = []
+        if self._evd_thing_type.uuid not in uuids:
+            data.append(self._evd_thing_type.to_dct())
+        
+        if self._evd_machine.uuid not in uuids:
+            data.append(self._evd_machine.to_dct())
+
+        if len(data) > 0:
+            #TODO need to reference the root node (environment)
+            self._data_client.set_program_partials(data)
 
 
 if __name__ == "__main__":

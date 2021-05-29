@@ -6,7 +6,7 @@ This does not handle robot & collision-mesh pinches which are really just a gene
 on collision itself.
 '''
 
-from ..node import Node
+from .environment_node import EnvironmentNode
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Orientation, Position
 from ..node_parser import NodeParser
@@ -16,7 +16,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class PinchPoint(Node, VisualizeMarker):
+class PinchPoint(EnvironmentNode, VisualizeMarker):
 
     '''
     Constants
@@ -36,7 +36,7 @@ class PinchPoint(Node, VisualizeMarker):
 
     @classmethod
     def full_type_string(cls):
-        return Node.full_type_string() + cls.type_string()
+        return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, axis='x', offset=None, link='', radius=0.05, length=0.2,
                  type='', name='', parent=None, uuid=None, append_type=True):

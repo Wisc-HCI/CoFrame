@@ -6,7 +6,7 @@ onto the environment) or a human (as a rectangular area).
 Parameterization only makes sense for human agent zones.
 '''
 
-from ..node import Node
+from .environment_node import EnvironmentNode
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Position
 
@@ -15,7 +15,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class OccupancyZone(Node, VisualizeMarker):
+class OccupancyZone(EnvironmentNode, VisualizeMarker):
 
     '''
     Constants
@@ -34,7 +34,7 @@ class OccupancyZone(Node, VisualizeMarker):
 
     @classmethod
     def full_type_string(cls):
-        return Node.full_type_string() + cls.type_string()
+        return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, height = 0,
                  type='', name='', parent=None, uuid=None, append_type=True):

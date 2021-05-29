@@ -196,6 +196,7 @@ class DataServer:
     # - Get
     # - Set
     # - Push Changes
+    # - Get UUIDs
     #===========================================================================
 
     def _get_prog_cb(self, request):
@@ -296,18 +297,43 @@ class DataServer:
         msg.action = history_entry.action
         msg.changes = json.dumps(history_entry.changes)
         msg.currentTag = history_entry.version.to_ros()
-
         prev_tag = self._program_history.get_previous_version()
         msg.previousTag = prev_tag.to_ros() if prev_tag != None else Version(rospy.Duration(0),'','data-server')
-
         self._update_prog_pub.publish(msg)
+
+        msg = UpdateData()
+        msg.data = json.dumps(self._program_cache.get_uuids())
+        msg.currentTag = history_entry.version.to_ros()
+        msg.previousTag = prev_tag.to_ros() if prev_tag != None else Version(rospy.Duration(0),'','data-server')
+        self._has_changes_pub.publish(msg)
+        
 
     def __program_updated_cb(self, attribute_trace):
         pass # maybe implement the repair routine here?
         # TODO Run orphan check
 
     def _get_uuids_cb(self, request):
-        return GetDataResponse() #TODO implement this
+        response = GetDataResponse()
+        
+        data = None
+        errors = []
+        if request.all:
+            data = self._program_cache.get_uuids()
+        else:
+            data = {}
+            types = json.loads(request.data)
+            for t in types:
+                uuids = self._program_cache.get_uuids(t)
+                if uuids == None:
+                    errors.append(t)
+                data[t] = uuids
+
+        response.data = self.__formatted_json_dump(data)
+        response.tag = self._program_history.get_current_version().to_ros()
+        response.status = len(errors) > 0
+        response.errors = self.__formatted_json_dump(errors) if len(errors) > 0 else ''
+        response.message = 'Encountered errors while retrieving UUIDs' if len(errors) > 0 else ''
+        return response
 
     #===========================================================================
     #   History Level ROS Callbacks

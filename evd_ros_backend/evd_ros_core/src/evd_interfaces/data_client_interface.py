@@ -12,6 +12,7 @@ needed by the node. This is an optional feature that can be enabled.
 TODO Currently the setting changes back to data server is broken / needs implementation.
 TODO Update history get partials to use new message format
 TODO Make use of additional attributes in UpdateData on has_changes sub
+TODO implement set routines
 '''
 
 
@@ -46,6 +47,7 @@ class DataClientInterface(object):
             self._save_app_srv = rospy.ServiceProxy('data_server/save_application_data',SaveData)
             self._get_app_options_srv = rospy.ServiceProxy('data_server/get_application_options',GetOptions)
 
+        self._uuids = []
         self._program = None
         self._history = None
         self._program_verison = None
@@ -187,7 +189,8 @@ class DataClientInterface(object):
 
     def _has_changes_cb(self, msg):
         #TODO do things with action, changes, and tags
-        #NOTE data is purposefully empty here
+        self._uuids = json.loads(msg.data)
+
         self._server_has_updated = True
         if self._on_program_update_cb != None:
             self._on_program_update_cb()
@@ -225,3 +228,31 @@ class DataClientInterface(object):
         return {
             
         }
+
+    def get_uuids(self, fetch=False, types=None):
+        all = types == None
+
+        if not fetch:
+            if not self._store_program:
+                if types != None:
+                    raise Exception('Only full uuid list supported when not fetching fresh data and not storing program')
+                data = self._uuids
+            elif all:
+                data = self.cache.get_uuids()
+            else:
+                data = {}
+                for t in types:
+                    uuids = self._program_cache.get_uuids(t)
+                    data[t] = uuids
+
+            return data
+        
+        else:
+            response = self._get_uuids_srv(all,json.dumps(types))
+            return json.loads(response.data)
+
+    def set_program(self, program):
+        pass #TODO
+
+    def set_program_partials(self, data):
+        pass #TODO
