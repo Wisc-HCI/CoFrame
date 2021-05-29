@@ -3,6 +3,7 @@ import { Card } from 'antd';
 
 import frameStyles from '../../frameStyles';
 import useGuiStore from '../../stores/GuiStore';
+
 export const ChecklistTile = (_) => {
     const {frameId, setFrame} = useGuiStore(state=>({frameId:state.frame,setFrame:state.setFrame}));
     const frames = [
@@ -34,12 +35,10 @@ export const ChecklistTile = (_) => {
         <div style={{height:'100%',paddingLeft:10,paddingRight:10,paddingBottom:10}}>
             <Card
                 style={{height:'100%'}}
-                bodyStyle={{padding:0,display:'flex',flexDirection:'column',height:'100%'}}
+                bodyStyle={{padding:0,display:'flex',flexDirection:'column'}}
                 title="Checklist"
                 tabList={frames}
-                onTabChange={key => {
-                  {setFrame(key)};
-                }}
+                onTabChange={setFrame}
                 tabProps={{centered:true,size:'small',style:{fontSize:10,marginTop:15}}}
             >
             <div style={{height:'100%',borderWidth:5,borderColor:frameStyles.colors[frameId]}}>

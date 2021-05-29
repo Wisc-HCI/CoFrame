@@ -1,260 +1,71 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+import { Tabs, Card, Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+
+import { LocationList } from './Tabs/Locations';
+// import { WaypointList } from './Tabs/Waypoints';
+// import { RegionList } from './Tabs/Regions';
+// import { MachineList } from './Tabs/Machines';
+// import { ThingList } from './Tabs/Things';
+// import { ThingTypeList } from './Tabs/ThingTypes';
 
 
-import {Tabs} from 'antd';
+import useGuiStore from '../../stores/GuiStore';
+import frameStyles from '../../frameStyles';
+
+// import './index.css'
 
 
+export function SetupEditor(_) {
 
-import { Set } from './Set';
+    const frame = useGuiStore(state=>state.frame);
+    const [activeTab, setActiveTab] = useState('locations')
 
-import { LocationTile } from './Tiles/LocationTile';
-import { WaypointTile } from './Tiles/WaypointTile';
-import { RegionTile } from './Tiles/RegionTile';
-import { MachineTile } from './Tiles/MachineTile';
-import { ThingTile } from './Tiles/ThingTile';
-import { ThingTypeTile } from './Tiles/ThingTypeTile';
-
-
-export class SetupEditor extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            activeField: 'locations'
-        };
-
-        this.onLinkClick = this.onLinkClick.bind(this);
-    }
-
-    onLinkClick(item) {
-        console.log(item);
-
-        if (item) {
-            this.setState({activeField: item});
+    const tabs = [
+        {
+            key:'locations',
+            name:'Locations',
+            content: <LocationList/>
+        },
+        {
+            key:'machines',
+            name:'Machines',
+            content: <LocationList/>
         }
-    }
+    ]
 
-    render() {
+    return (
 
-        const { activeField } = this.state;
-
-        //===========================================
-        // Replace with evd context
-
-        let waypoints = [];
-        for (let i=0; i<20; i++) {
-            waypoints.push({
-                uuid: i,
-                name: `Waypoint-${i}`
-            });
-        }
-
-        let regions = [];
-        for (let i=0; i<30; i++) {
-            regions.push({
-                uuid: i,
-                name: `Region-${i}`,
-                canDelete: i % 3,
-                canEdit: i % 3
-            });
-        }
-
-        let locations = [];
-        for (let i=0; i<20; i++) {
-            locations.push({
-                uuid: i,
-                name: `Location-${i}`,
-                canDelete: ! (i === 3),
-                canEdit: ! (i % 4 === 0)
-            });
-        }
-
-        let machines = [];
-        for (let i=0; i<30; i++) {
-            machines.push({
-                uuid: i,
-                name: `Machine-${i}`,
-                canDelete: i % 3,
-                canEdit: i % 3,
-                mesh: 'default.stl',
-                inputs: [],
-                outputs: []
-            });
-        }
-
-        let thingTypes = [];
-        for (let i=0; i<5; i++) {
-            thingTypes.push({
-                uuid: i,
-                name: `Thing-Type-${i}`,
-                canDelete: false,
-                mesh: 'default.stl'
-            });
-        }
-
-        let things = [];
-        for (let i=0; i<10; i++) {
-            things.push({
-                uuid: i,
-                name: `Thing-${i}`,
-                canDelete: false,
-                canEdit: true
-            });
-        }
-
-        //============================================
-
-
-        const groups = [
-            { name: 'Locations', key: 'locations', content: (
-                <Set
-                    sets={[
-                        { name: 'Locations', type: 'Location', content: locations.map(l => (
-                            <div key={l.uuid} style={{ paddingBottom: '10px' }}>
-                                <LocationTile
-                                    uuid={l.uuid}
-                                    name={l.name}
-                                    deleteCallback={(uuid) => {}}
-                                    canDelete={l.canDelete}
-                                    canEdit={l.canEdit}
-                                />
-                            </div>
-                        ))}
-                    ]}
-                />
-            )},
-
-            { name: 'Waypoints', key: 'waypoints', content: (
-                <Set
-                    sets={[
-                        { name: 'Waypoints', type: 'Waypoint', content: waypoints.map(w => (
-                            <div key={w.uuid} style={{ paddingBottom: '10px' }}>
-                                <WaypointTile
-                                    uuid={w.uuid}
-                                    name={w.name}
-                                    deleteCallback={(uuid) => {}}
-                                />
-                            </div>
-                        ))}
-                    ]}
-                />
-            )},
-
-            { name: 'Regions', key: 'regions', content: (
-                <Set
-                    sets={[
-                        { name: 'Regions', type: 'Region', content: regions.map(r => (
-                            <div key={r.uuid} style={{ paddingBottom: '10px' }}>
-                                <RegionTile
-                                    uuid={r.uuid}
-                                    name={r.name}
-                                    deleteCallback={(uuid) => {}}
-                                    canDelete={r.canDelete}
-                                    canEdit={r.canEdit}
-                                />
-                            </div>
-                        ))}
-                    ]}
-                />
-            )},
-
-            { name: 'Things', key: 'things', content: (
-                <Set
-                    sets={[
-                        { name: 'Thing Types', type: "Type", content: thingTypes.map(t => (
-                            <div key={t.uuid} style={{ paddingBottom: '10px' }}>
-                                <ThingTypeTile
-                                    uuid={t.uuid}
-                                    name={t.name}
-                                    deleteCallback={(uuid) => {}}
-                                    canDelete={t.canDelete}
-                                    mesh={t.mesh}
-                                />
-                            </div>
-                        ))},
-                        { name: 'Thing Instances', type: "Instance", content: things.map(t => (
-                            <div key={t.uuid} style={{ paddingBottom: '10px' }}>
-                                <ThingTile
-                                    uuid={t.uuid}
-                                    name={t.name}
-                                    deleteCallback={(uuid) => {}}
-                                    canDelete={t.canDelete}
-                                    canEdit={t.canEdit}
-                                    thingTypes={thingTypes}
-                                />
-                            </div>
-                        ))}
-                    ]}
-                />
-            )},
-
-            { name: 'Machines', key: 'machines', content: (
-                <Set
-                    sets={[
-                        {
-                            name: 'Machines',
-                            type: 'Machine',
-                            addable: false,
-                            content: machines.map(m => (
-                                <div key={m.uuid} style={{ paddingBottom: '10px' }}>
-                                    <MachineTile
-                                        uuid={m.uuid}
-                                        name={m.name}
-                                        deleteCallback={(uuid) => {}}
-                                        canDelete={m.canDelete}
-                                        canEdit={m.canEdit}
-                                        mesh={m.mesh}
-                                        inputs={m.inputs}
-                                        outputs={m.outputs}
-                                        thingTypes={thingTypes}
-                                        regions={regions}
-                                    />
-                                </div>
-                            ))
-                        }
-                    ]}
-                />
-            )},
-
-            { name: 'Environment', key: 'environment', content: (
-                <Set
-                    sets={[
-                        { name: 'Collision Objects', type: 'Object', content: []},
-                        { name: 'Pinch Points', type: 'Point', content: []},
-                        { name: 'Occupancy Zones', type: 'Zone', content: []}
-                    ]}
-                />
-            )}
-        ];
-        const {TabPane} = Tabs;
-        return (
-            <div
-                style={{
-                    height: 'calc(100vh-64px)',
-                    width: '45vw'
-                }}
-            >
-            <Tabs tabPosition= 'left' >
-            {groups.map(entry =>(
-            <TabPane onChange={e => this.onLinkClick(entry.key) } tab={<span>
-
-          {entry.name}
-           </span>} key={entry.key} style={{height : '700px'}}>
-
-             {entry.content}
-
-
-
-
-
-            </TabPane>
+        <Tabs
+            tabPosition='left'
+            style={{display:'flex',flex:1}}
+            activeKey={activeTab}
+            onChange={setActiveTab}
+        >
+            {tabs.map(tab=>(
+                <Tabs.TabPane
+                    key={tab.key}
+                    tab={<span style={{color:tab.key === activeTab ? frameStyles.colors[frame] : null}}>{tab.name}</span>}
+                    style={{padding:0,paddingTop:1,height:'100%'}}
+                >   
+                <Card 
+                    title={tab.name} 
+                    bordered={false} 
+                    style={{height:'100%'}}
+                    bodyStyle={{padding:0,minHeight:0,minWidth:0,height:'calc(100vh - 165pt)',overflow:'auto'}}
+                    extra={
+                        <Button 
+                            type='outline' 
+                            icon={<PlusOutlined/>}
+                        />
+                    }>
+                        {tab.content}
+                        
+                </Card>
+            </Tabs.TabPane>
             ))}
-
-
-
-            </Tabs>
-            </div>
-        );
-    }
+            
+        </Tabs>
+    );
 }

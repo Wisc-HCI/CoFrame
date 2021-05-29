@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-// import { UnityContent } from 'react-unity-webgl';
-// import { computeLayout } from "./layout";
 import { Layout, Row, Col, Button } from 'antd';
 import { FolderOpenOutlined, SaveOutlined, 
          UploadOutlined, DownloadOutlined, 
@@ -19,9 +17,6 @@ import useApplicationStore from "./stores/ApplicationStore";
 import useGuiStore from "./stores/GuiStore";
 
 import Logo from './content/logo.svg';
-
-import frameStyles from './frameStyles';
-import { formProperties } from "@fluentui/utilities";
 
 
 export function App(props) {
@@ -52,11 +47,8 @@ export function App(props) {
             document.body.classList.remove('safety');
             document.body.classList.add('business');
         }
-      }, [frame])
-
-    // const {mounted, setMounted} = useState(false);
-    // const {modalState, setModalState} = useState({ 'settings': true });
-    const hat = true;
+      }, [frame]
+    )
 
     const menuItems = [
         {

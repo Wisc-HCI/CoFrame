@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import YAML from 'yaml';
 
-import { Modal, Upload, Form, Button, Input, Result, message } from 'antd';
+import { Modal, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
 import useApplicationStore from '../../stores/ApplicationStore';

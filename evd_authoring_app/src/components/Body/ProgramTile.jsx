@@ -1,8 +1,6 @@
 import React, { useContext, useState } from 'react';
 
 import { Card, Button } from 'antd';
-import { Tile } from './Tile';
-import { TileHeader } from './TileHeader';
 import { ProgramEditor } from '../ProgramEditor';
 import { SetupEditor } from '../SetupEditor';
 
@@ -32,8 +30,8 @@ export const ProgramTile = (props) => {
                         {editorPane === 'setup' ? "Switch to Editor" : "Switch to Setup"}
                     </Button>
                 }
-                style={{height:'100%'}}
-                bodyStyle={{padding:0,display:'flex',flexDirection:'column',height:'100%'}}
+                style={{height:'100%',display:'flex',flex:1,flexDirection:'column',}}
+                bodyStyle={{padding:0,display:'flex',flex:1,flexDirection:'column'}}
                 title={editorPane === 'setup' ? "Program Setup" : "Program Editor"}>
                     {editorPane === 'setup' ? (
                         <SetupEditor/>

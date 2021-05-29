@@ -1,11 +1,7 @@
 import React from 'react';
 
 import { Card } from 'antd';
-import { Separator } from '@fluentui/react/lib/Separator';
 
-import { Tile } from './Tile';
-import { TileHeader } from './TileHeader';
-// import { Simulator } from '../Simulator';
 import {Scene} from 'robot-scene';
 import useGuiStore from '../../stores/GuiStore';
 import { Controls } from '../Controls';
@@ -17,12 +13,13 @@ export const SimulatorTile = (props) => {
     const frame = useGuiStore(state => state.frame);
 
     return (
-        <div style={{height:'800px',padding:10}}>
+        <div style={{height:'100%',display:'flex',flexDirection:'column',padding:10}}>
             <Card
-                style={{flex:1,height:'890px'}}
-                bodyStyle={{padding:0,height:'890px'}}
+                style={{display:'flex',flex:2,flexDirection:'column',marginBottom:10}}
+                bodyStyle={{padding:0,display:'flex',flex:1}}
+                extra={<Controls/>}
                 title="Simulator">
-                    <div style={{position:'relative',height:'830px', backgroundColor: frameStyles.colors[frame], padding: 5}}>
+                    <div style={{flex:1,backgroundColor: frameStyles.colors[frame], padding: 5, width:'100%'}}>
 
                         <Scene
                             displayTfs={true}
@@ -30,25 +27,13 @@ export const SimulatorTile = (props) => {
                             isPolar={false}
                             backgroundColor='#1e1e1e'
                             planeColor='#141414'
-                            highlightColor='#ffffff'
-                            height = "700px"
-                            style={{position:'relative'}}
-
+                            highlightColor={frameStyles.colors[frame]}
                         />
 
-                        <Card size="small" style ={{ position:'absolute',bottom: '-24px',left:'50%',transform: 'translate(-50%, -50%)'}}>
-                        <Controls style={{ float: 'center'}}/>
-
-                        </Card>
-
-
-
                     </div>
-
-
-
-
-
+            </Card>
+            <Card title='Contextual Feedback' style={{flex:1}}>
+                Contextual Feedback Here
             </Card>
         </div>
     );

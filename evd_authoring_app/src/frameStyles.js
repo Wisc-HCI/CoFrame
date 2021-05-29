@@ -1,4 +1,4 @@
-export default {
+const frameStyles = {
     colors: {
         safety: '#54eb61',
         quality: '#6c8feb',
@@ -6,3 +6,5 @@ export default {
         business: '#eb3d7a'
     }
 };
+
+export default frameStyles

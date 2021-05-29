@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal, Form, Input, Button } from 'antd';
+import { Modal, Input } from 'antd';
 
 import useApplicationStore from '../../stores/ApplicationStore';
 import useGuiStore from '../../stores/GuiStore';
