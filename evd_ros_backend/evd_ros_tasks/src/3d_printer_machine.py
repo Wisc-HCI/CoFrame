@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
 '''
-#TODO should provide an ID and a set of hooks. Can convert to low-level implementation code
+Presents a virtual 3D printer machine to EvD.
+
+Behavior implementation hooks are stubbed. Machine and thing type registration is
+also handled.
 '''
 
 
