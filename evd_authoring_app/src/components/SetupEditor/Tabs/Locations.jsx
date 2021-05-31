@@ -1,9 +1,10 @@
 import React, {useCallback} from 'react';
 
 import { List, Space, Button } from 'antd';
-import { DeleteOutlined, EditOutlined, } from '@ant-design/icons';
+import { DeleteOutlined, EllipsisOutlined, } from '@ant-design/icons';
 
 import useEvdStore from '../../../stores/EvdStore';
+import useGuiStore from '../../../stores/GuiStore';
 
 
 export function LocationItem(props) {
@@ -14,13 +15,15 @@ export function LocationItem(props) {
     state.environment.locations.filter(item=>(item.uuid === uuid))[0]
   ,[uuid]))
 
+  const setFocusItem = useGuiStore(state=>state.setFocusItem);
+
   return (
         <List.Item
           extra={
             <Space align='center'>
               <Button 
-                disabled={!location.canEdit}
-                icon={<EditOutlined/>}
+                onClick={()=>setFocusItem('location',uuid)}
+                icon={<EllipsisOutlined/>}
               />
               <Button 
                 danger

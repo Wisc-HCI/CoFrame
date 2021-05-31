@@ -5,6 +5,7 @@ import { Card } from 'antd';
 import {Scene} from 'robot-scene';
 import useGuiStore from '../../stores/GuiStore';
 import { Controls } from '../Controls';
+import { FeedbackTile } from './FeedbackTile';
 import frameStyles from '../../frameStyles';
 
 
@@ -32,9 +33,7 @@ export const SimulatorTile = (props) => {
 
                     </div>
             </Card>
-            <Card title='Contextual Feedback' style={{flex:1}}>
-                Contextual Feedback Here
-            </Card>
+            <FeedbackTile/>
         </div>
     );
 };

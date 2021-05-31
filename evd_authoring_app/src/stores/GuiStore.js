@@ -15,6 +15,9 @@ const store = (set) => ({
     activeModal: null,
     setActiveModal: (modal) => set((_)=>({activeModal:modal})),
     closeModal: () => set((_)=>({activeModal:null})),
+    // the setupTab specifies the tab in the SetupEditor that is shown
+    setupTab: 'locations',
+    setSetupTab: (tab) => set((_)=>({setupTab:tab})),
     // the focusItem specifies the type and uuid of data to focus on
     focusItem: {type:null,uuid:null},
     setFocusItem: (type,uuid) => set((_)=>({focusItem:{type:type,uuid:uuid}})),

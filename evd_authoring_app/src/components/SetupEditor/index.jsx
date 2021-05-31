@@ -19,8 +19,11 @@ import frameStyles from '../../frameStyles';
 
 export function SetupEditor(_) {
 
-    const frame = useGuiStore(state=>state.frame);
-    const [activeTab, setActiveTab] = useState('locations')
+    const {frame, setupTab, setSetupTab} = useGuiStore(state=>({
+        frame:state.frame, 
+        setupTab:state.setupTab,
+        setSetupTab:state.setSetupTab
+    }));
 
     const tabs = [
         {
@@ -40,13 +43,13 @@ export function SetupEditor(_) {
         <Tabs
             tabPosition='left'
             style={{display:'flex',flex:1}}
-            activeKey={activeTab}
-            onChange={setActiveTab}
+            activeKey={setupTab}
+            onChange={setSetupTab}
         >
             {tabs.map(tab=>(
                 <Tabs.TabPane
                     key={tab.key}
-                    tab={<span style={{color:tab.key === activeTab ? frameStyles.colors[frame] : null}}>{tab.name}</span>}
+                    tab={<span style={{color:tab.key === setupTab ? frameStyles.colors[frame] : null}}>{tab.name}</span>}
                     style={{padding:0,paddingTop:1,height:'100%'}}
                 >   
                 <Card 
