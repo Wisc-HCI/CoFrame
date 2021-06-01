@@ -43,6 +43,7 @@ export const SettingsModal = (_) => {
                     <Input.Search 
                         placeholder="e.g. ws://localhost:9090" 
                         defaultValue={url} 
+                        onChange={(e)=>setUrl(e.target.value)}
                         enterButton={connectButtonText} 
                         size="large" 
                         loading={connection === 'connecting'} 

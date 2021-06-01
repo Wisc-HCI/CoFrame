@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import { Drawer, Empty } from 'antd';
+import { Drawer, Empty, Input, Space, Button } from 'antd';
 
 import useGuiStore from '../../stores/GuiStore';
 
@@ -17,13 +17,27 @@ export const LocationDetail = (_) => {
         location:state.environment.locations.filter(item=>(item.uuid === focusItem.uuid))[0]
     })
       ,[focusItem]))
+      const deleteLocation = useEvdStore(state=>state.deleteLocation);
 
     if (location) {
         return (
             <Drawer 
-                title={'Location: '+location.name}
+                title={<Space><span>Location: </span><Input defaultValue={location.name} disabled={!location.canEdit}/></Space>}
                 visible={focusItem.type === 'location'} 
                 onClose={clearFocusItem}
+                footer={
+                    <Button
+                        danger
+                        block
+                        disabled={!location.canDelete}
+                        onClick={()=>{
+                            clearFocusItem();
+                            deleteLocation(focusItem.uuid)
+                        }}
+                    >
+                        Delete
+                    </Button>
+                }
                 width='25%'
             >
                 <Empty/>

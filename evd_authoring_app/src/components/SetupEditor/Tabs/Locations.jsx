@@ -14,6 +14,7 @@ export function LocationItem(props) {
   const location = useEvdStore(useCallback(state=>
     state.environment.locations.filter(item=>(item.uuid === uuid))[0]
   ,[uuid]))
+  const deleteLocation = useEvdStore(state=>state.deleteLocation);
 
   const setFocusItem = useGuiStore(state=>state.setFocusItem);
 
@@ -28,6 +29,7 @@ export function LocationItem(props) {
               <Button 
                 danger
                 disabled={!location.canDelete}
+                onClick={()=>deleteLocation(uuid)}
                 icon={<DeleteOutlined/>}
               />
             </Space>}

@@ -36,21 +36,40 @@ const store = (set,get) => ({
     addLocation: (location) => set((state)=>{
       state.environment.locations.push(location)
     }),
+    deleteLocation: (uuid) => set((state)=>{
+      state.environment.locations = state.environment.locations.filter(item=>item.uuid !== uuid)
+    }),
     addWaypoint: (waypoint) => set((state)=>{
       state.environment.waypoints.push(waypoint)
+    }),
+    deleteWaypoint: (uuid) => set((state)=>{
+      state.environment.waypoints = state.environment.waypoints.filter(item=>item.uuid !== uuid)
     }),
     addRegion: (region) => set((state)=>{
       state.environment.regions.push(region)
     }),
+    deleteRegion: (uuid) => set((state)=>{
+      state.environment.regions = state.environment.regions.filter(item=>item.uuid !== uuid)
+    }),
     addMachine: (machine) => set((state)=>{
       state.environment.machines.push(machine)
+    }),
+    deleteMachine: (uuid) => set((state)=>{
+      state.environment.machines = state.environment.machines.filter(item=>item.uuid !== uuid)
     }),
     addThingType: (thingType) => set((state)=>{
       state.environment.thingTypes.push(thingType)
     }),
+    deleteThingType: (uuid) => set((state)=>{
+      state.environment.thingTypes = state.environment.thingTypes.filter(item=>item.uuid !== uuid)
+    }),
     addThing: (thing) => set((state)=>{
       state.environment.things.push(thing)
     }),
+    deleteThing: (uuid) => set((state)=>{
+      state.environment.things = state.environment.things.filter(item=>item.uuid !== uuid)
+    }),
+
     primitives: {},
     setProgram: (program) => set((_)=>({program:program}))
 });

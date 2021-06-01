@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import YAML from 'yaml';
 
 import { Modal, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
-import useApplicationStore from '../../stores/ApplicationStore';
+// import useApplicationStore from '../../stores/ApplicationStore';
 import useGuiStore from '../../stores/GuiStore';
+// import useEvdStore from '../../stores/EvdStore';
 
 export const UploadModal = (_) => {
 
@@ -13,13 +14,6 @@ export const UploadModal = (_) => {
         activeModal:state.activeModal,
         closeModal:state.closeModal
     }));
-    const {filename, setFilename} = useApplicationStore(state=>({
-        filename:state.filename,
-        setFilename:state.setFilename
-    }))
-
-
-    const [data, setData] = useState(null);
 
     const handleUpload = async (info) => {
         if (info.file) {
@@ -31,7 +25,6 @@ export const UploadModal = (_) => {
             let data = YAML.parse(reader.result);
             if (data) {
               // Do handling
-              setData(data)
               closeModal()
             }
           }

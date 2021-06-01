@@ -12,8 +12,7 @@ export const SaveModal = (_) => {
         activeModal:state.activeModal,
         closeModal:state.closeModal
     }));
-    const {save, filename, setFilename} = useApplicationStore(state=>({
-        save:state.save,
+    const {filename, setFilename} = useApplicationStore(state=>({
         filename:state.filename,
         setFilename:state.setFilename,
     }));

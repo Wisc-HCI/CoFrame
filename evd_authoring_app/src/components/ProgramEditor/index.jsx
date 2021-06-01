@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
 // import ReactBlockly from 'react-blockly';
 
-import { 
-    evdScriptBlocklyToolbox, 
-    evdScriptBlocklyInitialXML 
-} from '../../model/evdScript';
+// import { 
+//     evdScriptBlocklyToolbox, 
+//     evdScriptBlocklyInitialXML 
+// } from '../../model/evdScript';
 
 import './index.css';
 
 
 export class ProgramEditor extends Component {
-  constructor(props) {
-    super(props);
+  // constructor(props) {
+  //   super(props);
 
-    this.state = {
-      toolbox: evdScriptBlocklyToolbox(),
-      initialXml: evdScriptBlocklyInitialXML()
-    };
-  }
+    // this.state = {
+    //   toolbox: evdScriptBlocklyToolbox(),
+    //   initialXml: evdScriptBlocklyInitialXML()
+    // };
+  // }
 
   workspaceDidChange = (workspace) => {
     /*
@@ -38,12 +38,10 @@ export class ProgramEditor extends Component {
   };
 
   render() {
-    const { 
-        toolbox, 
-        initialXml 
-    } = this.state;
-
-    const padding = 5;
+    // const { 
+    //     toolbox, 
+    //     initialXml 
+    // } = this.state;
     
     return (
       <div 
