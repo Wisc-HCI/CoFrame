@@ -1,15 +1,11 @@
 import create from "zustand";
 import produce from "immer";
-import useRosStore from './RosStore';
 import fakeEvdData from './fakeEvdData';
 
 const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
 
-const store = (set,get) => ({
-    setup: ()=>set((state)=>{
-      useRosStore.getState().subscribeToProgramTopic(get().updateProgram);
-    }),
+const store = (set) => ({
     program: null,
     updateProgram: ({data,action,changes,currentTag,previousTag})=>{
       // {

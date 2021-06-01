@@ -1,6 +1,8 @@
 import create from "zustand";
 import ROSLIB from '@robostack/roslib';
 
+import useEvdStore from './EvdStore';
+
 const store = (set) => ({
     url: 'ws://localhost:9090',
     // SetURL resets ROS
@@ -13,9 +15,6 @@ const store = (set) => ({
     getProgramSrv: null,
     setProgramSrv: null,
     updateProgramTopic: null,
-    subscribeToProgramTopic: (fn) => set((state)=>{
-        state.updateProgramTopic.subscribe(fn)
-    }),
     onConnection: () => set({connection:'connected'}),
     onError: () => set({connection:'disconnected'}),
     onClose: () => set({connection:'disconnected'}),
@@ -60,6 +59,9 @@ const store = (set) => ({
             name: 'data_server/update',
             messageType: 'evd_ros_core/UpdateData'
         });
+
+        updateProgramTopic.subscribe(useEvdStore.getState().updateProgram);
+
         ros.connect();
         return {
             url:state.url,
