@@ -8,6 +8,11 @@ const immer = (config) => (set, get, api) =>
 const store = (set) => ({
     program: null,
     updateProgram: ({data,action,changes,currentTag,previousTag})=>{
+      const dataBlob = JSON.parse(data);
+      const changesBlob = JSON.parse(changes);
+      console.log(dataBlob);
+      console.log(changesBlob);
+
       // {
       //   data:str (json blob ~ probably your program), 
       //   action:str, 
@@ -24,10 +29,10 @@ const store = (set) => ({
     environment: {
       locations: [],
       waypoints: [],
-      regions: [],
+      regions: [],    // Only shown through machines
       machines: [],
       thingTypes: [],
-      things: []
+      things: []      // Only shown through thingTypes
     },
     addLocation: (location) => set((state)=>{
       state.environment.locations.push(location)

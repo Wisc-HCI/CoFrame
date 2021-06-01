@@ -6,7 +6,7 @@
   <arg name="display_joint_gui" default='true'/>
 
   <!-- Global State Publishers -->
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(arg application_description_xacro)' kinematics_config:=$(arg kinematics_config)"/>
+  <param name="robot_description" command="$(find xacro)/xacro '$(arg application_description_xacro)' kinematics_config:=$(arg kinematics_config)"/>
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="$(arg display_joint_gui)"/>

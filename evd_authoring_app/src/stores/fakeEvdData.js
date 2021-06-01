@@ -16,8 +16,6 @@ for (let i=0; i<30; i++) {
     });
 }
 
-
-
 let locations = [];
 for (let i=0; i<20; i++) {
     locations.push({
