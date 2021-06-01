@@ -5,8 +5,8 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { LocationList } from './Tabs/Locations';
 // import { WaypointList } from './Tabs/Waypoints';
-// import { RegionList } from './Tabs/Regions';
-// import { MachineList } from './Tabs/Machines';
+ import { RegionList } from './Tabs/Regions';
+ import { MachineList } from './Tabs/Machines';
 // import { ThingList } from './Tabs/Things';
 // import { ThingTypeList } from './Tabs/ThingTypes';
 
@@ -20,7 +20,7 @@ import frameStyles from '../../frameStyles';
 export function SetupEditor(_) {
 
     const {frame, setupTab, setSetupTab} = useGuiStore(state=>({
-        frame:state.frame, 
+        frame:state.frame,
         setupTab:state.setupTab,
         setSetupTab:state.setSetupTab
     }));
@@ -34,7 +34,13 @@ export function SetupEditor(_) {
         {
             key:'machines',
             name:'Machines',
-            content: <LocationList/>
+            content: <MachineList/>
+        },
+        {
+          key:'regions',
+          name:'Regions',
+          content: <RegionList/>
+
         }
     ]
 
@@ -51,24 +57,24 @@ export function SetupEditor(_) {
                     key={tab.key}
                     tab={<span style={{color:tab.key === setupTab ? frameStyles.colors[frame] : null}}>{tab.name}</span>}
                     style={{padding:0,paddingTop:1,height:'100%'}}
-                >   
-                <Card 
-                    title={tab.name} 
-                    bordered={false} 
+                >
+                <Card
+                    title={tab.name}
+                    bordered={false}
                     style={{height:'100%'}}
                     bodyStyle={{padding:0,minHeight:0,minWidth:0,height:'calc(100vh - 165pt)',overflow:'auto'}}
                     extra={
-                        <Button 
-                            type='outline' 
+                        <Button
+                            type='outline'
                             icon={<PlusOutlined/>}
                         />
                     }>
                         {tab.content}
-                        
+
                 </Card>
             </Tabs.TabPane>
             ))}
-            
+
         </Tabs>
     );
 }
