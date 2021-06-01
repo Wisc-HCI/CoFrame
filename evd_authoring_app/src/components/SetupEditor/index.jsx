@@ -5,8 +5,8 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { LocationList } from './Tabs/Locations';
 import { WaypointList } from './Tabs/Waypoints';
- import { RegionList } from './Tabs/Regions';
- import { MachineList } from './Tabs/Machines';
+import { RegionList } from './Tabs/Regions';
+import { MachineList } from './Tabs/Machines';
 // import { ThingList } from './Tabs/Things';
 // import { ThingTypeList } from './Tabs/ThingTypes';
 
@@ -36,18 +36,18 @@ export function SetupEditor(_) {
             name:'Machines',
             content: <MachineList/>
         },
-        {
-          key:'regions',
-          name:'Regions',
-          content: <RegionList/>
+        // {
+        //     key:'regions',
+        //     name:'Regions',
+        //     content: <RegionList/>
 
-        },
-        {
-          key:'waypoints',
-          name:'Waypoints',
-          content: <WaypointList/>
+        // },
+        // {
+        //     key:'waypoints',
+        //     name:'Waypoints',
+        //     content: <WaypointList/>
 
-        }
+        // }
     ]
 
     return (
@@ -61,7 +61,7 @@ export function SetupEditor(_) {
             {tabs.map(tab=>(
                 <Tabs.TabPane
                     key={tab.key}
-                    tab={<span style={{color:tab.key === setupTab ? frameStyles.colors[frame] : null}}>{tab.name}</span>}
+                    tab={<span style={tab.key === setupTab ? { color: frameStyles.colors[frame] } : {}}>{tab.name}</span>}
                     style={{padding:0,paddingTop:1,height:'100%'}}
                 >
                 <Card

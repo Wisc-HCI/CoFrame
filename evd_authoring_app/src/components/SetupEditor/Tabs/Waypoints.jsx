@@ -7,7 +7,7 @@ import useEvdStore from '../../../stores/EvdStore';
 import useGuiStore from '../../../stores/GuiStore';
 
 
-export function WayPointItem(props) {
+export function WaypointItem(props) {
 
   const { uuid } = props;
 
@@ -63,7 +63,7 @@ export function WaypointList(_) {
       split={false}
       dataSource={uuids}
       renderItem={(uuid)=>(
-        <WayPointItem uuid={uuid} key={uuid}/>
+        <WaypointItem uuid={uuid} key={uuid}/>
       )}
     />
 
