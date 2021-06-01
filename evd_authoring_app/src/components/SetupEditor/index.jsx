@@ -4,7 +4,7 @@ import { Tabs, Card, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { LocationList } from './Tabs/Locations';
-// import { WaypointList } from './Tabs/Waypoints';
+import { WaypointList } from './Tabs/Waypoints';
  import { RegionList } from './Tabs/Regions';
  import { MachineList } from './Tabs/Machines';
 // import { ThingList } from './Tabs/Things';
@@ -40,6 +40,12 @@ export function SetupEditor(_) {
           key:'regions',
           name:'Regions',
           content: <RegionList/>
+
+        },
+        {
+          key:'waypoints',
+          name:'Waypoints',
+          content: <WaypointList/>
 
         }
     ]
