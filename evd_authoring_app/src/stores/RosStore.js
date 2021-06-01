@@ -4,8 +4,23 @@ import ROSLIB from '@robostack/roslib';
 const store = (set) => ({
     url: 'ws://localhost:9090',
     // SetURL resets ROS
-    setUrl: (url) => set((state)=>{
-        const ros = new ROSLIB.Ros({url:url});
+    setUrl: (url) => set((_)=>({url:url,connection:'disconnected'})),
+    ros: null,
+    connection: 'disconnected',
+    loadAppSrv: null,
+    saveAppSrv: null,
+    getApOptionsSrv: null,
+    getProgramSrv: null,
+    setProgramSrv: null,
+    updateProgramTopic: null,
+    subscribeToProgramTopic: (fn) => set((state)=>{
+        state.updateProgramTopic.subscribe(fn)
+    }),
+    onConnection: () => set({connection:'connected'}),
+    onError: () => set({connection:'disconnected'}),
+    onClose: () => set({connection:'disconnected'}),
+    connect: () => set((state)=>{
+        const ros = new ROSLIB.Ros({url:state.url});
         ros.on('connection', state.onConnection);
         ros.on('error', state.onError);
         ros.on('close', state.onClose);
@@ -45,11 +60,10 @@ const store = (set) => ({
             name: 'data_server/update',
             messageType: 'evd_ros_core/UpdateData'
         });
-        console.log(url);
-        console.log(ros);
+        ros.connect();
         return {
-            url:url,
-            connection:'disconnected',
+            url:state.url,
+            connection:'connecting',
             ros:ros,
             loadAppSrv:loadAppSrv, 
             saveAppSrv:saveAppSrv, 
@@ -58,25 +72,6 @@ const store = (set) => ({
             setProgramSrv:setProgramSrv,
             updateProgramTopic:updateProgramTopic
         };
-    }),
-    ros: null,
-    connection: 'disconnected',
-    loadAppSrv: null,
-    saveAppSrv: null,
-    getApOptionsSrv: null,
-    getProgramSrv: null,
-    setProgramSrv: null,
-    updateProgramTopic: null,
-    subscribeToProgramTopic: (fn) => set((state)=>{
-        state.updateProgramTopic.subscribe(fn)
-    }),
-    onConnection: () => set({connection:'connected'}),
-    onError: () => set({connection:'disconnected'}),
-    onClose: () => set({connection:'disconnected'}),
-    connect: () => set((state)=>{
-        console.log(state.ros);
-        state.ros.connect();
-        return {connection:'connecting'}
     })
 });
 
