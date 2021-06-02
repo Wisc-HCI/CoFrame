@@ -1,7 +1,8 @@
 import React, { Fragment } from "react";
 
 import { LocationDetail } from "./LocationDetail";
-import {MachineDetail} from "./MachineDetail"
+import {MachineDetail} from "./MachineDetail";
+import {WaypointDetail} from "./WaypointDetail";
 
 
 export const Detail = (props) => {
@@ -11,6 +12,7 @@ export const Detail = (props) => {
 
             <LocationDetail/>
             <MachineDetail/>
+            <WaypointDetail/>
 
         </Fragment>
     );
