@@ -70,8 +70,8 @@ class Pose(Node):
 
     @classmethod
     def from_dct(cls, dct):
-        return cls(position=NodeParser(dct['position'], enforce_type=Position.type_string(trailing_delim=False)),
-                   orientation=NodeParser(dct['orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
+        return cls(position=NodeParser(dct['position'], enforce_types=[Position.type_string(trailing_delim=False)]),
+                   orientation=NodeParser(dct['orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -128,11 +128,11 @@ class Pose(Node):
     def set(self, dct):
         pos = dct.get('position',None)
         if pos != None:
-            self.position = NodeParser(pos, enforce_type=Position.type_string(trailing_delim=False))
+            self.position = NodeParser(pos, enforce_types=[Position.type_string(trailing_delim=False)])
 
         ort = dct.get('orientation',None)
         if ort != None:
-            self.orientation = NodeParser(ort, enforce_type=Orientation.type_string(trailing_delim=False))
+            self.orientation = NodeParser(ort, enforce_types=[Orientation.type_string(trailing_delim=False)])
 
         super(Pose,self).set(dct)
 
@@ -176,4 +176,3 @@ class Pose(Node):
 
         self.updated_attribute('position','update')
         self.updated_attribute('orientation','update')
-

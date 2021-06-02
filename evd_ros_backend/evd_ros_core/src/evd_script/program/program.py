@@ -63,7 +63,7 @@ class Program(Skill):
             append_type=False,
             uuid=dct['uuid'],
             primitives=[NodeParser(p) for p in dct['primitives']],
-            environment=NodeParser(dct['environment'], enforce_type=Environment.type_string(trailing_delim=False)))
+            environment=NodeParser(dct['environment'], enforce_types=[Environment.type_string(trailing_delim=False)]))
 
     '''
     Data accessor/modifier methods

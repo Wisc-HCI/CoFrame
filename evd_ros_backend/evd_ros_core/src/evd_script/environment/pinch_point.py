@@ -75,7 +75,7 @@ class PinchPoint(EnvironmentNode, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(axis=dct['axis'],
-                   offset=NodeParser(dct['offset'], enforce_type=Position.type_string(trailing_delim=False)),
+                   offset=NodeParser(dct['offset'], enforce_types=[Position.type_string(trailing_delim=False)]),
                    link=dct['link'],
                    radius=dct['radius'],
                    length=dct['length'],
@@ -181,7 +181,7 @@ class PinchPoint(EnvironmentNode, VisualizeMarker):
             self.axis = dct['axis']
 
         if 'offset' in dct.keys():
-            self.offset = NodeParser(dct['offset'], enforce_type=Position.type_string(trailing_delim=False))
+            self.offset = NodeParser(dct['offset'], enforce_types=[Position.type_string(trailing_delim=False)])
 
         if 'link' in dct.keys():
             self.link = dct['link']

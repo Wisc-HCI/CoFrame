@@ -58,13 +58,13 @@ class TraceDataPoint(Pose, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            position=NodeParser(dct['position'], enforce_type=Position.type_string(trailing_delim=False)),
-            orientation=NodeParser(dct['orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
+            position=NodeParser(dct['position'], enforce_types=[Position.type_string(trailing_delim=False)]),
+            orientation=NodeParser(dct['orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
             type=dct['type'],
             append_type=False,
             name=dct['name'],
             uuid=dct['uuid'],
-            grades={key: NodeParser(dct['grades'][key], enforce_type=Grade.type_string(trailing_delim=False)) for key in dct['grades'].keys()})
+            grades={key: NodeParser(dct['grades'][key], enforce_types=[Grade.type_string(trailing_delim=False)]) for key in dct['grades'].keys()})
 
     def to_ros_marker(self, frame_id, id=0):
         marker = Marker()
@@ -102,7 +102,7 @@ class TraceDataPoint(Pose, VisualizeMarker):
     def set(self, dct):
 
         if 'grades' in dct.keys():
-            self.grades = {key: NodeParser(dct['grades'][key], enforce_type=Grade.type_string(trailing_delim=False)) for key in dct['grades'].keys()}
+            self.grades = {key: NodeParser(dct['grades'][key], enforce_types=[Grade.type_string(trailing_delim=False)]) for key in dct['grades'].keys()}
 
         super(TraceDataPoint,self).set(dct)
 

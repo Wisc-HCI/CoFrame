@@ -1,5 +1,5 @@
 '''
-Trace is the result of running a trajectory on the robot planner. 
+Trace is the result of running a trajectory on the robot planner.
 
 Traces provide a set of data and various labeled keys.
 
@@ -85,7 +85,7 @@ class Trace(Node, VisualizeMarkers):
             data[key] = []
 
             for i in range(0,len(dct['data'][key])):
-                node = NodeParser(dct['data'][key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False))
+                node = NodeParser(dct['data'][key][i], enforce_types=[TraceDataPoint.type_string(trailing_delim=False)])
                 data[key].append(node)
 
         return cls(
@@ -252,7 +252,7 @@ class Trace(Node, VisualizeMarkers):
                 for i in range(0,len(dct['data'][key])):
                     node = NodeParser(dct['data'][key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False))
                     data[key].append(node)
-            
+
             self.data = data
 
         time = dct.get('time',None)

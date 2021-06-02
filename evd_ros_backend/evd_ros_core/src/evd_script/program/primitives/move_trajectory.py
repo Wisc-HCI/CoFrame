@@ -85,7 +85,7 @@ class MoveTrajectory(Primitive):
             startLocUuid=dct['start_location_uuid'],
             endLocUuid=dct['end_location_uuid'],
             manual_safety=dct['manual_safety'],
-            trajectory=NodeParser(dct['trajectory'], enforce_type=Trajectory.type_string(trailing_delim=False)) if 'trajectory' in dct.keys() else None,
+            trajectory=NodeParser(dct['trajectory'], enforce_types=[Trajectory.type_string(trailing_delim=False)]) if 'trajectory' in dct.keys() else None,
             trajectory_uuid=dct['trajectory_uuid'] if 'trajectory_uuid' in dct.keys() else None)
 
     def on_delete(self):
@@ -205,7 +205,7 @@ class MoveTrajectory(Primitive):
             self.manual_safety = dct['manual_safety']
 
         if 'trajectory' in dct.keys():
-            self.trajectory = NodeParser(dct['trajectory'], enforce_type=Trajectory.type_string(trailing_delim=False))
+            self.trajectory = NodeParser(dct['trajectory'], enforce_types=[Trajectory.type_string(trailing_delim=False)])
 
         if 'trajectory_uuid' in dct.keys():
             self.trajectory_uuid = dct['trajectory_uuid']

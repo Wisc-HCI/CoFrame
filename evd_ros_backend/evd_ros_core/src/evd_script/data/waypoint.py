@@ -53,8 +53,8 @@ class Waypoint(Pose):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            position=NodeParser(dct['position'], enforce_type=Position.type_string(trailing_delim=False)),
-            orientation=NodeParser(dct['orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
+            position=NodeParser(dct['position'], enforce_types=[Position.type_string(trailing_delim=False)]),
+            orientation=NodeParser(dct['orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
             type=dct['type'],
             append_type=False,
             name=dct['name'],

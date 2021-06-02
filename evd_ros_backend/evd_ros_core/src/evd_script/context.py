@@ -15,6 +15,7 @@ from .data.waypoint import Waypoint
 from .data.location import Location
 from .data.thing_type import ThingType
 from .data.trajectory import Trajectory
+from .data.regions import Region, CubeRegion, SphereRegion
 
 from .orphans import *
 from .node_parser import NodeParser
@@ -34,7 +35,7 @@ class Context(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, locations=[], machines=[], things=[], thing_types=[], waypoints=[], trajectories=[],
+    def __init__(self, locations=[], machines=[], things=[], thing_types=[], waypoints=[], trajectories=[], regions=[],
                  type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._orphan_list = evd_orphan_list()
@@ -45,6 +46,7 @@ class Context(Node):
         self._thing_types = {}
         self._waypoints = {}
         self._trajectories = {}
+        self._regions = {}
 
         super(Context,self).__init__(
             type=Context.type_string() + type if append_type else type,
@@ -61,6 +63,7 @@ class Context(Node):
         self.waypoints = waypoints
         self.trajectories = trajectories
         self.thing_types = thing_types
+        self.regions = regions
 
     def to_dct(self):
         msg = super(Context,self).to_dct()
@@ -70,7 +73,8 @@ class Context(Node):
             'things': [t.to_dct() for t in self.things],
             'waypoints': [w.to_dct() for w in self.waypoints],
             'trajectories': [t.to_dct() for t in self.trajectories],
-            'thing_types': [t.to_dct() for t in self.thing_types]
+            'thing_types': [t.to_dct() for t in self.thing_types],
+            'regions': [r.to_dct() for r in self.regions]
         })
         return msg
 
@@ -81,12 +85,13 @@ class Context(Node):
             uuid=dct['uuid'],
             type=dct['type'],
             append_type=False,
-            locations=[NodeParser(l, enforce_type=Location.type_string(trailing_delim=False)) for l in dct['locations']],
-            machines=[NodeParser(m, enforce_type=Machine.type_string(trailing_delim=False)) for m in dct['machines']],
-            things=[NodeParser(t, enforce_type=Thing.type_string(trailing_delim=False)) for t in dct['things']],
-            waypoints=[NodeParser(w, enforce_type=Waypoint.type_string(trailing_delim=False)) for w in dct['waypoints']],
-            trajectories=[NodeParser(t, enforce_type=Trajectory.type_string(trailing_delim=False)) for t in dct['trajectories']],
-            thing_types=[NodeParser(t, enforce_type=ThingType.type_string(trailing_delim=False)) for t in dct['thing_types']])
+            locations=[NodeParser(l, enforce_types=[Location.type_string(trailing_delim=False)]) for l in dct['locations']],
+            machines=[NodeParser(m, enforce_types=[Machine.type_string(trailing_delim=False)]) for m in dct['machines']],
+            things=[NodeParser(t, enforce_types=[Thing.type_string(trailing_delim=False)]) for t in dct['things']],
+            waypoints=[NodeParser(w, enforce_types=[Waypoint.type_string(trailing_delim=False)]) for w in dct['waypoints']],
+            trajectories=[NodeParser(t, enforce_types=[Trajectory.type_string(trailing_delim=False)]) for t in dct['trajectories']],
+            thing_types=[NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']],
+            regions=[NodeParser(r, enforce_types=[Region.type_string(trailing_delim=False),CubeRegion.type_string(trailing_delim=False),SphereRegion.type_string(trailing_delim=False)]) for r in dct['regions']])
 
     def on_delete(self):
 
@@ -107,6 +112,9 @@ class Context(Node):
 
         for t in self.thing_types:
             self._orphan_list.add(t.uuid,'thing_type')
+
+        for r in self.regions:
+            self._orphan_list.add(r.uuid,'region')
 
         super(Context,self).on_delete()
 
@@ -260,9 +268,32 @@ class Context(Node):
                 uuids.remove(t.uuid)
 
         for u in uuids:
-            self._orphan_list.add(u,'waypoint')
+            self._orphan_list.add(u,'trajectory')
 
         self.updated_attribute('trajectories','set')
+
+    @property
+    def regions(self):
+        return self._regions.values()
+
+    @regions.setter
+    def regions(self, value):
+        uuids = []
+
+        for r in self._regions.values():
+            r.remove_from_cache()
+            uuids.append(r.uuid)
+
+        self._regions = {}
+
+        for r in value:
+            self._regions[r.uuid] = r
+            r.parent - self
+            if r.uuid in uuids:
+                uuids.remove(r.uuid)
+
+        for u in uuids:
+            self._orphan_list.add(u,'region')
 
     def get_location(self, uuid):
         if uuid in self._locations.keys():
@@ -357,7 +388,7 @@ class Context(Node):
 
     def add_thing_type(self, thing_type):
         thing_type.parent = self
-        self._things[thing_type.uuid] = thing_type
+        self._thing_types[thing_type.uuid] = thing_type
         self.updated_attribute('thing_types','add',thing_type.uuid)
 
     def delete_thing_type(self, uuid):
@@ -365,6 +396,23 @@ class Context(Node):
             self._thing_types.pop(uuid).remove_from_cache()
             self._orphan_list.add(uuid,'thing_type')
             self.updated_attribute('thing_types','delete', uuid)
+
+    def get_region(self, uuid):
+        if uuid in self._regions.keys():
+            return self._regions[uuid]
+        else:
+            return None
+
+    def add_region(self, region):
+        region.parent = self
+        self._regions[region.uuid] = region
+        self.updated_attribute('regions','add',region.uuid)
+
+    def delete_region(self, uuid):
+        if uuid in self._regions.keys():
+            self._regions.pop(uuid).remove_from_cache()
+            self._orphan_list.add(uuid,'region')
+            self.updated_attribute('regions','delete', uuid)
 
     def set(self, dct):
         if 'locations' in dct.keys():
@@ -384,6 +432,9 @@ class Context(Node):
 
         if 'thing_types' in dct.keys():
             self.thing_types = [NodeParser(t, enforce_type=ThingType.type_string(trailing_delim=False)) for t in dct['thing_types']]
+
+        if 'regions' in dct.keys():
+            self.regions = [NodeParser(r, enforce_types=[Region.type_string(trailing_delim=False),CubeRegion.type_string(trailing_delim=False),SphereRegion.type_string(trailing_delim=False)]) for r in dct['regions']]
 
         super(Context,self).set(dct)
 
@@ -410,6 +461,9 @@ class Context(Node):
         for t in self.thing_types:
             t.remove_from_cache()
 
+        for r in self.regions:
+            r.remove_from_cache()
+
         super(Context,self).remove_from_cache()
 
     def add_to_cache(self):
@@ -430,6 +484,9 @@ class Context(Node):
 
         for t in self.thing_types:
             t.add_to_cache()
+
+        for r in self.regions:
+            r.add_to_cache()
 
         super(Context,self).add_to_cache()
 
@@ -452,6 +509,8 @@ class Context(Node):
             self.delete_trajectory(uuid)
         elif uuid in [t.uuid for t in self.thing_types]:
             self.delete_thing_type(uuid)
+        elif uuid in [r.uuid for r in self.regions]:
+            self.delete_region(uuid)
         else:
             success = False
 
@@ -497,6 +556,9 @@ class Context(Node):
         for t in self.thing_types:
             t.late_construct_update()
 
+        for r in self.regions:
+            r.late_construct_update()
+
         super(Context,self).late_construct_update()
 
     def deep_update(self):
@@ -519,6 +581,9 @@ class Context(Node):
         for t in self.thing_types:
             t.deep_update()
 
+        for r in self.regions:
+            r.deep_update()
+
         super(Context,self).deep_update()
 
         self.updated_attribute('machines','update')
@@ -527,6 +592,7 @@ class Context(Node):
         self.updated_attribute('waypoints','update')
         self.updated_attribute('trajectories','update')
         self.updated_attribute('thing_types','update')
+        self.updated_attribute('regions','update')
 
     def shallow_update(self):
         super(Context,self).shallow_update()
@@ -537,3 +603,4 @@ class Context(Node):
         self.updated_attribute('waypoints','update')
         self.updated_attribute('trajectories','update')
         self.updated_attribute('thing_types','update')
+        self.updated_attribute('regions','update')

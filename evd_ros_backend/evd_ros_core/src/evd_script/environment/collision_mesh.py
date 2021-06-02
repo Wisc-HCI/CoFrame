@@ -65,7 +65,7 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(mesh_id=dct['mesh_id'],
-                   pose_offset=NodeParser(dct['pose_offset'], enforce_type=Pose.type_string(trailing_delim=False)),
+                   pose_offset=NodeParser(dct['pose_offset'], enforce_types=[Pose.type_string(trailing_delim=False)]),
                    link=dct['link'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
@@ -146,7 +146,7 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
             self.mesh_id = dct['mesh_id']
 
         if 'pose_offset' in dct.keys():
-            self.pose_offset = NodeParser(dct['pose_offset'], enforce_type=Pose.type_string(trailing_delim=False))
+            self.pose_offset = NodeParser(dct['pose_offset'], enforce_types=[Pose.type_string(trailing_delim=False)])
 
         if 'link' in dct.keys():
             self.link = dct['link']

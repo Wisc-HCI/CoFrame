@@ -70,15 +70,15 @@ class Environment(Context):
 
     @classmethod
     def from_dct(cls, dct):
-        return cls(reach_sphere=NodeParser(dct['reach_sphere'], enforce_type=ReachSphere.type_string(trailing_delim=False)) if dct['reach_sphere'] != None else None,
-                   pinch_points=[NodeParser(p, enforce_type=PinchPoint.type_string(trailing_delim=False)) for p in dct['pinch_points']],
-                   collision_meshes=[NodeParser(c, enforce_type=CollisionMesh.type_string(trailing_delim=False)) for c in dct['collision_meshes']],
-                   occupancy_zones=[NodeParser(o, enforce_type=OccupancyZone.type_string(trailing_delim=False)) for o in dct['occupancy_zones']],
-                   locations=[NodeParser(l, enforce_type=Location.type_string(trailing_delim=False)) for l in dct['locations']],
-                   machines=[NodeParser(m, enforce_type=Machine.type_string(trailing_delim=False)) for m in dct['machines']],
-                   things=[NodeParser(t, enforce_type=Thing.type_string(trailing_delim=False)) for t in dct['things']],
-                   waypoints=[NodeParser(w, enforce_type=Waypoint.type_string(trailing_delim=False)) for w in dct['waypoints']],
-                   trajectories=[NodeParser(t, enforce_type=Trajectory.type_string(trailing_delim=False)) for t in dct['trajectories']],
+        return cls(reach_sphere=NodeParser(dct['reach_sphere'], enforce_types=[ReachSphere.type_string(trailing_delim=False)]) if dct['reach_sphere'] != None else None,
+                   pinch_points=[NodeParser(p, enforce_types=[PinchPoint.type_string(trailing_delim=False)]) for p in dct['pinch_points']],
+                   collision_meshes=[NodeParser(c, enforce_types=[CollisionMesh.type_string(trailing_delim=False)]) for c in dct['collision_meshes']],
+                   occupancy_zones=[NodeParser(o, enforce_types=[OccupancyZone.type_string(trailing_delim=False)]) for o in dct['occupancy_zones']],
+                   locations=[NodeParser(l, enforce_types=[Location.type_string(trailing_delim=False)]) for l in dct['locations']],
+                   machines=[NodeParser(m, enforce_types=[Machine.type_string(trailing_delim=False)]) for m in dct['machines']],
+                   things=[NodeParser(t, enforce_types=[Thing.type_string(trailing_delim=False)]) for t in dct['things']],
+                   waypoints=[NodeParser(w, enforce_types=[Waypoint.type_string(trailing_delim=False)]) for w in dct['waypoints']],
+                   trajectories=[NodeParser(t, enforce_types=[Trajectory.type_string(trailing_delim=False)]) for t in dct['trajectories']],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -168,16 +168,16 @@ class Environment(Context):
     def set(self, dct):
 
         if 'reach_sphere' in dct.keys():
-            self.reach_sphere = NodeParser(dct['reach_sphere'], enforce_type=ReachSphere.type_string(trailing_delim=False)) if dct['reach_sphere'] != None else None
+            self.reach_sphere = NodeParser(dct['reach_sphere'], enforce_types=[ReachSphere.type_string(trailing_delim=False)]) if dct['reach_sphere'] != None else None
 
         if 'pinch_points' in dct.keys():
-            self.pinch_points = [NodeParser(p, enforce_type=PinchPoint.type_string(trailing_delim=False)) for p in dct['pinch_points']]
+            self.pinch_points = [NodeParser(p, enforce_types=[PinchPoint.type_string(trailing_delim=False)]) for p in dct['pinch_points']]
 
         if 'collision_meshes' in dct.keys():
-            self.collision_meshes = [NodeParser(c, enforce_type=CollisionMesh.type_string(trailing_delim=False)) for c in dct['collision_meshes']]
+            self.collision_meshes = [NodeParser(c, enforce_types=[CollisionMesh.type_string(trailing_delim=False)]) for c in dct['collision_meshes']]
 
         if 'occupancy_zones' in dct.keys():
-            self.occupancy_zones = [NodeParser(o, enforce_type=OccupancyZone.type_string(trailing_delim=False)) for o in dct['occupancy_zones']]
+            self.occupancy_zones = [NodeParser(o, enforce_types=[OccupancyZone.type_string(trailing_delim=False)]) for o in dct['occupancy_zones']]
 
         super(Environment,self).set(dct)
 

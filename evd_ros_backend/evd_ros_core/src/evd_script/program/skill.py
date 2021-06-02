@@ -2,8 +2,8 @@
 Skill wraps a set of primitives that should be executed in order.
 
 In hierarchical task analysis (and/or those familiar with Authr) this is a "task".
-The purpose of a skill is to abstract the base-primitives into more semantically 
-meaningful behaviors. 
+The purpose of a skill is to abstract the base-primitives into more semantically
+meaningful behaviors.
 '''
 
 from .primitive import Primitive
@@ -134,7 +134,7 @@ class Skill(Primitive):
         return None
 
     def set(self, dct):
-        
+
         if 'primitives' in dct.keys():
             self.primitives = [NodeParser(p) for p in dct['primitives']]
 

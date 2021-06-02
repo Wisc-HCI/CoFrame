@@ -1,5 +1,5 @@
 '''
-Container provides a generalized set of nodes. 
+Container provides a generalized set of nodes.
 
 This is only really useful for testing the AST's internal behavior when storing data.
 It is better to rely on semantic structures like Context, Skill, etc. to store various
@@ -52,7 +52,7 @@ class Container(Node):
     def from_dct(cls, dct):
         return cls(
             item_type=dct['item_type'],
-            values=[NodeParser(x, enforce_type=dct['item_type']) for x in dct['values']],
+            values=[NodeParser(x, enforce_types=[dct['item_type']]) for x in dct['values']],
             type=dct['type'],
             append_type=False,
             name=dct['name'],

@@ -55,8 +55,8 @@ class Thing(Pose, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(thing_type_uuid=dct['thing_type_uuid'],
-                   position=NodeParser(dct['position'], enforce_type=Position.type_string(trailing_delim=False)),
-                   orientation=NodeParser(dct['orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
+                   position=NodeParser(dct['position'], enforce_types=[Position.type_string(trailing_delim=False)]),
+                   orientation=NodeParser(dct['orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,

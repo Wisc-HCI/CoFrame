@@ -1,7 +1,7 @@
 from .geometry import *
 from .location import Location
 from .waypoint import Waypoint
-from .machine import Machine, MachineRecipe
+from .machine import Machine
 from .trace import Trace
 from .trace_data_point import TraceDataPoint
 from .trajectory import Trajectory
@@ -32,8 +32,6 @@ def DataNodeParser(exactType, dct):
         node = TraceDataPoint.from_dct(dct)
     elif exactType == Machine.type_string(trailing_delim=False):
         node = Machine.from_dct(dct)
-    elif exactType == MachineRecipe.type_string(trailing_delim=False):
-        node  = MachineRecipe.from_dct(dct)
     elif exactType == Thing.type_string(trailing_delim=False):
         node = Thing.from_dct(dct)
 

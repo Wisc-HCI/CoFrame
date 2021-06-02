@@ -1,5 +1,5 @@
 '''
-Simplification of the joint-configuration space that a robot can reach. 
+Simplification of the joint-configuration space that a robot can reach.
 
 We can think of the robot's max reach as being bounded by a sphere. Tuning of
 this sphere can further restrict the reachability region.
@@ -65,7 +65,7 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(radius=dct['radius'],
-                   offset=NodeParser(dct['offset'], enforce_type=Position.type_string(trailing_delim=False)),
+                   offset=NodeParser(dct['offset'], enforce_types=[Position.type_string(trailing_delim=False)]),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -132,7 +132,7 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
             self.radius = dct['radius']
 
         if 'offset' in dct.keys():
-            self.offset = NodeParser(dct['offset'], enforce_type=Position.type_string(trailing_delim=False))
+            self.offset = NodeParser(dct['offset'], enforce_types=[Position.type_string(trailing_delim=False)])
 
         super(ReachSphere,self).set(dct)
 
