@@ -29,7 +29,6 @@ const store = (set) => ({
     environment: {
       locations: {},
       waypoints: {},
-      regions: {},    // Only shown through machines
       machines: {},
       thingTypes: {},
       things: {}      // Only shown through thingTypes
@@ -54,9 +53,6 @@ fakeEvdData.locations.forEach((location)=>{
 })
 fakeEvdData.waypoints.forEach((waypoint)=>{
   useEvdStore.getState().addItem('waypoint',waypoint)
-})
-fakeEvdData.regions.forEach((region)=>{
-  useEvdStore.getState().addItem('region',region)
 })
 fakeEvdData.machines.forEach((machine)=>{
   useEvdStore.getState().addItem('machine',machine)

@@ -40,20 +40,18 @@ export function SetupEditor(_) {
             description: (item)=> `Info about ${item.name}`
         },
         {
-            key:'regions',
-            name:'Regions',
-            type:'region',
-            title: (item)=> `${item.name}`,
-            description: (item)=> `Info about ${item.name}`
-
-        },
-        {
             key:'waypoints',
             name:'Waypoints',
             type:'waypoint',
             title: (item)=> `${item.name}`,
             description: (item)=> `Info about ${item.name}`
-
+        },
+        {
+            key:'things',
+            name:'Things',
+            type:'thing',
+            title: (item)=> `${item.name}`,
+            description: (item)=> `Info about ${item.name}`
         }
     ]
 
