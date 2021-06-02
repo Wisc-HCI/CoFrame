@@ -159,6 +159,7 @@ for (let i=0; i<NUM_GENERIC_REGIONS; i++) {
     });
 }
 
+// Set to free orientation for simplicity only - can have orientation constraints
 for (let i=0; i<NUM_CUBE_REGIONS; i++) {
     regions.push({
         uuid: `cube-region-js-${i}`,
@@ -196,6 +197,7 @@ for (let i=0; i<NUM_CUBE_REGIONS; i++) {
     });
 }
 
+// Set to free orientation for simplicity only - can have orientation constraints
 for (let i=0; i<NUM_SPHERE_REGIONS; i++) {
     regions.push({
         uuid: `sphere-region-js-${i}`,
@@ -313,7 +315,7 @@ let reachSphere = {
     editable: false,
 
     radius: 1.0,
-    offset = {
+    offset: {
         uuid: `pose-js-reach-sphere-offset-0`,
         name: '',
         deleteable: false,
