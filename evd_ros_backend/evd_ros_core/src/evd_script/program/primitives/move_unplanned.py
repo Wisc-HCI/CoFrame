@@ -28,7 +28,7 @@ class MoveUnplanned(Primitive):
         return Primitive.full_type_string() + cls.type_string()
 
     def __init__(self, locUuid, manual_safety=True, move_type="joint", velocity=0, 
-                 type='', name='', uuid=None, parent=None, append_type=True):
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._velocity = None
         self._move_type = None
@@ -40,7 +40,9 @@ class MoveUnplanned(Primitive):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.velocity = velocity
         self.move_type = move_type

@@ -35,7 +35,7 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
         return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, mesh_id = None, pose_offset = None, link='', type='', name='',
-                 parent=None, uuid=None, append_type=True):
+                 parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         self._mesh_id = None
         self._pose_offset = None
         self._link = None
@@ -45,7 +45,9 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.mesh_id = mesh_id
         self.pose_offset = pose_offset if pose_offset != None else Pose()

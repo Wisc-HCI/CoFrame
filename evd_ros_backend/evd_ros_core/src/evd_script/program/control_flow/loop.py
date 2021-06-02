@@ -26,7 +26,7 @@ class Loop(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, primitives=[], condition=None, type='', name='', uuid=None, parent=None,
-                 append_type=True):
+                 append_type=True, editable=True, deleteable=True):
         self._condition = None
 
         super(Loop,self).__init__(
@@ -35,7 +35,9 @@ class Loop(Skill):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=primitives)
+            primitives=primitives,
+            editable=editable,
+            deleteable=deleteable)
 
         self.condition = condition
 

@@ -21,7 +21,7 @@ class ThingType(Node):
         return Node.full_type_string() + cls.type_string()
     
     def __init__(self, type_name='', is_safe=True, weight=0, mesh_id=None,
-                 type='', name='', parent=None, uuid=None, append_type=True):
+                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
 
         self._type_name = None
         self._mesh_id = None
@@ -33,7 +33,9 @@ class ThingType(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.type_name = type_name
         self.mesh_id = mesh_id

@@ -26,7 +26,7 @@ class Node(ABC):
     def full_type_string(cls):
         return cls.type_string()
 
-    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._parent = None
         self._type = None
         self._name = None
@@ -40,18 +40,27 @@ class Node(ABC):
         self.type = Node.type_string() + type if append_type else type
         self.name = name
 
+        self._editable = editable
+        self._deleteable = deleteable
+        self.updated_attribute("editable","set") # called this as these are set directly on the private members
+        self.updated_attribute("deleteable","set")
+
     @classmethod
     def from_dct(cls, dct):
         return cls(type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
-                   name=dct['name'] if 'name' in dct.keys() else '')
+                   name=dct['name'] if 'name' in dct.keys() else '',
+                   editable=dct['editable'] if 'editable' in dct.keys() else '',
+                   deleteable=dct['deleteable'] if 'deleteable' in dct.keys() else '')
 
     def to_dct(self):
         return {
             'type': self.type,
             'name': self.name,
-            'uuid': self.uuid
+            'uuid': self.uuid,
+            'editable': self.editable,
+            'deleteable': self.deletable
         }
 
     def on_delete(self):
@@ -108,8 +117,17 @@ class Node(ABC):
 
             self.updated_attribute("parent","set")
 
+    @property
+    def editable(self):
+        return self._editable
+
+    @property
+    def deletable(self):
+        return self._deleteable
+
     def set(self, dct):
         # Note: cannot set uuid or parent with this
+        # Note: cannot set editable or deleteable status
 
         name = dct.get('name',None)
         if name != None:
@@ -207,11 +225,15 @@ class Node(ABC):
         self.updated_attribute('name', 'update')
         self.updated_attribute('type', 'update')
         self.updated_attribute('uuid', 'update')
+        self.updated_attribute('editable', 'update')
+        self.updated_attribute('deleteable', 'update')
 
     def shallow_update(self):
         self.updated_attribute('name', 'update')
         self.updated_attribute('type', 'update')
         self.updated_attribute('uuid', 'update')
+        self.updated_attribute('editable', 'update')
+        self.updated_attribute('deleteable', 'update')
 
     '''
     Execution methods:

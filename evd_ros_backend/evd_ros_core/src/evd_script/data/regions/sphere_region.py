@@ -27,7 +27,7 @@ class SphereRegion(Region):
 
     def __init__(self, center_position=None, center_orientation=None, uncertainty_radius=0.1,
                  free_orientation=True, uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,
-                 type='', name='', uuid=None, parent=None, append_type=True):
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._uncert_radius = None
 
         super(SphereRegion,self).__init__(
@@ -40,7 +40,9 @@ class SphereRegion(Region):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.uncertainty_radius = uncertainty_radius
 

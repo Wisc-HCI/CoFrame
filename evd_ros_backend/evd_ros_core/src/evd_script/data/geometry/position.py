@@ -25,7 +25,7 @@ class Position(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, x, y, z, type='', name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, x, y, z, type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         self._x = None
         self._y = None
         self._z = None
@@ -35,7 +35,9 @@ class Position(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.x = x
         self.y = y

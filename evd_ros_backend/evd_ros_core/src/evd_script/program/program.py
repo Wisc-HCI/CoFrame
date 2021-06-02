@@ -25,7 +25,7 @@ class Program(Skill):
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None):
+    def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None, editable=True, deleteable=True):
         self._orphan_list = evd_orphan_list()
         self.changes_cb = changes_cb
         self._environment = None
@@ -42,7 +42,9 @@ class Program(Skill):
             uuid=uuid,
             parent=None,
             append_type=append_type,
-            primitives=primitives)
+            primitives=primitives,
+            editable=editable,
+            deleteable=deleteable)
 
         self.environment = environment
 

@@ -31,7 +31,7 @@ class TraceDataPoint(Pose, VisualizeMarker):
         return Pose.full_type_string() + cls.type_string()
 
     def __init__(self, position=None, orientation=None, grades={}, type='',
-                 name='', uuid=None, parent=None, append_type=True):
+                 name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._grades = {}
 
@@ -42,7 +42,9 @@ class TraceDataPoint(Pose, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.grades = grades
 

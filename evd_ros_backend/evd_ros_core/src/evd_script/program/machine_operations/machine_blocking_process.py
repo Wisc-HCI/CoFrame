@@ -25,13 +25,13 @@ class MachineBlockingProcess(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
-                 append_type=True, primitives=None):
+                 append_type=True, primitives=None, editable=True, deleteable=True):
 
         if primitives == None:
             primitives=[
-                MachineStart(machineUuid),
-                MachineWait(machineUuid),
-                MachineStop(machineUuid)
+                MachineStart(machineUuid, editable=editable, deleteable=deleteable),
+                MachineWait(machineUuid, editable=editable, deleteable=deleteable),
+                MachineStop(machineUuid, editable=editable, deleteable=deleteable)
             ]
 
         super(MachineBlockingProcess,self).__init__(
@@ -40,4 +40,6 @@ class MachineBlockingProcess(Skill):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=primitives)
+            primitives=primitives,
+            editable=editable,
+            deleteable=deleteable)

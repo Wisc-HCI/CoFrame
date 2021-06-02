@@ -32,7 +32,7 @@ class Gripper(Primitive):
         return Primitive.full_type_string() + cls.type_string()
 
     def __init__(self, position=0, effort=0, speed=0, thing_uuid=None, semantic=None,
-                 type='', name='', uuid=None, parent=None, append_type=True):
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._thing_uuid = None
         self._position = None
@@ -45,7 +45,9 @@ class Gripper(Primitive):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.position = position
         self.effort = effort

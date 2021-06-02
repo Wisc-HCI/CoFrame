@@ -31,7 +31,7 @@ class Region(Pose, VisualizeMarker):
 
     def __init__(self, center_position=None, center_orientation=None, free_orientation=True,
                  uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,
-                 type='', name='', uuid=None, parent=None, append_type=True):
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._free_ort = None
         self._uncert_ort_lim = None
         self._uncert_ort_target = None
@@ -43,7 +43,9 @@ class Region(Pose, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.free_orientation = free_orientation
         self.uncertainty_orientation_limit = uncertainty_orientation_limit if not free_orientation else None

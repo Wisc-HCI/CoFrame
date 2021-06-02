@@ -35,7 +35,7 @@ class Context(Node):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, locations=[], machines=[], things=[], thing_types=[], waypoints=[], trajectories=[],
-                 type='', name='', uuid=None, parent=None, append_type=True):
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._orphan_list = evd_orphan_list()
 
@@ -51,7 +51,9 @@ class Context(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.locations = locations
         self.machines = machines

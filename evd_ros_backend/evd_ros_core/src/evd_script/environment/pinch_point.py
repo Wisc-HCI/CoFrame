@@ -39,7 +39,7 @@ class PinchPoint(EnvironmentNode, VisualizeMarker):
         return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, axis='x', offset=None, link='', radius=0.05, length=0.2,
-                 type='', name='', parent=None, uuid=None, append_type=True):
+                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         self._axis = None
         self._offset = None
         self._link = None
@@ -51,7 +51,9 @@ class PinchPoint(EnvironmentNode, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.axis = axis
         self.offset = offset if offset != None else Position(0,0,0)

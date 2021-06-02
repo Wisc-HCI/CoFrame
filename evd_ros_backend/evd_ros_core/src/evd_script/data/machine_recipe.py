@@ -22,7 +22,7 @@ class MachineRecipe(Node):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, process_time=0, input_thing_quantities={}, output_thing_quantities={},
-                 type='', name='', uuid=None, parent=None, append_type=True):
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._process_time = None
         self._input_quantities = None
         self._output_quantities = None
@@ -32,7 +32,9 @@ class MachineRecipe(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.process_time = process_time
         self.input_thing_quantities = input_thing_quantities

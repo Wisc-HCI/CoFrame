@@ -30,7 +30,7 @@ class Orientation(Node):
     def Identity(cls):
         return cls(0,0,0,1)
 
-    def __init__(self, x, y, z, w, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, x, y, z, w, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._x = None
         self._y = None
         self._z = None
@@ -41,7 +41,9 @@ class Orientation(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.x = x
         self.y = y

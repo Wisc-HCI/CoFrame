@@ -22,7 +22,7 @@ class MachinePrimitive(Primitive):
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
-    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._machine_uuid = None
 
         super(MachinePrimitive,self).__init__(
@@ -30,7 +30,9 @@ class MachinePrimitive(Primitive):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.machine_uuid = machineUuid
 

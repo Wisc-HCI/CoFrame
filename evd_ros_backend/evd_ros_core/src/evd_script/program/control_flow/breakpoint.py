@@ -21,13 +21,15 @@ class Breakpoint(Primitive):
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
-    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         super(Breakpoint,self).__init__(
             type=Breakpoint.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
     '''
     Execution methods

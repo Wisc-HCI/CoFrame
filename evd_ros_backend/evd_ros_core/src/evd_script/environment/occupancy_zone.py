@@ -37,7 +37,7 @@ class OccupancyZone(EnvironmentNode, VisualizeMarker):
         return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, height = 0,
-                 type='', name='', parent=None, uuid=None, append_type=True):
+                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         self._occupancy_type = None
         self._position_x = None
         self._position_z = None
@@ -50,7 +50,9 @@ class OccupancyZone(EnvironmentNode, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.occupancy_type = occupancyType
         self.position_x = posX

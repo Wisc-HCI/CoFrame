@@ -38,7 +38,7 @@ class Machine(Node):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, input_regions=None, output_regions=None,
-                 recipe=None, type='', name='', uuid=None, parent=None, append_type=True):
+                 recipe=None, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._input_regions = None
         self._output_regions = None
         self._machine_type = None
@@ -49,7 +49,9 @@ class Machine(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.input_regions = input_regions
         self.output_regions = output_regions

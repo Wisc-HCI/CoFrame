@@ -40,7 +40,7 @@ class Trace(Node, VisualizeMarkers):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, eePath=None, data={}, jPaths=[], tPaths=[], cPaths=[],
-                 time=0, type='', name='', uuid=None, parent=None, append_type=True):
+                 time=0, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._data = {}
         self._time = None
@@ -54,7 +54,9 @@ class Trace(Node, VisualizeMarkers):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.data = data
         self.time = time

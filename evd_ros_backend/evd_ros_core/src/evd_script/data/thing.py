@@ -29,7 +29,7 @@ class Thing(Pose, VisualizeMarker):
         return Pose.full_type_string() + cls.type_string()
 
     def __init__(self, thing_type_uuid, position=None, orientation=None,
-                 type='', name='', parent=None, uuid=None, append_type=True):
+                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         self._thing_type_uuid = None
 
         super(Thing,self).__init__(
@@ -39,7 +39,9 @@ class Thing(Pose, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.thing_type_uuid = thing_type_uuid
 

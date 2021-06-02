@@ -24,7 +24,7 @@ class Skill(Primitive):
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=[], type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, primitives=[], type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._primitives = []
 
@@ -33,7 +33,9 @@ class Skill(Primitive):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.primitives = primitives
 

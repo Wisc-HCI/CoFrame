@@ -24,16 +24,16 @@ class Initialize(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, homeLocUuid=None, machineUuids=[], type='', name='',
-                 uuid=None, parent=None, append_type=True, primitives=None):
+                 uuid=None, parent=None, append_type=True, primitives=None, editable=True, deleteable=True):
 
         if primitives == None:
             primitives = []
 
-            primitives += [MachineInitialize(id) for id in machineUuids]
+            primitives += [MachineInitialize(id, editable=editable, deleteable=deleteable) for id in machineUuids]
 
             primitives += [
-                MoveUnplanned(homeLocUuid,True),
-                OpenGripper()
+                MoveUnplanned(homeLocUuid,True, editable=editable, deleteable=deleteable),
+                OpenGripper(editable=editable, deleteable=deleteable)
             ]
 
         super(Initialize,self).__init__(
@@ -42,7 +42,9 @@ class Initialize(Skill):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=primitives)
+            primitives=primitives,
+            editable=editable,
+            deleteable=deleteable)
 
     '''
     Execution methods

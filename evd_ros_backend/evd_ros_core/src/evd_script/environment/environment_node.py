@@ -19,10 +19,12 @@ class EnvironmentNode(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(type='', name='', parent=None, uuid=None, append_type=True):
+    def __init__(self, type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         super(EnvironmentNode,self).__init__(
             type=EnvironmentNode.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)

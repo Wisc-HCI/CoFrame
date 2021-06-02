@@ -26,7 +26,7 @@ class Pose(Node):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, position=None, orientation=None, type='', name='',
-                 uuid=None, parent=None, append_type=True):
+                 uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._position = None
         self._orientation = None
@@ -36,7 +36,9 @@ class Pose(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         if position is None:
             self.position = Position(0,0,0)
