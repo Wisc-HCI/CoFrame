@@ -36,18 +36,18 @@ export function SetupEditor(_) {
             name:'Machines',
             content: <MachineList/>
         },
-        // {
-        //     key:'regions',
-        //     name:'Regions',
-        //     content: <RegionList/>
+        {
+            key:'regions',
+            name:'Regions',
+            content: <RegionList/>
 
-        // },
-        // {
-        //     key:'waypoints',
-        //     name:'Waypoints',
-        //     content: <WaypointList/>
+        },
+        {
+            key:'waypoints',
+            name:'Waypoints',
+            content: <WaypointList/>
 
-        // }
+        }
     ]
 
     return (
