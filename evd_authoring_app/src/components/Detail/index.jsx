@@ -12,9 +12,9 @@ export const Detail = (props) => {
         <Fragment>
 
             <LocationDetail/>
-            <MachineDetail/>
+            {/* <MachineDetail/>
             <WaypointDetail/>
-            <RegionDetail/>
+            <RegionDetail/> */}
 
         </Fragment>
     );
