@@ -34,7 +34,7 @@ for (let i=0; i<NUM_THING_TYPES; i++) {
         type_name: `Thing-Type-${i}`,
         mesh_id: 'default.stl',
         is_safe: true,
-        weigth: 1.0
+        weight: 1.0
     });
 }
 
@@ -241,7 +241,7 @@ for (let i=0; i<NUM_THINGS; i++) {
         deleteable: true,
         editable: true,
 
-        thing_type_uuid: thingTypes[i % (thingTypes.length / 2)].uuid, // gets a thing_type from other fake data
+        thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
         position: {
             uuid: `position-js-thing-${i}`,
             name: '',

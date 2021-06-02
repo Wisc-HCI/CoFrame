@@ -3,10 +3,10 @@ import React from 'react';
 import { Tabs, Card, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import { LocationList } from './Tabs/Locations';
-import { WaypointList } from './Tabs/Waypoints';
-import { RegionList } from './Tabs/Regions';
-import { MachineList } from './Tabs/Machines';
+import { ItemList } from './Tabs/ItemList';
+// import { WaypointList } from './Tabs/Waypoints';
+// import { RegionList } from './Tabs/Regions';
+// import { MachineList } from './Tabs/Machines';
 // import { ThingList } from './Tabs/Things';
 // import { ThingTypeList } from './Tabs/ThingTypes';
 
@@ -28,23 +28,31 @@ export function SetupEditor(_) {
         {
             key:'locations',
             name:'Locations',
-            content: <LocationList/>
+            type:'location',
+            title: (item)=> `${item.name}`,
+            description: (item)=> `Info about ${item.name}`
         },
         {
             key:'machines',
             name:'Machines',
-            content: <MachineList/>
+            type:'machine',
+            title: (item)=> `${item.name}`,
+            description: (item)=> `Info about ${item.name}`
         },
         {
             key:'regions',
             name:'Regions',
-            content: <RegionList/>
+            type:'region',
+            title: (item)=> `${item.name}`,
+            description: (item)=> `Info about ${item.name}`
 
         },
         {
             key:'waypoints',
             name:'Waypoints',
-            content: <WaypointList/>
+            type:'waypoint',
+            title: (item)=> `${item.name}`,
+            description: (item)=> `Info about ${item.name}`
 
         }
     ]
@@ -74,7 +82,11 @@ export function SetupEditor(_) {
                             icon={<PlusOutlined/>}
                         />
                     }>
-                        {tab.content}
+                        <ItemList
+                            type={tab.type}
+                            title={tab.title}
+                            description={tab.description}
+                        />
 
                 </Card>
             </Tabs.TabPane>

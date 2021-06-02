@@ -27,57 +27,22 @@ const store = (set) => ({
       // }
     },
     environment: {
-      locations: [],
-      waypoints: [],
-      regions: [],    // Only shown through machines
-      machines: [],
-      thingTypes: [],
-      things: []      // Only shown through thingTypes
+      locations: {},
+      waypoints: {},
+      regions: {},    // Only shown through machines
+      machines: {},
+      thingTypes: {},
+      things: {}      // Only shown through thingTypes
     },
-    addLocation: (location) => set((state)=>{
-      state.environment.locations.push(location)
+    addItem: (type, item) => set((state)=>{
+      state.environment[type+'s'][item.uuid] = item
     }),
-    setLocationName: (uuid, name) => set((state)=>{
-      state.environment.locations = state.environment.locations.map(item=>{
-        if (item.uuid === uuid) {
-          return {...item, name:name}
-        } else return item
-      })
+    setItemProperty: (type, uuid, property, value) => set((state)=>{
+      state.environment[type+'s'][uuid][property] = value
     }),
-    deleteLocation: (uuid) => set((state)=>{
-      state.environment.locations = state.environment.locations.filter(item=>item.uuid !== uuid)
+    deleteItem: (type, uuid) => set((state)=>{
+      delete state.environment[type+'s'][uuid]
     }),
-    addWaypoint: (waypoint) => set((state)=>{
-      state.environment.waypoints.push(waypoint)
-    }),
-    deleteWaypoint: (uuid) => set((state)=>{
-      state.environment.waypoints = state.environment.waypoints.filter(item=>item.uuid !== uuid)
-    }),
-    addRegion: (region) => set((state)=>{
-      state.environment.regions.push(region)
-    }),
-    deleteRegion: (uuid) => set((state)=>{
-      state.environment.regions = state.environment.regions.filter(item=>item.uuid !== uuid)
-    }),
-    addMachine: (machine) => set((state)=>{
-      state.environment.machines.push(machine)
-    }),
-    deleteMachine: (uuid) => set((state)=>{
-      state.environment.machines = state.environment.machines.filter(item=>item.uuid !== uuid)
-    }),
-    addThingType: (thingType) => set((state)=>{
-      state.environment.thingTypes.push(thingType)
-    }),
-    deleteThingType: (uuid) => set((state)=>{
-      state.environment.thingTypes = state.environment.thingTypes.filter(item=>item.uuid !== uuid)
-    }),
-    addThing: (thing) => set((state)=>{
-      state.environment.things.push(thing)
-    }),
-    deleteThing: (uuid) => set((state)=>{
-      state.environment.things = state.environment.things.filter(item=>item.uuid !== uuid)
-    }),
-
     primitives: {},
     setProgram: (program) => set((_)=>({program:program}))
 });
@@ -85,22 +50,22 @@ const store = (set) => ({
 const useEvdStore = create(immer(store));
 
 fakeEvdData.locations.forEach((location)=>{
-  useEvdStore.getState().addLocation(location)
+  useEvdStore.getState().addItem('location',location)
 })
 fakeEvdData.waypoints.forEach((waypoint)=>{
-  useEvdStore.getState().addWaypoint(waypoint)
+  useEvdStore.getState().addItem('waypoint',waypoint)
 })
 fakeEvdData.regions.forEach((region)=>{
-  useEvdStore.getState().addRegion(region)
+  useEvdStore.getState().addItem('region',region)
 })
 fakeEvdData.machines.forEach((machine)=>{
-  useEvdStore.getState().addMachine(machine)
+  useEvdStore.getState().addItem('machine',machine)
 })
 fakeEvdData.thingTypes.forEach((thingType)=>{
-  useEvdStore.getState().addThingType(thingType)
+  useEvdStore.getState().addItem('thingType',thingType)
 })
 fakeEvdData.things.forEach((thing)=>{
-  useEvdStore.getState().addThing(thing)
+  useEvdStore.getState().addItem('thing',thing)
 })
 
 console.log(useEvdStore.getState().environment);

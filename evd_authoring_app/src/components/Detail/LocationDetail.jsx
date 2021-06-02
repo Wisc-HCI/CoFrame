@@ -14,12 +14,12 @@ export const LocationDetail = (_) => {
     }));
 
     const {location} = useEvdStore(useCallback(state=>({
-        location:state.environment.locations.filter(item=>(item.uuid === focusItem.uuid))[0]
+        location:state.environment.locations[focusItem.uuid]
     })
       ,[focusItem]))
-    const { deleteLocation, setLocationName } = useEvdStore(state=>({
-        deleteLocation:state.deleteLocation,
-        setLocationName:state.setLocationName
+    const { deleteItem, setItemProperty } = useEvdStore(state=>({
+        deleteItem:state.deleteItem,
+        setItemProperty:state.setItemProperty
     }));
 
     if (location) {
@@ -30,8 +30,8 @@ export const LocationDetail = (_) => {
                         <span>Location: </span>
                         <Input 
                             defaultValue={location.name} 
-                            disabled={!location.canEdit}
-                            onChange={e=>setLocationName(focusItem.uuid,e.target.value)}/>
+                            disabled={!location.editable}
+                            onChange={e=>setItemProperty('location',focusItem.uuid,'name',e.target.value)}/>
                     </Space>}
                 visible={focusItem.type === 'location'} 
                 onClose={clearFocusItem}
@@ -41,10 +41,10 @@ export const LocationDetail = (_) => {
                     <Button
                         danger
                         block
-                        disabled={!location.canDelete}
+                        disabled={!location.deleteable}
                         onClick={()=>{
                             clearFocusItem();
-                            deleteLocation(focusItem.uuid)
+                            deleteItem('location',focusItem.uuid)
                         }}
                     >
                         Delete
