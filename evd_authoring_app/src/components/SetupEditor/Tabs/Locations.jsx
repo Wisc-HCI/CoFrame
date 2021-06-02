@@ -16,7 +16,11 @@ export function LocationItem(props) {
   ,[uuid]))
   const deleteLocation = useEvdStore(state=>state.deleteLocation);
 
-  const setFocusItem = useGuiStore(state=>state.setFocusItem);
+  const {focusItem, setFocusItem, primaryColor} = useGuiStore(state=>({
+    focusItem:state.focusItem,
+    setFocusItem:state.setFocusItem,
+    primaryColor:state.primaryColor
+  }));
 
   return (
         <List.Item
@@ -33,7 +37,12 @@ export function LocationItem(props) {
                 icon={<DeleteOutlined/>}
               />
             </Space>}
-          style={{borderRadius:3,backgroundColor:'#1f1f1f',margin:5,padding:10}}
+          style={{
+            borderRadius:3,
+            backgroundColor:'#1f1f1f',
+            margin:5,padding:10,
+            boxShadow:focusItem.type === 'location' && focusItem.uuid===uuid ? 'inset 0 0 2.5pt '+primaryColor  : null
+          }}
         >
           <List.Item.Meta
             title={location.name}

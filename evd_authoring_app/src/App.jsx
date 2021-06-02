@@ -12,7 +12,6 @@ import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
 
 import { Modals } from "./components/Modals";
-import { Detail } from "./components/Detail";
 
 import useApplicationStore from "./stores/ApplicationStore";
 import useGuiStore from "./stores/GuiStore";
@@ -125,7 +124,6 @@ export function App(props) {
             </Layout>
 
             <Modals/>
-            <Detail/>     
         </>
     )
 }

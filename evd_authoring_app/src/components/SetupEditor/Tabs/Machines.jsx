@@ -16,7 +16,11 @@ export function MachineItem(props) {
   ,[uuid]))
   const deleteMachine = useEvdStore(state=>state.deleteMachine);
 
-  const setFocusItem = useGuiStore(state=>state.setFocusItem);
+  const {focusItem, setFocusItem, primaryColor} = useGuiStore(state=>({
+    focusItem:state.focusItem,
+    setFocusItem:state.setFocusItem,
+    primaryColor:state.primaryColor
+  }));
 
   return (
         <List.Item
@@ -33,7 +37,12 @@ export function MachineItem(props) {
                 icon={<DeleteOutlined/>}
               />
             </Space>}
-          style={{borderRadius:3,backgroundColor:'#1f1f1f',margin:5,padding:10}}
+          style={{
+            borderRadius:3,
+            backgroundColor:'#1f1f1f',
+            margin:5,padding:10,
+            boxShadow:focusItem.type === 'machine' && focusItem.uuid===uuid ? 'inset 0 0 2.5pt '+primaryColor  : null
+          }}
         >
           <List.Item.Meta
             title={machine.name}

@@ -37,6 +37,13 @@ const store = (set) => ({
     addLocation: (location) => set((state)=>{
       state.environment.locations.push(location)
     }),
+    setLocationName: (uuid, name) => set((state)=>{
+      state.environment.locations = state.environment.locations.map(item=>{
+        if (item.uuid === uuid) {
+          return {...item, name:name}
+        } else return item
+      })
+    }),
     deleteLocation: (uuid) => set((state)=>{
       state.environment.locations = state.environment.locations.filter(item=>item.uuid !== uuid)
     }),

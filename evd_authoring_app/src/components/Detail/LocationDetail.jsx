@@ -17,14 +17,26 @@ export const LocationDetail = (_) => {
         location:state.environment.locations.filter(item=>(item.uuid === focusItem.uuid))[0]
     })
       ,[focusItem]))
-      const deleteLocation = useEvdStore(state=>state.deleteLocation);
+    const { deleteLocation, setLocationName } = useEvdStore(state=>({
+        deleteLocation:state.deleteLocation,
+        setLocationName:state.setLocationName
+    }));
 
     if (location) {
         return (
             <Drawer 
-                title={<Space><span>Location: </span><Input defaultValue={location.name} disabled={!location.canEdit}/></Space>}
+                title={
+                    <Space>
+                        <span>Location: </span>
+                        <Input 
+                            defaultValue={location.name} 
+                            disabled={!location.canEdit}
+                            onChange={e=>setLocationName(focusItem.uuid,e.target.value)}/>
+                    </Space>}
                 visible={focusItem.type === 'location'} 
                 onClose={clearFocusItem}
+                getContainer={false}
+                style={{ position: 'absolute' }}
                 footer={
                     <Button
                         danger
@@ -38,7 +50,7 @@ export const LocationDetail = (_) => {
                         Delete
                     </Button>
                 }
-                width='25%'
+                width='50%'
             >
                 <Empty/>
             </Drawer>
@@ -49,7 +61,9 @@ export const LocationDetail = (_) => {
                 title={'Location: '}
                 visible={focusItem.type === 'location'} 
                 onClose={clearFocusItem}
-                width='25%'
+                getContainer={false}
+                style={{ position: 'absolute' }}
+                width='50%'
             >
                 <Empty/>
             </Drawer>

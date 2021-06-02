@@ -1,5 +1,6 @@
 import create from "zustand";
 import produce from "immer";
+import frameStyles from '../frameStyles';
 
 const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
@@ -7,7 +8,8 @@ const immer = (config) => (set, get, api) =>
 const store = (set) => ({
     // The frame specifies the expert (color) frame
     frame: 'safety',
-    setFrame: (frame) => set((_)=>({frame:frame})),
+    primaryColor: frameStyles.colors['safety'],
+    setFrame: (frame) => set((_)=>({frame:frame,primaryColor:frameStyles.colors[frame]})),
     // The editorPane specifies the section of the ProgramTile that is shown
     editorPane: 'program',
     setEditorPane: (pane) => set((_)=>({editorPane:pane})),

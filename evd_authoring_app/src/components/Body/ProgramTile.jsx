@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, Button } from 'antd';
 import { ProgramEditor } from '../ProgramEditor';
 import { SetupEditor } from '../SetupEditor';
+import { Detail } from '../Detail';
 
 import useGuiStore from '../../stores/GuiStore';
 
@@ -38,6 +39,7 @@ export const ProgramTile = (props) => {
                     ) : (
                         <ProgramEditor/>
                     )}
+                    <Detail/>   
             </Card>
         </div>
     );

@@ -12,15 +12,14 @@ import { MachineList } from './Tabs/Machines';
 
 
 import useGuiStore from '../../stores/GuiStore';
-import frameStyles from '../../frameStyles';
 
 // import './index.css'
 
 
 export function SetupEditor(_) {
 
-    const {frame, setupTab, setSetupTab} = useGuiStore(state=>({
-        frame:state.frame,
+    const {primaryColor, setupTab, setSetupTab} = useGuiStore(state=>({
+        primaryColor:state.primaryColor,
         setupTab:state.setupTab,
         setSetupTab:state.setSetupTab
     }));
@@ -61,7 +60,7 @@ export function SetupEditor(_) {
             {tabs.map(tab=>(
                 <Tabs.TabPane
                     key={tab.key}
-                    tab={<span style={tab.key === setupTab ? { color: frameStyles.colors[frame] } : {}}>{tab.name}</span>}
+                    tab={<span style={tab.key === setupTab ? { color: primaryColor } : {}}>{tab.name}</span>}
                     style={{padding:0,paddingTop:1,height:'100%'}}
                 >
                 <Card
