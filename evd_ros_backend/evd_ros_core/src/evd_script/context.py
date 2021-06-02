@@ -360,7 +360,7 @@ class Context(Node):
         self._things[thing_type.uuid] = thing_type
         self.updated_attribute('thing_types','add',thing_type.uuid)
 
-    def delete_thing(self, uuid):
+    def delete_thing_type(self, uuid):
         if uuid in self._thing_types.keys():
             self._thing_types.pop(uuid).remove_from_cache()
             self._orphan_list.add(uuid,'thing_type')

@@ -104,6 +104,18 @@ class Program(Skill):
         super(Program,self).set(dct)
 
     '''
+    Cache Methods
+    '''
+
+    def remove_from_cache(self):
+        self.environment.remove_from_cache()
+        super(Program,self).remove_from_cache()
+
+    def add_to_cache(self):
+        self.environment.add_to_cache()
+        super(Program,self).add_to_cache()
+
+    '''
     Update Methods
     '''
 

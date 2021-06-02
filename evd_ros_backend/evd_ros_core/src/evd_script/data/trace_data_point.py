@@ -107,6 +107,24 @@ class TraceDataPoint(Pose, VisualizeMarker):
         super(TraceDataPoint,self).set(dct)
 
     '''
+    Cache Methods
+    '''
+
+    def remove_from_cache(self):
+
+        for grade in self._grades.values():
+                grade.remove_from_cache()
+
+        super(TraceDataPoint,self).remove_from_cache()
+
+    def add_to_cache(self):
+
+        for grade in self._grades.values():
+                grade.add_to_cache()
+
+        super(TraceDataPoint,self).add_to_cache()
+
+    '''
     Update Methods
     '''
 
