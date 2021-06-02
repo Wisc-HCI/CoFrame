@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import { List, Space, Button } from 'antd';
+import { List, Space, Button,Popconfirm } from 'antd';
 import { DeleteOutlined, EllipsisOutlined, } from '@ant-design/icons';
 
 import useEvdStore from '../../../stores/EvdStore';
@@ -21,21 +21,35 @@ export function LocationItem(props) {
     setFocusItem:state.setFocusItem,
     primaryColor:state.primaryColor
   }));
+  const [visible, setVisible] = React.useState(false);
+  const handleOK = () =>{
+    deleteLocation(uuid);
+  }
+  const handleCancel = () =>{
+     setVisible(false);
+  }
+
 
   return (
         <List.Item
           extra={
             <Space align='center'>
-              <Button 
+              <Button
                 onClick={()=>setFocusItem('location',uuid)}
                 icon={<EllipsisOutlined/>}
               />
-              <Button 
+              <Popconfirm title= "Are you sure you want to delete this location?"
+                          onConfirm={handleOK}
+                          onCancel ={handleCancel}
+                          visible = {visible}
+                          placement ="left">
+              <Button
                 danger
                 disabled={!location.canDelete}
-                onClick={()=>deleteLocation(uuid)}
+                onClick={()=>setVisible(true)}
                 icon={<DeleteOutlined/>}
               />
+              </Popconfirm>
             </Space>}
           style={{
             borderRadius:3,
@@ -53,7 +67,7 @@ export function LocationItem(props) {
 };
 
 export function LocationList(_) {
-  
+
   const uuids = useEvdStore(state=>state.environment.locations.map(location=>location.uuid),
     // Custom function to prevent unnecessary re-renders:
     (oldState, newState) => {
@@ -67,7 +81,7 @@ export function LocationList(_) {
   )
 
   return (
-    
+
     <List
       split={false}
       dataSource={uuids}
@@ -75,6 +89,6 @@ export function LocationList(_) {
         <LocationItem uuid={uuid} key={uuid}/>
       )}
     />
-    
+
   )
 }
