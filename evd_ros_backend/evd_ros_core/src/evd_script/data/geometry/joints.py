@@ -1,7 +1,5 @@
 '''
 Joints provides an abstraction on joint information for a robot
-
-NOTE: Currently not being used but might be worth swapping in for a naive joint vector
 '''
 
 from ...node import Node

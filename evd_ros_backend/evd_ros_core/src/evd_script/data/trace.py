@@ -3,17 +3,31 @@ Trace is the result of running a trajectory on the robot planner.
 
 Traces provide a set of data and various labeled keys.
 
-data = {
-    "key": [TraceDataPoint,...]
+time_data = [<timestep_0>,<timestep_1>,...]
+joint_names = [<joint_name_0>,...]
+joint_data = [[<joint_value_0>,...],...]
+tf_data = [
+    "frame": [<{position:{x:<value>,y:<value>,z:<value>}, orientation:{x:<value>,y:<value>,z:<value>,w:<value>}}>,...]
+]
+grades = {
+    "grader_uuid": [<grade_value_0>,...]
 }
 
-keys are provided by
+frame keys are provided by
 - end_effector_path (robot's end-effector frame)
 - joint_paths (each relevant joint frame)
 - tool_paths (each relevant tool frame)
 - component_paths (additional frames tracked by application)
 
+grade keys are provided by pre-registered graders through their grade_type uuid.
+
 time is the duration for just this trajectory in planning (approximate)
+
+NOTE: trace does not wrap joint_data or tf_data into nice node serializations. Instead
+it opts to just package the raw data. This is for performance and memory reasons 
+(consider the additional meta-data needed for each node plus time to construct).
+Conversion methods are available in the underlying data nodes (Pose, Joints) that can
+be used to reconstruct nodes from the trace data.
 '''
 
 from ..node import Node
