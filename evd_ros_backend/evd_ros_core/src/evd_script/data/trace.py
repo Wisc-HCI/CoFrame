@@ -17,7 +17,6 @@ time is the duration for just this trajectory in planning (approximate)
 '''
 
 from ..node import Node
-from ..node_parser import NodeParser
 from .geometry import Pose
 from ..visualizable import VisualizeMarkers, ColorTable
 
@@ -69,7 +68,7 @@ class Trace(Node, VisualizeMarkers):
         msg.update({
             'time_data': self.time_data,
             'joint_data': self.joint_data,
-            'tf_data': {key: [d.to_dct() for d in self.tf_data[key]] for key in self.tf_data.keys()},
+            'tf_data': self.tf_data,
             'grades': self.grades,
             'time': self.time,
             'end_effector_path': self.end_effector_path,
@@ -81,15 +80,6 @@ class Trace(Node, VisualizeMarkers):
 
     @classmethod
     def from_dct(cls, dct):
-
-        tf_data = {}
-        for key in dct['tf_data'].keys():
-            tf_data[key] = []
-
-            for i in range(0,len(dct['tf_data'][key])):
-                node = NodeParser(dct['tf_data'][key][i], enforce_types=[Pose.type_string(trailing_delim=False)])
-                tf_data[key].append(node)
-
         return cls(
             uuid=dct['uuid'],
             type=dct['type'],
@@ -98,9 +88,9 @@ class Trace(Node, VisualizeMarkers):
             editable=dct['editable'],
             deleteable=dct['deleteable'],
             description=dct['description'],
-            time_data=dct['time_data']
-            joint_data=dct['joint_data']
-            tf_data=tf_data,
+            time_data=dct['time_data'],
+            joint_data=dct['joint_data'],
+            tf_data=dct['tf_data'],
             grades=dct['grades'],
             eePath=dct['end_effector_path'],
             jPaths=dct['joint_paths'],
@@ -127,7 +117,7 @@ class Trace(Node, VisualizeMarkers):
             pointsList = []
             uuidsList = []
             for point in self.tf_data[key]:
-                marker = point.to_ros_marker(frame_id,count)
+                marker = Pose.from_simple_dct(point).to_ros_marker(frame_id,count)
                 lineMarker.points.append(marker.pose.position)
                 pointsList.append(marker)
                 uuidsList.append(point.uuid)
@@ -191,39 +181,10 @@ class Trace(Node, VisualizeMarkers):
         return self._component_paths
 
     '''
-    Cache methods
-    '''
-
-    def remove_from_cache(self):
-        for key in self._tf_data.keys():
-            for d in self._tf_data[key]:
-                d.remove_from_cache()
-        super(Trace,self).remove_from_cache()
-
-    def add_to_cache(self):
-        for key in self._tf_data.keys():
-            for d in self._tf_data[key]:
-                d.add_to_cache()
-        super(Trace,self).add_to_cache()
-
-    '''
     Update Methods
     '''
 
-    def late_construct_update(self):
-
-        for key in self.tf_data.keys():
-            for dp in self.tf_data[key]:
-                dp.late_construct_update()
-
-        super(Trace,self).late_construct_update()
-
     def deep_update(self):
-
-        for key in self.tf_data.keys():
-            for dp in self.tf_data[key]:
-                dp.deep_update()
-
         super(Trace,self).deep_update()
 
         self.updated_attribute('tf_data','update')
