@@ -26,8 +26,8 @@ for (let i=0; i<NUM_THING_TYPES; i++) {
         name: `Thing-Type-${i}`,
         deleteable: false,
         editable: true,
-
         description: 'Some descriptor string',
+
         mesh_id: 'package://app/meshes/3DBenchy.stl', // This specific pathing is subject to change (using robot-scene variant for now)
         is_safe: true,  // Checklist that creates this aggregate value
         weight: 1.0 // kg in one g (evd will not work natively on the moon)
@@ -42,7 +42,6 @@ for (let i=0; i<NUM_GRADE_TYPES; i++) {
         name: `Grade-Type-${i}`,
         deleteable: false,
         editable: true,
-
         description: 'Some descriptor string'
     });
 }
@@ -61,16 +60,26 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
         name: `Waypoint-${i}`,
         deleteable: true,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
-        joints: (i % 3) ? (null) : ((i % 5) ? [0,0,0,0,0,0] : []), // variantions on joint information (dependent on reachability)
-        // if null then needs to run grader
-        // if length === 0 then failed to reach
-        // if length > 0 filled with joint info (indexed in default order from base_link) - assumes single-arm
+        joints: {
+            uuid: `joints-js-waypoint-${i}`,
+            name: '',
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            joint_positions: [0,0,0], // or null
+            joint_names: ['j1','j2','j3'], // or null
+            reachable: false, // better than having to check the array to generate the flag
+            length: 3 // this is enforced on the backend for positions and names
+        },
         position: {
             uuid: `position-js-waypoint-${i}`,
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -81,6 +90,7 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -97,13 +107,26 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
         name: `Location-${i}`,
         deleteable: ! (i === 3),
         editable: ! (i % 4 === 0),
+        description: 'Some descriptor string (optional)', // could be ''
 
-        joints: (i % 3) ? (null) : ((i % 5) ? [0,0,0,0,0,0] : []), // variantions on joint information (dependent on reachability)
+        joints: {
+            uuid: `joints-js-location-${i}`,
+            name: '',
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            joint_positions: [0,0,0], // or null
+            joint_names: ['j1','j2','j3'], // or null
+            reachable: false, // better than having to check the array to generate the flag
+            length: 3 // this is enforced on the backend for positions and names
+        },
         position: {
             uuid: `position-js-location-${i}`,
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -114,6 +137,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -130,6 +154,7 @@ for (let i=0; i<NUM_THINGS; i++) {
         name: `Thing-${i}`,
         deleteable: true,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
         position: {
@@ -137,6 +162,7 @@ for (let i=0; i<NUM_THINGS; i++) {
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -147,6 +173,7 @@ for (let i=0; i<NUM_THINGS; i++) {
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -166,6 +193,7 @@ const generic_region = {
     name: `Region-0`,
     deleteable: true,
     editable: true,
+    description: 'Some descriptor string (optional)', // could be ''
 
     // position is known in a default region, just uncertainty in orientation
     center_position: {
@@ -173,6 +201,7 @@ const generic_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -183,6 +212,7 @@ const generic_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -200,6 +230,7 @@ const generic_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -214,12 +245,14 @@ const cube_region = {
     name: `Cube-Region-1`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     center_position: {
         uuid: `position-js-cube-region-1`,
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -230,6 +263,7 @@ const cube_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -250,12 +284,14 @@ const sphere_region = {
     name: `Sphere-Region-2`,
     deleteable: true,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     center_position: {
         uuid: `position-js-sphere-region-3`,
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -266,6 +302,7 @@ const sphere_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -294,6 +331,7 @@ const machine_generator = {
     name: `Machine-Generator`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 5, //sec
     inputs: {}, // make this a tuple as value of keys
@@ -312,6 +350,7 @@ const machine_consumer = {
     name: `Machine-Consumer`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 2, //sec
     inputs: {
@@ -330,6 +369,7 @@ const machine_transformer = {
     name: `Machine-Transformer`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 2, //sec
     inputs: {
@@ -371,6 +411,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
         name: `Trajectory-${i}`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         start_location_uuid: locations[0].uuid,
         end_location_uuid: locations[1].uuid,
@@ -382,6 +423,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
             name: `Trace-${i}`,
             deleteable: false,
             editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
 
             time_data: [0], // each timestep, time from relative start
             joint_names: ['j1','j2','j3','j4','j5','j6'], // name for each joint corresponding to inner array on joint_data
@@ -428,6 +470,7 @@ let reachSphere = {
     name: `ReachSphere`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     radius: 1.0,
     offset: {
@@ -435,6 +478,7 @@ let reachSphere = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -449,6 +493,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
         name: `CollisionMesh-${i}`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         mesh_id: 'default.stl',
         pose_offset: { // Local transform
@@ -456,12 +501,14 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
             name: `Pose-${i}`,
             deleteable: false,
             editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
 
             position: {
                 uuid: `position-js-collision-mesh-${i}`,
                 name: `Position-${i}`,
                 deleteable: false,
                 editable: false,
+                description: 'Some descriptor string (optional)', // could be ''
 
                 x:0,
                 y:0,
@@ -472,6 +519,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
                 name: `Orientation-${i}`,
                 deleteable: false,
                 editable: false,
+                description: 'Some descriptor string (optional)', // could be ''
 
                 x:0,
                 y:0,
@@ -489,6 +537,7 @@ let occupancyZones = [
         name: `Human Occupancy Zone`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         occupancy_type: 'human', // human is conceptualized as a box
         position_x: 0, // 'center'
@@ -502,6 +551,7 @@ let occupancyZones = [
         name: `Human Occupancy Zone`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         occupancy_type: 'robot', // robot is ellipse "cast as shadow of reach-sphere"
         position_x: 0, // 'center'
@@ -519,6 +569,7 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
         name: `Pinch Point ${i}`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         // conceptualized as a cylinder
         axis: 'x', // 'x', 'y', or 'z' ~ aligned along one of these axes
@@ -527,6 +578,7 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
             name: `Position-${i}`,
             deleteable: false,
             editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x:0,
             y:0,
@@ -545,7 +597,9 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
 * - Error Blob
 *****************************************************************/
 
-// TODO
+const rcs_tokens = {};
+
+const rcs_error = {};
 
 /***************************************************************** 
 * Issue Server
