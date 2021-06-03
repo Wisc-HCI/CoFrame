@@ -37,7 +37,7 @@ class Machine(Node):
 
     def __init__(self, inputs=None, outputs=None, process_time=0, type='', name='',
                  uuid=None, parent=None, append_type=True, editable=True,
-                 deleteable=True, description=description):
+                 deleteable=True, description=''):
         self._inputs = None
         self._outputs = None
         self._process_time = None

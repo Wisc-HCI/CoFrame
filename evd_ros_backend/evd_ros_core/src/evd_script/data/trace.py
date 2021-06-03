@@ -38,10 +38,10 @@ class Trace(Node, VisualizeMarkers):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, tf_data={}, time_data=[], joint_data=[], grades={},
-                 eePath=None, jPaths=[], tPaths=[], cPaths=[], time=0, type='',
-                 name='', uuid=None, parent=None, append_type=True, editable=True,
-                 deleteable=True, description=''):
+    def __init__(self, tf_data={}, time_data=[], joint_names=[], joint_data=[], 
+                 grades={}, eePath=None, jPaths=[], tPaths=[], cPaths=[], time=0, 
+                 type='', name='', uuid=None, parent=None, append_type=True, 
+                 editable=True, deleteable=True, description=''):
 
         super(Trace,self).__init__(
             type=Trace.type_string() + type if append_type else type,
@@ -51,9 +51,10 @@ class Trace(Node, VisualizeMarkers):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description='')
+            description=description)
 
         self._time_data = time_data
+        self._joint_names = joint_names
         self._joint_data = joint_data
         self._tf_data = tf_data
         self._grades = grades
@@ -67,6 +68,7 @@ class Trace(Node, VisualizeMarkers):
         msg = super(Trace,self).to_dct()
         msg.update({
             'time_data': self.time_data,
+            'joint_names': self.joint_names,
             'joint_data': self.joint_data,
             'tf_data': self.tf_data,
             'grades': self.grades,
@@ -89,6 +91,7 @@ class Trace(Node, VisualizeMarkers):
             deleteable=dct['deleteable'],
             description=dct['description'],
             time_data=dct['time_data'],
+            joint_names=dct['joint_names'],
             joint_data=dct['joint_data'],
             tf_data=dct['tf_data'],
             grades=dct['grades'],
@@ -149,6 +152,10 @@ class Trace(Node, VisualizeMarkers):
         return self._time_data
 
     @property
+    def joint_names(self):
+        return self._joint_names
+
+    @property
     def joint_data(self):
         return self._joint_data
 
@@ -187,6 +194,10 @@ class Trace(Node, VisualizeMarkers):
     def deep_update(self):
         super(Trace,self).deep_update()
 
+        self.updated_attribute('time_data','update')
+        self.updated_attribute('joint_names','update')
+        self.updated_attribute('joint_data','update')
+        self.updated_attribute('grades','update')
         self.updated_attribute('tf_data','update')
         self.updated_attribute('time','update')
         self.updated_attribute('end_effector_path','update')
@@ -197,6 +208,10 @@ class Trace(Node, VisualizeMarkers):
     def shallow_update(self):
         super(Trace,self).shallow_update()
 
+        self.updated_attribute('time_data','update')
+        self.updated_attribute('joint_names','update')
+        self.updated_attribute('joint_data','update')
+        self.updated_attribute('grades','update')
         self.updated_attribute('tf_data','update')
         self.updated_attribute('time','update')
         self.updated_attribute('end_effector_path','update')

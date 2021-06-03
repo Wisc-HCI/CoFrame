@@ -22,8 +22,8 @@ class Joints(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, length=6, joint_positions=None, reachable=False, joint_names=None, type='', 
-                 name='', uuid=None, parent=None, append_type=True, editable=True, 
+    def __init__(self, length=6, joint_positions=None, reachable=False, joint_names=None, 
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, 
                  deleteable=True, description=''):
         self._length = None
         self._joint_positions = None

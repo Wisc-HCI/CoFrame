@@ -4,7 +4,7 @@ have an associated set of joints.
 '''
 
 from ..node_parser import NodeParser
-from .geometry import Pose, Position, Orientation
+from .geometry import Pose, Position, Orientation, Joints
 from ..visualizable import ColorTable
 
 from visualization_msgs.msg import Marker
@@ -48,7 +48,7 @@ class Waypoint(Pose):
     def to_dct(self):
         msg = super(Waypoint,self).to_dct()
         msg.update({
-            'joints': self.joints
+            'joints': self.joints.to_dct() if self.joints != None else None
         })
         return msg
 
@@ -64,7 +64,7 @@ class Waypoint(Pose):
             description=dct['description'],
             name=dct['name'],
             uuid=dct['uuid'],
-            joints=dct['joints'])
+            joints=NodeParser(dct['joints'], enforce_types=[Joints.type_string(trailing_delim=False)]) if dct['joints'] != None else None)
 
     def to_ros_marker(self, frame_id='app', id=0):
         # The frame_id should be the application frame
@@ -91,13 +91,19 @@ class Waypoint(Pose):
     @joints.setter
     def joints(self, value):
         if self._joints != value:
+            if self._joints != None:
+                self._joints.remove_from_cache()
+
             self._joints = value
+            if self._joints != None:
+                self._joints.parent = self
+                
             self.updated_attribute('joints','set')
 
     def set(self, dct):
 
         if 'joints' in dct.keys():
-            self.joints = dct['joints']
+            self.joints = NodeParser(dct['joints'], enforce_types=[Joints.type_string(trailing_delim=False)]) if dct['joints'] != None else None
 
         super(Waypoint,self).set(dct)
 
