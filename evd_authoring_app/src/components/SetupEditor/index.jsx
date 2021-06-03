@@ -49,6 +49,13 @@ export function SetupEditor(_) {
         {
             key:'things',
             name:'Things',
+            type:'thing',
+            title: (item)=> `${item.name}`,
+            description: (item)=> `Info about ${item.name}`
+        },
+        {
+            key:'thingTypes',
+            name:'Thing Types',
             type:'thingType',
             title: (item)=> `${item.name}`,
             description: (item)=> `Info about ${item.name}`
