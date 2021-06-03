@@ -4,13 +4,13 @@ Each machine can generate and/or consume things.
 
 Machine could be something "smart" like a CNC mill or a 3D printer, but it could also be
 a simple machine like a feeder. Additionally, vision systems can be a machine that
-"generates" things by finding them in the real environment. 
+"generates" things by finding them in the real environment.
 
 A machine allows for a set of input regions that take in a thing of a particular type and a set of output
 regions that generate things of a certain type. Machines also use a recipe to define the number of input
 things at the input regions that can be converted into a number of output things at the output regions.
 
-Machines can be purely generators (they don't have any inputs), purely consumers (no outputs), or 
+Machines can be purely generators (they don't have any inputs), purely consumers (no outputs), or
 transformers (that have inputs and outputs).
 
 NOTE, currently regions are not a supported type for robot planning. Robot's use locations so arbitrary
@@ -19,8 +19,6 @@ handling this disconnect.
 '''
 
 from ..node import Node
-from ..node_parser import NodeParser
-from .machine_recipe import MachineRecipe
 
 
 class Machine(Node):
@@ -37,12 +35,13 @@ class Machine(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, input_regions=None, output_regions=None,
-                 recipe=None, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
-        self._input_regions = None
-        self._output_regions = None
+    def __init__(self, inputs=None, outputs=None, process_time=0, type='', name='',
+                 uuid=None, parent=None, append_type=True, editable=True,
+                 deleteable=True, description=description):
+        self._inputs = None
+        self._outputs = None
+        self._process_time = None
         self._machine_type = None
-        self._recipe = None
 
         super(Machine,self).__init__(
             type=Machine.type_string() + type if append_type else type,
@@ -51,29 +50,33 @@ class Machine(Node):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
-        self.input_regions = input_regions
-        self.output_regions = output_regions
-        self.recipe = recipe if recipe != None else MachineRecipe()
+        self.inputs = inputs if inputs != None else {}
+        self.outputs = outputs if outputs != None else {}
+        self.process_time = process_time
 
     def to_dct(self):
         msg = super(Machine,self).to_dct()
         msg.update({
-            'input_regions': {k: self.input_regions[k].to_dct() for k in self.input_regions.keys()} if self.input_regions != None else None,
-            'output_regions': {k: self.output_regions[k].to_dct() for k in self.output_regions.keys()} if self.output_regions != None else None,
-            'recipe': self.recipe.to_dct()
+            'inputs': self.inputs,
+            'outputs': self.outputs,
+            'process_time': self.process_time
         })
         return msg
 
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            input_regions={k: NodeParser(dct[k]) for k in dct['input_regions'].keys()} if dct['input_regions'] != None else None,
-            output_regions={k: NodeParser(dct[k]) for k in dct['output_regions'].keys()} if dct['output_regions'] != None else None,
-            recipe=NodeParser(dct['recipe'], enforce_type=MachineRecipe.type_string(trailing_delim=False)),
+            inputs=dct['inputs'],
+            outputs=dct['outputs'],
+            process_time=dct['process_time'],
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
             name=dct['name'] if 'name' in dct.keys() else '')
 
@@ -86,62 +89,89 @@ class Machine(Node):
         return self._machine_type
 
     @property
-    def input_regions(self):
-        return self._input_regions
+    def inputs(self):
+        return self._inputs
 
-    @input_regions.setter
-    def input_regions(self, value):
-        if self._input_regions != value:
-            for k in self._input_regions.keys():
-                self._input_regions[k].remove_from_cache()
+    @inputs.setter
+    def inputs(self, value):
+        if self._inputs != value:
+            if value == None:
+                raise Exception('Must be a valid dictionary')
 
-            self._input_regions = value
-            for k in self._input_regions.keys():
-                self._input_regions[k].parent = self
+            self._inputs = value
 
             self._compute_type()
-            self.updated_attribute('input_regions','set')
+            self.updated_attribute('inputs','set')
 
-    def add_input_region(self, thing_type_uuid, region, override=False):
+    def add_input_region(self, thing_type_uuid, region_uuid, quantity, override=False):
         verb = 'add'
 
-        if thing_type_uuid in self._input_regions.keys():
-            if not override:
-                raise Exception('Thing Region is about to be overrided, override is not allowed')
-            else:
-                self._input_regions[thing_type_uuid].remove_from_cache()
-                verb = 'update'
+        if not thing_type_uuid in self._inputs.keys():
+            self._inputs[thing_type_uuid] = []
 
-        region.parent = self
-        self._input_regions[thing_type_uuid] = region
-        self._compute_type()
-        self.updated_attribute('input_regions',verb,region.uuid)
-
-    def delete_input_region(self, thing_type_uuid):
-        if not thing_type_uuid in self._input_regions.keys():
-            raise Exception('No such thing `{0}` in input_regions'.format(thing_type_uuid))
-
-        self._input_regions[thing_type_uuid].remove_from_cache()
-        obj = self._input_regions.pop(thing_type_uuid)
-        self._compute_type()
-        self.updated_attribute('input_regions','delete',obj.uuid)
-
-    def get_input_region(self, thing_type_uuid):
-        return self._input_regions[thing_type_uuid]
-
-    def find_input_region_thing_type(self, regionId):
-        type = None
-
-        for k in self._input_regions.keys():
-            if self._input_regions[k].uuid == regionId:
-                type = k
+        found = False
+        for i in range(0,len(self._inputs[thing_type_uuid])):
+            if region_uuid in self._inputs[thing_type_uuid][i]['region_uuid']:
+                if not override:
+                    raise Exception('Region already exists, cannot add')
+                else:
+                    self._inputs[i]['quantity'] = quantity
+                    verb = 'set'
+                found = True
                 break
 
-        return type
+        if not found:
+            self._inputs[thing_type_uuid].append({
+                'region_uuid': region_uuid,
+                'quantity': quantity })
+
+        self._compute_type()
+        self.updated_attribute('inputs',verb,region_uuid)
+
+    def delete_input_region(self, thing_type_uuid, region_uuid):
+        if not thing_type_uuid in self._inputs.keys():
+            raise Exception('No such thing `{0}` in inputs'.format(thing_type_uuid))
+
+        idx = None
+        for i in range(0,len(self._inputs[thing_type_uuid])):
+            if region_uuid in self._inputs[thing_type_uuid][i]['region_uuid']:
+                idx = i
+                break
+
+        if idx == None:
+            raise Exception('Region `{0}` not in inputs'.format(region_uuid))
+        else:
+            self._inputs[thing_type_uuid].pop(idx)
+            self.updated_attribute('inputs','delete',region_uuid)
+
+            if len(self._inputs[thing_type_uuid]) == 0:
+                del self._inputs[thing_type_uuid]
+                self.updated_attribute('inputs','delete',thing_type_uuid)
+
+        self._compute_type()
+
+    def set_input_region_quantity(self, thing_type_uuid, region_uuid, quantity):
+        if not thing_type_uuid in self._inputs.keys():
+            raise Exception('No such thing `{0}` in inputs'.format(thing_type_uuid))
+
+        idx = None
+        for i in range(0,len(self._inputs[thing_type_uuid])):
+            if region_uuid in self._inputs[thing_type_uuid][i]['region_uuid']:
+                idx = i
+                break
+
+        if idx == None:
+            raise Exception('Region `{0}` not in inputs'.format(region_uuid))
+        else:
+            self._inputs[thing_type_uuid][idx]['quantity'] = quantity
+            self.updated_attribute('inputs','set',region_uuid)
+
+        self._compute_type()
+        self.updated_attribute('inputs',verb,region_uuid)
 
     @property
-    def output_regions(self):
-        return self._output_regions
+    def outputs(self):
+        return self._outputs
 
     @output_regions.setter
     def output_regions(self, value):
@@ -156,149 +186,115 @@ class Machine(Node):
             self._compute_type()
             self.updated_attribute('output_regions','set')
 
-    def add_output_region(self, thing_type_uuid, region, override=False):
+    def add_output_region(self, thing_type_uuid, region_uuid, override=False):
         verb = 'add'
 
-        if thing_type_uuid in self._output_regions.keys():
-            if not override:
-                raise Exception('Thing Region is about to be overrided, override is not allowed')
-            else:
-                self._output_regions[thing_type_uuid].remove_from_cache()
-                verb = 'update'
+        if not thing_type_uuid in self._outputs.keys():
+            self._outputs[thing_type_uuid] = []
 
-        region.parent = self
-        self._output_regions[thing_type_uuid] = region
-        self._compute_type()
-        self.updated_attribute('output_regions',verb,region.uuid)
-
-    def delete_output_region(self, thing_type_uuid):
-        if not thing_type_uuid in self._output_regions.keys():
-            raise Exception('No such thing `{0}` in output_regions'.format(thing_type_uuid))
-
-        self._output_regions[thing_type_uuid].remove_from_cache()
-        obj = self._output_regions.pop(thing_type_uuid)
-        self._compute_type()
-        self.updated_attribute('output_regions','delete',obj.uuid)
-
-    def get_output_region(self, thing_type_uuid):
-        return self._output_regions[thing_type_uuid]
-
-    def find_output_region_thing_type(self, regionId):
-        type = None
-
-        for k in self._output_regions.keys():
-            if self._output_regions[k].uuid == regionId:
-                type = k
+        found = False
+        for i in range(0,len(self._outputs[thing_type_uuid])):
+            if region_uuid in self._outputs[thing_type_uuid][i]['region_uuid']:
+                if not override:
+                    raise Exception('Region already exists, cannot add')
+                else:
+                    self._outputs[i]['quantity'] = quantity
+                    verb = 'set'
+                found = True
                 break
 
-        return type
+        if not found:
+            self._outputs[thing_type_uuid].append({
+                'region_uuid': region_uuid,
+                'quantity': quantity })
+
+        self._compute_type()
+        self.updated_attribute('inputs',verb,region_uuid)
+
+    def delete_output_region(self, thing_type_uuid, region_uuid):
+        if not thing_type_uuid in self._outputs.keys():
+            raise Exception('No such thing `{0}` in _outputs'.format(thing_type_uuid))
+
+        idx = None
+        for i in range(0,len(self._outputs[thing_type_uuid])):
+            if region_uuid in self._outputs[thing_type_uuid][i]['region_uuid']:
+                idx = i
+                break
+
+        if idx == None:
+            raise Exception('Region `{0}` not in outputs'.format(region_uuid))
+        else:
+            self._outputs[thing_type_uuid].pop(idx)
+            self.updated_attribute('outputs','delete',region_uuid)
+
+            if len(self._outputs[thing_type_uuid]) == 0:
+                del self._outputs[thing_type_uuid]
+                self.updated_attribute('outputs','delete',thing_type_uuid)
+
+        self._compute_type()
+
+    def set_output_region_quantity(self, thing_type_uuid, region_uuid, quantity):
+        if not thing_type_uuid in self._outputs.keys():
+            raise Exception('No such thing `{0}` in outputs'.format(thing_type_uuid))
+
+        idx = None
+        for i in range(0,len(self._outputs[thing_type_uuid])):
+            if region_uuid in self._outputs[thing_type_uuid][i]['region_uuid']:
+                idx = i
+                break
+
+        if idx == None:
+            raise Exception('Region `{0}` not in outputs'.format(region_uuid))
+        else:
+            self._outputs[thing_type_uuid][idx]['quantity'] = quantity
+            self.updated_attribute('outputs','set',region_uuid)
+
+        self._compute_type()
+        self.updated_attribute('outputs',verb,region_uuid)
 
     @property
-    def recipe(self):
-        return self._recipe
+    def process_time(self):
+        return self._process_time
 
-    @recipe.setter
-    def recipe(self, value):
-        if self._recipe != value:
-            if value == None:
-                raise Exception('A recipe can be empty but it must exist!')
+    @process_time.setter
+    def process_time(self, value):
+        if self._process_time != value:
+            self._process_time = value
+            self.updated_attribute('process_time','set')
 
-            if self._recipe != None:
-                self._recipe.remove_from_cache()
-
-            self._recipe = value
-            self._recipe.parent = self
-            self.updated_attribute('recipe','set')
 
     def set(self, dct):
 
-        if 'input_regions' in dct.keys():
-            self.input_regions = {k: NodeParser(dct[k]) for k in dct['input_regions'].keys()}
+        if 'inputs' in dct.keys():
+            self.inputs = dct['inputs']
 
-        if 'output_regions' in dct.keys():
-            self.output_regions = {k: NodeParser(dct[k]) for k in dct['output_regions'].keys()}
+        if 'outputs' in dct.keys():
+            self.outputs = dct['outputs']
 
-        if 'recipe' in dct.keys():
-            self.recipe = NodeParser(dct['recipe'], enforce_type=MachineRecipe.type_string(trailing_delim=False))
+        if 'process_time' in dct.keys():
+            self.process_time = dct['process_time']
 
         super(Machine,self).set(dct)
-
-    '''
-    Cache methods
-    '''
-
-    def remove_from_cache(self):
-
-        if self.input_regions != None:
-            for k in self.input_regions.keys():
-                self.input_regions[k].remove_from_cache()
-
-        if self.output_regions != None:
-            for k in self.output_regions.keys():
-                self.output_regions[k].remove_from_cache()
-
-        self.recipe.remove_from_cache()
-
-        super(Machine,self).remove_from_cache()
-
-    def add_to_cache(self):
-
-        if self.input_regions != None:
-            for k in self.input_regions.keys():
-                self.input_regions[k].add_to_cache()
-
-        if self.output_regions != None:
-            for k in self.output_regions.keys():
-                self.output_regions[k].add_to_cache()
-
-        self.recipe.add_to_cache()
-
-        super(Machine,self).add_to_cache()
 
     '''
     Update Methods
     '''
 
-    def late_construct_update(self):
-
-        if self.input_regions != None:
-            for i in self.input_regions.values():
-                i.late_construct_update()
-
-        if self.output_regions != None:
-            for o in self.output_regions.values():
-                o.late_construct_update()
-
-        self.recipe.late_construct_update()
-
-        super(Machine,self).late_construct_update()
-
     def deep_update(self):
-
-        if self.input_regions != None:
-            for i in self.input_regions.values():
-                i.deep_update()
-
-        if self.output_regions != None:
-            for o in self.output_regions.values():
-                o.deep_update()
-
-        self.recipe.deep_update()
-
         super(Machine,self).deep_update()
 
         self.updated_attribute('machine_type','update')
-        self.updated_attribute('input_regions','update')
-        self.updated_attribute('output_regions','update')
-        self.updated_attribute('recipe','update')
+        self.updated_attribute('inputs','update')
+        self.updated_attribute('outputs','update')
+        self.updated_attribute('process_time','update')
 
     def shallow_update(self):
         super(Machine,self).shallow_update()
 
         self.updated_attribute('machine_type','update')
-        self.updated_attribute('input_regions','update')
-        self.updated_attribute('output_regions','update')
-        self.updated_attribute('recipe','update')
+        self.updated_attribute('inputs','update')
+        self.updated_attribute('outputs','update')
+        self.updated_attribute('process_time','update')
 
     '''
     Utility Methods

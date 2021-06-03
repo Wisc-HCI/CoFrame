@@ -27,7 +27,7 @@ class SphereRegion(Region):
 
     def __init__(self, center_position=None, center_orientation=None, uncertainty_radius=0.1,
                  free_orientation=True, uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,
-                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True, description=''):
         self._uncert_radius = None
 
         super(SphereRegion,self).__init__(
@@ -42,7 +42,8 @@ class SphereRegion(Region):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.uncertainty_radius = uncertainty_radius
 
@@ -56,14 +57,17 @@ class SphereRegion(Region):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            center_position=NodeParser(dct['center_position'], enforce_type=Position.type_string(trailing_delim=False)),
-            center_orientation=NodeParser(dct['center_orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
+            center_position=NodeParser(dct['center_position'], enforce_types=[Position.type_string(trailing_delim=False)]),
+            center_orientation=NodeParser(dct['center_orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
             uncertainty_radius=dct['uncertainty_radius'],
             free_orientation=dct['free_orientation'],
             uncertainty_orientation_limit=dct['uncertainty_orientation_limit'],
-            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_type=Orientation.type_string(trailing_delim=False)),
+            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
             name=dct['name'] if 'name' in dct.keys() else '')
 

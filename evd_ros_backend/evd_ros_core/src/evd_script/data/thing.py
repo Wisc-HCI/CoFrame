@@ -29,7 +29,8 @@ class Thing(Pose, VisualizeMarker):
         return Pose.full_type_string() + cls.type_string()
 
     def __init__(self, thing_type_uuid, position=None, orientation=None,
-                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
+                 type='', name='', parent=None, uuid=None, append_type=True,
+                 editable=True, deleteable=True, description=''):
         self._thing_type_uuid = None
 
         super(Thing,self).__init__(
@@ -41,7 +42,8 @@ class Thing(Pose, VisualizeMarker):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.thing_type_uuid = thing_type_uuid
 
@@ -55,10 +57,13 @@ class Thing(Pose, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(thing_type_uuid=dct['thing_type_uuid'],
-                   position=NodeParser(dct['position'], enforce_type=Position.type_string(trailing_delim=False)),
-                   orientation=NodeParser(dct['orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
+                   position=NodeParser(dct['position'], enforce_types=[Position.type_string(trailing_delim=False)]),
+                   orientation=NodeParser(dct['orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
+                   editable=dct['editable'],
+                   deleteable=dct['deleteable'],
+                   description=dct['description'],
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
 

@@ -26,13 +26,13 @@ from .data.trace import Trace
 from .data.machine import Machine
 from .data.thing_type import ThingType
 from .data.regions.region import Region
-from .program.skill import Skill
-
-from .environment.environment import Environment
-from .program.program import Program
-from .program.primitive import Primitive
+from .program_nodes.skill import Skill
+from .program_nodes.primitive import Primitive
+from .environment_nodes.environment_node import EnvironmentNode
+from .program import Program
 from .context import Context
-from .environment.environment_node import EnvironmentNode
+from .environment import Environment
+
 
 
 class Cache(object):
@@ -73,7 +73,7 @@ class Cache(object):
 
     def clear(self):
         self.data = {}
-        
+
         for entry in self.instance_table.values():
             entry['table'] = {}
 
@@ -92,7 +92,7 @@ class Cache(object):
 
     def get_uuids(self, hint=None):
         retVal = None
-        
+
         if hint in self.instance_table.keys():
             retVal = self.instance_table[hint]['table'].keys()
         elif hint == None:

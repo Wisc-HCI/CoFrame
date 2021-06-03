@@ -31,7 +31,8 @@ class Region(Pose, VisualizeMarker):
 
     def __init__(self, center_position=None, center_orientation=None, free_orientation=True,
                  uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,
-                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True,
+                 deleteable=True, description=''):
         self._free_ort = None
         self._uncert_ort_lim = None
         self._uncert_ort_target = None
@@ -45,7 +46,8 @@ class Region(Pose, VisualizeMarker):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.free_orientation = free_orientation
         self.uncertainty_orientation_limit = uncertainty_orientation_limit if not free_orientation else None
@@ -69,13 +71,16 @@ class Region(Pose, VisualizeMarker):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            center_position=NodeParser(dct['center_position'], enforce_type=Position.type_string(trailing_delim=False)),
-            center_orientation=NodeParser(dct['center_orientation'], enforce_type=Orientation.type_string(trailing_delim=False)),
+            center_position=NodeParser(dct['center_position'], enforce_types=[Position.type_string(trailing_delim=False)]),
+            center_orientation=NodeParser(dct['center_orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
             free_orientation=dct['free_orientation'],
             uncertainty_orientation_limit=dct['uncertainty_orientation_limit'],
-            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_type=Orientation.type_string(trailing_delim=False)),
+            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
             name=dct['name'] if 'name' in dct.keys() else '')
 
@@ -164,10 +169,10 @@ class Region(Pose, VisualizeMarker):
     def set(self, dct):
 
         if 'center_position' in dct.keys():
-            self.center_position = NodeParser(dct["center_position"], enforce_type=Position.type_string(trailing_delim=False))
+            self.center_position = NodeParser(dct["center_position"], enforce_types=[Position.type_string(trailing_delim=False)])
 
         if 'center_orientation' in dct.keys():
-            self.center_orientation = NodeParser(dct["center_orientation"], enforce_type=Orientation.type_string(trailing_delim=False))
+            self.center_orientation = NodeParser(dct["center_orientation"], enforce_types=[Orientation.type_string(trailing_delim=False)])
 
         if 'free_orientation' in dct.keys():
             self.free_orientation = dct['free_orientation']
@@ -176,7 +181,7 @@ class Region(Pose, VisualizeMarker):
             self.uncertainty_orientation_limit = dct['uncertainty_orientation_limit']
 
         if 'uncertainty_orientation_alt_target' in dct.keys():
-            self.uncertainty_orientation_alt_target = NodeParser(dct['uncertainty_orientation_alt_target'], enforce_type=Orientation.type_string(trailing_delim=False)) if dct['uncertainty_orientation_alt_target'] != None else None
+            self.uncertainty_orientation_alt_target = NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]) if dct['uncertainty_orientation_alt_target'] != None else None
 
         super(Region,self).set(dct)
 

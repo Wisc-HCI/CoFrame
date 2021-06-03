@@ -19,15 +19,15 @@ class ThingType(Node):
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
-    
-    def __init__(self, type_name='', is_safe=True, weight=0, mesh_id=None,
-                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
 
-        self._type_name = None
+    def __init__(self, is_safe=True, weight=0, mesh_id=None, type='', name='',
+                 parent=None, uuid=None, append_type=True, editable=True,
+                 deleteable=True, description=''):
+
         self._mesh_id = None
         self._is_safe = None
         self._weight = None
-        
+
         super(ThingType,self).__init__(
             type=ThingType.type_string() + type if append_type else type,
             name=name,
@@ -35,9 +35,9 @@ class ThingType(Node):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
-        self.type_name = type_name
         self.mesh_id = mesh_id
         self.is_safe = is_safe
         self.weight = weight
@@ -45,7 +45,6 @@ class ThingType(Node):
     def to_dct(self):
         msg = super(ThingType,self).to_dct()
         msg.update({
-            'type_name': self.type_name,
             'mesh_id': self.mesh_id,
             'is_safe': self.is_safe,
             'weight': self.weight
@@ -54,28 +53,20 @@ class ThingType(Node):
 
     @classmethod
     def from_dct(cls, dct):
-        return cls(thing_type=dct['thing_type'],
-                   mesh_id=dct['mesh_id'],
+        return cls(mesh_id=dct['mesh_id'],
                    is_safe=dct['is_safe'],
                    weight=dct['weight'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
+                   editable=dct['editable'],
+                   deleteable=dct['deleteable'],
+                   description=dct['description'],
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
 
     '''
     Data accessor/modifier methods
     '''
-
-    @property
-    def type_name(self):
-        return self._type_name
-
-    @type_name.setter
-    def type_name(self, value):
-        if self._type_name != value:
-            self._type_name = value
-            self.updated_attribute('type_name','set')
 
     @property
     def is_safe(self):
@@ -109,9 +100,6 @@ class ThingType(Node):
 
     def set(self, dct):
 
-        if 'type_name' in dct.key():
-            self.type_name = dct['type_name']
-
         if 'is_safe' in dct.keys():
             self.is_safe = dct['is_safe']
 
@@ -131,7 +119,6 @@ class ThingType(Node):
 
         super(ThingType,self).deep_update()
 
-        self.updated_attribute('type_name','update')
         self.updated_attribute('is_safe','update')
         self.updated_attribute('weight','update')
         self.updated_attribute('mesh_id','update')
@@ -139,7 +126,6 @@ class ThingType(Node):
     def shallow_update(self):
         super(ThingType,self).shallow_update()
 
-        self.updated_attribute('type_name','update')
         self.updated_attribute('is_safe','update')
         self.updated_attribute('weight','update')
         self.updated_attribute('mesh_id','update')

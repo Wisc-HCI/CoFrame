@@ -1,5 +1,5 @@
 '''
-Trace is the result of running a trajectory on the robot planner. 
+Trace is the result of running a trajectory on the robot planner.
 
 Traces provide a set of data and various labeled keys.
 
@@ -18,7 +18,7 @@ time is the duration for just this trajectory in planning (approximate)
 
 from ..node import Node
 from ..node_parser import NodeParser
-from .trace_data_point import TraceDataPoint
+from .geometry import Pose
 from ..visualizable import VisualizeMarkers, ColorTable
 
 from visualization_msgs.msg import Marker
@@ -39,15 +39,10 @@ class Trace(Node, VisualizeMarkers):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, eePath=None, data={}, jPaths=[], tPaths=[], cPaths=[],
-                 time=0, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
-
-        self._data = {}
-        self._time = None
-        self._end_effector_path = None
-        self._joint_paths = None
-        self._tool_paths = None
-        self._component_paths = None
+    def __init__(self, tf_data={}, time_data=[], joint_data=[], grades={},
+                 eePath=None, jPaths=[], tPaths=[], cPaths=[], time=0, type='',
+                 name='', uuid=None, parent=None, append_type=True, editable=True,
+                 deleteable=True, description=''):
 
         super(Trace,self).__init__(
             type=Trace.type_string() + type if append_type else type,
@@ -56,19 +51,26 @@ class Trace(Node, VisualizeMarkers):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description='')
 
-        self.data = data
-        self.time = time
-        self.end_effector_path = eePath
-        self.joint_paths = jPaths
-        self.tool_paths = tPaths
-        self.component_paths = cPaths
+        self._time_data = time_data
+        self._joint_data = joint_data
+        self._tf_data = tf_data
+        self._grades = grades
+        self._time = time
+        self._end_effector_path = eePath
+        self._joint_paths = jPaths
+        self._tool_paths = tPaths
+        self._component_paths = cPaths
 
     def to_dct(self):
         msg = super(Trace,self).to_dct()
         msg.update({
-            'data': {key: [d.to_dct() for d in self.data[key]] for key in self.data.keys()},
+            'time_data': self.time_data,
+            'joint_data': self.joint_data,
+            'tf_data': {key: [d.to_dct() for d in self.tf_data[key]] for key in self.tf_data.keys()},
+            'grades': self.grades,
             'time': self.time,
             'end_effector_path': self.end_effector_path,
             'joint_paths': self.joint_paths,
@@ -80,20 +82,26 @@ class Trace(Node, VisualizeMarkers):
     @classmethod
     def from_dct(cls, dct):
 
-        data = {}
-        for key in dct['data'].keys():
-            data[key] = []
+        tf_data = {}
+        for key in dct['tf_data'].keys():
+            tf_data[key] = []
 
-            for i in range(0,len(dct['data'][key])):
-                node = NodeParser(dct['data'][key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False))
-                data[key].append(node)
+            for i in range(0,len(dct['tf_data'][key])):
+                node = NodeParser(dct['tf_data'][key][i], enforce_types=[Pose.type_string(trailing_delim=False)])
+                tf_data[key].append(node)
 
         return cls(
             uuid=dct['uuid'],
             type=dct['type'],
             name=dct['name'],
             append_type=False,
-            data=data,
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
+            time_data=dct['time_data']
+            joint_data=dct['joint_data']
+            tf_data=tf_data,
+            grades=dct['grades'],
             eePath=dct['end_effector_path'],
             jPaths=dct['joint_paths'],
             tPaths=dct['tool_paths'],
@@ -106,7 +114,7 @@ class Trace(Node, VisualizeMarkers):
         render_point_uuids = []
 
         count = id_start
-        for key in self.data.keys():
+        for key in self.tf_data.keys():
             lineMarker = Marker()
             lineMarker.header.frame_id = frame_id
             lineMarker.type = Marker.LINE_STRIP
@@ -118,7 +126,7 @@ class Trace(Node, VisualizeMarkers):
 
             pointsList = []
             uuidsList = []
-            for point in self.data[key]:
+            for point in self.tf_data[key]:
                 marker = point.to_ros_marker(frame_id,count)
                 lineMarker.points.append(marker.pose.position)
                 pointsList.append(marker)
@@ -147,169 +155,56 @@ class Trace(Node, VisualizeMarkers):
     '''
 
     @property
-    def data(self):
-        return self._data
+    def time_data(self):
+        return self._time_data
 
-    @data.setter
-    def data(self, value):
-        if self._data != value:
+    @property
+    def joint_data(self):
+        return self._joint_data
 
-            # remove old from cache
-            for key in self._data.keys():
-                for d in self._data[key]:
-                    d.remove_from_cache()
+    @property
+    def tf_data(self):
+        return self._tf_data
 
-            self._data = value
-            for key in self._data.keys():
-                for d in self._data[key]:
-                    d.parent = self
-
-            self.updated_attribute('data','set')
+    @property
+    def grades(self):
+        return self._grades
 
     @property
     def time(self):
         return self._time
 
-    @time.setter
-    def time(self, value):
-        if self._time != value:
-            self._time = value
-            self.updated_attribute('time','set')
-
     @property
     def end_effector_path(self):
         return self._end_effector_path
-
-    @end_effector_path.setter
-    def end_effector_path(self, value):
-        if self._end_effector_path != value:
-            self._end_effector_path = value
-            self.updated_attribute('end_effector_path','set')
 
     @property
     def joint_paths(self):
         return self._joint_paths
 
-    @joint_paths.setter
-    def joint_paths(self, value):
-        if self._joint_paths != value:
-            self._joint_paths = value
-            self.updated_attribute('joint_paths','set')
-
     @property
     def tool_paths(self):
         return self._tool_paths
 
-    @tool_paths.setter
-    def tool_paths(self, value):
-        if self._tool_paths != value:
-            self._tool_paths = value
-            self.updated_attribute('tool_paths','set')
-
     @property
     def component_paths(self):
         return self._component_paths
-
-    @component_paths.setter
-    def component_paths(self, value):
-        if self._component_paths != value:
-            self._component_paths = value
-            self.updated_attribute('component_paths','set')
-
-    def add_data_point(self, dp, group):
-        dp.parent = self
-
-        if not group in self._data.keys():
-            self._data[group] = []
-        self._data[group].append(dp)
-
-        self.updated_attribute('data','add')
-
-    def get_data_point(self, uuid, group):
-        for d in self._data[group]:
-            if d.uuid == uuid:
-                return d
-        return None
-
-    def delete_data_point(self, uuid, group):
-        delIdx = None
-        for i in range(0,len(self._data[group])):
-            if self._data[group][i].uuid == uuid:
-                delIdx = i
-                break
-
-        if delIdx != None:
-            self._data[group].pop(delIdx).remove_from_cache()
-            self.updated_attribute('data','delete')
-
-    def set(self, dct):
-
-        if 'data' in dct.keys():
-            data = {}
-            for key in dct['data'].keys():
-                data[key] = []
-
-                for i in range(0,len(dct['data'][key])):
-                    node = NodeParser(dct['data'][key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False))
-                    data[key].append(node)
-            
-            self.data = data
-
-        time = dct.get('time',None)
-        if time != None:
-            self.time = time
-
-        if 'end_effector_path' in dct.keys():
-            self.end_effector_path = dct['end_effector_path']
-
-        if 'joint_paths' in dct.keys():
-            self.joint_paths = dct['joint_paths']
-
-        if 'tool_paths' in dct.keys():
-            self.tool_paths = dct['tool_paths']
-
-        if 'component_paths' in dct.keys():
-            self.component_paths = dct['component_paths']
-
-        super(Trace,self).set(dct)
 
     '''
     Cache methods
     '''
 
     def remove_from_cache(self):
-        for key in self._data.keys():
-            for d in self._data[key]:
+        for key in self._tf_data.keys():
+            for d in self._tf_data[key]:
                 d.remove_from_cache()
         super(Trace,self).remove_from_cache()
 
     def add_to_cache(self):
-        for key in self._data.keys():
-            for d in self._data[key]:
+        for key in self._tf_data.keys():
+            for d in self._tf_data[key]:
                 d.add_to_cache()
         super(Trace,self).add_to_cache()
-
-    '''
-    Children methods
-    '''
-
-    def delete_child(self, uuid):
-
-        group = None
-        for g in self._data.keys():
-            for d in self._data[g]:
-                if d.uuid == uuid:
-                    group = g
-                    break
-
-            if group != None:
-                break
-
-        if group != None:
-            self.delete_data_point(uuid, group)
-            return True
-        else:
-            return False
 
     '''
     Update Methods
@@ -317,21 +212,21 @@ class Trace(Node, VisualizeMarkers):
 
     def late_construct_update(self):
 
-        for key in self.data.keys():
-            for dp in self.data[key]:
+        for key in self.tf_data.keys():
+            for dp in self.tf_data[key]:
                 dp.late_construct_update()
 
         super(Trace,self).late_construct_update()
 
     def deep_update(self):
 
-        for key in self.data.keys():
-            for dp in self.data[key]:
+        for key in self.tf_data.keys():
+            for dp in self.tf_data[key]:
                 dp.deep_update()
 
         super(Trace,self).deep_update()
 
-        self.updated_attribute('data','update')
+        self.updated_attribute('tf_data','update')
         self.updated_attribute('time','update')
         self.updated_attribute('end_effector_path','update')
         self.updated_attribute('joint_paths','update')
@@ -341,7 +236,7 @@ class Trace(Node, VisualizeMarkers):
     def shallow_update(self):
         super(Trace,self).shallow_update()
 
-        self.updated_attribute('data','update')
+        self.updated_attribute('tf_data','update')
         self.updated_attribute('time','update')
         self.updated_attribute('end_effector_path','update')
         self.updated_attribute('joint_paths','update')

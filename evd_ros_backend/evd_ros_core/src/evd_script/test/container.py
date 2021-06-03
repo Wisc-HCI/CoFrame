@@ -1,5 +1,5 @@
 '''
-Container provides a generalized set of nodes. 
+Container provides a generalized set of nodes.
 
 This is only really useful for testing the AST's internal behavior when storing data.
 It is better to rely on semantic structures like Context, Skill, etc. to store various
@@ -24,7 +24,9 @@ class Container(Node):
     def full_type_string(cls, item_type='node.'):
         return Node.full_type_string() + cls.type_string(item_type)
 
-    def __init__(self, item_type, values=[], type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, item_type, values=[], type='', name='', uuid=None,
+                 parent=None, append_type=True, editable=True, deleteable=True,
+                 description=''):
 
         self._values = None
         self._item_type = None
@@ -35,7 +37,9 @@ class Container(Node):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            editable=editable)
+            editable=editable,
+            deleteable=deleteable,
+            description=description)
 
         self.values = values
         self.item_type = item_type
@@ -52,12 +56,14 @@ class Container(Node):
     def from_dct(cls, dct):
         return cls(
             item_type=dct['item_type'],
-            values=[NodeParser(x, enforce_type=dct['item_type']) for x in dct['values']],
+            values=[NodeParser(x, enforce_types=[dct['item_type']]) for x in dct['values']],
             type=dct['type'],
             append_type=False,
             name=dct['name'],
-            uuid=dct['uuid']
-        )
+            uuid=dct['uuid'],
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'])
 
     '''
     Data accessor/modifier methods

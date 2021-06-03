@@ -1,12 +1,14 @@
 from .geometry import *
+from .regions import *
+
 from .location import Location
 from .waypoint import Waypoint
-from .machine import Machine, MachineRecipe
+from .machine import Machine
 from .trace import Trace
-from .trace_data_point import TraceDataPoint
 from .trajectory import Trajectory
-from .regions import *
 from .thing import Thing
+from .thing_type import ThingType
+from .grade_type import GradeType
 
 
 def DataNodeParser(exactType, dct):
@@ -28,13 +30,13 @@ def DataNodeParser(exactType, dct):
         node = Trajectory.from_dct(dct)
     elif exactType == Trace.type_string(trailing_delim=False):
         node = Trace.from_dct(dct)
-    elif exactType == TraceDataPoint.type_string(trailing_delim=False):
-        node = TraceDataPoint.from_dct(dct)
     elif exactType == Machine.type_string(trailing_delim=False):
         node = Machine.from_dct(dct)
-    elif exactType == MachineRecipe.type_string(trailing_delim=False):
-        node  = MachineRecipe.from_dct(dct)
     elif exactType == Thing.type_string(trailing_delim=False):
         node = Thing.from_dct(dct)
+    elif exactType == ThingType.type_string(trailing_delim=False):
+        node = ThingType.from_dct(dct)
+    elif exactType == GradeType.type_string(trailing_delim=False):
+        node = GradeType.from_dct(dct)
 
     return node

@@ -1,5 +1,5 @@
 '''
-Provides a conveinent interface between low-level position implementations 
+Provides a conveinent interface between low-level position implementations
 (like ROS) and the EvD AST.
 
 Convience methods are provided.
@@ -25,7 +25,8 @@ class Position(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, x, y, z, type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, x, y, z, type='', name='', parent=None, uuid=None,
+                 append_type=True, editable=True, deleteable=True, description=''):
         self._x = None
         self._y = None
         self._z = None
@@ -37,7 +38,8 @@ class Position(Node):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.x = x
         self.y = y
@@ -73,6 +75,9 @@ class Position(Node):
             z=dct['z'],
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
             name=dct['name'] if 'name' in dct.keys() else '')
 
@@ -191,5 +196,3 @@ class Position(Node):
         self.updated_attribute('x','update')
         self.updated_attribute('y','update')
         self.updated_attribute('z','update')
-
-

@@ -26,10 +26,12 @@ class Node(ABC):
     def full_type_string(cls):
         return cls.type_string()
 
-    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True,
+                 editable=True, deleteable=True, description=''):
         self._parent = None
         self._type = None
         self._name = None
+        self._description = None
 
         if uuid is None:
             self._uuid = self._generate_uuid(type)
@@ -39,6 +41,7 @@ class Node(ABC):
         self.parent = parent
         self.type = Node.type_string() + type if append_type else type
         self.name = name
+        self.description = description
 
         self._editable = editable
         self._deleteable = deleteable
@@ -51,8 +54,9 @@ class Node(ABC):
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '',
-                   editable=dct['editable'] if 'editable' in dct.keys() else '',
-                   deleteable=dct['deleteable'] if 'deleteable' in dct.keys() else '')
+                   editable=dct['editable'] if 'editable' in dct.keys() else True,
+                   deleteable=dct['deleteable'] if 'deleteable' in dct.keys() else True,
+                   description=dct['description'] if 'description' in dct.keys() else '')
 
     def to_dct(self):
         return {
@@ -60,7 +64,8 @@ class Node(ABC):
             'name': self.name,
             'uuid': self.uuid,
             'editable': self.editable,
-            'deleteable': self.deletable
+            'deleteable': self.deletable,
+            'description': self.description
         }
 
     def on_delete(self):
@@ -72,7 +77,7 @@ class Node(ABC):
 
     @property
     def context(self):
-        # Since EvD only has a global context, this is more a short-hand of saying the node is 
+        # Since EvD only has a global context, this is more a short-hand of saying the node is
         # situated in a program.
         if self._parent != None:
             return self._parent.context
@@ -125,6 +130,16 @@ class Node(ABC):
     def deletable(self):
         return self._deleteable
 
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        if self._description != value:
+            self._description = value
+            self.updated_attribute('description','set')
+
     def set(self, dct):
         # Note: cannot set uuid or parent with this
         # Note: cannot set editable or deleteable status
@@ -136,6 +151,9 @@ class Node(ABC):
         type = dct.get('type',None)
         if type != None:
             self.type = type
+
+        if 'description' in dct.key():
+            self.description = dct['description']
 
     '''
     Cache methods
@@ -156,7 +174,7 @@ class Node(ABC):
 
     '''
     Children methods (optional)
-        - If nodes encapsulate other nodes then their implementation should 
+        - If nodes encapsulate other nodes then their implementation should
           expose useful variants of these methods.
     '''
 
@@ -212,7 +230,7 @@ class Node(ABC):
 
     def late_construct_update(self):
         # Implement if your class needs to update something after entire program is constructed
-        # Note that late construct must be called after a program is complete. This should be 
+        # Note that late construct must be called after a program is complete. This should be
         # handled if using the standard data server and data client.
         pass
 
@@ -227,6 +245,7 @@ class Node(ABC):
         self.updated_attribute('uuid', 'update')
         self.updated_attribute('editable', 'update')
         self.updated_attribute('deleteable', 'update')
+        self.updated_attribute('description','update')
 
     def shallow_update(self):
         self.updated_attribute('name', 'update')
@@ -234,6 +253,7 @@ class Node(ABC):
         self.updated_attribute('uuid', 'update')
         self.updated_attribute('editable', 'update')
         self.updated_attribute('deleteable', 'update')
+        self.updated_attribute('description','update')
 
     '''
     Execution methods:
