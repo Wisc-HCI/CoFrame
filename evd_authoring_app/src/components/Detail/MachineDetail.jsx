@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import { Drawer, Empty, Input, Space, Button } from 'antd';
+import { Drawer, Empty, Input, Space, Button,Popconfirm } from 'antd';
 
 import useGuiStore from '../../stores/GuiStore';
 
@@ -14,13 +14,21 @@ export const MachineDetail = (_) => {
     }));
 
     const {machine} = useEvdStore(useCallback(state=>({
-        machine:state.environment.machines.filter(item=>(item.uuid === focusItem.uuid))[0]
+        machine:state.environment.machines[focusItem.uuid]
     })
       ,[focusItem]))
-    const { deleteMachine, setMachineName } = useEvdStore(state=>({
-        deleteMachine:state.deleteMachine,
-        setMachineName:state.setMachineName
-    }));
+      const { deleteItem, setItemProperty } = useEvdStore(state=>({
+          deleteItem:state.deleteItem,
+          setItemProperty:state.setItemProperty
+      }));
+     const [visible, setVisible] = React.useState(false);
+      const handleOK = () =>{
+        clearFocusItem();
+        deleteItem('machine',focusItem.uuid);
+      }
+      const handleCancel = () =>{
+         setVisible(false);
+      }
 
     if (machine) {
         return (
@@ -31,24 +39,27 @@ export const MachineDetail = (_) => {
                         <Input
                             defaultValue={machine.name}
                             disabled={!machine.canEdit}
-                            onChange={e=>setMachineName(focusItem.uuid,e.target.value)}/>
+                            onChange={e=>setItemProperty('machine',focusItem.uuid,'name',e.target.value)}/>
                     </Space>}
                 visible={focusItem.type === 'machine'}
                 onClose={clearFocusItem}
                 getContainer={false}
                 style={{ position: 'absolute' }}
                 footer={
+                  <Popconfirm title= "Are you sure you want to delete this machine?"
+                              onConfirm={handleOK}
+                              onCancel ={handleCancel}
+                              visible = {visible}
+                              placement ="top">
                     <Button
                         danger
                         block
-                        disabled={!machine.canDelete}
-                        onClick={()=>{
-                            clearFocusItem();
-                            deleteMachine(focusItem.uuid)
-                        }}
+                        disabled={!machine.deleteable}
+                        onClick={()=>setVisible(true)}
                     >
                         Delete
                     </Button>
+                    </Popconfirm>
                 }
                 width='50%'
             >

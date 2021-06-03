@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import { Drawer, Empty, Input, Space, Button } from 'antd';
+import { Drawer, Empty, Input, Space, Button,Popconfirm } from 'antd';
 
 import useGuiStore from '../../stores/GuiStore';
 
@@ -21,34 +21,45 @@ export const LocationDetail = (_) => {
         deleteItem:state.deleteItem,
         setItemProperty:state.setItemProperty
     }));
+    const [visible, setVisible] = React.useState(false);
+    const handleOK = () =>{
+      clearFocusItem();
+      deleteItem('location',focusItem.uuid);
+    }
+    const handleCancel = () =>{
+       setVisible(false);
+    }
 
     if (location) {
         return (
-            <Drawer 
+            <Drawer
                 title={
                     <Space>
                         <span>Location: </span>
-                        <Input 
-                            defaultValue={location.name} 
-                            disabled={!location.editable}
+                        <Input
+                            defaultValue={location.name}
+                            disabled={!location.canEdit}
                             onChange={e=>setItemProperty('location',focusItem.uuid,'name',e.target.value)}/>
                     </Space>}
-                visible={focusItem.type === 'location'} 
+                visible={focusItem.type === 'location'}
                 onClose={clearFocusItem}
                 getContainer={false}
                 style={{ position: 'absolute' }}
                 footer={
+                  <Popconfirm title= "Are you sure you want to delete this location?"
+                              onConfirm={handleOK}
+                              onCancel ={handleCancel}
+                              visible = {visible}
+                              placement ="top">
                     <Button
                         danger
                         block
                         disabled={!location.deleteable}
-                        onClick={()=>{
-                            clearFocusItem();
-                            deleteItem('location',focusItem.uuid)
-                        }}
+                        onClick={()=>setVisible(true)}
                     >
                         Delete
                     </Button>
+                    </Popconfirm>
                 }
                 width='50%'
             >
@@ -57,9 +68,9 @@ export const LocationDetail = (_) => {
         )
     } else {
         return  (
-            <Drawer 
+            <Drawer
                 title={'Location: '}
-                visible={focusItem.type === 'location'} 
+                visible={focusItem.type === 'location'}
                 onClose={clearFocusItem}
                 getContainer={false}
                 style={{ position: 'absolute' }}

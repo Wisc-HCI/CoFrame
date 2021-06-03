@@ -4,6 +4,7 @@ import { LocationDetail } from "./LocationDetail";
 import {MachineDetail} from "./MachineDetail";
 import {WaypointDetail} from "./WaypointDetail";
 import {RegionDetail} from "./RegionDetail.jsx";
+import {ThingDetail} from "./ThingDetail.jsx";
 
 
 export const Detail = (props) => {
@@ -12,6 +13,9 @@ export const Detail = (props) => {
         <Fragment>
 
             <LocationDetail/>
+            <MachineDetail/>
+            <WaypointDetail/>
+            <ThingDetail/>
             {/* <MachineDetail/>
             <WaypointDetail/>
             <RegionDetail/> */}

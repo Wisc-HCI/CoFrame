@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import { Drawer, Empty, Input, Space, Button } from 'antd';
+import { Drawer, Empty, Input, Space, Button ,Popconfirm} from 'antd';
 
 import useGuiStore from '../../stores/GuiStore';
 
@@ -14,13 +14,21 @@ export const WaypointDetail = (_) => {
     }));
 
     const {waypoint} = useEvdStore(useCallback(state=>({
-        waypoint:state.environment.waypoints.filter(item=>(item.uuid === focusItem.uuid))[0]
+        waypoint:state.environment.waypoints[focusItem.uuid]
     })
       ,[focusItem]))
-    const { deleteWaypoint, setWaypointName } = useEvdStore(state=>({
-        deleteWaypoint:state.deleteWaypoint,
-        setWaypointName:state.setWaypointName
-    }));
+      const { deleteItem, setItemProperty } = useEvdStore(state=>({
+          deleteItem:state.deleteItem,
+          setItemProperty:state.setItemProperty
+      }));
+    const [visible, setVisible] = React.useState(false);
+     const handleOK = () =>{
+       clearFocusItem();
+       deleteItem('waypoint',focusItem.uuid);
+     }
+     const handleCancel = () =>{
+        setVisible(false);
+     }
 
     if (waypoint) {
         return (
@@ -31,24 +39,28 @@ export const WaypointDetail = (_) => {
                         <Input
                             defaultValue={waypoint.name}
                             disabled={!waypoint.canEdit}
-                            onChange={e=>setWaypointName(focusItem.uuid,e.target.value)}/>
+                            onChange={e=>setItemProperty('waypoint',focusItem.uuid,'name',e.target.value)}/>
                     </Space>}
                 visible={focusItem.type === 'waypoint'}
                 onClose={clearFocusItem}
                 getContainer={false}
                 style={{ position: 'absolute' }}
                 footer={
+                  <Popconfirm title= "Are you sure you want to delete this waypoint?"
+                              onConfirm={handleOK}
+                              
+                              onCancel ={handleCancel}
+                              visible = {visible}
+                              placement ="top">
                     <Button
                         danger
                         block
-                        disabled={!waypoint.canDelete}
-                        onClick={()=>{
-                            clearFocusItem();
-                            deleteWaypoint(focusItem.uuid)
-                        }}
+                        disabled={!waypoint.deleteable}
+                        onClick={()=>setVisible(true)}
                     >
                         Delete
                     </Button>
+                    </Popconfirm>
                 }
                 width='50%'
             >

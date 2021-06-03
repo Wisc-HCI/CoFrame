@@ -6,15 +6,15 @@ import useGuiStore from '../../stores/GuiStore';
 
 import useEvdStore from '../../stores/EvdStore';
 
-export const RegionDetail = (_) => {
+export const ThingDetail = (_) => {
 
     const {focusItem, clearFocusItem} = useGuiStore(state=>({
         focusItem:state.focusItem,
         clearFocusItem:state.clearFocusItem
     }));
 
-    const {region} = useEvdStore(useCallback(state=>({
-        region:state.environment.regions[focusItem.uuid]
+    const {thing} = useEvdStore(useCallback(state=>({
+        thing:state.environment.things[focusItem.uuid]
     })
       ,[focusItem]))
       const { deleteItem, setItemProperty } = useEvdStore(state=>({
@@ -24,29 +24,29 @@ export const RegionDetail = (_) => {
      const [visible, setVisible] = React.useState(false);
       const handleOK = () =>{
         clearFocusItem();
-        deleteItem('region',focusItem.uuid);
+        deleteItem('thing',focusItem.uuid);
       }
       const handleCancel = () =>{
          setVisible(false);
       }
 
-    if (region) {
+    if (thing) {
         return (
             <Drawer
                 title={
                     <Space>
-                        <span>Region: </span>
+                        <span>Thing: </span>
                         <Input
-                            defaultValue={region.name}
-                            disabled={!region.canEdit}
-                            onChange={e=>setItemProperty('region',focusItem.uuid,'name',e.target.value)}/>
+                            defaultValue={thing.name}
+                            disabled={!thing.editable}
+                            onChange={e=>setItemProperty('thing',focusItem.uuid,'name',e.target.value)}/>
                     </Space>}
-                visible={focusItem.type === 'region'}
+                visible={focusItem.type === 'thing'}
                 onClose={clearFocusItem}
                 getContainer={false}
                 style={{ position: 'absolute' }}
                 footer={
-                  <Popconfirm title= "Are you sure you want to delete this region?"
+                  <Popconfirm title= "Are you sure you want to delete this thing?"
                               onConfirm={handleOK}
                               onCancel ={handleCancel}
                               visible = {visible}
@@ -54,7 +54,7 @@ export const RegionDetail = (_) => {
                     <Button
                         danger
                         block
-                        disabled={!region.deleteable}
+                        disabled={!thing.deleteable}
                         onClick={()=>setVisible(true)}
                     >
                         Delete
@@ -69,8 +69,8 @@ export const RegionDetail = (_) => {
     } else {
         return  (
             <Drawer
-                title={'Region: '}
-                visible={focusItem.type === 'region'}
+                title={'Thing: '}
+                visible={focusItem.type === 'thing'}
                 onClose={clearFocusItem}
                 getContainer={false}
                 style={{ position: 'absolute' }}
