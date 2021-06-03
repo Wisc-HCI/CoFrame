@@ -40,6 +40,8 @@ export function Item(props) {
                 />
                 <Popconfirm title= "Are you sure you want to delete this item?"
                             onConfirm={handleOK}
+                            okButtonProps = {{danger:true}}
+                            okText = "Delete"
                             onCancel ={handleCancel}
                             visible = {visible}
                             placement ="left">

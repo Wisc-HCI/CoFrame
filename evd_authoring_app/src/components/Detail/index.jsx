@@ -28,7 +28,7 @@ export const Detail = (_) => {
     }));
 
     const [popoverVisible, setPopoverVisible] = React.useState(false);
-      
+
     const handleOK = () =>{
         clearFocusItem();
         deleteItem(focusItem.type,focusItem.uuid);
@@ -54,6 +54,8 @@ export const Detail = (_) => {
                 style={{ position: 'absolute' }}
                 footer={
                   <Popconfirm title={`Are you sure you want to delete this ${focusItem.type}?`}
+                              okButtonProps = {{danger:true}}
+                              okText = "Delete"
                               onConfirm={handleOK}
                               onCancel ={handleCancel}
                               visible = {popoverVisible}
@@ -64,7 +66,7 @@ export const Detail = (_) => {
                         disabled={!item.deleteable}
                         onClick={()=>setPopoverVisible(true)}
                     >
-                        Delete
+                        <a href="#">Delete</a>
                     </Button>
                     </Popconfirm>
                 }
