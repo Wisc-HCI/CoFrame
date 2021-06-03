@@ -48,4 +48,4 @@ class SimplePickAndPlace(Skill):
             primitives=primitives,
             editable=editable,
             deleteable=deleteable,
-            description='')
+            description=description)

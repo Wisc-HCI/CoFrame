@@ -95,6 +95,9 @@ class Trace(Node, VisualizeMarkers):
             type=dct['type'],
             name=dct['name'],
             append_type=False,
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             time_data=dct['time_data']
             joint_data=dct['joint_data']
             tf_data=tf_data,

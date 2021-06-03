@@ -54,6 +54,9 @@ class Skill(Primitive):
             name=dct['name'],
             type=dct['type'],
             append_type=False,
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             uuid=dct['uuid'],
             primitives=[NodeParser(p) for p in dct['primitives']])
 

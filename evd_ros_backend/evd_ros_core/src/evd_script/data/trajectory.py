@@ -83,6 +83,9 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             uuid=dct['uuid'],
             type=dct['type'],
             append_type=False,
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             velocity=dct['velocity'],
             move_type=dct['move_type'])
 

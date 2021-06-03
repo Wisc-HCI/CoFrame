@@ -71,6 +71,9 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
                    link=dct['link'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
+                   editable=dct['editable'],
+                   deleteable=dct['deleteable'],
+                   description=dct['description'],
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
 

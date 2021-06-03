@@ -59,6 +59,9 @@ class Waypoint(Pose):
             orientation=NodeParser(dct['orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
             type=dct['type'],
             append_type=False,
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             name=dct['name'],
             uuid=dct['uuid'],
             joints=dct['joints'])

@@ -58,7 +58,10 @@ class Loop(Skill):
             name=dct['name'],
             uuid=dct['uuid'],
             type=dct['type'],
-            append_type=False)
+            append_type=False,
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'])
 
     '''
     Data accessor/modifier methods

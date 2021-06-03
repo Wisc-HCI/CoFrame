@@ -60,8 +60,10 @@ class Container(Node):
             type=dct['type'],
             append_type=False,
             name=dct['name'],
-            uuid=dct['uuid']
-        )
+            uuid=dct['uuid'],
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'])
 
     '''
     Data accessor/modifier methods

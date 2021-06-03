@@ -52,6 +52,9 @@ class MachinePrimitive(Primitive):
             uuid=dct['uuid'],
             type=dct['type'],
             append_type=False,
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             machineUuid=dct['machine_uuid'])
 
     '''

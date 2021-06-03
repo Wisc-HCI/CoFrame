@@ -50,6 +50,9 @@ class Delay(Primitive):
             name=dct['name'],
             type=dct['type'],
             append_type=False,
+            editable=dct['editable'],
+            deleteable=dct['deleteable'],
+            description=dct['description'],
             uuid=dct['uuid'],
             duration=dct['duration'])
 
