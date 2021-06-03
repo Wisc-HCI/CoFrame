@@ -26,8 +26,8 @@ for (let i=0; i<NUM_THING_TYPES; i++) {
         name: `Thing-Type-${i}`,
         deleteable: false,
         editable: true,
-
         description: 'Some descriptor string',
+
         mesh_id: 'package://app/meshes/3DBenchy.stl', // This specific pathing is subject to change (using robot-scene variant for now)
         is_safe: true,  // Checklist that creates this aggregate value
         weight: 1.0 // kg in one g (evd will not work natively on the moon)
@@ -42,7 +42,6 @@ for (let i=0; i<NUM_GRADE_TYPES; i++) {
         name: `Grade-Type-${i}`,
         deleteable: false,
         editable: true,
-
         description: 'Some descriptor string'
     });
 }
@@ -61,16 +60,26 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
         name: `Waypoint-${i}`,
         deleteable: true,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
-        joints: (i % 3) ? (null) : ((i % 5) ? [0,0,0,0,0,0] : []), // variantions on joint information (dependent on reachability)
-        // if null then needs to run grader
-        // if length === 0 then failed to reach
-        // if length > 0 filled with joint info (indexed in default order from base_link) - assumes single-arm
+        joints: {
+            uuid: `joints-js-waypoint-${i}`,
+            name: '',
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            joint_positions: [0,0,0], // or null
+            joint_names: ['j1','j2','j3'], // or null
+            reachable: false, // better than having to check the array to generate the flag
+            length: 3 // this is enforced on the backend for positions and names
+        },
         position: {
             uuid: `position-js-waypoint-${i}`,
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -81,6 +90,7 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -97,13 +107,26 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
         name: `Location-${i}`,
         deleteable: ! (i === 3),
         editable: ! (i % 4 === 0),
+        description: 'Some descriptor string (optional)', // could be ''
 
-        joints: (i % 3) ? (null) : ((i % 5) ? [0,0,0,0,0,0] : []), // variantions on joint information (dependent on reachability)
+        joints: {
+            uuid: `joints-js-location-${i}`,
+            name: '',
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            joint_positions: [0,0,0], // or null
+            joint_names: ['j1','j2','j3'], // or null
+            reachable: false, // better than having to check the array to generate the flag
+            length: 3 // this is enforced on the backend for positions and names
+        },
         position: {
             uuid: `position-js-location-${i}`,
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -114,6 +137,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -130,6 +154,7 @@ for (let i=0; i<NUM_THINGS; i++) {
         name: `Thing-${i}`,
         deleteable: true,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
         position: {
@@ -137,6 +162,7 @@ for (let i=0; i<NUM_THINGS; i++) {
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -147,6 +173,7 @@ for (let i=0; i<NUM_THINGS; i++) {
             name: '',
             deleteable: false,
             editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x: 0,
             y: 0,
@@ -166,6 +193,7 @@ const generic_region = {
     name: `Region-0`,
     deleteable: true,
     editable: true,
+    description: 'Some descriptor string (optional)', // could be ''
 
     // position is known in a default region, just uncertainty in orientation
     center_position: {
@@ -173,6 +201,7 @@ const generic_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -183,6 +212,7 @@ const generic_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -200,6 +230,7 @@ const generic_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -214,12 +245,14 @@ const cube_region = {
     name: `Cube-Region-1`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     center_position: {
         uuid: `position-js-cube-region-1`,
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -230,6 +263,7 @@ const cube_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -250,12 +284,14 @@ const sphere_region = {
     name: `Sphere-Region-2`,
     deleteable: true,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     center_position: {
         uuid: `position-js-sphere-region-3`,
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -266,6 +302,7 @@ const sphere_region = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -294,6 +331,7 @@ const machine_generator = {
     name: `Machine-Generator`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 5, //sec
     inputs: {}, // make this a tuple as value of keys
@@ -312,6 +350,7 @@ const machine_consumer = {
     name: `Machine-Consumer`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 2, //sec
     inputs: {
@@ -330,6 +369,7 @@ const machine_transformer = {
     name: `Machine-Transformer`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 2, //sec
     inputs: {
@@ -371,6 +411,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
         name: `Trajectory-${i}`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         start_location_uuid: locations[0].uuid,
         end_location_uuid: locations[1].uuid,
@@ -382,20 +423,18 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
             name: `Trace-${i}`,
             deleteable: false,
             editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
 
             time_data: [0], // each timestep, time from relative start
-            joint_data: [[0,0,0,0,0,0]], // joint state of robot at each timestep 
+            joint_names: ['j1','j2','j3','j4','j5','j6'], // name for each joint corresponding to inner array on joint_data
+            joint_data: [[0,0,0,0,0,0]], // joint state of robot at each timestep (NOTE that this is not an EvD Joints just a simple list)
             tf_data: {
-                'ee_link': [ // Pose at that frame at each timestep
+                'ee_link': [ // Pose at that frame at each timestep (NOTE that this is not an EvD Pose just a simple dict)
                     {
-                        uuid: `pose-ee_link-trace-js-trajectory-${i}`,
-                        name: `TraceDataPoint-${i}`,
-                        deleteable: false,
-                        editable: false,
-
-                        position: {/*...*/},
-                        orientation: {/*...*/},
+                        position: {x:0, y:0, z:0},
+                        orientation: {x:0, y:0, z:0, w:0},
                     }
+                    /*...*/
                 ],
                 // ... (e.g keys for joint_tf_frame_1, gripper_tf_frame_1)
             },
@@ -431,6 +470,7 @@ let reachSphere = {
     name: `ReachSphere`,
     deleteable: false,
     editable: false,
+    description: 'Some descriptor string (optional)', // could be ''
 
     radius: 1.0,
     offset: {
@@ -438,6 +478,7 @@ let reachSphere = {
         name: '',
         deleteable: false,
         editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
 
         x: 0,
         y: 0,
@@ -452,6 +493,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
         name: `CollisionMesh-${i}`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         mesh_id: 'default.stl',
         pose_offset: { // Local transform
@@ -459,12 +501,14 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
             name: `Pose-${i}`,
             deleteable: false,
             editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
 
             position: {
                 uuid: `position-js-collision-mesh-${i}`,
                 name: `Position-${i}`,
                 deleteable: false,
                 editable: false,
+                description: 'Some descriptor string (optional)', // could be ''
 
                 x:0,
                 y:0,
@@ -475,6 +519,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
                 name: `Orientation-${i}`,
                 deleteable: false,
                 editable: false,
+                description: 'Some descriptor string (optional)', // could be ''
 
                 x:0,
                 y:0,
@@ -492,6 +537,7 @@ let occupancyZones = [
         name: `Human Occupancy Zone`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         occupancy_type: 'human', // human is conceptualized as a box
         position_x: 0, // 'center'
@@ -505,6 +551,7 @@ let occupancyZones = [
         name: `Human Occupancy Zone`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         occupancy_type: 'robot', // robot is ellipse "cast as shadow of reach-sphere"
         position_x: 0, // 'center'
@@ -522,6 +569,7 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
         name: `Pinch Point ${i}`,
         deleteable: false,
         editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
 
         // conceptualized as a cylinder
         axis: 'x', // 'x', 'y', or 'z' ~ aligned along one of these axes
@@ -530,6 +578,7 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
             name: `Position-${i}`,
             deleteable: false,
             editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
 
             x:0,
             y:0,
@@ -545,10 +594,80 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
 /***************************************************************** 
 * Robot Control Server
 * - Token Blob
-* - Error Blob
+* - RCS interface
+* - ROS Msgs
 *****************************************************************/
 
-// TODO
+/*
+ * Subscribe to 'robot_control_server/at_start' -> Bool     (True when program starts)
+ * Subscribe to 'robot_control_server/at_end' -> Bool       (True when program ends)
+ * Subscribe to 'robot_control_server/lockout' -> Bool      (True while program running)
+ * Subscribe to 'robot_control_server/status' -> ProgramRunnerStatus
+ * Subscribe to 'robot_control_server/tokens' -> String (JSON blob)
+ * Subscribe to 'robot_control_server/error' -> String      (A human readable error message)
+ * 
+ * Publish to 'robot_control_server/play' <- Empty "{}"     (Commands server to run)
+ * Publish to 'robot_control_server/stop' <- Empty          
+ * Publish to 'robot_control_server/pause' <- Empty         (This one might not work in final version?)
+ * Publish to 'robot_control_server/reset' <- Empty
+ * 
+ * Service 'robot_control_server/set_root_node' <- SetRootNodeRequest, SetRootNodeResponse
+ * Service 'robot_control_server/get_root_node' <- GetRootNodeRequest, GetRootNodeResponse
+ */
+
+let rcs_tokens = {
+    robot: {
+        type: 'robot',
+        state: {
+            position: {x:0, y:0, z:0}, // EE relative to world, these values can also be '?' at start
+            orientation: {x:0, y:0, z:0, w:0},
+            joints: ['?'], // current joint state of robot or ['?'] if unknown
+            gripper: {
+                position: 0, //current gripper state or '?' if unknown
+                grasped_thing: null, // either null if no thing grasped or string uuid of thing being grasped
+                ambigous_flag: false // true if gripper is ever actuated without proper semantics and thing association (except in initialize)
+            }
+        }
+    },
+    'machine-js-0': {
+        type: 'machine',
+        state: '?'  // '?' at start, otherwise of [idle, pause, running, error]
+    },
+    /*...*/ //for all machines
+    'thing-js-0': {
+        type: 'thing',
+        state: {
+            position: {x:0, y:0, z:0}, // or ? for each
+            orientation: {x:0, y:0, z:0}
+        }
+    },
+    /*...*/ //for all things (including the ones going to be generated by machines)
+};
+
+let ProgramRunnerStatus = {
+    uuid: '', //string of active primitive
+    start_time: 0, //floating point start time from time.time() (-1 if not set)
+    previous_time: 0.1, // last timestep time (-1 if not set)
+    current_time: 0.3,  // current timestep time (-1 if not set)
+    stop_time: -1       // final execution time (only set at the end)
+};
+
+let SetRootNodeRequest = {
+    uuid: '', //string uuid of node in program to be considered root for execution if empty string then defaults to program
+};
+
+let SetRootNodeResponse = {
+    status: true, // boolean indicating operation was succesful
+    message: '', //human readable error message if node was not found or otherwise unable to be set
+};
+
+let GetRootNodeRequest = {
+    // Purposefully empty
+};
+
+let GetRootNodeResponse = {
+    uuid: '' //string uuid of node in program to be considered root for execution if empty string then defaults to program
+};
 
 /***************************************************************** 
 * Issue Server
@@ -569,7 +688,155 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
 * - Control Flow
 *****************************************************************/
 
-// TODO
+let program = {
+    uuid: `program-js`,
+    name: ``,
+    deleteable: false,
+    editable: true,
+    description: 'Some descriptor string (optional)', // could be ''
+    
+    environment: {
+        reach_sphere: reachSphere,
+        pinch_points: pinchPoints,
+        collision_meshes: collisionMeshes,
+        occupancy_zones: occupancyZones,
+        locations: locations,
+        machines: machines,
+        things: things,
+        waypoints: waypoints,
+        trajectories: trajectories,
+        thing_types: thingTypes,
+        regions: regions,
+        grade_types: gradeTypes
+    },
+    primitives: [
+        // Assume we want a simple non-looping pick-and-place task
+
+        {
+            uuid: `initialize-skill-js`,
+            name: ``,
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            primitives: [
+                {
+                    uuid: `machine-initialize-machine-primitive-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    machine_uuid: 'machine-js-0' //some machine uuid
+                },
+                /*...*/ //for all machines
+                {
+                    uuid: `move-unplanned-primitive-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    //TODO
+                },
+                {
+                    uuid: `open-gripper-skill-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    primitives: [
+                        {
+                            uuid: `gripper-primitive-js`,
+                            name: ``,
+                            deleteable: false,
+                            editable: true,
+                            description: 'Some descriptor string (optional)', // could be ''
+
+                            // TODO
+                        }
+                    ]
+                },
+            ]
+        },
+        {
+            uuid: `simple_pick_and_place-skill-js`,
+            name: ``,
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            primitives: [
+                {
+                    uuid: `move-trajectory-primitive-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    // TODO
+                },
+                {
+                    uuid: `close-gripper-skill-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    primitives: [
+                        {
+                            uuid: `gripper-primitive-js`,
+                            name: ``,
+                            deleteable: false,
+                            editable: true,
+                            description: 'Some descriptor string (optional)', // could be ''
+
+                            // TODO
+                        }
+                    ]
+                },
+                {
+                    uuid: `move-trajectory-primitive-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    // TODO
+                },
+                {
+                    uuid: `open-gripper-skill-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    primitives: [
+                        {
+                            uuid: `gripper-primitive-js`,
+                            name: ``,
+                            deleteable: false,
+                            editable: true,
+                            description: 'Some descriptor string (optional)', // could be ''
+
+                            // TODO
+                        }
+                    ]
+                },
+            ]
+        },
+        {
+            uuid: `move-trajectory-primitive-js`,
+            name: `Retract to Home`,
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            // TODO
+        }
+    ]
+};
 
 /// Export
 const fields = {
@@ -586,7 +853,20 @@ const fields = {
     reachSphere,
     collisionMeshes,
     occupancyZones,
-    pinchPoints
+    pinchPoints,
+
+    // evd_program
+    program,
+
+    // Robot Control Server
+    rcs_tokens,
+    ProgramRunnerStatus,
+    SetRootNodeRequest,
+    SetRootNodeResponse,
+    GetRootNodeRequest,
+    GetRootNodeResponse,
+
+    // Issue Server
 };
 
 export default fields;
