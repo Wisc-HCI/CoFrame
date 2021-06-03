@@ -31,7 +31,8 @@ const store = (set) => ({
       waypoints: {},
       machines: {},
       thingTypes: {},
-      things: {}      // Only shown through thingTypes
+      things: {},      // Only shown through thingTypes
+      regions: {}      // Only shown through machines (I added regions back in after reworking machines)
     },
     addItem: (type, item) => set((state)=>{
       state.environment[type+'s'][item.uuid] = item
@@ -62,6 +63,9 @@ fakeEvdData.thingTypes.forEach((thingType)=>{
 })
 fakeEvdData.things.forEach((thing)=>{
   useEvdStore.getState().addItem('thing',thing)
+})
+fakeEvdData.regions.forEach((region)=>{
+  useEvdStore.getState().addItem('region',region)
 })
 
 console.log(useEvdStore.getState().environment);

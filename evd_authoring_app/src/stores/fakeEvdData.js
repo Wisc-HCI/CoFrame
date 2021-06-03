@@ -5,13 +5,13 @@
  */
 
 const NUM_THING_TYPES = 5;
+const NUM_GRADE_TYPES = 3;
 const NUM_WAYPOINTS = 20;
 const NUM_LOCATIONS = 20;
 const NUM_THINGS = 10;
-const NUM_MACHINES = 3;
 const NUM_TRAJECTORIES = 4;
 const NUM_COLLISION_MESHES = 2;
-const NUM_PINCH_POINTS = 0;
+const NUM_PINCH_POINTS = 5;
 
 
 /***************************************************************** 
@@ -27,11 +27,23 @@ for (let i=0; i<NUM_THING_TYPES; i++) {
         deleteable: false,
         editable: true,
 
-        type_name: `Thing-Type-${i}`,
+        description: 'Some descriptor string',
         mesh_id: 'package://app/meshes/3DBenchy.stl', // This specific pathing is subject to change (using robot-scene variant for now)
         is_safe: true,  // Checklist that creates this aggregate value
         weight: 1.0 // kg in one g (evd will not work natively on the moon)
         // Assume scale is (1,1,1) - meshes sized correctly
+    });
+}
+
+let gradeTypes = [];
+for (let i=0; i<NUM_GRADE_TYPES; i++) {
+    gradeTypes.push({
+        uuid: `grade-type-js-${i}`,
+        name: `Grade-Type-${i}`,
+        deleteable: false,
+        editable: true,
+
+        description: 'Some descriptor string'
     });
 }
 
@@ -145,152 +157,204 @@ for (let i=0; i<NUM_THINGS; i++) {
 }
 
 /***************************************************************** 
-* Machines
-* - Machine
-* - Machine Recipe
-* - ThingType & Region Mapping
+* Regions
 *****************************************************************/
 
-let machines = [];
-for (let i=0; i<NUM_MACHINES; i++) {
-    machines.push({
-        uuid: `machine-js-${i}`,
-        name: `Machine-${i}`,
-        deleteable: i % 3,
-        editable: i % 2,
-
-        mesh_id: 'default.stl',
-        input_regions: {}, // make this a tuple as value of keys
-        output_regions: {}
-    });
-}
-
-/*
 // Probably don't visualize all of fields of regions
-let regions = [];
-for (let i=0; i<NUM_GENERIC_REGIONS; i++) {
-    regions.push({
-        uuid: `region-js-${i}`,
-        name: `Region-${i}`,
-        deleteable: i % 3,
-        editable: i % 3,
+const generic_region = {
+    uuid: `region-js-0`,
+    name: `Region-0`,
+    deleteable: true,
+    editable: true,
 
-        // position is known in a default region, just uncertainty in orientation
-        center_position: {
-            uuid: `position-js-region-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
+    // position is known in a default region, just uncertainty in orientation
+    center_position: {
+        uuid: `position-js-region-0`,
+        name: '',
+        deleteable: false,
+        editable: true,
 
-            x: 0,
-            y: 0,
-            z: 0
-        },
-        center_orientation: {
-            uuid: `orientation-js-region-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
+        x: 0,
+        y: 0,
+        z: 0
+    },
+    center_orientation: {
+        uuid: `orientation-js-region-0`,
+        name: '',
+        deleteable: false,
+        editable: true,
 
-            x: 0,
-            y: 0,
-            z: 0,
-            w: 1
-        },
-        free_orientation: (i % 2) ? true : false,
-        uncertainty_orientation_limit: 1.0,
-        // if free_orientation then it is null (don't care case)
-        // if not free_orientation it can be null meaning use the center_orientation as target
-            // target relative to other node for qaternion distance
-        // otherwise switch over to alt target as the relative node for distance calc
-        uncertainty_orientation_alt_target: (i % 2) ? null : {
-            uuid: `orientation-js-region-alt-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1
+    },
+    free_orientation: false,
+    uncertainty_orientation_limit: 1.0,
+    // if free_orientation then it is null (don't care case)
+    // if not free_orientation it can be null meaning use the center_orientation as target
+        // target relative to other node for qaternion distance
+    // otherwise switch over to alt target as the relative node for distance calc
+    uncertainty_orientation_alt_target: {
+        uuid: `orientation-js-region-alt-0`,
+        name: '',
+        deleteable: false,
+        editable: true,
 
-            x: 0,
-            y: 0,
-            z: 0,
-            w: 1
-        }
-    });
-}
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1
+    }
+};
 
 // Set to free orientation for simplicity only - can have orientation constraints
-for (let i=0; i<NUM_CUBE_REGIONS; i++) {
-    regions.push({
-        uuid: `cube-region-js-${i}`,
-        name: `Cube-Region-${i}`,
-        deleteable: i % 3,
-        editable: i % 3,
+const cube_region = {
+    uuid: `cube-region-js-1`,
+    name: `Cube-Region-1`,
+    deleteable: false,
+    editable: false,
 
-        center_position: {
-            uuid: `position-js-cube-region-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
+    center_position: {
+        uuid: `position-js-cube-region-1`,
+        name: '',
+        deleteable: false,
+        editable: true,
 
-            x: 0,
-            y: 0,
-            z: 0
-        },
-        center_orientation: {
-            uuid: `orientation-js-cube-region-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
+        x: 0,
+        y: 0,
+        z: 0
+    },
+    center_orientation: {
+        uuid: `orientation-js-cube-region-1`,
+        name: '',
+        deleteable: false,
+        editable: true,
 
-            x: 0,
-            y: 0,
-            z: 0,
-            w: 1
-        },
-        free_orientation: true,
-        uncertainty_orientation_limit: 1.0,
-        uncertainty_orientation_alt_target: null,
-        uncertainty_x: 1.0,
-        uncertainty_y: 1.0,
-        uncertainty_z: 1.0
-    });
-}
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1
+    },
+    free_orientation: true,
+    uncertainty_orientation_limit: null,
+    uncertainty_orientation_alt_target: null,
+    uncertainty_x: 1.0,
+    uncertainty_y: 1.0,
+    uncertainty_z: 1.0
+};
 
 // Set to free orientation for simplicity only - can have orientation constraints
-for (let i=0; i<NUM_SPHERE_REGIONS; i++) {
-    regions.push({
-        uuid: `sphere-region-js-${i}`,
-        name: `Sphere-Region-${i}`,
-        deleteable: i % 3,
-        editable: i % 3,
+const sphere_region = {
+    uuid: `sphere-region-js-2`,
+    name: `Sphere-Region-2`,
+    deleteable: true,
+    editable: false,
 
-        center_position: {
-            uuid: `position-js-sphere-region-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
+    center_position: {
+        uuid: `position-js-sphere-region-3`,
+        name: '',
+        deleteable: false,
+        editable: true,
 
-            x: 0,
-            y: 0,
-            z: 0
-        },
-        center_orientation: {
-            uuid: `orientation-js-sphere-region-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
+        x: 0,
+        y: 0,
+        z: 0
+    },
+    center_orientation: {
+        uuid: `orientation-js-sphere-region-3`,
+        name: '',
+        deleteable: false,
+        editable: true,
 
-            x: 0,
-            y: 0,
-            z: 0,
-            w: 1
-        },
-        free_orientation: true,
-        uncertainty_orientation_limit: 1.0,
-        uncertainty_orientation_alt_target: null,
-        uncertainty_radius: 1.0
-    });
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1
+    },
+    free_orientation: true,
+    uncertainty_orientation_limit: null,
+    uncertainty_orientation_alt_target: null,
+    uncertainty_radius: 1.0
+};
+
+let regions = [
+    generic_region,
+    cube_region,
+    sphere_region
+];
+
+/***************************************************************** 
+* Machines
+* - Machine
+*****************************************************************/
+
+const machine_generator = {
+    uuid: `machine-js-generator`,
+    name: `Machine-Generator`,
+    deleteable: false,
+    editable: false,
+
+    process_time: 5, //sec
+    inputs: {}, // make this a tuple as value of keys
+    outputs: {
+        'thing-type-js-0': [
+            {
+                region_uuid: cube_region.uuid,
+                quantity: 1
+            }
+        ]
+    }
 }
-*/
+
+const machine_consumer = {
+    uuid: `machine-js-consumer`,
+    name: `Machine-Consumer`,
+    deleteable: false,
+    editable: false,
+
+    process_time: 2, //sec
+    inputs: {
+        'thing-type-js-1': [
+            {
+                region_uuid: generic_region.uuid,
+                quantity: 1
+            }
+        ]
+    }, 
+    outputs: { }
+};
+
+const machine_transformer = {
+    uuid: `machine-js-transformer`,
+    name: `Machine-Transformer`,
+    deleteable: false,
+    editable: false,
+
+    process_time: 2, //sec
+    inputs: {
+        'thing-type-js-0': [
+            {
+                region_uuid: sphere_region.uuid,
+                quantity: 1
+            }
+        ]
+    }, 
+    outputs: {
+        'thing-type-js-1': [
+            {
+                region_uuid: sphere_region.uuid,
+                quantity: 1
+            }
+        ]
+    }
+};
+
+let machines = [
+    machine_generator,
+    machine_consumer,
+    machine_transformer
+];
 
 /***************************************************************** 
 * Trajectories
@@ -319,33 +383,30 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
             deleteable: false,
             editable: false,
 
-            data: {
-                'ee_link': [ // TraceDatePoint
+            time_data: [0], // each timestep, time from relative start
+            joint_data: [[0,0,0,0,0,0]], // joint state of robot at each timestep 
+            tf_data: {
+                'ee_link': [ // Pose at that frame at each timestep
                     {
-                        uuid: `trace-data-point-ee_link-trace-js-trajectory-${i}`,
+                        uuid: `pose-ee_link-trace-js-trajectory-${i}`,
                         name: `TraceDataPoint-${i}`,
                         deleteable: false,
                         editable: false,
 
-                        // NOTE: have predefined grade types: ENUM?
-                        grades: {
-                            'grade_max_velocity': {
-                                uuid: `grade-trace-data-point-ee_link-trace-js-trajectory-${i}`,
-                                name: `Grade-${i}`,
-                                deleteable: false,
-                                editable: false,
-
-                                grade_type: 'grade_max_velocity',
-                                value: 0.5 // 0 to 1 (all grades) though the semantics of that is dependent on the grader
-                            },
-                            //... (e.g. grade_min_velocity, collision_proximity)
-                        },
                         position: {/*...*/},
                         orientation: {/*...*/},
                     }
                 ],
                 // ... (e.g keys for joint_tf_frame_1, gripper_tf_frame_1)
             },
+            // Keys are predefined grade types
+            grades: {
+                'grade_max_velocity': [0.5] // list of grade values from 0 to 1 (for all grades), though semantics of that is dependent on the grader
+                //... (e.g. grade_min_velocity, collision_proximity)
+            },
+
+            // length of time_data, joint_data, each value list in tf_data and in graders should be equal
+
             time: 1, // sec
             end_effector_path: 'ee_link', //the frame of the end-effector,
             joints_paths: ['joint_tf_frame_1','joint_tf_frame_2'], // tf-frames of arm joints being tracked
@@ -354,9 +415,6 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
         },
         velocity: 0.5, // suggestion (user configured)
         move_type: 'joint' // or 'ee_ik'
-
-        // There will probably be a joint_angles property in trace which will be a list of joint states corresponding to the data list
-        // List of times through the trace as additional field ("Index" vector)
     });
 }
 
@@ -376,32 +434,14 @@ let reachSphere = {
 
     radius: 1.0,
     offset: {
-        uuid: `pose-js-reach-sphere-offset-0`,
+        uuid: `position-js-reach-sphere-offset-0`,
         name: '',
         deleteable: false,
-        editable: false,
+        editable: true,
 
-        position: {
-            uuid: `position-js-reach-sphere-offset-0`,
-            name: '',
-            deleteable: false,
-            editable: true,
-
-            x: 0,
-            y: 0,
-            z: 0
-        },
-        orientation: {
-            uuid: `orientation-js-reach-sphere-offset-0`,
-            name: '',
-            deleteable: false,
-            editable: true,
-
-            x: 0,
-            y: 0,
-            z: 0,
-            w: 1
-        }
+        x: 0,
+        y: 0,
+        z: 0
     }
 };
 
@@ -533,11 +573,15 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
 
 /// Export
 const fields = {
+
+    // all of these in environment
     waypoints,
     locations,
     machines,
     thingTypes,
+    gradeTypes,
     things,
+    regions,
     trajectories,
     reachSphere,
     collisionMeshes,
