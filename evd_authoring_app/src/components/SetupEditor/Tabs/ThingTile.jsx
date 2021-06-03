@@ -1,48 +1,80 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 
-import { Stack } from '@fluentui/react/lib/Stack';
-import { TextField } from '@fluentui/react/lib/TextField';
-import { PrimaryButton } from '@fluentui/react/lib/Button';
-import { Dropdown } from '@fluentui/react/lib/Dropdown';
+import { List, Space, Button } from 'antd';
+import { DeleteOutlined, EllipsisOutlined, } from '@ant-design/icons';
 
-import { DeleteButton } from '../DeleteButton';
-import { ElementTile } from '../ElementTile';
+import useEvdStore from '../../../stores/EvdStore';
+import useGuiStore from '../../../stores/GuiStore';
 
 
-export const ThingTile = (props) => {
+export function ThingTileItem(props) {
 
-    const { style, name, uuid, deleteCallback, canDelete, canEdit, thingTypes } = props;
+  const { uuid } = props;
 
-    const options = thingTypes.map(t => {
-        return {
-            key: t.uuid,
-            text: t.name
-        };
-    });
+  const thingTile = useEvdStore(useCallback(state=>
+    state.environment.things.filter(item=>(item.uuid === uuid))[0]
+  ,[uuid]))
+  const deleteThing = useEvdStore(state=>state.deleteThing);
 
-    const selectedOption = options[0];
+  const {focusItem, setFocusItem, primaryColor} = useGuiStore(state=>({
+    focusItem:state.focusItem,
+    setFocusItem:state.setFocusItem,
+    primaryColor:state.primaryColor
+  }));
 
-    return (
-        <ElementTile style={style}>
-            <Stack horizontal tokens={{childrenGap: '50px'}}>
-                <Stack.Item grow styles={{root: { marginLeft: '10px'}}}>
-                    <TextField label="Name:" onChange={() => {}} defaultValue={name} styles={{root: { maxWidth: '400px'}}}/>
-                </Stack.Item>
-                <Stack.Item>
-                    <Dropdown 
-                        label="Type"
-                        selectedKey={selectedOption}
-                        onChange={() => {}}
-                        options={options}
-                    />
-                </Stack.Item>
-                <Stack.Item align="center">
-                    <PrimaryButton text="Edit Pose" onClick={() => {}}  disabled={!canEdit} />
-                </Stack.Item>
-                <Stack.Item align="center" styles={{root: { marginRight: '10px'}}}>
-                    <DeleteButton type="Waypoint" callback={() => { deleteCallback(uuid) }} disabled={!canDelete} />
-                </Stack.Item>
-            </Stack>
-        </ElementTile>
+  return (
+        <List.Item
+          extra={
+            <Space align='center'>
+              <Button
+                onClick={()=>setFocusItem('thing',uuid)}
+                icon={<EllipsisOutlined/>}
+              />
+              <Button
+                danger
+                disabled={!thingTile.canDelete}
+                onClick={()=>deleteThing(uuid)}
+                icon={<DeleteOutlined/>}
+              />
+            </Space>}
+          style={{
+            borderRadius:3,
+            backgroundColor:'#1f1f1f',
+            margin:5,padding:10,
+            boxShadow:focusItem.type === 'thing' && focusItem.uuid===uuid ? 'inset 0 0 2.5pt '+primaryColor  : null
+          }}
+        >
+          <List.Item.Meta
+            title={thingTile.name}
+            description={'Some Description Here'}
+          />
+        </List.Item>
     );
 };
+
+export function ThingTileList(_) {
+
+  const uuids = useEvdStore(state=>state.environment.things.map(thing=>thing.uuid),
+    // Custom function to prevent unnecessary re-renders:
+    (oldState, newState) => {
+      // Only change if the uuids change
+      if (newState.environment === undefined || oldState.environment === undefined){
+        return false
+      } else {
+        return oldState.environment.things.map(thing=>thing.uuid) === newState.environment.things.map(thing=>thing.uuid)
+      }
+    }
+  )
+
+  return (
+
+    <List
+      split={false}
+      dataSource={uuids}
+      renderItem={(uuid)=>(
+        <ThingTileItem uuid={uuid} key={uuid}/>
+      )}
+    />
+
+  )
+}
