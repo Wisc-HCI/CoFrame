@@ -27,8 +27,10 @@ class MoveTrajectory(Primitive):
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
-    def __init__(self, startLocUuid=None, endLocUuid=None, trajectory=None, trajectory_uuid=None,
-                 manual_safety=False, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, startLocUuid=None, endLocUuid=None, trajectory=None,
+                 trajectory_uuid=None, manual_safety=False, type='', name='',
+                 uuid=None, parent=None, append_type=True, editable=True,
+                 deleteable=True, description=''):
 
         self._context_patch = None
         self._start_location_uuid = None
@@ -43,7 +45,8 @@ class MoveTrajectory(Primitive):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.start_location_uuid = startLocUuid
         self.end_location_uuid = endLocUuid

@@ -1,6 +1,6 @@
 '''
-Gripper exposes the robot's grasping behavior in a generalized fashion. 
-Position, speed, and effort paramters ought to be supplied. Internal kinematics 
+Gripper exposes the robot's grasping behavior in a generalized fashion.
+Position, speed, and effort paramters ought to be supplied. Internal kinematics
 of the gripper is handled at the implementation level.
 
 #TODO implement real-time behavior
@@ -32,7 +32,8 @@ class Gripper(Primitive):
         return Primitive.full_type_string() + cls.type_string()
 
     def __init__(self, position=0, effort=0, speed=0, thing_uuid=None, semantic=None,
-                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+                 type='', name='', uuid=None, parent=None, append_type=True,
+                 editable=True, deleteable=True, description=''):
 
         self._thing_uuid = None
         self._position = None
@@ -47,13 +48,14 @@ class Gripper(Primitive):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.position = position
         self.effort = effort
         self.speed = speed
-        self.thing_uuid = thing_uuid        
-        
+        self.thing_uuid = thing_uuid
+
         if thing_uuid != None:
             self.semantic = semantic if semantic != None else self.SEMANTIC_GRASPING
 
@@ -129,7 +131,7 @@ class Gripper(Primitive):
                 self.semantic = self.SEMANTIC_AMBIGUOUS
             elif self.semantic == self.SEMANTIC_AMBIGUOUS:
                 # assume attempting to grasp by default
-                self.semantic = self.SEMANTIC_GRASPING 
+                self.semantic = self.SEMANTIC_GRASPING
 
             self.updated_attribute('thing_uuid','set')
 
@@ -203,7 +205,7 @@ class Gripper(Primitive):
         hooks.active_primitive = self
 
         hooks.tokens['robot']['state']['gripper']['position'] = self.position
-        
+
         if self.thing_uuid != None:
             if self.semantic == self.SEMANTIC_GRASPING:
                 hooks.tokens['robot']['state']['gripper']['grasped_thing'] = self.thing_uuid
@@ -222,7 +224,7 @@ class Gripper(Primitive):
         if not self.uuid in hooks.state.keys():
             hooks.state[self.uuid] = 'pending'
             hooks.robot_interface.grip_async(self.position, self.speed, self.effort)
-        
+
         else:
             resp = hooks.robot_interface.is_acked('gripper')
             if resp != None:
@@ -241,7 +243,7 @@ class Gripper(Primitive):
 
                 else:
                     raise Exception('Robot NACKed')
-            
+
         status = hooks.robot_interface.get_status()
         hooks.tokens['robot']['state']['gripper']['position'] = status.gripper_position
 

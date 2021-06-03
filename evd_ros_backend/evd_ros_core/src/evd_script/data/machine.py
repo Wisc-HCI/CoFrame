@@ -35,7 +35,9 @@ class Machine(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, inputs=None, outputs=None, process_time=0, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, inputs=None, outputs=None, process_time=0, type='', name='',
+                 uuid=None, parent=None, append_type=True, editable=True,
+                 deleteable=True, description=description):
         self._inputs = None
         self._outputs = None
         self._process_time = None
@@ -48,7 +50,8 @@ class Machine(Node):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.inputs = inputs if inputs != None else {}
         self.outputs = outputs if outputs != None else {}

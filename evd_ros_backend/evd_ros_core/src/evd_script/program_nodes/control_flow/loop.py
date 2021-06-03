@@ -1,5 +1,5 @@
 '''
-Loop is a sub-skill structure that allows for rerunning a list of nodes. 
+Loop is a sub-skill structure that allows for rerunning a list of nodes.
 
 At this point, loop only supports infinite looping but in the future conditional looping
 is desired.
@@ -25,8 +25,9 @@ class Loop(Skill):
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=[], condition=None, type='', name='', uuid=None, parent=None,
-                 append_type=True, editable=True, deleteable=True):
+    def __init__(self, primitives=[], condition=None, type='', name='', uuid=None,
+                 parent=None, append_type=True, editable=True, deleteable=True,
+                 description=''):
         self._condition = None
 
         super(Loop,self).__init__(
@@ -37,7 +38,8 @@ class Loop(Skill):
             append_type=append_type,
             primitives=primitives,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.condition = condition
 
@@ -143,7 +145,7 @@ class Loop(Skill):
         if not hooks.state[self.uuid]['checked_cond']:
             # Check condition
             hooks.state[self.uuid]['checked_cond'] = True
-            
+
             if self.condition != None:
                 next = self.condition
             else:
@@ -163,7 +165,7 @@ class Loop(Skill):
                 # Index through primitives in list
                 next = self.primitives[index]
                 hooks.state[self.uuid]['index'] = index + 1
-            
+
             else:
                 # Try next iteration of loop
                 next = self

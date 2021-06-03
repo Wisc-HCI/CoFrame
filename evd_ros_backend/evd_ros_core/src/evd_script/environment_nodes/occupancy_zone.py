@@ -1,6 +1,6 @@
 '''
 Occupancy zone defines a region that an agent will potentially occupy during the
-task. A zone can be either for the robot (represented as a reach sphere shadow cast 
+task. A zone can be either for the robot (represented as a reach sphere shadow cast
 onto the environment) or a human (as a rectangular area).
 
 Parameterization only makes sense for human agent zones.
@@ -36,8 +36,9 @@ class OccupancyZone(EnvironmentNode, VisualizeMarker):
     def full_type_string(cls):
         return EnvironmentNode.full_type_string() + cls.type_string()
 
-    def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, height = 0,
-                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1,
+                 height = 0, type='', name='', parent=None, uuid=None,
+                 append_type=True, editable=True, deleteable=True, description=''):
         self._occupancy_type = None
         self._position_x = None
         self._position_z = None
@@ -52,7 +53,8 @@ class OccupancyZone(EnvironmentNode, VisualizeMarker):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.occupancy_type = occupancyType
         self.position_x = posX

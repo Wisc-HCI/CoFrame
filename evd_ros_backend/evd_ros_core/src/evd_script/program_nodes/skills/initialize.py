@@ -1,5 +1,5 @@
 '''
-Initialize should be the first skill evoked in the program to 
+Initialize should be the first skill evoked in the program to
 configure all machines and jog cobot to initial position.
 '''
 
@@ -24,16 +24,17 @@ class Initialize(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, homeLocUuid=None, machineUuids=[], type='', name='',
-                 uuid=None, parent=None, append_type=True, primitives=None, editable=True, deleteable=True):
+                 uuid=None, parent=None, append_type=True, primitives=None,
+                 editable=True, deleteable=True, description=''):
 
         if primitives == None:
             primitives = []
 
-            primitives += [MachineInitialize(id, editable=editable, deleteable=deleteable) for id in machineUuids]
+            primitives += [MachineInitialize(id, editable=editable, deleteable=False) for id in machineUuids]
 
             primitives += [
-                MoveUnplanned(homeLocUuid,True, editable=editable, deleteable=deleteable),
-                OpenGripper(editable=editable, deleteable=deleteable)
+                MoveUnplanned(homeLocUuid,True, editable=editable, deleteable=False),
+                OpenGripper(editable=editable, deleteable=False)
             ]
 
         super(Initialize,self).__init__(
@@ -44,7 +45,8 @@ class Initialize(Skill):
             append_type=append_type,
             primitives=primitives,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
     '''
     Execution methods

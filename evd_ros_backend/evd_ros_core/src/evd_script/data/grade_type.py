@@ -18,7 +18,8 @@ class GradeType(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True, description=''):
+    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True,
+                 editable=True, deleteable=True, description=''):
         super(GradeType,self).__init__(
             type=GradeType.type_string() + type if append_type else type,
             name=name,
@@ -26,4 +27,5 @@ class GradeType(Node):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)

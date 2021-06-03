@@ -32,8 +32,9 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, startLocUuid=None, endLocUuid=None, waypointUuids=[],
-                 trace=None, move_type="joint", velocity=0,
-                 parent=None, type='', name='', uuid=None, append_type=True, editable=True, deleteable=True):
+                 trace=None, move_type="joint", velocity=0, parent=None, type='',
+                 name='', uuid=None, append_type=True, editable=True,
+                 deleteable=True, description=''):
 
         self._start_location_uuid = None
         self._end_location_uuid = None
@@ -49,7 +50,8 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.start_location_uuid = startLocUuid
         self.end_location_uuid = endLocUuid

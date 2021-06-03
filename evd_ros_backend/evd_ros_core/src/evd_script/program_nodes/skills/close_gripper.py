@@ -21,7 +21,8 @@ class CloseGripper(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, position=100, effort=100, speed=100, thing_uuid=None, type='',
-                 name='', uuid=None, parent=None, append_type=True, primitives=None, editable=True, deleteable=True):
+                 name='', uuid=None, parent=None, append_type=True, primitives=None,
+                 editable=True, deleteable=True, description=''):
 
         if primitives == None:
             primitives=[
@@ -32,7 +33,8 @@ class CloseGripper(Skill):
                     effort=effort,
                     speed=speed,
                     editable=editable,
-                    deleteable=deleteable)
+                    deleteable=False,
+                    description='')
             ]
 
         super(CloseGripper,self).__init__(
@@ -43,4 +45,5 @@ class CloseGripper(Skill):
             append_type=append_type,
             primitives=primitives,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description='')

@@ -30,9 +30,11 @@ class Environment(Context):
     def full_type_string(cls):
         return Context.full_type_string() + cls.type_string()
 
-    def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
-                 locations=[], machines=[], things=[], waypoints=[], trajectories=[],
-                 name='', type='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[],
+                 occupancy_zones=[], locations=[], machines=[], things=[],
+                 waypoints=[], trajectories=[], name='', type='', uuid=None,
+                 parent=None, append_type=True, editable=True, deleteable=True,
+                 description=''):
 
         self._reach_sphere = None
         self._pinch_points = None
@@ -51,7 +53,8 @@ class Environment(Context):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.reach_sphere = reach_sphere
         self.pinch_points = pinch_points

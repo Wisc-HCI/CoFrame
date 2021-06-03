@@ -36,8 +36,10 @@ class Context(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, locations=[], machines=[], things=[], thing_types=[], waypoints=[], trajectories=[], regions=[], grade_types=[],
-                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, locations=[], machines=[], things=[], thing_types=[],
+                 waypoints=[], trajectories=[], regions=[], grade_types=[],
+                 type='', name='', uuid=None, parent=None, append_type=True,
+                 editable=True, deleteable=True, description=''):
 
         self._orphan_list = evd_orphan_list()
 
@@ -57,7 +59,8 @@ class Context(Node):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.locations = locations
         self.machines = machines

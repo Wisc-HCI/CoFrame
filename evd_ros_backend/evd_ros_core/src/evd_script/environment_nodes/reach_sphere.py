@@ -37,8 +37,9 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
     def full_type_string(cls):
         return EnvironmentNode.full_type_string() + cls.type_string()
 
-    def __init__(self, radius=1, offset=None, type='', name='',
-                 parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, radius=1, offset=None, type='', name='', parent=None,
+                 uuid=None, append_type=True, editable=True, deleteable=True,
+                 description=''):
         self._radius = None
         self._offset = None
 
@@ -49,7 +50,8 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.radius = radius
         self.offset = offset if offset != None else Position(0,0,0)

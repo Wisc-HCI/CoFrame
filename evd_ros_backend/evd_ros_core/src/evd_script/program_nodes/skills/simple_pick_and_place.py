@@ -26,15 +26,17 @@ class SimplePickAndPlace(Skill):
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, startLocUuid=None, pickLocUuid=None, placeLocUuid=None, thing_uuid=None,
-                 type='', name='', uuid=None, parent=None, append_type=True, primitives=None, editable=True, deleteable=True):
+    def __init__(self, startLocUuid=None, pickLocUuid=None, placeLocUuid=None,
+                 thing_uuid=None, type='', name='', uuid=None, parent=None,
+                 append_type=True, primitives=None, editable=True, deleteable=True,
+                 description=''):
 
         if primitives == None:
             primitives = [
-                MoveTrajectory(startLocUuid,pickLocUuid, editable=editable, deleteable=deleteable),
-                CloseGripper(thing_uuid=thing_uuid, editable=editable, deleteable=deleteable),
-                MoveTrajectory(pickLocUuid,placeLocUuid, editable=editable, deleteable=deleteable),
-                OpenGripper(thing_uuid=thing_uuid, editable=editable, deleteable=deleteable)
+                MoveTrajectory(startLocUuid,pickLocUuid, editable=editable, deleteable=False),
+                CloseGripper(thing_uuid=thing_uuid, editable=editable, deleteable=False),
+                MoveTrajectory(pickLocUuid,placeLocUuid, editable=editable, deleteable=False),
+                OpenGripper(thing_uuid=thing_uuid, editable=editable, deleteable=False)
             ]
 
         super(SimplePickAndPlace,self).__init__(
@@ -45,4 +47,5 @@ class SimplePickAndPlace(Skill):
             append_type=append_type,
             primitives=primitives,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description='')

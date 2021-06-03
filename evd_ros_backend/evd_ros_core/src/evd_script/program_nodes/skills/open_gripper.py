@@ -21,7 +21,8 @@ class OpenGripper(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, position=0, effort=100, speed=100, thing_uuid=None, type='',
-                 name='', uuid=None, parent=None, append_type=True, primitives=None, editable=True, deleteable=True):
+                 name='', uuid=None, parent=None, append_type=True, primitives=None,
+                 editable=True, deleteable=True, description=''):
 
         if primitives == None:
             primitives=[
@@ -32,7 +33,7 @@ class OpenGripper(Skill):
                     effort=effort,
                     speed=speed,
                     editable=editable,
-                    deleteable=deleteable)
+                    deleteable=False)
             ]
 
         super(OpenGripper,self).__init__(
@@ -43,4 +44,5 @@ class OpenGripper(Skill):
             append_type=append_type,
             primitives=primitives,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)

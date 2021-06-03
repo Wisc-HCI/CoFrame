@@ -1,5 +1,5 @@
 '''
-Machine Blocking Process simplifies the generalzied machining process for a robot. The 
+Machine Blocking Process simplifies the generalzied machining process for a robot. The
 machining could be a pre-written CNC routine that gets invoked by this primitive, then
 waits until that routine finishes, and will perform any "cleanup" at end of the process.
 '''
@@ -25,13 +25,14 @@ class MachineBlockingProcess(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
-                 append_type=True, primitives=None, editable=True, deleteable=True):
+                 append_type=True, primitives=None, editable=True, deleteable=True,
+                 description=''):
 
         if primitives == None:
             primitives=[
-                MachineStart(machineUuid, editable=editable, deleteable=deleteable),
-                MachineWait(machineUuid, editable=editable, deleteable=deleteable),
-                MachineStop(machineUuid, editable=editable, deleteable=deleteable)
+                MachineStart(machineUuid, editable=editable, deleteable=False),
+                MachineWait(machineUuid, editable=editable, deleteable=False),
+                MachineStop(machineUuid, editable=editable, deleteable=False)
             ]
 
         super(MachineBlockingProcess,self).__init__(
@@ -42,4 +43,5 @@ class MachineBlockingProcess(Skill):
             append_type=append_type,
             primitives=primitives,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)

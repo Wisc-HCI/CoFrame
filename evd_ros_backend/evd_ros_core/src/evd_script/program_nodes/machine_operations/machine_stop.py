@@ -24,7 +24,8 @@ class MachineStop(MachinePrimitive):
     def full_type_string(cls):
         return MachinePrimitive.full_type_string() + cls.type_string()
 
-    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
+                 append_type=True, editable=True, deleteable=True, description=''):
         super(MachineStop,self).__init__(
             machineUuid=machineUuid,
             type=MachineStop.type_string() + type if append_type else type,
@@ -33,7 +34,8 @@ class MachineStop(MachinePrimitive):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
     '''
     Execution methods

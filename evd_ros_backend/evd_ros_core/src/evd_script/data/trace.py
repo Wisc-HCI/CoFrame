@@ -39,8 +39,10 @@ class Trace(Node, VisualizeMarkers):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, tf_data={}, time_data=[], joint_data=[], grades={}, eePath=None, jPaths=[], tPaths=[], cPaths=[],
-                 time=0, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, tf_data={}, time_data=[], joint_data=[], grades={},
+                 eePath=None, jPaths=[], tPaths=[], cPaths=[], time=0, type='',
+                 name='', uuid=None, parent=None, append_type=True, editable=True,
+                 deleteable=True, description=''):
 
         super(Trace,self).__init__(
             type=Trace.type_string() + type if append_type else type,
@@ -49,7 +51,8 @@ class Trace(Node, VisualizeMarkers):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description='')
 
         self._time_data = time_data
         self._joint_data = joint_data

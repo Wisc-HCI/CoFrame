@@ -1,5 +1,5 @@
 '''
-Commands a machine to be initialized. Actual implemenation is up to the 
+Commands a machine to be initialized. Actual implemenation is up to the
 application engineer.
 '''
 
@@ -21,7 +21,7 @@ class MachineInitialize(MachinePrimitive):
         return MachinePrimitive.full_type_string() + cls.type_string()
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
-                 append_type=True, editable=True, deleteable=True):
+                 append_type=True, editable=True, deleteable=True, description=''):
         super(MachineInitialize,self).__init__(
             machineUuid=machineUuid,
             type=MachineInitialize.type_string() + type if append_type else type,
@@ -30,7 +30,8 @@ class MachineInitialize(MachinePrimitive):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
     '''
     Execution methods

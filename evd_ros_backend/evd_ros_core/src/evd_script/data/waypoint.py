@@ -26,7 +26,8 @@ class Waypoint(Pose):
         return Pose.full_type_string() + cls.type_string()
 
     def __init__(self, position=None, orientation=None, joints=None, type='',
-                 name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+                 name='', uuid=None, parent=None, append_type=True, editable=True,
+                 deleteable=True, description=''):
 
         self._joints = None
 
@@ -39,7 +40,8 @@ class Waypoint(Pose):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.joints = joints
 

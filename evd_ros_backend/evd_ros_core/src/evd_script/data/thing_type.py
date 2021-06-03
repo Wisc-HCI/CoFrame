@@ -20,13 +20,13 @@ class ThingType(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, is_safe=True, weight=0, mesh_id=None, description=''
-                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, is_safe=True, weight=0, mesh_id=None, type='', name='',
+                 parent=None, uuid=None, append_type=True, editable=True,
+                 deleteable=True, description=''):
 
         self._mesh_id = None
         self._is_safe = None
         self._weight = None
-        self._description = None
 
         super(ThingType,self).__init__(
             type=ThingType.type_string() + type if append_type else type,
@@ -35,20 +35,19 @@ class ThingType(Node):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.mesh_id = mesh_id
         self.is_safe = is_safe
         self.weight = weight
-        self.description = description
 
     def to_dct(self):
         msg = super(ThingType,self).to_dct()
         msg.update({
             'mesh_id': self.mesh_id,
             'is_safe': self.is_safe,
-            'weight': self.weight,
-            'description': self.description
+            'weight': self.weight
         })
         return msg
 
@@ -57,7 +56,6 @@ class ThingType(Node):
         return cls(mesh_id=dct['mesh_id'],
                    is_safe=dct['is_safe'],
                    weight=dct['weight'],
-                   description=dct['description']
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -97,16 +95,6 @@ class ThingType(Node):
             self._mesh_id = value
             self.updated_attribute('mesh_id','set')
 
-    @property
-    def description(self):
-        return self._description
-
-    @description.setter
-    def description(self, value):
-        if self._description != value:
-            self._description = value
-            self.updated_attribute('description','set')
-
     def set(self, dct):
 
         if 'is_safe' in dct.keys():
@@ -117,9 +105,6 @@ class ThingType(Node):
 
         if 'mesh_id' in dct.keys():
             self.mesh_id = dct['mesh_id']
-
-        if 'description' in dct.key():
-            self.description = dct['description']
 
         super(ThingType,self).set(dct)
 
@@ -134,7 +119,6 @@ class ThingType(Node):
         self.updated_attribute('is_safe','update')
         self.updated_attribute('weight','update')
         self.updated_attribute('mesh_id','update')
-        self.updated_attribute('description','update')
 
     def shallow_update(self):
         super(ThingType,self).shallow_update()
@@ -142,4 +126,3 @@ class ThingType(Node):
         self.updated_attribute('is_safe','update')
         self.updated_attribute('weight','update')
         self.updated_attribute('mesh_id','update')
-        self.updated_attribute('description','update')

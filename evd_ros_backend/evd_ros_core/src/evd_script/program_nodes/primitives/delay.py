@@ -21,7 +21,8 @@ class Delay(Primitive):
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
-    def __init__(self, duration=0, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, duration=0, type='', name='', uuid=None, parent=None,
+                 append_type=True, editable=True, deleteable=True, description=''):
         self._duration = None
 
         super(Delay,self).__init__(
@@ -31,7 +32,8 @@ class Delay(Primitive):
             parent=parent,
             append_type=append_type,
             editable=editable,
-            deleteable=deleteable)
+            deleteable=deleteable,
+            description=description)
 
         self.duration = duration
 
@@ -98,7 +100,7 @@ class Delay(Primitive):
         # initialize state
         if not self.uuid in hooks.state.keys():
             hooks.state[self.uuid] = {'start_time': time.time(), 'paused_start_time': [], 'paused_end_time': [], 'in_pause': False}
-        
+
         # handle timing for when program is paused
         if hooks.pause and not hooks.state[self.uuid]['in_pause']:
             hooks.state[self.uuid]['paused_start_time'].append(time.time())
