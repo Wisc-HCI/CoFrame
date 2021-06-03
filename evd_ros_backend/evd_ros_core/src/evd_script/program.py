@@ -4,11 +4,11 @@ hook to global Environment/Context. Additionally, all change traces end at this
 root node in the AST. Users can hook into this with a change callback.
 '''
 
-from .skill import Skill
-from ..node_parser import NodeParser
-from ..environment import Environment
+from .program_nodes.skill import Skill
+from .node_parser import NodeParser
+from .environment import Environment
 
-from ..orphans import *
+from .orphans import *
 
 
 class Program(Skill):

@@ -23,13 +23,12 @@ def evd_orphan_list():
 
 # Repairs the current program and cache with the orphan list - could be a time consuming process
 def evd_orphan_repair():
-    from .program.primitives.gripper import Gripper
-    from .program.primitives.move_trajectory import MoveTrajectory
-    from .program.primitives.move_unplanned import MoveUnplanned
-    from .program.machine_operations.machine_primitive import MachinePrimitive
+    from .program_nodes.primitives.gripper import Gripper
+    from .program_nodes.primitives.move_trajectory import MoveTrajectory
+    from .program_nodes.primitives.move_unplanned import MoveUnplanned
+    from .program_nodes.machine_operations.machine_primitive import MachinePrimitive
     from .data.thing import Thing
     from .data.machine import Machine
-    from .data.machine_recipe import MachineRecipe
     #TODO handle deletion of thing_types
 
     cache = get_evd_cache_obj()

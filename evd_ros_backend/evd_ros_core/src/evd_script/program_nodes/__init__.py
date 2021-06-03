@@ -1,6 +1,5 @@
 from .skill import Skill
 from .primitive import Primitive
-from .program import Program
 
 from .skills import *
 from .primitives import *
@@ -26,9 +25,7 @@ def ProgramNodeParser(exactType, dct):
     if node != None:
         return node
 
-    if exactType == Program.type_string(trailing_delim=False):
-        node = Program.from_dct(dct)
-    elif exactType == Skill.type_string(trailing_delim=False):
+    if exactType == Skill.type_string(trailing_delim=False):
         node = Skill.from_dct(dct)
     elif exactType == Primitive.type_string(trailing_delim=False):
         node = Primitive.from_dct(dct)

@@ -3,17 +3,17 @@ Environment extends context to provide additional global lookup of environment
 types. This node is directly used by program to expose top-level state.
 '''
 
-from ..context import Context
-from .reach_sphere import ReachSphere
-from .collision_mesh import CollisionMesh
-from .occupancy_zone import OccupancyZone
-from .pinch_point import PinchPoint
-from ..data.location import Location
-from ..data.machine import Machine
-from ..data.thing import Thing
-from ..data.waypoint import Waypoint
-from ..data.trajectory import Trajectory
-from ..node_parser import NodeParser
+from .context import Context
+from .environment_nodes.reach_sphere import ReachSphere
+from .environment_nodes.collision_mesh import CollisionMesh
+from .environment_nodes.occupancy_zone import OccupancyZone
+from .environment_nodes.pinch_point import PinchPoint
+from .data.location import Location
+from .data.machine import Machine
+from .data.thing import Thing
+from .data.waypoint import Waypoint
+from .data.trajectory import Trajectory
+from .node_parser import NodeParser
 
 
 class Environment(Context):

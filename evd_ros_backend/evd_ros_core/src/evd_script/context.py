@@ -14,6 +14,7 @@ from .data.machine import Machine
 from .data.waypoint import Waypoint
 from .data.location import Location
 from .data.thing_type import ThingType
+from .data.grade_type import GradeType
 from .data.trajectory import Trajectory
 from .data.regions import Region, CubeRegion, SphereRegion
 
@@ -35,7 +36,7 @@ class Context(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, locations=[], machines=[], things=[], thing_types=[], waypoints=[], trajectories=[], regions=[],
+    def __init__(self, locations=[], machines=[], things=[], thing_types=[], waypoints=[], trajectories=[], regions=[], grade_types=[],
                  type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._orphan_list = evd_orphan_list()
@@ -47,6 +48,7 @@ class Context(Node):
         self._waypoints = {}
         self._trajectories = {}
         self._regions = {}
+        self._grade_types = {}
 
         super(Context,self).__init__(
             type=Context.type_string() + type if append_type else type,
@@ -64,6 +66,7 @@ class Context(Node):
         self.trajectories = trajectories
         self.thing_types = thing_types
         self.regions = regions
+        self.grade_types = grade_types
 
     def to_dct(self):
         msg = super(Context,self).to_dct()
@@ -74,7 +77,8 @@ class Context(Node):
             'waypoints': [w.to_dct() for w in self.waypoints],
             'trajectories': [t.to_dct() for t in self.trajectories],
             'thing_types': [t.to_dct() for t in self.thing_types],
-            'regions': [r.to_dct() for r in self.regions]
+            'regions': [r.to_dct() for r in self.regions],
+            'grade_types': [g.to_dct() for g in self.grade_types]
         })
         return msg
 
@@ -91,7 +95,8 @@ class Context(Node):
             waypoints=[NodeParser(w, enforce_types=[Waypoint.type_string(trailing_delim=False)]) for w in dct['waypoints']],
             trajectories=[NodeParser(t, enforce_types=[Trajectory.type_string(trailing_delim=False)]) for t in dct['trajectories']],
             thing_types=[NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']],
-            regions=[NodeParser(r, enforce_types=[Region.type_string(trailing_delim=False),CubeRegion.type_string(trailing_delim=False),SphereRegion.type_string(trailing_delim=False)]) for r in dct['regions']])
+            regions=[NodeParser(r, enforce_types=[Region.type_string(trailing_delim=False),CubeRegion.type_string(trailing_delim=False),SphereRegion.type_string(trailing_delim=False)]) for r in dct['regions']],
+            grade_types=[NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']])
 
     def on_delete(self):
 
@@ -115,6 +120,9 @@ class Context(Node):
 
         for r in self.regions:
             self._orphan_list.add(r.uuid,'region')
+
+        for g in self.grade_types:
+            self._orphan_list.add(g.uuid,'grade_type')
 
         super(Context,self).on_delete()
 
@@ -295,6 +303,28 @@ class Context(Node):
         for u in uuids:
             self._orphan_list.add(u,'region')
 
+    @property
+    def grade_types(self):
+        return self._grade_types.values()
+
+    @grade_types.setter(self):
+        uuids = []
+
+        for g in self._grade_types.values():
+            g.remove_from_cache()
+            uuids.append(g.uuid)
+
+        self._grade_types = {}
+
+        for g in value:
+            self._grade_types[g.uuid] = g
+            g.parent = self
+            if g.uuid in uuids:
+                uuids.remove(g.uuid)
+
+        for u in uuids:
+            self._orphan_list.add(u,'grade_type')
+
     def get_location(self, uuid):
         if uuid in self._locations.keys():
             return self._locations[uuid]
@@ -414,27 +444,47 @@ class Context(Node):
             self._orphan_list.add(uuid,'region')
             self.updated_attribute('regions','delete', uuid)
 
+    def get_grade_type(self, uuid):
+        if uuid in self._grade_types.keys():
+            return self._grade_types[uuid]
+        else:
+            return None
+
+    def add_grade_type(self, grade_type):
+        grade_type.parent = self
+        self._grade_types[grade_type.uuid] = grade_type
+        self.updated_attribute('grade_types','add',grade_type.uuid)
+
+    def delete_grade_type(self, uuid):
+        if uuid in self._grade_types.keys():
+            self._grade_types.pop(uuid).remove_from_cache()
+            self._orphan_list.add(uuid,'grade_type')
+            self.updated_attribute('grade_types','delete', uuid)
+
     def set(self, dct):
         if 'locations' in dct.keys():
-            self.locations = [NodeParser(l, enforce_type=Location.type_string(trailing_delim=False)) for l in dct['locations']]
+            self.locations = [NodeParser(l, enforce_types=[Location.type_string(trailing_delim=False)]) for l in dct['locations']]
 
         if 'machines' in dct.keys():
-            self.machines = [NodeParser(m, enforce_type=Machine.type_string(trailing_delim=False)) for m in dct['machines']]
+            self.machines = [NodeParser(m, enforce_types=[Machine.type_string(trailing_delim=False)]) for m in dct['machines']]
 
         if 'things' in dct.keys():
-            self.things = [NodeParser(t, enforce_type=Thing.type_string(trailing_delim=False)) for t in dct['things']]
+            self.things = [NodeParser(t, enforce_types=[Thing.type_string(trailing_delim=False)]) for t in dct['things']]
 
         if 'waypoints' in dct.keys():
-            self.waypoints = [NodeParser(w, enforce_type=Waypoint.type_string(trailing_delim=False)) for w in dct['waypoints']]
+            self.waypoints = [NodeParser(w, enforce_types=[Waypoint.type_string(trailing_delim=False)]) for w in dct['waypoints']]
 
         if 'trajectories' in dct.keys():
-            self.trajectories = [NodeParser(t, enforce_type=Trajectory.type_string(trailing_delim=False)) for t in dct['trajectories']]
+            self.trajectories = [NodeParser(t, enforce_types=[Trajectory.type_string(trailing_delim=False)]) for t in dct['trajectories']]
 
         if 'thing_types' in dct.keys():
-            self.thing_types = [NodeParser(t, enforce_type=ThingType.type_string(trailing_delim=False)) for t in dct['thing_types']]
+            self.thing_types = [NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']]
 
         if 'regions' in dct.keys():
             self.regions = [NodeParser(r, enforce_types=[Region.type_string(trailing_delim=False),CubeRegion.type_string(trailing_delim=False),SphereRegion.type_string(trailing_delim=False)]) for r in dct['regions']]
+
+        if 'grade_types' in dct.keys():
+            self.grade_types = [NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']]
 
         super(Context,self).set(dct)
 
@@ -464,6 +514,9 @@ class Context(Node):
         for r in self.regions:
             r.remove_from_cache()
 
+        for g in self.grade_types:
+            g.remove_from_cache()
+
         super(Context,self).remove_from_cache()
 
     def add_to_cache(self):
@@ -488,6 +541,9 @@ class Context(Node):
         for r in self.regions:
             r.add_to_cache()
 
+        for g in self.grade_types:
+            g.add_to_cache()
+
         super(Context,self).add_to_cache()
 
     '''
@@ -511,6 +567,8 @@ class Context(Node):
             self.delete_thing_type(uuid)
         elif uuid in [r.uuid for r in self.regions]:
             self.delete_region(uuid)
+        elif uuid in [g.uuid for g in self.grade_types]:
+            self.delete_grade_type(uuid)
         else:
             success = False
 
@@ -559,6 +617,9 @@ class Context(Node):
         for r in self.regions:
             r.late_construct_update()
 
+        for g in self.grade_types:
+            g.late_construct_update()
+
         super(Context,self).late_construct_update()
 
     def deep_update(self):
@@ -584,6 +645,9 @@ class Context(Node):
         for r in self.regions:
             r.deep_update()
 
+        for g in self.grade_types:
+            g.deep_update()
+
         super(Context,self).deep_update()
 
         self.updated_attribute('machines','update')
@@ -593,6 +657,7 @@ class Context(Node):
         self.updated_attribute('trajectories','update')
         self.updated_attribute('thing_types','update')
         self.updated_attribute('regions','update')
+        self.updated_attribute('grade_types','update')
 
     def shallow_update(self):
         super(Context,self).shallow_update()
@@ -604,3 +669,4 @@ class Context(Node):
         self.updated_attribute('trajectories','update')
         self.updated_attribute('thing_types','update')
         self.updated_attribute('regions','update')
+        self.updated_attribute('grade_types','update')

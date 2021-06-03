@@ -77,11 +77,17 @@ def NodeParser(dct, no_cache=False, enforce_types=None):
     # Top level nodes
     from .node import Node
     from .context import Context
+    from .program import Program
+    from .environment import Environment
 
     if exactType == Node.type_string(trailing_delim=False):
         node = Node.from_dct(dct)
     elif exactType == Context.type_string(trailing_delim=False):
         node = Context.from_dct(dct)
+    elif exactType == Environment.type_string(trailing_delim=False):
+        node = Environment.from_dct(dct)
+    elif exactType == Program.type_string(trailing_delim=False):
+        node = Program.from_dct(dct)
     else:
         raise Exception('Could not parse object supplied with type: {}'.format(exactType))
 

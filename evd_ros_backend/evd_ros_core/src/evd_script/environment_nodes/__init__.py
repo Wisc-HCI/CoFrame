@@ -1,4 +1,3 @@
-from .environment import Environment
 from .collision_mesh import CollisionMesh
 from .occupancy_zone import OccupancyZone
 from .pinch_point import PinchPoint
@@ -18,8 +17,6 @@ def EnvironmentNodeParser(exactType, dct):
         node = CollisionMesh.from_dct(dct)
     elif exactType == OccupancyZone.type_string(trailing_delim=False):
         node = OccupancyZone.from_dct(dct)
-    elif exactType == Environment.type_string(trailing_delim=False):
-        node = Environment.from_dct(dct)
     elif exactType == EnvironmentNode.type_string(trailing_delim=False):
         node = EnvironmentNode.from_dct(dct)
 
