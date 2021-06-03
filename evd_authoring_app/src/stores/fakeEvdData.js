@@ -384,18 +384,15 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
             editable: false,
 
             time_data: [0], // each timestep, time from relative start
-            joint_data: [[0,0,0,0,0,0]], // joint state of robot at each timestep 
+            joint_names: ['j1','j2','j3','j4','j5','j6'], // name for each joint corresponding to inner array on joint_data
+            joint_data: [[0,0,0,0,0,0]], // joint state of robot at each timestep (NOTE that this is not an EvD Joints just a simple list)
             tf_data: {
-                'ee_link': [ // Pose at that frame at each timestep
+                'ee_link': [ // Pose at that frame at each timestep (NOTE that this is not an EvD Pose just a simple dict)
                     {
-                        uuid: `pose-ee_link-trace-js-trajectory-${i}`,
-                        name: `TraceDataPoint-${i}`,
-                        deleteable: false,
-                        editable: false,
-
-                        position: {/*...*/},
-                        orientation: {/*...*/},
+                        position: {x:0, y:0, z:0},
+                        orientation: {x:0, y:0, z:0, w:0},
                     }
+                    /*...*/
                 ],
                 // ... (e.g keys for joint_tf_frame_1, gripper_tf_frame_1)
             },
