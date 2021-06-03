@@ -43,12 +43,12 @@ class Pose(Node):
             description=description)
 
         if position is None:
-            self.position = Position(0,0,0)
+            self.position = Position(0,0,0, editable=editable, deleteable=False)
         else:
             self.position = position
 
         if orientation is None:
-            self.orientation = Orientation(0,0,0,1)
+            self.orientation = Orientation(0,0,0,1, editable=editable, deleteable=False)
         else:
             self.orientation = orientation
 

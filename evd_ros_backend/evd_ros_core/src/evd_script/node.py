@@ -26,7 +26,8 @@ class Node(ABC):
     def full_type_string(cls):
         return cls.type_string()
 
-    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
+    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True,
+                 editable=True, deleteable=True, description=''):
         self._parent = None
         self._type = None
         self._name = None

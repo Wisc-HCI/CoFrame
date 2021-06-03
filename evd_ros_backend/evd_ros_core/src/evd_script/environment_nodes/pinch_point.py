@@ -58,7 +58,7 @@ class PinchPoint(EnvironmentNode, VisualizeMarker):
             description=description)
 
         self.axis = axis
-        self.offset = offset if offset != None else Position(0,0,0)
+        self.offset = offset if offset != None else Position(0,0,0, editable=editable, deleteable=False)
         self.link = link
         self.radius = radius
         self.length = length

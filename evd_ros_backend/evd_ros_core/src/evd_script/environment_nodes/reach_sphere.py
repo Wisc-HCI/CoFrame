@@ -54,7 +54,7 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
             description=description)
 
         self.radius = radius
-        self.offset = offset if offset != None else Position(0,0,0)
+        self.offset = offset if offset != None else Position(0,0,0, editable=editable, deletable=False)
 
     def to_dct(self):
         msg = super(ReachSphere,self).to_dct()
