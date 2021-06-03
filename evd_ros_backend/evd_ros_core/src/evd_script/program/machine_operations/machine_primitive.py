@@ -1,3 +1,10 @@
+'''
+Machine Primitive extends primitive to simplify the later definition of specific machine primitives.
+
+A machine primitive is a way to generalize machine behavior in EvD. The actual behavior needs to be
+supplied externally and is hooked into the EvD program runner.
+'''
+
 from ..primitive import Primitive
 
 
@@ -9,13 +16,13 @@ class MachinePrimitive(Primitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'machine-primitive' + '.' if trailing_delim else ''
+        return 'machine-primitive' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
-    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._machine_uuid = None
 
         super(MachinePrimitive,self).__init__(
@@ -23,7 +30,9 @@ class MachinePrimitive(Primitive):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.machine_uuid = machineUuid
 

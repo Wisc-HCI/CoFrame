@@ -48,7 +48,11 @@ export class Location extends Waypoint {
         return { type: 'location' };
     }
 
-    static BlocklyBlock() {
+    static BlocklyBlock(locations) {
+        // TODO need to support type checking here
+        // iterate through locations creating new fielddropdown entries
+        // remove the unnamed option
+        // look up syntax for blockly adding field options
         return { key: 'location', data: {
             init: function() {
                 this.appendDummyInput()

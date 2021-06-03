@@ -1,3 +1,10 @@
+'''
+Container provides a generalized set of nodes. 
+
+This is only really useful for testing the AST's internal behavior when storing data.
+It is better to rely on semantic structures like Context, Skill, etc. to store various
+sub-nodes.
+'''
 
 from ..node import Node
 from ..node_parser import NodeParser
@@ -17,7 +24,7 @@ class Container(Node):
     def full_type_string(cls, item_type='node.'):
         return Node.full_type_string() + cls.type_string(item_type)
 
-    def __init__(self, item_type, values=[], type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, item_type, values=[], type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._values = None
         self._item_type = None
@@ -27,7 +34,8 @@ class Container(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable)
 
         self.values = values
         self.item_type = item_type

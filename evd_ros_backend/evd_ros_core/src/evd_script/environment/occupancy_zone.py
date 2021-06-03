@@ -1,4 +1,12 @@
-from ..node import Node
+'''
+Occupancy zone defines a region that an agent will potentially occupy during the
+task. A zone can be either for the robot (represented as a reach sphere shadow cast 
+onto the environment) or a human (as a rectangular area).
+
+Parameterization only makes sense for human agent zones.
+'''
+
+from .environment_node import EnvironmentNode
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Position
 
@@ -7,7 +15,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class OccupancyZone(Node, VisualizeMarker):
+class OccupancyZone(EnvironmentNode, VisualizeMarker):
 
     '''
     Constants
@@ -22,14 +30,14 @@ class OccupancyZone(Node, VisualizeMarker):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'occupancy-zone' + '.' if trailing_delim else ''
+        return 'occupancy-zone' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
-        return Node.full_type_string() + cls.type_string()
+        return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1, height = 0,
-                 type='', name='', parent=None, uuid=None, append_type=True):
+                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         self._occupancy_type = None
         self._position_x = None
         self._position_z = None
@@ -42,7 +50,9 @@ class OccupancyZone(Node, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.occupancy_type = occupancyType
         self.position_x = posX

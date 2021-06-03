@@ -7,9 +7,12 @@ actual change manifest much harder to enforce manually. Hence, wrapping that beh
 for the user in this node.
 
 We also support application level interface for loading / saving whole programs if
-needed by the node.
+needed by the node. This is an optional feature that can be enabled.
 
-Note: Currently the setting changes back to data server is broken.
+TODO Currently the setting changes back to data server is broken / needs implementation.
+TODO Update history get partials to use new message format
+TODO Make use of additional attributes in UpdateData on has_changes sub
+TODO implement set routines
 '''
 
 
@@ -17,24 +20,24 @@ import json
 import rospy
 import traceback
 
-from std_msgs.msg import String
-from evd_ros_core.msg import UpdateData, Version
+from evd_ros_core.msg import UpdateData
 
-from evd_ros_core.srv import GetData, GetDataRequest, GetDataResponse
-from evd_ros_core.srv import SetData, SetDataRequest, SetDataResponse
-from evd_ros_core.srv import LoadData, LoadDataRequest, LoadDataResponse
-from evd_ros_core.srv import SaveData, SaveDataRequest, SaveDataResponse
-from evd_ros_core.srv import GetOptions, GetOptionsRequest, GetOptionsResponse
+from evd_ros_core.srv import GetHistory
+from evd_ros_core.srv import GetData, SetData
+from evd_ros_core.srv import LoadData, SaveData,GetOptions
 
-from evd_script import *
-from evd_version_tracking import *
+from evd_script import Program, NodeParser
+from evd_script.cache import get_evd_cache_obj
+from evd_version_tracking import History, HistoryEntry, VersionTag
 
 
 class DataClientInterface(object):
 
-    def __init__(self, use_application_interface=False, on_program_update_cb=None, store_program=True):
+    def __init__(self, use_application_interface=False, sub_to_update=True, on_program_update_cb=None, store_program=True, track_local_changes=True):
         self._server_has_updated = False
         self._store_program = store_program
+        self.sub_to_update = sub_to_update
+        self.track_local_changes = track_local_changes
 
         self._use_application_interface = use_application_interface
         self._cache = get_evd_cache_obj()
@@ -44,16 +47,21 @@ class DataClientInterface(object):
             self._save_app_srv = rospy.ServiceProxy('data_server/save_application_data',SaveData)
             self._get_app_options_srv = rospy.ServiceProxy('data_server/get_application_options',GetOptions)
 
+        self._uuids = []
         self._program = None
         self._history = None
         self._program_verison = None
         self._program_changes_manifest = []
         self._on_program_update_cb = on_program_update_cb
 
-        self._update_sub = rospy.Subscriber('data_server/update',UpdateData, self._update_cb)
+        if self.sub_to_update:
+            self._update_sub = rospy.Subscriber('data_server/update',UpdateData, self._update_cb)
+        self._has_changes_pub = rospy.Subscriber('data_server/has_changes',UpdateData, self._has_changes_cb)
+        
         self._get_program_srv = rospy.ServiceProxy('data_server/get_program',GetData)
         self._set_program_srv = rospy.ServiceProxy('data_server/set_program',SetData)
-        self._get_history_srv = rospy.ServiceProxy('data_server/get_history',GetData)
+        self._get_history_srv = rospy.ServiceProxy('data_server/get_history',GetHistory)
+        self._get_uuids_srv = rospy.ServiceProxy('data_server/get_uuids',GetData)
 
     '''
     Application Interface
@@ -163,10 +171,6 @@ class DataClientInterface(object):
                 traceback.print_exc()
                 return #Error parsing, ignore for now
 
-        self._server_has_updated = True
-        if self._on_program_update_cb != None:
-            self._on_program_update_cb()
-
     def __program_changed_cb(self, trace):
         # This only runs if program saved
         '''
@@ -182,6 +186,14 @@ class DataClientInterface(object):
         #TODO need to keep a manifest of all changed nodes
         # self._program_changes_manifest
         pass
+
+    def _has_changes_cb(self, msg):
+        #TODO do things with action, changes, and tags
+        self._uuids = json.loads(msg.data)
+
+        self._server_has_updated = True
+        if self._on_program_update_cb != None:
+            self._on_program_update_cb()
 
     def get_history(self, fetch=False):
         if fetch:
@@ -201,6 +213,7 @@ class DataClientInterface(object):
             raise Exception('Not storing program')
 
     def get_history_partials(self, tags=[]):
+        #TODO this needs to be updated
         response = self._get_history_srv(False,json.dumps(tags))
 
         if not response.status:
@@ -211,5 +224,35 @@ class DataClientInterface(object):
 
         return True, partials
 
-    def _manifest_entry(self):
-        pass
+    def _create_manifest_entry(self):
+        return {
+            
+        }
+
+    def get_uuids(self, fetch=False, types=None):
+        all = types == None
+
+        if not fetch:
+            if not self._store_program:
+                if types != None:
+                    raise Exception('Only full uuid list supported when not fetching fresh data and not storing program')
+                data = self._uuids
+            elif all:
+                data = self.cache.get_uuids()
+            else:
+                data = {}
+                for t in types:
+                    uuids = self._program_cache.get_uuids(t)
+                    data[t] = uuids
+
+            return data
+        
+        else:
+            response = self._get_uuids_srv(all,json.dumps(types))
+            return json.loads(response.data)
+
+    def set_program(self, program):
+        pass #TODO
+
+    def set_program_partials(self, data):
+        pass #TODO

@@ -5,8 +5,8 @@ Tests application data behavior with a simple GUI interface.
 
 Allows
 - Getting Application Options
-- Saving (allows creation of new)
-- Loading
+- Saving (allows creation of new application)
+- Loading Application
 '''
 
 
@@ -24,6 +24,8 @@ class TestApplicationDataPublisher:
         self._options = None
 
         self._root = tk.Tk()
+        self._root.resizable(True, True)
+        
         frame = tk.Frame(self._root)
         frame.pack()
 

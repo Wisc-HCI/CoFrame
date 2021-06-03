@@ -1,0 +1,74 @@
+<launch>
+
+  <arg name="application_description_xacro" default="$(find evd_ros_tasks)/description/robot.urdf.xacro"/>
+  <arg name="kinematics_config" default="$(find ur_description)/config/ur3_default.yaml"/>
+
+  <arg name="active_physical" default="true"/>
+  <arg name="active_simulated" default="true"/>
+  <arg name="active_planner" default="true"/>
+
+  <arg name="simulate_physical_robot" default='true'/>
+
+  <arg name="display_joint_gui" default='true'/>
+
+  <arg name="physical_ip_robot" default="10.134.71.9"/>
+  <arg name="physical_ip_sim" default="192.168.1.101"/>
+  <arg name="physical_port" default="50002"/>
+  <arg name="physical_reverse_port" default="50001"/>
+  <arg name="planner_ip" default="192.168.1.102"/>
+  <arg name="planner_port" default="50022"/>
+  <arg name="planner_reverse_port" default="50021"/>
+  <arg name="simulated_ip" default="192.168.1.100"/>
+  <arg name="simulated_port" default="50012"/>
+  <arg name="simulated_reverse_port" default="50011"/>
+
+  <!-- Launch physical robot interface from here if local-->
+  <group if="$(arg active_physical)" ns="physical">
+    <include file="$(find evd_ros_ur_bringup)/launch/main.launch">
+      <arg name="type" value="physical"/>
+      <arg if="$(arg simulate_physical_robot)" name="ip_address" value="$(arg physical_ip_sim)"/>
+      <arg if="$(arg simulate_physical_robot)" name="fake_gripper" value="true"/>
+      <arg unless="$(arg simulate_physical_robot)" name="ip_address" value="$(arg physical_ip_robot)"/>
+      <arg unless="$(arg simulate_physical_robot)" name="fake_gripper" value="false"/>
+      <arg name="port" value="$(arg physical_port)"/>
+      <arg name="reverse_port" value="$(arg physical_reverse_port)"/>
+      <arg name="kinematics_config" value="$(arg kinematics_config)"/>
+    </include>
+  </group>
+
+  <!-- Launch simulated robot interface from here if local -->
+  <group if="$(arg active_simulated)" ns="simulated">
+    <include file="$(find evd_ros_ur_bringup)/launch/main.launch">
+      <arg name="type" value="simulated"/>
+      <arg name="ip_address" value="$(arg simulated_ip)"/>
+      <arg name="fake_gripper" value="true"/>
+      <arg name="port" value="$(arg simulated_port)"/>
+      <arg name="reverse_port" value="$(arg simulated_reverse_port)"/>
+      <arg name="kinematics_config" value="$(arg kinematics_config)"/>
+    </include>
+  </group>
+
+  <!-- Launch planner robot interface from here if local -->
+  <group if="$(arg active_planner)" ns="planner">
+    <include file="$(find evd_ros_ur_bringup)/launch/main.launch">
+      <arg name="type" value="planner"/>
+      <arg name="ip_address" value="$(arg planner_ip)"/>
+      <arg name="fake_gripper" value="true"/>
+      <arg name="port" value="$(arg planner_port)"/>
+      <arg name="reverse_port" value="$(arg planner_reverse_port)"/>
+      <arg name="kinematics_config" value="$(arg kinematics_config)"/>
+    </include>
+  </group>
+
+  <!-- Global State Publishers -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(arg application_description_xacro)' kinematics_config:=$(arg kinematics_config)"/>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="/use_gui" value="$(arg display_joint_gui)"/>
+    <param name="rate" value="25"/>
+    <rosparam param="/source_list">[physical/joint_states_labeled,simulated/joint_states_labeled,planner/joint_states_labeled]</rosparam>
+  </node>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+</launch>

@@ -1,7 +1,17 @@
+'''
+Moves a robot according to a preplanned trajectory. This wraps the trajectory
+data structure with additional movement parameterization needed to actually
+execute on the robot.
+
+TODO implement thing token movement behavior
+'''
 
 from ..primitive import Primitive
-from ...data.trajectory import Trajectory
 from ...node_parser import NodeParser
+from ...data.trajectory import Trajectory
+from ...data.geometry.position import Position
+from ...data.geometry.orientation import Orientation
+
 
 class MoveTrajectory(Primitive):
 
@@ -11,29 +21,33 @@ class MoveTrajectory(Primitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'move-trajectory' + '.' if trailing_delim else ''
+        return 'move-trajectory' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
     def __init__(self, startLocUuid=None, endLocUuid=None, trajectory=None, trajectory_uuid=None,
-                 type='', name='', uuid=None, parent=None, append_type=True):
+                 manual_safety=False, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._context_patch = None
         self._start_location_uuid = None
         self._end_location_uuid = None
         self._trajectory_uuid = None
+        self._manual_safety = None
 
         super(MoveTrajectory,self).__init__(
             type=MoveTrajectory.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.start_location_uuid = startLocUuid
         self.end_location_uuid = endLocUuid
+        self.manual_safety = manual_safety
 
         if trajectory != None and trajectory_uuid != None:
             raise Exception('Cannot supply both a default trajectory and a trajectory id already in context')
@@ -51,6 +65,7 @@ class MoveTrajectory(Primitive):
         msg.update({
             'start_location_uuid': self.start_location_uuid,
             'end_location_uuid': self.end_location_uuid,
+            'manual_safety': self.manual_safety,
         })
 
         if self._context_patch == None:
@@ -69,6 +84,7 @@ class MoveTrajectory(Primitive):
             uuid=dct['uuid'],
             startLocUuid=dct['start_location_uuid'],
             endLocUuid=dct['end_location_uuid'],
+            manual_safety=dct['manual_safety'],
             trajectory=NodeParser(dct['trajectory'], enforce_type=Trajectory.type_string(trailing_delim=False)) if 'trajectory' in dct.keys() else None,
             trajectory_uuid=dct['trajectory_uuid'] if 'trajectory_uuid' in dct.keys() else None)
 
@@ -126,6 +142,16 @@ class MoveTrajectory(Primitive):
             self.updated_attribute('end_location_uuid','set')
 
     @property
+    def manual_safety(self):
+        return self._manual_safety
+
+    @manual_safety.setter
+    def manual_safety(self, value):
+        if self._manual_safety != value:
+            self._manual_safety = value
+            self.updated_attribute('manual_safety','set')
+
+    @property
     def trajectory(self):
         return self.context.get_trajectory(self.trajectory_uuid)
 
@@ -175,6 +201,9 @@ class MoveTrajectory(Primitive):
         if 'end_location_uuid' in dct.keys():
             self.end_location_uuid = dct['end_location_uuid']
 
+        if 'manual_safety' in dct.keys():
+            self.manual_safety = dct['manual_safety']
+
         if 'trajectory' in dct.keys():
             self.trajectory = NodeParser(dct['trajectory'], enforce_type=Trajectory.type_string(trailing_delim=False))
 
@@ -197,6 +226,7 @@ class MoveTrajectory(Primitive):
 
         super(MoveTrajectory,self).deep_update()
 
+        self.updated_attribute('manual_safety','update')
         self.updated_attribute('start_location_uuid','update')
         self.updated_attribute('end_location_uuid','update')
         self.updated_attribute('trajectory_uuid','update')
@@ -205,6 +235,7 @@ class MoveTrajectory(Primitive):
     def shallow_update(self):
         super(MoveTrajectory,self).shallow_update()
 
+        self.updated_attribute('manual_safety','update')
         self.updated_attribute('start_location_uuid','update')
         self.updated_attribute('end_location_uuid','update')
         self.updated_attribute('trajectory_uuid','update')
@@ -215,11 +246,44 @@ class MoveTrajectory(Primitive):
     '''
 
     def symbolic_execution(self, hooks):
-        pass
+        hooks.active_primitive = self
+
+        loc = self.context.get_location(self.end_location_uuid)
+        hooks.tokens['robot']['state']['position'] = loc.position.to_simple_dct()
+        hooks.tokens['robot']['state']['orientation'] = loc.orientation.to_simple_dct()
+        hooks.tokens['robot']['state']['joints'] = loc.joints
+
+        #TODO handle thing movement
+
+        return self.parent
 
     def realtime_execution(self, hooks):
-        pass
+        hooks.active_primitive = self
+        next = self
 
+        if not self.uuid in hooks.state.keys():
+            hooks.robot_interface.is_acked('arm') # clear prev ack
+            hooks.state[self.uuid] = 'pending'
+            hooks.robot_interface.move_trajectory_async(self.trajectory, self.manual_safety)
+
+        else:
+            resp = hooks.robot_interface.is_acked('arm')
+            if resp != None:
+                if resp:
+                    del hooks.state[self.uuid]
+                    next = self.parent
+
+                else:
+                    raise Exception('Robot NACKed')
+
+        status = hooks.robot_interface.get_status()
+        hooks.tokens['robot']['state']['position'] = Position.from_ros(status.arm_pose.position).to_simple_dct()
+        hooks.tokens['robot']['state']['orientation'] = Orientation.from_ros(status.arm_pose.orientation).to_simple_dct()
+        hooks.tokens['robot']['state']['joints'] = status.arm_joints
+
+        #TODO handle thing movement
+
+        return next
 
 class ContextPatch(object):
 

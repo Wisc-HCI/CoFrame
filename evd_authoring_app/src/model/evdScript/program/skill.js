@@ -56,6 +56,8 @@ export class Skill extends Primitive {
     }
 
     static BlocklyBlock() {
+        // This is the wrapper variant
+        // TODO create a instance variant for each runtime skill
         return { key: 'skill', data: {
             init: function() {
                 this.appendDummyInput()

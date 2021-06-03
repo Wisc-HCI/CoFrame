@@ -1,4 +1,10 @@
-#TODO generalize the grade structure
+'''
+Grade provides a grade name and value. This will be used in trace data points.
+
+There can be multiple grades for a given point, each provided by a separate grader.
+
+TODO better generalize grade structure
+'''
 from ..node import Node
 
 
@@ -10,13 +16,13 @@ class Grade(Node):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'grade' + '.' if trailing_delim else ''
+        return 'grade' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, value, grade_type, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, value, grade_type, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._value = None
         self._grade_type = None
 
@@ -25,7 +31,9 @@ class Grade(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.value = value
         self.grade_type = grade_type

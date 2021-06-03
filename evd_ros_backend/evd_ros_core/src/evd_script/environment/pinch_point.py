@@ -1,4 +1,12 @@
-from ..node import Node
+'''
+Pinch point is an area on the robot that through actuation of a particular joint
+will result in unsafe operation. I.e. a human could get pinched within the robot.
+
+This does not handle robot & collision-mesh pinches which are really just a generalization
+on collision itself.
+'''
+
+from .environment_node import EnvironmentNode
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data.geometry import Orientation, Position
 from ..node_parser import NodeParser
@@ -8,7 +16,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class PinchPoint(Node, VisualizeMarker):
+class PinchPoint(EnvironmentNode, VisualizeMarker):
 
     '''
     Constants
@@ -24,14 +32,14 @@ class PinchPoint(Node, VisualizeMarker):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'pinch-point' + '.' if trailing_delim else ''
+        return 'pinch-point' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
-        return Node.full_type_string() + cls.type_string()
+        return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, axis='x', offset=None, link='', radius=0.05, length=0.2,
-                 type='', name='', parent=None, uuid=None, append_type=True):
+                 type='', name='', parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         self._axis = None
         self._offset = None
         self._link = None
@@ -43,7 +51,9 @@ class PinchPoint(Node, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.axis = axis
         self.offset = offset if offset != None else Position(0,0,0)

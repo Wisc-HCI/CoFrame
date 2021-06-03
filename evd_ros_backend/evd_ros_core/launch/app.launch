@@ -14,17 +14,13 @@
     <param name="app_filepath" value="$(arg app_filepath)"/>
   </node>
 
-  <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py" output="screen">
-
-  </node>
+  <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py" output="screen"/>
 
   <node name="issue_server" pkg="evd_ros_core" type="issue_server.py" output="screen"/>
 
   <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen">
 
   </node>
-
-  <node name="expert_checklist" pkg="evd_ros_core" type="expert_checklist.py" output="screen" />
 
   <include file="$(find evd_ros_core)/launch/graders.launch">
     <arg name="app_filepath" value="$(arg app_filepath)"/>

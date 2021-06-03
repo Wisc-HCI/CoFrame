@@ -1,167 +1,228 @@
 '''
-Wraps the robot bringup subsystem for each robot instance. This is expected to
-interact with a UR robot using URScript.
+Robot interface defines an abstracted single-arm with single gripper robot for EvD.
+
+Basic robot behavior to move to a joint state or a pose is assumed. Gripper with
+position (and optional speed/effort) is assumed.
+
+Base robot is conceptualized around a UR3e with Robotiq 85 2-Finger gripper.
+
+The asynchronous methods use the ACK/NACK as feedback channel whereas the synchronous
+methods use services. All robot behavior is also being presented in a generalized 
+status update pushed from the robot implementation.
+
+Class methods are provided to simplify packing messages. Though it is probably best not
+to use them outside of this interface.
 '''
 
-
-import time
 import rospy
-import actionlib
 
-from std_msgs.msg import Bool
-from sensor_msgs.msg import JointState
-from ur_msgs.msg import RobotModeDataMsg
-from robotiq_85_msgs.msg import GripperStat
-from evd_ros_core.msg import RobotMoveTrajectoryAction
-from evd_ros_core.msg import RobotStop, RobotServo, RobotMove, RobotGrip
-
-from evd_script.data.trajectory import *
+from evd_ros_core.srv import SetRobotMove, SetRobotMoveTrajectory, SetRobotGrip
+from evd_ros_core.msg import RobotAck, RobotStatus, RobotStop, RobotPause, RobotMove, RobotMoveTrajectory, RobotGrip, RobotInitialize
 
 
 class RobotInterface:
 
-    def __init__(self, prefix):
+    def __init__(self, prefix=None):
         self._prefix = prefix
-        self._last_js_msg = JointState()
-        self._last_js_msg_time = 0
-        self._last_rms_msg = RobotModeDataMsg()
-        self._last_rms_msg_time = 0
-        self._last_gstat_msg = GripperStat()
-        self._last_gstat_msg_time = 0
+        prefix_fmt = prefix+'/' if prefix != None else ''
+        self._latest_status = None
+        self._ack_table = {}
 
-        self.freedrive_pub = rospy.Publisher('{}/robot_control/freedrive'.format(self._prefix),Bool,queue_size=5)
-        self.servoing_pub = rospy.Publisher('{}/robot_control/servoing'.format(self._prefix),RobotServo,queue_size=5)
-        self.stop_pub = rospy.Publisher('{}/robot_control/stop'.format(self._prefix),RobotStop,queue_size=5)
-        self.grip_pub = rospy.Publisher('{}/robot_control/gripper'.format(self._prefix),RobotGrip,queue_size=5)
+        self.init_pub = rospy.Publisher('{0}robot/initialize'.format(prefix_fmt), RobotInitialize, queue_size=10)
+        self.estop_pub = rospy.Publisher('{0}robot/estop'.format(prefix_fmt), RobotStop, queue_size=10)
+        self.pause_pub = rospy.Publisher('{0}robot/pause'.format(prefix_fmt), RobotPause, queue_size=10)
+        self.move_pub = rospy.Publisher('{0}robot/move'.format(prefix_fmt), RobotMove, queue_size=10)
+        self.move_trajectory_pub = rospy.Publisher('{0}robot/move_trajectory'.format(prefix_fmt), RobotMoveTrajectory, queue_size=10)
+        self.grip_pub = rospy.Publisher('{0}robot/grip'.format(prefix_fmt), RobotGrip, queue_size=10)
 
-        self._joint_state_sub = rospy.Subscriber('{}/joint_states'.format(self._prefix),JointState,self._joint_state_cb)
-        self._robot_mode_state_sub = rospy.Subscriber('{}/ur_driver/robot_mode_state'.format(self._prefix),RobotModeDataMsg,self._robot_mode_state_cb)
-        self._gripper_state_sub = rospy.Subscriber('{}/gripper/stat'.format(self._prefix), GripperStat, self._gripper_state_cb)
+        self.move_srv = rospy.ServiceProxy('{0}robot/set_move',SetRobotMove)
+        self.move_trajectory_srv = rospy.ServiceProxy('{0}robot/set_move_trajectory',SetRobotMoveTrajectory)
+        self.grip_srv = rospy.ServiceProxy('{0}robot/set_grip',SetRobotGrip)
 
-        self.move_trajectory_action = actionlib.SimpleActionClient('{}/robot_control/move_trajectory'.format(self._prefix),RobotMoveTrajectoryAction)
+        self.ack_sub = rospy.Subscriber('{0}robot/ack'.format(prefix_fmt), RobotAck, self._ack_cb)
+        self.status_sub = rospy.Subscriber('{0}robot/wait'.format(prefix_fmt), RobotStatus, self._status_cb)
 
-    def _joint_state_cb(self, msg):
-        self._last_js_msg = msg
-        self._last_js_msg_time = time.time()
+    def _ack_cb(self, msg):
+        self._ack_table[msg.subsystem] = msg.ack
 
-    def get_last_joint_state(self):
-        return self._last_js_msg, self._last_js_msg_time
+    def _status_cb(self, msg):
+        self._latest_status = msg
 
-    def _robot_mode_state_cb(self, msg):
-        self._last_rms_msg = msg
-        self._last_rms_msg_time = time.time()
+    '''
+    Public Methods
+        - Exposes robot behavior
+        - Some methods (e.g., pause may not be implemented for all robots)
+    '''
 
-    def get_last_robot_mode_state(self):
-        return self._last_rms_msg, self._last_rms_msg_time
-
-    def _gripper_state_cb(self, msg):
-        self._last_gstat_msg = msg
-        self._last_gstat_msg_time = time.time()
-
-    def get_last_gripper_state(self):
-        return self._last_gstat_msg, self._last_gstat_msg_time
+    def initialize(self, gripper_position=None, arm_joints=None):
+        msg = RobotInitialize()
+        msg.gripper_position = gripper_position if gripper_position != None else -1
+        msg.arm_joints = arm_joints if arm_joints != None else []
+        self.init_pub.publish(msg)
 
     def estop(self):
-        msg = RobotInterface.pack_robot_stop_joint()
-        self.stop_pub.publish(msg)
+        self.estop_pub.publish(RobotStop(True))
 
     def pause(self, state):
-        pass
+        self.pause_pub.publish(RobotPause(state))
+
+    def move_async(self, evd_waypoint, move_type='ee_ik', velocity=None, manual_safety=False):
+        msg = RobotInterface.convert_waypoint_to_move(move_type, evd_waypoint, velocity, manual_safety)
+        self.move_pub.publish(msg)
+
+    def move_sync(self, evd_waypoint, move_type='ee_ik', velocity=None, manual_safety=False):
+        goal = RobotInterface.convert_waypoint_to_move(move_type, evd_waypoint, velocity, manual_safety)
+        return self.move_srv(goal).status
+
+    def move_trajectory_async(self, evd_trajectory, manual_safety=False):
+        msg = RobotInterface.pack_move_trajectory(evd_trajectory,manual_safety)
+        self.move_trajectory_pub.publish(msg)
+
+    def move_trajectory_sync(self, evd_trajectory, manual_safety=False):
+        goal = RobotInterface.pack_move_trajectory(evd_trajectory,manual_safety)
+        return self.move_trajectory_srv(goal).status
+
+    def grip_async(self, position, speed, effort, manual_safety=False):
+        msg = RobotInterface.pack_gripper_msg(position,speed,effort,manual_safety)
+        self.grip_pub.publish(msg)
+
+    def grip_sync(self, position, speed, effort, manual_safety=False):
+        goal = RobotInterface.pack_gripper_msg(position,speed,effort,manual_safety)
+        return self.grip_srv(goal).status
+
+    def is_acked(self, subsystem=None, clearEntry=True):
+        subsystem = subsystem if subsystem != None else 'arm'
+
+        if not subsystem in self._ack_table.keys():
+            return None
+        else:
+            ack = self._ack_table[subsystem]
+            if clearEntry:
+                del self._ack_table[subsystem]
+            return ack
+
+    def get_status(self):
+        return self._latest_status
+    
+    '''
+    State Properties (from last status message)
+    '''
+
+    @property
+    def current_pose(self):
+        return self._latest_status.arm_pose
+
+    @property
+    def current_joints(self):
+        return self._latest_status.arm_joints
+
+    @property
+    def current_gripper_position(self):
+        return self._latest_status.gripper_position
+
+    @property
+    def is_real_robot(self):
+        return self._latest_status.is_real_robot
+
+    @property
+    def is_in_emergency_stop(self):
+        return self._latest_status.is_in_emergency_stop
+
+    @property
+    def is_running(self):
+        return self._latest_status.is_running
+
+    @property
+    def gripper_object_detected(self):
+        return self._latest_status.gripper_object_detected
+
+    @property
+    def status_flag(self):
+        return self._latest_status.status
+
+    '''
+    Class Methods
+        - Pack messages
+    '''
 
     @classmethod
-    def pack_robot_move_joint(cls, joints, radius=RobotMove.STD_RADIUS, acceleration=RobotMove.JOINT_ACCELERATION, velocity=RobotMove.JOINT_VELOCITY):
-        move = RobotMove()
-        move.motion_type = RobotMove.JOINT
-        move.use_ur_ik = False
-        move.target_joints = joints
-        move.radius = radius
-        move.acceleration = acceleration
-        move.velocity = velocity
+    def pack_move_trajectory(cls, evd_trajectory, manual_safety=False):
+        moves = []
+
+        mtype = evd_trajectory.move_type
+        vel = evd_trajectory.velocity
+       
+        loc_uuid = evd_trajectory.start_location_uuid
+        loc = evd_trajectory.context.get_location(loc_uuid)
+        moves.append(cls.convert_waypoint_to_move(mtype, loc, vel, 0, manual_safety))
+
+        for wp_uuid in evd_trajectory.waypoint_uuids:
+            wp = evd_trajectory.context.get_waypoint(wp_uuid)
+            moves.append(cls.convert_waypoint_to_move(mtype, wp, vel, 0, manual_safety))
+
+        loc_uuid = evd_trajectory.end_location_uuid
+        loc = evd_trajectory.context.get_location(loc_uuid)
+        moves.append(cls.convert_waypoint_to_move(mtype, loc, vel, 0, manual_safety))
+       
+        msg = RobotMoveTrajectory()
+        msg.moves = moves
+        return msg
+
+    @classmethod
+    def convert_waypoint_to_move(cls, move_type, evd_waypoint, velocity=None, manual_safety=False):
+        
+        if move_type == 'joint':
+            if evd_waypoint.joints != None and len(evd_waypoint.joints) > 0:
+                move = cls.pack_move_joint_msg(evd_waypoint.joints, velocity, 0, manual_safety)
+            else:
+                raise Exception('Joints must be specified')
+
+        elif move_type == 'ee_ik':
+            move = cls.pack_move_ik_msg(evd_waypoint.to_ros(), velocity, 0, manual_safety)
+
+        else:
+            raise Exception('Invalid Move Type specified')
+
         return move
 
     @classmethod
-    def pack_robot_move_pose_joint(cls, pose, radius=RobotMove.STD_RADIUS, acceleration=RobotMove.STD_ACCELERATION, velocity=RobotMove.STD_VELOCITY):
-        move = RobotMove()
-        move.motion_type = RobotMove.JOINT
-        move.use_ur_ik = True
-        move.target_pose = pose
-        move.radius = radius
-        move.acceleration = acceleration
-        move.velocity = velocity
-        return move
+    def pack_move_ik_msg(cls, pose, velocity=None, timestep=None, manual_safety=False):
+        velocity = velocity if velocity != None else RobotMove.STD_VELOCITY
+        timestep = timestep if timestep != None else RobotMove.STD_TIMESTEP
+
+        msg = RobotMove()
+        msg.motion_type = RobotMove.EE_IK
+        msg.target_pose = pose
+        msg.velocity = velocity
+        msg.timestep = timestep
+        msg.manual_safety = manual_safety
+        return msg
 
     @classmethod
-    def pack_robot_move_pose_linear(cls, pose, radius=RobotMove.STD_RADIUS, acceleration=RobotMove.STD_ACCELERATION, velocity=RobotMove.STD_VELOCITY):
-        move = RobotMove()
-        move.motion_type = RobotMove.LINEAR
-        move.target_pose = pose
-        move.radius = radius
-        move.acceleration = acceleration
-        move.velocity = velocity
-        return move
+    def pack_move_joints_msg(cls, joints, velocity=None, timestep=None, manual_safety=False):
+        velocity = velocity if velocity != None else RobotMove.JOINT_VELOCITY
+        timestep = timestep if timestep != None else RobotMove.STD_TIMESTEP
+
+        msg = RobotMove()
+        msg.motion_type = RobotMove.JOINT
+        msg.target_joints = joints
+        msg.velocity = velocity
+        msg.timestep = timestep
+        msg.manual_safety = manual_safety
+        return msg
 
     @classmethod
-    def pack_robot_move_pose_circular(cls, pose, path_pose, radius=RobotMove.STD_RADIUS, acceleration=RobotMove.STD_ACCELERATION, velocity=RobotMove.STD_VELOCITY):
-        move = RobotMove()
-        move.motion_type = RobotMove.CIRCULAR
-        move.target_pose = pose
-        move.path_pose = path_pose
-        move.radius = radius
-        move.acceleration = acceleration
-        move.velocity = velocity
-        return move
+    def pack_gripper_msg(cls, position, speed, effort, manual_safety=False):
+        if position < 0 or position > 100:
+            raise Exception('Position out of range')
+        elif speed <= 0:
+            raise Exception('Speed must be a positive value (greater than zero)')
+        elif effort < 0:
+            raise Exception('Effort must be a positive value or zero')
 
-    @classmethod
-    def pack_robot_move_pose_process(cls, pose, radius=RobotMove.STD_RADIUS, acceleration=RobotMove.STD_ACCELERATION, velocity=RobotMove.STD_VELOCITY):
-        move = RobotMove()
-        move.motion_type = RobotMove.PROCESS
-        move.target_pose = pose
-        move.radius = radius
-        move.acceleration = acceleration
-        move.velocity = velocity
-        return move
-
-    @classmethod
-    def pack_robot_servo_joint(cls, joints, acceleration=RobotServo.STD_ACCELERATION, velocity=RobotServo.STD_VELOCITY):
-        servo = RobotServo()
-        servo.motion_type = RobotServo.JOINT
-        servo.use_ur_ik = False
-        servo.target_joints = joints
-        servo.acceleration = acceleration
-        servo.velocity = velocity
-        return servo
-
-    @classmethod
-    def pack_robot_servo_pose_joint(cls, pose, acceleration=RobotServo.STD_ACCELERATION, velocity=RobotServo.STD_VELOCITY):
-        servo = RobotServo()
-        servo.motion_type = RobotServo.JOINT
-        servo.use_ur_ik = True
-        servo.target_pose = pose
-        servo.acceleration = acceleration
-        servo.velocity = velocity
-        return servo
-
-    @classmethod
-    def pack_robot_servo_pose_circular(cls, pose, radius=RobotServo.STD_RADIUS, acceleration=RobotServo.STD_ACCELERATION, velocity=RobotServo.STD_VELOCITY):
-        servo = RobotServo()
-        servo.motion_type = RobotServo.JOINT
-        servo.use_ur_ik = True
-        servo.target_pose = pose
-        servo.radius = radius
-        servo.acceleration = acceleration
-        servo.velocity = velocity
-        return servo
-
-    @classmethod
-    def pack_robot_stop_joint(cls, acceleration=RobotStop.STD_ACCELERATION):
-        stop = RobotStop()
-        stop.motion_type = RobotStop.JOINT
-        stop.acceleration = acceleration
-        return stop
-
-    @classmethod
-    def pack_robot_stop_linear(cls, acceleration=RobotStop.STD_ACCELERATION):
-        stop = RobotStop()
-        stop.motion_type = RobotStop.LINEAR
-        stop.acceleration = acceleration
-        return stop
+        msg = RobotGrip()
+        msg.position = position
+        msg.speed = speed
+        msg.effort = effort
+        msg.manual_safety = manual_safety
+        return msg

@@ -1,5 +1,7 @@
 '''
-
+Program is a top-level skill that wraps execution of robot behavior and provides
+hook to global Environment/Context. Additionally, all change traces end at this
+root node in the AST. Users can hook into this with a change callback.
 '''
 
 from .skill import Skill
@@ -17,13 +19,13 @@ class Program(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'program' + '.' if trailing_delim else ''
+        return 'program' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None):
+    def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None, editable=True, deleteable=True):
         self._orphan_list = evd_orphan_list()
         self.changes_cb = changes_cb
         self._environment = None
@@ -40,7 +42,9 @@ class Program(Skill):
             uuid=uuid,
             parent=None,
             append_type=append_type,
-            primitives=primitives)
+            primitives=primitives,
+            editable=editable,
+            deleteable=deleteable)
 
         self.environment = environment
 
@@ -53,8 +57,6 @@ class Program(Skill):
 
     @classmethod
     def from_dct(cls, dct):
-        from ..utility_functions import NodeParser
-
         return cls(
             name=dct['name'],
             type=dct['type'],
@@ -102,8 +104,21 @@ class Program(Skill):
         super(Program,self).set(dct)
 
     '''
+    Cache Methods
+    '''
+
+    def remove_from_cache(self):
+        self.environment.remove_from_cache()
+        super(Program,self).remove_from_cache()
+
+    def add_to_cache(self):
+        self.environment.add_to_cache()
+        super(Program,self).add_to_cache()
+
+    '''
     Update Methods
     '''
+
     def late_construct_update(self):
 
         self.environment.late_construct_update()

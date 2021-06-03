@@ -59,6 +59,7 @@ export class Waypoint extends Pose {
     }
 
     static BlocklyBlock() {
+        // figure out typing
         return { key: 'waypoint', data: {
             init: function() {
                 this.appendDummyInput()

@@ -1,4 +1,14 @@
+'''
+Loop is a sub-skill structure that allows for rerunning a list of nodes. 
+
+At this point, loop only supports infinite looping but in the future conditional looping
+is desired.
+
+TODO support conditional looping
+'''
+
 from ..skill import Skill
+from ...node_parser import NodeParser
 
 
 class Loop(Skill):
@@ -9,14 +19,14 @@ class Loop(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'loop' + '.' if trailing_delim else ''
+        return 'loop' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, primitives=[], condition=None, type='', name='', uuid=None, parent=None,
-                 append_type=True):
+                 append_type=True, editable=True, deleteable=True):
         self._condition = None
 
         super(Loop,self).__init__(
@@ -25,7 +35,9 @@ class Loop(Skill):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=primitives)
+            primitives=primitives,
+            editable=editable,
+            deleteable=deleteable)
 
         self.condition = condition
 
@@ -38,8 +50,6 @@ class Loop(Skill):
 
     @classmethod
     def from_dct(cls, dct):
-        from ...utility_functions import NodeParser
-
         return cls(
             primitives=[NodeParser(p) for p in dct['primitives']],
             condition=NodeParser(dct['condition']) if dct['condition'] != None else None,
@@ -71,8 +81,6 @@ class Loop(Skill):
     def set(self, dct):
 
         if 'condition' in dct.keys():
-            from ...utility_functions import NodeParser
-
             self.condition = NodeParser(dct['condition']) if dct['condition'] != None else None
 
         super(Loop,self).set(dct)
@@ -128,19 +136,40 @@ class Loop(Skill):
     def symbolic_execution(self, hooks):
         hooks.active_primitive = self
 
-        run = True
-        while run:
-            for p in self.primitives:
-                p.symbolic_execution(hooks)
+        if not self.uuid in hooks.state.keys():
+            hooks.state[self.uuid] = { 'index': 0, 'checked_cond': False }
 
-            run = self.condition.symbolic_execution(hooks) if self.condition != None else True
+        next = None
+        if not hooks.state[self.uuid]['checked_cond']:
+            # Check condition
+            hooks.state[self.uuid]['checked_cond'] = True
+            
+            if self.condition != None:
+                next = self.condition
+            else:
+                next = self # infinite loop
+
+        elif hooks.state[self.uuid]['checked_cond'] and self.condition != None and not hooks.state[self.condition.uuid]['result']:
+            # Exit based on condition (if no condition supplied then infinite loop)
+            next = self.parent
+            del hooks.state[self.uuid]
+            del hooks.state[self.condition.uuid]
+
+        else:
+            # Run through inner contents of loop
+
+            index = hooks.state[self.uuid]['index']
+            if index < len(self.primitives):
+                # Index through primitives in list
+                next = self.primitives[index]
+                hooks.state[self.uuid]['index'] = index + 1
+            
+            else:
+                # Try next iteration of loop
+                next = self
+                hooks.state[self.uuid]['checked_cond'] = False
+
+        return next
 
     def realtime_execution(self, hooks):
-        hooks.active_primitive = self
-
-        run = True
-        while run:
-            for p in self.primitives:
-                p.symbolic_execution(hooks)
-
-            run = self.condition.symbolic_execution(hooks) if self.condition != None else True
+        return self.symbolic_execution(hooks)

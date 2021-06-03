@@ -40,6 +40,7 @@ export const evdScriptBlocklyToolbox = () => {
             colour: "260",
             blocks: [
                 Location.BlocklyToolbox()
+                ///... add more instances of locations at runtime 
             ]
         },
         {
@@ -48,6 +49,7 @@ export const evdScriptBlocklyToolbox = () => {
             colour: "290",
             blocks: [
                 Waypoint.BlocklyToolbox()
+                ///... add more instances of waypoints at runtime 
             ]
         },
         {
@@ -64,6 +66,7 @@ export const evdScriptBlocklyToolbox = () => {
             colour: "50",
             blocks: [
                 Machine.BlocklyToolbox()
+                ///... add more instances of machine at runtime 
             ]
         },
         {
@@ -72,6 +75,7 @@ export const evdScriptBlocklyToolbox = () => {
             colour: "20",
             blocks: [
                 Thing.BlocklyToolbox()
+                ///... add more instances of things at runtime 
             ]
         },
         {
@@ -85,6 +89,7 @@ export const evdScriptBlocklyToolbox = () => {
                 OpenGripper.BlocklyToolbox(),
                 SimplePickAndPlace.BlocklyToolbox(),
                 MachineBlockingProcess.BlocklyToolbox()
+                ///... add more instances of skills at runtime 
             ]
         },
         {
@@ -117,7 +122,8 @@ export const evdScriptBlocklyToolbox = () => {
 export const evdScriptBlocklyInitialize = () => {
     let tmp = null;
 
-    tmp = Location.BlocklyBlock();
+    const locations = []
+    tmp = Location.BlocklyBlock(locations); //needs to take in list of location options
     Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Waypoint.BlocklyBlock();
@@ -132,12 +138,17 @@ export const evdScriptBlocklyInitialize = () => {
     tmp = Thing.BlocklyBlock();
     Blockly.Blocks[tmp.key] = tmp.data;
 
+    // THis should generate a skill template block (like program)
+    // and should generate an instance block (or blocks)
+    // instance of skill should not be parameterized
     tmp = Skill.BlocklyBlock();
     Blockly.Blocks[tmp.key] = tmp.data;
 
     tmp = Program.BlocklyBlock();
     Blockly.Blocks[tmp.key] = tmp.data;
 
+    // Maybe revist parameterization here
+    //  For learning over time - maybe switching this to instance & template model
     tmp = CloseGripper.BlocklyBlock();
     Blockly.Blocks[tmp.key] = tmp.data;
 

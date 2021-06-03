@@ -1,3 +1,11 @@
+'''
+Node is the root type within EvDScript's AST.
+
+Each node provides the basic serialization/deserialization behavior,
+a set of public facing properties, a generic set method, potentially child
+methods, cache management, and change callback tracing behavior.
+'''
+
 import uuid
 
 from abc import ABC
@@ -12,13 +20,13 @@ class Node(ABC):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'node' + '.' if trailing_delim else ''
+        return 'node' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return cls.type_string()
 
-    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._parent = None
         self._type = None
         self._name = None
@@ -32,18 +40,27 @@ class Node(ABC):
         self.type = Node.type_string() + type if append_type else type
         self.name = name
 
+        self._editable = editable
+        self._deleteable = deleteable
+        self.updated_attribute("editable","set") # called this as these are set directly on the private members
+        self.updated_attribute("deleteable","set")
+
     @classmethod
     def from_dct(cls, dct):
         return cls(type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
-                   name=dct['name'] if 'name' in dct.keys() else '')
+                   name=dct['name'] if 'name' in dct.keys() else '',
+                   editable=dct['editable'] if 'editable' in dct.keys() else '',
+                   deleteable=dct['deleteable'] if 'deleteable' in dct.keys() else '')
 
     def to_dct(self):
         return {
             'type': self.type,
             'name': self.name,
-            'uuid': self.uuid
+            'uuid': self.uuid,
+            'editable': self.editable,
+            'deleteable': self.deletable
         }
 
     def on_delete(self):
@@ -55,6 +72,8 @@ class Node(ABC):
 
     @property
     def context(self):
+        # Since EvD only has a global context, this is more a short-hand of saying the node is 
+        # situated in a program.
         if self._parent != None:
             return self._parent.context
         else:
@@ -98,8 +117,17 @@ class Node(ABC):
 
             self.updated_attribute("parent","set")
 
+    @property
+    def editable(self):
+        return self._editable
+
+    @property
+    def deletable(self):
+        return self._deleteable
+
     def set(self, dct):
-        # Note: cannot set uuid
+        # Note: cannot set uuid or parent with this
+        # Note: cannot set editable or deleteable status
 
         name = dct.get('name',None)
         if name != None:
@@ -111,6 +139,9 @@ class Node(ABC):
 
     '''
     Cache methods
+        - The cache is very important for quick lookup of program nodes.
+        - All objects should make sure to add and remove themselves and their
+          children as state changes in EvDScript.
     '''
 
     def remove_from_cache(self):
@@ -125,24 +156,36 @@ class Node(ABC):
 
     '''
     Children methods (optional)
+        - If nodes encapsulate other nodes then their implementation should 
+          expose useful variants of these methods.
     '''
 
     def delete_child(self, uuid):
-        # write this for each sub-node type that has children
-        return True #no children in root node to delete
+        # write this for each sub-node type that has set of deletable children
+        return False #no children in root node to delete
+
+    def add_child(self, dct):
+        # write this for each sub-node type that has set of addable children
+        return False #no children in root node can be added
+
+    '''
+    Utility methods
+        - Subnodes probably will not need to override these
+    '''
+
+    def get_exact_type(self):
+        type = self.type.split('.')
+        exactType = type[len(type) - 2]
+        return exactType
+
+    @staticmethod
+    def _generate_uuid(type):
+        return '{}-py-{}'.format(type,uuid.uuid1().hex)
 
     def child_changed_event(self, attribute_trace):
         if self._parent != None:
             attribute_trace.append(self._child_changed_event_msg(None,'callback'))
             self._parent.child_changed_event(attribute_trace)
-
-    '''
-    Utility methods
-    '''
-
-    @staticmethod
-    def _generate_uuid(type):
-        return '{}-py-{}'.format(type,uuid.uuid1().hex)
 
     def _child_changed_event_msg(self, attribute, verb, child_uuid = None):
         return {
@@ -164,10 +207,14 @@ class Node(ABC):
 
     '''
     Update methods
+        - Various methods to trigger callback traces and repair state (if needed)
     '''
 
     def late_construct_update(self):
-        pass # Implement if your class needs to update something after entire program is constructed
+        # Implement if your class needs to update something after entire program is constructed
+        # Note that late construct must be called after a program is complete. This should be 
+        # handled if using the standard data server and data client.
+        pass
 
     def updated_attribute(self, attribute, verb, child_uuid = None):
         if self._parent != None:
@@ -178,18 +225,27 @@ class Node(ABC):
         self.updated_attribute('name', 'update')
         self.updated_attribute('type', 'update')
         self.updated_attribute('uuid', 'update')
+        self.updated_attribute('editable', 'update')
+        self.updated_attribute('deleteable', 'update')
 
     def shallow_update(self):
         self.updated_attribute('name', 'update')
         self.updated_attribute('type', 'update')
         self.updated_attribute('uuid', 'update')
+        self.updated_attribute('editable', 'update')
+        self.updated_attribute('deleteable', 'update')
 
     '''
-    Execution methods
+    Execution methods:
+        - These allow for working through the AST at run-time.
     '''
 
     def symbolic_execution(self, hooks):
-        pass # Inplement the pre-post conditions directly
+        # Inplement the pre-post conditions directly
+        hooks.active_primitive = self
+        return self.parent # Node itself does nothing
 
     def realtime_execution(self, hooks):
-        pass # Implement the full real-time simulation
+        # Implement the full real-time simulation
+        hooks.active_primitive = self
+        return self.parent # Node itself does nothing

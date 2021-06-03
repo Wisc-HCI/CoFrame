@@ -1,3 +1,7 @@
+'''
+TODO Intention is to have a "switch" node dependent on results of conditional
+'''
+
 from ..primitive import Primitive
 from ...node_parser import NodeParser
 
@@ -10,7 +14,7 @@ class Branch(Primitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'branch' + '.' if trailing_delim else ''
+        return 'branch' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):

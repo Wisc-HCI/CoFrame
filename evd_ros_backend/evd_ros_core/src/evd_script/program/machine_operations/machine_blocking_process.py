@@ -1,3 +1,9 @@
+'''
+Machine Blocking Process simplifies the generalzied machining process for a robot. The 
+machining could be a pre-written CNC routine that gets invoked by this primitive, then
+waits until that routine finishes, and will perform any "cleanup" at end of the process.
+'''
+
 from ..skill import Skill
 from .machine_start import MachineStart
 from .machine_stop import MachineStop
@@ -12,20 +18,20 @@ class MachineBlockingProcess(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'machine-blocking-process' + '.' if trailing_delim else ''
+        return 'machine-blocking-process' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
-                 append_type=True, primitives=None):
+                 append_type=True, primitives=None, editable=True, deleteable=True):
 
         if primitives == None:
             primitives=[
-                MachineStart(machineUuid),
-                MachineWait(machineUuid),
-                MachineStop(machineUuid)
+                MachineStart(machineUuid, editable=editable, deleteable=deleteable),
+                MachineWait(machineUuid, editable=editable, deleteable=deleteable),
+                MachineStop(machineUuid, editable=editable, deleteable=deleteable)
             ]
 
         super(MachineBlockingProcess,self).__init__(
@@ -34,4 +40,6 @@ class MachineBlockingProcess(Skill):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=primitives)
+            primitives=primitives,
+            editable=editable,
+            deleteable=deleteable)

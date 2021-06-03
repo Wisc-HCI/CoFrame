@@ -1,3 +1,9 @@
+'''
+This abstracts controlling a machine in EvD. All machines should follow this interface (for instance 
+by using the template).
+
+Machine primitives are specifically written with this interface in mind.
+'''
 
 import rospy
 
@@ -18,7 +24,7 @@ class MachineInterface:
         self.pause_pub = rospy.Publisher('{0}machine/pause'.format(prefix_fmt), MachinePause, queue_size=10)
 
         self.ack_sub = rospy.Subscriber('{0}machine/ack'.format(prefix_fmt), MachineAck, self._ack_cb)
-        self.status_sub = rospy.Subscriber('{0}machine/wait'.format(prefix_fmt), MachineStatus, self._status_cb)
+        self.status_sub = rospy.Subscriber('{0}machine/status'.format(prefix_fmt), MachineStatus, self._status_cb)
 
     def _ack_cb(self, msg):
         self._ack_table[msg.uuid] = msg.ack

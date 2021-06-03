@@ -1,12 +1,21 @@
 '''
-???
+Program runner takes in a raw program (can be a full program or a subset of nodes)
+and will attempt to run it using a standard player interface.
+
+The program runner also acts as its own set of hooks when passed into the EvDscript
+AST for execution. It allows the underlying program to command machines and robot.
+It allows breakpoints to pause execution. And it provides both a state scratchpad for
+nodes and a token tracker for persistent state across nodes.
+
+Each executable node should implement symbolic and realtime execution methods. 
+
+Real-time execution runs a simulation that actually runs through the execution pipeline.
+Whereas the symbolic execution merely manipulate the symbols needed to achieve 
+post-conditions from pre-conditions.
 '''
 
 import time
-import json
-import rospy
 
-from std_msgs.msg import Bool, String
 from evd_ros_core.msg import ProgramRunnerStatus
 
 
@@ -16,45 +25,19 @@ class ProgramRunner(object):
     # Program Runner External Interface
     #===========================================================================
 
-    def __init__(self, raw_program, physical_robot_interface=None, simulated_robot_interface=None,
-                 physical_machine_interface=None, simulated_machine_interface=None, symbolic=False):
+    def __init__(self, full_program, root_node, symbolic=False, robot=None, machine=None, player=None):
         self._symbolic = symbolic
-        self._program = raw_program
-        self._physical_robot_interface = physical_robot_interface
-        self._simulated_robot_interface = simulated_robot_interface
-        self._physical_machine_interface = physical_machine_interface
-        self._simulated_machine_interface = simulated_machine_interface
-
-        mode = None
-        if not self._symbolic:
-            if physical_robot_interface and simulated_robot_interface:
-                mode = 'both'
-                if not physical_machine_interface or not simulated_machine_interface:
-                    raise Exception('Both machine interfaces must be provided if both robot interfaces used')
-            elif physical_robot_interface:
-                mode = 'physical'
-                if not physical_machine_interface:
-                    raise Exception('Physical machine interface must be supplied')
-            elif simulated_robot_interface:
-                mode = 'simulated'
-                if not simulated_machine_interface:
-                    raise Exception('Simulated machine interface must be supplied')
-            else:
-                raise Exception('Must be at least one valid robot interface')
-        self._mode = mode
-
-        if not self._symbolic:
-            self._at_start_pub = rospy.Publisher('program_runner/at_start',Bool, queue_size=10, latch=True)
-            self._at_end_pub = rospy.Publisher('program_runner/at_end',Bool, queue_size=10, latch=True)
-            self._lockout_pub = rospy.Publisher('program_runner/lockout',Bool, queue_size=10, latch=True)
-            self._status_pub = rospy.Publisher('program_runner/status',ProgramRunnerStatus, queue_size=10, latch=True)
-            self._tokens_pub = rospy.Publisher('program_runner/tokens',String, queue_size=10, latch=True)
+        self._program = full_program
+        self._root_node = root_node
+        self._robot_interface = robot
+        self._machine_interface = machine
+        self._player_interface = player
 
         self._state = {} # nodes can place internal state here, indexed by their node UUID
         self._tokens = {} # tokens are currently things, machine state
         self._pause = False
-        self._active_node = None
-        self._next_node = None
+        self._active_node = None # hooked into by the nodes themselves (really just a flagging mechanism)
+        self._next_node = None # node that drives the execution state machine
 
         self._start_time = -1
         self._prev_time = -1
@@ -62,8 +45,8 @@ class ProgramRunner(object):
         self._stop_time = -1
 
     @property
-    def mode(self):
-        return self._mode
+    def root_uuid(self):
+        return self._root_node.uuid
 
     @property
     def pause(self):
@@ -75,26 +58,26 @@ class ProgramRunner(object):
             self._pause = value
 
             # Send pause behavior to robots
-            # Send pause signal to all machines
-            if self._physical_robot_interface:
-                self._physical_robot_interface.pause(self._pause)
-                for machine in self._program.environment.machines:
-                    self._physical_machine_interface.pause(self._pause, machine.uuid)
+            self._robot_interface.pause(self._pause)
 
-            if self._simulated_robot_interface:
-                self._simulated_robot_interface.pause(self._pause)
-                for machine in self._program.environment.machines:
-                    self._simulated_machine_interface.pause(self._pause, machine.uuid)
+            # Send pause signal to all machines
+            for machine in self._program.context.machines:
+                self._machine_interface.pause(self._pause, machine.uuid)
 
     def start(self):
-        self.reset() # initialize state
         if not self._symbolic:
-            self._at_start_pub.publish(Bool(True))
-            self._lockout_pub.publish(Bool(True))
+            self._player_interface.set_lockout(True)
 
-        self.update()
-        if not self._symbolic:
-            self._at_start_pub.publish(Bool(False))
+        # initialize state
+        error = self.reset()
+        
+        # Give initial step of program execution
+        if not error:
+            self.update()
+            if not self._symbolic:
+                self._player_interface.set_at_start(False)
+
+        return error
 
     def stop(self):
         self._stop_time = time.time()
@@ -102,22 +85,17 @@ class ProgramRunner(object):
         self._prev_time = -1
         self._curr_time = -1
 
+        # Cancel active pending robot actions
+        self._robot_interface.estop()
+
+        # Send stop signal to all machines
+        for machine in self._program.context.machines:
+            self._machine_interface.estop(machine.uuid)
+
         # Send stop and unlock messages
         if not self._symbolic:
-            self._at_end_pub.publish(True)
-            self._lockout_pub.publish(Bool(False))
-
-        # Cancel active pending robot actions
-        # Send stop signal to all machines
-        if self._physical_robot_interface:
-            self._physical_robot_interface.estop()
-            for machine in self._program.environment.machines:
-                self._physical_machine_interface.estop(machine.uuid)
-
-        if self._simulated_robot_interface:
-            self._simulated_robot_interface.estop()
-            for machine in self._program.environment.machines:
-                self._simulated_machine_interface.estop(machine.uuid)
+            self._player_interface.set_at_end(True)
+            self._player_interface.set_lockout(False)
 
     def reset(self):
         self._prev_time = -1
@@ -125,18 +103,40 @@ class ProgramRunner(object):
         self._start_time = self._curr_time
         self._stop_time = -1
 
-        self._active_node = None
-        self._next_node = self._program
+        self._active_node = None 
+        self._next_node = self._root_node 
         self._state = {}
 
-        # fill in tokens
-        self._tokens = { 'robot': {'type': 'robot', 'state': {'position': {'x':'?','y':'?','z':'?'}, 'orientation': {'x':'?','y':'?','z':'?','w':'?'}}} }
-        for e in self._program.environment.machines:
+        # fill in tokens (with unknown states)
+        self._tokens = { 'robot': {
+            'type': 'robot', 'state': {
+                'position': {'x':'?','y':'?','z':'?'}, 
+                'orientation': {'x':'?','y':'?','z':'?','w':'?'},
+                'joints': ['?'],
+                'gripper': {'position': '?', 'grasped_thing': None, 'ambiguous_flag': False}
+            }
+        }}
+        for e in self._program.context.machines:
             self._tokens[e.uuid] = {'type': 'machine', 'state': '?'}
-        for e in self._program.environment.things:
+        for e in self._program.context.things:
             self._tokens[e.uuid] = {'type': 'thing', 'state': {'position': e.position.to_dct(), 'orientation': e.orientation.to_dct()}}
 
-        self._at_end_pub.publish(False)
+        # generate reasonable start state given an arbitrary node (must symbolically execute up to root_node)
+        # result will be a token table with up-to-date values
+        error = False
+        next_node = self._program
+        while next_node != self._root_node and not error:
+            next_node = next_node.symbolic_execution(self)
+            error = next_node == None
+
+        if not self._symbolic:
+            self._player_interface.set_at_start(True)
+            self._player_interface.set_at_end(False)
+            
+            if error:
+                self._player_interface.set_error('Reset could not move state to root node')
+        
+        return error
 
     def update(self):
         self._prev_time = self._curr_time
@@ -152,11 +152,17 @@ class ProgramRunner(object):
                     self._next_node = self._next_node.symbolic_execution(self)
                 else:
                     self._next_node = self._next_node.realtime_execution(self)
+
+                # When root node is not the root program, we must stop subtree execution when 
+                # it tries to execute the parent above the root node.
+                if self._next_node != None and self._next_node == self._root_node.parent:
+                    self._next_node = None # on the next update, we will find that we ended the program
+
             else:
                 # At Program End
                 if not self._symbolic:
-                    self._at_end_pub.publish(True)
-                    self._lockout_pub.publish(Bool(False))
+                    self._player_interface.set_at_end(True)
+                    self._player_interface.set_lockout(False)
 
                 self._stop_time = time.time()
                 self._publish_status()
@@ -172,13 +178,12 @@ class ProgramRunner(object):
             msg.previous_time = self._prev_time
             msg.current_time = self._curr_time
             msg.stop_time = self._stop_time
-            self._status_pub.publish(msg)
+            
+            self._player_interface.set_status(msg)
 
     def _publish_tokens(self):
         if not self._symbolic:
-            msg = String()
-            msg.data = json.dumps(self._tokens)
-            self._tokens_pub.publish(msg)
+            self._player_interface.set_tokens(self._tokens)
 
     #===========================================================================
     # Program Runner Hooks
@@ -214,36 +219,10 @@ class ProgramRunner(object):
     def start_time(self):
         return self._start_time
 
-    #===========================================================================
-    # Machine Hooks
-    #===========================================================================
+    @property
+    def machine_interface(self):
+        return self._machine_interface
 
-    def machine_initialize(self, uuid):
-        if self._physical_machine_interface:
-            self._physical_machine_interface.machine_initialize(uuid)
-        if self._simulated_machine_interface:
-            self._simulated_machine_interface.machine_initialize(uuid)
-
-    def machine_start(self, uuid):
-        if self._physical_machine_interface:
-            self._physical_machine_interface.machine_start(uuid)
-        if self._simulated_machine_interface:
-            self._simulated_machine_interface.machine_start(uuid)
-
-    def machine_stop(self, uuid):
-        if self._physical_machine_interface:
-            self._physical_machine_interface.machine_stop(uuid)
-        if self._simulated_machine_interface:
-            self._simulated_machine_interface.machine_stop(uuid)
-
-    def machine_get_status(self, uuid):
-        status = None
-        if self._physical_machine_interface:
-            status = self._physical_machine_interface.get_status(uuid)
-        else:
-            status = self._simulated_machine_interface.get_status(uuid)
-        return status
-
-    #===========================================================================
-    # Robot Hooks
-    #===========================================================================
+    @property
+    def robot_interface(self):
+        return self._robot_interface

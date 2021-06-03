@@ -1,85 +1,357 @@
 #!/usr/bin/env python3
 
 '''
-Convert ur_mode and gripper_stat to a consistent interface for robot_interface
+Implements a UR Controller middleware that exposed URScript behavior.
+This version is compatible with RobotInterace defined in evd_ros_core.
+Additionally, freedrive and servoing behavior exposed.
+
+NOTE this has not been ran / tested since converting to the new RobotTemplate
+Some work is needed to get this fully functional.
 '''
 
 import tf
 import time
 import math
 import rospy
-import actionlib
 
 from std_msgs.msg import Bool, String
+from sensor_msgs.msg import JointState
 from ur_msgs.msg import RobotModeDataMsg
-from evd_ros_core.msg import Stop, Servo, Move, Grip
 from robotiq_85_msgs.msg import GripperCmd, GripperStat
-from geometry_msgs.msg import Pose, Quaternion, Vector3
-from evd_ros_core.msg import MoveTrajectoryAction, MoveTrajectoryGoal, MoveTrajectoryResult, MoveTrajectoryFeedback
+from geometry_msgs.msg import Pose, Position, Quaternion
+from evd_ros_core.msg import RobotMove, RobotStatus, RobotGrip
+
+from evd_interface.robot_template import RobotTemplate
 
 
+# Time Scaling Servoing Constants 
 MIN_M = -30.0
 MAX_M = 1.0
 MIN_TIME = 0.05
 MAX_TIME = 0.9
 
+# Default Movement Constants
+DEFAULT_GAIN = 100
+DEFAULT_LOOKAHEAD = 0.1
+DEFAULT_TIME_SCALARS = [100,100,100,100,100,100]
+DEFAULT_TIMESTEP = 0.12
+DEFAULT_JOINT_ACCELERATION = 1.4
+DEFAULT_LINEAR_ACCELERATION = 1.2
 
-class URController:
 
-    def __init__(self, gain, lookahead, time_scalars, timestep):
-        self._gain = gain
-        self._timestep = timestep
-        self._lookahead = lookahead
-        self._running_trajectory = False
-        self._time_scalars = time_scalars
-        self._robot_state = RobotModeDataMsg()
-        self._gripper_state = GripperStat()
+class URController(RobotTemplate):
+
+    def __init__(self, prefix=None, real_robot=False, rate=5, end_effector_link='ee_link', base_link='base_link'):
+        super(URController,self).__init__(
+            prefix, real_robot,
+            init_fnt=self.initialize,
+            estop_fnt=self.estop,
+            pause_fnt=self.pause,
+            move_fnt=self.move,
+            move_traj_fnt=self.move_trajectory,
+            grip_fnt=self.grip)
+
+        self._last_js_msg = JointState()
+        self._last_js_msg_time = 0
+        self._last_rms_msg = RobotModeDataMsg()
+        self._last_rms_msg_time = 0
+        self._last_gstat_msg = GripperStat()
+        self._last_gstat_msg_time = 0
+
+        prefix_fmt = prefix+'/' if prefix != None else ''
+
+        self._rate = rate
+        self._ee_link = end_effector_link
+        self._base_link = base_link
 
         self._urscript_pub = rospy.Publisher('ur_hardware_interface/script_command',String,queue_size=10)
         self._gripper_cmd_pub = rospy.Publisher("gripper/cmd", GripperCmd, queue_size=10)
-        self._gripper_stat_sub = rospy.Publisher('gripper/stat', GripperStat, self._gripper_stat_cb, queue_size=10)
 
-        self._ur_mode_sub = rospy.Subscriber('ur_driver/robot_mode_state',RobotModeDataMsg,self._ur_mode_cb)
-        self._freedrive_sub = rospy.Subscriber('robot_control/freedrive',Bool,self._freedrive_cb)
-        self._servoing_sub = rospy.Subscriber('robot_control/servoing',Servo,self._servoing_cb)
-        self._stop_sub = rospy.Subscriber('robot_control/stop',Stop,self._stop_cb)
-        self._gripper_sub = rospy.Subscriber('robot_control/gripper',Grip,self._gripper_cb)
+        self._joint_state_sub = rospy.Subscriber('{0}joint_states'.format(prefix_fmt),JointState,self._joint_state_cb)
+        self._robot_mode_state_sub = rospy.Subscriber('{0}ur_driver/robot_mode_state'.format(prefix_fmt),RobotModeDataMsg,self._robot_mode_state_cb)
+        self._gripper_stat_sub = rospy.Publisher('{0}gripper/stat'.format(prefix_fmt), GripperStat, self._gripper_stat_cb, queue_size=10)
+        self._tf_listener = tf.TransformListener()
+        
+        self._freedrive_sub = rospy.Subscriber('ur_controller/freedrive',Bool,self._freedrive_cb)
+        self._servoing_sub = rospy.Subscriber('ur_controller/servoing',RobotMove,self._servoing_cb)
 
-        self._move_trajectory_as = actionlib.SimpleActionServer('robot_control/move_trajectory',MoveTrajectoryAction,execute_cb=self._move_trajectory_cb,auto_start=False)
-        self._move_trajectory_as.start()
+    def spin(self):
+        rate = rospy.Rate(self._rate)
 
-    def _ur_mode_cb(self, msg):
-        self._robot_state = msg
+        while not rospy.is_shutdown():
+
+            # Update end-effector being tracked by interface
+            try:
+                ((tx,ty,tz), (rx,ry,rz,rw)) = self._tf_listener.lookupTransform(self._ee_link,self._base_link,rospy.Time(0))
+                pose = Pose(Position(tx,ty,tz),Quaternion(rx,ry,rz,rw))
+                self.current_pose = pose
+            except:
+                pass
+
+            # Push periodic updates
+            self.update_status()
+            rate.sleep()
+
+    '''
+    Low-Level Hardware callbacks
+    '''
+
+    def _joint_state_cb(self, msg):
+        self._last_js_msg = msg
+        self._last_js_msg_time = time.time()
+        self.current_joints = msg.position
+
+    def _robot_mode_state_cb(self, msg):
+        self._last_rms_msg = msg
+        self._last_rms_msg_time = time.time()
+        self.is_in_emergency_stop = msg.is_emergency_stopped or msg.is_protective_stopped
+        self.is_real_robot = msg.is_robot_connected and msg.is_real_robot_enabled
+
+    def _gripper_stat_cb(self, msg):
+        self._last_gstat_msg = msg
+        self._last_gstat_msg_time = time.time()
+        self.current_gripper_position = msg.position
+        self.gripper_object_detected = msg.obj_detected
+
+    '''
+    UR Controller Specific Behavior
+    '''
 
     def _freedrive_cb(self, msg):
+        self.is_running = msg.data
+
         cmd =  'def prog():\n'
         if msg.data:
+            self.status = RobotStatus.STATUS_RUNNING
+
             cmd += '\twhile (True):\n'
             cmd += '\t\tfreedrive_mode()\n'
             cmd += '\t\tsync()\n'
             cmd += '\tend\n'
         else:
+            self.status = RobotStatus.STATUS_IDLE
             cmd += '\tend_freedrive_mode()\n'
         cmd += 'end\n'
         self._urscript_pub.publish(String(cmd))
 
     def _servoing_cb(self, msg):
-        self._running_trajectory = False
+        # a servo op is "instantanous" and interruptable, hence considered idle
+        self.status = RobotStatus.STATUS_IDLE
+        self.is_running = False 
 
-        cmd = ''
-        if msg.motion_type == Servo.CIRCULAR:
-            cmd = self.__servoing_circular(msg.target_pose,msg.radius,msg.velocity,msg.acceleration)
-        elif msg.motion_type == Servo.JOINT:
-            if msg.use_ur_ik:
-                cmd = self.__servoing_joint_pose(msg.target_pose,msg.velocity,msg.acceleration)
-            else:
-                cmd = self.__servoing_joint_joints(msg.target_joints,msg.velocity,msg.acceleration)
+        if msg.motion_type == RobotMove.EE_IK:
+            cmd = URController.pack_servoing_joint_pose_cmd(msg.target_pose,msg.velocity,DEFAULT_LINEAR_ACCELERATION)
+        else:
+            cmd = URController.pack_servoing_joint_joints_cmd(msg.target_joints,msg.velocity,DEFAULT_JOINT_ACCELERATION)
 
         self._urscript_pub.publish(String(cmd))
 
-    def __servoing_joint_joints(self, js, velocity, acceleration):
-        if self._time_scalars != None:
-            j = max([self._time_scalars[i] * abs(js[i] - self._js[i]) for i in range(0,len(self._ordering))])
+    '''
+    Robot Template Behavior
+    '''
+
+    def initialize(self, set_gripper=False, gripper_position=None, set_arm=False, arm_joints=None):
+        # Behavior is not instantaneous. Must jog robot to position.
+        grip_status = True
+        if set_gripper:
+            msg = RobotGrip()
+            msg.position = gripper_position
+            grip_status = self.grip(msg)
+
+        arm_status = True
+        if set_arm:
+            msg = RobotMove()
+            msg.motion_type = RobotMove.JOINT
+            msg.target_joints = arm_joints
+            msg.velocity = RobotMove.JOINT_VELOCITY
+            arm_status = self.move(msg)
+
+        return grip_status and arm_status # ACK / NACK
+
+    def estop(self, emergency):
+        self.status = RobotStatus.STATUS_ERROR if emergency else RobotStatus.STATUS_IDLE
+        self.is_running = False
+
+        if emergency:
+            cmd = URController.pack_stop_joint_cmd(DEFAULT_JOINT_ACCELERATION)
+        else:
+            cmd = URController.pack_stop_linear_cmd(DEFAULT_LINEAR_ACCELERATION)
+        self._urscript_pub.publish(String(cmd))
+    
+        self._running_gripper = False
+        cmd = URController.pack_gripper_stop_cmd()
+        self._gripper_cmd_pub.publish(cmd)
+
+        return True # ACK
+            
+    def pause(self, state):
+        # Pause is not supported on the real robot at this point!
+        if self.is_running:
+            self.estop(True)
+
+        return False #NACK
+
+    def move(self, msg): #RobotMove
+        self.status = RobotStatus.STATUS_RUNNING
+        self.is_running = True
+
+        if msg.motion_type == RobotMove.EE_IK:
+            cmd = URController.pack_servoing_joint_pose_cmd(msg.target_pose,msg.velocity,DEFAULT_LINEAR_ACCELERATION)
+        else:
+            cmd = URController.pack_servoing_joint_joints_cmd(msg.target_joints,msg.velocity,DEFAULT_JOINT_ACCELERATION)
+
+        # publish to robot & wait for movement to complete
+        self._urscript_pub.publish(String(cmd))
+        self._execute_wait('arm')
+
+        self.status = RobotStatus.STATUS_IDLE
+        self.is_running = False
+        return True #ACK
+
+    def move_trajectory(self, moves): #RobotMove[]
+        status = True
+
+        #generate urscript program for path
+        cmd = "def prog():\n"
+        for move in moves:
+            if move.motion_type == RobotMove.EE_IK:
+                cmd += self.__move_linear(move)
+            elif move.motion_type == RobotMove.JOINT:
+                cmd += self.__move_joint_joints(move)
+            else:
+                status = False
+        cmd += "end\n"
+
+        if not status:
+            # could not properly pack trajectory
+            return False #NACK
+        elif len(moves) == 0:
+            # Empty list can be run in zero time :)
+            return True #ACK
+
+        # publish to robot & wait for movement to complete
+        self._urscript_pub.publish(String(cmd))
+        self._execute_wait('arm')
+
+        return True #ACK
+
+    def grip(self, msg): #RobotGrip
+        self.status = RobotStatus.STATUS_RUNNING
+        self.is_running = True
+
+        cmd = URController.pack_gripper_move_cmd(msg.position,msg.speed,msg.effort)
+        self._gripper_cmd_pub.publish(cmd)
+
+        self._execute_wait('grip')
+
+        self.status = RobotStatus.STATUS_IDLE
+        self.is_running = False
+        return True #ACK
+
+    def _execute_wait(self, arm_or_grip='arm'):
+        state = 'start'
+        init_time = time.time()
+        while True:
+            
+            # check if forced to stop
+            if not self.is_running:
+                state = 'stopped'
+                break
+
+            # get running status
+            if arm_or_grip == 'arm':
+                running = self._last_rms_msg.is_program_running
+            else:
+                running = self._last_gstat_msg.is_moving
+            
+            # run state machine to confirm behavior
+            if state == 'start':
+                if running:
+                    state = 'moving'
+                    continue
+
+                elif time.time() - init_time >= 0.2:
+                    # Program never ran, assume it is already at position
+                    state = 'timeout'
+                    break
+            
+            elif state == 'moving':
+                # while controller says it is running, stay in this loop
+                if not running:
+                    state = 'stopped'
+                    break
+
+            rospy.sleep(0.1)
+
+    '''
+    Hardware Level - State Properties
+    '''
+
+    def get_last_gripper_state(self):
+        return self._last_gstat_msg, self._last_gstat_msg_time
+
+    def get_last_robot_mode_state(self):
+        return self._last_rms_msg, self._last_rms_msg_time
+
+    def get_last_joint_state(self):
+        return self._last_js_msg, self._last_js_msg_time
+
+    '''
+    Class Methods
+        - Used to pack commands
+    '''
+
+    @classmethod
+    def pack_move_circular_cmd(self, target_pose, path_pose, acceleration, velocity, radius, circular_constrained):
+        px, py, pz, rx, ry, rz = self.unpack_formatted_pose(target_pose)
+        ppx, ppy, ppz, prx, pry, prz = self.unpack_formatted_pose(path_pose)
+
+        cmd =  "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
+        cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
+        cmd += "\trv = rpy2rotvec([{0},{1},{2}])\n".format(prx,pry,prz)
+        cmd += "\tpath_point = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(ppx,ppy,ppz)
+        cmd += "\tmovec(path_point,pose_target,{0},{1},{2},{3})\n".format(acceleration,velocity,radius,int(circular_constrained))
+        return cmd
+
+    @classmethod
+    def pack_move_joint_pose_cmd(self, pose, acceleration, velocity, time, radius):
+        px, py, pz, rx, ry, rz = self.unpack_formatted_pose(pose)
+
+        cmd =  "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
+        cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
+        cmd += "\tmovej(pose_target,{0},{1},{2},{3})\n".format(acceleration,velocity,time,radius)
+        return cmd
+
+    @classmethod
+    def pack_move_joint_joints_cmd(self, js, acceleration, velocity, time, radius):
+        cmd =  "\tjoints = [{0},{1},{2},{3},{4},{5}]\n".format(js[0],js[1],js[2],js[3],js[4],js[5])
+        cmd += "\tmovej(joints,{0},{1},{2},{3})\n".format(acceleration,velocity,time,radius)
+        return cmd
+
+    @classmethod
+    def pack_move_linear_cmd(cls, pose, acceleration, velocity, time, radius):
+        px, py, pz, rx, ry, rz = cls.unpack_formatted_pose(pose)
+
+        cmd =  "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
+        cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
+        cmd += "\tmovel(pose_target,{0},{1},{2},{3})\n".format(acceleration,velocity,time,radius)
+        return cmd
+
+    @classmethod
+    def pack_move_process_cmd(cls, pose, acceleration, velocity, radius):
+        px, py, pz, rx, ry, rz = cls.unpack_formatted_pose(pose)
+
+        cmd =  "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
+        cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
+        cmd += "\tmovep(pose_target,{0},{1},{2})\n".format(acceleration,velocity,radius)
+        return cmd
+
+    @classmethod
+    def pack_servoing_joint_joints_cmd(cls, js, velocity, acceleration, lookahead_time, gain, time_scalars=None, prev_js=None, timestep=None):
+        # Time scaling attempts to provide a dynamic timestep based on the difference in prev to current joint states. This can stabilize some
+        # of the jerky (higher-order overshoot) behavior when servoing aggressively.
+        if time_scalars != None:
+            j = max([time_scalars[i] * abs(js[i] - prev_js[i]) for i in range(0,len(time_scalars))])
             if j > 0:
                 m = math.log(j)
                 if m <= MIN_M:
@@ -91,28 +363,29 @@ class URController:
             else:
                 time = MIN_TIME
         else:
-            time = self._timestep
-        self._js = js
+            time = timestep if timestep != None else DEFAULT_TIMESTEP
 
         cmd =  "def prog():\n"
         cmd += "\tjoints = [{0},{1},{2},{3},{4},{5}]\n".format(js[0],js[1],js[2],js[3],js[4],js[5])
-        cmd += "\tservoj(joints,{0},{1},{2},{3},{4})\n".format(acceleration,velocity,time,self._lookahead_time,self._gain)
+        cmd += "\tservoj(joints,{0},{1},{2},{3},{4})\n".format(acceleration,velocity,time,lookahead_time,gain)
         cmd += "end\n"
         return cmd
 
-    def __servoing_joint_pose(self, pose, velocity, acceleration):
-        px, py, pz, rx, ry, rz = self.___format_pose(pose)
+    @classmethod
+    def pack_servoing_joint_pose_cmd(cls, pose, velocity, acceleration, timestep, lookahead_time, gain):
+        px, py, pz, rx, ry, rz = cls.unpack_formatted_pose(pose)
 
         cmd =  "def prog():\n"
         cmd += "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
         cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
         cmd += "\tjoints = get_inverse_kin(pose_target)\n"
-        cmd += "\tservoj(joints,{0},{1},{2},{3},{4})\n".format(acceleration,velocity,self._timestep,self._lookahead_time,self._gain)
+        cmd += "\tservoj(joints,{0},{1},{2},{3},{4})\n".format(acceleration,velocity,timestep,lookahead_time,gain)
         cmd += "end\n"
         return cmd
 
-    def __servoing_circular(self, pose, radius, velocity, acceleration):
-        px, py, pz, rx, ry, rz = self.___format_pose(pose)
+    @classmethod
+    def pack_servoing_circular_cmd(cls, pose, radius, velocity, acceleration):
+        px, py, pz, rx, ry, rz = cls.unpack_formatted_pose(pose)
 
         cmd =  "def prog():\n"
         cmd += "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
@@ -121,7 +394,8 @@ class URController:
         cmd += "end\n"
         return cmd
 
-    def ___format_pose(self, pose):
+    @classmethod
+    def unpack_formatted_pose(cls, pose):
         px = -pose.position.x
         py = -pose.position.y
         pz = pose.position.z
@@ -133,177 +407,34 @@ class URController:
             'sxyz')
         return px, py, pz, rx, ry, rz
 
-    def _move_trajectory_cb(self, goal):
-        self._running_trajectory = True
+    @classmethod
+    def pack_stop_joint_cmd(cls, acceleration):
+        return "stopj({0})\n".format(acceleration)
 
-        result = MoveTrajectoryResult()
-        result.status = True
-        result.message = ''
+    @classmethod
+    def pack_stop_linear_cmd(cls, acceleration):
+        return "stopl({0})\n".format(acceleration)
 
-        feedback = MoveTrajectoryFeedback()
-        feedback.message = 'starting action'
-        self._move_trajectory_as.publish_feedback(feedback)
+    @classmethod
+    def pack_gripper_stop_cmd(cls):
+        msg = GripperCmd()
+        msg.stop = True
+        return msg
 
-        #generate urscript program for path
-        cmd = "def prog():\n"
-        for move in goal.moves:
-            if move.motion_type == Move.CIRCULAR:
-                cmd += self.__move_circular(move)
-            elif move.motion_type == Move.JOINT:
-                if move.use_ur_ik:
-                    cmd += self.__move_joint_pose(move)
-                else:
-                    cmd += self.__move_joint_joints(move)
-            elif move.motion_type == Move.LINEAR:
-                cmd += self.__move_linear(move)
-            elif move.motion_type == Move.PROCESS:
-                cmd += self.__move_process(move)
-            else:
-                result.status = False
-                result.message = 'invalid motion type encountered'
-        cmd += "end\n"
-
-        # early stopping on error or if zero items
-        if not result.status or len(goal.moves) == 0:
-            self._move_trajectory_as.set_succeeded(result)
-
-        feedback = MoveTrajectoryFeedback()
-        feedback.message = 'generated urscript'
-        self._move_trajectory_as.publish_feedback(feedback)
-
-        # publish to robot
-        self._urscript_pub.publish(String(cmd))
-
-        feedback = MoveTrajectoryFeedback()
-        feedback.message = 'published urscript'
-        self._move_trajectory_as.publish_feedback(feedback)
-
-        # wait for movement to complete
-        if goal.wait_for_finish:
-            state = 'start'
-            init_time = time.time()
-            while True:
-                # check if forced to stop
-                if not self._running_trajectory:
-                    state = 'stopped'
-
-                    self._urscript_pub.publish(String("stopj({0})\n".format(1.2)))
-
-                    result.status = False
-                    result.message = 'forced to stop in node'
-                    self._move_trajectory_as.set_succeeded(result)
-                    break
-
-                elif self._move_trajectory_as.is_preempt_requested():
-                    state = 'preempted'
-
-                    self._urscript_pub.publish(String("stopj({0})\n".format(1.2)))
-
-                    result.status = False
-                    result.message = 'preempted'
-                    self._server.set_preempted(result)
-                    break
-
-                # run state machine
-                if state == 'start':
-                    if self._robot_state.is_program_running:
-                        state = 'moving'
-                        continue
-
-                    elif time.time() - init_time >= 0.2:
-                        state = 'timeout'
-
-                        result.status = True
-                        result.message = 'Robot program never ran, could already be at state'
-                        self._move_trajectory_as.set_succeeded(result)
-                        break
-
-                elif state == 'moving':
-                    if not self._robot_state.is_program_running:
-                        state = 'stopped'
-
-                        result.status = True
-                        result.message = 'Trajectory finished executing'
-                        self._move_trajectory_as.set_succeeded(result)
-                        break
-
-                # waiting timestep
-                rospy.sleep(0.1)
-        else:
-            result.status = True
-            result.message = 'Instructed to ignore trajectory execution state'
-            self._move_trajectory_as.set_succeeded(result)
-
-    def __move_circular(self, msg):
-        px, py, pz, rx, ry, rz = self.___format_pose(msg.target_pose)
-        ppx, ppy, ppz, prx, pry, prz = self.___format_pose(msg.path_pose)
-
-        cmd =  "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
-        cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
-        cmd += "\trv = rpy2rotvec([{0},{1},{2}])\n".format(prx,pry,prz)
-        cmd += "\tpath_point = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(ppx,ppy,ppz)
-        cmd += "\tmovec(path_point,pose_target,{0},{1},{2},{3})\n".format(msg.acceleration,msg.velocity,msg.radius,int(msg.circular_constrained))
-        return cmd
-
-    def __move_joint_pose(self, msg):
-        px, py, pz, rx, ry, rz = self.___format_pose(msg.target_pose)
-
-        cmd =  "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
-        cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
-        cmd += "\tmovej(pose_target,{0},{1},{2},{3})\n".format(msg.acceleration,msg.velocity,msg.time,msg.radius)
-        return cmd
-
-    def __move_joint_joints(self, msg):
-        js = msg.target_joints
-
-        cmd =  "\tjoints = [{0},{1},{2},{3},{4},{5}]\n".format(js[0],js[1],js[2],js[3],js[4],js[5])
-        cmd += "\tmovej(joints,{0},{1},{2},{3})\n".format(msg.acceleration,msg.velocity,msg.time,msg.radius)
-        return cmd
-
-    def __move_linear(self, msg):
-        px, py, pz, rx, ry, rz = self.___format_pose(msg.target_pose)
-
-        cmd =  "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
-        cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
-        cmd += "\tmovel(pose_target,{0},{1},{2},{3})\n".format(msg.acceleration,msg.velocity,msg.time,msg.radius)
-        return cmd
-
-    def __move_process(self, msg):
-        px, py, pz, rx, ry, rz = self.___format_pose(msg.target_pose)
-
-        cmd =  "\trv = rpy2rotvec([{0},{1},{2}])\n".format(rx,ry,rz)
-        cmd += "\tpose_target = p[{0},{1},{2},rv[0],rv[1],rv[2]]\n".format(px,py,pz)
-        cmd += "\tmovep(pose_target,{0},{1},{2},{3})\n".format(msg.acceleration,msg.velocity,msg.radius)
-        return cmd
-
-    def _stop_cb(self, msg):
-
-        if msg.motion_type == Stop.JOINT:
-            cmd = "stopj({0})\n".format(msg.acceleration)
-        else: # default to this case for safety
-            cmd = "stopl({0})\n".format(msg.acceleration)
-
-        self._urscript_pub.publish(String(cmd))
-        self._running_trajectory = False
-
-    def _gripper_cb(self, msg):
-        cmd = GripperCmd()
-        cmd.position = msg.position / 100 * 0.085
-        cmd.speed = msg.speed / 100
-        cmd.force = msg.effort / 100
-        self._gripper_cmd_pub.publish(cmd)
-
-    def _gripper_stat_cb(self, msg):
-        self._gripper_state = msg
+    @classmethod
+    def pack_gripper_move_cmd(cls, position, speed, force):
+        msg = GripperCmd()
+        msg.position = position
+        msg.speed = speed
+        msg.force = force
+        return msg
 
 
 if __name__ == "__main__":
     rospy.init_node('ur_controller')
 
-    gain = rospy.get_param('~gain')
-    lookahead = rospy.get_param('~lookahead')
-    time_scalars = rospy.get_param('~time_scalars',None)
-    timestep = rospy.get_param('~timestep',MIN_TIME)
+    prefix = rospy.get_param('prefix',None)
+    rate = rospy.get_param('rate',5)
 
-    node = URController(gain,lookahead,time_scalars,timestep)
-    rospy.spin()
+    node = URController(prefix,rate)
+    node.spin()

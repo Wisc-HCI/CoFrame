@@ -1,3 +1,8 @@
+'''
+Semantically meaningful waypoints that a robot can operate on as
+start/end points in a trajectory.
+'''
+
 from .waypoint import Waypoint
 
 from geometry_msgs.msg import Vector3
@@ -19,14 +24,14 @@ class Location(Waypoint):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'location' + '.' if trailing_delim else ''
+        return 'location' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Waypoint.full_type_string() + cls.type_string()
 
     def __init__(self, position=None, orientation=None, joints=None, type='',
-                 name='', uuid=None, parent=None, append_type=True):
+                 name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         super(Location,self).__init__(
             position=position,
             orientation=orientation,
@@ -35,7 +40,9 @@ class Location(Waypoint):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
     def to_ros_marker(self, frame_id='app', id=0):
         # The frame_id should be the application frame

@@ -1,3 +1,12 @@
+'''
+Trace Data Point provides a sample of robot state during execution of a trajectory.
+Each data point should be stored within a trace data structure.
+
+TODO record joint values on each
+TODO record time from start
+TODO expand on grader properties and methods here
+'''
+
 from .grade import Grade
 from ..node_parser import NodeParser
 from .geometry import Pose, Position, Orientation
@@ -15,14 +24,14 @@ class TraceDataPoint(Pose, VisualizeMarker):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'trace-data-point' + '.' if trailing_delim else ''
+        return 'trace-data-point' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Pose.full_type_string() + cls.type_string()
 
     def __init__(self, position=None, orientation=None, grades={}, type='',
-                 name='', uuid=None, parent=None, append_type=True):
+                 name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._grades = {}
 
@@ -33,7 +42,9 @@ class TraceDataPoint(Pose, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.grades = grades
 
@@ -94,6 +105,24 @@ class TraceDataPoint(Pose, VisualizeMarker):
             self.grades = {key: NodeParser(dct['grades'][key], enforce_type=Grade.type_string(trailing_delim=False)) for key in dct['grades'].keys()}
 
         super(TraceDataPoint,self).set(dct)
+
+    '''
+    Cache Methods
+    '''
+
+    def remove_from_cache(self):
+
+        for grade in self._grades.values():
+                grade.remove_from_cache()
+
+        super(TraceDataPoint,self).remove_from_cache()
+
+    def add_to_cache(self):
+
+        for grade in self._grades.values():
+                grade.add_to_cache()
+
+        super(TraceDataPoint,self).add_to_cache()
 
     '''
     Update Methods

@@ -62,6 +62,8 @@ export class SimplePickAndPlace extends Skill {
     }
 
     static BlocklyBlock() {
+
+        // Expose trajectory objects as parameters instead of just locations.
         return { key: 'simple_pick_and_place', data: {
             init: function() {
                 this.appendDummyInput()

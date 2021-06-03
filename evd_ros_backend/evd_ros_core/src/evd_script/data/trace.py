@@ -1,5 +1,23 @@
-from ..node_parser import NodeParser
+'''
+Trace is the result of running a trajectory on the robot planner. 
+
+Traces provide a set of data and various labeled keys.
+
+data = {
+    "key": [TraceDataPoint,...]
+}
+
+keys are provided by
+- end_effector_path (robot's end-effector frame)
+- joint_paths (each relevant joint frame)
+- tool_paths (each relevant tool frame)
+- component_paths (additional frames tracked by application)
+
+time is the duration for just this trajectory in planning (approximate)
+'''
+
 from ..node import Node
+from ..node_parser import NodeParser
 from .trace_data_point import TraceDataPoint
 from ..visualizable import VisualizeMarkers, ColorTable
 
@@ -15,14 +33,14 @@ class Trace(Node, VisualizeMarkers):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'trace' + '.' if trailing_delim else ''
+        return 'trace' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, eePath=None, data={}, jPaths=[], tPaths=[], cPaths=[],
-                 time=0, type='', name='', uuid=None, parent=None, append_type=True):
+                 time=0, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._data = {}
         self._time = None
@@ -36,7 +54,9 @@ class Trace(Node, VisualizeMarkers):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.data = data
         self.time = time
@@ -59,12 +79,21 @@ class Trace(Node, VisualizeMarkers):
 
     @classmethod
     def from_dct(cls, dct):
+
+        data = {}
+        for key in dct['data'].keys():
+            data[key] = []
+
+            for i in range(0,len(dct['data'][key])):
+                node = NodeParser(dct['data'][key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False))
+                data[key].append(node)
+
         return cls(
             uuid=dct['uuid'],
             type=dct['type'],
             name=dct['name'],
             append_type=False,
-            data={key: [NodeParser(dct['data'][key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False)) for i in range(0,len(dct['data'][key]))] for key in dct['data'].keys()},
+            data=data,
             eePath=dct['end_effector_path'],
             jPaths=dct['joint_paths'],
             tPaths=dct['tool_paths'],
@@ -214,9 +243,17 @@ class Trace(Node, VisualizeMarkers):
             self.updated_attribute('data','delete')
 
     def set(self, dct):
-        data = dct.get('data',None)
-        if data != None:
-            self.data = {key: [NodeParser(data[key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False)) for i in range(0,len(data[key]))] for key in data.keys()}
+
+        if 'data' in dct.keys():
+            data = {}
+            for key in dct['data'].keys():
+                data[key] = []
+
+                for i in range(0,len(dct['data'][key])):
+                    node = NodeParser(dct['data'][key][i], enforce_type=TraceDataPoint.type_string(trailing_delim=False))
+                    data[key].append(node)
+            
+            self.data = data
 
         time = dct.get('time',None)
         if time != None:

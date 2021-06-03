@@ -1,3 +1,23 @@
+'''
+A machine is an "agent" that is neither human nor the robot executing the program.
+Each machine can generate and/or consume things.
+
+Machine could be something "smart" like a CNC mill or a 3D printer, but it could also be
+a simple machine like a feeder. Additionally, vision systems can be a machine that
+"generates" things by finding them in the real environment. 
+
+A machine allows for a set of input regions that take in a thing of a particular type and a set of output
+regions that generate things of a certain type. Machines also use a recipe to define the number of input
+things at the input regions that can be converted into a number of output things at the output regions.
+
+Machines can be purely generators (they don't have any inputs), purely consumers (no outputs), or 
+transformers (that have inputs and outputs).
+
+NOTE, currently regions are not a supported type for robot planning. Robot's use locations so arbitrary
+position is not supported. This is fine for the studies at this time but more complex use will require
+handling this disconnect.
+'''
+
 from ..node import Node
 from ..node_parser import NodeParser
 from .machine_recipe import MachineRecipe
@@ -11,14 +31,14 @@ class Machine(Node):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'machine' + '.' if trailing_delim else ''
+        return 'machine' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, input_regions=None, output_regions=None,
-                 recipe=None, type='', name='', uuid=None, parent=None, append_type=True):
+                 recipe=None, type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
         self._input_regions = None
         self._output_regions = None
         self._machine_type = None
@@ -29,7 +49,9 @@ class Machine(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.input_regions = input_regions
         self.output_regions = output_regions
@@ -46,8 +68,6 @@ class Machine(Node):
 
     @classmethod
     def from_dct(cls, dct):
-        from ..utility_functions import NodeParser
-
         return cls(
             input_regions={k: NodeParser(dct[k]) for k in dct['input_regions'].keys()} if dct['input_regions'] != None else None,
             output_regions={k: NodeParser(dct[k]) for k in dct['output_regions'].keys()} if dct['output_regions'] != None else None,
@@ -82,32 +102,32 @@ class Machine(Node):
             self._compute_type()
             self.updated_attribute('input_regions','set')
 
-    def add_input_region(self, thing_type, region, override=False):
+    def add_input_region(self, thing_type_uuid, region, override=False):
         verb = 'add'
 
-        if thing_type in self._input_regions.keys():
+        if thing_type_uuid in self._input_regions.keys():
             if not override:
                 raise Exception('Thing Region is about to be overrided, override is not allowed')
             else:
-                self._input_regions[thing_type].remove_from_cache()
+                self._input_regions[thing_type_uuid].remove_from_cache()
                 verb = 'update'
 
         region.parent = self
-        self._input_regions[thing_type] = region
+        self._input_regions[thing_type_uuid] = region
         self._compute_type()
         self.updated_attribute('input_regions',verb,region.uuid)
 
-    def delete_input_region(self, thing_type):
-        if not thing_type in self._input_regions.keys():
-            raise Exception('No such thing `{0}` in input_regions'.format(thing_type))
+    def delete_input_region(self, thing_type_uuid):
+        if not thing_type_uuid in self._input_regions.keys():
+            raise Exception('No such thing `{0}` in input_regions'.format(thing_type_uuid))
 
-        self._input_regions[thing_type].remove_from_cache()
-        obj = self._input_regions.pop(thing_type)
+        self._input_regions[thing_type_uuid].remove_from_cache()
+        obj = self._input_regions.pop(thing_type_uuid)
         self._compute_type()
         self.updated_attribute('input_regions','delete',obj.uuid)
 
-    def get_input_region(self, thing_type):
-        return self._input_regions[thing_type]
+    def get_input_region(self, thing_type_uuid):
+        return self._input_regions[thing_type_uuid]
 
     def find_input_region_thing_type(self, regionId):
         type = None
@@ -136,32 +156,32 @@ class Machine(Node):
             self._compute_type()
             self.updated_attribute('output_regions','set')
 
-    def add_output_region(self, thing_type, region, override=False):
+    def add_output_region(self, thing_type_uuid, region, override=False):
         verb = 'add'
 
-        if thing_type in self._output_regions.keys():
+        if thing_type_uuid in self._output_regions.keys():
             if not override:
                 raise Exception('Thing Region is about to be overrided, override is not allowed')
             else:
-                self._output_regions[thing_type].remove_from_cache()
+                self._output_regions[thing_type_uuid].remove_from_cache()
                 verb = 'update'
 
         region.parent = self
-        self._output_regions[thing_type] = region
+        self._output_regions[thing_type_uuid] = region
         self._compute_type()
         self.updated_attribute('output_regions',verb,region.uuid)
 
-    def delete_output_region(self, thing_type):
-        if not thing_type in self._output_regions.keys():
-            raise Exception('No such thing `{0}` in output_regions'.format(thing_type))
+    def delete_output_region(self, thing_type_uuid):
+        if not thing_type_uuid in self._output_regions.keys():
+            raise Exception('No such thing `{0}` in output_regions'.format(thing_type_uuid))
 
-        self._output_regions[thing_type].remove_from_cache()
-        obj = self._output_regions.pop(thing_type)
+        self._output_regions[thing_type_uuid].remove_from_cache()
+        obj = self._output_regions.pop(thing_type_uuid)
         self._compute_type()
         self.updated_attribute('output_regions','delete',obj.uuid)
 
-    def get_output_region(self, thing_type):
-        return self._output_regions[thing_type]
+    def get_output_region(self, thing_type_uuid):
+        return self._output_regions[thing_type_uuid]
 
     def find_output_region_thing_type(self, regionId):
         type = None
@@ -191,7 +211,6 @@ class Machine(Node):
             self.updated_attribute('recipe','set')
 
     def set(self, dct):
-        from ..utility_functions import NodeParser
 
         if 'input_regions' in dct.keys():
             self.input_regions = {k: NodeParser(dct[k]) for k in dct['input_regions'].keys()}

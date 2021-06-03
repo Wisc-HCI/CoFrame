@@ -1,3 +1,8 @@
+'''
+Environment extends context to provide additional global lookup of environment
+types. This node is directly used by program to expose top-level state.
+'''
+
 from ..context import Context
 from .reach_sphere import ReachSphere
 from .collision_mesh import CollisionMesh
@@ -19,7 +24,7 @@ class Environment(Context):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'environment' + '.' if trailing_delim else ''
+        return 'environment' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
@@ -27,7 +32,7 @@ class Environment(Context):
 
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], occupancy_zones=[],
                  locations=[], machines=[], things=[], waypoints=[], trajectories=[],
-                 name='', type='', uuid=None, parent=None, append_type=True):
+                 name='', type='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._reach_sphere = None
         self._pinch_points = None
@@ -44,9 +49,11 @@ class Environment(Context):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
-        self.reach_sphere = reach_sphere if reach_sphere != None else ReachSphere()
+        self.reach_sphere = reach_sphere
         self.pinch_points = pinch_points
         self.collision_meshes = collision_meshes
         self.occupancy_zones = occupancy_zones
@@ -54,7 +61,7 @@ class Environment(Context):
     def to_dct(self):
         msg = super(Environment,self).to_dct()
         msg.update({
-            'reach_sphere': self.reach_sphere.to_dct(),
+            'reach_sphere': self.reach_sphere.to_dct() if self.reach_sphere != None else None,
             'pinch_points': [p.to_dct() for p in self.pinch_points],
             'collision_meshes': [c.to_dct() for c in self.collision_meshes],
             'occupancy_zones': [o.to_dct() for o in self.occupancy_zones]
@@ -63,7 +70,7 @@ class Environment(Context):
 
     @classmethod
     def from_dct(cls, dct):
-        return cls(reach_sphere=NodeParser(dct['reach_sphere'], enforce_type=ReachSphere.type_string(trailing_delim=False)),
+        return cls(reach_sphere=NodeParser(dct['reach_sphere'], enforce_type=ReachSphere.type_string(trailing_delim=False)) if dct['reach_sphere'] != None else None,
                    pinch_points=[NodeParser(p, enforce_type=PinchPoint.type_string(trailing_delim=False)) for p in dct['pinch_points']],
                    collision_meshes=[NodeParser(c, enforce_type=CollisionMesh.type_string(trailing_delim=False)) for c in dct['collision_meshes']],
                    occupancy_zones=[NodeParser(o, enforce_type=OccupancyZone.type_string(trailing_delim=False)) for o in dct['occupancy_zones']],
@@ -87,15 +94,15 @@ class Environment(Context):
 
     @reach_sphere.setter
     def reach_sphere(self, value):
-        if value == None:
-            raise Exception('reach sphere cannot be none')
 
         if self._reach_sphere != value:
             if self._reach_sphere != None:
                 self._reach_sphere.remove_from_cache()
 
             self._reach_sphere = value
-            self._reach_sphere.parent = self
+            if self._reach_sphere != None:
+                self._reach_sphere.parent = self
+
             self.updated_attribute('reach_sphere','set',self._reach_sphere.uuid)
 
     @property
@@ -161,7 +168,7 @@ class Environment(Context):
     def set(self, dct):
 
         if 'reach_sphere' in dct.keys():
-            self.reach_sphere = NodeParser(dct['reach_sphere'], enforce_type=ReachSphere.type_string(trailing_delim=False))
+            self.reach_sphere = NodeParser(dct['reach_sphere'], enforce_type=ReachSphere.type_string(trailing_delim=False)) if dct['reach_sphere'] != None else None
 
         if 'pinch_points' in dct.keys():
             self.pinch_points = [NodeParser(p, enforce_type=PinchPoint.type_string(trailing_delim=False)) for p in dct['pinch_points']]
@@ -179,7 +186,8 @@ class Environment(Context):
     '''
 
     def remove_from_cache(self):
-        self.reach_sphere.remove_from_cache()
+        if self.reach_sphere != None:
+            self.reach_sphere.remove_from_cache()
 
         for p in self.pinch_points:
             p.remove_from_cache()
@@ -193,7 +201,8 @@ class Environment(Context):
         super(Environment,self).remove_from_cache()
 
     def add_to_cache(self):
-        self.reach_sphere.add_to_cache()
+        if self.reach_sphere != None:
+            self.reach_sphere.add_to_cache()
 
         for p in self.pinch_points:
             p.add_to_cache()
@@ -211,7 +220,8 @@ class Environment(Context):
     '''
 
     def late_construct_update(self):
-        self.reach_sphere.late_construct_update()
+        if self.reach_sphere != None:
+            self.reach_sphere.late_construct_update()
 
         for p in self.pinch_points:
             p.late_construct_update()
@@ -225,7 +235,8 @@ class Environment(Context):
         super(Environment,self).late_construct_update()
 
     def deep_update(self):
-        self.reach_sphere.deep_update()
+        if self.reach_sphere != None:
+            self.reach_sphere.deep_update()
 
         for p in self.pinch_points:
             p.deep_update()

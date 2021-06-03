@@ -1,6 +1,6 @@
 # evd_ros_tasks
-EvD is an education system developed for collaborative manufacturing robots (e.g., Universal Robots, Franka Emika) with the goal of overlaying an expert's view of a task onto the operator's.
-We aim to improve understanding of the task such that operators can make informed changes to their program.
+Expert View Dashboard (EvD) is an educational environment used to train operators
+for collaborative robotic workcells.
 
 This package provides tasks implemented for experiments and demos when using the EvD system.
 
@@ -35,6 +35,10 @@ Lastly, make sure to update the launch file `main.launch` with the task option a
 custom launch file in the `launch\tasks` directory. The custom launch file should hook into
 existing EvD ore infrastructure w/ custom configuration. If nodes external to EvD need to run,
 then this is where you should launch them.
+
+## Code
+All code should follow standard ROS convention and be placed in either scripts or src depending on the 
+generalizability of the thing written.
 
 ## Notes
 This package ends up serving as a place to store one-off task specific code. As

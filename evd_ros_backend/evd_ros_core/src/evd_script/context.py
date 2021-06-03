@@ -1,13 +1,24 @@
+'''
+Contexts at as a local "cache" for data within the program. At this point, EvD
+is architected to have a single context at the root program though in theory this
+could be used elsewhere.
+
+Nodes that reference data should do so through the context if they do not want to
+own the data with encapsulation.
+'''
+
 
 from .node import Node
 from .data.thing import Thing
 from .data.machine import Machine
 from .data.waypoint import Waypoint
 from .data.location import Location
+from .data.thing_type import ThingType
 from .data.trajectory import Trajectory
 
 from .orphans import *
 from .node_parser import NodeParser
+
 
 class Context(Node):
 
@@ -17,20 +28,21 @@ class Context(Node):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'context' + '.' if trailing_delim else ''
+        return 'context' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, locations=[], machines=[], things=[], waypoints=[], trajectories=[],
-                 type='', name='', uuid=None, parent=None, append_type=True):
+    def __init__(self, locations=[], machines=[], things=[], thing_types=[], waypoints=[], trajectories=[],
+                 type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True):
 
         self._orphan_list = evd_orphan_list()
 
         self._locations = {}
         self._machines = {}
         self._things = {}
+        self._thing_types = {}
         self._waypoints = {}
         self._trajectories = {}
 
@@ -39,13 +51,16 @@ class Context(Node):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.locations = locations
         self.machines = machines
         self.things = things
         self.waypoints = waypoints
         self.trajectories = trajectories
+        self.thing_types = thing_types
 
     def to_dct(self):
         msg = super(Context,self).to_dct()
@@ -54,7 +69,8 @@ class Context(Node):
             'machines': [m.to_dct() for m in self.machines],
             'things': [t.to_dct() for t in self.things],
             'waypoints': [w.to_dct() for w in self.waypoints],
-            'trajectories': [t.to_dct() for t in self.trajectories]
+            'trajectories': [t.to_dct() for t in self.trajectories],
+            'thing_types': [t.to_dct() for t in self.thing_types]
         })
         return msg
 
@@ -69,7 +85,8 @@ class Context(Node):
             machines=[NodeParser(m, enforce_type=Machine.type_string(trailing_delim=False)) for m in dct['machines']],
             things=[NodeParser(t, enforce_type=Thing.type_string(trailing_delim=False)) for t in dct['things']],
             waypoints=[NodeParser(w, enforce_type=Waypoint.type_string(trailing_delim=False)) for w in dct['waypoints']],
-            trajectories=[NodeParser(t, enforce_type=Trajectory.type_string(trailing_delim=False)) for t in dct['trajectories']])
+            trajectories=[NodeParser(t, enforce_type=Trajectory.type_string(trailing_delim=False)) for t in dct['trajectories']],
+            thing_types=[NodeParser(t, enforce_type=ThingType.type_string(trailing_delim=False)) for t in dct['thing_types']])
 
     def on_delete(self):
 
@@ -87,6 +104,9 @@ class Context(Node):
 
         for t in self.trajectories:
             self._orphan_list.add(t.uuid,'trajectory')
+
+        for t in self.thing_types:
+            self._orphan_list.add(t.uuid,'thing_type')
 
         super(Context,self).on_delete()
 
@@ -169,6 +189,30 @@ class Context(Node):
             self._orphan_list.add(u,'thing')
 
         self.updated_attribute('things','set')
+
+    @property
+    def thing_types(self):
+        return self._thing_types.values()
+
+    @thing_types.setter
+    def thing_types(self, value):
+        uuids = []
+
+        for t in self._thing_types:
+            t.remove_from_cache()
+            uuids.append(t.uuid)
+        self._thing_types = {}
+
+        for t in value:
+            self._thing_types[t.uuid] = t
+            t.parent = self
+            if t.uuid in uuids:
+                uuids.remove(t.uuid)
+
+        for u in uuids:
+            self._orphan_list.add(u,'thing_type')
+
+        self.updated_attribute('thing_types','set')
 
     @property
     def waypoints(self):
@@ -305,6 +349,23 @@ class Context(Node):
             self._orphan_list.add(uuid,'trajectory')
             self.updated_attribute('trajectories','delete',uuid)
 
+    def get_thing_type(self, uuid):
+        if uuid in self._thing_types.keys():
+            return self._thing_types[uuid]
+        else:
+            return None
+
+    def add_thing_type(self, thing_type):
+        thing_type.parent = self
+        self._things[thing_type.uuid] = thing_type
+        self.updated_attribute('thing_types','add',thing_type.uuid)
+
+    def delete_thing_type(self, uuid):
+        if uuid in self._thing_types.keys():
+            self._thing_types.pop(uuid).remove_from_cache()
+            self._orphan_list.add(uuid,'thing_type')
+            self.updated_attribute('thing_types','delete', uuid)
+
     def set(self, dct):
         if 'locations' in dct.keys():
             self.locations = [NodeParser(l, enforce_type=Location.type_string(trailing_delim=False)) for l in dct['locations']]
@@ -320,6 +381,9 @@ class Context(Node):
 
         if 'trajectories' in dct.keys():
             self.trajectories = [NodeParser(t, enforce_type=Trajectory.type_string(trailing_delim=False)) for t in dct['trajectories']]
+
+        if 'thing_types' in dct.keys():
+            self.thing_types = [NodeParser(t, enforce_type=ThingType.type_string(trailing_delim=False)) for t in dct['thing_types']]
 
         super(Context,self).set(dct)
 
@@ -343,6 +407,9 @@ class Context(Node):
         for t in self.trajectories:
             t.remove_from_cache()
 
+        for t in self.thing_types:
+            t.remove_from_cache()
+
         super(Context,self).remove_from_cache()
 
     def add_to_cache(self):
@@ -359,6 +426,9 @@ class Context(Node):
             w.add_to_cache()
 
         for t in self.trajectories:
+            t.add_to_cache()
+
+        for t in self.thing_types:
             t.add_to_cache()
 
         super(Context,self).add_to_cache()
@@ -380,10 +450,28 @@ class Context(Node):
             self.delete_waypoint(uuid)
         elif uuid in [t.uuid for t in self.trajectories]:
             self.delete_trajectory(uuid)
+        elif uuid in [t.uuid for t in self.thing_types]:
+            self.delete_thing_type(uuid)
         else:
             success = False
 
-        return success
+        if not success:
+            return super(Context,self).delete_child(uuid)
+        else:
+            return success
+
+    def add_child(self, dct):
+        success = True
+
+        type = dct["type"].split('.')
+        exactType = type[len(type) - 2]
+
+        #TODO
+
+        if not success:
+            return super(Context,self).add_child(dct)
+        else:
+            return success
 
     '''
     Update Methods
@@ -406,6 +494,9 @@ class Context(Node):
         for t in self.trajectories:
             t.late_construct_update()
 
+        for t in self.thing_types:
+            t.late_construct_update()
+
         super(Context,self).late_construct_update()
 
     def deep_update(self):
@@ -425,6 +516,9 @@ class Context(Node):
         for t in self.trajectories:
             t.deep_update()
 
+        for t in self.thing_types:
+            t.deep_update()
+
         super(Context,self).deep_update()
 
         self.updated_attribute('machines','update')
@@ -432,6 +526,7 @@ class Context(Node):
         self.updated_attribute('things','update')
         self.updated_attribute('waypoints','update')
         self.updated_attribute('trajectories','update')
+        self.updated_attribute('thing_types','update')
 
     def shallow_update(self):
         super(Context,self).shallow_update()
@@ -441,3 +536,4 @@ class Context(Node):
         self.updated_attribute('things','update')
         self.updated_attribute('waypoints','update')
         self.updated_attribute('trajectories','update')
+        self.updated_attribute('thing_types','update')

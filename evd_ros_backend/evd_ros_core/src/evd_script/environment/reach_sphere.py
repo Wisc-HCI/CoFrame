@@ -1,5 +1,11 @@
+'''
+Simplification of the joint-configuration space that a robot can reach. 
 
-from ..node import Node
+We can think of the robot's max reach as being bounded by a sphere. Tuning of
+this sphere can further restrict the reachability region.
+'''
+
+from .environment_node import EnvironmentNode
 from ..data.geometry import Position
 from ..visualizable import VisualizeMarker, ColorTable
 from ..node_parser import NodeParser
@@ -9,7 +15,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
 
 
-class ReachSphere(Node, VisualizeMarker):
+class ReachSphere(EnvironmentNode, VisualizeMarker):
 
     '''
     Constants
@@ -25,14 +31,14 @@ class ReachSphere(Node, VisualizeMarker):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'reach-sphere' + '.' if trailing_delim else ''
+        return 'reach-sphere' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
-        return Node.full_type_string() + cls.type_string()
+        return EnvironmentNode.full_type_string() + cls.type_string()
 
     def __init__(self, radius=1, offset=None, type='', name='',
-                 parent=None, uuid=None, append_type=True):
+                 parent=None, uuid=None, append_type=True, editable=True, deleteable=True):
         self._radius = None
         self._offset = None
 
@@ -41,7 +47,9 @@ class ReachSphere(Node, VisualizeMarker):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type)
+            append_type=append_type,
+            editable=editable,
+            deleteable=deleteable)
 
         self.radius = radius
         self.offset = offset if offset != None else Position(0,0,0)

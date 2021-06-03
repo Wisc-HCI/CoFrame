@@ -28,12 +28,6 @@
   </node>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
-  <!-- Test script -->
-  <node name="bringup_system_test" pkg="evd_ros_ur_bringup" type="bringup_system_test.py" output="screen">
-    <param name="system_prefix" value="$(arg type)"/>
-    <param name="test_start_delay" value="180"/>
-  </node>
-
   <!-- RVIZ -->
   <group if="$(arg launch_rviz)">
     <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find evd_ros_ur_bringup)/rviz/test.rviz"/>

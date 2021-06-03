@@ -1,3 +1,14 @@
+'''
+EvDScript's AST generates callback traces, which can be hooked into at the root program.
+
+This is just a simple subscriber for the traces to route various in-app callbacks that 
+you may want. For instance, your program may require tracking changes on traces. You can
+then subscribe with a type=Trace.full_type_string() and your callback. When ever a change
+happens that has the type field set as specified, your supplied callback will be invoked
+and the entry in the trace will be passed.
+
+This entry is defined as the node's child changed message.
+'''
 
 class AttributeTraceProcessor:
 

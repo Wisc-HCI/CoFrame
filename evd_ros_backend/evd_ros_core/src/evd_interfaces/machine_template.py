@@ -1,4 +1,10 @@
-# TODO this abstracts the publishing to machines (all task machines should use this!)
+'''
+This abstracts controlling machines (all task machines should use use this!)
+
+Specifically, this template should be extended by task specific software to expose
+machines in EvD.
+'''
+
 import rospy
 
 from evd_ros_core.msg import MachineAck, MachineInitialize, MachinePause, MachineStart, MachineStop, MachineStatus
@@ -27,7 +33,7 @@ class MachineTemplate:
         self._pause_fnt = pause_fnt
 
         self.ack_pub = rospy.Publisher('{0}machine/ack'.format(prefix_fmt), MachineAck, queue_size=10)
-        self.status_pub = rospy.Publisher('{0}machine/wait'.format(prefix_fmt), MachineStatus, queue_size=10)
+        self.status_pub = rospy.Publisher('{0}machine/status'.format(prefix_fmt), MachineStatus, queue_size=10)
 
         self.initialize_sub = rospy.Subscriber('{0}machine/initialize'.format(prefix_fmt), MachineInitialize, self._initialize_cb)
         self.start_sub = rospy.Subscriber('{0}machine/start'.format(prefix_fmt), MachineStart, self._start_cb)
@@ -40,7 +46,7 @@ class MachineTemplate:
             # Call machine routine
             ack = True
             if self._init_fnt != None:
-                ack = self._init_fnt() == True
+                ack = self._init_fnt(msg.emergency) == True
 
             # Generate ACK/NACK
             retmsg = MachineAck(self.uuid,ack)

@@ -50,10 +50,14 @@ catkin_python_setup()
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  RobotAck.msg
   RobotGrip.msg
   RobotMove.msg
   RobotStop.msg
-  RobotServo.msg
+  RobotPause.msg
+  RobotStatus.msg
+  RobotInitialize.msg
+  RobotMoveTrajectory.msg
   
   MachineAck.msg
   MachineInitialize.msg
@@ -65,7 +69,6 @@ add_message_files(
   Issue.msg
   Version.msg
   UpdateData.msg
-  ExpertCheck.msg
   StringArray.msg
   ApplicationOption.msg
   ProgramRunnerStatus.msg
@@ -78,21 +81,27 @@ add_service_files(
   SetData.srv
   LoadData.srv
   SaveData.srv
+  GetOptions.srv
+  GetHistory.srv
+
   GetIssues.srv
   ClearIssue.srv
-  GetOptions.srv
   GetPendingJobs.srv
   SetPendingJobs.srv
   ClearPendingJob.srv
-  GetExpertChecklist.srv
+
+  SetRootNode.srv
+  GetRootNode.srv
+
+  SetRobotGrip.srv
+  SetRobotMove.srv
+  SetRobotMoveTrajectory.srv
 )
 
 ## Generate actions in the 'action' folder
-add_action_files(
-  FILES
-  RobotGrip.action
-  RobotMoveTrajectory.action
-)
+#add_action_files(
+#  FILES
+#)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(

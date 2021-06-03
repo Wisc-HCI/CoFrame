@@ -1,3 +1,8 @@
+'''
+Initialize should be the first skill evoked in the program to 
+configure all machines and jog cobot to initial position.
+'''
+
 from ..skill import Skill
 from ..machine_operations import MachineInitialize
 from ..primitives import MoveUnplanned
@@ -12,23 +17,23 @@ class Initialize(Skill):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'initialize' + '.' if trailing_delim else ''
+        return 'initialize' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, homeLocUuid=None, machineUuids=[], type='', name='',
-                 uuid=None, parent=None, append_type=True, primitives=None):
+                 uuid=None, parent=None, append_type=True, primitives=None, editable=True, deleteable=True):
 
         if primitives == None:
             primitives = []
 
-            primitives += [MachineInitialize(id) for id in machineUuids]
+            primitives += [MachineInitialize(id, editable=editable, deleteable=deleteable) for id in machineUuids]
 
             primitives += [
-                MoveUnplanned(homeLocUuid,True),
-                OpenGripper()
+                MoveUnplanned(homeLocUuid,True, editable=editable, deleteable=deleteable),
+                OpenGripper(editable=editable, deleteable=deleteable)
             ]
 
         super(Initialize,self).__init__(
@@ -37,4 +42,28 @@ class Initialize(Skill):
             uuid=uuid,
             parent=parent,
             append_type=append_type,
-            primitives=primitives)
+            primitives=primitives,
+            editable=editable,
+            deleteable=deleteable)
+
+    '''
+    Execution methods
+    '''
+
+    def symbolic_execution(self, hooks):
+        next = super(Initialize,self).symbolic_execution(hooks)
+
+        # Since we are initializing state, the ambigous movement is expected and does not
+        # warrant special consideration
+        hooks.tokens['robot']['state']['gripper']['ambiguous_flag'] = False
+
+        return next
+
+    def realtime_execution(self, hooks):
+        next = super(Initialize,self).realtime_execution(hooks)
+
+        # Since we are initializing state, the ambigous movement is expected and does not
+        # warrant special consideration
+        hooks.tokens['robot']['state']['gripper']['ambiguous_flag'] = False
+
+        return next
