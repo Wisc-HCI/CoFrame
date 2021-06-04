@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import { Drawer, Input, Empty, Space, Button, Popconfirm } from 'antd';
+import { Drawer, Input, Empty, Space, Button, Popover } from 'antd';
 
 import useGuiStore from '../../stores/GuiStore';
 
@@ -8,6 +8,7 @@ import { LocationDetail } from './LocationDetail';
 import { MachineDetail } from './MachineDetail';
 import { ThingDetail } from './ThingDetail';
 import { WaypointDetail } from './WaypointDetail';
+import { DeleteOutlined, EllipsisOutlined, } from '@ant-design/icons';
 
 import useEvdStore from '../../stores/EvdStore';
 
@@ -33,9 +34,18 @@ export const Detail = (_) => {
         clearFocusItem();
         deleteItem(focusItem.type,focusItem.uuid);
     }
-    const handleCancel = () =>{
-        setPopoverVisible(false);
-    }
+
+    const content =(
+      <Button
+        danger
+        onClick={handleOK}
+        icon={<DeleteOutlined/>}
+        style = {{width:"300px"}}
+      >
+      Delete
+      </Button>
+
+    )
 
     if (item) {
         return (
@@ -53,22 +63,20 @@ export const Detail = (_) => {
                 getContainer={false}
                 style={{ position: 'absolute' }}
                 footer={
-                  <Popconfirm title={`Are you sure you want to delete this ${focusItem.type}?`}
-                              okButtonProps = {{danger:true}}
-                              okText = "Delete"
-                              onConfirm={handleOK}
-                              onCancel ={handleCancel}
-                              visible = {popoverVisible}
-                              placement ="top">
+                  <Popover title={`Are you sure you want to delete this ${focusItem.type}?`}
+                           trigger = "click"
+                           placement ="top"
+                           content = {content}>
                     <Button
                         danger
                         block
                         disabled={!item.deleteable}
                         onClick={()=>setPopoverVisible(true)}
+                        icon={<DeleteOutlined/>}
                     >
-                        <a href="#">Delete</a>
+                        Delete
                     </Button>
-                    </Popconfirm>
+                    </Popover>
                 }
                 width='50%'
             >

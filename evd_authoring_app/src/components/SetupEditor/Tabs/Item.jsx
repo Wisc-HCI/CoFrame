@@ -1,7 +1,8 @@
-import React, {useCallback} from 'react';
+import React, {useCallback,useRef,useEffect} from 'react';
 
-import { List, Space, Button,Popconfirm } from 'antd';
+import { List, Space, Button,Popconfirm,Popover } from 'antd';
 import { DeleteOutlined, EllipsisOutlined, } from '@ant-design/icons';
+import 'antd/dist/antd.css';
 
 import useEvdStore from '../../../stores/EvdStore';
 import useGuiStore from '../../../stores/GuiStore';
@@ -26,11 +27,22 @@ export function Item(props) {
     const handleOK = () =>{
       deleteItem(type,uuid);
     }
-    const handleCancel = () =>{
-       setVisible(false);
-    }
+
+    const content =(
+      <Button
+        danger
+        onClick={()=>deleteItem(type,uuid)}
+        icon={<DeleteOutlined/>}
+        style = {{width:"300px"}}
+      >
+      Delete
+      </Button>
+
+    )
+
 
     return (
+
           <List.Item
             extra={
               <Space align='center'>
@@ -38,21 +50,24 @@ export function Item(props) {
                   onClick={()=>setFocusItem(type,uuid)}
                   icon={<EllipsisOutlined/>}
                 />
-                <Popconfirm title= "Are you sure you want to delete this item?"
-                            onConfirm={handleOK}
-                            okButtonProps = {{danger:true}}
-                            okText = "Delete"
-                            onCancel ={handleCancel}
-                            visible = {visible}
-                            placement ="left">
-                <Button
-                  danger
-                  disabled={!item.deleteable}
-                  onClick={()=>setVisible(true)}
-                  icon={<DeleteOutlined/>}
-                />
-                  </Popconfirm>
+
+                <Popover title= "Are you sure you want to delete this item?"
+                         trigger = "click"
+                         placement ="left"
+                         content = {content}
+                            >
+
+                            <Button
+                              danger
+                              disabled={!item.deleteable}
+                              onClick={()=>setVisible(true)}
+                              icon={<DeleteOutlined/>}
+                            />
+
+                  </Popover>
+
               </Space>}
+
             style={{
               borderRadius:3,
               backgroundColor:'#1f1f1f',
@@ -65,5 +80,8 @@ export function Item(props) {
               description={description(title)}
             />
           </List.Item>
+
+
+
       );
   };
