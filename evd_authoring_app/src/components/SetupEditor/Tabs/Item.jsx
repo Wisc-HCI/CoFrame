@@ -23,10 +23,7 @@ export function Item(props) {
       setFocusItem:state.setFocusItem,
       primaryColor:state.primaryColor
     }));
-    const [visible, setVisible] = React.useState(false);
-    const handleOK = () =>{
-      deleteItem(type,uuid);
-    }
+    //const [visible, setVisible] = React.useState(false);
 
     const content =(
       <Button
@@ -41,6 +38,9 @@ export function Item(props) {
     )
 
 
+
+
+
     return (
 
           <List.Item
@@ -51,20 +51,32 @@ export function Item(props) {
                   icon={<EllipsisOutlined/>}
                 />
 
-                <Popover title= "Are you sure you want to delete this item?"
-                         trigger = "click"
-                         placement ="left"
-                         content = {content}
-                            >
 
-                            <Button
-                              danger
-                              disabled={!item.deleteable}
-                              onClick={()=>setVisible(true)}
-                              icon={<DeleteOutlined/>}
-                            />
+                <div>
+                {item.deleteable ? (
+                    <Popover title= "Are you sure you want to delete this item?"
+                             trigger = "click"
+                             placement ="left"
+                             content = {content}>
+                                <Button
+                                  danger
+                                  disabled={!item.deleteable}
+                                  icon={<DeleteOutlined/>}
+                                />
 
-                  </Popover>
+                      </Popover>
+                  ):(
+                    <Button
+                      danger
+                      disabled={!item.deleteable}
+                      icon={<DeleteOutlined/>}
+                    />
+
+                  )}
+
+
+                </div>
+
 
               </Space>}
 

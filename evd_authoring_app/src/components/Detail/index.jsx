@@ -28,7 +28,7 @@ export const Detail = (_) => {
         setItemProperty:state.setItemProperty
     }));
 
-    const [popoverVisible, setPopoverVisible] = React.useState(false);
+
 
     const handleOK = () =>{
         clearFocusItem();
@@ -63,20 +63,33 @@ export const Detail = (_) => {
                 getContainer={false}
                 style={{ position: 'absolute' }}
                 footer={
-                  <Popover title={`Are you sure you want to delete this ${focusItem.type}?`}
-                           trigger = "click"
-                           placement ="top"
-                           content = {content}>
-                    <Button
+                  <div>
+                  {item.deleteable ? (
+                      <Popover title= "Are you sure you want to delete this item?"
+                               trigger = "click"
+                               placement ="left"
+                               content = {content}>
+                                  <Button
+                                    danger
+                                    disabled={!item.deleteable}
+                                    icon={<DeleteOutlined/>}
+                                    style={{width:"360px"}}
+
+                                  />
+
+                        </Popover>
+                    ):(
+                      <Button
                         danger
-                        block
                         disabled={!item.deleteable}
-                        onClick={()=>setPopoverVisible(true)}
                         icon={<DeleteOutlined/>}
-                    >
-                        Delete
-                    </Button>
-                    </Popover>
+                        style={{width:"360px"}}
+                      />
+
+                    )}
+
+
+                  </div>
                 }
                 width='50%'
             >
