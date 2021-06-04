@@ -13,6 +13,8 @@ const NUM_TRAJECTORIES = 4;
 const NUM_COLLISION_MESHES = 2;
 const NUM_PINCH_POINTS = 5;
 
+// TODO: document the type naming scheme
+
 
 /***************************************************************** 
 * Type Declaration
@@ -147,6 +149,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
     });
 }
 
+//NOTE: Andy is simmering (but like not upset) in regards to shadow things
 let things = [];
 for (let i=0; i<NUM_THINGS; i++) {
     things.push({
@@ -326,6 +329,8 @@ let regions = [
 * - Machine
 *****************************************************************/
 
+//TODO frame linking and mesh_id linking, collision_mesh_uuid link
+
 const machine_generator = {
     uuid: `machine-js-generator`,
     name: `Machine-Generator`,
@@ -404,6 +409,8 @@ let machines = [
 * - Grade
 *****************************************************************/
 
+//TODO change time to duration
+
 let trajectories = [];
 for (let i=0; i<NUM_TRAJECTORIES; i++) {
     trajectories.push({
@@ -425,7 +432,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            time_data: [0], // each timestep, time from relative start
+            time_data: [0, /*...*/], // each timestep, time from relative start
             joint_names: ['j1','j2','j3','j4','j5','j6'], // name for each joint corresponding to inner array on joint_data
             joint_data: [[0,0,0,0,0,0]], // joint state of robot at each timestep (NOTE that this is not an EvD Joints just a simple list)
             tf_data: {
@@ -438,15 +445,15 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
                 ],
                 // ... (e.g keys for joint_tf_frame_1, gripper_tf_frame_1)
             },
-            // Keys are predefined grade types
+            // Keys are predefined grade type uuids
             grades: {
-                'grade_max_velocity': [0.5] // list of grade values from 0 to 1 (for all grades), though semantics of that is dependent on the grader
+                'grade_max_velocity_uuid': [0.5, /*...*/] // list of grade values from 0 to 1 (for all grades), though semantics of that is dependent on the grader
                 //... (e.g. grade_min_velocity, collision_proximity)
             },
 
             // length of time_data, joint_data, each value list in tf_data and in graders should be equal
 
-            time: 1, // sec
+            time: 1, // sec (change to duration)
             end_effector_path: 'ee_link', //the frame of the end-effector,
             joints_paths: ['joint_tf_frame_1','joint_tf_frame_2'], // tf-frames of arm joints being tracked
             tool_paths: ['gripper_tf_frame_1'], // tf-frames for grippers
@@ -646,6 +653,7 @@ let rcs_tokens = {
 
 let ProgramRunnerStatus = {
     uuid: '', //string of active primitive
+    //TODO: define status/state structure for highlighting from this UUID
     start_time: 0, //floating point start time from time.time() (-1 if not set)
     previous_time: 0.1, // last timestep time (-1 if not set)
     current_time: 0.3,  // current timestep time (-1 if not set)
@@ -694,6 +702,95 @@ let program = {
     deleteable: false,
     editable: true,
     description: 'Some descriptor string (optional)', // could be ''
+
+    
+    // Andy's musings
+    primitive_library: [
+        {
+            type: 'node.primitive.move-trajectory',
+            name: 'Move Trajectory',
+            fields: [
+                {
+                    type:'trajectory',
+                    name:'trajectory_uuid'
+                }
+            ]
+        },
+        {
+            type: 'node.primitive.gripper',
+            name: 'Move Trajectory',
+            fields: [
+                {
+                    type:'trajectory',
+                    name:'trajectory_uuid'
+                }
+            ]
+        }
+    ],
+
+    macro_calls: [
+        {
+            uuid: 'macro_call_1',
+            name: 'My Macro Call',
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+            macro_uuid: 'macro_1_js',
+            macro_args: [ // probably this should be key-value + have typing info
+                'trajectory_1_uuid',
+                'trajectory_2_uuid'
+            ]
+        }
+    ],
+
+    macro_library: [
+        {
+            uuid: 'macro_1_js',
+            name: 'My Macro',
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+            fields: [
+                {
+                    type:'node.trajectory.',
+                    key:'trajectory_uuid', // This is the key that it inserts into the primitives
+                    value:'real_trajectory_uuid' // This is the name that gets swapped in
+                },
+                {
+                    type:'node.trajectory.',
+                    key:'trajectory_uuid', // This is the key that it inserts into the primitives
+                    value:'second_trajectory_uuid' // This is the name that gets swapped in
+                }
+            ],
+            
+            primitives: [
+                {
+                    type: 'node.primitive.move-trajectory.',
+                    uuid: `move-trajectory-primitive-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    trajectory_uuid: 'real_trajectory_uuid'
+                    //TODO
+                },
+                {
+                    type: 'node.primitive.move-trajectory.',
+                    uuid: `move-trajectory-primitive-js`,
+                    name: ``,
+                    deleteable: false,
+                    editable: true,
+                    description: 'Some descriptor string (optional)', // could be ''
+
+                    trajectory_uuid: 'second_trajectory_uuid'
+                    //TODO
+                },
+            ]
+        }
+    ],
+
+    //TODO add an ownership
     
     environment: {
         reach_sphere: reachSphere,
@@ -709,6 +806,7 @@ let program = {
         regions: regions,
         grade_types: gradeTypes
     },
+    
     primitives: [
         // Assume we want a simple non-looping pick-and-place task
 
@@ -769,13 +867,15 @@ let program = {
 
             primitives: [
                 {
+                    type: 'node.primitive.move-trajectory.',
                     uuid: `move-trajectory-primitive-js`,
                     name: ``,
                     deleteable: false,
                     editable: true,
                     description: 'Some descriptor string (optional)', // could be ''
 
-                    // TODO
+                    trajectory_uuid: 'trajectory-js-0'
+                    //TODO
                 },
                 {
                     uuid: `close-gripper-skill-js`,
