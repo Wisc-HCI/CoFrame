@@ -1,17 +1,17 @@
 '''
-Program is a top-level skill that wraps execution of robot behavior and provides
+Program is a top-level hierarchical task that wraps execution of robot behavior and provides
 hook to global Environment/Context. Additionally, all change traces end at this
 root node in the AST. Users can hook into this with a change callback.
 '''
 
-from .program_nodes.skill import Skill
+from .program_nodes.hierarchical import Hierarchical
 from .node_parser import NodeParser
 from .environment import Environment
 
 from .orphans import *
 
 
-class Program(Skill):
+class Program(Hierarchical):
 
     '''
     Data structure methods
@@ -23,7 +23,7 @@ class Program(Skill):
 
     @classmethod
     def full_type_string(cls):
-        return Skill.full_type_string() + cls.type_string()
+        return Hierarchical.full_type_string() + cls.type_string()
 
     def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None, editable=True, deleteable=True):
         self._orphan_list = evd_orphan_list()

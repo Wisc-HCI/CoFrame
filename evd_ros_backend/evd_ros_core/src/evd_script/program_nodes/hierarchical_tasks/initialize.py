@@ -3,13 +3,13 @@ Initialize should be the first skill evoked in the program to
 configure all machines and jog cobot to initial position.
 '''
 
-from ..skill import Skill
+from ..hierarchical import Hierarchical
 from ..machine_operations import MachineInitialize
 from ..primitives import MoveUnplanned
 from .open_gripper import OpenGripper
 
 
-class Initialize(Skill):
+class Initialize(Hierarchical):
 
     '''
     Data structure methods
@@ -21,7 +21,7 @@ class Initialize(Skill):
 
     @classmethod
     def full_type_string(cls):
-        return Skill.full_type_string() + cls.type_string()
+        return Hierarchical.full_type_string() + cls.type_string()
 
     def __init__(self, homeLocUuid=None, machineUuids=[], type='', name='',
                  uuid=None, parent=None, append_type=True, primitives=None,

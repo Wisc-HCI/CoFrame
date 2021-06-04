@@ -8,8 +8,8 @@ location, and then release it.
 
 from ..skill import Skill
 from ..primitives import MoveTrajectory
-from .open_gripper import OpenGripper
-from .close_gripper import CloseGripper
+from ..hierarchical_tasks.open_gripper import OpenGripper
+from ..hierarchical_tasks.close_gripper import CloseGripper
 
 
 class SimplePickAndPlace(Skill):

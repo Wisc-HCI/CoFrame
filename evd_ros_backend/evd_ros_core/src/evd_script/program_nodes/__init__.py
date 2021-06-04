@@ -1,10 +1,12 @@
-from .skill import Skill
+from .hierarchical import Hierarchical
 from .primitive import Primitive
+from .skill import Skill
 
-from .skills import *
+from .hierarchical_tasks import *
 from .primitives import *
 from .machine_operations import *
 from .control_flow import *
+from .predefined_skills import *
 
 
 def ProgramNodeParser(exactType, dct):
@@ -21,13 +23,19 @@ def ProgramNodeParser(exactType, dct):
     if node != None:
         return node
 
-    node  = SkillsNodeParser(exactType, dct)
+    node = HierarchicalTasksNodeParser(exactType, dct)
     if node != None:
         return node
 
-    if exactType == Skill.type_string(trailing_delim=False):
-        node = Skill.from_dct(dct)
+    node = PredefinedSkillsNodeParser(exactType, dct)
+    if node != None:
+        return node
+
+    if exactType == Hierarchical.type_string(trailing_delim=False):
+        node = Hierarchical.from_dct(dct)
     elif exactType == Primitive.type_string(trailing_delim=False):
         node = Primitive.from_dct(dct)
+    elif exactType == Skill.type_string(trailing_delim=False):
+        node = Skill.from_dct(dct)
 
     return node
