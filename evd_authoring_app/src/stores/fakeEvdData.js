@@ -13,9 +13,6 @@ const NUM_TRAJECTORIES = 4;
 const NUM_COLLISION_MESHES = 2;
 const NUM_PINCH_POINTS = 5;
 
-// TODO: document the type naming scheme
-
-
 /***************************************************************** 
 * Type Declaration
 * - ThingType
@@ -24,6 +21,7 @@ const NUM_PINCH_POINTS = 5;
 let thingTypes = [];
 for (let i=0; i<NUM_THING_TYPES; i++) {
     thingTypes.push({
+        type: 'node.thing-type.',
         uuid: `thing-type-js-${i}`,
         name: `Thing-Type-${i}`,
         deleteable: false,
@@ -40,6 +38,7 @@ for (let i=0; i<NUM_THING_TYPES; i++) {
 let gradeTypes = [];
 for (let i=0; i<NUM_GRADE_TYPES; i++) {
     gradeTypes.push({
+        type: 'node.grade-type.',
         uuid: `grade-type-js-${i}`,
         name: `Grade-Type-${i}`,
         deleteable: false,
@@ -58,6 +57,7 @@ for (let i=0; i<NUM_GRADE_TYPES; i++) {
 let waypoints = [];
 for (let i=0; i<NUM_WAYPOINTS; i++) {
     waypoints.push({
+        type: 'node.pose.waypoint.',
         uuid: `waypoint-js-${i}`,
         name: `Waypoint-${i}`,
         deleteable: true,
@@ -65,6 +65,7 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
         description: 'Some descriptor string (optional)', // could be ''
 
         joints: {
+            type: 'node.joints.',
             uuid: `joints-js-waypoint-${i}`,
             name: '',
             deleteable: false,
@@ -77,6 +78,7 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
             length: 3 // this is enforced on the backend for positions and names
         },
         position: {
+            type: 'node.position.',
             uuid: `position-js-waypoint-${i}`,
             name: '',
             deleteable: false,
@@ -88,6 +90,7 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
             z: 0
         },
         orientation: {
+            type: 'node.orientation.',
             uuid: `orientation-js-waypoint-${i}`,
             name: '',
             deleteable: false,
@@ -105,6 +108,7 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
 let locations = [];
 for (let i=0; i<NUM_LOCATIONS; i++) {
     locations.push({
+        type: 'node.pose.waypoint.location.',
         uuid: `location-js-${i}`,
         name: `Location-${i}`,
         deleteable: ! (i === 3),
@@ -112,6 +116,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
         description: 'Some descriptor string (optional)', // could be ''
 
         joints: {
+            type: 'node.joints.',
             uuid: `joints-js-location-${i}`,
             name: '',
             deleteable: false,
@@ -124,6 +129,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
             length: 3 // this is enforced on the backend for positions and names
         },
         position: {
+            type: 'node.position.',
             uuid: `position-js-location-${i}`,
             name: '',
             deleteable: false,
@@ -135,6 +141,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
             z: 0
         },
         orientation: {
+            type: 'node.orientation.',
             uuid: `orientation-js-location-${i}`,
             name: '',
             deleteable: false,
@@ -153,6 +160,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
 let things = [];
 for (let i=0; i<NUM_THINGS; i++) {
     things.push({
+        type: 'node.pose.thing.',
         uuid: `thing-js-${i}`,
         name: `Thing-${i}`,
         deleteable: true,
@@ -161,6 +169,7 @@ for (let i=0; i<NUM_THINGS; i++) {
 
         thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
         position: {
+            type: 'node.position.',
             uuid: `position-js-thing-${i}`,
             name: '',
             deleteable: false,
@@ -172,6 +181,7 @@ for (let i=0; i<NUM_THINGS; i++) {
             z: 0
         },
         orientation: {
+            type: 'node.orientation.',
             uuid: `orientation-js-thing-${i}`,
             name: '',
             deleteable: false,
@@ -192,6 +202,7 @@ for (let i=0; i<NUM_THINGS; i++) {
 
 // Probably don't visualize all of fields of regions
 const generic_region = {
+    type: 'node.pose.region.',
     uuid: `region-js-0`,
     name: `Region-0`,
     deleteable: true,
@@ -200,6 +211,7 @@ const generic_region = {
 
     // position is known in a default region, just uncertainty in orientation
     center_position: {
+        type: 'node.position.',
         uuid: `position-js-region-0`,
         name: '',
         deleteable: false,
@@ -211,6 +223,7 @@ const generic_region = {
         z: 0
     },
     center_orientation: {
+        type: 'node.orientation.',
         uuid: `orientation-js-region-0`,
         name: '',
         deleteable: false,
@@ -229,6 +242,7 @@ const generic_region = {
         // target relative to other node for qaternion distance
     // otherwise switch over to alt target as the relative node for distance calc
     uncertainty_orientation_alt_target: {
+        type: 'node.orientation.',
         uuid: `orientation-js-region-alt-0`,
         name: '',
         deleteable: false,
@@ -244,6 +258,7 @@ const generic_region = {
 
 // Set to free orientation for simplicity only - can have orientation constraints
 const cube_region = {
+    type: 'node.pose.region.cube-region.',
     uuid: `cube-region-js-1`,
     name: `Cube-Region-1`,
     deleteable: false,
@@ -251,6 +266,7 @@ const cube_region = {
     description: 'Some descriptor string (optional)', // could be ''
 
     center_position: {
+        type: 'node.position.',
         uuid: `position-js-cube-region-1`,
         name: '',
         deleteable: false,
@@ -262,6 +278,7 @@ const cube_region = {
         z: 0
     },
     center_orientation: {
+        type: 'node.orientation.',
         uuid: `orientation-js-cube-region-1`,
         name: '',
         deleteable: false,
@@ -283,6 +300,7 @@ const cube_region = {
 
 // Set to free orientation for simplicity only - can have orientation constraints
 const sphere_region = {
+    type: 'node.pose.region.sphere-region.',
     uuid: `sphere-region-js-2`,
     name: `Sphere-Region-2`,
     deleteable: true,
@@ -290,6 +308,7 @@ const sphere_region = {
     description: 'Some descriptor string (optional)', // could be ''
 
     center_position: {
+        type: 'node.position.',
         uuid: `position-js-sphere-region-3`,
         name: '',
         deleteable: false,
@@ -301,6 +320,7 @@ const sphere_region = {
         z: 0
     },
     center_orientation: {
+        type: 'node.orientation.',
         uuid: `orientation-js-sphere-region-3`,
         name: '',
         deleteable: false,
@@ -329,9 +349,8 @@ let regions = [
 * - Machine
 *****************************************************************/
 
-//TODO frame linking and mesh_id linking, collision_mesh_uuid link
-
 const machine_generator = {
+    type: 'node.machine.',
     uuid: `machine-js-generator`,
     name: `Machine-Generator`,
     deleteable: false,
@@ -347,10 +366,48 @@ const machine_generator = {
                 quantity: 1
             }
         ]
-    }
+    },
+    mesh_id: 'package:/app/meshes/3d_printer.fbx',
+    pose_offset: { // Local transform
+        type: 'node.pose.',
+        uuid: `pose-js-machine-0`,
+        name: `Pose-0`,
+        deleteable: false,
+        editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
+
+        position: {
+            type: 'node.position.',
+            uuid: `position-js-machine-0`,
+            name: `Position-0`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0
+        },
+        orientation: {
+            type: 'node.orientation.',
+            uuid: `orientation-js-machine-0`,
+            name: `Orientation-0`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0,
+            w:1
+        }
+    },
+    link: 'app',
+    collision_mesh_uuid: 'collision-mesh-js-0'
 }
 
 const machine_consumer = {
+    type: 'node.machine.',
     uuid: `machine-js-consumer`,
     name: `Machine-Consumer`,
     deleteable: false,
@@ -366,10 +423,48 @@ const machine_consumer = {
             }
         ]
     }, 
-    outputs: { }
+    outputs: { },
+    mesh_id: 'package:/app/meshes/3d_printer.fbx',
+    pose_offset: { // Local transform
+        type: 'node.pose.',
+        uuid: `pose-js-machine-1`,
+        name: `Pose-1`,
+        deleteable: false,
+        editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
+
+        position: {
+            type: 'node.position.',
+            uuid: `position-js-machine-1`,
+            name: `Position-1`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0
+        },
+        orientation: {
+            type: 'node.orientation.',
+            uuid: `orientation-js-machine-1`,
+            name: `Orientation-1`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0,
+            w:1
+        }
+    },
+    link: 'app',
+    collision_mesh_uuid: 'collision-mesh-js-1'
 };
 
 const machine_transformer = {
+    type: 'node.machine.',
     uuid: `machine-js-transformer`,
     name: `Machine-Transformer`,
     deleteable: false,
@@ -392,7 +487,44 @@ const machine_transformer = {
                 quantity: 1
             }
         ]
-    }
+    },
+    mesh_id: 'package:/app/meshes/3d_printer.fbx',
+    pose_offset: { // Local transform
+        type: 'node.pose.',
+        uuid: `pose-js-machine-2`,
+        name: `Pose-2`,
+        deleteable: false,
+        editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
+
+        position: {
+            type: 'node.position.',
+            uuid: `position-js-machine-2`,
+            name: `Position-2`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0
+        },
+        orientation: {
+            type: 'node.orientation.',
+            uuid: `orientation-js-machine-2`,
+            name: `Orientation-2`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0,
+            w:1
+        }
+    },
+    link: 'app',
+    collision_mesh_uuid: 'collision-mesh-js-2' // could be null
 };
 
 let machines = [
@@ -409,11 +541,10 @@ let machines = [
 * - Grade
 *****************************************************************/
 
-//TODO change time to duration
-
 let trajectories = [];
 for (let i=0; i<NUM_TRAJECTORIES; i++) {
     trajectories.push({
+        type: 'node.trajectory.',
         uuid: `trajectory-js-${i}`,
         name: `Trajectory-${i}`,
         deleteable: false,
@@ -425,7 +556,8 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
         waypoint_uuids: [
             // presumably filled with arbitrary (ordered) list of waypoint uuids
         ],
-        trace: {
+        trace: { // trace can be null, supplied by backend when planning is complete
+            type: 'node.trace.',
             uuid: `trace-js-trajectory-${i}`,
             name: `Trace-${i}`,
             deleteable: false,
@@ -453,7 +585,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
 
             // length of time_data, joint_data, each value list in tf_data and in graders should be equal
 
-            time: 1, // sec (change to duration)
+            duration: 1, // sec (full time to complete action Note approximate)
             end_effector_path: 'ee_link', //the frame of the end-effector,
             joints_paths: ['joint_tf_frame_1','joint_tf_frame_2'], // tf-frames of arm joints being tracked
             tool_paths: ['gripper_tf_frame_1'], // tf-frames for grippers
@@ -473,6 +605,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
 *****************************************************************/
 
 let reachSphere = {
+    type: 'node.environment-node.reach-sphere.',
     uuid: `reach-sphere-js-0`,
     name: `ReachSphere`,
     deleteable: false,
@@ -481,6 +614,7 @@ let reachSphere = {
 
     radius: 1.0,
     offset: {
+        type: 'node.position.',
         uuid: `position-js-reach-sphere-offset-0`,
         name: '',
         deleteable: false,
@@ -496,6 +630,7 @@ let reachSphere = {
 let collisionMeshes = [];
 for (let i=0; i<NUM_COLLISION_MESHES; i++) {
     collisionMeshes.push({
+        type: 'node.environment-node.collision-mesh.',
         uuid: `collision-mesh-js-${i}`,
         name: `CollisionMesh-${i}`,
         deleteable: false,
@@ -504,6 +639,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
 
         mesh_id: 'default.stl',
         pose_offset: { // Local transform
+            type: 'node.pose.',
             uuid: `pose-js-collision-mesh-${i}`,
             name: `Pose-${i}`,
             deleteable: false,
@@ -511,6 +647,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
             description: 'Some descriptor string (optional)', // could be ''
 
             position: {
+                type: 'node.position.',
                 uuid: `position-js-collision-mesh-${i}`,
                 name: `Position-${i}`,
                 deleteable: false,
@@ -522,6 +659,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
                 z:0
             },
             orientation: {
+                type: 'node.orientation.',
                 uuid: `orientation-js-collision-mesh-${i}`,
                 name: `Orientation-${i}`,
                 deleteable: false,
@@ -540,6 +678,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
 
 let occupancyZones = [
     {
+        type: 'node.environment-node.occupancy-zone.',
         uuid: `occupancy-zone-js-0`,
         name: `Human Occupancy Zone`,
         deleteable: false,
@@ -554,6 +693,7 @@ let occupancyZones = [
         height: 0 // typically a negative value (wherever ground is)
     },
     {
+        type: 'node.environment-node.occupancy-zone.',
         uuid: `occupancy-zone-js-1`,
         name: `Human Occupancy Zone`,
         deleteable: false,
@@ -572,6 +712,7 @@ let occupancyZones = [
 let pinchPoints = [];
 for (let i=0; i<NUM_PINCH_POINTS; i++) {
     pinchPoints.push({
+        type: 'node.environment-node.pinch-point.',
         uuid: `pinch-points-js-${i}`,
         name: `Pinch Point ${i}`,
         deleteable: false,
@@ -581,6 +722,7 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
         // conceptualized as a cylinder
         axis: 'x', // 'x', 'y', or 'z' ~ aligned along one of these axes
         offset: { // positional offset from link
+            type: 'node.position.',
             uuid: `position-js-pinch-point-${i}`,
             name: `Position-${i}`,
             deleteable: false,
@@ -697,6 +839,7 @@ let GetRootNodeResponse = {
 *****************************************************************/
 
 let program = {
+    type: 'node.primitive.skill.program.',
     uuid: `program-js`,
     name: ``,
     deleteable: false,
