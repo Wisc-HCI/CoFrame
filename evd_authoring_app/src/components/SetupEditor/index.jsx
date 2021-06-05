@@ -25,15 +25,18 @@ export function SetupEditor(_) {
     }));
     const [visible,setVisible] = useState(false);
     const [ButtonVisible,setButtonVisible] = useState(true);
+    const [searchTerm,setSearchTerm] = useState("");
 
     const changeVisibility = () => {
       setVisible(!visible);
       setButtonVisible(!ButtonVisible);
+      setSearchTerm("");
+
+
 
     }
-    const onChange = () => {
-      //todo
-
+    const onChange = (event) => {
+      setSearchTerm(event.target.value);
     };
 
     const tabs = [
@@ -73,6 +76,8 @@ export function SetupEditor(_) {
             description: (item)=> `Info about ${item.name}`
         }
     ]
+    const { TextArea } = Input;
+
 
 
     return (
@@ -83,44 +88,62 @@ export function SetupEditor(_) {
             activeKey={setupTab}
             onChange={setSetupTab}
         >
-            {tabs.map(tab=>(
-                <Tabs.TabPane
-                    key={tab.key}
-                    tab={<span style={tab.key === setupTab ? { color: primaryColor } : {}}>{tab.name}</span>}
-                    style={{padding:0,paddingTop:1,height:'100%'}}
-                >
-                <Card
-                    title={tab.name}
-                    bordered={false}
-                    style={{height:'100%'}}
-                    bodyStyle={{padding:0,minHeight:0,minWidth:0,height:'calc(100vh - 165pt)',overflow:'auto'}}
-                    extra={
-                      <Space>
-                      <Input style={{width:300, left:10,display:visible ? "block":"none"}}/>
-                      <Button ghost size = "small"type="text" icon ={<CloseOutlined/>}style={{position: 'absolute',left: 560,top:20,display:visible ? "block":"none"}}
-                      onClick={changeVisibility}>
+        {tabs.filter((tab) => {
+          if (searchTerm ==""){
+            return tab;
+          } else if (tab.name.toLowerCase().includes(searchTerm.toLowerCase())){
+            return tab;
+          }
 
-                      </Button>
-                        <Button style={{left:"-5px",display:ButtonVisible ?"block":"none"}}type='outline' icon={<SearchOutlined />} onClick={changeVisibility}/>
-                        <Button
-                            type='outline'
-                            icon={<PlusOutlined/>}
-                        />
-
-                      </Space>
-
-                    }>
+        }).map((tab)=>{
+          return (
+            <Tabs.TabPane
+                key={tab.key}
+                tab={<span style={tab.key === setupTab ? { color: primaryColor } : {}}>{tab.name}</span>}
+                style={{padding:0,paddingTop:1,height:'100%'}}
+            >
+            <Card
+                title={tab.name}
+                bordered={false}
+                style={{height:'100%'}}
+                bodyStyle={{padding:0,minHeight:0,minWidth:0,height:'calc(100vh - 165pt)',overflow:'auto'}}
+                extra={
+                  <Space>
+                  <Input value ={searchTerm} placeholder ="Search..." onChange={onChange} style={{width:300, left:10,display:visible ? "block":"none"}} />
 
 
-                        <ItemList
-                            type={tab.type}
-                            title={tab.title}
-                            description={tab.description}
-                        />
+                  <Button ghost size = "small"type="text" icon ={<CloseOutlined/>}style={{position: 'absolute',left: 560,top:20,display:visible ? "block":"none"}}
+                  onClick={changeVisibility}>
 
-                </Card>
-            </Tabs.TabPane>
-            ))}
+                  </Button>
+                    <Button style={{left:"-5px",display:ButtonVisible ?"block":"none"}}type='outline' icon={<SearchOutlined />} onClick={changeVisibility}/>
+                    <Button
+                        type='outline'
+                        icon={<PlusOutlined/>}
+                    />
+
+                  </Space>
+
+                }>
+                    <ItemList
+                        type={tab.type}
+                        title={tab.title}
+                        description={tab.description}
+                    />
+
+            </Card>
+        </Tabs.TabPane>
+
+
+
+          );
+
+
+        })}
+
+
+
+
 
         </Tabs>
     );
