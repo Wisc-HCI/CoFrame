@@ -460,7 +460,7 @@ const machine_consumer = {
         }
     },
     link: 'app',
-    collision_mesh_uuid: 'collision-mesh-js-0'
+    collision_mesh_uuid: 'collision-mesh-js-1'
 };
 
 const machine_transformer = {
@@ -524,7 +524,7 @@ const machine_transformer = {
         }
     },
     link: 'app',
-    collision_mesh_uuid: 'collision-mesh-js-0'
+    collision_mesh_uuid: 'collision-mesh-js-2' // could be null
 };
 
 let machines = [
@@ -556,7 +556,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
         waypoint_uuids: [
             // presumably filled with arbitrary (ordered) list of waypoint uuids
         ],
-        trace: {
+        trace: { // trace can be null, supplied by backend when planning is complete
             type: 'node.trace.',
             uuid: `trace-js-trajectory-${i}`,
             name: `Trace-${i}`,
@@ -585,7 +585,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
 
             // length of time_data, joint_data, each value list in tf_data and in graders should be equal
 
-            time: 1, // sec (change to duration)
+            duration: 1, // sec (full time to complete action Note approximate)
             end_effector_path: 'ee_link', //the frame of the end-effector,
             joints_paths: ['joint_tf_frame_1','joint_tf_frame_2'], // tf-frames of arm joints being tracked
             tool_paths: ['gripper_tf_frame_1'], // tf-frames for grippers

@@ -2,6 +2,7 @@
 A region with a position uncertainty defined by a cuboid.
 '''
 
+from ... import NUMBER_TYPE
 from .region import Region
 from ...node_parser import NodeParser
 from ...visualizable import ColorTable
@@ -24,6 +25,29 @@ class CubeRegion(Region):
     @classmethod
     def full_type_string(cls):
         return Region.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Region.template()
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'uncertainty_x',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'uncertainty_y',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'uncertainty_z',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, center_position=None, center_orientation=None, uncertainty_x=0.1,
                  uncertainty_y=0.1, uncertainty_z=0.1, free_orientation=True,

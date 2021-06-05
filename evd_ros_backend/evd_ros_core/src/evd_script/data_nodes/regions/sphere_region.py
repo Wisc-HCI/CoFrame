@@ -2,6 +2,7 @@
 A region with position uncertainty defined by a sphere.
 '''
 
+from ... import NUMBER_TYPE
 from .region import Region
 from ...node_parser import NodeParser
 from ..geometry import Position, Orientation
@@ -24,6 +25,17 @@ class SphereRegion(Region):
     @classmethod
     def full_type_string(cls):
         return Region.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Region.template()
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'uncertainty_radius',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, center_position=None, center_orientation=None, uncertainty_radius=0.1,
                  free_orientation=True, uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,

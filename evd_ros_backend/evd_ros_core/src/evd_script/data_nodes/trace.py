@@ -30,6 +30,7 @@ Conversion methods are available in the underlying data nodes (Pose, Joints) tha
 be used to reconstruct nodes from the trace data.
 '''
 
+from .. import NUMBER_TYPE, STRING_TYPE, ARBITRARY_OBJ_TYPE
 from ..node import Node
 from .geometry import Pose
 from ..visualizable import VisualizeMarkers, ColorTable
@@ -51,6 +52,71 @@ class Trace(Node, VisualizeMarkers):
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Node.template()
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'time_data',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'joint_names',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': ARBITRARY_OBJ_TYPE, #array of number array
+            'key': 'joint_data',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': ARBITRARY_OBJ_TYPE, #dictionary of array of simple poses with frame keys
+            'key': 'tf_data',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': ARBITRARY_OBJ_TYPE, #dictionary of array of numbers with grade_type uuids as keys
+            'key': 'grades',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'end_effector_path',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'joint_paths',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'tool_paths',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'component_paths',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'duraation',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, tf_data={}, time_data=[], joint_names=[], joint_data=[], 
                  grades={}, eePath=None, jPaths=[], tPaths=[], cPaths=[], 

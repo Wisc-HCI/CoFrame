@@ -22,10 +22,11 @@ def NodeParser(dct, no_cache=False, enforce_types=None):
     exactType = type[len(type) - 2]
 
     # We don't support deserialization of basic types from here
-    from . import STRING_TYPE, NUMBER_TYPE, BOOLEAN_TYPE, ENUM_TYPE
+    from . import STRING_TYPE, NUMBER_TYPE, BOOLEAN_TYPE, ENUM_TYPE, ARBITRARY_OBJ_TYPE
     if STRING_TYPE in enforce_types or NUMBER_TYPE in enforce_types \
-            or BOOLEAN_TYPE in enforce_types or ENUM_TYPE in enforce_types:
-        raise Exception('Basic types <string, numbers, booleans, enums> cannot be parsed out!')
+            or BOOLEAN_TYPE in enforce_types or ENUM_TYPE in enforce_types \
+            or ARBITRARY_OBJ_TYPE in enforce_types:
+        raise Exception('Basic types <string, numbers, booleans, enums, objs> cannot be parsed out!')
 
     # Expand out enforce list for generalized type descriptors
     from . import ALL_NODES_TYPE, ALL_PRIMITIVES_TYPES, ALL_REGION_TYPES, \

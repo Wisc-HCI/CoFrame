@@ -6,6 +6,9 @@ end location. When a trajectory is planned it produces a trace. Any change to th
 trajectory will result in a new trace needing to be computed.
 '''
 
+from .. import NUMBER_TYPE, ENUM_TYPE
+from .location import Location
+from .waypoint import Waypoint
 from ..node import Node
 from .trace import Trace
 from ..node_parser import NodeParser
@@ -30,6 +33,48 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Node.template()
+        template['fields'].append({
+            'type': Location.full_type_string(),
+            'key': 'start_location_uuid',
+            'is_uuid': True,
+            'is_list': False
+        })
+        template['field'].append({
+            'type': Location.full_type_string(),
+            'key': 'end_location_uuid',
+            'is_uuid': True,
+            'is_list': False
+        })
+        template['field'].append({
+            'type': Waypoint.full_type_string(),
+            'key': 'waypoint_uuids',
+            'is_uuid': True,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'velocity',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': ENUM_TYPE,
+            'key': 'move_type',
+            'is_uuid': False,
+            'is_list': False,
+            'enum_values': [x for x in cls.TYPES]
+        })
+        template['fields'].append({
+            'type': Trace.full_type_string(),
+            'key': 'trace',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, startLocUuid=None, endLocUuid=None, waypointUuids=[],
                  trace=None, move_type="joint", velocity=0, parent=None, type='',

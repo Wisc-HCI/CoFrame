@@ -5,6 +5,7 @@ NOTE, right now regions are on parallel development to waypoints/locations and t
 not mingle when discussing robots. Future work should address this.
 '''
 
+from ... import BOOLEAN_TYPE, NUMBER_TYPE
 from ...node_parser import NodeParser
 from ..geometry import Pose, Position, Orientation
 from ...visualizable import VisualizeMarker
@@ -28,6 +29,47 @@ class Region(Pose, VisualizeMarker):
     @classmethod
     def full_type_string(cls):
         return Pose.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Pose.template()
+
+        # remove old position and orientation field entries
+        del_li = [x for x in template['fields'] if x['key'] == 'position' or x['key'] == 'orientation']
+        for e in del_li:
+            template['fields'].remove(e)
+
+        template['fields'].append({
+            'type': Position.full_type_string(),
+            'key': 'center_position',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': Orientation.full_type_string(),
+            'key': 'center_orientation',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': BOOLEAN_TYPE,
+            'key': 'free_orientation',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'uncertainty_orientation_limit',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': Orientation.full_type_string(),
+            'key': 'uncertainty_orientation_alt_target',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, center_position=None, center_orientation=None, free_orientation=True,
                  uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,

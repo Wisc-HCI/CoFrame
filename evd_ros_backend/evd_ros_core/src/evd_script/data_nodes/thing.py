@@ -6,6 +6,7 @@ These act as tokens within the simulator and may be useful for verification in t
 The thinking behind things is much the same as it was in Authr.
 '''
 
+from .thing_type import ThingType
 from ..node_parser import NodeParser
 from .geometry import Pose, Position, Orientation
 from ..visualizable import VisualizeMarker, ColorTable
@@ -27,6 +28,17 @@ class Thing(Pose, VisualizeMarker):
     @classmethod
     def full_type_string(cls):
         return Pose.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Pose.template()
+        template['fields'].append({
+            'type': ThingType.full_type_string(),
+            'key': 'thing_type_uuid',
+            'is_uuid': True,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, thing_type_uuid, position=None, orientation=None,
                  type='', name='', parent=None, uuid=None, append_type=True,

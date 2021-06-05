@@ -10,6 +10,7 @@ import math
 import geometry_msgs.msg as ros_msgs
 
 from ...node import Node
+from ... import NUMBER_TYPE
 
 
 class Orientation(Node):
@@ -25,6 +26,35 @@ class Orientation(Node):
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Node.template()
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'x',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'y',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'z',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'w',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     @classmethod
     def Identity(cls):

@@ -3,6 +3,7 @@ ThingType defines a type system for things. This is useful for generating things
 run-time and for token processing during planning/simulation.
 '''
 
+from .. import BOOLEAN_TYPE, NUMBER_TYPE, STRING_TYPE
 from ..node import Node
 
 
@@ -19,6 +20,29 @@ class ThingType(Node):
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Node.template()
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'mesh_id',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': BOOLEAN_TYPE,
+            'key': 'is_safe',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'weight',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, is_safe=True, weight=0, mesh_id=None, type='', name='',
                  parent=None, uuid=None, append_type=True, editable=True,

@@ -2,6 +2,7 @@
 Joints provides an abstraction on joint information for a robot
 '''
 
+from ... import BOOLEAN_TYPE, NUMBER_TYPE, STRING_TYPE
 from ...node import Node
 from sensor_msgs.msg import JointState
 
@@ -19,6 +20,35 @@ class Joints(Node):
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Node.template()
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'length',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'joint_positions',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'joint_names',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': BOOLEAN_TYPE,
+            'key': 'reachable',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, length=6, joint_positions=None, reachable=False, joint_names=None, 
                  type='', name='', uuid=None, parent=None, append_type=True, editable=True, 

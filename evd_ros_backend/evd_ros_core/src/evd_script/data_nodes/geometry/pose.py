@@ -25,6 +25,23 @@ class Pose(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
+    @classmethod
+    def template(cls):
+        template = Node.template()
+        template['fields'].append({
+            'type': Position.full_type_string(),
+            'key': 'position',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': Orientation.full_type_string(),
+            'key': 'orientation',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
+
     def __init__(self, position=None, orientation=None, type='', name='', uuid=None,
                  parent=None, append_type=True, editable=True, deleteable=True,
                  description=''):

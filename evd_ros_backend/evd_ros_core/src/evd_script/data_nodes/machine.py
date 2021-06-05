@@ -18,6 +18,8 @@ position is not supported. This is fine for the studies at this time but more co
 handling this disconnect. Probably something like a variable location?
 '''
 
+from evd_ros_backend.evd_ros_core.src.evd_script.environment_nodes.collision_mesh import CollisionMesh
+from .. import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE
 from ..node import Node
 from .geometry import Pose
 from ..node_parser import NodeParser
@@ -36,6 +38,53 @@ class Machine(Node):
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Node.template()
+        template['fields'].append({
+            'type': ARBITRARY_OBJ_TYPE, # dictionary of lists of dictionaries of regions and quantities with thing_type uuids as top-level keys
+            'keys': 'inputs',
+            'is_uuid': False,
+            'is_list': False 
+        })
+        template['fields'].append({
+            'type': ARBITRARY_OBJ_TYPE, # dictionary of lists of dictionaries of regions and quantities with thing_type uuids as top-level keys
+            'keys': 'outputs',
+            'is_uuid': False,
+            'is_list': False 
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'process_time',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'mesh_id',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': Pose.full_type_string(),
+            'key': 'pose_offset',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'link',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': CollisionMesh.full_type_string(),
+            'key': 'collision_mesh_uuid',
+            'is_uuid': True,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, inputs=None, outputs=None, process_time=0, link='', mesh_id=None, 
                  pose_offset=None, collision_mesh_uuid=None, type='', name='', uuid=None, 
