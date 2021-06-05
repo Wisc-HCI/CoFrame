@@ -349,8 +349,6 @@ let regions = [
 * - Machine
 *****************************************************************/
 
-//TODO frame linking and mesh_id linking, collision_mesh_uuid link
-
 const machine_generator = {
     type: 'node.machine.',
     uuid: `machine-js-generator`,
@@ -368,7 +366,44 @@ const machine_generator = {
                 quantity: 1
             }
         ]
-    }
+    },
+    mesh_id: 'package:/app/meshes/3d_printer.fbx',
+    pose_offset: { // Local transform
+        type: 'node.pose.',
+        uuid: `pose-js-machine-${i}`,
+        name: `Pose-${i}`,
+        deleteable: false,
+        editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
+
+        position: {
+            type: 'node.position.',
+            uuid: `position-js-machine-${i}`,
+            name: `Position-${i}`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0
+        },
+        orientation: {
+            type: 'node.orientation.',
+            uuid: `orientation-js-machine-${i}`,
+            name: `Orientation-${i}`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0,
+            w:1
+        }
+    },
+    link: 'app',
+    collision_mesh_uuid: 'collision-mesh-js-0'
 }
 
 const machine_consumer = {
@@ -388,7 +423,44 @@ const machine_consumer = {
             }
         ]
     }, 
-    outputs: { }
+    outputs: { },
+    mesh_id: 'package:/app/meshes/3d_printer.fbx',
+    pose_offset: { // Local transform
+        type: 'node.pose.',
+        uuid: `pose-js-machine-${i}`,
+        name: `Pose-${i}`,
+        deleteable: false,
+        editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
+
+        position: {
+            type: 'node.position.',
+            uuid: `position-js-machine-${i}`,
+            name: `Position-${i}`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0
+        },
+        orientation: {
+            type: 'node.orientation.',
+            uuid: `orientation-js-machine-${i}`,
+            name: `Orientation-${i}`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0,
+            w:1
+        }
+    },
+    link: 'app',
+    collision_mesh_uuid: 'collision-mesh-js-0'
 };
 
 const machine_transformer = {
@@ -415,7 +487,44 @@ const machine_transformer = {
                 quantity: 1
             }
         ]
-    }
+    },
+    mesh_id: 'package:/app/meshes/3d_printer.fbx',
+    pose_offset: { // Local transform
+        type: 'node.pose.',
+        uuid: `pose-js-machine-${i}`,
+        name: `Pose-${i}`,
+        deleteable: false,
+        editable: false,
+        description: 'Some descriptor string (optional)', // could be ''
+
+        position: {
+            type: 'node.position.',
+            uuid: `position-js-machine-${i}`,
+            name: `Position-${i}`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0
+        },
+        orientation: {
+            type: 'node.orientation.',
+            uuid: `orientation-js-machine-${i}`,
+            name: `Orientation-${i}`,
+            deleteable: false,
+            editable: false,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x:0,
+            y:0,
+            z:0,
+            w:1
+        }
+    },
+    link: 'app',
+    collision_mesh_uuid: 'collision-mesh-js-0'
 };
 
 let machines = [
@@ -431,8 +540,6 @@ let machines = [
 * - TraceDataPoint
 * - Grade
 *****************************************************************/
-
-//TODO change time to duration
 
 let trajectories = [];
 for (let i=0; i<NUM_TRAJECTORIES; i++) {

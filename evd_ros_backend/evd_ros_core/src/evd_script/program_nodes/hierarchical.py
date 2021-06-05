@@ -8,6 +8,7 @@ meaningful behaviors.
 
 from .primitive import Primitive
 from ..node_parser import NodeParser
+from .. import ALL_PRIMITIVES_TYPES
 
 
 class Hierarchical(Primitive):
@@ -23,6 +24,17 @@ class Hierarchical(Primitive):
     @classmethod
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Primitive.template()
+        template['fields'].append({
+            'type': ALL_PRIMITIVES_TYPES,
+            'key': 'primitives',
+            'is_uuid': False,
+            'is_list': True
+        })
+        return template
 
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):
@@ -58,7 +70,7 @@ class Hierarchical(Primitive):
             deleteable=dct['deleteable'],
             description=dct['description'],
             uuid=dct['uuid'],
-            primitives=[NodeParser(p) for p in dct['primitives']])
+            primitives=[NodeParser(p, enforce_types=[ALL_PRIMITIVES_TYPES]) for p in dct['primitives']])
 
     '''
     Data accessor/modifier methods
@@ -141,7 +153,7 @@ class Hierarchical(Primitive):
     def set(self, dct):
 
         if 'primitives' in dct.keys():
-            self.primitives = [NodeParser(p) for p in dct['primitives']]
+            self.primitives = [NodeParser(p, enforce_types=[ALL_PRIMITIVES_TYPES]) for p in dct['primitives']]
 
         super(Hierarchical,self).set(dct)
 

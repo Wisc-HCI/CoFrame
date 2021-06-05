@@ -1,21 +1,41 @@
-from .hierarchical import Hierarchical
-from .primitive import Primitive
 from .skill import Skill
+from .primitive import Primitive
+from .hierarchical import Hierarchical
+from .machine_primitive import MachinePrimitive
 
-from .hierarchical_tasks import *
 from .primitives import *
-from .machine_operations import *
 from .control_flow import *
 from .predefined_skills import *
+from .hierarchical_tasks import *
+
+
+primitive_library = [
+    Delay,
+    Gripper,
+    MoveTrajectory,
+    MoveUnplanned,
+    Hierarchical,
+    Loop,
+    SkillCall,
+    Breakpoint,
+    MachineInitialize,
+    MachineStart,
+    MachineWait,
+    MachineStop,
+    OpenGripper,
+    CloseGripper,
+    Initialize
+]
+
+skills_library = [
+    MachineBlockingProcess,
+    SimplePickAndPlace
+]
 
 
 def ProgramNodeParser(exactType, dct):
 
     node = ControlFlowNodeParser(exactType, dct)
-    if node != None:
-        return node
-
-    node = MachineOperationsNodeParser(exactType, dct)
     if node != None:
         return node
 
@@ -37,5 +57,7 @@ def ProgramNodeParser(exactType, dct):
         node = Primitive.from_dct(dct)
     elif exactType == Skill.type_string(trailing_delim=False):
         node = Skill.from_dct(dct)
+    elif exactType == MachinePrimitive.type_string(trailing_delim=False):
+        node = MachinePrimitive.from_dct(dct)
 
     return node

@@ -7,6 +7,8 @@ of the gripper is handled at the implementation level.
 '''
 
 from ..primitive import Primitive
+from ...data_nodes import Thing
+from ... import NUMBER_TYPE, ENUM_TYPE
 
 
 class Gripper(Primitive):
@@ -30,6 +32,46 @@ class Gripper(Primitive):
     @classmethod
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Primitive.template()
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'position',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'effort',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'speed',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': ENUM_TYPE,
+            'key': 'semantic',
+            'is_uuid': False,
+            'is_list': False,
+            'enum_values': [
+                cls.SEMANTIC_AMBIGUOUS,
+                cls.SEMANTIC_GRASPING,
+                cls.SEMANTIC_RELEASING
+            ]
+        })
+        template['fields'].append({
+            'type': Thing.full_type_string(),
+            'key': 'thing_uuid',
+            'is_uuid': True,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, position=0, effort=0, speed=0, thing_uuid=None, semantic=None,
                  type='', name='', uuid=None, parent=None, append_type=True,

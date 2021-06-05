@@ -8,12 +8,15 @@ from .environment_nodes.reach_sphere import ReachSphere
 from .environment_nodes.collision_mesh import CollisionMesh
 from .environment_nodes.occupancy_zone import OccupancyZone
 from .environment_nodes.pinch_point import PinchPoint
-from .data.location import Location
-from .data.machine import Machine
-from .data.thing import Thing
-from .data.waypoint import Waypoint
-from .data.trajectory import Trajectory
+from .data_nodes.thing import Thing
+from .data_nodes.machine import Machine
+from .data_nodes.waypoint import Waypoint
+from .data_nodes.location import Location
+from .data_nodes.thing_type import ThingType
+from .data_nodes.grade_type import GradeType
+from .data_nodes.trajectory import Trajectory
 from .node_parser import NodeParser
+from . import ALL_REGION_TYPES
 
 
 class Environment(Context):
@@ -30,11 +33,40 @@ class Environment(Context):
     def full_type_string(cls):
         return Context.full_type_string() + cls.type_string()
 
-    def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[],
-                 occupancy_zones=[], locations=[], machines=[], things=[],
-                 waypoints=[], trajectories=[], name='', type='', uuid=None,
-                 parent=None, append_type=True, editable=True, deleteable=True,
-                 description=''):
+    @classmethod
+    def template(cls):
+        template = Context.template()
+        template['fields'].append({
+            'type': ReachSphere.full_type_string(),
+            'key': 'reach_sphere',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': PinchPoint.full_type_string(),
+            'key': 'pinch_points',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': CollisionMesh.full_type_string(),
+            'key': 'collision_meshes',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': OccupancyZone.full_type_string(),
+            'key': 'occupancy_zones',
+            'is_uuid': False,
+            'is_list': True
+        })
+        return template
+
+    def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], 
+                 occupancy_zones=[], locations=[], machines=[], things=[], 
+                 thing_types=[], waypoints=[], trajectories=[], regions=[], 
+                 grade_types=[], name='', type='', uuid=None, parent=None, 
+                 append_type=True, editable=True, deleteable=True, description=''):
 
         self._reach_sphere = None
         self._pinch_points = None
@@ -47,6 +79,9 @@ class Environment(Context):
             things=things,
             waypoints=waypoints,
             trajectories=trajectories,
+            thing_types=thing_types,
+            regions=regions,
+            grade_types=grade_types,
             type=Environment.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
@@ -82,6 +117,9 @@ class Environment(Context):
                    things=[NodeParser(t, enforce_types=[Thing.type_string(trailing_delim=False)]) for t in dct['things']],
                    waypoints=[NodeParser(w, enforce_types=[Waypoint.type_string(trailing_delim=False)]) for w in dct['waypoints']],
                    trajectories=[NodeParser(t, enforce_types=[Trajectory.type_string(trailing_delim=False)]) for t in dct['trajectories']],
+                   thing_types=[NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']],
+                   regions=[NodeParser(r, enforce_types=[ALL_REGION_TYPES]) for r in dct['regions']],
+                   grade_types=[NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,

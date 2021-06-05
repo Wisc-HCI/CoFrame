@@ -7,8 +7,10 @@ TODO implement thing token movement behavior
 '''
 
 from ..primitive import Primitive
-from ...data.geometry.position import Position
-from ...data.geometry.orientation import Orientation
+from ... import BOOLEAN_TYPE
+from ...data_nodes.trajectory import Trajectory
+from ...data_nodes.geometry.position import Position
+from ...data_nodes.geometry.orientation import Orientation
 
 
 class MoveTrajectory(Primitive):
@@ -24,6 +26,23 @@ class MoveTrajectory(Primitive):
     @classmethod
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Primitive.template()
+        template['fields'].append({
+            'type': BOOLEAN_TYPE,
+            'key': 'manual_safety',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': Trajectory.full_type_string(),
+            'key': 'trajectory_uuid',
+            'is_uuid': True,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, trajectory_uuid=None, manual_safety=False, type='', 
                  name='', uuid=None, parent=None, append_type=True, 

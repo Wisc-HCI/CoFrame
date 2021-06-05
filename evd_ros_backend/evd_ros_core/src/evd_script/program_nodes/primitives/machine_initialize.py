@@ -1,12 +1,12 @@
 '''
-Commands machine to start running a routine. Actual implemenation subject
-to application engineer.
+Commands a machine to be initialized. Actual implemenation is up to the
+application engineer.
 '''
 
-from .machine_primitive import MachinePrimitive
+from ..machine_primitive import MachinePrimitive
 
 
-class MachineStart(MachinePrimitive):
+class MachineInitialize(MachinePrimitive):
 
     '''
     Data structure methods
@@ -14,7 +14,7 @@ class MachineStart(MachinePrimitive):
 
     @classmethod
     def type_string(cls, trailing_delim=True):
-        return 'machine-start' + ('.' if trailing_delim else '')
+        return 'machine-initialize' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
@@ -22,9 +22,9 @@ class MachineStart(MachinePrimitive):
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):
-        super(MachineStart,self).__init__(
+        super(MachineInitialize,self).__init__(
             machineUuid=machineUuid,
-            type=MachineStart.type_string() + type if append_type else type,
+            type=MachineInitialize.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -39,7 +39,7 @@ class MachineStart(MachinePrimitive):
 
     def symbolic_execution(self, hooks):
         hooks.active_primitive = self
-        hooks.tokens[self.machine_uuid]['state'] = 'running'
+        hooks.tokens[self.machine_uuid]['state'] = 'idle'
         return self.parent
 
     def realtime_execution(self, hooks):
@@ -49,13 +49,13 @@ class MachineStart(MachinePrimitive):
         if not self.uuid in hooks.state.keys():
             hooks.machine_interface.is_acked(self.machine_uuid) # clear prev ack
             hooks.tokens[self.machine_uuid]['state'] = 'pending'
-            hooks.machine_inferface.start(self.machine_uuid)
+            hooks.machine_inferface.initialize(self.machine_uuid)
             hooks.state[self.uuid] = 'pending'
         else:
             resp = hooks.machine_interface.is_acked(self.machine_uuid)
             if resp != None:
                 if resp:
-                    hooks.tokens[self.machine_uuid]['state'] = 'running'
+                    hooks.tokens[self.machine_uuid]['state'] = 'idle'
                     del hooks.state[self.uuid]
                     next = self.parent
                 else:

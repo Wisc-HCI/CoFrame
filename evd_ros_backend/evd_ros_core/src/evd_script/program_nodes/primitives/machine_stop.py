@@ -7,7 +7,7 @@ Of course stopping a process early might be problematic so care should be taken
 when implementing this in an application.
 '''
 
-from .machine_primitive import MachinePrimitive
+from ..machine_primitive import MachinePrimitive
 
 
 class MachineStop(MachinePrimitive):

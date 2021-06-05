@@ -6,7 +6,7 @@ This behavior is required on implemetation of a machine lest programs assume
 a static timing (bad programming).
 '''
 
-from .machine_primitive import MachinePrimitive
+from ..machine_primitive import MachinePrimitive
 
 
 class MachineWait(MachinePrimitive):

@@ -8,8 +8,9 @@ on collision itself.
 
 from .environment_node import EnvironmentNode
 from ..visualizable import VisualizeMarker, ColorTable
-from ..data.geometry import Orientation, Position
+from ..data_nodes.geometry import Orientation, Position
 from ..node_parser import NodeParser
+from .. import NUMBER_TYPE, ENUM_TYPE, STRING_TYPE
 
 
 from visualization_msgs.msg import Marker
@@ -37,6 +38,46 @@ class PinchPoint(EnvironmentNode, VisualizeMarker):
     @classmethod
     def full_type_string(cls):
         return EnvironmentNode.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = EnvironmentNode.template()
+        template['fields'].append({
+            'type': ENUM_TYPE,
+            'key': 'axis',
+            'is_uuid': False,
+            'is_list': False,
+            'enum_values': [
+                'x',
+                'y',
+                'z'
+            ]
+        })
+        template['fields'].append({
+            'type': Position.full_type_string(),
+            'key': 'offset',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'link',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'radius',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'length',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, axis='x', offset=None, link='', radius=0.05, length=0.2,
                  type='', name='', parent=None, uuid=None, append_type=True,

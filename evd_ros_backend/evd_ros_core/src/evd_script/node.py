@@ -10,7 +10,7 @@ import uuid
 
 from abc import ABC
 from .cache import *
-
+from . import STRING_TYPE, BOOLEAN_TYPE
 
 class Node(ABC):
 
@@ -25,6 +25,39 @@ class Node(ABC):
     @classmethod
     def full_type_string(cls):
         return cls.type_string()
+
+    @classmethod
+    def template(cls):
+        return {
+            'type': cls.full_type_string,
+            'metadata': [
+                {
+                    'type': STRING_TYPE,
+                    'key': 'type'
+                },
+                {
+                    'type': STRING_TYPE,
+                    'key': 'uuid'
+                },
+                {
+                    'type': STRING_TYPE,
+                    'key': 'name'
+                },
+                {
+                    'type': BOOLEAN_TYPE,
+                    'key': 'editable'
+                },
+                {
+                    'type': BOOLEAN_TYPE,
+                    'key': 'deleteable'
+                },
+                {
+                    'type': STRING_TYPE,
+                    'key': 'description'
+                }
+            ],
+            'fields': []
+        }
 
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True,
                  editable=True, deleteable=True, description=''):

@@ -15,10 +15,12 @@ transformers (that have inputs and outputs).
 
 NOTE, currently regions are not a supported type for robot planning. Robot's use locations so arbitrary
 position is not supported. This is fine for the studies at this time but more complex use will require
-handling this disconnect.
+handling this disconnect. Probably something like a variable location?
 '''
 
 from ..node import Node
+from .geometry import Pose
+from ..node_parser import NodeParser
 
 
 class Machine(Node):
@@ -35,13 +37,17 @@ class Machine(Node):
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
 
-    def __init__(self, inputs=None, outputs=None, process_time=0, type='', name='',
-                 uuid=None, parent=None, append_type=True, editable=True,
-                 deleteable=True, description=''):
+    def __init__(self, inputs=None, outputs=None, process_time=0, link='', mesh_id=None, 
+                 pose_offset=None, collision_mesh_uuid=None, type='', name='', uuid=None, 
+                 parent=None, append_type=True, editable=True, deleteable=True, description=''):
         self._inputs = None
         self._outputs = None
         self._process_time = None
         self._machine_type = None
+        self._mesh_id = None
+        self._pose_offset = None
+        self._link = None
+        self._collision_mesh_uuid = None
 
         super(Machine,self).__init__(
             type=Machine.type_string() + type if append_type else type,
@@ -56,13 +62,21 @@ class Machine(Node):
         self.inputs = inputs if inputs != None else {}
         self.outputs = outputs if outputs != None else {}
         self.process_time = process_time
+        self.mesh_id = mesh_id
+        self.pose_offset = pose_offset if pose_offset != None else Pose(deletable=False, editable=editable)
+        self.link = link
+        self.collision_mesh_uuid = collision_mesh_uuid
 
     def to_dct(self):
         msg = super(Machine,self).to_dct()
         msg.update({
             'inputs': self.inputs,
             'outputs': self.outputs,
-            'process_time': self.process_time
+            'process_time': self.process_time,
+            'mesh_id': self.mesh_id,
+            'pose_offset': self.pose_offset.to_dct(),
+            'link': self.link,
+            'collision_mesh_uuid': self.collision_mesh_uuid
         })
         return msg
 
@@ -72,6 +86,10 @@ class Machine(Node):
             inputs=dct['inputs'],
             outputs=dct['outputs'],
             process_time=dct['process_time'],
+            mesh_id=dct['mesh_id'],
+            pose_offset=NodeParser(dct['pose_offset'], enforce_types=[Pose.type_string(trailing_delim=False)]),
+            link=dct['link'],
+            collision_mesh_uuid=dct['collision_mesh_uuid'],
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
             editable=dct['editable'],
@@ -164,17 +182,16 @@ class Machine(Node):
             raise Exception('Region `{0}` not in inputs'.format(region_uuid))
         else:
             self._inputs[thing_type_uuid][idx]['quantity'] = quantity
-            self.updated_attribute('inputs','set',region_uuid)
 
         self._compute_type()
-        self.updated_attribute('inputs',verb,region_uuid)
+        self.updated_attribute('inputs','set',region_uuid)
 
     @property
     def outputs(self):
         return self._outputs
 
-    @output_regions.setter
-    def output_regions(self, value):
+    @outputs.setter
+    def outputs(self, value):
         if self._output_regions != value:
             for k in self._output_regions.keys():
                 self._output_regions[k].remove_from_cache()
@@ -186,7 +203,7 @@ class Machine(Node):
             self._compute_type()
             self.updated_attribute('output_regions','set')
 
-    def add_output_region(self, thing_type_uuid, region_uuid, override=False):
+    def add_output_region(self, thing_type_uuid, region_uuid, quantity, override=False):
         verb = 'add'
 
         if not thing_type_uuid in self._outputs.keys():
@@ -247,10 +264,9 @@ class Machine(Node):
             raise Exception('Region `{0}` not in outputs'.format(region_uuid))
         else:
             self._outputs[thing_type_uuid][idx]['quantity'] = quantity
-            self.updated_attribute('outputs','set',region_uuid)
 
         self._compute_type()
-        self.updated_attribute('outputs',verb,region_uuid)
+        self.updated_attribute('outputs','set',region_uuid)
 
     @property
     def process_time(self):
@@ -262,6 +278,54 @@ class Machine(Node):
             self._process_time = value
             self.updated_attribute('process_time','set')
 
+    @property
+    def mesh_id(self):
+        return self._mesh_id
+
+    @mesh_id.setter
+    def mesh_id(self, value):
+        if self._mesh_id != value:
+            self._mesh_id = value
+            self.updated_attribute('mesh_id','set')
+
+    @property
+    def pose_offset(self):
+        return self._pose_offset
+
+    @pose_offset.setter
+    def pose_offset(self, value):
+        if self._pose_offset != value:
+            if value == None:
+                raise Exception('pose_offset cannot be None')
+
+            if self._pose_offset != None:
+                self._pose_offset.remove_from_cache()
+
+            self._pose_offset = value
+            if self._pose_offset != None:
+                self._pose_offset.parent = self
+
+            self.updated_attribute('pose_offset','set')
+
+    @property
+    def link(self):
+        return self._link
+
+    @link.setter
+    def link(self, value):
+        if self._link != value:
+            self._link = value
+            self.updated_attribute('link','set')
+
+    @property
+    def collision_mesh_uuid(self):
+        return self._collision_mesh_uuid
+
+    @collision_mesh_uuid.setter
+    def collision_mesh_uuid(self, value):
+        if self._collision_mesh_uuid != value:
+            self._collision_mesh_uuid = value
+            self.updated_attribute('collision_mesh_uuid','set')
 
     def set(self, dct):
 
@@ -274,11 +338,39 @@ class Machine(Node):
         if 'process_time' in dct.keys():
             self.process_time = dct['process_time']
 
+        if 'mesh_id' in dct.keys():
+            self.mesh_id = dct['mesh_id']
+
+        if 'pose_offset' in dct.keys():
+            self.pose_offset = NodeParser(dct['pose_offset'], enforce_types=[Pose.type_string(trailing_delim=False)])
+
+        if 'link' in dct.keys():
+            self.link = dct['link']
+
         super(Machine,self).set(dct)
+
+    '''
+    Cache methods
+    '''
+
+    def remove_from_cache(self):
+        self.pose_offset.remove_from_cache()
+
+        super(Machine,self).remove_from_cache()
+
+    def add_to_cache(self):
+        self.pose_offset.add_to_cache()
+
+        super(Machine,self).add_to_cache()
 
     '''
     Update Methods
     '''
+
+    def late_construct_update(self):
+        self.pose_offset.late_construct_update()
+
+        super(Machine,self).late_construct_update()
 
     def deep_update(self):
         super(Machine,self).deep_update()
@@ -287,6 +379,10 @@ class Machine(Node):
         self.updated_attribute('inputs','update')
         self.updated_attribute('outputs','update')
         self.updated_attribute('process_time','update')
+        self.updated_attribute('mesh_id','update')
+        self.updated_attribute('pose_offset','update')
+        self.updated_attribute('link','update')
+        self.updated_attribute('collision_mesh_uuid','update')
 
     def shallow_update(self):
         super(Machine,self).shallow_update()
@@ -295,6 +391,10 @@ class Machine(Node):
         self.updated_attribute('inputs','update')
         self.updated_attribute('outputs','update')
         self.updated_attribute('process_time','update')
+        self.updated_attribute('mesh_id','update')
+        self.updated_attribute('pose_offset','update')
+        self.updated_attribute('link','update')
+        self.updated_attribute('collision_mesh_uuid','update')
 
     '''
     Utility Methods

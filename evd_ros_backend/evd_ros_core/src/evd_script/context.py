@@ -9,14 +9,14 @@ own the data with encapsulation.
 
 
 from .node import Node
-from .data.thing import Thing
-from .data.machine import Machine
-from .data.waypoint import Waypoint
-from .data.location import Location
-from .data.thing_type import ThingType
-from .data.grade_type import GradeType
-from .data.trajectory import Trajectory
-from .data.regions import Region, CubeRegion, SphereRegion
+from .data_nodes.thing import Thing
+from .data_nodes.machine import Machine
+from .data_nodes.waypoint import Waypoint
+from .data_nodes.location import Location
+from .data_nodes.thing_type import ThingType
+from .data_nodes.grade_type import GradeType
+from .data_nodes.trajectory import Trajectory
+from . import ALL_REGION_TYPES
 
 from .orphans import *
 from .node_parser import NodeParser
@@ -35,6 +35,59 @@ class Context(Node):
     @classmethod
     def full_type_string(cls):
         return Node.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = EnvironmentNode.template()
+        template['fields'].append({
+            'type': Location.full_type_string(),
+            'key': 'locations',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': Machine.full_type_string(),
+            'key': 'machines',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': Thing.full_type_string(),
+            'key': 'things',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': ThingType.full_type_string(),
+            'key': 'thing_types',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': Waypoint.full_type_string(),
+            'key': 'waypoints',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': Trajectory.full_type_string(),
+            'key': 'trajectories',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': ALL_REGION_TYPES,
+            'key': 'regions',
+            'is_uuid': False,
+            'is_list': True
+        })
+        template['fields'].append({
+            'type': GradeType.full_type_string(),
+            'key': 'grade_types',
+            'is_uuid': False,
+            'is_list': True
+        })
+        return template
 
     def __init__(self, locations=[], machines=[], things=[], thing_types=[],
                  waypoints=[], trajectories=[], regions=[], grade_types=[],
@@ -101,7 +154,7 @@ class Context(Node):
             waypoints=[NodeParser(w, enforce_types=[Waypoint.type_string(trailing_delim=False)]) for w in dct['waypoints']],
             trajectories=[NodeParser(t, enforce_types=[Trajectory.type_string(trailing_delim=False)]) for t in dct['trajectories']],
             thing_types=[NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']],
-            regions=[NodeParser(r, enforce_types=[Region.type_string(trailing_delim=False),CubeRegion.type_string(trailing_delim=False),SphereRegion.type_string(trailing_delim=False)]) for r in dct['regions']],
+            regions=[NodeParser(r, enforce_types=[ALL_REGION_TYPES]) for r in dct['regions']],
             grade_types=[NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']])
 
     def on_delete(self):
@@ -313,7 +366,8 @@ class Context(Node):
     def grade_types(self):
         return self._grade_types.values()
 
-    @grade_types.setter(self):
+    @grade_types.setter
+    def grade_types(self, value):
         uuids = []
 
         for g in self._grade_types.values():
@@ -487,7 +541,7 @@ class Context(Node):
             self.thing_types = [NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']]
 
         if 'regions' in dct.keys():
-            self.regions = [NodeParser(r, enforce_types=[Region.type_string(trailing_delim=False),CubeRegion.type_string(trailing_delim=False),SphereRegion.type_string(trailing_delim=False)]) for r in dct['regions']]
+            self.regions = [NodeParser(r, enforce_types=[ALL_REGION_TYPES]) for r in dct['regions']]
 
         if 'grade_types' in dct.keys():
             self.grade_types = [NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']]

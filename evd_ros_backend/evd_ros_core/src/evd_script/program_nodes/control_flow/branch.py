@@ -28,7 +28,7 @@ class Branch(Primitive):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type
+            append_type=append_type,
             description=description)
 
     def to_dct(self):

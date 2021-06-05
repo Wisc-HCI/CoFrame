@@ -18,6 +18,7 @@ class SimplePickAndPlace(Skill):
     Data structure methods
     '''
 
+'''
     @classmethod
     def type_string(cls, trailing_delim=True):
         return 'simple-pick-and-place' + ('.' if trailing_delim else '')
@@ -49,3 +50,4 @@ class SimplePickAndPlace(Skill):
             editable=editable,
             deleteable=deleteable,
             description=description)
+'''

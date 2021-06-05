@@ -6,9 +6,10 @@ this sphere can further restrict the reachability region.
 '''
 
 from .environment_node import EnvironmentNode
-from ..data.geometry import Position
+from ..data_nodes.geometry import Position
 from ..visualizable import VisualizeMarker, ColorTable
 from ..node_parser import NodeParser
+from .. import NUMBER_TYPE
 
 
 from visualization_msgs.msg import Marker
@@ -36,6 +37,23 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
     @classmethod
     def full_type_string(cls):
         return EnvironmentNode.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = EnvironmentNode.template()
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'radius',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': Position.full_type_string(),
+            'key': 'offset',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, radius=1, offset=None, type='', name='', parent=None,
                  uuid=None, append_type=True, editable=True, deleteable=True,

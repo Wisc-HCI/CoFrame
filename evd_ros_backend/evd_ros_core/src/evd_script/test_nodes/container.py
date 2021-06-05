@@ -8,6 +8,7 @@ sub-nodes.
 
 from ..node import Node
 from ..node_parser import NodeParser
+from .. import ALL_NODES_TYPE, STRING_TYPE
 
 
 class Container(Node):
@@ -23,6 +24,23 @@ class Container(Node):
     @classmethod
     def full_type_string(cls, item_type='node.'):
         return Node.full_type_string() + cls.type_string(item_type)
+
+    @classmethod
+    def template(cls):
+        template = Node.template()
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'item_type',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': ALL_NODES_TYPE,
+            'key': 'values',
+            'is_uuid': False,
+            'is_list': True
+        })
+        return template
 
     def __init__(self, item_type, values=[], type='', name='', uuid=None,
                  parent=None, append_type=True, editable=True, deleteable=True,

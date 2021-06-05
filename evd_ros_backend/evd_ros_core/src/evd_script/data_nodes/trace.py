@@ -21,7 +21,7 @@ frame keys are provided by
 
 grade keys are provided by pre-registered graders through their grade_type uuid.
 
-time is the duration for just this trajectory in planning (approximate)
+Duration for just this trajectory in planning (approximate)
 
 NOTE: trace does not wrap joint_data or tf_data into nice node serializations. Instead
 it opts to just package the raw data. This is for performance and memory reasons 
@@ -53,9 +53,9 @@ class Trace(Node, VisualizeMarkers):
         return Node.full_type_string() + cls.type_string()
 
     def __init__(self, tf_data={}, time_data=[], joint_names=[], joint_data=[], 
-                 grades={}, eePath=None, jPaths=[], tPaths=[], cPaths=[], time=0, 
-                 type='', name='', uuid=None, parent=None, append_type=True, 
-                 editable=True, deleteable=True, description=''):
+                 grades={}, eePath=None, jPaths=[], tPaths=[], cPaths=[], 
+                 duration=0, type='', name='', uuid=None, parent=None, 
+                 append_type=True, editable=True, deleteable=True, description=''):
 
         super(Trace,self).__init__(
             type=Trace.type_string() + type if append_type else type,
@@ -72,7 +72,7 @@ class Trace(Node, VisualizeMarkers):
         self._joint_data = joint_data
         self._tf_data = tf_data
         self._grades = grades
-        self._time = time
+        self._duration = duration
         self._end_effector_path = eePath
         self._joint_paths = jPaths
         self._tool_paths = tPaths
@@ -86,7 +86,7 @@ class Trace(Node, VisualizeMarkers):
             'joint_data': self.joint_data,
             'tf_data': self.tf_data,
             'grades': self.grades,
-            'time': self.time,
+            'duration': self.duration,
             'end_effector_path': self.end_effector_path,
             'joint_paths': self.joint_paths,
             'tool_paths': self.tool_paths,
@@ -113,7 +113,7 @@ class Trace(Node, VisualizeMarkers):
             jPaths=dct['joint_paths'],
             tPaths=dct['tool_paths'],
             cPaths=dct['component_paths'],
-            time=dct['time'])
+            duration=dct['duration'])
 
     def to_ros_markers(self, frame_id, id_start=0):
         render_point_markers = []
@@ -182,8 +182,8 @@ class Trace(Node, VisualizeMarkers):
         return self._grades
 
     @property
-    def time(self):
-        return self._time
+    def duration(self):
+        return self._duration
 
     @property
     def end_effector_path(self):
@@ -213,7 +213,7 @@ class Trace(Node, VisualizeMarkers):
         self.updated_attribute('joint_data','update')
         self.updated_attribute('grades','update')
         self.updated_attribute('tf_data','update')
-        self.updated_attribute('time','update')
+        self.updated_attribute('duration','update')
         self.updated_attribute('end_effector_path','update')
         self.updated_attribute('joint_paths','update')
         self.updated_attribute('tool_paths','update')
@@ -227,7 +227,7 @@ class Trace(Node, VisualizeMarkers):
         self.updated_attribute('joint_data','update')
         self.updated_attribute('grades','update')
         self.updated_attribute('tf_data','update')
-        self.updated_attribute('time','update')
+        self.updated_attribute('duration','update')
         self.updated_attribute('end_effector_path','update')
         self.updated_attribute('joint_paths','update')
         self.updated_attribute('tool_paths','update')

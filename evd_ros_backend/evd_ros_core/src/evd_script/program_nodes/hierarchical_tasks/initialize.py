@@ -4,8 +4,7 @@ configure all machines and jog cobot to initial position.
 '''
 
 from ..hierarchical import Hierarchical
-from ..machine_operations import MachineInitialize
-from ..primitives import MoveUnplanned
+from ..primitives import MoveUnplanned, MachineInitialize
 from .open_gripper import OpenGripper
 
 

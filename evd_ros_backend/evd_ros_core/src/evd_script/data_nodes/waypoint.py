@@ -25,6 +25,17 @@ class Waypoint(Pose):
     def full_type_string(cls):
         return Pose.full_type_string() + cls.type_string()
 
+    @classmethod
+    def template(cls):
+        template = Pose.template()
+        template['fields'].append({
+            'type': Joints.full_type_string(),
+            'key': 'joints',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
+
     def __init__(self, position=None, orientation=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True, editable=True,
                  deleteable=True, description=''):

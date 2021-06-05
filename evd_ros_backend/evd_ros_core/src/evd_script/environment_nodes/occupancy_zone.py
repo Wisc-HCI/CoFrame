@@ -8,7 +8,8 @@ Parameterization only makes sense for human agent zones.
 
 from .environment_node import EnvironmentNode
 from ..visualizable import VisualizeMarker, ColorTable
-from ..data.geometry import Position
+from ..data_nodes.geometry import Position
+from .. import NUMBER_TYPE, ENUM_TYPE
 
 
 from visualization_msgs.msg import Marker
@@ -35,6 +36,51 @@ class OccupancyZone(EnvironmentNode, VisualizeMarker):
     @classmethod
     def full_type_string(cls):
         return EnvironmentNode.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = EnvironmentNode.template()
+        template['fields'].append({
+            'type': ENUM_TYPE,
+            'key': 'occupancy_type',
+            'is_uuid': False,
+            'is_list': False,
+            'enum_values': [
+                cls.HUMAN_TYPE,
+                cls.ROBOT_TYPE
+            ]
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'position_x',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'position_z',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'scale_x',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'scale_z',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'height',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1,
                  height = 0, type='', name='', parent=None, uuid=None,

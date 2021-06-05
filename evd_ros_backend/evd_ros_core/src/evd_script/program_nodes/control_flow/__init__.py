@@ -1,6 +1,7 @@
 from .branch import Branch
 from .breakpoint import Breakpoint
 from .loop import Loop
+from .skill_call import SkillCall
 
 from .conditionals import *
 
@@ -17,5 +18,7 @@ def ControlFlowNodeParser(exactType, dct):
         node = Branch.from_dct(dct)
     elif exactType == Breakpoint.type_string(trailing_delim=False):
         node = Breakpoint.from_dct(dct)
+    elif exactType == SkillCall.type_string(trailing_delim=False):
+        node = SkillCall.from_dct(dct)
 
     return node

@@ -5,6 +5,7 @@ Simple primitive that delays the cobot's behavior for a fixed amount of time.
 import time
 
 from ..primitive import Primitive
+from ... import NUMBER_TYPE
 
 
 class Delay(Primitive):
@@ -20,6 +21,17 @@ class Delay(Primitive):
     @classmethod
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Primitive.template()
+        template['fields'].append({
+            'type': NUMBER_TYPE,
+            'key': 'duration',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, duration=0, type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):

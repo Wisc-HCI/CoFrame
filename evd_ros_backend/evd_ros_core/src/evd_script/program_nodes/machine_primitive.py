@@ -5,7 +5,8 @@ A machine primitive is a way to generalize machine behavior in EvD. The actual b
 supplied externally and is hooked into the EvD program runner.
 '''
 
-from ..primitive import Primitive
+from .primitive import Primitive
+from ..data_nodes.machine import Machine
 
 
 class MachinePrimitive(Primitive):
@@ -21,6 +22,17 @@ class MachinePrimitive(Primitive):
     @classmethod
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Primitive.template()
+        template['fields'].append({
+            'type': Machine.full_type_string(),
+            'key': 'machine_uuid',
+            'is_uuid': True,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):
