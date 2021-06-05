@@ -19,22 +19,23 @@ export function ItemList({type, title, description}) {
             }
         }
     )
-  
+
     return (
-      
+
       <List
         split={false}
         dataSource={uuids}
         renderItem={(uuid)=>(
-          <Item 
+          <Item
             key={uuid}
-            uuid={uuid}  
-            type={type} 
-            title={title} 
+            uuid={uuid}
+            type={type}
+            title={title}
             description={description}
           />
         )}
       />
-      
+    
+
     )
   }

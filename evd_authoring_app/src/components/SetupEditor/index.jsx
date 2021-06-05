@@ -1,7 +1,7 @@
-import React from 'react';
+import React,{useState} from 'react';
 
-import { Tabs, Card, Button } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Tabs, Card, Button,Input,Space } from 'antd';
+import { PlusOutlined,SearchOutlined,CloseOutlined  } from '@ant-design/icons';
 
 import { ItemList } from './Tabs/ItemList';
 // import { WaypointList } from './Tabs/Waypoints';
@@ -23,6 +23,18 @@ export function SetupEditor(_) {
         setupTab:state.setupTab,
         setSetupTab:state.setSetupTab
     }));
+    const [visible,setVisible] = useState(false);
+    const [ButtonVisible,setButtonVisible] = useState(true);
+
+    const changeVisibility = () => {
+      setVisible(!visible);
+      setButtonVisible(!ButtonVisible);
+
+    }
+    const onChange = () => {
+      //todo
+
+    };
 
     const tabs = [
         {
@@ -49,11 +61,19 @@ export function SetupEditor(_) {
         {
             key:'things',
             name:'Things',
+            type:'thing',
+            title: (item)=> `${item.name}`,
+            description: (item)=> `Info about ${item.name}`
+        },
+        {
+            key:'thingTypes',
+            name:'Thing Types',
             type:'thingType',
             title: (item)=> `${item.name}`,
             description: (item)=> `Info about ${item.name}`
         }
     ]
+
 
     return (
 
@@ -75,11 +95,23 @@ export function SetupEditor(_) {
                     style={{height:'100%'}}
                     bodyStyle={{padding:0,minHeight:0,minWidth:0,height:'calc(100vh - 165pt)',overflow:'auto'}}
                     extra={
+                      <Space>
+                      <Input style={{width:300, left:10,display:visible ? "block":"none"}}/>
+                      <Button ghost size = "small"type="text" icon ={<CloseOutlined/>}style={{position: 'absolute',left: 560,top:20,display:visible ? "block":"none"}}
+                      onClick={changeVisibility}>
+
+                      </Button>
+                        <Button style={{left:"-5px",display:ButtonVisible ?"block":"none"}}type='outline' icon={<SearchOutlined />} onClick={changeVisibility}/>
                         <Button
                             type='outline'
                             icon={<PlusOutlined/>}
                         />
+
+                      </Space>
+
                     }>
+
+
                         <ItemList
                             type={tab.type}
                             title={tab.title}
