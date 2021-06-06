@@ -85,21 +85,25 @@ export function SetupEditor(_) {
         <Tabs
             tabPosition='left'
             style={{display:'flex',flex:1}}
-            activeKey={setupTab}
+            defaultActiveKey={setupTab}
             onChange={setSetupTab}
+
         >
         {tabs.filter((tab) => {
           if (searchTerm ==""){
             return tab;
           } else if (tab.name.toLowerCase().includes(searchTerm.toLowerCase())){
+
             return tab;
           }
 
         }).map((tab)=>{
           return (
+
             <Tabs.TabPane
                 key={tab.key}
                 tab={<span style={tab.key === setupTab ? { color: primaryColor } : {}}>{tab.name}</span>}
+              
                 style={{padding:0,paddingTop:1,height:'100%'}}
             >
             <Card
