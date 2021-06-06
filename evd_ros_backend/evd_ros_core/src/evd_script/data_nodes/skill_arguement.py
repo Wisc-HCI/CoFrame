@@ -1,5 +1,5 @@
 
-from .. import STRING_TYPE
+from .. import ALL_NODES_TYPE, STRING_TYPE
 from ..node import Node
 
 
@@ -36,10 +36,16 @@ class SkillArguement(Node):
             'is_uuid': False,
             'is_list': False
         })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'parameter_type',
+            'is_uuid': False,
+            'is_list': False
+        })
         return template
     
-    def __init__(self, parameter_key=None, temporary_value=None, type='', 
-                 name='', uuid=None, parent=None, append_type=True, 
+    def __init__(self, parameter_key=None, temporary_value=None, parameter_type=ALL_NODES_TYPE, 
+                 type='', name='', uuid=None, parent=None, append_type=True, 
                  editable=True, deleteable=True, description=''):
 
         super(SkillArguement,self).__init__(
@@ -57,15 +63,18 @@ class SkillArguement(Node):
 
         self._parameter_key = parameter_key
         self._temporary_value = temporary_value if temporary_value != None else self._generate_uuid('skill-arguement-variable')
+        self._parameter_type = parameter_type
 
         self.updated_attribute('parameter_key','set')
         self.updated_attribute('temporary_value','set')
+        self.updated_attribute('parameter_type','set')
 
     def to_dct(self):
         msg = super(SkillArguement,self).to_dct()
         msg.update({
             'parameter_key': self.parameter_key,
-            'temporary_value': self.temporary_value
+            'temporary_value': self.temporary_value,
+            'parameter_type': self.parameter_type
         })
         return msg
 
@@ -80,7 +89,8 @@ class SkillArguement(Node):
             description=dct['description'],
             uuid=dct['uuid'],
             parameter_key=dct['parameter_key'],
-            temporary_value=dct['temporary_value'])
+            temporary_value=dct['temporary_value'],
+            parameter_type=dct['parameter_type'])
 
     '''
     Data accessor/modifier methods
@@ -94,6 +104,10 @@ class SkillArguement(Node):
     def temporary_value(self):
         return self._temporary_value
 
+    @property
+    def parameter_type(self):
+        return self._parameter_type
+
     '''
     Update methods
     '''
@@ -103,9 +117,11 @@ class SkillArguement(Node):
 
         self.updated_attribute('parameter_key','update')
         self.updated_attribute('temporary_value','update')
+        self.updated_attribute('parameter_type','update')
 
     def shallow_update(self):
         super(SkillArguement,self).shallow_update()
 
         self.updated_attribute('parameter_key','update')
         self.updated_attribute('temporary_value','update')
+        self.updated_attribute('parameter_type','update')

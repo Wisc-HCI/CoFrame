@@ -106,6 +106,10 @@ class Skill(Hierarchical):
 
         self.updated_attribute('arguements','set')
 
+    @property
+    def arguements_dct(self):
+        return self._arguements
+
     def add_skill_arguement(self, arg):
         arg.parent = self
         self._arguements[arg.uuid] = arg
