@@ -21,11 +21,12 @@ from evd_ros_core.srv import SaveData, SaveDataResponse
 from evd_ros_core.srv import GetOptions, GetOptionsResponse
 from evd_ros_core.srv import GetHistory, GetHistoryResponse
 
-from evd_script.program.program import Program
+from evd_script.program import Program
 from evd_script.cache import get_evd_cache_obj
 from evd_script.orphans import evd_orphan_repair
 from evd_version_tracking import HistoryEntry, History, VersionTag
 from evd_interfaces import IssueClientInterface
+from evd_script.program_nodes import primitive_library
 
 
 class DataServer:
@@ -60,6 +61,7 @@ class DataServer:
         self._set_prog_srv = rospy.Service('data_server/set_program',SetData,self._set_prog_cb)
         self._get_history_srv = rospy.Service('data_server/get_history',GetHistory,self._get_history_cb)
         self._get_uuids_srv = rospy.Service('data_server/get_uuids',GetData,self._get_uuids_cb)
+        self._get_primitive_lib_srv = rospy.Service('data_server/get_primitive_library',GetData,self._get_primitive_lib_cb)
 
     def spin(self):
         # give nodes time before publishing initial state
@@ -333,6 +335,16 @@ class DataServer:
         response.status = len(errors) > 0
         response.errors = self.__formatted_json_dump(errors) if len(errors) > 0 else ''
         response.message = 'Encountered errors while retrieving UUIDs' if len(errors) > 0 else ''
+        return response
+
+    def _get_primitive_lib_cb(self, _): # ignore request, we only support get all
+        response = GetDataResponse()
+        
+        data = [p.template() for p in primitive_library]
+
+        response.data = self.__formatted_json_dump(data)
+        response.tag = self._program_history.get_current_version().to_ros()
+        response.status = True
         return response
 
     #===========================================================================

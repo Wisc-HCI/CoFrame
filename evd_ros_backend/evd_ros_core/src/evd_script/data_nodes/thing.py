@@ -22,6 +22,10 @@ class Thing(Pose, VisualizeMarker):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Thing'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'thing' + ('.' if trailing_delim else '')
 

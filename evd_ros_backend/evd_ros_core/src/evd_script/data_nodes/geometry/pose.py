@@ -18,6 +18,10 @@ class Pose(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Pose'
+
+    @classmethod
     def type_string(clss, trailing_delim=True):
         return 'pose' + ('.' if trailing_delim else '')
 

@@ -19,6 +19,10 @@ class Node(ABC):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Node'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'node' + ('.' if trailing_delim else '')
 
@@ -29,7 +33,8 @@ class Node(ABC):
     @classmethod
     def template(cls):
         return {
-            'type': cls.full_type_string,
+            'type': cls.full_type_string(),
+            'name': cls.display_name(),
             'metadata': [
                 {
                     'type': STRING_TYPE,
@@ -294,11 +299,19 @@ class Node(ABC):
     '''
 
     def symbolic_execution(self, hooks):
-        # Inplement the pre-post conditions directly
-        hooks.active_primitive = self
-        return self.parent # Node itself does nothing
+        # Implement the pre-post conditions directly
+
+        # EX) Really simple example would look like
+        #   hooks.active_primitive = self
+        #   return self.parent # Node itself does nothing
+
+        raise Exception('This node is not defined for execution')
 
     def realtime_execution(self, hooks):
         # Implement the full real-time simulation
-        hooks.active_primitive = self
-        return self.parent # Node itself does nothing
+        
+        # EX) Really simple example would look like
+        #   hooks.active_primitive = self
+        #   return self.parent # Node itself does nothing
+        
+        raise Exception('This node is not defined for execution')

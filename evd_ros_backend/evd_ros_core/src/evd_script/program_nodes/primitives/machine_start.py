@@ -13,6 +13,10 @@ class MachineStart(MachinePrimitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Machine Start'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'machine-start' + ('.' if trailing_delim else '')
 

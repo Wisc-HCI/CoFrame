@@ -17,6 +17,10 @@ class MachineStop(MachinePrimitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Machine Stop'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'machine-stop' + ('.' if trailing_delim else '')
 

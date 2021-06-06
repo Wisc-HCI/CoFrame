@@ -26,6 +26,10 @@ class Gripper(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Gripper'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'gripper' + ('.' if trailing_delim else '')
 

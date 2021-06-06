@@ -31,6 +31,10 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Reach Sphere'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'reach-sphere' + ('.' if trailing_delim else '')
 

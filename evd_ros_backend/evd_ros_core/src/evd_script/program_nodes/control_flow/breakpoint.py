@@ -14,6 +14,10 @@ class Breakpoint(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Breakpoint'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'breakpoint' + ('.' if trailing_delim else '')
 

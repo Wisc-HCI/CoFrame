@@ -46,6 +46,10 @@ class Trace(Node, VisualizeMarkers):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Trace'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'trace' + ('.' if trailing_delim else '')
 

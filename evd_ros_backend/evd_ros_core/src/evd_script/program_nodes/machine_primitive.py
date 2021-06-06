@@ -16,6 +16,10 @@ class MachinePrimitive(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Machine Primitive'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'machine-primitive' + ('.' if trailing_delim else '')
 

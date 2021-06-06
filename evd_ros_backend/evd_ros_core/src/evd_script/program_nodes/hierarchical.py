@@ -18,6 +18,10 @@ class Hierarchical(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Hierarchical Block'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'hierarchical' + ('.' if trailing_delim else '')
 
@@ -141,7 +145,7 @@ class Hierarchical(Primitive):
                 break
 
         if delIdx != None:
-            self._primitives.pop(i).remove_from_cache()
+            self._primitives.pop(delIdx).remove_from_cache()
             self.updated_attribute('primitives','delete')
 
     def get_primitive(self, uuid):
@@ -184,6 +188,9 @@ class Hierarchical(Primitive):
             self.delete_primitive(uuid)
         else:
             success = False
+
+        if not success:
+            success = super(Hierarchical,self).delete_child(uuid)
 
         return success
 

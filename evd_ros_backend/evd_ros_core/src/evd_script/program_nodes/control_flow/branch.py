@@ -13,6 +13,10 @@ class Branch(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Branch'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'branch' + ('.' if trailing_delim else '')
 

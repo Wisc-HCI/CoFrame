@@ -19,6 +19,10 @@ class CubeRegion(Region):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Cube Region'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'cube-region' + ('.' if trailing_delim else '')
 

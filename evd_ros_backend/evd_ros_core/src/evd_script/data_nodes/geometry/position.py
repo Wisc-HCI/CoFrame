@@ -19,6 +19,10 @@ class Position(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Position'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'position' + ('.' if trailing_delim else '')
 

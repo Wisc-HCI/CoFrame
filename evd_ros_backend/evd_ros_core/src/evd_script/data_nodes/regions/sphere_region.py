@@ -19,6 +19,10 @@ class SphereRegion(Region):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Sphere Region'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'sphere-region' + ('.' if trailing_delim else '')
 

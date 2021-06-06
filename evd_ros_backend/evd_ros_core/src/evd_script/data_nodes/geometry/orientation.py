@@ -20,6 +20,10 @@ class Orientation(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Orientation'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'orientation' + ('.' if trailing_delim else '')
 

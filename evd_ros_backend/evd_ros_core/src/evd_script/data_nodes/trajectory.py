@@ -27,6 +27,10 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Trajectory'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'trajectory' + ('.' if trailing_delim else '')
 

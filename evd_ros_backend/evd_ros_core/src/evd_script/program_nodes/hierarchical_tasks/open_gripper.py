@@ -11,6 +11,10 @@ class OpenGripper(Hierarchical):
     '''
     Data structure methods
     '''
+    
+    @classmethod
+    def display_name(cls):
+        return 'Open Gripper'
 
     @classmethod
     def type_string(cls, trailing_delim=True):

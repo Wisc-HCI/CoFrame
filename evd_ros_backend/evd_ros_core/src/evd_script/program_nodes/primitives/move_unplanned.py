@@ -22,6 +22,10 @@ class MoveUnplanned(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Move Unplanned'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'move-unplanned' + ('.' if trailing_delim else '')
 

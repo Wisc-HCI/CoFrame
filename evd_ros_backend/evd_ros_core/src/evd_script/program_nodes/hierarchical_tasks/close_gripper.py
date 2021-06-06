@@ -13,6 +13,10 @@ class CloseGripper(Hierarchical):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Close Gripper'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'close-gripper' + ('.' if trailing_delim else '')
 

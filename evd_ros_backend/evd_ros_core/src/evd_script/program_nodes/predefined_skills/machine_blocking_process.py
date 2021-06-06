@@ -17,6 +17,11 @@ class MachineBlockingProcess(Skill):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Machine Blocking Process Skill'
+
+'''
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'machine-blocking-process' + ('.' if trailing_delim else '')
 
@@ -45,3 +50,4 @@ class MachineBlockingProcess(Skill):
             editable=editable,
             deleteable=deleteable,
             description=description)
+'''

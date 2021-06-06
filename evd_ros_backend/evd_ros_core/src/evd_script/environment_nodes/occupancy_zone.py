@@ -30,6 +30,10 @@ class OccupancyZone(EnvironmentNode, VisualizeMarker):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Occupancy Zone'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'occupancy-zone' + ('.' if trailing_delim else '')
 

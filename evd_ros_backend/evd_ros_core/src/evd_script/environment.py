@@ -26,6 +26,10 @@ class Environment(Context):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Environment'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'environment' + ('.' if trailing_delim else '')
 

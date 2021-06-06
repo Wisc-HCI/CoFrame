@@ -18,7 +18,11 @@ class Container(Node):
     '''
 
     @classmethod
-    def type_string(cls, item_type='node.', trailing_delim=True):
+    def display_name(cls):
+        return 'Container'
+
+    @classmethod
+    def type_string(cls, item_type='?', trailing_delim=True):
         return 'container<{}>'.format(item_type) + '.' if trailing_delim else ''
 
     @classmethod

@@ -11,6 +11,10 @@ class GradeType(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Grade Type'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'grade-type' + ('.' if trailing_delim else '')
 

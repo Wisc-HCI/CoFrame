@@ -32,6 +32,10 @@ class Machine(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Machine'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'machine' + ('.' if trailing_delim else '')
 

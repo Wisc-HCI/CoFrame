@@ -23,6 +23,10 @@ class Region(Pose, VisualizeMarker):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Orientation Region'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'region' + ('.' if trailing_delim else '')
 

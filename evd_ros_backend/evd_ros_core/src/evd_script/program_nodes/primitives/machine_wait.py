@@ -16,6 +16,10 @@ class MachineWait(MachinePrimitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Machine Wait'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'machine-wait' + ('.' if trailing_delim else '')
 

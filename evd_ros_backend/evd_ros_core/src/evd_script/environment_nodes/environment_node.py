@@ -12,6 +12,10 @@ class EnvironmentNode(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Environment Node'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'environment-node' + ('.' if trailing_delim else '')
 

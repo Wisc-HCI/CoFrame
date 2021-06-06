@@ -12,6 +12,10 @@ class Primitive(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Primitive'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'primitive' + ('.' if trailing_delim else '')
 

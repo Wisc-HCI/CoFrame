@@ -14,6 +14,10 @@ class Joints(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Joints'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'joints' + ('.' if trailing_delim else '')
 

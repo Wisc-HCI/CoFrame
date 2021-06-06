@@ -15,6 +15,10 @@ class Delay(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Delay'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'delay' + ('.' if trailing_delim else '')
 

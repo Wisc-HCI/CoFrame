@@ -20,6 +20,10 @@ class MoveTrajectory(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Move Trajectory'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'move-trajectory' + ('.' if trailing_delim else '')
 

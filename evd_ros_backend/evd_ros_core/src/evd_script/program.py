@@ -18,12 +18,27 @@ class Program(Hierarchical):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Program'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'program' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return Hierarchical.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Hierarchical.template()
+        template['fields'].append({
+            'type': Environment.full_type_string(),
+            'key': 'environment',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, primitives=[], changes_cb=None, name='', type='', uuid=None, append_type=True, environment=None, editable=True, deleteable=True):
         self._orphan_list = evd_orphan_list()

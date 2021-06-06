@@ -18,6 +18,10 @@ class SimplePickAndPlace(Skill):
     Data structure methods
     '''
 
+    @classmethod
+    def display_name(cls):
+        return 'Simple Pick and Place Skill'
+
 '''
     @classmethod
     def type_string(cls, trailing_delim=True):

@@ -14,6 +14,10 @@ class ThingType(Node):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Thing Type'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'thing-type' + ('.' if trailing_delim else '')
 

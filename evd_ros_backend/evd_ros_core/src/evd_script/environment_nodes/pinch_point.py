@@ -32,6 +32,10 @@ class PinchPoint(EnvironmentNode, VisualizeMarker):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Pinch Point'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'pinch-point' + ('.' if trailing_delim else '')
 

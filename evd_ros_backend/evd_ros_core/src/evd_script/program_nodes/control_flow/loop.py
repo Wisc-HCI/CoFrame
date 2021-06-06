@@ -19,6 +19,10 @@ class Loop(Hierarchical):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Loop'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'loop' + ('.' if trailing_delim else '')
 

@@ -28,6 +28,10 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Collision Mesh'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'collision-mesh' + ('.' if trailing_delim else '')
 

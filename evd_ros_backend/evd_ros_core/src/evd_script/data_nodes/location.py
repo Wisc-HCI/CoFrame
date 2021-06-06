@@ -23,6 +23,10 @@ class Location(Waypoint):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Location'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'location' + ('.' if trailing_delim else '')
 
