@@ -9,6 +9,7 @@ from .trajectory import Trajectory
 from .thing import Thing
 from .thing_type import ThingType
 from .grade_type import GradeType
+from .skill_arguement import SkillArguement
 
 
 def DataNodeParser(exactType, dct):
@@ -38,5 +39,7 @@ def DataNodeParser(exactType, dct):
         node = ThingType.from_dct(dct)
     elif exactType == GradeType.type_string(trailing_delim=False):
         node = GradeType.from_dct(dct)
+    elif exactType == SkillArguement.type_string(trailing_delim=False):
+        node = SkillArguement.from_dct(dct)
 
     return node

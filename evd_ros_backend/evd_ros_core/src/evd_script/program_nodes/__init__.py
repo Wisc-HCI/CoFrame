@@ -27,11 +27,6 @@ primitive_library = [
     Initialize
 ]
 
-skills_library = [
-    MachineBlockingProcess,
-    SimplePickAndPlace
-]
-
 
 def ProgramNodeParser(exactType, dct):
 
