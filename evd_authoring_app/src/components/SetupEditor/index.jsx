@@ -1,7 +1,6 @@
 import React,{useState} from 'react';
 
-import { Tabs, Card, Button,Input,Space } from 'antd';
-import { PlusOutlined,SearchOutlined,CloseOutlined  } from '@ant-design/icons';
+import { Tabs, Card } from 'antd';
 
 import { ItemList } from './Tabs/ItemList';
 // import { WaypointList } from './Tabs/Waypoints';
@@ -10,12 +9,8 @@ import { ItemList } from './Tabs/ItemList';
 // import { ThingList } from './Tabs/Things';
 // import { ThingTypeList } from './Tabs/ThingTypes';
 
-
 import useGuiStore from '../../stores/GuiStore';
 import {SearchBox} from './Tabs/SearchBox.jsx';
-
-// import './index.css'
-
 
 export function SetupEditor(_) {
 

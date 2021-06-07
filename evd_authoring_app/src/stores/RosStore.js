@@ -2,6 +2,7 @@ import create from "zustand";
 import ROSLIB from '@robostack/roslib';
 
 import useEvdStore from './EvdStore';
+import useSimStore from './SimStore';
 
 const store = (set) => ({
     url: 'ws://localhost:9090',
@@ -80,6 +81,7 @@ const store = (set) => ({
 const useRosStore = create(store);
 
 useRosStore.getState().setUrl('ws://localhost:9090');
+useSimStore.getState().setup();
 
 
 export default useRosStore;
