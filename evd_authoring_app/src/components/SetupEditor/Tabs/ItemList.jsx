@@ -14,7 +14,7 @@ export function ItemList({type, title, description,searchTerm}) {
           if (searchTerm === '') {
             return true
           } else {
-            return state.environment[type+'s'][uuid].name.includes(searchTerm.toLowerCase())
+            return state.environment[type+'s'][uuid].name.toLowerCase().includes(searchTerm.toLowerCase())
           }
         }),[type,searchTerm])
 )
