@@ -49,22 +49,22 @@ const store = (set) => ({
 
 const useEvdStore = create(immer(store));
 
-fakeEvdData.locations.forEach((location)=>{
+fakeEvdData.arbitrary.locations.forEach((location)=>{
   useEvdStore.getState().addItem('location',location)
 })
-fakeEvdData.waypoints.forEach((waypoint)=>{
+fakeEvdData.arbitrary.waypoints.forEach((waypoint)=>{
   useEvdStore.getState().addItem('waypoint',waypoint)
 })
-fakeEvdData.machines.forEach((machine)=>{
+fakeEvdData.arbitrary.machines.forEach((machine)=>{
   useEvdStore.getState().addItem('machine',machine)
 })
-fakeEvdData.thingTypes.forEach((thingType)=>{
+fakeEvdData.arbitrary.thingTypes.forEach((thingType)=>{
   useEvdStore.getState().addItem('thingType',thingType)
 })
-fakeEvdData.things.forEach((thing)=>{
+fakeEvdData.arbitrary.things.forEach((thing)=>{
   useEvdStore.getState().addItem('thing',thing)
 })
-fakeEvdData.regions.forEach((region)=>{
+fakeEvdData.arbitrary.regions.forEach((region)=>{
   useEvdStore.getState().addItem('region',region)
 })
 

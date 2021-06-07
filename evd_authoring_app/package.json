@@ -23,7 +23,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
     "react-unity-webgl": "^7.1.10",
-    "robot-scene": "github:Wisc-HCI/robot-scene#v0.1.3",
+    "robot-scene": "github:Wisc-HCI/robot-scene",
     "serve": "^11.3.2",
     "uuid": "^8.3.2",
     "zustand": "^3.5.1"
