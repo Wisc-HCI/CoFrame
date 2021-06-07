@@ -2616,7 +2616,30 @@ const fields = {
     occupancyZone_template,
     pinchPoint_template,
     context_template,
-    environment_template
+    environment_template,
+
+    primitive_template,
+    machine_primitive_template,
+    delay_template,
+    gripper_template,
+    machine_initialize_template,
+    machine_start_template,
+    machine_stop_template,
+    machine_wait_template,
+    move_trajectory_template,
+    move_unplanned_template,
+    hierarchical_template,
+    close_gripper_template,
+    open_gripper_template,
+    initialize_template,
+    breakpoint_template,
+    skillCall_template,
+    loop_template,
+
+    skill_template,
+    machine_blocking_process_template,
+    simple_pick_and_place_template,
+    program_template
 };
 
 export default fields;
