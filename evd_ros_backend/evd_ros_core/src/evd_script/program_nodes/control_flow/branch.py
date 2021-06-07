@@ -1,5 +1,7 @@
 '''
 TODO Intention is to have a "switch" node dependent on results of conditional
+
+WARNING! This is not fully written
 '''
 
 from ..primitive import Primitive

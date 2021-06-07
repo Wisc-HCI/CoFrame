@@ -40,25 +40,25 @@ class Gripper(Primitive):
     @classmethod
     def template(cls):
         template = Primitive.template()
-        template['fields'].append({
+        template['parameters'].append({
             'type': NUMBER_TYPE,
             'key': 'position',
             'is_uuid': False,
             'is_list': False
         })
-        template['fields'].append({
+        template['parameters'].append({
             'type': NUMBER_TYPE,
             'key': 'effort',
             'is_uuid': False,
             'is_list': False
         })
-        template['fields'].append({
+        template['parameters'].append({
             'type': NUMBER_TYPE,
             'key': 'speed',
             'is_uuid': False,
             'is_list': False
         })
-        template['fields'].append({
+        template['parameters'].append({
             'type': ENUM_TYPE,
             'key': 'semantic',
             'is_uuid': False,
@@ -69,7 +69,7 @@ class Gripper(Primitive):
                 cls.SEMANTIC_RELEASING
             ]
         })
-        template['fields'].append({
+        template['parameters'].append({
             'type': Thing.full_type_string(),
             'key': 'thing_uuid',
             'is_uuid': True,
@@ -78,14 +78,17 @@ class Gripper(Primitive):
         return template
 
     def __init__(self, position=0, effort=0, speed=0, thing_uuid=None, semantic=None,
-                 type='', name='', uuid=None, parent=None, append_type=True,
-                 editable=True, deleteable=True, description=''):
+                 parameters=None, type='', name='', uuid=None, parent=None, 
+                 append_type=True, editable=True, deleteable=True, description=''):
 
-        self._thing_uuid = None
-        self._position = None
-        self._effort = None
-        self._speed = None
-        self._semantic = None
+        if parameters == None:
+            parameters = {
+                'thing_uuid': None,
+                'position': None,
+                'effort': None,
+                'speed': None,
+                'semantic': None
+            }
 
         super(Gripper,self).__init__(
             type=Gripper.type_string() + type if append_type else type,
@@ -95,7 +98,8 @@ class Gripper(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.position = position
         self.effort = effort
@@ -105,92 +109,65 @@ class Gripper(Primitive):
         if thing_uuid != None:
             self.semantic = semantic if semantic != None else self.SEMANTIC_GRASPING
 
-    def to_dct(self):
-        msg = super(Gripper,self).to_dct()
-        msg.update({
-            'thing_uuid': self.thing_uuid,
-            'position': self.position,
-            'effort': self.effort,
-            'speed': self.speed,
-            'semantic': self.semantic
-        })
-        return msg
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            uuid=dct['uuid'],
-            type=dct['type'],
-            append_type=False,
-            editable=dct['editable'],
-            deleteable=dct['deleteable'],
-            description=dct['description'],
-            position=dct['position'],
-            effort=dct['effort'],
-            speed=dct['speed'],
-            thing_uuid=dct['thing_uuid'],
-            semantic=dct['semantic'])
-
     '''
     Data accessor/modifier methods
     '''
 
     @property
     def position(self):
-        return self._position
+        return self._parameters['position']
 
     @position.setter
     def position(self, value):
-        if self._position != value:
-            self._position = value
-            self.updated_attribute('position','set')
+        if self._parameters['position'] != value:
+            self._parameters['position'] = value
+            self.updated_attribute('parameters.position','set')
 
     @property
     def effort(self):
-        return self._effort
+        return self._parameters['effort']
 
     @effort.setter
     def effort(self, value):
-        if self._effort != value:
-            self._effort = value
-            self.updated_attribute('effort','set')
+        if self._parameters['effort'] != value:
+            self._parameters['effort'] = value
+            self.updated_attribute('parameters.effort','set')
 
     @property
     def speed(self):
-        return self._speed
+        return self._parameters['speed']
 
     @speed.setter
     def speed(self, value):
-        if self._speed != value:
-            self._speed = value
-            self.updated_attribute('speed','set')
+        if self._parameters['speed'] != value:
+            self._parameters['speed'] = value
+            self.updated_attribute('parameters.speed','set')
 
     @property
     def thing_uuid(self):
-        return self._thing_uuid
+        return self._parameters['thing_uuid']
 
     @thing_uuid.setter
     def thing_uuid(self, value):
-        if self._thing_uuid != value:
-            self._thing_uuid = value
+        if self._parameters['thing_uuid'] != value:
+            self._parameters['thing_uuid'] = value
 
-            if self._thing_uuid == None:
+            if self._parameters['thing_uuid'] == None:
                 # without a reference to a thing, behavior is unknowable
                 self.semantic = self.SEMANTIC_AMBIGUOUS
             elif self.semantic == self.SEMANTIC_AMBIGUOUS:
                 # assume attempting to grasp by default
                 self.semantic = self.SEMANTIC_GRASPING
 
-            self.updated_attribute('thing_uuid','set')
+            self.updated_attribute('parameters.thing_uuid','set')
 
     @property
     def semantic(self):
-        return self._semantic
+        return self._parameters['semantic']
 
     @semantic.setter
     def semantic(self, value):
-        if self._semantic != value:
+        if self._parameters['semantic'] != value:
 
             if self.thing_uuid == None:
                 if value != self.SEMANTIC_AMBIGUOUS:
@@ -199,8 +176,8 @@ class Gripper(Primitive):
                 if value != self.SEMANTIC_GRASPING and value != self.SEMANTIC_RELEASING:
                     raise Exception('If thing defined then it must either be grasping or releasing')
 
-            self._semantic = value
-            self.updated_attribute('semantic','set')
+            self._parameters['semantic'] = value
+            self.updated_attribute('parameters.semantic','set')
 
     def set(self, dct):
         position = dct.get('position', None)
@@ -222,29 +199,6 @@ class Gripper(Primitive):
             self.semantic = dct['semantic']
 
         super(Gripper,self).set(dct)
-
-    '''
-    Update Methods
-    '''
-
-    def deep_update(self):
-
-        super(Gripper,self).deep_update()
-
-        self.updated_attribute('thing_uuid','update')
-        self.updated_attribute('position','update')
-        self.updated_attribute('effort','update')
-        self.updated_attribute('speed','update')
-        self.updated_attribute('semantic','update')
-
-    def shallow_update(self):
-        super(Gripper,self).shallow_update()
-
-        self.updated_attribute('thing_uuid','update')
-        self.updated_attribute('position','update')
-        self.updated_attribute('effort','update')
-        self.updated_attribute('speed','update')
-        self.updated_attribute('semantic','update')
 
     '''
     Execution methods

@@ -41,7 +41,8 @@ class Hierarchical(Primitive):
         return template
 
     def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
-                 append_type=True, editable=True, deleteable=True, description=''):
+                 append_type=True, editable=True, deleteable=True, description='',
+                 parameters=None):
 
         self._primitives = []
 
@@ -53,7 +54,8 @@ class Hierarchical(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.primitives = primitives
 

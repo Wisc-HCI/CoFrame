@@ -34,13 +34,13 @@ class MoveTrajectory(Primitive):
     @classmethod
     def template(cls):
         template = Primitive.template()
-        template['fields'].append({
+        template['parameters'].append({
             'type': BOOLEAN_TYPE,
             'key': 'manual_safety',
             'is_uuid': False,
             'is_list': False
         })
-        template['fields'].append({
+        template['parameters'].append({
             'type': Trajectory.full_type_string(),
             'key': 'trajectory_uuid',
             'is_uuid': True,
@@ -48,12 +48,15 @@ class MoveTrajectory(Primitive):
         })
         return template
 
-    def __init__(self, trajectory_uuid=None, manual_safety=False, type='', 
+    def __init__(self, trajectory_uuid=None, manual_safety=False, parameters=None, type='', 
                  name='', uuid=None, parent=None, append_type=True, 
                  editable=True, deleteable=True, description=''):
 
-        self._trajectory_uuid = None
-        self._manual_safety = None
+        if parameters == None:
+            parameters = {
+                'manual_safety': None,
+                'trajectory_uuid': None
+            }
 
         super(MoveTrajectory,self).__init__(
             type=MoveTrajectory.type_string() + type if append_type else type,
@@ -63,33 +66,11 @@ class MoveTrajectory(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.manual_safety = manual_safety
         self.trajectory_uuid = trajectory_uuid
-
-    def to_dct(self):
-        tmp = self.context # This guarantees that the patch is applied if possible
-
-        msg = super(MoveTrajectory,self).to_dct()
-        msg.update({
-            'trajectory_uuid': self.trajectory_uuid,
-            'manual_safety': self.manual_safety,
-        })
-        return msg
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            type=dct['type'],
-            append_type=False,
-            editable=dct['editable'],
-            deleteable=dct['deleteable'],
-            description=dct['description'],
-            uuid=dct['uuid'],
-            manual_safety=dct['manual_safety'],
-            trajectory_uuid=dct['trajectory_uuid'])
 
     '''
     Data accessor/modifier methods
@@ -97,30 +78,25 @@ class MoveTrajectory(Primitive):
 
     @property
     def manual_safety(self):
-        return self._manual_safety
+        return self._parameters['manual_safety']
 
     @manual_safety.setter
     def manual_safety(self, value):
-        if self._manual_safety != value:
-            self._manual_safety = value
-            self.updated_attribute('manual_safety','set')
+        if self._parameters['manual_safety'] != value:
+            self._parameters['manual_safety'] = value
+            self.updated_attribute('parameters.manual_safety','set')
 
     @property
     def trajectory_uuid(self):
-        return self._trajectory_uuid
+        return self._parameters['trajectory_uuid']
 
     @trajectory_uuid.setter
     def trajectory_uuid(self, value):
-        if self._trajectory_uuid != value:
-            self._trajectory_uuid = value
-            self.updated_attribute('trajectory_uuid','set')
+        if self._parameters['trajectory_uuid'] != value:
+            self._parameters['trajectory_uuid'] = value
+            self.updated_attribute('parameters.trajectory_uuid','set')
 
     def set(self, dct):
-        if 'start_location_uuid' in dct.keys():
-            self.start_location_uuid = dct['start_location_uuid']
-
-        if 'end_location_uuid' in dct.keys():
-            self.end_location_uuid = dct['end_location_uuid']
 
         if 'manual_safety' in dct.keys():
             self.manual_safety = dct['manual_safety']
@@ -129,26 +105,6 @@ class MoveTrajectory(Primitive):
             self.trajectory_uuid = dct['trajectory_uuid']
 
         super(MoveTrajectory,self).set(dct)
-
-    '''
-    Update Methods
-    '''
-
-    def deep_update(self):
-        super(MoveTrajectory,self).deep_update()
-
-        self.updated_attribute('manual_safety','update')
-        self.updated_attribute('start_location_uuid','update')
-        self.updated_attribute('end_location_uuid','update')
-        self.updated_attribute('trajectory_uuid','update')
-
-    def shallow_update(self):
-        super(MoveTrajectory,self).shallow_update()
-
-        self.updated_attribute('manual_safety','update')
-        self.updated_attribute('start_location_uuid','update')
-        self.updated_attribute('end_location_uuid','update')
-        self.updated_attribute('trajectory_uuid','update')
 
     '''
     Execution methods

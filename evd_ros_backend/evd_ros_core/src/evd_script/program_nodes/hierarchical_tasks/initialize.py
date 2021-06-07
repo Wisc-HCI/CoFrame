@@ -28,7 +28,7 @@ class Initialize(Hierarchical):
 
     def __init__(self, homeLocUuid=None, machineUuids=[], type='', name='',
                  uuid=None, parent=None, append_type=True, primitives=None,
-                 editable=True, deleteable=True, description=''):
+                 editable=True, deleteable=True, description='', parameters=None):
 
         if primitives == None:
             primitives = []
@@ -49,7 +49,8 @@ class Initialize(Hierarchical):
             primitives=primitives,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
     '''
     Execution methods

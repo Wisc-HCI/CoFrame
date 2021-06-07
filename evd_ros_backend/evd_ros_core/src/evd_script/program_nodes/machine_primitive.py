@@ -30,7 +30,7 @@ class MachinePrimitive(Primitive):
     @classmethod
     def template(cls):
         template = Primitive.template()
-        template['fields'].append({
+        template['parameters'].append({
             'type': Machine.full_type_string(),
             'key': 'machine_uuid',
             'is_uuid': True,
@@ -38,9 +38,13 @@ class MachinePrimitive(Primitive):
         })
         return template
 
-    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
+    def __init__(self, machineUuid=None, parameters=None, type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):
-        self._machine_uuid = None
+
+        if parameters == None:
+            parameters = {
+                'machine_uuid': None
+            }
 
         super(MachinePrimitive,self).__init__(
             type=MachinePrimitive.type_string() + type if append_type else type,
@@ -50,28 +54,10 @@ class MachinePrimitive(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.machine_uuid = machineUuid
-
-    def to_dct(self):
-        msg = super(MachinePrimitive,self).to_dct()
-        msg.update({
-            'machine_uuid': self.machine_uuid
-        })
-        return msg
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            uuid=dct['uuid'],
-            type=dct['type'],
-            append_type=False,
-            editable=dct['editable'],
-            deleteable=dct['deleteable'],
-            description=dct['description'],
-            machineUuid=dct['machine_uuid'])
 
     '''
     Data accessor/modifier methods
@@ -79,30 +65,16 @@ class MachinePrimitive(Primitive):
 
     @property
     def machine_uuid(self):
-        return self._machine_uuid
+        return self.parameters['machine_uuid']
 
     @machine_uuid.setter
     def machine_uuid(self, value):
-        if self._machine_uuid != value:
-            self._machine_uuid = value
-            self.updated_attribute('machine_uuid','set')
+        if self.parameters['machine_uuid'] != value:
+            self.parameters['machine_uuid'] = value
+            self.updated_attribute('parameters.machine_uuid','set')
 
     def set(self, dct):
         if 'machine_uuid' in dct.keys():
             self.machine_uuid = dct['machine_uuid']
 
         super(MachinePrimitive,self).set(dct)
-
-    '''
-    Update Methods
-    '''
-
-    def deep_update(self):
-        super(MachinePrimitive,self).deep_update()
-
-        self.updated_attribute('machine_uuid','update')
-
-    def shallow_update(self):
-        super(MachinePrimitive,self).shallow_update()
-
-        self.updated_attribute('machine_uuid','update')

@@ -24,7 +24,7 @@ class MachineStart(MachinePrimitive):
     def full_type_string(cls):
         return MachinePrimitive.full_type_string() + cls.type_string()
 
-    def __init__(self, machineUuid=None, type='', name='', uuid=None, parent=None,
+    def __init__(self, machineUuid=None, parameters=None, type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):
         super(MachineStart,self).__init__(
             machineUuid=machineUuid,
@@ -35,7 +35,8 @@ class MachineStart(MachinePrimitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
     '''
     Execution methods

@@ -26,7 +26,7 @@ class OpenGripper(Hierarchical):
 
     def __init__(self, position=0, effort=100, speed=100, thing_uuid=None, type='',
                  name='', uuid=None, parent=None, append_type=True, primitives=None,
-                 editable=True, deleteable=True, description=''):
+                 editable=True, deleteable=True, description='', parameters=None):
 
         if primitives == None:
             primitives=[
@@ -49,4 +49,5 @@ class OpenGripper(Hierarchical):
             primitives=primitives,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)

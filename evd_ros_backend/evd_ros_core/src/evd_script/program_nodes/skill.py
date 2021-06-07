@@ -3,8 +3,13 @@ Skills act as functions within EvD. Like Hierarchical blocks they provide a high
 level definition to a collection of nodes. However, they also support 
 parameterization, which allows them to be reused as if they are primitives.
 
-To invoke a skill in EvD, there is a primitive control_flow block called CallSkill
+To invoke a skill in EvD, there is a primitive control_flow block called SkillCall
 which interfaces with this node to fill in the parameterization 
+
+Nesting SkillCalls is a bit tricky. The crux of the problem is that a Skill / Skill
+Arguement requires top-level parameterization but a skill-call provides this as a
+set of "shadow-params".
+#TODO think about how best to do this linking, maybe all primitives have a parameters list?
 '''
 
 from ..data_nodes.skill_arguement import SkillArguement
@@ -44,7 +49,7 @@ class Skill(Hierarchical):
 
     def __init__(self, arguements=None, primitives=[], type='', name='', uuid=None, 
                  parent=None, append_type=True, editable=True, deleteable=True, 
-                 description=''):
+                 description='', parameters=None):
 
         self._arguements = {}
 
@@ -57,7 +62,8 @@ class Skill(Hierarchical):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.arguements = arguements if arguements == None else []
 

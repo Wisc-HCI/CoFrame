@@ -1,3 +1,9 @@
+'''
+Skill arguement provides a simple typing scheme for parameters to be passed
+into skills when invoked. Effectively, each value in the underlying nodes
+are overrided with a temporary value and copied over to a real value on
+invocation.
+'''
 
 from .. import ALL_NODES_TYPE, STRING_TYPE
 from ..node import Node

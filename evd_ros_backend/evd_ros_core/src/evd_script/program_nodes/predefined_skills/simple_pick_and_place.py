@@ -31,7 +31,7 @@ class SimplePickAndPlace(Skill):
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=None, arguements=None, type='', 
+    def __init__(self, primitives=None, arguements=None, parameters=None, type='', 
                  name='', uuid=None, parent=None, append_type=True, 
                  editable=False, deleteable=False, description=''):
 
@@ -88,4 +88,5 @@ class SimplePickAndPlace(Skill):
             deleteable=deleteable,
             description=description,
             primitives=primitives,
-            arguements=arguements)
+            arguements=arguements,
+            parameters=parameters)

@@ -43,7 +43,7 @@ class Loop(Hierarchical):
 
     def __init__(self, primitives=[], condition=None, type='', name='', uuid=None,
                  parent=None, append_type=True, editable=True, deleteable=True,
-                 description=''):
+                 description='', parameters=None):
         self._condition = None
 
         super(Loop,self).__init__(
@@ -55,7 +55,8 @@ class Loop(Hierarchical):
             primitives=primitives,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.condition = condition
 
