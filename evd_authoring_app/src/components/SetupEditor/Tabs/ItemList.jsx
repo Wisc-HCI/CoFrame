@@ -5,20 +5,23 @@ import { List } from 'antd';
 import { Item } from './Item';
 
 import useEvdStore from '../../../stores/EvdStore';
+import SearchBox from "./SearchBox";
 
-export function ItemList({type, title, description}) {
+export function ItemList({type, title, description,searchTerm}) {
 
-    const uuids = useEvdStore(useCallback(state=>Object.keys(state.environment[type+'s']),[type]),
-        // Custom function to prevent unnecessary re-renders:
-        (oldState, newState) => {
-            // Only change if the uuids change
-            if (newState.environment === undefined || oldState.environment === undefined){
-                return false
-            } else {
-                return Object.keys(oldState.environment[type+'s']) === Object.keys(newState.environment[type+'s'])
-            }
-        }
-    )
+  const uuids = useEvdStore(useCallback(state=>Object.keys(state.environment[type+'s'])
+        .filter(uuid=>{
+          if (searchTerm === '') {
+            return true
+          } else {
+            return state.environment[type+'s'][uuid].name.includes(searchTerm.toLowerCase())
+          }
+        }),[type,searchTerm])
+)
+
+
+
+
 
     return (
 
@@ -35,7 +38,7 @@ export function ItemList({type, title, description}) {
           />
         )}
       />
-    
+
 
     )
   }
