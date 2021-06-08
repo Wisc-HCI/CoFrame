@@ -5,9 +5,8 @@ import { List } from 'antd';
 import { Item } from './Item';
 
 import useEvdStore from '../../../stores/EvdStore';
-import SearchBox from "./SearchBox";
 
-export function ItemList({type, title, description,searchTerm}) {
+export function ItemList({type, title, description, searchTerm}) {
 
   const uuids = useEvdStore(useCallback(state=>Object.keys(state.environment[type+'s'])
         .filter(uuid=>{
