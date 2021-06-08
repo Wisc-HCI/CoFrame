@@ -1,23 +1,26 @@
 import React, { Component } from 'react';
 // import ReactBlockly from 'react-blockly';
 
-// import { 
-//     evdScriptBlocklyToolbox, 
-//     evdScriptBlocklyInitialXML 
-// } from '../../model/evdScript';
+import Blockly from 'node-blockly/browser';
+import BlocklyDrawer, { Block, Category } from 'react-blockly-drawer';
+
+import { 
+    evdScriptBlocklyToolbox, 
+    evdScriptBlocklyInitialXML 
+} from '../../model/evdScript/blockly.js';
 
 import './index.css';
 
 
 export class ProgramEditor extends Component {
-  // constructor(props) {
-  //   super(props);
+  constructor(props) {
+    super(props);
 
-    // this.state = {
-    //   toolbox: evdScriptBlocklyToolbox(),
-    //   initialXml: evdScriptBlocklyInitialXML()
-    // };
-  // }
+    this.state = {
+      toolbox: evdScriptBlocklyToolbox(),
+      initialXml: evdScriptBlocklyInitialXML()
+    };
+  }
 
   workspaceDidChange = (workspace) => {
     /*
@@ -38,20 +41,43 @@ export class ProgramEditor extends Component {
   };
 
   render() {
-    // const { 
-    //     toolbox, 
-    //     initialXml 
-    // } = this.state;
-    
+    const { 
+        toolbox, 
+        initialXml 
+    } = this.state;
+  
     return (
-      <div 
-        id="blockly"
-        style={{ 
-          height: '100%', 
-          width: '100%'
-      }}>
-        BLOCKLY HERE
-      </div>
-    )
+        <div
+            id="blockly"
+            style={{ 
+                height: '100%', 
+                width: '100%' 
+            }}
+        >
+        <BlocklyDrawer
+          tools={toolbox}
+          language={Blockly.JavaScript}
+          appearance={
+            {
+              categories: {
+                Testing: {
+                  colour: '360'
+                },
+                Machine: {
+                  colour: '50'
+                },
+                Location: {
+                  colour: '260'
+                },
+                Skills: {
+                  colour: '210'
+                }
+              },
+            }
+          }
+        >
+        </BlocklyDrawer>
+        </div>
+    );
   }
 }

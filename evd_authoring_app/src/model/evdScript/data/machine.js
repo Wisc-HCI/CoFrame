@@ -275,22 +275,36 @@ export class Machine extends Node {
         return { type: 'machine' };
     }
 
-    static BlocklyBlock() {
-        return { key: 'machine', data: {
-            init: function() {
-                this.appendDummyInput()
-                    .appendField("Machine");
-                this.appendDummyInput()
-                    .appendField(new Blockly.FieldDropdown([["untitled","defaul"]]), "name");
-                this.setInputsInline(true);
-                this.setOutput(true, null);
-                this.setColour(50);
-                this.setTooltip("machine");
-                this.setHelpUrl("machine");
+    static BlocklyBlock(machine_list) {
+        return { 
+            name: 'Machine',
+            category: 'Machine',
+            block: {
+                init: function () {
+                    this.jsonInit({
+                        type: "example_dropdown",
+                        message0: "Machine %1",
+                        args0: [
+                            {
+                            type: "field_dropdown",
+                            name: "FIELDNAME",
+                            options: machine_list
+                            }
+                        ],
+                        inputsInline: true,
+                        colour: 50,
+                        output: 'null',
+                        tooltip: "machine"
+                    });
+                },
+            },
+            generator: (block) => {
+                var value_length = block.getFieldValue('FIELDNAME');
+                var code = `console.log('Length is: ${value_length}')`;
+                return [code, Blockly.JavaScript.ORDER_ATOMIC];
             }
-        }};
+        };
     }
-    
     /*
     * Data accessor/modifier methods
     */
