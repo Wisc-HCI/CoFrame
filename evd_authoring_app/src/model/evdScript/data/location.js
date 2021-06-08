@@ -48,19 +48,38 @@ export class Location extends Waypoint {
         return { type: 'location' };
     }
 
-    static BlocklyBlock() {
-        return { key: 'location', data: {
-            init: function() {
-                this.appendDummyInput()
-                    .appendField("Location");
-                this.appendDummyInput()
-                    .appendField(new Blockly.FieldDropdown([["unnamed","default"]]), "name");
-                this.setInputsInline(true);
-                this.setOutput(true, null);
-                this.setColour(260);
-                this.setTooltip("location");
-                this.setHelpUrl("location");
+    static BlocklyBlock(locations) {
+        // TODO need to support type checking here
+        // iterate through locations creating new fielddropdown entries
+        // remove the unnamed option
+        // look up syntax for blockly adding field options
+        return { 
+            name: 'Location',
+            category: 'Location',
+            block: {
+                init: function () {
+                    this.jsonInit({
+                        type: "example_dropdown",
+                        message0: "Location %1",
+                        args0: [
+                            {
+                            type: "field_dropdown",
+                            name: "FIELDNAME",
+                            options: locations
+                            }
+                        ],
+                        inputsInline: true,
+                        colour: 260,
+                        output: 'null',
+                        tooltip: "location"
+                    });
+                },
+            },
+            generator: (block) => {
+                var value_length = block.getFieldValue('name');
+                var code = `console.log('Length is: ${value_length}')`;
+                return [code, Blockly.JavaScript.ORDER_ATOMIC];
             }
-        }};
+        };
     }
 }

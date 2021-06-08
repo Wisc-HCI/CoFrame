@@ -1,7 +1,9 @@
 import * as evdData from './data';
 import * as evdProgram from './program';
 
-import Blockly from 'blockly';
+// import Blockly from 'blockly';
+
+import Blockly from 'node-blockly/browser';
 
 const {
     Location,
@@ -33,84 +35,155 @@ const {
 
 
 export const evdScriptBlocklyToolbox = () => {
+    // Checking how lists are built when adding items afterwards
+    var locs = [["loc-1", "loc-1"], ["loc-2", "loc-2"], ["loc-3", "loc-3"]];
+    var someblocks = Location.BlocklyBlock(locs);
+    locs.push(["loc-4", "loc-4"])
+
     return [
+        // Blocks for testing/tutorials, learning Blockly.
         {
-            kind: "category",
-            name: "Locations",
-            colour: "260",
-            blocks: [
-                Location.BlocklyToolbox()
-            ]
+            name: 'HelloWorld',
+            category: 'Testing',
+            block: {
+                init: function () {
+                this.jsonInit({
+                    message0: 'Hello %1',
+                    args0: [
+                    {
+                        type: 'field_input',
+                        name: 'NAME',
+                        check: 'String',
+                    },
+                    // accept a location
+                    ],
+                    output: 'String',
+                    tooltip: 'Says Hello',
+                });
+                },
+            },
+            generator: (block) => {
+                const message = `'${block.getFieldValue('NAME')}'` || '\'\'';
+                const code = `console.log('Hello ${message}')`;
+                return [code, Blockly.JavaScript.ORDER_MEMBER];
+            },
         },
         {
-            kind: "category",
-            name: "Wayponts",
-            colour: "290",
-            blocks: [
-                Waypoint.BlocklyToolbox()
-            ]
+            name: 'legnth_block',
+            category: 'Testing',
+            block: {
+                init: function () {
+                    this.jsonInit({
+                        type: "length_block",
+                        message0: "length of %1",
+                        args0: [
+                            {
+                                type: "input_value",
+                                name: "FROM",
+                                check: "String"
+                            }
+                        ],
+                        output: "Number",
+                        tooltip: "testing tooltip",
+                        helpUrl: ""
+                    });
+                },
+            },
+            generator: (block) => {
+                var value_length = Blockly.JavaScript.valueToCode(block, 'FROM', Blockly.JavaScript.ORDER_ATOMIC) || '\'\'';
+                // TODO: Assemble JavaScript into code variable.
+                var code = `console.log('Length is: ${value_length.length}')`;
+                return [code, Blockly.JavaScript.ORDER_MEMBER];
+            },
         },
         {
-            kind: "category",
-            name: "Trajectories",
-            colour: "330",
-            blocks: [
-                Trajectory.BlocklyToolbox()
-            ]
+            name: 'string_msg',
+            category: 'Testing',
+            block: {
+                init: function () {
+                    this.jsonInit({
+                        type: "string_msg",
+                        message0: 'String: %1',
+                        args0: [
+                            {
+                                type: 'field_input',
+                                name: 'VALUE',
+                                check: 'String',
+                            },
+                        ],
+                        output: 'String',
+                        tooltip: 'Says Hello',
+                    });
+                },
+            },
+            generator: (block) => {
+                return [block.getFieldValue('VALUE') || '\'\'', Blockly.JavaScript.ORDER_MEMBER]
+            }
         },
         {
-            kind: "category",
-            name: "Machines",
-            colour: "50",
-            blocks: [
-                Machine.BlocklyToolbox()
-            ]
+            name: 'number_msg',
+            category: 'Testing',
+            block: {
+                init: function () {
+                    this.jsonInit({
+                        type: "number_msg",
+                        message0: 'Number: %1',
+                        args0: [
+                            {
+                                type: 'field_input',
+                                name: 'VALUE',
+                                check: 'Number',
+                            },
+                        ],
+                        output: 'Number',
+                        tooltip: 'Says Hello',
+                    });
+                },
+            },
+            generator: (block) => {
+                return [block.getFieldValue('VALUE') || '0', Blockly.JavaScript.ORDER_MEMBER]
+            }
         },
-        {
-            kind: "category",
-            name: "Things",
-            colour: "20",
-            blocks: [
-                Thing.BlocklyToolbox()
-            ]
-        },
-        {
-            kind: "category",
-            name: "Skills",
-            colour: "210",
-            blocks: [
-                Skill.BlocklyToolbox(),
-                Initialize.BlocklyToolbox(),
-                CloseGripper.BlocklyToolbox(),
-                OpenGripper.BlocklyToolbox(),
-                SimplePickAndPlace.BlocklyToolbox(),
-                MachineBlockingProcess.BlocklyToolbox()
-            ]
-        },
-        {
-            kind: "category",
-            name: "Primitives",
-            colour: "120",
-            blocks: [
-                Delay.BlocklyToolbox(),
-                Gripper.BlocklyToolbox(),
-                MoveTrajectory.BlocklyToolbox(),
-                MoveUnplanned.BlocklyToolbox(),
-                MachineInitialize.BlocklyToolbox(),
-                MachineStart.BlocklyToolbox(),
-                MachineWait.BlocklyToolbox(),
-                MachineStop.BlocklyToolbox()
-            ]
-        },
-        {
-            kind: "category",
-            name: "Control Flow",
-            colour: "160",
-            blocks: [
-                Breakpoint.BlocklyToolbox(),
-                Loop.BlocklyToolbox()
-            ]
-        }
+
+        Machine.BlocklyBlock([["machine-1", "machine-1"], ["machine-2", "machine-2"], ["machine-3", "machine-3"]]),
+
+        // Locations, testing
+        someblocks,
+
+        // TODO
+        // Waypoint.BlocklyToolbox()
+        // colour: "290",
+
+        // Trajectories.BlocklyToolbox()
+        // colour: "330"
+        
+        // Thing.BlocklyToolbox()
+        // colour: "20"
+
+        // ----------Skills
+        // Skill.BlocklyToolbox(),
+        // Initialize.BlocklyToolbox(),
+        // CloseGripper.BlocklyToolbox(),
+        // OpenGripper.BlocklyToolbox(),
+        SimplePickAndPlace.BlocklyBlock(),
+        // MachineBlockingProcess.BlocklyToolbox()
+        // colour: "210",
+
+        // ----------Primitives
+        // Delay.BlocklyToolbox(),
+        // Gripper.BlocklyToolbox(),
+        // MoveTrajectory.BlocklyToolbox(),
+        // MoveUnplanned.BlocklyToolbox(),
+        // MachineInitialize.BlocklyToolbox(),
+        // MachineStart.BlocklyToolbox(),
+        // MachineWait.BlocklyToolbox(),
+        // MachineStop.BlocklyToolbox()
+        // colour: "120"
+
+        // ----------Control Flow
+        // Breakpoint.BlocklyToolbox(),
+        // Loop.BlocklyToolbox()
+        // colour: "160"
     ];
 };
 
