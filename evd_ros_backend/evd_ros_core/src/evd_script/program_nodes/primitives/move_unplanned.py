@@ -67,17 +67,12 @@ class MoveUnplanned(Primitive):
                  type='', name='', uuid=None, parent=None, append_type=True,
                  editable=True, deleteable=True, description='', parameters=None):
 
-        self._velocity = None
-        self._move_type = None
-        self._location_uuid = None
-        self._manual_safety = None
-
         if parameters == None:
             parameters = {
-                'velocity': None,
-                'move_type': None,
-                'location_uuid': None,
-                'manual_safety': None
+                'velocity': velocity,
+                'move_type': move_type,
+                'location_uuid': locUuid,
+                'manual_safety': manual_safety
             }
 
         super(MoveUnplanned,self).__init__(
@@ -90,11 +85,6 @@ class MoveUnplanned(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self.velocity = velocity
-        self.move_type = move_type
-        self.manual_safety = manual_safety
-        self.location_uuid = locUuid
 
     '''
     Data accessor/modifier methods

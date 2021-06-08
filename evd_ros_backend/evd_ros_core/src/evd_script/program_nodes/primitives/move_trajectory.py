@@ -54,8 +54,8 @@ class MoveTrajectory(Primitive):
 
         if parameters == None:
             parameters = {
-                'manual_safety': None,
-                'trajectory_uuid': None
+                'manual_safety': manual_safety,
+                'trajectory_uuid': trajectory_uuid
             }
 
         super(MoveTrajectory,self).__init__(
@@ -68,9 +68,6 @@ class MoveTrajectory(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self.manual_safety = manual_safety
-        self.trajectory_uuid = trajectory_uuid
 
     '''
     Data accessor/modifier methods

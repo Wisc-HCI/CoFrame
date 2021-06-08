@@ -83,11 +83,11 @@ class Gripper(Primitive):
 
         if parameters == None:
             parameters = {
-                'thing_uuid': None,
-                'position': None,
-                'effort': None,
-                'speed': None,
-                'semantic': None
+                'thing_uuid': thing_uuid,
+                'position': position,
+                'effort': effort,
+                'speed': speed,
+                'semantic': semantic if semantic != None else self.SEMANTIC_GRASPING
             }
 
         super(Gripper,self).__init__(
@@ -100,14 +100,6 @@ class Gripper(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self.position = position
-        self.effort = effort
-        self.speed = speed
-        self.thing_uuid = thing_uuid
-
-        if thing_uuid != None:
-            self.semantic = semantic if semantic != None else self.SEMANTIC_GRASPING
 
     '''
     Data accessor/modifier methods
