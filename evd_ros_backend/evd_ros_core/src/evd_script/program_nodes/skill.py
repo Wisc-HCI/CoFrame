@@ -51,7 +51,7 @@ class Skill(Hierarchical):
                  parent=None, append_type=True, editable=True, deleteable=True, 
                  description='', parameters=None):
 
-        self._arguements = {}
+        self._arguements = None
 
         super(Skill,self).__init__(
             primitives=primitives,

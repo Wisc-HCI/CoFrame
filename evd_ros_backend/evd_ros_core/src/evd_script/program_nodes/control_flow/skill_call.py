@@ -40,8 +40,10 @@ class SkillCall(Primitive):
     def __init__(self, skill_uuid=None, parameters=None, type='', name='', uuid=None, parent=None, 
                  append_type=True, editable=True, deleteable=True, description=''):
 
-        if 'skill_uuid' not in parameters.keys():
-            parameters.update({'skill_uuid': None})
+        if parameters == None:
+            parameters = {
+                'skill_uuid': skill_uuid
+            }
 
         super(SkillCall,self).__init__(
             type=SkillCall.type_string() + type if append_type else type,
@@ -53,9 +55,6 @@ class SkillCall(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self._parameters['skill_uuid'] = skill_uuid
-        self.updated_attribute('parameters.skill_uuid','set')
 
     '''
     Data accessor/modifier methods
