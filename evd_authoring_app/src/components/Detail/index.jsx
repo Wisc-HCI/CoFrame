@@ -8,7 +8,7 @@ import { LocationDetail } from './LocationDetail';
 import { MachineDetail } from './MachineDetail';
 import { ThingDetail } from './ThingDetail';
 import { WaypointDetail } from './WaypointDetail';
-import { DeleteOutlined, EllipsisOutlined, } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import useEvdStore from '../../stores/EvdStore';
 
@@ -38,9 +38,9 @@ export const Detail = (_) => {
     const content =(
       <Button
         danger
+        block
         onClick={handleOK}
         icon={<DeleteOutlined/>}
-        style = {{width:"300px"}}
       >
       Delete
       </Button>
@@ -71,9 +71,9 @@ export const Detail = (_) => {
                                content = {content}>
                                   <Button
                                     danger
+                                    block
                                     disabled={!item.deleteable}
                                     icon={<DeleteOutlined/>}
-                                    style={{width:"360px"}}
 
                                   />
 
@@ -81,9 +81,9 @@ export const Detail = (_) => {
                     ):(
                       <Button
                         danger
+                        block
                         disabled={!item.deleteable}
                         icon={<DeleteOutlined/>}
-                        style={{width:"360px"}}
                       />
 
                     )}

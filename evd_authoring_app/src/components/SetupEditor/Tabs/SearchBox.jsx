@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import { Tabs, Card, Button, Input, Space } from 'antd';
+import { Button, Input, Space } from 'antd';
 import { PlusOutlined, SearchOutlined, CloseOutlined } from '@ant-design/icons';
-import useGuiStore from '../../../stores/GuiStore';
 
 export function SearchBox(props) {
     const { searchTerm, changeVisibility, clearSearch, visible, onChange, buttonVisible } = props;
@@ -12,9 +11,9 @@ export function SearchBox(props) {
             <Input 
                 allowClear
                 value={searchTerm} 
-                placeholder="Search..." 
+                 placeholder="Search..." 
                 onChange={onChange} 
-                addonAfter={<CloseOutlined onClick={changeVisibility, clearSearch}/>}
+                addonAfter={<CloseOutlined onClick={()=>{changeVisibility(); clearSearch()}}/>}
                 style={{ maxWidth: 300, minWidth: 100, display: visible ? "block" : "none" }} />
 
 
@@ -27,6 +26,4 @@ export function SearchBox(props) {
         </Space>
 
     );
-
-
 };
