@@ -1,13 +1,24 @@
 import React from 'react';
 
-import {CaretRightFilled,PauseOutlined,RollbackOutlined  } from '@ant-design/icons';
+import {CaretRightFilled,PauseOutlined,RollbackOutlined,FullscreenExitOutlined,FullscreenOutlined } from '@ant-design/icons';
 import { Button, Space, Tooltip } from 'antd';
 
+import useGuiStore from '../stores/GuiStore';
+
 export function Controls() {
+
+  const [simMode,setSimMode] = useGuiStore(state=>([state.simMode, state.setSimMode]))
 
   return (
 
     <Space>
+      <Tooltip placement="top" title={simMode === 'default' ? "Expand" : "Shrink"}>
+        <Button 
+          type="outline"
+          icon= {simMode === 'default' ? <FullscreenOutlined /> : <FullscreenExitOutlined />}
+          onClick={() => setSimMode(simMode === 'default' ? 'expanded' : 'default')}
+        />
+      </Tooltip>
       <Tooltip placement="top" title="Play">
         <Button 
           type="outline"

@@ -24,6 +24,7 @@ export function App(props) {
     const filename = useApplicationStore(state=>state.filename);
     const setActiveModal = useGuiStore(state=>state.setActiveModal);
     const frame = useGuiStore(state=>state.frame);
+    const simMode = useGuiStore(state=>state.simMode);
 
     useEffect(() => {
         if (frame === 'safety') {
@@ -111,12 +112,14 @@ export function App(props) {
                     <Layout width='75vw'>
                         <Layout.Content>
                             <Row style={{height:'100%'}}>
-                                <Col style={{width:'45%'}}>
+                                <Col style={{width:simMode==='default'? '45%' : '100%'}}>
                                     <SimulatorTile/>
                                 </Col>
-                                <Col style={{width:'55%'}}>
-                                    <ProgramTile/>
-                                </Col>
+                                {simMode==='default' && (
+                                    <Col style={{width:'55%'}}>
+                                        <ProgramTile/>
+                                    </Col>
+                                )}
                             </Row>
                         </Layout.Content>
                     </Layout>
