@@ -1,5 +1,7 @@
 '''
 TODO Intention is to have a "switch" node dependent on results of conditional
+
+WARNING! This is not fully written
 '''
 
 from ..primitive import Primitive
@@ -11,6 +13,10 @@ class Branch(Primitive):
     '''
     Data structure methods
     '''
+
+    @classmethod
+    def display_name(cls):
+        return 'Branch'
 
     @classmethod
     def type_string(cls, trailing_delim=True):
@@ -28,7 +34,7 @@ class Branch(Primitive):
             name=name,
             uuid=uuid,
             parent=parent,
-            append_type=append_type
+            append_type=append_type,
             description=description)
 
     def to_dct(self):

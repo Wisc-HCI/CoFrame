@@ -1,35 +1,60 @@
 '''
-Skill wraps a set of primitives that should be executed in order.
+Skills act as functions within EvD. Like Hierarchical blocks they provide a higher
+level definition to a collection of nodes. However, they also support 
+parameterization, which allows them to be reused as if they are primitives.
 
-In hierarchical task analysis (and/or those familiar with Authr) this is a "task".
-The purpose of a skill is to abstract the base-primitives into more semantically
-meaningful behaviors.
+To invoke a skill in EvD, there is a primitive control_flow block called SkillCall
+which interfaces with this node to fill in the parameterization 
+
+Nesting SkillCalls is a bit tricky. The crux of the problem is that a Skill / Skill
+Arguement requires top-level parameterization but a skill-call provides this as a
+set of "shadow-params".
+#TODO think about how best to do this linking, maybe all primitives have a parameters list?
 '''
 
-from .primitive import Primitive
+from ..data_nodes.skill_arguement import SkillArguement
+from .hierarchical import Hierarchical
 from ..node_parser import NodeParser
+from .. import ALL_PRIMITIVES_TYPES
 
 
-class Skill(Primitive):
+class Skill(Hierarchical):
 
     '''
     Data structure methods
     '''
 
     @classmethod
-    def type_string(cls, trailing_delim=True):
-        return 'skill' + ('.' if trailing_delim else '')
+    def display_name(cls):
+        return 'Skill'
 
     @classmethod
+    def type_string(cls, trailing_delim):
+        return 'skill' + ('.' if trailing_delim else '')
+    
+    @classmethod
     def full_type_string(cls):
-        return Primitive.full_type_string() + cls.type_string()
+        return Hierarchical.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=[], type='', name='', uuid=None, parent=None,
-                 append_type=True, editable=True, deleteable=True, description=''):
+    @classmethod
+    def template(cls):
+        template = Hierarchical.template()
+        template['fields'].append({
+            'type': SkillArguement.full_type_string(),
+            'key': 'arguements',
+            'is_uuid': False,
+            'is_list': True
+        })
+        return template
 
-        self._primitives = []
+    def __init__(self, arguements=None, primitives=[], type='', name='', uuid=None, 
+                 parent=None, append_type=True, editable=True, deleteable=True, 
+                 description='', parameters=None):
+
+        self._arguements = {}
 
         super(Skill,self).__init__(
+            primitives=primitives,
             type=Skill.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
@@ -37,14 +62,15 @@ class Skill(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
-        self.primitives = primitives
+        self.arguements = arguements if arguements == None else []
 
     def to_dct(self):
         msg = super(Skill,self).to_dct()
         msg.update({
-            'primitives': [p.to_dct() for p in self.primitives]
+            'arguements': [a.to_dct() for a in self.arguements]
         })
         return msg
 
@@ -58,90 +84,71 @@ class Skill(Primitive):
             deleteable=dct['deleteable'],
             description=dct['description'],
             uuid=dct['uuid'],
-            primitives=[NodeParser(p) for p in dct['primitives']])
+            primitives=[NodeParser(p, enforce_types=[ALL_PRIMITIVES_TYPES]) for p in dct['primitives']],
+            arguements=[NodeParser(a, enforce_types=[SkillArguement.type_string(trailing_delim=False)]) for a in dct['arguements']])
 
     '''
     Data accessor/modifier methods
     '''
+    
+    @property
+    def arguements(self):
+        return self._arguements.values()
+
+    @arguements.setter
+    def arguements(self, value):
+        if value == None:
+            raise Exception('Arguements cannot be none, must at least be an empty list')
+        
+        if self._arguements != None:
+            for a in self._arguements.values():
+                a.remove_from_cache()
+
+        self._arguements = {}
+
+        for a in value:
+            self._arguements[a.uuid] = a
+            a.parent = self
+
+        self.updated_attribute('arguements','set')
 
     @property
-    def parent(self):
-        return self._parent
+    def arguements_dct(self):
+        return self._arguements
 
-    @parent.setter
-    def parent(self, value):
-        if self._parent != value:
+    def add_skill_arguement(self, arg):
+        arg.parent = self
+        self._arguements[arg.uuid] = arg
+        self.updated_attribute('arguements','add',arg.uuid)
 
-            self.remove_from_cache()
-            self._parent = value
-            self.add_to_cache()
+    def delete_skill_arguement(self, uuid):
+        if uuid in self._arguements.keys():
+            self._arguements[uuid].remove_from_cache()
+            del self._arguements[uuid]
+            self.updated_attribute('arguements','delete',uuid)
 
-            self.updated_attribute("parent","set")
-
-    @property
-    def primitives(self):
-        return self._primitives
-
-    @primitives.setter
-    def primitives(self, value):
-        if self._primitives != value:
-            for p in self._primitives:
-                p.remove_from_cache()
-
-            self._primitives = value
-            for p in self._primitives:
-                p.parent = self
-
-            self.updated_attribute('primitives','set')
-
-    def add_primitive(self, prm):
-        prm.parent = self
-        self._primitives.append(prm)
-        self.updated_attribute('primitives','add')
-
-    def insert_primitive(self, idx, prm):
-        prm.parent = self
-        self._primitives.insert(idx,prm)
-        self.updated_attribute('primitives','reorder')
-
-    def reorder_primitives(self, uuid, shift):
-        idx = None
-        for i in range(0,len(self._primitives)):
-            if self._primitives[i].uuid == uuid:
-                idx = i
-                break
-
-        if idx != None:
-            shiftedIdx = idx + shift
-            if shiftedIdx < 0 or shiftedIdx >= len(self._primitives):
-                raise Exception("Index out of bounds")
-
-            copy = self._primitives.pop(idx)
-            self._primitives.insert(shiftedIdx,copy) #TODO check to make sure not off by one
-
-            self.updated_attribute('primitives','reorder')
-
-    def delete_primitive(self, uuid):
-        delIdx = None
-        for i in range(0,len(self._primitives)):
-            if self._primitives[i].uuid == uuid:
-                delIdx = i
-                break
-
-        if delIdx != None:
-            self._primitives.pop(i).remove_from_cache()
-            self.updated_attribute('primitives','delete')
-
-    def get_primitive(self, uuid):
-        for p in self.primitives:
-            if p.uuid == uuid:
-                return p
+    def get_skill_arguement(self, uuid):
+        for a in self.arguements:
+            if a.uuid == uuid:
+                return a
         return None
+
+    def add_primitive(self, prm, arg_uuids=None):
+        if arg_uuids != None:
+            self.apply_args_to_primitive(prm,arg_uuids)
+
+        super(Skill,self).add_primitive(prm)
+
+    def insert_primitive(self, idx, prm, arg_uuids=None):
+        if arg_uuids != None:
+            self.apply_args_to_primitive(prm,arg_uuids)
+
+        super(Skill,self).insert_primitive(idx,prm)
 
     def set(self, dct):
 
-        if 'primitives' in dct.keys():
-            self.primitives = [NodeParser(p) for p in dct['primitives']]
+        if 'arguements' in dct.keys():
+            self.arguements=[NodeParser(a, enforce_types=[SkillArguement.type_string(trailing_delim=False)]) for a in dct['arguements']]
 
         super(Skill,self).set(dct)
 
@@ -150,14 +157,14 @@ class Skill(Primitive):
     '''
 
     def remove_from_cache(self):
-        for p in self._primitives:
-            p.remove_from_cache()
+        for a in self.arguements:
+            a.remove_from_cache()
 
         super(Skill,self).remove_from_cache()
 
     def add_to_cache(self):
-        for p in self._primitives:
-            p.add_to_cache()
+        for a in self.arguements:
+            a.add_to_cache()
 
         super(Skill,self).add_to_cache()
 
@@ -168,10 +175,13 @@ class Skill(Primitive):
     def delete_child(self, uuid):
         success = True
 
-        if uuid in [p.uuid for p in self.primitives]:
-            self.delete_primitive(uuid)
+        if uuid in [a.uuid for a in self.arguements]:
+            self.delete_skill_arguement(uuid)
         else:
             success = False
+
+        if not success: 
+            success = super(Skill,self).delete_child(uuid)
 
         return success
 
@@ -180,45 +190,84 @@ class Skill(Primitive):
     '''
 
     def late_construct_update(self):
-
-        for p in self.primitives:
-            p.late_construct_update()
+        
+        for a in self.arguements:
+            a.late_construct_update()
 
         super(Skill,self).late_construct_update()
 
     def deep_update(self):
-
-        for p in self.primitives:
-            p.deep_update()
+        
+        for a in self.arguements:
+            a.deep_update()
 
         super(Skill,self).deep_update()
 
-        self.updated_attribute('primitives','update')
+        self.updated_attribute('arguements','update')
 
     def shallow_update(self):
         super(Skill,self).shallow_update()
 
-        self.updated_attribute('primitives','update')
+        self.updated_attribute('arguements','update')
 
     '''
     Execution methods
     '''
 
     def symbolic_execution(self, hooks):
-        hooks.active_primitive = self
-
-        if not self.uuid in hooks.state.keys():
-            hooks.state[self.uuid] = { 'index': 0 }
-
-        next = None
-        index = hooks.state[self.uuid]['index']
-        if index < len(self.primitives):
-            next = self.primitives[index]
-            hooks.state[self.uuid]['index'] = index + 1
-        else:
-            next = self.parent
-            del hooks.state[self.uuid]
-        return next
+        raise Exception('A skill does not execute directly, it must be invoked by a skill-call, which turns it into a hierarchical block')
 
     def realtime_execution(self, hooks):
-        return self.symbolic_execution(hooks)
+        raise Exception('A skill does not execute directly, it must be invoked by a skill-call, which turns it into a hierarchical block')
+
+    '''
+    Utility methods
+    '''
+    
+    def apply_args_to_primitive(self, prm, arg_uuids):
+        # arg_uuids = [
+        #   '<skill-arguement-uuid>
+        # ]
+
+        for uuid in arg_uuids:
+                if uuid not in self._arguements.keys():
+                    raise Exception('Skill arguement is being used before it exists in the arguements list')
+
+                key = self._arguements[uuid].parameter_key
+                value = self._arguements[uuid].temporary_value
+
+                getattr(prm,key) = value
+
+    def resolve_to_hierarchical(self, arg_map):
+        # arg_map = {
+        #    '<skill-arg-uuid>': <actual_value>,
+        #    ...
+        # }
+        
+        unmapped_args = self._arguements.keys()
+        primitives_copy = [p.to_dct() for p in self.primitives]
+
+        for arg_uuid in arg_map.keys():
+            if arg_uuid in self._arguements.keys():
+                unmapped_args.remove(arg_uuid)
+
+                value = arg_map[arg_uuid]
+                key = self._arguements[arg_uuid].parametr_key
+                temp = self._arguements[arg_uuid].temporary_value
+
+                for p in primitives_copy:
+                    if key in p.keys() and p[key] == temp:
+                        p[key] = value
+
+        if len(unmapped_args) > 0:
+            return None # could not resolve down to hierarchical node
+        else:
+            return Hierarchical.from_dct({
+                'primitives': primitives_copy,
+                'name': self.name,
+                'type': Hierarchical.full_type_string(),
+                'append_type': False,
+                'editable': False,
+                'deleteable': False,
+                'description': '(Autogenerated hierarchical from skill) :: ' + self.description,
+                'uuid': self._generate_uuid(Hierarchical.full_type_string() + '-autogenerated-from-' + self.uuid)})

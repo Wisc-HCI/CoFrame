@@ -14,6 +14,10 @@ class Breakpoint(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Breakpoint'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'breakpoint' + ('.' if trailing_delim else '')
 
@@ -22,7 +26,7 @@ class Breakpoint(Primitive):
         return Primitive.full_type_string() + cls.type_string()
 
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True,
-                 editable=True, deleteable=True, description=''):
+                 editable=True, deleteable=True, description='', parameters=None):
         super(Breakpoint,self).__init__(
             type=Breakpoint.type_string() + type if append_type else type,
             name=name,
@@ -31,7 +35,8 @@ class Breakpoint(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
     '''
     Execution methods

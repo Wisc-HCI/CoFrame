@@ -7,15 +7,20 @@ is desired.
 TODO support conditional looping
 '''
 
-from ..skill import Skill
+from ... import ALL_PRIMITIVES_TYPES, ALL_CONDITIONS_TYPES
+from ..hierarchical import Hierarchical
 from ...node_parser import NodeParser
 
 
-class Loop(Skill):
+class Loop(Hierarchical):
 
     '''
     Data structure methods
     '''
+
+    @classmethod
+    def display_name(cls):
+        return 'Loop'
 
     @classmethod
     def type_string(cls, trailing_delim=True):
@@ -23,11 +28,22 @@ class Loop(Skill):
 
     @classmethod
     def full_type_string(cls):
-        return Skill.full_type_string() + cls.type_string()
+        return Hierarchical.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = Hierarchical.template()
+        template['fields'].append({
+            'type': ALL_CONDITIONS_TYPES,
+            'key': 'condition',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, primitives=[], condition=None, type='', name='', uuid=None,
                  parent=None, append_type=True, editable=True, deleteable=True,
-                 description=''):
+                 description='', parameters=None):
         self._condition = None
 
         super(Loop,self).__init__(
@@ -39,7 +55,8 @@ class Loop(Skill):
             primitives=primitives,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.condition = condition
 
@@ -53,8 +70,8 @@ class Loop(Skill):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            primitives=[NodeParser(p) for p in dct['primitives']],
-            condition=NodeParser(dct['condition']) if dct['condition'] != None else None,
+            primitives=[NodeParser(p, enforce_types=[ALL_PRIMITIVES_TYPES]) for p in dct['primitives']],
+            condition=NodeParser(dct['condition'], enforce_types=[ALL_CONDITIONS_TYPES]) if dct['condition'] != None else None,
             name=dct['name'],
             uuid=dct['uuid'],
             type=dct['type'],
@@ -86,7 +103,7 @@ class Loop(Skill):
     def set(self, dct):
 
         if 'condition' in dct.keys():
-            self.condition = NodeParser(dct['condition']) if dct['condition'] != None else None
+            self.condition = NodeParser(dct['condition'], enforce_types=[ALL_CONDITIONS_TYPES]) if dct['condition'] != None else None
 
         super(Loop,self).set(dct)
 

@@ -4,9 +4,10 @@ ought to avoid.
 '''
 
 from .environment_node import EnvironmentNode
-from ..data.geometry import Pose
+from ..data_nodes.geometry import Pose
 from ..node_parser import NodeParser
 from ..visualizable import VisualizeMarker, ColorTable
+from .. import STRING_TYPE
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -27,12 +28,39 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Collision Mesh'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'collision-mesh' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return EnvironmentNode.full_type_string() + cls.type_string()
+
+    @classmethod
+    def template(cls):
+        template = EnvironmentNode.template()
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'mesh_id',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': Pose.full_type_string(),
+            'key': 'pose_offset',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'link',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
 
     def __init__(self, mesh_id = None, pose_offset = None, link='', type='',
                  name='', parent=None, uuid=None, append_type=True, editable=True,

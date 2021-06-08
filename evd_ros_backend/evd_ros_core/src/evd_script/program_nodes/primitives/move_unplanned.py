@@ -7,8 +7,10 @@ TODO implement thing token movement behavior
 '''
 
 from ..primitive import Primitive
-from ...data.geometry.position import Position
-from ...data.geometry.orientation import Orientation
+from ... import BOOLEAN_TYPE, ENUM_TYPE, NUMBER_TYPE
+from ...data_nodes.location import Location
+from ...data_nodes.geometry.position import Position
+from ...data_nodes.geometry.orientation import Orientation
 
 
 class MoveUnplanned(Primitive):
@@ -20,6 +22,10 @@ class MoveUnplanned(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Move Unplanned'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'move-unplanned' + ('.' if trailing_delim else '')
 
@@ -27,14 +33,52 @@ class MoveUnplanned(Primitive):
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
+    @classmethod
+    def template(cls):
+        template = Primitive.template()
+        template['parameters'].append({
+            'type': BOOLEAN_TYPE,
+            'key': 'manual_safety',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['parameters'].append({
+            'type': NUMBER_TYPE,
+            'key': 'velocity',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['parameters'].append({
+            'type': ENUM_TYPE,
+            'key': 'move_type',
+            'is_uuid': False,
+            'is_list': False,
+            'enum_values': [x for x in cls.TYPES]
+        })
+        template['parameters'].append({
+            'type': Location.full_type_string(),
+            'key': 'location_uuid',
+            'is_uuid': True,
+            'is_list': False        
+        })
+        return template
+
     def __init__(self, locUuid, manual_safety=True, move_type="joint", velocity=0,
                  type='', name='', uuid=None, parent=None, append_type=True,
-                 editable=True, deleteable=True, description=''):
+                 editable=True, deleteable=True, description='', parameters=None):
 
         self._velocity = None
         self._move_type = None
         self._location_uuid = None
         self._manual_safety = None
+
+        if parameters == None:
+            parameters = {
+                'velocity': None,
+                'move_type': None,
+                'location_uuid': None,
+                'manual_safety': None
+            }
 
         super(MoveUnplanned,self).__init__(
             type=MoveUnplanned.type_string() + type if append_type else type,
@@ -44,37 +88,13 @@ class MoveUnplanned(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.velocity = velocity
         self.move_type = move_type
         self.manual_safety = manual_safety
         self.location_uuid = locUuid
-
-    def to_dct(self):
-        msg = super(MoveUnplanned,self).to_dct()
-        msg.update({
-            'location_uuid': self.location_uuid,
-            'manual_safety': self.manual_safety,
-            'velocity': self.velocity,
-            'move_type': self.move_type
-        })
-        return msg
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            type=dct['type'],
-            append_type=False,
-            editable=dct['editable'],
-            deleteable=dct['deleteable'],
-            description=dct['description'],
-            uuid=dct['uuid'],
-            locUuid=dct['location_uuid'],
-            manual_safety=dct['manual_safety'],
-            velocity=dct['velocity'],
-            move_type=dct['move_type'])
 
     '''
     Data accessor/modifier methods
@@ -82,49 +102,47 @@ class MoveUnplanned(Primitive):
 
     @property
     def velocity(self):
-        return self._velocity
+        return self._parameters['velocity']
 
     @velocity.setter
     def velocity(self, value):
-        if self._velocity != value:
-            self._velocity = value
-            self.trace = None
-            self.updated_attribute('velocity','set')
+        if self._parameters['velocity'] != value:
+            self._parameters['velocity'] = value
+            self.updated_attribute('parameters.velocity','set')
 
     @property
     def move_type(self):
-        return self._move_type
+        return self._parameters['move_type']
 
     @move_type.setter
     def move_type(self, value):
-        if self._move_type != value:
+        if self._parameters['move_type'] != value:
 
             if not value in self.TYPES:
                 raise Exception("Invalid move_type provided")
 
-            self._move_type = value
-            self.trace = None
-            self.updated_attribute('move_type','set')
+            self._parameters['move_type'] = value
+            self.updated_attribute('parameters.move_type','set')
 
     @property
     def manual_safety(self):
-        return self._manual_safety
+        return self._parameters['manual_safety']
 
     @manual_safety.setter
     def manual_safety(self, value):
-        if self._manual_safety != value:
-            self._manual_safety = value
-            self.updated_attribute('manual_safety','set')
+        if self._parameters['manual_safety'] != value:
+            self._parameters['manual_safety'] = value
+            self.updated_attribute('parameters.manual_safety','set')
 
     @property
     def location_uuid(self):
-        return self._location_uuid
+        return self._parameters['location_uuid']
 
     @location_uuid.setter
     def location_uuid(self, value):
-        if self._location_uuid != value:
-            self._location_uuid = value
-            self.updated_attribute('location_uuid','set')
+        if self._parameters['location_uuid'] != value:
+            self._parameters['location_uuid'] = value
+            self.updated_attribute('parameters.location_uuid','set')
 
     def set(self, dct):
         if 'location_uuid' in dct.keys():
@@ -142,27 +160,6 @@ class MoveUnplanned(Primitive):
             self.move_type = move_type
 
         super(MoveUnplanned,self).set(dct)
-
-    '''
-    Update Methods
-    '''
-
-    def deep_update(self):
-
-        super(MoveUnplanned,self).deep_update()
-
-        self.updated_attribute('velocity','update')
-        self.updated_attribute('move_type','update')
-        self.updated_attribute('location_uuid','update')
-        self.updated_attribute('manual_safety','update')
-
-    def shallow_update(self):
-        super(MoveUnplanned,self).shallow_update()
-
-        self.updated_attribute('velocity','update')
-        self.updated_attribute('move_type','update')
-        self.updated_attribute('location_uuid','update')
-        self.updated_attribute('manual_safety','update')
 
     '''
     Execution methods
@@ -208,5 +205,3 @@ class MoveUnplanned(Primitive):
         #TODO handle thing movement
 
         return next
-
-        return self.symbolic_execution(hooks)

@@ -226,3 +226,7 @@ class ProgramRunner(object):
     @property
     def robot_interface(self):
         return self._robot_interface
+
+    @property
+    def program(self):
+        return self._program

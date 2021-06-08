@@ -5,6 +5,7 @@ Simple primitive that delays the cobot's behavior for a fixed amount of time.
 import time
 
 from ..primitive import Primitive
+from ... import NUMBER_TYPE
 
 
 class Delay(Primitive):
@@ -14,6 +15,10 @@ class Delay(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Delay'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'delay' + ('.' if trailing_delim else '')
 
@@ -21,9 +26,24 @@ class Delay(Primitive):
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
-    def __init__(self, duration=0, type='', name='', uuid=None, parent=None,
+    @classmethod
+    def template(cls):
+        template = Primitive.template()
+        template['parameters'].append({
+            'type': NUMBER_TYPE,
+            'key': 'duration',
+            'is_uuid': False,
+            'is_list': False
+        })
+        return template
+
+    def __init__(self, duration=0, parameters=None, type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):
-        self._duration = None
+
+        if parameters == None:
+            parameters = {
+                'duration': None
+            }
 
         super(Delay,self).__init__(
             type=Delay.type_string() + type if append_type else type,
@@ -33,28 +53,10 @@ class Delay(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
         self.duration = duration
-
-    def to_dct(self):
-        msg = super(Delay,self).to_dct()
-        msg.update({
-            'duration': self.duration,
-        })
-        return msg
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            type=dct['type'],
-            append_type=False,
-            editable=dct['editable'],
-            deleteable=dct['deleteable'],
-            description=dct['description'],
-            uuid=dct['uuid'],
-            duration=dct['duration'])
 
     '''
     Data accessor/modifier methods
@@ -62,13 +64,13 @@ class Delay(Primitive):
 
     @property
     def duration(self):
-        return self._duration
+        return self._parameters['duration']
 
     @duration.setter
     def duration(self, value):
-        if self._duration != value:
-            self._duration = value
-            self.updated_attribute("duration",'set')
+        if self._parameters['duration'] != value:
+            self._parameters['duration'] = value
+            self.updated_attribute("parameters.duration",'set')
 
     def set(self, dct):
         duration = dct.get('duration', None)
@@ -76,21 +78,6 @@ class Delay(Primitive):
             self.duration = duration
 
         super(Delay,self).set(dct)
-
-    '''
-    Update Methods
-    '''
-
-    def deep_update(self):
-
-        super(Delay,self).deep_update()
-
-        self.updated_attribute('duration','update')
-
-    def shallow_update(self):
-        super(Delay,self).shallow_update()
-
-        self.updated_attribute('duration','update')
 
     '''
     Execution methods

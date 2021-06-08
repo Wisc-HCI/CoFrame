@@ -7,10 +7,10 @@ TODO implement thing token movement behavior
 '''
 
 from ..primitive import Primitive
-from ...node_parser import NodeParser
-from ...data.trajectory import Trajectory
-from ...data.geometry.position import Position
-from ...data.geometry.orientation import Orientation
+from ... import BOOLEAN_TYPE
+from ...data_nodes.trajectory import Trajectory
+from ...data_nodes.geometry.position import Position
+from ...data_nodes.geometry.orientation import Orientation
 
 
 class MoveTrajectory(Primitive):
@@ -20,6 +20,10 @@ class MoveTrajectory(Primitive):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Move Trajectory'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'move-trajectory' + ('.' if trailing_delim else '')
 
@@ -27,16 +31,32 @@ class MoveTrajectory(Primitive):
     def full_type_string(cls):
         return Primitive.full_type_string() + cls.type_string()
 
-    def __init__(self, startLocUuid=None, endLocUuid=None, trajectory=None,
-                 trajectory_uuid=None, manual_safety=False, type='', name='',
-                 uuid=None, parent=None, append_type=True, editable=True,
-                 deleteable=True, description=''):
+    @classmethod
+    def template(cls):
+        template = Primitive.template()
+        template['parameters'].append({
+            'type': BOOLEAN_TYPE,
+            'key': 'manual_safety',
+            'is_uuid': False,
+            'is_list': False
+        })
+        template['parameters'].append({
+            'type': Trajectory.full_type_string(),
+            'key': 'trajectory_uuid',
+            'is_uuid': True,
+            'is_list': False
+        })
+        return template
 
-        self._context_patch = None
-        self._start_location_uuid = None
-        self._end_location_uuid = None
-        self._trajectory_uuid = None
-        self._manual_safety = None
+    def __init__(self, trajectory_uuid=None, manual_safety=False, parameters=None, type='', 
+                 name='', uuid=None, parent=None, append_type=True, 
+                 editable=True, deleteable=True, description=''):
+
+        if parameters == None:
+            parameters = {
+                'manual_safety': None,
+                'trajectory_uuid': None
+            }
 
         super(MoveTrajectory,self).__init__(
             type=MoveTrajectory.type_string() + type if append_type else type,
@@ -46,206 +66,45 @@ class MoveTrajectory(Primitive):
             append_type=append_type,
             editable=editable,
             deleteable=deleteable,
-            description=description)
+            description=description,
+            parameters=parameters)
 
-        self.start_location_uuid = startLocUuid
-        self.end_location_uuid = endLocUuid
         self.manual_safety = manual_safety
-
-        if trajectory != None and trajectory_uuid != None:
-            raise Exception('Cannot supply both a default trajectory and a trajectory id already in context')
-        elif trajectory != None:
-            self.trajectory = trajectory
-        elif trajectory_uuid != None:
-            self.trajectory_uuid = trajectory_uuid
-        else:
-            self.trajectory = Trajectory(self.start_location_uuid,self.end_location_uuid)
-
-    def to_dct(self):
-        tmp = self.context # This guarantees that the patch is applied if possible
-
-        msg = super(MoveTrajectory,self).to_dct()
-        msg.update({
-            'start_location_uuid': self.start_location_uuid,
-            'end_location_uuid': self.end_location_uuid,
-            'manual_safety': self.manual_safety,
-        })
-
-        if self._context_patch == None:
-            msg['trajectory_uuid'] = self.trajectory_uuid
-        else:
-            msg['trajectory'] = self.trajectory.to_dct()
-
-        return msg
-
-    @classmethod
-    def from_dct(cls, dct):
-        return cls(
-            name=dct['name'],
-            type=dct['type'],
-            append_type=False,
-            editable=dct['editable'],
-            deleteable=dct['deleteable'],
-            description=dct['description'],
-            uuid=dct['uuid'],
-            startLocUuid=dct['start_location_uuid'],
-            endLocUuid=dct['end_location_uuid'],
-            manual_safety=dct['manual_safety'],
-            trajectory=NodeParser(dct['trajectory'], enforce_types=[Trajectory.type_string(trailing_delim=False)]) if 'trajectory' in dct.keys() else None,
-            trajectory_uuid=dct['trajectory_uuid'] if 'trajectory_uuid' in dct.keys() else None)
-
-    def on_delete(self):
-        self.context.delete_trajectory(self.trajectory_uuid)
-
-        super(MoveTrajectory,self).on_delete()
+        self.trajectory_uuid = trajectory_uuid
 
     '''
     Data accessor/modifier methods
     '''
 
     @property
-    def context(self):
-        # Need to patch context when none exists
-        realContext = super(MoveTrajectory,self).context
-        if realContext == None:
-            if self._context_patch == None:
-                self._context_patch = ContextPatch(self)
-            return self._context_patch
-        else:
-            if self._context_patch != None:
-                self._context_patch.update_context(realContext)
-                self._context_patch = None
-            return realContext
-
-    @property
-    def start_location_uuid(self):
-        return self._start_location_uuid
-
-    @start_location_uuid.setter
-    def start_location_uuid(self, value):
-        if self._start_location_uuid != value:
-            self._start_location_uuid = value
-
-            t = self.context.get_trajectory(self.trajectory_uuid)
-            if t != None:
-                t.start_location_uuid = self._start_location_uuid
-
-            self.updated_attribute('start_location_uuid','set')
-
-    @property
-    def end_location_uuid(self):
-        return self._end_location_uuid
-
-    @end_location_uuid.setter
-    def end_location_uuid(self, value):
-        if self._end_location_uuid != value:
-            self._end_location_uuid = value
-
-            t = self.context.get_trajectory(self.trajectory_uuid)
-            if t != None:
-                t.end_location_uuid = self._end_location_uuid
-
-            self.updated_attribute('end_location_uuid','set')
-
-    @property
     def manual_safety(self):
-        return self._manual_safety
+        return self._parameters['manual_safety']
 
     @manual_safety.setter
     def manual_safety(self, value):
-        if self._manual_safety != value:
-            self._manual_safety = value
-            self.updated_attribute('manual_safety','set')
-
-    @property
-    def trajectory(self):
-        return self.context.get_trajectory(self.trajectory_uuid)
-
-    @trajectory.setter
-    def trajectory(self, value):
-        if self._trajectory_uuid != value.uuid:
-            self.context.delete_trajectory(self.trajectory_uuid)
-            self.context.add_trajectory(value)
-            self.trajectory_uuid = value.uuid
-
-            self.updated_attribute('trajectory','set')
+        if self._parameters['manual_safety'] != value:
+            self._parameters['manual_safety'] = value
+            self.updated_attribute('parameters.manual_safety','set')
 
     @property
     def trajectory_uuid(self):
-        return self._trajectory_uuid
+        return self._parameters['trajectory_uuid']
 
     @trajectory_uuid.setter
     def trajectory_uuid(self, value):
-        if self._trajectory_uuid != value:
-            if value == None:
-                raise Exception('Id must be defined')
-
-            traj = self.context.get_trajectory(value)
-            if traj == None and self._context_patch == None:
-                raise Exception('Id must have a trajectory already in context')
-
-            elif traj == None and self._context_patch != None:
-                self._context_patch.add_pending_trajectory(
-                    uuid=value,
-                    startLoc=self.start_location_uuid,
-                    endLoc=self.end_location_uuid)
-
-            elif traj != None:
-                if traj.start_location_uuid != self.start_location_uuid:
-                    raise Exception('Trajectory must have matching start location to primitive if set by id')
-
-                if traj.end_location_uuid != self.end_location_uuid:
-                    raise Exception('Trajectory must have matching end location to primitive if set by id')
-
-            self._trajectory_uuid = value
-            self.updated_attribute('trajectory_uuid','set')
+        if self._parameters['trajectory_uuid'] != value:
+            self._parameters['trajectory_uuid'] = value
+            self.updated_attribute('parameters.trajectory_uuid','set')
 
     def set(self, dct):
-        if 'start_location_uuid' in dct.keys():
-            self.start_location_uuid = dct['start_location_uuid']
-
-        if 'end_location_uuid' in dct.keys():
-            self.end_location_uuid = dct['end_location_uuid']
 
         if 'manual_safety' in dct.keys():
             self.manual_safety = dct['manual_safety']
-
-        if 'trajectory' in dct.keys():
-            self.trajectory = NodeParser(dct['trajectory'], enforce_types=[Trajectory.type_string(trailing_delim=False)])
 
         if 'trajectory_uuid' in dct.keys():
             self.trajectory_uuid = dct['trajectory_uuid']
 
         super(MoveTrajectory,self).set(dct)
-
-    '''
-    Update Methods
-    '''
-
-    def late_construct_update(self):
-        tmp = self.context # This guarantees that the patch is applied if possible
-
-        super(MoveTrajectory,self).late_construct_update()
-
-    def deep_update(self):
-        tmp = self.context # This guarantees that the patch is applied if possible
-
-        super(MoveTrajectory,self).deep_update()
-
-        self.updated_attribute('manual_safety','update')
-        self.updated_attribute('start_location_uuid','update')
-        self.updated_attribute('end_location_uuid','update')
-        self.updated_attribute('trajectory_uuid','update')
-        self.updated_attribute('trajectory','update')
-
-    def shallow_update(self):
-        super(MoveTrajectory,self).shallow_update()
-
-        self.updated_attribute('manual_safety','update')
-        self.updated_attribute('start_location_uuid','update')
-        self.updated_attribute('end_location_uuid','update')
-        self.updated_attribute('trajectory_uuid','update')
-        self.updated_attribute('trajectory','update')
 
     '''
     Execution methods
@@ -254,7 +113,8 @@ class MoveTrajectory(Primitive):
     def symbolic_execution(self, hooks):
         hooks.active_primitive = self
 
-        loc = self.context.get_location(self.end_location_uuid)
+        traj = self.context.get_trajectory(self.trajectory_uuid)
+        loc = self.context.get_location(traj.end_location_uuid)
         hooks.tokens['robot']['state']['position'] = loc.position.to_simple_dct()
         hooks.tokens['robot']['state']['orientation'] = loc.orientation.to_simple_dct()
         hooks.tokens['robot']['state']['joints'] = loc.joints
@@ -270,7 +130,9 @@ class MoveTrajectory(Primitive):
         if not self.uuid in hooks.state.keys():
             hooks.robot_interface.is_acked('arm') # clear prev ack
             hooks.state[self.uuid] = 'pending'
-            hooks.robot_interface.move_trajectory_async(self.trajectory, self.manual_safety)
+
+            traj = self.context.get_trajectory(self.trajectory_uuid)
+            hooks.robot_interface.move_trajectory_async(traj, self.manual_safety)
 
         else:
             resp = hooks.robot_interface.is_acked('arm')
@@ -290,73 +152,3 @@ class MoveTrajectory(Primitive):
         #TODO handle thing movement
 
         return next
-
-class ContextPatch(object):
-
-    def __init__(self, parent):
-        self._trajectories = {}
-        self._parent = parent
-        self._pending = {}
-
-    @property
-    def parent(self):
-        return self._parent
-
-    @property
-    def trajectories(self):
-        traj = {uuid: self._trajectories[uuid] for uuid in self._trajectories.keys()} # copy
-        traj.update({uuid: 'pending' for uuid in self._pending.keys()})
-        return traj
-
-    @trajectories.setter
-    def trajectories(self, value):
-        for t in self._trajectories:
-            t.remove_from_cache()
-        self._trajectories = {}
-
-        for t in value:
-            self._trajectories[t.uuid] = t
-            t.parent = self
-
-    def get_trajectory(self, uuid):
-        if uuid in self._trajectories.keys():
-            return self._trajectories[uuid]
-        elif uuid in self._pending.keys():
-            return 'pending'
-        else:
-            return None
-
-    def add_trajectory(self, trajectory):
-        trajectory.parent = self
-        self._trajectories[trajectory.uuid] = trajectory
-
-    def delete_trajectory(self, uuid):
-        if uuid in self._trajectories.keys():
-            self._trajectories.pop(uuid).remove_from_cache()
-        elif uuid in self._pending.keys():
-            self._pending.pop(uuid)
-
-    def update_context(self, context):
-
-        for traj in self._trajectories.values():
-            context.add_trajectory(traj)
-
-        for uuid in self._pending.keys():
-            traj = context.get_trajectory(uuid)
-            if traj == None:
-                raise Exception('Pending trajectory was not found when context was assigned')
-
-            if traj.start_location_uuid != self._pending[uuid]['startLoc']:
-                raise Exception('Pending trajectory start location does not match one in context')
-
-            if traj.end_location_uuid != self._pending[uuid]['endLoc']:
-                raise Exception('Pending trajectory end location does not match one in context')
-
-        self._trajectories = {}
-        self._pending = {}
-
-    def child_changed_event(self, attribute_trace):
-        self.parent.child_changed_event(attribute_trace)
-
-    def add_pending_trajectory(self, uuid, startLoc, endLoc):
-        self._pending[uuid] = {'startLoc': startLoc, 'endLoc': endLoc}

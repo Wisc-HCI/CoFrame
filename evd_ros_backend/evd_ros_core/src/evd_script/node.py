@@ -10,7 +10,7 @@ import uuid
 
 from abc import ABC
 from .cache import *
-
+from . import STRING_TYPE, BOOLEAN_TYPE
 
 class Node(ABC):
 
@@ -19,12 +19,50 @@ class Node(ABC):
     '''
 
     @classmethod
+    def display_name(cls):
+        return 'Node'
+
+    @classmethod
     def type_string(cls, trailing_delim=True):
         return 'node' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
         return cls.type_string()
+
+    @classmethod
+    def template(cls):
+        return {
+            'type': cls.full_type_string(),
+            'name': cls.display_name(),
+            'metadata': [
+                {
+                    'type': STRING_TYPE,
+                    'key': 'type'
+                },
+                {
+                    'type': STRING_TYPE,
+                    'key': 'uuid'
+                },
+                {
+                    'type': STRING_TYPE,
+                    'key': 'name'
+                },
+                {
+                    'type': BOOLEAN_TYPE,
+                    'key': 'editable'
+                },
+                {
+                    'type': BOOLEAN_TYPE,
+                    'key': 'deleteable'
+                },
+                {
+                    'type': STRING_TYPE,
+                    'key': 'description'
+                }
+            ],
+            'fields': []
+        }
 
     def __init__(self, type='', name='', uuid=None, parent=None, append_type=True,
                  editable=True, deleteable=True, description=''):
@@ -261,11 +299,19 @@ class Node(ABC):
     '''
 
     def symbolic_execution(self, hooks):
-        # Inplement the pre-post conditions directly
-        hooks.active_primitive = self
-        return self.parent # Node itself does nothing
+        # Implement the pre-post conditions directly
+
+        # EX) Really simple example would look like
+        #   hooks.active_primitive = self
+        #   return self.parent # Node itself does nothing
+
+        raise Exception('This node is not defined for execution')
 
     def realtime_execution(self, hooks):
         # Implement the full real-time simulation
-        hooks.active_primitive = self
-        return self.parent # Node itself does nothing
+        
+        # EX) Really simple example would look like
+        #   hooks.active_primitive = self
+        #   return self.parent # Node itself does nothing
+        
+        raise Exception('This node is not defined for execution')
