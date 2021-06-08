@@ -4,6 +4,8 @@ import { Card } from 'antd';
 import frameStyles from '../../frameStyles';
 import useGuiStore from '../../stores/GuiStore';
 
+import {Safety, Quality, Performance, Business} from '../Feedback';
+
 export const ChecklistTile = (_) => {
     const {frameId, setFrame} = useGuiStore(state=>({frameId:state.frame,setFrame:state.setFrame}));
     const frames = [
@@ -25,10 +27,10 @@ export const ChecklistTile = (_) => {
         }
     ]
     const contentList = {
-      safety: <div>Safety Frame Content</div>,
-      quality: <div>Program Quality Frame Content</div>,
-      performance: <div>Robot Performance Frame Content</div>,
-      business:  <div>Business Objectives Frame Content</div>
+      safety: <Safety/>,
+      quality: <Quality/>,
+      performance: <Performance/>,
+      business:  <Business/>
     };
     
     return (

@@ -1,13 +1,15 @@
 import React from 'react';
-import { Card } from 'antd';
+import { Card, Alert } from 'antd';
 import useGuiStore from '../../stores/GuiStore';
 
 export function FeedbackTile(_) {
 
-    const { editorPane, setupTab, focusItem } = useGuiStore(state=>({
+    const { editorPane, setupTab, focusItem, frame, primaryColor } = useGuiStore(state=>({
         editorPane:state.editorPane,
         setupTab:state.setupTab,
-        focusItem:state.focusItem
+        focusItem:state.focusItem,
+        frame:state.frame,
+        primaryColor:state.primaryColor
     }))
 
     let title = '';
@@ -24,12 +26,27 @@ export function FeedbackTile(_) {
             title = 'Info: Machines';
             description = <p>Machines are items in the workspace that perform tasks, such as modifying or combining <i>Things</i> after placement in defined configurations. They also encode the duration for each process.</p>
         } else if (setupTab === 'waypoints') {
-
-        } else if (setupTab === 'regions') {
-
+            title = 'Info: Waypoints';
+            if (frame ===  'safety') {
+                description = (
+                    <p>
+                        Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
+                        <Alert showIcon message={'Pay special attention to placing waypoints around the occupancy zone of the human, since this is more likely to result in undesirable conflicts between the human and the robot.'}></Alert>
+                    </p>
+                )
+                
+            } else if (frame === 'performance') {
+                description = (
+                    <p>
+                        Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
+                        <Alert showIcon message={'Pay special attention to the sequences of waypoints and where they are relative to one another within a trajectory. Longer trajectories take longer to execute and can contribute to greater space usage.'}></Alert>
+                    </p>
+                )
+            } else {
+                description = <p>Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.</p>
+            }
+            
         } else if (setupTab === 'thingTypes') {
-
-        } else if (setupTab === 'things') {
 
         }
     } else if (focusItem.type !== null) {
