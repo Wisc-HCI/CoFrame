@@ -23,7 +23,10 @@ const store = (set) => ({
     // the focusItem specifies the type and uuid of data to focus on
     focusItem: {type:null,uuid:null},
     setFocusItem: (type,uuid) => set((_)=>({focusItem:{type:type,uuid:uuid}})),
-    clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null}}))
+    clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null}})),
+    searchTerm: '',
+    setSearchTerm: (term) => set((_) => ({searchTerm:term})),
+    clearSearchTerm: () => set((_) => ({searchTerm:''}))
 });
 
 const useGuiStore = create(immer(store));
