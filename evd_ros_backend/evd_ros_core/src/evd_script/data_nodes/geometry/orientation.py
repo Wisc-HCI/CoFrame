@@ -213,6 +213,10 @@ class Orientation(Node):
         else:
             raise Exception('axis is not valid')
 
+    @classmethod
+    def Unknown(cls):
+        return cls(x='?', y='?', z='?', w='?')
+
     '''
     Data accessor/modifier methods
     '''

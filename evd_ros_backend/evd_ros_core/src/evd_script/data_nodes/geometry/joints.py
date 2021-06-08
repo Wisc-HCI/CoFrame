@@ -149,6 +149,12 @@ class Joints(Node):
             positions= dct.values(),
             joint_names=dct.keys())
 
+    @classmethod
+    def Unknown(cls, length=None):
+        positions = (length if length != None else 1) * ['?']
+        names = (length if length != None else 1) * ['?']
+        return cls(length=length, joint_positions=positions, joint_names=names)
+
     '''
     Data accessor/modifier methods
     '''
@@ -177,7 +183,7 @@ class Joints(Node):
     @joint_positions.setter
     def joint_positions(self, value):
         if self._joint_positions != value:
-            if value != None and len(value) != self.length:
+            if value != None and self.length != None and len(value) != self.length:
                 raise Exception('vector must match length expectation')
 
             self._joint_positions = value
@@ -193,7 +199,7 @@ class Joints(Node):
     @joint_names.setter
     def joint_names(self, value):
         if value != self._joint_names:
-            if value != None and len(value) != self.length:
+            if value != None and self.length != None and len(value) != self.length:
                 raise Exception('vector must match length expectation')
 
             self._joint_names = value

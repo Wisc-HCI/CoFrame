@@ -238,6 +238,8 @@ class Hierarchical(Primitive):
             hooks.state[self.uuid]['index'] = index + 1
         else:
             next = self.parent
+        
+        if next == self.parent:
             del hooks.state[self.uuid]
         return next
 

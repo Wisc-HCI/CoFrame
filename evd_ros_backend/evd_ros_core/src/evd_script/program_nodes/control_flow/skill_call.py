@@ -95,9 +95,10 @@ class SkillCall(Primitive):
             next = hierarchicalBlock
         else:
             hooks.state[self.uuid]['block'].remove_from_cache()
-            del hooks.state[self.uuid]
             next = self.parent
 
+        if next == self.parent:
+            del hooks.state[self.uuid]
         return next
 
     def realtime_execution(self, hooks):

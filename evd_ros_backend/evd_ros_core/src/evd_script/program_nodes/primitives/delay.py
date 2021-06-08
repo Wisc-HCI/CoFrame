@@ -104,6 +104,7 @@ class Delay(Primitive):
 
             if total >= self.duration:
                 next = self.parent
-                del hooks.state[self.uuid]
-
+        
+        if next == self.parent:
+            del hooks.state[self.uuid]
         return next

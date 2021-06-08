@@ -8,6 +8,8 @@ of the gripper is handled at the implementation level.
 
 from ..primitive import Primitive
 from ...data_nodes import Thing
+from ...data_nodes.regions import SphereRegion
+from ...data_nodes.geometry import Pose, Position, Orientation
 from ... import NUMBER_TYPE, ENUM_TYPE
 
 
@@ -202,6 +204,23 @@ class Gripper(Primitive):
         hooks.tokens['robot']['state']['gripper']['position'] = self.position
 
         if self.thing_uuid != None:
+
+            # check if thing is actually near the gripper
+            gripperRegion = SphereRegion(
+                center_position=Position(0,0.1,0), 
+                link='ee_link',
+                uncertainty_radius=0.1, 
+                free_orientation=True)
+
+            _, thing_pose = Pose.compute_relative(
+                    Pose.from_simple_dct(hooks.tokens[self.thing_uuid]['state']),
+                    Pose.from_simple_dct(hooks.tokens['robot']['state']))
+        
+            within = gripperRegion.check_if_pose_within_uncertainty(thing_pose)
+            if not within:
+                raise Exception('thing {} not within gripper region'.format(self.thing_uuid))
+
+            # set grasping semantic
             if self.semantic == self.SEMANTIC_GRASPING:
                 hooks.tokens['robot']['state']['gripper']['grasped_thing'] = self.thing_uuid
             elif self.semantic == self.SEMANTIC_RELEASING:
@@ -224,10 +243,26 @@ class Gripper(Primitive):
             resp = hooks.robot_interface.is_acked('gripper')
             if resp != None:
                 if resp:
-                    del hooks.state[self.uuid]
                     next = self.parent
 
                     if self.thing_uuid != None:
+
+                        # check if thing is actually near the gripper
+                        gripperRegion = SphereRegion(
+                            center_position=Position(0,0.1,0), 
+                            link='ee_link',
+                            uncertainty_radius=0.1, 
+                            free_orientation=True)
+
+                        _, thing_pose = Pose.compute_relative(
+                                Pose.from_simple_dct(hooks.tokens[self.thing_uuid]['state']),
+                                Pose.from_simple_dct(hooks.tokens['robot']['state']))
+                    
+                        within = gripperRegion.check_if_pose_within_uncertainty(thing_pose)
+                        if not within:
+                            raise Exception('thing {} not within gripper region'.format(self.thing_uuid))
+
+                        # set grasping semantic
                         if self.semantic == self.SEMANTIC_GRASPING:
                             hooks.tokens['robot']['state']['gripper']['grasped_thing'] = self.thing_uuid
                         elif self.semantic == self.SEMANTIC_RELEASING:
@@ -242,4 +277,6 @@ class Gripper(Primitive):
         status = hooks.robot_interface.get_status()
         hooks.tokens['robot']['state']['gripper']['position'] = status.gripper_position
 
+        if next == self.parent:
+            del hooks.state[self.uuid]
         return next

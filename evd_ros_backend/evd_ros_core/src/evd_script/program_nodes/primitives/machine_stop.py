@@ -65,9 +65,10 @@ class MachineStop(MachinePrimitive):
             if resp != None:
                 if resp:
                     hooks.tokens[self.machine_uuid]['state'] = 'idle'
-                    del hooks.state[self.uuid]
                     next = self.parent
                 else:
                     raise Exception('Machine NACKed - {}'.format(self.machine_uuid))
 
+        if next == self.parent:
+            del hooks.state[self.uuid]
         return next
