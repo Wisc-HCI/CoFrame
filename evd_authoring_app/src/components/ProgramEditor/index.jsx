@@ -11,6 +11,11 @@ import {
 
 import './index.css';
 
+// We might want to look into the ResizeObserver for updating
+// the size of this component more gracefully. Right now it
+// initializes too large, and if the screen is resized it breaks.
+// import { ResizeObserver } from "@juggle/resize-observer";
+
 
 export class ProgramEditor extends Component {
   constructor(props) {
@@ -22,24 +27,6 @@ export class ProgramEditor extends Component {
     };
   }
 
-  workspaceDidChange = (workspace) => {
-    /*
-      workspace.registerButtonCallback('myFirstButtonPressed', () => {
-          alert('button is pressed');
-      });
-      */
-
-    /*
-      const newXml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
-      document.getElementById('generated-xml').innerText = newXml;
-      */
-
-    /*
-      const code = Blockly.JavaScript.workspaceToCode(workspace);
-      document.getElementById('code').value = code;
-      */
-  };
-
   render() {
     const { 
         toolbox, 
@@ -47,14 +34,12 @@ export class ProgramEditor extends Component {
     } = this.state;
   
     return (
-        <div
-            id="blockly"
-            style={{ 
-                height: '100%', 
-                width: '100%' 
-            }}
-        >
+        
         <BlocklyDrawer
+          style={{ 
+            width:'100%',
+            height:'100%'
+          }}
           tools={toolbox}
           language={Blockly.JavaScript}
           appearance={
@@ -77,7 +62,6 @@ export class ProgramEditor extends Component {
           }
         >
         </BlocklyDrawer>
-        </div>
     );
   }
 }
