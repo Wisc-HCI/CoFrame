@@ -116,7 +116,7 @@ class Machine(Node):
         self.outputs = outputs if outputs != None else {}
         self.process_time = process_time
         self.mesh_id = mesh_id
-        self.pose_offset = pose_offset if pose_offset != None else Pose(deletable=False, editable=editable)
+        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deletable=False, editable=editable)
         self.link = link
         self.collision_mesh_uuid = collision_mesh_uuid
 
