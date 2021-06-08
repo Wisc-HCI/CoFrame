@@ -5,14 +5,15 @@
  */
 
 
+
 import arbitrary from './arbitrary';
-import logical from './logical';
+import debugApp from './debugApp';
 import template from './template';
 import comm from './comm';
 
 const fields = {
     arbitrary,
-    logical,
+    debugApp,
     template,
     comm
 };

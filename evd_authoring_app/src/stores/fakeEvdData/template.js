@@ -191,6 +191,12 @@ const skillArguement_template = {
             key: 'parameter_type',
             is_uuid: false,
             is_list: false
+        },
+        {
+            type: '<boolean>',
+            key: 'is_list',
+            is_uuid: false,
+            is_list: false
         }
     ]
 };
@@ -2085,150 +2091,6 @@ const hierarchical_template = {
     ]
 };
 
-const close_gripper_template = {
-    type: 'node.primitive.hierarchical.close-gripper.',
-    name: 'Close Gripper', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // defining instance fields
-        {
-            type: '<parameters>',
-            key: 'parameters',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<all-primitives>',
-            key: 'primitives',
-            is_uuid: false,
-            is_list: true
-        }
-    ],
-    parameters: [ // define primitive parameters that can be filled in by the user
-        // empty
-    ]
-};
-
-const open_gripper_template = {
-    type: 'node.primitive.hierarchical.open-gripper.',
-    name: 'Open Gripper', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // defining instance fields
-        {
-            type: '<parameters>',
-            key: 'parameters',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<all-primitives>',
-            key: 'primitives',
-            is_uuid: false,
-            is_list: true
-        }
-    ],
-    parameters: [ // define primitive parameters that can be filled in by the user
-        // empty
-    ]
-};
-
-const initialize_template = {
-    type: 'node.primitive.hierarchical.initialize.',
-    name: 'Initialize', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // defining instance fields
-        {
-            type: '<parameters>',
-            key: 'parameters',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<all-primitives>',
-            key: 'primitives',
-            is_uuid: false,
-            is_list: true
-        }
-    ],
-    parameters: [ // define primitive parameters that can be filled in by the user
-        // empty
-    ]
-};
-
 /***************************************************************** 
 * Control Flow
 *****************************************************************/
@@ -2422,6 +2284,12 @@ const skill_template = {
             key: 'arguements',
             is_uuid: false,
             is_list: true
+        },
+        {
+            type: '<all-primitives>',
+            key: 'primitives',
+            is_uuid: false,
+            is_list: true
         }
     ],
     parameters: [ // define primitive parameters that can be filled in by the user
@@ -2430,7 +2298,7 @@ const skill_template = {
 };
 
 const machine_blocking_process_template = {
-    type: 'node.primitive.hierarical.skill.machine-blocking-process',
+    type: 'node.primitive.hierarical.skill.machine-blocking-process.',
     name: 'Machine Blocking Process Skill', // generated display name
     meta_data: [ // defining instance meta data
         {
@@ -2468,6 +2336,12 @@ const machine_blocking_process_template = {
         {
             type: 'nodes.skill-arguement.',
             key: 'arguements',
+            is_uuid: false,
+            is_list: true
+        },
+        {
+            type: '<all-primitives>',
+            key: 'primitives',
             is_uuid: false,
             is_list: true
         }
@@ -2518,10 +2392,178 @@ const simple_pick_and_place_template = {
             key: 'arguements',
             is_uuid: false,
             is_list: true
+        },
+        {
+            type: '<all-primitives>',
+            key: 'primitives',
+            is_uuid: false,
+            is_list: true
         }
     ],
     parameters: [ // define primitive parameters that can be filled in by the user
         //empty
+    ]
+};
+
+const close_gripper_template = {
+    type: 'node.primitive.hierarchical.skill.close-gripper.',
+    name: 'Close Gripper Skill', // generated display name
+    meta_data: [ // defining instance meta data
+        {
+            type: '<string>',
+            key: 'type'
+        },
+        {
+            type: '<string>',
+            key: 'uuid'
+        },
+        {
+            type: '<string>',
+            key: 'name'
+        },
+        {
+            type: '<boolean>',
+            key: 'editable'
+        },
+        {
+            type: '<boolean>',
+            key: 'deleteable'
+        },
+        {
+            type: '<string>',
+            key: 'description'
+        }
+    ],
+    fields: [ // defining instance fields
+        {
+            type: '<parameters>',
+            key: 'parameters',
+            is_uuid: false,
+            is_list: false
+        },
+        {
+            type: '<all-primitives>',
+            key: 'primitives',
+            is_uuid: false,
+            is_list: true
+        },
+        {
+            type: 'nodes.skill-arguement.', // hint this one doesn't actually take args
+            key: 'arguements',
+            is_uuid: false,
+            is_list: true
+        }
+    ],
+    parameters: [ // define primitive parameters that can be filled in by the user
+        // empty
+    ]
+};
+
+const open_gripper_template = {
+    type: 'node.primitive.hierarchical.skill.open-gripper.',
+    name: 'Open Gripper Skill', // generated display name
+    meta_data: [ // defining instance meta data
+        {
+            type: '<string>',
+            key: 'type'
+        },
+        {
+            type: '<string>',
+            key: 'uuid'
+        },
+        {
+            type: '<string>',
+            key: 'name'
+        },
+        {
+            type: '<boolean>',
+            key: 'editable'
+        },
+        {
+            type: '<boolean>',
+            key: 'deleteable'
+        },
+        {
+            type: '<string>',
+            key: 'description'
+        }
+    ],
+    fields: [ // defining instance fields
+        {
+            type: '<parameters>',
+            key: 'parameters',
+            is_uuid: false,
+            is_list: false
+        },
+        {
+            type: '<all-primitives>',
+            key: 'primitives',
+            is_uuid: false,
+            is_list: true
+        },
+        {
+            type: 'nodes.skill-arguement.', //hint this one doesn't actually take args
+            key: 'arguements',
+            is_uuid: false,
+            is_list: true
+        }
+    ],
+    parameters: [ // define primitive parameters that can be filled in by the user
+        // empty
+    ]
+};
+
+const initialize_template = {
+    type: 'node.primitive.hierarchical.skill.initialize.',
+    name: 'Initialize Skill', // generated display name
+    meta_data: [ // defining instance meta data
+        {
+            type: '<string>',
+            key: 'type'
+        },
+        {
+            type: '<string>',
+            key: 'uuid'
+        },
+        {
+            type: '<string>',
+            key: 'name'
+        },
+        {
+            type: '<boolean>',
+            key: 'editable'
+        },
+        {
+            type: '<boolean>',
+            key: 'deleteable'
+        },
+        {
+            type: '<string>',
+            key: 'description'
+        }
+    ],
+    fields: [ // defining instance fields
+        {
+            type: '<parameters>',
+            key: 'parameters',
+            is_uuid: false,
+            is_list: false
+        },
+        {
+            type: '<all-primitives>',
+            key: 'primitives',
+            is_uuid: false,
+            is_list: true
+        },
+        {
+            type: 'nodes.skill-arguement.',
+            key: 'arguements',
+            is_uuid: false,
+            is_list: true
+        }
+    ],
+    parameters: [ // define primitive parameters that can be filled in by the user
+        // empty
     ]
 };
 
@@ -2629,9 +2671,6 @@ const fields = {
     move_trajectory_template,
     move_unplanned_template,
     hierarchical_template,
-    close_gripper_template,
-    open_gripper_template,
-    initialize_template,
     breakpoint_template,
     skillCall_template,
     loop_template,
@@ -2639,7 +2678,10 @@ const fields = {
     skill_template,
     machine_blocking_process_template,
     simple_pick_and_place_template,
-    program_template
+    program_template,
+    close_gripper_template,
+    open_gripper_template,
+    initialize_template
 };
 
 export default fields;

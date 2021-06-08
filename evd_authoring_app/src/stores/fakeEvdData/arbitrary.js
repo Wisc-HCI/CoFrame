@@ -749,81 +749,330 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
 * - Control Flow
 *****************************************************************/
 
+
+
 let program = {
-    type: 'node.primitive.skill.program.',
+    type: 'node.primitive.hierarchical.program.',
     uuid: `program-js`,
     name: ``,
     deleteable: false,
     editable: true,
     description: 'Some descriptor string (optional)', // could be ''
 
-    
-    // Andy's musings
-    
-
-    macro_calls: [
+    skills: [
         {
-            uuid: 'macro_call_1',
-            name: 'My Macro Call',
+            type: 'node.primitive.hierarical.skill.machine-blocking-process.',
+            name: 'Machine Blocking Process',
+            uuid: 'machine-blocking-process-skill-uuid',
+            editable: false,
             deleteable: false,
-            editable: true,
-            description: 'Some descriptor string (optional)', // could be ''
-            macro_uuid: 'macro_1_js',
-            macro_args: [ // probably this should be key-value + have typing info
-                'trajectory_1_uuid',
-                'trajectory_2_uuid'
-            ]
-        }
-    ],
-
-    macro_library: [
-        {
-            uuid: 'macro_1_js',
-            name: 'My Macro',
-            deleteable: false,
-            editable: true,
-            description: 'Some descriptor string (optional)', // could be ''
-            fields: [
+            description: '',
+            parameters: {},
+            arguements: [
                 {
-                    type:'node.trajectory.',
-                    key:'trajectory_uuid', // This is the key that it inserts into the primitives
-                    value:'real_trajectory_uuid' // This is the name that gets swapped in
-                },
-                {
-                    type:'node.trajectory.',
-                    key:'trajectory_uuid', // This is the key that it inserts into the primitives
-                    value:'second_trajectory_uuid' // This is the name that gets swapped in
+                    type: 'node.skill-arguement.',
+                    name: 'machine_uuid',
+                    uuid: 'skill-arg-uuid-0',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameter_key: 'machine_uuid',
+                    temporary_value: '<<arbitrary-value-0>>',
+                    parameter_type: 'node.machine.',
+                    is_list: false
                 }
             ],
-            
+            primitives: [
+                {
+                    type: 'node.primitive.machine-primitive.machine-start.',
+                    name: '',
+                    uuid: 'skill-machine-start-uuid',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameters: {
+                        machine_uuid: '<<arbitrary-value-0>>'
+                    }
+                },
+                {
+                    type: 'node.primitive.machine-primitive.machine-wait.',
+                    name: '',
+                    uuid: 'skill-machine-wait-uuid',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameters: {
+                        machine_uuid: '<<arbitrary-value-0>>'
+                    }
+                },
+                {
+                    type: 'node.primitive.machine-primitive.machine-wait.',
+                    name: '',
+                    uuid: 'skill-machine-wait-uuid',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameters: {
+                        machine_uuid: '<<arbitrary-value-0>>'
+                    }
+                },
+            ]
+        },
+        {
+            type: 'node.primitive.hierarchical.skill.simple-pick-and-place.',
+            name: 'Simple Pick and Place',
+            uuid: 'simple-pick-and-place-uuid',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {},
+            arguements: [
+                {
+                    type: 'node.skill-arguement.',
+                    name: 'pick_trajectory',
+                    uuid: 'some-uuid',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameter_key: 'trajectory_uuid',
+                    temporary_value: '<<arg-pick-traj>>',
+                    parameter_type: 'node.trajectory.',
+                    is_list: false
+                },
+                {
+                    type: 'node.skill-arguement.',
+                    name: 'place_trajectory',
+                    uuid: 'some-uuid',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameter_key: 'trajectory_uuid',
+                    temporary_value: '<<arg-place-traj>>',
+                    parameter_type: 'node.trajectory.',
+                    is_list: false
+                },
+                {
+                    type: 'node.skill-arguement.',
+                    name: 'thing_uuid',
+                    uuid: 'some-uuid',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameter_key: 'thing_uuid',
+                    temporary_value: '<<arg-thing>>',
+                    parameter_type: 'node.pose.thing.',
+                    is_list: false
+                }
+            ],
             primitives: [
                 {
                     type: 'node.primitive.move-trajectory.',
-                    uuid: `move-trajectory-primitive-js`,
-                    name: ``,
+                    uuid: 'some-uuid',
+                    name: '',
+                    editable: false,
                     deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    trajectory_uuid: 'real_trajectory_uuid'
-                    //TODO
+                    description: '',
+                    parameters: {
+                        manual_safety: false,
+                        trajectory_uuid: '<<arg-pick-traj>>'
+                    }
+                },
+                {
+                    type: 'node.primitive.skill-call',
+                    uuid: 'some-uuid',
+                    name: '',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameters: {
+                        skill_uuid: 'close-gripper-skill-uuid',
+                        thing_uuid: '<<arg-thing>>'
+                    }
                 },
                 {
                     type: 'node.primitive.move-trajectory.',
-                    uuid: `move-trajectory-primitive-js`,
-                    name: ``,
+                    uuid: 'some-uuid',
+                    name: '',
+                    editable: false,
                     deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    trajectory_uuid: 'second_trajectory_uuid'
-                    //TODO
+                    description: '',
+                    parameters: {
+                        manual_safety: false,
+                        trajectory_uuid: '<<arg-place-traj>>'
+                    }
                 },
+                {
+                    type: 'node.primitive.skill-call',
+                    uuid: 'some-uuid',
+                    name: '',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameters: {
+                        skill_uuid: 'open-gripper-skill-uuid',
+                        thing_uuid: '<<arg-thing>>'
+                    }
+                }
+            ]
+        },
+        {
+            type: 'node.primitive.hierarchical.skill.initialize.',
+            name: 'Initialize',
+            uuid: 'initialize-uuid',
+            editable: false,
+            deleteable: false,
+            parameters: {},
+            arguements: [
+                {
+                    type: 'node.skill-arguement.',
+                    name: 'machine_uuids',
+                    uuid: 'skill-arg-uuid-0',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameter_key: 'machine_uuid',
+                    temporary_value: '<<arbitrary-value-0>>',
+                    parameter_type: 'node.machine.',
+                    is_list: true
+                },
+                {
+                    type: 'node.skill-arguement.',
+                    name: 'home_location_uuid',
+                    uuid: 'skill-arg-uuid-1',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameter_key: 'location_uuid',
+                    temporary_value: '<<home-location>>',
+                    parameter_type: 'node.pose.waypoint.location.',
+                    is_list: false
+                }
+            ],
+            primitives: [
+                { // This is only for display purposes. what really happens in that this
+                  // gets expanded for each machine at runtime
+                    type: 'node.primitive.machine-primitive.machine-initialize.',
+                    uuid: 'some-uuid',
+                    name: '',
+                    deleteable: false,
+                    editable: false,
+                    description: '',
+                    parameters: {
+                        machine_uuid: '<<arbitrary-value-0>>'
+                    }
+                },
+                {
+                    type: 'node.primitive.gripper.',
+                    uuid: 'some-uuid',
+                    name: '',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameters: {
+                        position: 100,
+                        speed: 1,
+                        effort: 1,
+                        semantic: 'ambiguous',
+                        thing_uuid: null
+                    }
+                },
+                {
+                    type: 'node.primitive.move-unplanned.',
+                    uuid: 'some-uuid',
+                    name: '',
+                    deleteable: false,
+                    editable: false,
+                    description: '',
+                    parameters: {
+                        manual_safety: false,
+                        velocity: 1,
+                        move_type: 'joint',
+                        location_uuid: '<<home-location>>'
+                    }
+                }
+            ]
+        },
+        {
+            type: 'node.primitive.hierarchical.skill.open-gripper.',
+            uuid: 'some-uuid',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {},
+            arguements: [
+                {
+                    type: 'node.skill-arguement.',
+                    uuid: 'some-uuid',
+                    name: 'thing_uuid',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameter_key: 'thing_uuid',
+                    temporary_value: '<<temp-thing>>',
+                    parameter_type: 'node.pose.thing.',
+                    is_list: false
+                }
+            ],
+            primitives: [
+                {
+                    type: 'node.primitive.gripper.',
+                    uuid: 'some-uuid',
+                    name: '',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameters: {
+                        position: 100,
+                        speed: 1,
+                        effort: 1,
+                        semantic: 'releasing',
+                        thing_uuid: '<<temp-thing>>'
+                    }
+                }
+            ]
+        },
+        {
+            type: 'node.primitive.hierarchical.skill.close-gripper.',
+            uuid: 'some-uuid',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {},
+            arguements: [
+                {
+                    type: 'node.skill-arguement.',
+                    uuid: 'some-uuid',
+                    name: 'thing_uuid',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameter_key: 'thing_uuid',
+                    temporary_value: '<<temp-thing>>',
+                    parameter_type: 'node.pose.thing.',
+                    is_list: false
+                }
+            ],
+            primitives: [
+                {
+                    type: 'node.primitive.gripper.',
+                    uuid: 'some-uuid',
+                    name: '',
+                    editable: false,
+                    deleteable: false,
+                    description: '',
+                    parameters: {
+                        position: 0,
+                        speed: 1,
+                        effort: 1,
+                        semantic: 'grasping',
+                        thing_uuid: '<<temp-thing>>'
+                    }
+                }
             ]
         }
     ],
-
-    //TODO add an ownership
     
     environment: {
         reach_sphere: reachSphere,
@@ -840,142 +1089,26 @@ let program = {
         grade_types: gradeTypes
     },
     
-    primitives: [
-        // Assume we want a simple non-looping pick-and-place task
-
+    primitives: [ // just initializes but that is enough to get the point across >(0_0)<
         {
-            uuid: `initialize-skill-js`,
-            name: ``,
+            type: 'node.primitive.skill-call',
+            uuid: 'some-uuid',
+            name: '',
+            editable: false,
             deleteable: false,
-            editable: true,
-            description: 'Some descriptor string (optional)', // could be ''
-
-            primitives: [
-                {
-                    uuid: `machine-initialize-machine-primitive-js`,
-                    name: ``,
-                    deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    machine_uuid: 'machine-js-0' //some machine uuid
-                },
-                /*...*/ //for all machines
-                {
-                    uuid: `move-unplanned-primitive-js`,
-                    name: ``,
-                    deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    //TODO
-                },
-                {
-                    uuid: `open-gripper-skill-js`,
-                    name: ``,
-                    deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    primitives: [
-                        {
-                            uuid: `gripper-primitive-js`,
-                            name: ``,
-                            deleteable: false,
-                            editable: true,
-                            description: 'Some descriptor string (optional)', // could be ''
-
-                            // TODO
-                        }
-                    ]
-                },
-            ]
+            description: '',
+            parameters: {
+                skill_uuid: 'initialize-skill-uuid',
+                machine_uuids: [
+                    'machine-1-uuid',
+                    'machine-2-uuid',
+                    /*etc.*/
+                ],
+                home_location_uuid: 'home-location-uuid'
+            }
         },
-        {
-            uuid: `simple_pick_and_place-skill-js`,
-            name: ``,
-            deleteable: false,
-            editable: true,
-            description: 'Some descriptor string (optional)', // could be ''
-
-            primitives: [
-                {
-                    type: 'node.primitive.move-trajectory.',
-                    uuid: `move-trajectory-primitive-js`,
-                    name: ``,
-                    deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    trajectory_uuid: 'trajectory-js-0'
-                    //TODO
-                },
-                {
-                    uuid: `close-gripper-skill-js`,
-                    name: ``,
-                    deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    primitives: [
-                        {
-                            uuid: `gripper-primitive-js`,
-                            name: ``,
-                            deleteable: false,
-                            editable: true,
-                            description: 'Some descriptor string (optional)', // could be ''
-
-                            // TODO
-                        }
-                    ]
-                },
-                {
-                    uuid: `move-trajectory-primitive-js`,
-                    name: ``,
-                    deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    // TODO
-                },
-                {
-                    uuid: `open-gripper-skill-js`,
-                    name: ``,
-                    deleteable: false,
-                    editable: true,
-                    description: 'Some descriptor string (optional)', // could be ''
-
-                    primitives: [
-                        {
-                            uuid: `gripper-primitive-js`,
-                            name: ``,
-                            deleteable: false,
-                            editable: true,
-                            description: 'Some descriptor string (optional)', // could be ''
-
-                            // TODO
-                        }
-                    ]
-                },
-            ]
-        },
-        {
-            uuid: `move-trajectory-primitive-js`,
-            name: `Retract to Home`,
-            deleteable: false,
-            editable: true,
-            description: 'Some descriptor string (optional)', // could be ''
-
-            // TODO
-        }
     ]
 };
-
-
-
-
-
-
 
 
 //=================================================================

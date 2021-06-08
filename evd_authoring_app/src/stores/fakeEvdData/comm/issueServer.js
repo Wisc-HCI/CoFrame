@@ -4,6 +4,14 @@
 * - Pending Jobs
 *****************************************************************/
 
+/*
+ * Subscribe to 'issue_server/updated_issues' -> Bool   (signals to frontend that new issues have been added)
+ * Subscribe to 'issue_server/updated_pending_jobs' -> Bool  (signals to frontend that new pending jobs have been submitted)
+ * 
+ * Service 'issue_server/get_issues' GetIssuesRequest, GetIssuesResponse
+ * Service 'issue_server/get_pending_jobs' GetPendingJobsRequest, GetPendingJobsResponse
+ */
+
 const GetIssuesRequest = {
     filter_by_source: false, //tells server to look at source and id fields, just set to false for frontend
     source: '', //some string like "data_server", probably not useful for frontend display
