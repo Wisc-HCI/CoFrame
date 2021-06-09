@@ -26,6 +26,7 @@
     "react-unity-webgl": "^7.1.10",
     "robot-scene": "github:Wisc-HCI/robot-scene#v0.1.4",
     "serve": "^11.3.2",
+    "styled-components": "^5.3.0",
     "uuid": "^8.3.2",
     "zustand": "^3.5.1"
   },

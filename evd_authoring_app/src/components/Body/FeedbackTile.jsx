@@ -1,63 +1,56 @@
 import React from 'react';
-import { Card, Alert } from 'antd';
+import { Card, Space, Button } from 'antd';
+import { FrameButton } from '../FrameButton';
+
+import frameStyles from '../../frameStyles';
 import useGuiStore from '../../stores/GuiStore';
 
-export function FeedbackTile(_) {
+import {Safety, Quality, Performance, Business} from '../Feedback';
 
-    const { editorPane, setupTab, focusItem, frame, primaryColor } = useGuiStore(state=>({
-        editorPane:state.editorPane,
-        setupTab:state.setupTab,
-        focusItem:state.focusItem,
-        frame:state.frame,
-        primaryColor:state.primaryColor
-    }))
-
-    let title = '';
-    let description = <p></p>
-
-    if (editorPane === 'program') {
-        title = 'Info: The Program Editor';
-        description = <p>You can adjust the program in the Program Editor by dragging elements from the drawer into the canvas. Elements can be modified by clicking on them from within the canvas.</p>
-    } else if (editorPane === 'setup' && focusItem.type === null) {
-        if (setupTab === 'locations') {
-            title = 'Info: Locations';
-            description = <p>Locations are meaningful positions in the scene. For example, they can be used to define goals for placing or picking up <i>Things</i>, or specifying starting or ending positions for the robot.</p>
-        } else if (setupTab === 'machines') {
-            title = 'Info: Machines';
-            description = <p>Machines are items in the workspace that perform tasks, such as modifying or combining <i>Things</i> after placement in defined configurations. They also encode the duration for each process.</p>
-        } else if (setupTab === 'waypoints') {
-            title = 'Info: Waypoints';
-            if (frame ===  'safety') {
-                description = (
-                    <p>
-                        Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
-                        <Alert showIcon message={'Pay special attention to placing waypoints around the occupancy zone of the human, since this is more likely to result in undesirable conflicts between the human and the robot.'}></Alert>
-                    </p>
-                )
-                
-            } else if (frame === 'performance') {
-                description = (
-                    <p>
-                        Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
-                        <Alert showIcon message={'Pay special attention to the sequences of waypoints and where they are relative to one another within a trajectory. Longer trajectories take longer to execute and can contribute to greater space usage.'}></Alert>
-                    </p>
-                )
-            } else {
-                description = <p>Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.</p>
-            }
-            
-        } else if (setupTab === 'thingTypes') {
-
+export const FeedbackTile = (_) => {
+    const {frameId, setFrame} = useGuiStore(state=>({frameId:state.frame,setFrame:state.setFrame}));
+    const frames = [
+        {
+            key:'safety',
+            tab:<span style={{textAlign:'center',opacity:frameId === 'safety' ? 1 : 0.5,fontSize:12,color:frameStyles.colors['safety']}}>Safety<br/>Concerns</span>
+        },
+        {
+            key:'quality',
+            tab:<span style={{textAlign:'center',opacity:frameId === 'quality' ? 1 : 0.5,fontSize:12,color:frameStyles.colors['quality']}}>Program<br/>Quality</span>
+        },
+        {
+            key:'performance',
+            tab:<span style={{textAlign:'center',opacity:frameId === 'performance' ? 1 : 0.5,fontSize:12,color:frameStyles.colors['performance']}}>Robot<br/>Performance</span>
+        },
+        {
+            key:'business',
+            tab:<span style={{textAlign:'center',opacity:frameId === 'business' ? 1 : 0.5,fontSize:12,color:frameStyles.colors['business']}}>Business<br/>Objectives</span>
         }
-    } else if (focusItem.type !== null) {
-        title = 'Info: Detail';
-        description = <p>Specific info for this thing</p>
-    }
-
-
+    ]
+    const contentList = {
+      safety: <Safety/>,
+      quality: <Quality/>,
+      performance: <Performance/>,
+      business:  <Business/>
+    };
+    
     return (
-        <Card title={title} style={{flex:1}}>
-            {description}
-        </Card>
-    )
-}
+        <div style={{height:'100%',paddingLeft:10,paddingRight:10,paddingBottom:10,display:'flex',flexDirection:'column'}}>
+            <Space style={{flexDirection:'row',display:'flex',justifyContent:'space-between',margin:5}}>
+                <FrameButton onClick={()=>setFrame('safety')} frame={'safety'} active={frameId=='safety'} text='Safety Concerns'/>
+                <FrameButton onClick={()=>setFrame('quality')} frame={'quality'} active={frameId=='quality'} text='Program Quality'/>
+                <FrameButton onClick={()=>setFrame('performance')} frame={'performance'} active={frameId=='performance'} text='Robot Performance'/>
+                <FrameButton onClick={()=>setFrame('business')} frame={'business'} active={frameId=='business'} text='Business Objectives'/>
+            </Space>
+            <Card
+                style={{flex:1}}
+                bodyStyle={{padding:0,display:'flex',flexDirection:'column'}}
+                title="Feedback"
+            >
+            <div style={{height:'100%',borderWidth:5,borderColor:frameStyles.colors[frameId]}}>
+            {contentList[frameId]}
+            </div>
+            </Card>
+        </div>
+    );
+};

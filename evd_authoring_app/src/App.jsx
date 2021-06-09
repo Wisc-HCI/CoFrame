@@ -7,7 +7,7 @@ import './themes/safety.less';
 import './themes/quality.less';
 import './themes/performance.less';
 import './themes/business.less';
-import { ChecklistTile } from "./components/Body/ChecklistTile";
+import { FeedbackTile } from "./components/Body/FeedbackTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
 
@@ -107,7 +107,7 @@ export function App(props) {
                 </Layout.Header>
                 <Layout>
                     <Layout.Sider width='25vw'>
-                        <ChecklistTile/>
+                        <FeedbackTile/>
                     </Layout.Sider>
                     <Layout width='75vw'>
                         <Layout.Content>

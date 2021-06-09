@@ -11,7 +11,7 @@ const store = (set) => ({
     primaryColor: frameStyles.colors['safety'],
     setFrame: (frame) => set((_)=>({frame:frame,primaryColor:frameStyles.colors[frame]})),
     // The editorPane specifies the section of the ProgramTile that is shown
-    editorPane: 'program',
+    editorPane: 'setup',
     setEditorPane: (pane) => set((_)=>({editorPane:pane})),
     // the activeModal specifies the type of modal shown
     activeModal: null,

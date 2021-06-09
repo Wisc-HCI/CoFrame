@@ -1,9 +1,9 @@
 const frameStyles = {
     colors: {
-        safety: '#54eb61',
-        quality: '#6c8feb',
-        performance: '#ebbc49',
-        business: '#eb3d7a'
+        safety: '#009E73',
+        quality: '#56B4E9',
+        performance: '#E69F00',
+        business: '#CC79A7'
     }
 };
 

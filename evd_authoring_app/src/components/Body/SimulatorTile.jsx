@@ -5,7 +5,7 @@ import { Card } from 'antd';
 import {Scene} from 'robot-scene';
 import useGuiStore from '../../stores/GuiStore';
 import { Controls } from '../Controls';
-import { FeedbackTile } from './FeedbackTile';
+import { InfoTile } from './InfoTile';
 import frameStyles from '../../frameStyles';
 
 
@@ -34,7 +34,7 @@ export const SimulatorTile = (props) => {
 
                     </div>
             </Card>
-            <FeedbackTile/>
+            <InfoTile/>
         </div>
     );
 };

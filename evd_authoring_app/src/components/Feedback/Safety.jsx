@@ -20,9 +20,9 @@ export function Safety(_) {
             complete: false,
             enabled: true,
             items: [
-                {label:'Trajectory-01',complete: true},
-                {label:'Trajectory-02',complete: false},
-                {label:'Trajectory-03',complete: false}
+                {label:'Trajectory-01',complete: true, force:true},
+                {label:'Trajectory-02',complete: false, force:true},
+                {label:'Trajectory-03',complete: false, force:false}
             ]
         },
         {

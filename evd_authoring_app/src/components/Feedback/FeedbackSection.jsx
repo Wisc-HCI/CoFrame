@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { List, Switch, Collapse } from 'antd';
+import { List, Switch, Collapse, Space, Badge } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 
 import './custom.css'
@@ -28,7 +28,14 @@ export function FeedbackSection(props) {
                     dataSource={items}
                     renderItem={(item)=>(
                         <List.Item 
-                            extra={<Switch size='small' defaultChecked={item.complete}/>}
+                            extra={
+                                <Space>
+                                    {item.force && !item.complete && (
+                                        <Badge danger count={'Change Required'}/>
+                                    )}
+                                    <Switch size='small' disabled={item.force} defaultChecked={item.complete}/>
+                                </Space>
+                            }
                             style={{
                                 borderRadius: 3,
                                 backgroundColor: '#1f1f1f',
