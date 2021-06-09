@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import frameStyles from '../../frameStyles';
+import frameStyles from '../frameStyles';
 
 export function FrameButton(props) {
 

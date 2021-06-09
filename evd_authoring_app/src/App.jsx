@@ -111,15 +111,13 @@ export function App(props) {
                     </Layout.Sider>
                     <Layout width='75vw'>
                         <Layout.Content>
-                            <Row style={{height:'100%'}}>
-                                <Col style={{width:simMode==='default'? '45%' : '100%'}}>
+                            <Row style={{height:'100%'}} wrap={false}>
+                                <Col style={{width:simMode==='default'? '45%' : '100%', transition: 'width 0.2s linear'}}>
                                     <SimulatorTile/>
                                 </Col>
-                                {simMode==='default' && (
-                                    <Col style={{width:'55%'}}>
-                                        <ProgramTile/>
-                                    </Col>
-                                )}
+                                <Col hidden={simMode!=='default'} style={{width:'55%'}}>
+                                    <ProgramTile/>
+                                </Col>
                             </Row>
                         </Layout.Content>
                     </Layout>
