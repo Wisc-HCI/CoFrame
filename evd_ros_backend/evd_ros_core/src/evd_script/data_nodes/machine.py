@@ -48,13 +48,13 @@ class Machine(Node):
         template = Node.template()
         template['fields'].append({
             'type': ARBITRARY_OBJ_TYPE, # dictionary of lists of dictionaries of regions and quantities with thing_type uuids as top-level keys
-            'keys': 'inputs',
+            'key': 'inputs',
             'is_uuid': False,
             'is_list': False 
         })
         template['fields'].append({
             'type': ARBITRARY_OBJ_TYPE, # dictionary of lists of dictionaries of regions and quantities with thing_type uuids as top-level keys
-            'keys': 'outputs',
+            'key': 'outputs',
             'is_uuid': False,
             'is_list': False 
         })

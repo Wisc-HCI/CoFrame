@@ -161,17 +161,9 @@ class MoveUnplanned(Primitive):
     def symbolic_execution(self, hooks):
         hooks.active_primitive = self
 
-        # Compute transform from thing to robot
-        Ttr = None
-        thing_uuid = hooks.tokens['robot']['state']['gripper']['grasped_thing']
-        if None != thing_uuid:
-            thing = self.context.get_thing(thing_uuid)
-            old_thing_pose = thing.to_simple_dct()
-            old_robot_pose = {
-                'position': dict(hooks.tokens['robot']['state']['position']),
-                'orientation': dict(hooks.tokens['robot']['state']['orientation'])
-            }
-            Ttr, _ = Pose.compute_relative(Pose.from_simple_dct(old_thing_pose),Pose.from_simple_dct(old_robot_pose))
+        # compute initial thing state
+        Ttr = self._handle_initial_thing_state(hooks)
+        hooks.state[self.uuid] = {'status': 'pending', 'Ttr': Ttr}
 
         # update robot state
         loc = self.context.get_location(self.location_uuid)
@@ -179,16 +171,10 @@ class MoveUnplanned(Primitive):
         hooks.tokens['robot']['state']['orientation'] = loc.orientation.to_simple_dct()
         hooks.tokens['robot']['state']['joints'] = loc.joints
 
-        # Compute transform thing to world
-        if None != thing_uuid:
-            Trw = Pose.from_simple_dct({
-                'position': dict(hooks.tokens['robot']['state']['position']),
-                'orientation': dict(hooks.tokens['robot']['state']['orientation'])
-            }).to_matrix()
-            Ttw = Pose.matrix_inverse(np.matmul(Ttr,Pose.matrix_inverse(Trw)))
-            new_thing_pose = Pose.from_matrix(Ttw).to_simple_dct()
-            hooks.tokens[thing_uuid]['state'].update(new_thing_pose)
+        # update thing state
+        self._handle_current_thing_state(hooks)
 
+        del hooks.state[self.uuid]
         return self.parent
 
     def realtime_execution(self, hooks):
@@ -198,17 +184,10 @@ class MoveUnplanned(Primitive):
         thing_uuid = hooks.tokens['robot']['state']['gripper']['grasped_thing']
 
         if not self.uuid in hooks.state.keys():
-
-            # Compute transform from thing to robot
-            Ttr = None
-            if None != thing_uuid:
-                Ttr, _ = Pose.compute_relative(
-                    Pose.from_simple_dct(hooks.tokens[thing_uuid]['state']),
-                    Pose.from_simple_dct(hooks.tokens['robot']['state']))
-
             # Set initial state and start action
             hooks.robot_interface.is_acked('arm') # clear prev ack
-            hooks.state[self.uuid] = {'state': 'pending', 'Ttr': Ttr}
+            Ttr = self._handle_initial_thing_state(hooks)
+            hooks.state[self.uuid] = {'status': 'pending', 'Ttr': Ttr}
             loc = self.context.get_location(self.location_uuid)
             hooks.robot_interface.move_async(loc, self.move_type, self.velocity, self.manual_safety)
 
@@ -221,11 +200,34 @@ class MoveUnplanned(Primitive):
                 else:
                     raise Exception('Robot NACKed')
 
-        # Set robot state
+        # update current state
+        self._handle_current_robot_state(hooks)
+        self._handle_current_thing_state(hooks)
+
+        if next == self.parent:
+            del hooks.state[self.uuid]
+        return next
+
+    def _handle_initial_thing_state(self, hooks):
+        thing_uuid = hooks.tokens['robot']['state']['gripper']['grasped_thing']
+
+        # Compute transform from thing to robot
+        Ttr = None
+        if None != thing_uuid:
+            Ttr, _ = Pose.compute_relative(
+                Pose.from_simple_dct(hooks.tokens[thing_uuid]['state']),
+                Pose.from_simple_dct(hooks.tokens['robot']['state']))
+
+        return Ttr
+
+    def _handle_current_robot_state(self,hooks):
         status = hooks.robot_interface.get_status()
         hooks.tokens['robot']['state']['position'] = Position.from_ros(status.arm_pose.position).to_simple_dct()
         hooks.tokens['robot']['state']['orientation'] = Orientation.from_ros(status.arm_pose.orientation).to_simple_dct()
         hooks.tokens['robot']['state']['joints'] = status.arm_joints
+
+    def _handle_current_thing_state(self, hooks):
+        thing_uuid = hooks.tokens['robot']['state']['gripper']['grasped_thing']
 
         #Set thing state / Compute transform thing to world
         if None != thing_uuid:
@@ -234,7 +236,3 @@ class MoveUnplanned(Primitive):
             Ttw = Pose.matrix_inverse(np.matmul(Ttr,Pose.matrix_inverse(Trw)))
             new_thing_pose = Pose.from_matrix(Ttw).to_simple_dct()
             hooks.tokens[thing_uuid]['state'].update(new_thing_pose)
-
-        if next == self.parent:
-            del hooks.state[self.uuid]
-        return next

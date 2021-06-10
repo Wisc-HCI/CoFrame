@@ -204,19 +204,7 @@ class Gripper(Primitive):
         hooks.tokens['robot']['state']['gripper']['position'] = self.position
 
         if self.thing_uuid != None:
-
-            # check if thing is actually near the gripper
-            gripperRegion = SphereRegion(
-                center_position=Position(0,0.1,0), 
-                link='ee_link',
-                uncertainty_radius=0.1, 
-                free_orientation=True)
-
-            _, thing_pose = Pose.compute_relative(
-                    Pose.from_simple_dct(hooks.tokens[self.thing_uuid]['state']),
-                    Pose.from_simple_dct(hooks.tokens['robot']['state']))
-        
-            within = gripperRegion.check_if_pose_within_uncertainty(thing_pose)
+            within = self._check_if_within_grasp_region(hooks)
             if not within:
                 raise Exception('thing {} not within gripper region'.format(self.thing_uuid))
 
@@ -246,19 +234,7 @@ class Gripper(Primitive):
                     next = self.parent
 
                     if self.thing_uuid != None:
-
-                        # check if thing is actually near the gripper
-                        gripperRegion = SphereRegion(
-                            center_position=Position(0,0.1,0), 
-                            link='ee_link',
-                            uncertainty_radius=0.1, 
-                            free_orientation=True)
-
-                        _, thing_pose = Pose.compute_relative(
-                                Pose.from_simple_dct(hooks.tokens[self.thing_uuid]['state']),
-                                Pose.from_simple_dct(hooks.tokens['robot']['state']))
-                    
-                        within = gripperRegion.check_if_pose_within_uncertainty(thing_pose)
+                        within = self._check_if_within_grasp_region(hooks)
                         if not within:
                             raise Exception('thing {} not within gripper region'.format(self.thing_uuid))
 
@@ -280,3 +256,17 @@ class Gripper(Primitive):
         if next == self.parent:
             del hooks.state[self.uuid]
         return next
+
+    def _check_if_within_grasp_region(self, hooks):
+        # check if thing is actually near the gripper
+        gripperRegion = SphereRegion(
+            center_position=Position(0,0.1,0), 
+            link='ee_link',
+            uncertainty_radius=0.1, 
+            free_orientation=True)
+
+        _, thing_pose = Pose.compute_relative(
+                Pose.from_simple_dct(hooks.tokens[self.thing_uuid]['state']),
+                Pose.from_simple_dct(hooks.tokens['robot']['state']))
+
+        return gripperRegion.check_if_pose_within_uncertainty(thing_pose)
