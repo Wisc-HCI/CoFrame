@@ -18,8 +18,7 @@ const typeToKey = (type) => {
 }
 
 const store = (set) => ({
-    program: null,
-    updateProgram: ({data,action,changes,currentTag,previousTag})=>{
+    updateProgram: ({data,action,changes,currentTag,previousTag})=> set((state)=>{
       const dataBlob = JSON.parse(data);
       const changesBlob = JSON.parse(changes);
       console.log(dataBlob);
@@ -37,26 +36,52 @@ const store = (set) => ({
       //   uuid: str,
       //   source: str
       // }
-    },
-    setProgram: (program) => set((state)=>{
-      state.program = program;
-      program.locations.forEach((l) => {
-        //TODO
-      });
-      program.waypoints.forEach((w) => {
-        //TODO
-      });
+      state.setProgram(dataBlob);
+    }),
+    setProgram: (program) => set((state)=>{      
+      program.locations.forEach((location)=>{
+        state.addItem('location',location)
+      })
+
+
+      program.waypoints.forEach((waypoint)=>{
+        useEvdStore.getState().addItem('waypoint',waypoint)
+      })
+      fakeEvdData.arbitrary.machines.forEach((machine)=>{
+        useEvdStore.getState().addItem('machine',machine)
+      })
+      fakeEvdData.arbitrary.thingTypes.forEach((thingType)=>{
+        useEvdStore.getState().addItem('thingType',thingType)
+      })
+      fakeEvdData.arbitrary.things.forEach((thing)=>{
+        useEvdStore.getState().addItem('thing',thing)
+      })
+      fakeEvdData.arbitrary.regions.forEach((region)=>{
+        useEvdStore.getState().addItem('region',region)
+      })
     }),
     data: {
+      //TODO store other data
+
       locations: {},
       waypoints: {},
       machines: {},
       thingTypes: {},
       things: {},      // Only shown through thingTypes
       regions: {},      // Only shown through machines (I added regions back in after reworking machines)
-      primitives: [],
-      skills: {},
+      primitives: {}, //lookup table (of flattened hierarchicals)
+      // for hierarchical primitives, extract children from primtives list, replace with uuid
+      skills: {}, // skills are not blockly! (Designers can add new skills)
     },
+    top_level_ordered: [], // ordered list of uuids, with hierarchcials being an inner list
+    /*
+    [
+      'uuid1',
+      {
+        'h-uuid'
+      }
+    ]
+    */
     addItem: (type, item) => set((state)=>{
         state.data[typeToKey(type)][item.uuid] = item
     }),
@@ -65,7 +90,9 @@ const store = (set) => ({
     }),
     deleteItem: (type, uuid) => set((state)=>{
       delete state.data[typeToKey(type)][uuid]
-    })
+    }),
+    getBlocklySkills: () => ({}),
+    getBlocklyPrimitives: () =>({})
 });
 
 const useEvdStore = create(immer(store));
