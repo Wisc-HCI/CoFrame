@@ -5,6 +5,18 @@ import fakeEvdData from './fakeEvdData';
 const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
 
+const typeToKey = (type) => {
+  let key;
+  switch(type) {
+    case 'trajectory':
+      key = 'trajectories';
+      break;
+    default:
+      key = type + 's'
+  }
+  return key;
+}
+
 const store = (set) => ({
     program: null,
     updateProgram: ({data,action,changes,currentTag,previousTag})=>{
@@ -26,29 +38,39 @@ const store = (set) => ({
       //   source: str
       // }
     },
-    environment: {
+    setProgram: (program) => set((state)=>{
+      state.program = program;
+      program.locations.forEach((l) => {
+        //TODO
+      });
+      program.waypoints.forEach((w) => {
+        //TODO
+      });
+    }),
+    data: {
       locations: {},
       waypoints: {},
       machines: {},
       thingTypes: {},
       things: {},      // Only shown through thingTypes
-      regions: {}      // Only shown through machines (I added regions back in after reworking machines)
+      regions: {},      // Only shown through machines (I added regions back in after reworking machines)
+      primitives: [],
+      skills: {},
     },
     addItem: (type, item) => set((state)=>{
-      state.environment[type+'s'][item.uuid] = item
+        state.data[typeToKey(type)][item.uuid] = item
     }),
     setItemProperty: (type, uuid, property, value) => set((state)=>{
-      state.environment[type+'s'][uuid][property] = value
+      state.data[typeToKey(type)][uuid][property] = value
     }),
     deleteItem: (type, uuid) => set((state)=>{
-      delete state.environment[type+'s'][uuid]
-    }),
-    primitives: {},
-    setProgram: (program) => set((_)=>({program:program}))
+      delete state.data[typeToKey(type)][uuid]
+    })
 });
 
 const useEvdStore = create(immer(store));
 
+/*
 fakeEvdData.arbitrary.locations.forEach((location)=>{
   useEvdStore.getState().addItem('location',location)
 })
@@ -67,6 +89,9 @@ fakeEvdData.arbitrary.things.forEach((thing)=>{
 fakeEvdData.arbitrary.regions.forEach((region)=>{
   useEvdStore.getState().addItem('region',region)
 })
+*/
+
+useEvdStore.getState().setProgram(fakeEvdData.arbitrary.program)
 
 console.log(useEvdStore.getState().environment);
 

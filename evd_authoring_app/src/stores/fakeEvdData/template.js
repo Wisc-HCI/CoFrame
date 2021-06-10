@@ -246,6 +246,12 @@ const pose_template = {
             key: 'orientation',
             is_uuid: false,
             is_list: false
+        },
+        {
+            type: '<string>',
+            key: 'link',
+            is_uuid: false,
+            is_list: false
         }
     ]
 };
@@ -466,6 +472,12 @@ const waypoint_template = {
             key: 'joints',
             is_uuid: false,
             is_list: false
+        },
+        {
+            type: '<string>',
+            key: 'link',
+            is_uuid: false,
+            is_list: false
         }
     ]
 };
@@ -515,6 +527,12 @@ const location_template = {
         {
             type: 'node.joints.',
             key: 'joints',
+            is_uuid: false,
+            is_list: false
+        },
+        {
+            type: '<string>',
+            key: 'link',
             is_uuid: false,
             is_list: false
         }
@@ -571,6 +589,12 @@ const thing_template = {
             type: 'node.thing-type.',
             key: 'thing_type_uuid',
             is_uuid: true,
+            is_list: false
+        },
+        {
+            type: '<string>',
+            key: 'link',
+            is_uuid: false,
             is_list: false
         }
     ]
@@ -637,6 +661,12 @@ const region_template = {
         {
             type: 'node.orientation.',
             key: 'uncertainty_orientation_alt_target',
+            is_uuid: false,
+            is_list: false
+        },
+        {
+            type: '<string>',
+            key: 'link',
             is_uuid: false,
             is_list: false
         }
@@ -720,6 +750,12 @@ const cube_region_template = {
             key: 'uncertainty_z',
             is_uuid: false,
             is_list: false
+        },
+        {
+            type: '<string>',
+            key: 'link',
+            is_uuid: false,
+            is_list: false
         }
     ]
 };
@@ -787,6 +823,12 @@ const sphere_region_template = {
         {
             type: '<number>',
             key: 'uncertainty_radius',
+            is_uuid: false,
+            is_list: false
+        },
+        {
+            type: '<string>',
+            key: 'link',
             is_uuid: false,
             is_list: false
         }
