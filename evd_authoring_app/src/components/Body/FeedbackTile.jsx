@@ -45,7 +45,7 @@ export const FeedbackTile = (_) => {
             <Card
                 style={{flex:1}}
                 bodyStyle={{padding:0,display:'flex',flexDirection:'column'}}
-                title="Feedback"
+                title="Review"
             >
             <div style={{height:'100%',borderWidth:5,borderColor:frameStyles.colors[frameId]}}>
             {contentList[frameId]}
