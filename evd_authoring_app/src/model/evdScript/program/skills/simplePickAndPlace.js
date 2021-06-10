@@ -3,6 +3,7 @@ import { CloseGripper } from './closeGripper';
 import { OpenGripper } from './openGripper';
 import { Skill } from '../skill';
 import { NodeParser } from '../../utilityFunctions';
+import Blockly from 'blockly';
 
 
 export class SimplePickAndPlace extends Skill {
@@ -62,30 +63,31 @@ export class SimplePickAndPlace extends Skill {
     }
 
     static BlocklyBlock() {
-
-        // Expose trajectory objects as parameters instead of just locations.
-        return { key: 'simple_pick_and_place', data: {
-            init: function() {
-                this.appendDummyInput()
-                    .appendField("Simple Pick and Place");
-                this.appendValueInput("thing")
-                    .setCheck("thing")
-                    .appendField("Thing");
-                this.appendValueInput("start-location")
-                    .setCheck("location")
-                    .appendField("Start Location");
-                this.appendValueInput("pick-location")
-                    .setCheck("location")
-                    .appendField("Pick Location");
-                this.appendValueInput("place-location")
-                    .setCheck("location")
-                    .appendField("Place Location");
-                this.setPreviousStatement(true, null);
-                this.setNextStatement(true, null);
-                this.setColour(210);
-                this.setTooltip("simple-pick-and-place");
-                this.setHelpUrl("simple-pick-and-place");
+        return { 
+            name: 'Simple Pick And Place',
+            category: 'Skills',
+            block: {
+                init: function() {
+                    this.appendDummyInput()
+                        .appendField("Simple Pick and Place");
+                    this.appendValueInput("thing")
+                        .appendField("Thing");
+                    this.appendValueInput("start-location")
+                        .appendField("Start Location");
+                    this.appendValueInput("pick-location")
+                        .appendField("Pick Location");
+                    this.appendValueInput("place-location")
+                        .appendField("Place Location");
+                    this.setPreviousStatement(true, null);
+                    this.setNextStatement(true, null);
+                    this.setColour(210);
+                    this.setTooltip("simple-pick-and-place");
+                    this.setHelpUrl("simple-pick-and-place");
+                }
+            },
+            generator: (block) => {
+                return [`console.log('simple_pick_and_place')`, Blockly.JavaScript.ORDER_ATOMIC];
             }
-        }};
+        };
     }
 }

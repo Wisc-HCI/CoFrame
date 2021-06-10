@@ -24,9 +24,13 @@ const store = (set) => ({
     focusItem: {type:null,uuid:null},
     setFocusItem: (type,uuid) => set((_)=>({focusItem:{type:type,uuid:uuid}})),
     clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null}})),
+    // the search terms they have entered
     searchTerm: '',
-    setSearchTerm: (term) => set((_) => ({searchTerm:term})),
-    clearSearchTerm: () => set((_) => ({searchTerm:''}))
+    setSearchTerm: (term) => set((_)=>({searchTerm:term})),
+    clearSearchTerm: () => set((_)=>({searchTerm:''})),
+    // whether the sim window is expanded to the whole width
+    simMode: 'default',
+    setSimMode: (mode) => set((_)=>({simMode:mode}))
 });
 
 const useGuiStore = create(immer(store));
