@@ -1606,6 +1606,15 @@ const machine_primitive_template = {
     ]
 };
 
+/*
+ {
+     type: 'node.primitive.machine-primitive.',
+     parameters: {
+         machine_uuid: 'some-uuid'
+     }
+ }
+*/
+
 const delay_template = {
     type: 'node.primitive.delay',
     name: 'Delay', // generated display name
