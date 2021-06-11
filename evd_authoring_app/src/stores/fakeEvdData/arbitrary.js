@@ -938,7 +938,7 @@ let program = {
             editable: false,
             deleteable: false,
             parameters: {},
-            arguements: [
+            arguements: [ // did I spell arguments
                 {
                     type: 'node.skill-arguement.',
                     name: 'machine_uuids',
@@ -1123,6 +1123,62 @@ let program = {
                 home_location_uuid: 'home-location-uuid'
             }
         },
+
+        {
+            type: 'node.primitive.move-trajectory.',
+            uuid: 'some-uuid',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {
+                manual_safety: false,
+                trajectory_uuid: 'uuid'
+            }
+        },
+        {
+            type: 'node.primitive.gripper.',
+            uuid: 'some-uuid',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {
+                position: 0,
+                speed: 1,
+                effort: 1,
+                semantic: 'grasping',
+                thing_uuid: 'uuid'
+            }
+        },
+        {
+            type: 'node.primitive.move-trajectory.',
+            uuid: 'some-uuid',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {
+                manual_safety: false,
+                trajectory_uuid: 'uuid'
+            }
+        },
+        {
+            type: 'node.primitive.gripper.',
+            uuid: 'some-uuid',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {
+                position: 0,
+                speed: 1,
+                effort: 1,
+                semantic: 'releasing',
+                thing_uuid: 'uuid'
+            }
+        }
+        
     ]
 };
 

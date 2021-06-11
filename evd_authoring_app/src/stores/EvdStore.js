@@ -37,12 +37,14 @@ const store = (set) => ({
       //   source: str
       // }
       state.setProgram(dataBlob);
+      
     }),
     setProgram: (program) => set((state)=>{      
-      program.locations.forEach((location)=>{
+      program.environment.locations.forEach((location)=>{
         state.addItem('location',location)
-      })
+      });
 
+      state.addItem('reachSphere',program.environment.reach_sphere);
 
       program.waypoints.forEach((waypoint)=>{
         useEvdStore.getState().addItem('waypoint',waypoint)
@@ -62,7 +64,11 @@ const store = (set) => ({
     }),
     data: {
       //TODO store other data
-
+      gradeTypes: {},
+      occupancyZones: {},
+      collisionMeshes: {},
+      pinchPoints: {},
+      reachSpheres: {},
       locations: {},
       waypoints: {},
       machines: {},
@@ -70,18 +76,12 @@ const store = (set) => ({
       things: {},      // Only shown through thingTypes
       regions: {},      // Only shown through machines (I added regions back in after reworking machines)
       primitives: {}, //lookup table (of flattened hierarchicals)
-      // for hierarchical primitives, extract children from primtives list, replace with uuid
+      // for hierarchical primitives, extract children from primtives list, 
+      // replace with uuid (or make a primtitiveUuids list and delete primitives list)
       skills: {}, // skills are not blockly! (Designers can add new skills)
     },
-    top_level_ordered: [], // ordered list of uuids, with hierarchcials being an inner list
-    /*
-    [
-      'uuid1',
-      {
-        'h-uuid'
-      }
-    ]
-    */
+    topLevelPrimitiveUuids: [], // ordered list of uuids
+
     addItem: (type, item) => set((state)=>{
         state.data[typeToKey(type)][item.uuid] = item
     }),
@@ -116,7 +116,14 @@ fakeEvdData.arbitrary.things.forEach((thing)=>{
 fakeEvdData.arbitrary.regions.forEach((region)=>{
   useEvdStore.getState().addItem('region',region)
 })
+
+
+fakeEvdData.arbitrary.pinchPoints.forEach((pinchPoint)=>{
+  useEvdStore.getState().addItem('pinchPoint',pinchPoint)
+})
 */
+
+
 
 useEvdStore.getState().setProgram(fakeEvdData.arbitrary.program)
 
