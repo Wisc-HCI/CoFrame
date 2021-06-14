@@ -877,7 +877,7 @@ let program = {
             primitives: [
                 {
                     type: 'node.primitive.move-trajectory.',
-                    uuid: 'some-uuid',
+                    uuid: 'move-trajectory-uuid-2',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -889,7 +889,7 @@ let program = {
                 },
                 {
                     type: 'node.primitive.gripper.',
-                    uuid: 'some-uuid',
+                    uuid: 'gripper-grasp-uuid-2',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -904,7 +904,7 @@ let program = {
                 },
                 {
                     type: 'node.primitive.move-trajectory.',
-                    uuid: 'some-uuid',
+                    uuid: 'move-trajectory-uuid-3',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -916,7 +916,7 @@ let program = {
                 },
                 {
                     type: 'node.primitive.gripper.',
-                    uuid: 'some-uuid',
+                    uuid: 'gripper-grasp-uuid-3',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -968,7 +968,7 @@ let program = {
                 { // This is only for display purposes. what really happens in that this
                   // gets expanded for each machine at runtime
                     type: 'node.primitive.machine-primitive.machine-initialize.',
-                    uuid: 'some-uuid',
+                    uuid: 'machine-init-uuid-0',
                     name: '',
                     deleteable: false,
                     editable: false,
@@ -979,7 +979,7 @@ let program = {
                 },
                 {
                     type: 'node.primitive.gripper.',
-                    uuid: 'some-uuid',
+                    uuid: 'gripper-grasp-uuid-5',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -994,7 +994,7 @@ let program = {
                 },
                 {
                     type: 'node.primitive.move-unplanned.',
-                    uuid: 'some-uuid',
+                    uuid: 'move-unplanned-uuid-0',
                     name: '',
                     deleteable: false,
                     editable: false,
@@ -1033,7 +1033,7 @@ let program = {
             primitives: [
                 {
                     type: 'node.primitive.gripper.',
-                    uuid: 'some-uuid',
+                    uuid: 'gripper-grasp-uuid-6',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -1073,7 +1073,7 @@ let program = {
             primitives: [
                 {
                     type: 'node.primitive.gripper.',
-                    uuid: 'some-uuid',
+                    uuid: 'gripper-grasp-uuid-7',
                     name: '',
                     editable: false,
                     deleteable: false,
