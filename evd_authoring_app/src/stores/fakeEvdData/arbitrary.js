@@ -778,9 +778,9 @@ let program = {
             deleteable: false,
             description: '',
             parameters: {},
-            arguements: [
+            arguments: [
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'machine_uuid',
                     uuid: 'skill-arg-uuid-0',
                     editable: false,
@@ -836,9 +836,9 @@ let program = {
             deleteable: false,
             description: '',
             parameters: {},
-            arguements: [
+            arguments: [
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'pick_trajectory',
                     uuid: 'some-uuid',
                     editable: false,
@@ -850,7 +850,7 @@ let program = {
                     is_list: false
                 },
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'place_trajectory',
                     uuid: 'some-uuid',
                     editable: false,
@@ -862,7 +862,7 @@ let program = {
                     is_list: false
                 },
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'thing_uuid',
                     uuid: 'some-uuid',
                     editable: false,
@@ -938,9 +938,9 @@ let program = {
             editable: false,
             deleteable: false,
             parameters: {},
-            arguements: [ // did I spell arguments
+            arguments: [ // did I spell arguments
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'machine_uuids',
                     uuid: 'skill-arg-uuid-0',
                     editable: false,
@@ -952,7 +952,7 @@ let program = {
                     is_list: true
                 },
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'home_location_uuid',
                     uuid: 'skill-arg-uuid-1',
                     editable: false,
@@ -1016,9 +1016,9 @@ let program = {
             deleteable: false,
             description: '',
             parameters: {},
-            arguements: [
+            arguments: [
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     uuid: 'some-uuid',
                     name: 'thing_uuid',
                     editable: false,
@@ -1056,9 +1056,9 @@ let program = {
             deleteable: false,
             description: '',
             parameters: {},
-            arguements: [
+            arguments: [
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     uuid: 'some-uuid',
                     name: 'thing_uuid',
                     editable: false,

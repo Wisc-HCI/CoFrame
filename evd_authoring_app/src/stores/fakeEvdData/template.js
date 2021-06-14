@@ -56,7 +56,7 @@ const node_template = {
 * Type Declaration
 * - ThingType
 * - GradeType
-* - SkillArguement
+* - SkillArgument
 *****************************************************************/
 
 const thingType_template = {
@@ -144,9 +144,9 @@ const gradeType_template = {
     ]
 }
 
-const skillArguement_template = {
-    type: 'node.skill-arguement.',
-    name: 'Skill Arguement', // generated display name
+const skillArgument_template = {
+    type: 'node.skill-argument.',
+    name: 'Skill Argument', // generated display name
     meta_data: [ // defining instance meta data
         {
             type: '<string>',
@@ -2322,8 +2322,8 @@ const skill_template = {
             is_list: false
         },
         {
-            type: 'nodes.skill-arguement.',
-            key: 'arguements',
+            type: 'nodes.skill-argument.',
+            key: 'arguments',
             is_uuid: false,
             is_list: true
         },
@@ -2376,8 +2376,8 @@ const machine_blocking_process_template = {
             is_list: false
         },
         {
-            type: 'nodes.skill-arguement.',
-            key: 'arguements',
+            type: 'nodes.skill-argument.',
+            key: 'arguments',
             is_uuid: false,
             is_list: true
         },
@@ -2430,8 +2430,8 @@ const simple_pick_and_place_template = {
             is_list: false
         },
         {
-            type: 'nodes.skill-arguement.',
-            key: 'arguements',
+            type: 'nodes.skill-argument.',
+            key: 'arguments',
             is_uuid: false,
             is_list: true
         },
@@ -2490,8 +2490,8 @@ const close_gripper_template = {
             is_list: true
         },
         {
-            type: 'nodes.skill-arguement.', // hint this one doesn't actually take args
-            key: 'arguements',
+            type: 'nodes.skill-argument.', // hint this one doesn't actually take args
+            key: 'arguments',
             is_uuid: false,
             is_list: true
         }
@@ -2544,8 +2544,8 @@ const open_gripper_template = {
             is_list: true
         },
         {
-            type: 'nodes.skill-arguement.', //hint this one doesn't actually take args
-            key: 'arguements',
+            type: 'nodes.skill-argument.', //hint this one doesn't actually take args
+            key: 'arguments',
             is_uuid: false,
             is_list: true
         }
@@ -2598,8 +2598,8 @@ const initialize_template = {
             is_list: true
         },
         {
-            type: 'nodes.skill-arguement.',
-            key: 'arguements',
+            type: 'nodes.skill-argument.',
+            key: 'arguments',
             is_uuid: false,
             is_list: true
         }
@@ -2680,7 +2680,7 @@ const fields = {
     node_template,
     thingType_template,
     gradeType_template,
-    skillArguement_template,
+    skillArgument_template,
     pose_template,
     position_template,
     orientation_template,
