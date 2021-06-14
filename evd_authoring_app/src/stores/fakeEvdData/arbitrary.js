@@ -771,7 +771,7 @@ let program = {
 
     skills: [
         {
-            type: 'node.primitive.hierarical.skill.machine-blocking-process.',
+            type: 'node.primitive.hierarchical.skill.machine-blocking-process.',
             name: 'Machine Blocking Process',
             uuid: 'machine-blocking-process-skill-uuid',
             editable: false,
@@ -1010,7 +1010,7 @@ let program = {
         },
         {
             type: 'node.primitive.hierarchical.skill.open-gripper.',
-            uuid: 'some-uuid',
+            uuid: 'open-gripper-skill-uuid',
             name: '',
             editable: false,
             deleteable: false,
@@ -1050,7 +1050,7 @@ let program = {
         },
         {
             type: 'node.primitive.hierarchical.skill.close-gripper.',
-            uuid: 'some-uuid',
+            uuid: 'close-gripper-skill-uuid',
             name: '',
             editable: false,
             deleteable: false,
@@ -1108,7 +1108,7 @@ let program = {
     primitives: [ // just initializes but that is enough to get the point across >(0_0)<
         {
             type: 'node.primitive.skill-call',
-            uuid: 'some-uuid',
+            uuid: 'some-skill-call-uuid',
             name: '',
             editable: false,
             deleteable: false,
@@ -1126,7 +1126,7 @@ let program = {
 
         {
             type: 'node.primitive.move-trajectory.',
-            uuid: 'some-uuid',
+            uuid: 'move-trajectory-uuid-0',
             name: '',
             editable: false,
             deleteable: false,
@@ -1138,7 +1138,7 @@ let program = {
         },
         {
             type: 'node.primitive.gripper.',
-            uuid: 'some-uuid',
+            uuid: 'gripper-grasp-uuid-0',
             name: '',
             editable: false,
             deleteable: false,
@@ -1153,7 +1153,7 @@ let program = {
         },
         {
             type: 'node.primitive.move-trajectory.',
-            uuid: 'some-uuid',
+            uuid: 'move-trajectory-uuid-1',
             name: '',
             editable: false,
             deleteable: false,
@@ -1165,7 +1165,7 @@ let program = {
         },
         {
             type: 'node.primitive.gripper.',
-            uuid: 'some-uuid',
+            uuid: 'gripper-grasp-uuid-1',
             name: '',
             editable: false,
             deleteable: false,

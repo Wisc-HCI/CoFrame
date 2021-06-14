@@ -12,7 +12,7 @@ export function Item(props) {
   const { type, uuid, title, description } = props;
 
   const item = useEvdStore(useCallback(state =>
-    state.environment[type + 's'][uuid]
+    state.data[type + 's'][uuid]
     , [uuid, type]))
 
   const deleteItem = useEvdStore(state => state.deleteItem);

@@ -97,7 +97,7 @@ export function App(props) {
                         <h2 style={{paddingLeft:20}}><b>Expert View Dashboard<i> - {filename}</i></b></h2>
                         <span style={{float:'right'}} >
                         {menuItems.map(entry => (
-                            <Button type='text' icon={entry.icon} onClick={()=>{console.log(entry.modalKey);setActiveModal(entry.modalKey)}}>
+                            <Button type='text' key={entry.modalKey} icon={entry.icon} onClick={()=>{console.log(entry.modalKey);setActiveModal(entry.modalKey)}}>
                                 {entry.name}
                             </Button>
                         ))}
