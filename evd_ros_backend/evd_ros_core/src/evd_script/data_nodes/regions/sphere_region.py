@@ -41,7 +41,7 @@ class SphereRegion(Region):
         })
         return template
 
-    def __init__(self, center_position=None, center_orientation=None, uncertainty_radius=0.1,
+    def __init__(self, center_position=None, center_orientation=None, link=None, uncertainty_radius=0.1,
                  free_orientation=True, uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,
                  type='', name='', uuid=None, parent=None, append_type=True, editable=True, deleteable=True, description=''):
         self._uncert_radius = None
@@ -49,6 +49,7 @@ class SphereRegion(Region):
         super(SphereRegion,self).__init__(
             center_position=center_position,
             center_orientation=center_orientation,
+            link=link,
             free_orientation=free_orientation,
             uncertainty_orientation_limit=uncertainty_orientation_limit,
             uncertainty_orientation_alt_target=uncertainty_orientation_alt_target,
@@ -75,6 +76,7 @@ class SphereRegion(Region):
         return cls(
             center_position=NodeParser(dct['center_position'], enforce_types=[Position.type_string(trailing_delim=False)]),
             center_orientation=NodeParser(dct['center_orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
+            link=dct['link'],
             uncertainty_radius=dct['uncertainty_radius'],
             free_orientation=dct['free_orientation'],
             uncertainty_orientation_limit=dct['uncertainty_orientation_limit'],
@@ -89,6 +91,8 @@ class SphereRegion(Region):
 
     def to_ros_marker(self, frame_id='app', id=0):
         # The frame_id should be the application frame
+        if frame_id == None:
+            frame_id = self.link
 
         marker = Marker()
         marker.header.frame_id = frame_id

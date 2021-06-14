@@ -8,6 +8,8 @@ of the gripper is handled at the implementation level.
 
 from ..primitive import Primitive
 from ...data_nodes import Thing
+from ...data_nodes.regions import SphereRegion
+from ...data_nodes.geometry import Pose, Position, Orientation
 from ... import NUMBER_TYPE, ENUM_TYPE
 
 
@@ -83,11 +85,11 @@ class Gripper(Primitive):
 
         if parameters == None:
             parameters = {
-                'thing_uuid': None,
-                'position': None,
-                'effort': None,
-                'speed': None,
-                'semantic': None
+                'thing_uuid': thing_uuid,
+                'position': position,
+                'effort': effort,
+                'speed': speed,
+                'semantic': semantic if semantic != None else self.SEMANTIC_GRASPING
             }
 
         super(Gripper,self).__init__(
@@ -100,14 +102,6 @@ class Gripper(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self.position = position
-        self.effort = effort
-        self.speed = speed
-        self.thing_uuid = thing_uuid
-
-        if thing_uuid != None:
-            self.semantic = semantic if semantic != None else self.SEMANTIC_GRASPING
 
     '''
     Data accessor/modifier methods
@@ -210,6 +204,11 @@ class Gripper(Primitive):
         hooks.tokens['robot']['state']['gripper']['position'] = self.position
 
         if self.thing_uuid != None:
+            within = self._check_if_within_grasp_region(hooks)
+            if not within:
+                raise Exception('thing {} not within gripper region'.format(self.thing_uuid))
+
+            # set grasping semantic
             if self.semantic == self.SEMANTIC_GRASPING:
                 hooks.tokens['robot']['state']['gripper']['grasped_thing'] = self.thing_uuid
             elif self.semantic == self.SEMANTIC_RELEASING:
@@ -232,10 +231,14 @@ class Gripper(Primitive):
             resp = hooks.robot_interface.is_acked('gripper')
             if resp != None:
                 if resp:
-                    del hooks.state[self.uuid]
                     next = self.parent
 
                     if self.thing_uuid != None:
+                        within = self._check_if_within_grasp_region(hooks)
+                        if not within:
+                            raise Exception('thing {} not within gripper region'.format(self.thing_uuid))
+
+                        # set grasping semantic
                         if self.semantic == self.SEMANTIC_GRASPING:
                             hooks.tokens['robot']['state']['gripper']['grasped_thing'] = self.thing_uuid
                         elif self.semantic == self.SEMANTIC_RELEASING:
@@ -250,4 +253,20 @@ class Gripper(Primitive):
         status = hooks.robot_interface.get_status()
         hooks.tokens['robot']['state']['gripper']['position'] = status.gripper_position
 
+        if next == self.parent:
+            del hooks.state[self.uuid]
         return next
+
+    def _check_if_within_grasp_region(self, hooks):
+        # check if thing is actually near the gripper
+        gripperRegion = SphereRegion(
+            center_position=Position(0,0.1,0), 
+            link='ee_link',
+            uncertainty_radius=0.1, 
+            free_orientation=True)
+
+        _, thing_pose = Pose.compute_relative(
+                Pose.from_simple_dct(hooks.tokens[self.thing_uuid]['state']),
+                Pose.from_simple_dct(hooks.tokens['robot']['state']))
+
+        return gripperRegion.check_if_pose_within_uncertainty(thing_pose)

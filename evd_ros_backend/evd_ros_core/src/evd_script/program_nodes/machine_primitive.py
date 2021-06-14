@@ -43,7 +43,7 @@ class MachinePrimitive(Primitive):
 
         if parameters == None:
             parameters = {
-                'machine_uuid': None
+                'machine_uuid': machineUuid
             }
 
         super(MachinePrimitive,self).__init__(
@@ -56,8 +56,6 @@ class MachinePrimitive(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self.machine_uuid = machineUuid
 
     '''
     Data accessor/modifier methods

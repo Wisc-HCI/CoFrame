@@ -48,13 +48,13 @@ class Machine(Node):
         template = Node.template()
         template['fields'].append({
             'type': ARBITRARY_OBJ_TYPE, # dictionary of lists of dictionaries of regions and quantities with thing_type uuids as top-level keys
-            'keys': 'inputs',
+            'key': 'inputs',
             'is_uuid': False,
             'is_list': False 
         })
         template['fields'].append({
             'type': ARBITRARY_OBJ_TYPE, # dictionary of lists of dictionaries of regions and quantities with thing_type uuids as top-level keys
-            'keys': 'outputs',
+            'key': 'outputs',
             'is_uuid': False,
             'is_list': False 
         })
@@ -116,7 +116,7 @@ class Machine(Node):
         self.outputs = outputs if outputs != None else {}
         self.process_time = process_time
         self.mesh_id = mesh_id
-        self.pose_offset = pose_offset if pose_offset != None else Pose(deletable=False, editable=editable)
+        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deletable=False, editable=editable)
         self.link = link
         self.collision_mesh_uuid = collision_mesh_uuid
 

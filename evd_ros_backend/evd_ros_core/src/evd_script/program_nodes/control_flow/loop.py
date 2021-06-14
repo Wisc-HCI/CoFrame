@@ -174,8 +174,6 @@ class Loop(Hierarchical):
         elif hooks.state[self.uuid]['checked_cond'] and self.condition != None and not hooks.state[self.condition.uuid]['result']:
             # Exit based on condition (if no condition supplied then infinite loop)
             next = self.parent
-            del hooks.state[self.uuid]
-            del hooks.state[self.condition.uuid]
 
         else:
             # Run through inner contents of loop
@@ -191,6 +189,9 @@ class Loop(Hierarchical):
                 next = self
                 hooks.state[self.uuid]['checked_cond'] = False
 
+        if next == self.parent:
+            del hooks.state[self.uuid]
+            del hooks.state[self.condition.uuid]
         return next
 
     def realtime_execution(self, hooks):

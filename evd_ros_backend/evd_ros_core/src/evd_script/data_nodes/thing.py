@@ -44,7 +44,7 @@ class Thing(Pose, VisualizeMarker):
         })
         return template
 
-    def __init__(self, thing_type_uuid, position=None, orientation=None,
+    def __init__(self, thing_type_uuid, position=None, orientation=None, link=None,
                  type='', name='', parent=None, uuid=None, append_type=True,
                  editable=True, deleteable=True, description=''):
         self._thing_type_uuid = None
@@ -52,6 +52,7 @@ class Thing(Pose, VisualizeMarker):
         super(Thing,self).__init__(
             position=position,
             orientation=orientation,
+            link='app' if link == None else link,
             type=Thing.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
@@ -75,6 +76,7 @@ class Thing(Pose, VisualizeMarker):
         return cls(thing_type_uuid=dct['thing_type_uuid'],
                    position=NodeParser(dct['position'], enforce_types=[Position.type_string(trailing_delim=False)]),
                    orientation=NodeParser(dct['orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
+                   link=dct['link'],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    editable=dct['editable'],

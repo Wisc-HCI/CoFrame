@@ -7,7 +7,7 @@ import useEvdStore from '../../stores/EvdStore';
 export const MachineDetail = ({uuid}) => {
 
     const {machine} = useEvdStore(useCallback(state=>({
-        machine:state.environment.machines[uuid]
+        machine:state.data.machines[uuid]
     })
       ,[uuid]))
     // const { deleteItem, setItemProperty } = useEvdStore(state=>({

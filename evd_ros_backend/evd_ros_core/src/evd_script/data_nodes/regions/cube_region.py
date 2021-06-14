@@ -53,7 +53,7 @@ class CubeRegion(Region):
         })
         return template
 
-    def __init__(self, center_position=None, center_orientation=None, uncertainty_x=0.1,
+    def __init__(self, center_position=None, center_orientation=None, link=None, uncertainty_x=0.1,
                  uncertainty_y=0.1, uncertainty_z=0.1, free_orientation=True,
                  uncertainty_orientation_limit=1, uncertainty_orientation_alt_target=None,
                  type='', name='', uuid=None, parent=None, append_type=True, editable=True,
@@ -65,6 +65,7 @@ class CubeRegion(Region):
         super(CubeRegion,self).__init__(
             center_position=center_position,
             center_orientation=center_orientation,
+            link=link,
             free_orientation=free_orientation,
             uncertainty_orientation_limit=uncertainty_orientation_limit,
             uncertainty_orientation_alt_target=uncertainty_orientation_alt_target,
@@ -96,6 +97,7 @@ class CubeRegion(Region):
         return cls(
             center_position=NodeParser(dct['center_position'], enforce_types=[Position.type_string(trailing_delim=False)]),
             center_orientation=NodeParser(dct['center_orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
+            link=dct['link'],
             uncertainty_x=dct['uncertainty_x'],
             uncertainty_y=dct['uncertainty_y'],
             uncertainty_z=dct['uncertainty_z'],
@@ -112,6 +114,8 @@ class CubeRegion(Region):
 
     def to_ros_marker(self, frame_id='app', id=0):
         # The frame_id should be the application frame
+        if frame_id == None:
+            frame_id = self.link
 
         marker = Marker()
         marker.header.frame_id = frame_id

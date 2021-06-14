@@ -7,7 +7,7 @@ import useEvdStore from '../../stores/EvdStore';
 export const WaypointDetail = ({uuid}) => {
 
     const {waypoint} = useEvdStore(useCallback(state=>({
-        waypoint:state.environment.waypoints[uuid]
+        waypoint:state.data.waypoints[uuid]
     })
       ,[uuid]))
     // const { deleteItem, setItemProperty } = useEvdStore(state=>({

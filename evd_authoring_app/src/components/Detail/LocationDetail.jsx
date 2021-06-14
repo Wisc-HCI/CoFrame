@@ -7,7 +7,7 @@ import useEvdStore from '../../stores/EvdStore';
 export const LocationDetail = ({uuid}) => {
 
     const {location} = useEvdStore(useCallback(state=>({
-        location:state.environment.locations[uuid]
+        location:state.data.locations[uuid]
     })
       ,[uuid]))
     // const { deleteItem, setItemProperty } = useEvdStore(state=>({

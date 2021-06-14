@@ -158,6 +158,11 @@ class Position(Node):
             return cls(0,0,-scale)
         else:
             raise Exception('axis is not valid')
+
+    @classmethod
+    def Unknown(cls):
+        return cls(x='?', y='?', z='?')
+        
     '''
     Data accessor/modifier methods
     '''

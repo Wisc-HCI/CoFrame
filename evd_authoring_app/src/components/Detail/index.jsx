@@ -20,7 +20,7 @@ export const Detail = (_) => {
     }));
 
     const {item} = useEvdStore(useCallback(state=>({
-        item:focusItem.type ? state.environment[focusItem.type+'s'][focusItem.uuid] : null
+        item:focusItem.type ? state.data[focusItem.type+'s'][focusItem.uuid] : null
     }),[focusItem]))
 
     const { deleteItem, setItemProperty } = useEvdStore(state=>({

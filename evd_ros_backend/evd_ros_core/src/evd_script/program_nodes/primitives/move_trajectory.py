@@ -6,9 +6,12 @@ execute on the robot.
 TODO implement thing token movement behavior
 '''
 
+import numpy as np
+
 from ..primitive import Primitive
 from ... import BOOLEAN_TYPE
 from ...data_nodes.trajectory import Trajectory
+from ...data_nodes.geometry.pose import Pose
 from ...data_nodes.geometry.position import Position
 from ...data_nodes.geometry.orientation import Orientation
 
@@ -54,8 +57,8 @@ class MoveTrajectory(Primitive):
 
         if parameters == None:
             parameters = {
-                'manual_safety': None,
-                'trajectory_uuid': None
+                'manual_safety': manual_safety,
+                'trajectory_uuid': trajectory_uuid
             }
 
         super(MoveTrajectory,self).__init__(
@@ -68,9 +71,6 @@ class MoveTrajectory(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self.manual_safety = manual_safety
-        self.trajectory_uuid = trajectory_uuid
 
     '''
     Data accessor/modifier methods
@@ -113,24 +113,32 @@ class MoveTrajectory(Primitive):
     def symbolic_execution(self, hooks):
         hooks.active_primitive = self
 
+        # compute initial thing state
+        Ttr = self._handle_initial_thing_state(hooks)
+        hooks.state[self.uuid] = {'status': 'pending', 'Ttr': Ttr}
+
+        # update robot state
         traj = self.context.get_trajectory(self.trajectory_uuid)
         loc = self.context.get_location(traj.end_location_uuid)
         hooks.tokens['robot']['state']['position'] = loc.position.to_simple_dct()
         hooks.tokens['robot']['state']['orientation'] = loc.orientation.to_simple_dct()
         hooks.tokens['robot']['state']['joints'] = loc.joints
 
-        #TODO handle thing movement
+        # update thing state
+        self._handle_current_thing_state(hooks)
 
+        del hooks.state[self.uuid]
         return self.parent
 
     def realtime_execution(self, hooks):
         hooks.active_primitive = self
         next = self
-
+        
         if not self.uuid in hooks.state.keys():
+            # Set initial state and start action
             hooks.robot_interface.is_acked('arm') # clear prev ack
-            hooks.state[self.uuid] = 'pending'
-
+            Ttr = self._handle_initial_thing_state(hooks)
+            hooks.state[self.uuid] = {'status': 'pending', 'Ttr': Ttr}
             traj = self.context.get_trajectory(self.trajectory_uuid)
             hooks.robot_interface.move_trajectory_async(traj, self.manual_safety)
 
@@ -138,17 +146,44 @@ class MoveTrajectory(Primitive):
             resp = hooks.robot_interface.is_acked('arm')
             if resp != None:
                 if resp:
-                    del hooks.state[self.uuid]
                     next = self.parent
 
                 else:
                     raise Exception('Robot NACKed')
 
+        # update current state
+        self._handle_current_robot_state(hooks)
+        self._handle_current_thing_state(hooks)
+
+        if next == self.parent:
+            del hooks.state[self.uuid]
+        return next
+
+    def _handle_initial_thing_state(self, hooks):
+        thing_uuid = hooks.tokens['robot']['state']['gripper']['grasped_thing']
+
+        # Compute transform from thing to robot
+        Ttr = None
+        if None != thing_uuid:
+            Ttr, _ = Pose.compute_relative(
+                Pose.from_simple_dct(hooks.tokens[thing_uuid]['state']),
+                Pose.from_simple_dct(hooks.tokens['robot']['state']))
+
+        return Ttr
+
+    def _handle_current_robot_state(self,hooks):
         status = hooks.robot_interface.get_status()
         hooks.tokens['robot']['state']['position'] = Position.from_ros(status.arm_pose.position).to_simple_dct()
         hooks.tokens['robot']['state']['orientation'] = Orientation.from_ros(status.arm_pose.orientation).to_simple_dct()
         hooks.tokens['robot']['state']['joints'] = status.arm_joints
 
-        #TODO handle thing movement
+    def _handle_current_thing_state(self, hooks):
+        thing_uuid = hooks.tokens['robot']['state']['gripper']['grasped_thing']
 
-        return next
+        #Set thing state / Compute transform thing to world
+        if None != thing_uuid:
+            Trw = Pose.from_simple_dct(hooks.tokens['robot']['state']).to_matrix()
+            Ttr = hooks.state[self.uuid]['Ttr']
+            Ttw = Pose.matrix_inverse(np.matmul(Ttr,Pose.matrix_inverse(Trw)))
+            new_thing_pose = Pose.from_matrix(Ttw).to_simple_dct()
+            hooks.tokens[thing_uuid]['state'].update(new_thing_pose)

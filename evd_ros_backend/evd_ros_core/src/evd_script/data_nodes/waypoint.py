@@ -40,7 +40,7 @@ class Waypoint(Pose):
         })
         return template
 
-    def __init__(self, position=None, orientation=None, joints=None, type='',
+    def __init__(self, position=None, orientation=None, link=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True, editable=True,
                  deleteable=True, description=''):
 
@@ -49,6 +49,7 @@ class Waypoint(Pose):
         super(Waypoint,self).__init__(
             position=position,
             orientation=orientation,
+            link='app' if link == None else link,
             type=Waypoint.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
@@ -72,6 +73,7 @@ class Waypoint(Pose):
         return cls(
             position=NodeParser(dct['position'], enforce_types=[Position.type_string(trailing_delim=False)]),
             orientation=NodeParser(dct['orientation'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
+            link=dct['link'],
             type=dct['type'],
             append_type=False,
             editable=dct['editable'],
@@ -83,6 +85,8 @@ class Waypoint(Pose):
 
     def to_ros_marker(self, frame_id='app', id=0):
         # The frame_id should be the application frame
+        if frame_id == None:
+            frame_id = self.link
 
         marker = Marker()
         marker.header.frame_id = frame_id

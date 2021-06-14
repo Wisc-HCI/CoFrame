@@ -62,7 +62,8 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
         deleteable: true,
         editable: true,
         description: 'Some descriptor string (optional)', // could be ''
-
+        
+        link: '', //'' means default to world or app 
         joints: {
             type: 'node.joints.',
             uuid: `joints-js-waypoint-${i}`,
@@ -114,6 +115,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
         editable: ! (i % 4 === 0),
         description: 'Some descriptor string (optional)', // could be ''
 
+        link: '', //'' means default to world or app 
         joints: {
             type: 'node.joints.',
             uuid: `joints-js-location-${i}`,
@@ -168,6 +170,7 @@ for (let i=0; i<NUM_THINGS; i++) {
         editable: true,
         description: 'Some descriptor string (optional)', // could be ''
 
+        link: '', //'' means default to world or app 
         thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
         position: {
             type: 'node.position.',
@@ -210,6 +213,7 @@ const generic_region = {
     editable: true,
     description: 'Some descriptor string (optional)', // could be ''
 
+    link: '', //'' means default to world or app 
     // position is known in a default region, just uncertainty in orientation
     center_position: {
         type: 'node.position.',
@@ -266,6 +270,7 @@ const cube_region = {
     editable: false,
     description: 'Some descriptor string (optional)', // could be ''
 
+    link: '', //'' means default to world or app 
     center_position: {
         type: 'node.position.',
         uuid: `position-js-cube-region-1`,
@@ -308,6 +313,7 @@ const sphere_region = {
     editable: false,
     description: 'Some descriptor string (optional)', // could be ''
 
+    link: '', //'' means default to world or app 
     center_position: {
         type: 'node.position.',
         uuid: `position-js-sphere-region-3`,
@@ -350,81 +356,6 @@ let regions = [
 * - Machine
 *****************************************************************/
 
-const machine_template = {
-    type: 'node.machine.',
-    name: 'Machine', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // defining instance fields
-        {
-            type: '<arbitrary-obj>', //dictionary of lists of dictionaries of region uuid and quantities with thing_type uuid as key
-            key: 'inputs',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<arbitrary-obj>', //dictionary of lists of dictionaries of region uuid and quantities with thing_type uuid as key
-            key: 'outputs',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<number>',
-            key: 'process_time',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<string>',
-            key: 'mesh_id',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: 'node.pose.',
-            key: 'pose_offset',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<string>',
-            key: 'link',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: 'node.environment-node.collision-mesh.',
-            key: 'collision_mesh_uuid',
-            is_uuid: true,
-            is_list: false
-        }
-    ]
-}
-
 const machine_generator = {
     type: 'node.machine.',
     uuid: `machine-js-generator`,
@@ -452,6 +383,7 @@ const machine_generator = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
+        link: '', //'' means default to world or app 
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-0`,
@@ -509,6 +441,7 @@ const machine_consumer = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
+        link: '', //'' means default to world or app 
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-1`,
@@ -573,6 +506,7 @@ const machine_transformer = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
+        link: '', //'' means default to world or app 
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-2`,
@@ -614,172 +548,6 @@ let machines = [
 * - Trajectory
 *   - Trace
 *****************************************************************/
-
-const trajectory_template = {
-    type: 'node.trajectory.',
-    name: 'Trajectory', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // defining instance fields
-        {
-            type: 'node.pose.waypoint.location.',
-            key: 'start_location_uuid',
-            is_uuid: true,
-            is_list: false
-        },
-        {
-            type: 'node.pose.waypoint.location.',
-            key: 'end_location_uuid',
-            is_uuid: true,
-            is_list: false
-        },
-        {
-            type: 'node.pose.waypoint.',
-            key: 'waypoint_uuid',
-            is_uuid: true,
-            is_list: true
-        },
-        {
-            type: '<number>',
-            key: 'velocity',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<enum>',
-            key: 'move_type',
-            is_uuid: false,
-            is_list: false,
-            enum_values: [
-                'joints',
-                'ee_ik'
-            ]
-        },
-        {
-            type: 'node.trace.',
-            key: 'trace',
-            is_uuid: false,
-            is_list: false
-        }
-    ] 
-}
-
-const trace_template = {
-    type: 'node.trace.',
-    name: 'Trace', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // instance fields
-        {
-            type: '<number>',
-            key: 'time_data',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<string>',
-            key: 'joint_names',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<arbitrary-obj>', // array of number array
-            key: 'joint_data',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<arbitrary-obj>', // dict of array of simple poses with frame keys
-            key: 'tf_data',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<arbitrary-obj>', // dict of array of numbers with grade_type uuids as keys
-            key: 'grades',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<string>',
-            key: 'end_effector_path',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<string>',
-            key: 'joint_paths',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<string>',
-            key: 'tool_paths',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<string>',
-            key: 'component_paths',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<number>',
-            key: 'duration',
-            is_uuid: false,
-            is_list: false
-        }
-    ]
-}
 
 let trajectories = [];
 for (let i=0; i<NUM_TRAJECTORIES; i++) {
@@ -853,7 +621,7 @@ let reachSphere = {
     description: 'Some descriptor string (optional)', // could be ''
 
     radius: 1.0,
-    offset: {
+    offset: { // assume frame is robot's root
         type: 'node.position.',
         uuid: `position-js-reach-sphere-offset-0`,
         name: '',
@@ -886,6 +654,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
+            link: '', //'' means default to world or app 
             position: {
                 type: 'node.position.',
                 uuid: `position-js-collision-mesh-${i}`,
@@ -916,7 +685,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
     });
 }
 
-let occupancyZones = [
+let occupancyZones = [ // assume frame is app / world
     {
         type: 'node.environment-node.occupancy-zone.',
         uuid: `occupancy-zone-js-0`,
@@ -1002,16 +771,16 @@ let program = {
 
     skills: [
         {
-            type: 'node.primitive.hierarical.skill.machine-blocking-process.',
+            type: 'node.primitive.hierarchical.skill.machine-blocking-process.',
             name: 'Machine Blocking Process',
             uuid: 'machine-blocking-process-skill-uuid',
             editable: false,
             deleteable: false,
             description: '',
             parameters: {},
-            arguements: [
+            arguments: [
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'machine_uuid',
                     uuid: 'skill-arg-uuid-0',
                     editable: false,
@@ -1067,9 +836,9 @@ let program = {
             deleteable: false,
             description: '',
             parameters: {},
-            arguements: [
+            arguments: [
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'pick_trajectory',
                     uuid: 'some-uuid',
                     editable: false,
@@ -1081,7 +850,7 @@ let program = {
                     is_list: false
                 },
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'place_trajectory',
                     uuid: 'some-uuid',
                     editable: false,
@@ -1093,7 +862,7 @@ let program = {
                     is_list: false
                 },
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'thing_uuid',
                     uuid: 'some-uuid',
                     editable: false,
@@ -1108,7 +877,7 @@ let program = {
             primitives: [
                 {
                     type: 'node.primitive.move-trajectory.',
-                    uuid: 'some-uuid',
+                    uuid: 'move-trajectory-uuid-2',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -1119,20 +888,23 @@ let program = {
                     }
                 },
                 {
-                    type: 'node.primitive.skill-call',
-                    uuid: 'some-uuid',
+                    type: 'node.primitive.gripper.',
+                    uuid: 'gripper-grasp-uuid-2',
                     name: '',
                     editable: false,
                     deleteable: false,
                     description: '',
                     parameters: {
-                        skill_uuid: 'close-gripper-skill-uuid',
+                        position: 0,
+                        speed: 1,
+                        effort: 1,
+                        semantic: 'grasping',
                         thing_uuid: '<<arg-thing>>'
                     }
                 },
                 {
                     type: 'node.primitive.move-trajectory.',
-                    uuid: 'some-uuid',
+                    uuid: 'move-trajectory-uuid-3',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -1143,14 +915,17 @@ let program = {
                     }
                 },
                 {
-                    type: 'node.primitive.skill-call',
-                    uuid: 'some-uuid',
+                    type: 'node.primitive.gripper.',
+                    uuid: 'gripper-grasp-uuid-3',
                     name: '',
                     editable: false,
                     deleteable: false,
                     description: '',
                     parameters: {
-                        skill_uuid: 'open-gripper-skill-uuid',
+                        position: 0,
+                        speed: 1,
+                        effort: 1,
+                        semantic: 'releasing',
                         thing_uuid: '<<arg-thing>>'
                     }
                 }
@@ -1163,9 +938,9 @@ let program = {
             editable: false,
             deleteable: false,
             parameters: {},
-            arguements: [
+            arguments: [ // did I spell arguments
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'machine_uuids',
                     uuid: 'skill-arg-uuid-0',
                     editable: false,
@@ -1177,7 +952,7 @@ let program = {
                     is_list: true
                 },
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     name: 'home_location_uuid',
                     uuid: 'skill-arg-uuid-1',
                     editable: false,
@@ -1193,7 +968,7 @@ let program = {
                 { // This is only for display purposes. what really happens in that this
                   // gets expanded for each machine at runtime
                     type: 'node.primitive.machine-primitive.machine-initialize.',
-                    uuid: 'some-uuid',
+                    uuid: 'machine-init-uuid-0',
                     name: '',
                     deleteable: false,
                     editable: false,
@@ -1204,13 +979,13 @@ let program = {
                 },
                 {
                     type: 'node.primitive.gripper.',
-                    uuid: 'some-uuid',
+                    uuid: 'gripper-grasp-uuid-5',
                     name: '',
                     editable: false,
                     deleteable: false,
                     description: '',
                     parameters: {
-                        position: 100,
+                        position: 0,
                         speed: 1,
                         effort: 1,
                         semantic: 'ambiguous',
@@ -1219,7 +994,7 @@ let program = {
                 },
                 {
                     type: 'node.primitive.move-unplanned.',
-                    uuid: 'some-uuid',
+                    uuid: 'move-unplanned-uuid-0',
                     name: '',
                     deleteable: false,
                     editable: false,
@@ -1235,15 +1010,15 @@ let program = {
         },
         {
             type: 'node.primitive.hierarchical.skill.open-gripper.',
-            uuid: 'some-uuid',
+            uuid: 'open-gripper-skill-uuid',
             name: '',
             editable: false,
             deleteable: false,
             description: '',
             parameters: {},
-            arguements: [
+            arguments: [
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     uuid: 'some-uuid',
                     name: 'thing_uuid',
                     editable: false,
@@ -1258,7 +1033,7 @@ let program = {
             primitives: [
                 {
                     type: 'node.primitive.gripper.',
-                    uuid: 'some-uuid',
+                    uuid: 'gripper-grasp-uuid-6',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -1275,15 +1050,15 @@ let program = {
         },
         {
             type: 'node.primitive.hierarchical.skill.close-gripper.',
-            uuid: 'some-uuid',
+            uuid: 'close-gripper-skill-uuid',
             name: '',
             editable: false,
             deleteable: false,
             description: '',
             parameters: {},
-            arguements: [
+            arguments: [
                 {
-                    type: 'node.skill-arguement.',
+                    type: 'node.skill-argument.',
                     uuid: 'some-uuid',
                     name: 'thing_uuid',
                     editable: false,
@@ -1298,7 +1073,7 @@ let program = {
             primitives: [
                 {
                     type: 'node.primitive.gripper.',
-                    uuid: 'some-uuid',
+                    uuid: 'gripper-grasp-uuid-7',
                     name: '',
                     editable: false,
                     deleteable: false,
@@ -1333,7 +1108,7 @@ let program = {
     primitives: [ // just initializes but that is enough to get the point across >(0_0)<
         {
             type: 'node.primitive.skill-call',
-            uuid: 'some-uuid',
+            uuid: 'some-skill-call-uuid',
             name: '',
             editable: false,
             deleteable: false,
@@ -1348,6 +1123,62 @@ let program = {
                 home_location_uuid: 'home-location-uuid'
             }
         },
+
+        {
+            type: 'node.primitive.move-trajectory.',
+            uuid: 'move-trajectory-uuid-0',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {
+                manual_safety: false,
+                trajectory_uuid: 'uuid'
+            }
+        },
+        {
+            type: 'node.primitive.gripper.',
+            uuid: 'gripper-grasp-uuid-0',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {
+                position: 0,
+                speed: 1,
+                effort: 1,
+                semantic: 'grasping',
+                thing_uuid: 'uuid'
+            }
+        },
+        {
+            type: 'node.primitive.move-trajectory.',
+            uuid: 'move-trajectory-uuid-1',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {
+                manual_safety: false,
+                trajectory_uuid: 'uuid'
+            }
+        },
+        {
+            type: 'node.primitive.gripper.',
+            uuid: 'gripper-grasp-uuid-1',
+            name: '',
+            editable: false,
+            deleteable: false,
+            description: '',
+            parameters: {
+                position: 0,
+                speed: 1,
+                effort: 1,
+                semantic: 'releasing',
+                thing_uuid: 'uuid'
+            }
+        }
+        
     ]
 };
 
