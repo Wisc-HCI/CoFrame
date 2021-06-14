@@ -1,5 +1,5 @@
 '''
-Skill arguement provides a simple typing scheme for parameters to be passed
+Skill argument provides a simple typing scheme for parameters to be passed
 into skills when invoked. Effectively, each value in the underlying nodes
 are overrided with a temporary value and copied over to a real value on
 invocation.
@@ -9,7 +9,7 @@ from .. import ALL_NODES_TYPE, BOOLEAN_TYPE, STRING_TYPE
 from ..node import Node
 
 
-class SkillArguement(Node):
+class SkillArgument(Node):
 
     '''
     Data structure methods
@@ -17,11 +17,11 @@ class SkillArguement(Node):
 
     @classmethod
     def display_name(cls):
-        return 'Skill Arguement'
+        return 'Skill Argument'
 
     @classmethod
     def type_string(cls, trailing_delim):
-        return 'skill-arguement' + ('.' if trailing_delim else '')
+        return 'skill-argument' + ('.' if trailing_delim else '')
 
     @classmethod
     def full_type_string(cls):
@@ -60,8 +60,8 @@ class SkillArguement(Node):
                  is_list=False, type='', name='', uuid=None, parent=None, append_type=True, 
                  editable=True, deleteable=True, description=''):
 
-        super(SkillArguement,self).__init__(
-            type=SkillArguement.type_string() + type if append_type else type,
+        super(SkillArgument,self).__init__(
+            type=SkillArgument.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
             parent=parent,
@@ -74,7 +74,7 @@ class SkillArguement(Node):
             raise Exception('parameter_key must be defined at construction')
 
         self._parameter_key = parameter_key
-        self._temporary_value = temporary_value if temporary_value != None else self._generate_uuid('skill-arguement-variable')
+        self._temporary_value = temporary_value if temporary_value != None else self._generate_uuid('skill-argument-variable')
         self._parameter_type = parameter_type
         self._is_list = is_list
 
@@ -84,7 +84,7 @@ class SkillArguement(Node):
         self.updated_attribute('is_list','set')
 
     def to_dct(self):
-        msg = super(SkillArguement,self).to_dct()
+        msg = super(SkillArgument,self).to_dct()
         msg.update({
             'parameter_key': self.parameter_key,
             'temporary_value': self.temporary_value,
@@ -133,7 +133,7 @@ class SkillArguement(Node):
     '''
 
     def deep_update(self):
-        super(SkillArguement,self).deep_update()
+        super(SkillArgument,self).deep_update()
 
         self.updated_attribute('parameter_key','update')
         self.updated_attribute('temporary_value','update')
@@ -141,7 +141,7 @@ class SkillArguement(Node):
         self.updated_attribute('is_list','update')
 
     def shallow_update(self):
-        super(SkillArguement,self).shallow_update()
+        super(SkillArgument,self).shallow_update()
 
         self.updated_attribute('parameter_key','update')
         self.updated_attribute('temporary_value','update')

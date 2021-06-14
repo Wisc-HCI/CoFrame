@@ -7,12 +7,12 @@ To invoke a skill in EvD, there is a primitive control_flow block called SkillCa
 which interfaces with this node to fill in the parameterization 
 
 Nesting SkillCalls is a bit tricky. The crux of the problem is that a Skill / Skill
-Arguement requires top-level parameterization but a skill-call provides this as a
+Argument requires top-level parameterization but a skill-call provides this as a
 set of "shadow-params".
 #TODO think about how best to do this linking, maybe all primitives have a parameters list?
 '''
 
-from ..data_nodes.skill_arguement import SkillArguement
+from ..data_nodes.skill_argument import SkillArgument
 from .hierarchical import Hierarchical
 from ..node_parser import NodeParser
 from .. import ALL_PRIMITIVES_TYPES
@@ -40,18 +40,18 @@ class Skill(Hierarchical):
     def template(cls):
         template = Hierarchical.template()
         template['fields'].append({
-            'type': SkillArguement.full_type_string(),
-            'key': 'arguements',
+            'type': SkillArgument.full_type_string(),
+            'key': 'arguments',
             'is_uuid': False,
             'is_list': True
         })
         return template
 
-    def __init__(self, arguements=None, primitives=[], type='', name='', uuid=None, 
+    def __init__(self, arguments=None, primitives=[], type='', name='', uuid=None, 
                  parent=None, append_type=True, editable=True, deleteable=True, 
                  description='', parameters=None):
 
-        self._arguements = None
+        self._arguments = None
 
         super(Skill,self).__init__(
             primitives=primitives,
@@ -65,12 +65,12 @@ class Skill(Hierarchical):
             description=description,
             parameters=parameters)
 
-        self.arguements = arguements if arguements == None else []
+        self.arguments = arguments if arguments == None else []
 
     def to_dct(self):
         msg = super(Skill,self).to_dct()
         msg.update({
-            'arguements': [a.to_dct() for a in self.arguements]
+            'arguments': [a.to_dct() for a in self.arguments]
         })
         return msg
 
@@ -85,50 +85,50 @@ class Skill(Hierarchical):
             description=dct['description'],
             uuid=dct['uuid'],
             primitives=[NodeParser(p, enforce_types=[ALL_PRIMITIVES_TYPES]) for p in dct['primitives']],
-            arguements=[NodeParser(a, enforce_types=[SkillArguement.type_string(trailing_delim=False)]) for a in dct['arguements']])
+            arguments=[NodeParser(a, enforce_types=[SkillArgument.type_string(trailing_delim=False)]) for a in dct['arguments']])
 
     '''
     Data accessor/modifier methods
     '''
     
     @property
-    def arguements(self):
-        return self._arguements.values()
+    def arguments(self):
+        return self._arguments.values()
 
-    @arguements.setter
-    def arguements(self, value):
+    @arguments.setter
+    def arguments(self, value):
         if value == None:
-            raise Exception('Arguements cannot be none, must at least be an empty list')
+            raise Exception('Arguments cannot be none, must at least be an empty list')
         
-        if self._arguements != None:
-            for a in self._arguements.values():
+        if self._arguments != None:
+            for a in self._arguments.values():
                 a.remove_from_cache()
 
-        self._arguements = {}
+        self._arguments = {}
 
         for a in value:
-            self._arguements[a.uuid] = a
+            self._arguments[a.uuid] = a
             a.parent = self
 
-        self.updated_attribute('arguements','set')
+        self.updated_attribute('arguments','set')
 
     @property
-    def arguements_dct(self):
-        return self._arguements
+    def arguments_dct(self):
+        return self._arguments
 
-    def add_skill_arguement(self, arg):
+    def add_skill_argument(self, arg):
         arg.parent = self
-        self._arguements[arg.uuid] = arg
-        self.updated_attribute('arguements','add',arg.uuid)
+        self._arguments[arg.uuid] = arg
+        self.updated_attribute('arguments','add',arg.uuid)
 
-    def delete_skill_arguement(self, uuid):
-        if uuid in self._arguements.keys():
-            self._arguements[uuid].remove_from_cache()
-            del self._arguements[uuid]
-            self.updated_attribute('arguements','delete',uuid)
+    def delete_skill_argument(self, uuid):
+        if uuid in self._arguments.keys():
+            self._arguments[uuid].remove_from_cache()
+            del self._arguments[uuid]
+            self.updated_attribute('arguments','delete',uuid)
 
-    def get_skill_arguement(self, uuid):
-        for a in self.arguements:
+    def get_skill_argument(self, uuid):
+        for a in self.arguments:
             if a.uuid == uuid:
                 return a
         return None
@@ -147,8 +147,8 @@ class Skill(Hierarchical):
 
     def set(self, dct):
 
-        if 'arguements' in dct.keys():
-            self.arguements=[NodeParser(a, enforce_types=[SkillArguement.type_string(trailing_delim=False)]) for a in dct['arguements']]
+        if 'arguments' in dct.keys():
+            self.arguments=[NodeParser(a, enforce_types=[SkillArgument.type_string(trailing_delim=False)]) for a in dct['arguments']]
 
         super(Skill,self).set(dct)
 
@@ -157,13 +157,13 @@ class Skill(Hierarchical):
     '''
 
     def remove_from_cache(self):
-        for a in self.arguements:
+        for a in self.arguments:
             a.remove_from_cache()
 
         super(Skill,self).remove_from_cache()
 
     def add_to_cache(self):
-        for a in self.arguements:
+        for a in self.arguments:
             a.add_to_cache()
 
         super(Skill,self).add_to_cache()
@@ -175,8 +175,8 @@ class Skill(Hierarchical):
     def delete_child(self, uuid):
         success = True
 
-        if uuid in [a.uuid for a in self.arguements]:
-            self.delete_skill_arguement(uuid)
+        if uuid in [a.uuid for a in self.arguments]:
+            self.delete_skill_argument(uuid)
         else:
             success = False
 
@@ -191,24 +191,24 @@ class Skill(Hierarchical):
 
     def late_construct_update(self):
         
-        for a in self.arguements:
+        for a in self.arguments:
             a.late_construct_update()
 
         super(Skill,self).late_construct_update()
 
     def deep_update(self):
         
-        for a in self.arguements:
+        for a in self.arguments:
             a.deep_update()
 
         super(Skill,self).deep_update()
 
-        self.updated_attribute('arguements','update')
+        self.updated_attribute('arguments','update')
 
     def shallow_update(self):
         super(Skill,self).shallow_update()
 
-        self.updated_attribute('arguements','update')
+        self.updated_attribute('arguments','update')
 
     '''
     Execution methods
@@ -226,15 +226,15 @@ class Skill(Hierarchical):
     
     def apply_args_to_primitive(self, prm, arg_uuids):
         # arg_uuids = [
-        #   '<skill-arguement-uuid>
+        #   '<skill-argument-uuid>
         # ]
 
         for uuid in arg_uuids:
-                if uuid not in self._arguements.keys():
-                    raise Exception('Skill arguement is being used before it exists in the arguements list')
+                if uuid not in self._arguments.keys():
+                    raise Exception('Skill argument is being used before it exists in the arguments list')
 
-                key = self._arguements[uuid].parameter_key
-                value = self._arguements[uuid].temporary_value
+                key = self._arguments[uuid].parameter_key
+                value = self._arguments[uuid].temporary_value
 
                 getattr(prm,key) = value
 
@@ -244,16 +244,16 @@ class Skill(Hierarchical):
         #    ...
         # }
         
-        unmapped_args = self._arguements.keys()
+        unmapped_args = self._arguments.keys()
         primitives_copy = [p.to_dct() for p in self.primitives]
 
         for arg_uuid in arg_map.keys():
-            if arg_uuid in self._arguements.keys():
+            if arg_uuid in self._arguments.keys():
                 unmapped_args.remove(arg_uuid)
 
                 value = arg_map[arg_uuid]
-                key = self._arguements[arg_uuid].parametr_key
-                temp = self._arguements[arg_uuid].temporary_value
+                key = self._arguments[arg_uuid].parametr_key
+                temp = self._arguments[arg_uuid].temporary_value
 
                 for p in primitives_copy:
                     if key in p.keys() and p[key] == temp:
