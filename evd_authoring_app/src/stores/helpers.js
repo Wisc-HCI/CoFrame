@@ -10,7 +10,7 @@ export function flattenProgram(primitives,skills) {
             let newPrimitive = lodash.omit(primitive,'primitives');
             newPrimitive.primitiveIds = primitive.primitives.map(primitive=>primitive.uuid);
             flattenedPrimitives.push(newPrimitive);
-            const [primitiveChildren,_] = flattenProgram(primitive.primitives,[]);
+            const primitiveChildren = flattenProgram(primitive.primitives,[])[0];
             flattenedPrimitives = [...flattenedPrimitives, ...primitiveChildren];
         } else {
             flattenedPrimitives.push(primitive)
@@ -21,7 +21,7 @@ export function flattenProgram(primitives,skills) {
             let newSkill = lodash.omit(skill,'primitives');
             newSkill.primitiveIds = skill.primitives.map(primitive=>primitive.uuid);
             flattenedSkills.push(newSkill);
-            const [primitiveChildren,_] = flattenProgram(skill.primitives,[]);
+            const primitiveChildren = flattenProgram(skill.primitives,[])[0];
             flattenedPrimitives = [...flattenedPrimitives, ...primitiveChildren]
         }
     })
