@@ -1,6 +1,6 @@
 import React from 'react';
 import { List } from 'antd';
-import { FeedbackSection } from './FeedbackSection';
+import { ReviewSection } from './ReviewSection';
 
 export function Quality(_) {
 
@@ -56,7 +56,7 @@ export function Quality(_) {
         split={false}
         dataSource={sections}
         renderItem={(section)=>(
-          <FeedbackSection {...section}/>
+            <ReviewSection {...section}/>
         )}
       />
     )

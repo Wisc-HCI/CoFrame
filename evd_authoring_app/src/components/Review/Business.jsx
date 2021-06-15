@@ -1,12 +1,12 @@
 import React from 'react';
 import { List } from 'antd';
-import { FeedbackSection } from './FeedbackSection';
+import { ReviewSection } from './ReviewSection';
 
-export function Safety(_) {
+export function Business(_) {
 
     const sections = [
         {
-            title: 'Pinch Points',
+            title: 'Cycle Time',
             complete: true,
             enabled: true,
             items: [
@@ -16,27 +16,21 @@ export function Safety(_) {
             ]
         },
         {   
-            title: 'Collisions',
+            title: 'Idle Time',
             complete: false,
             enabled: true,
             items: [
-                {label:'Trajectory-01',complete: true, force:true},
-                {label:'Trajectory-02',complete: false, force:true},
-                {label:'Trajectory-03',complete: false, force:false}
+                {label:'Trajectory-01',complete: true},
+                {label:'Trajectory-02',complete: false},
+                {label:'Trajectory-03',complete: false}
             ]
         },
         {
-            title: 'Occupancy',
+            title: 'Return on Investment',
             complete: false,
             enabled: false,
             items: []
-        },
-        {
-            title: 'Thing Movement',
-            complete: false,
-            enabled: false,
-            items: []
-        },
+        }
     ]
 
     return (
@@ -44,7 +38,7 @@ export function Safety(_) {
         split={false}
         dataSource={sections}
         renderItem={(section)=>(
-          <FeedbackSection {...section}/>
+          <ReviewSection {...section}/>
         )}
       />
     )

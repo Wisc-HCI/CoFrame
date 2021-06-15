@@ -5,9 +5,9 @@ import { FrameButton } from '../FrameButton';
 import frameStyles from '../../frameStyles';
 import useGuiStore from '../../stores/GuiStore';
 
-import {Safety, Quality, Performance, Business} from '../Feedback';
+import {Safety, Quality, Performance, Business} from '../Review';
 
-export const FeedbackTile = (_) => {
+export const ReviewTile = (_) => {
     const {frameId, setFrame} = useGuiStore(state=>({frameId:state.frame,setFrame:state.setFrame}));
     
     const contentList = {

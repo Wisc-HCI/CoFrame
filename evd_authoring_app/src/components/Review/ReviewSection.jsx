@@ -5,7 +5,7 @@ import { CaretRightOutlined } from '@ant-design/icons';
 
 import './custom.css'
 
-export function FeedbackSection(props) {
+export function ReviewSection(props) {
 
   const { title, complete, enabled, items } = props;
 
