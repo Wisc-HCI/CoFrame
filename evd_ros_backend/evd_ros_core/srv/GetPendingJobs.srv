@@ -1,7 +1,0 @@
----
-string[] sources
-StringArray[] ids
-StringArray[] human_messages
-StringArray[] data
-bool status
-string message

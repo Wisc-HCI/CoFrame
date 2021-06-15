@@ -67,31 +67,15 @@ add_message_files(
   MachineStop.msg
 
   Issue.msg
-  Version.msg
-  UpdateData.msg
   StringArray.msg
-  ApplicationOption.msg
   ProgramRunnerStatus.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  GetData.srv
   SetData.srv
-  LoadData.srv
-  SaveData.srv
-  GetOptions.srv
-  GetHistory.srv
-
-  GetIssues.srv
   ClearIssue.srv
-  GetPendingJobs.srv
-  SetPendingJobs.srv
-  ClearPendingJob.srv
-
-  SetRootNode.srv
-  GetRootNode.srv
 
   SetRobotGrip.srv
   SetRobotMove.srv
@@ -107,9 +91,7 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
-  actionlib_msgs
   geometry_msgs
-  trajectory_msgs
 )
 
 ################################################

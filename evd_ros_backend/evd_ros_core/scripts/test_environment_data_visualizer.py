@@ -18,7 +18,6 @@ Checks:
 import rospy
 
 from visualization_msgs.msg import Marker, MarkerArray
-from evd_interfaces.data_client_interface import DataClientInterface
 
 
 DEFAULT_ROS_FRAME_ID = 'app'
@@ -34,7 +33,7 @@ class TestEnvironmentDataVisualizer:
 
         self._ros_frame_id = ros_frame_id
         self._marker_pub = rospy.Publisher('test_environment_data_visualizer/markers',MarkerArray,queue_size=10,latch=True)
-        self._data_client = DataClientInterface(on_program_update_cb=self._update_markers)
+        self._program_sub = rospy.Subscriber('program/')
 
     def _update_markers(self):
 

@@ -1,6 +1,5 @@
-bool all
 string data
-evd_ros_core/Version tag
+string id
 ---
 bool status
 string errors

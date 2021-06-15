@@ -32,12 +32,12 @@ from evd_ros_core.srv import SetPendingJobs, SetPendingJobsRequest, SetPendingJo
 from evd_ros_core.srv import GetPendingJobs, GetPendingJobsRequest, GetPendingJobsResponse
 
 from evd_interfaces.robot_interface import RobotInterface
-from evd_interfaces.data_client_interface import DataClientInterface
-from evd_interfaces.issue_client_interface import IssueClientInterface
 
-from evd_script.data.trace import *
-from evd_script.data.trajectory import *
-from evd_script.data.geometry import *
+from evd_script.data_nodes.trace import Trace
+from evd_script.data_nodes.trajectory import Trajectory
+from evd_script.data_nodes.waypoint import Waypoint
+from evd_script.data_nodes.location import Location
+from evd_script.data_nodes.geometry import Pose, Position, Orientation
 
 
 class TraceProcessor:

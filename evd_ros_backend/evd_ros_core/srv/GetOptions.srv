@@ -1,7 +1,0 @@
----
-string title
-string description
-ApplicationOption[] options
-string currently_loaded_filename
-bool status
-string message

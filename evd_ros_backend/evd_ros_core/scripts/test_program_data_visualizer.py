@@ -14,7 +14,6 @@ Checks:
 import rospy
 
 from visualization_msgs.msg import Marker, MarkerArray
-from evd_interfaces.data_client_interface import DataClientInterface
 
 
 DEFAULT_ROS_FRAME_ID = 'app'
