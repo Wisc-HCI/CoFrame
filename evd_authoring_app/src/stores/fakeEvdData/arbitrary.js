@@ -764,7 +764,7 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
 let program = {
     type: 'node.primitive.hierarchical.program.',
     uuid: `program-js`,
-    name: ``,
+    name: `Test Program`,
     deleteable: false,
     editable: true,
     description: 'Some descriptor string (optional)', // could be ''
