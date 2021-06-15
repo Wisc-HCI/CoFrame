@@ -7,7 +7,7 @@ import useEvdStore from '../../stores/EvdStore';
 export const ThingDetail = ({uuid}) => {
 
     const {thingType} = useEvdStore(useCallback(state=>({
-        thingType:state.environment.thingTypes[uuid]
+        thingType:state.data.thingTypes[uuid]
     })
       ,[uuid]))
     // const { deleteItem, setItemProperty } = useEvdStore(state=>({

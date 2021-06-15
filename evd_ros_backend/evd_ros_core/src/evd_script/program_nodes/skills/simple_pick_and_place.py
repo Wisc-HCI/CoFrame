@@ -8,9 +8,7 @@ location, and then release it.
 
 from ...data_nodes.skill_arguement import SkillArguement
 from ..skill import Skill
-from ..primitives import MoveTrajectory
-from ..hierarchical_tasks.open_gripper import OpenGripper
-from ..hierarchical_tasks.close_gripper import CloseGripper
+from ..primitives import MoveTrajectory, Gripper
 
 
 class SimplePickAndPlace(Skill):
@@ -67,10 +65,26 @@ class SimplePickAndPlace(Skill):
 
         if primitives == None:
             primitives = [
-                MoveTrajectory(trajectory_uuid=pick_traj_arg.temporary_value, editable=editable, deleteable=False),
-                CloseGripper(thing_uuid=thing_arg.temporary_value, editable=editable, deleteable=False),
-                MoveTrajectory(trajectory_uuid=place_traj_arg.temporary_value, editable=editable, deleteable=False),
-                OpenGripper(thing_uuid=thing_arg.temporary_value, editable=editable, deleteable=False)
+                MoveTrajectory(
+                    trajectory_uuid=pick_traj_arg.temporary_value, 
+                    editable=editable, 
+                    deleteable=False),
+                Gripper(
+                    thing_uuid=thing_arg.temporary_value,
+                    semantic=Gripper.SEMANTIC_GRASPING,
+                    position=100,
+                    editable=editable,
+                    deleteable=False),
+                MoveTrajectory(
+                    trajectory_uuid=place_traj_arg.temporary_value, 
+                    editable=editable, 
+                    deleteable=False),
+                Gripper(
+                    thing_uuid=thing_arg.temporary_value,
+                    semantic=Gripper.SEMANTIC_RELEASING,
+                    position=0,
+                    editable=editable,
+                    deleteable=False)
             ]
         else: #make sure each has a fresh copy (only applicable since we predefined the primitives)
             primitives[0].trajectory_uuid = pick_traj_arg.temporary_value

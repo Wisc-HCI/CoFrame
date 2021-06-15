@@ -40,8 +40,10 @@ class SkillCall(Primitive):
     def __init__(self, skill_uuid=None, parameters=None, type='', name='', uuid=None, parent=None, 
                  append_type=True, editable=True, deleteable=True, description=''):
 
-        if 'skill_uuid' not in parameters.keys():
-            parameters.update({'skill_uuid': None})
+        if parameters == None:
+            parameters = {
+                'skill_uuid': skill_uuid
+            }
 
         super(SkillCall,self).__init__(
             type=SkillCall.type_string() + type if append_type else type,
@@ -53,9 +55,6 @@ class SkillCall(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self._parameters['skill_uuid'] = skill_uuid
-        self.updated_attribute('parameters.skill_uuid','set')
 
     '''
     Data accessor/modifier methods
@@ -78,11 +77,11 @@ class SkillCall(Primitive):
             skill = hooks.program.skills_dct[self.skill_uuid]
 
             #self.parameters -> keys are names of parameters, values are actual values
-            #skill.arguements_dct -> dict of SkillArguements (name is parameters key, we need uuid, is key)
+            #skill.arguments_dct -> dict of SkillArguments (name is parameters key, we need uuid, is key)
             
             arg_map = {}
             for param_name, param_value in self.parameters.items():
-                for arg_uuid, arg in skill.arguements_dct.items():
+                for arg_uuid, arg in skill.arguments_dct.items():
                     if arg.name == param_name:
                         arg_map[arg_uuid] = param_value
             
@@ -96,9 +95,10 @@ class SkillCall(Primitive):
             next = hierarchicalBlock
         else:
             hooks.state[self.uuid]['block'].remove_from_cache()
-            del hooks.state[self.uuid]
             next = self.parent
 
+        if next == self.parent:
+            del hooks.state[self.uuid]
         return next
 
     def realtime_execution(self, hooks):

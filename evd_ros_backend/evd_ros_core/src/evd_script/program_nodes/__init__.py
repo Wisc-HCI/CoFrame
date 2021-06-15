@@ -5,8 +5,7 @@ from .machine_primitive import MachinePrimitive
 
 from .primitives import *
 from .control_flow import *
-from .predefined_skills import *
-from .hierarchical_tasks import *
+from .skills import *
 
 
 primitive_library = [
@@ -21,7 +20,13 @@ primitive_library = [
     MachineInitialize,
     MachineStart,
     MachineWait,
-    MachineStop,
+    MachineStop
+]
+
+
+skills_library = [
+    MachineBlockingProcess,
+    SimplePickAndPlace,
     OpenGripper,
     CloseGripper,
     Initialize

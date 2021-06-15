@@ -34,12 +34,13 @@ class Location(Waypoint):
     def full_type_string(cls):
         return Waypoint.full_type_string() + cls.type_string()
 
-    def __init__(self, position=None, orientation=None, joints=None, type='',
+    def __init__(self, position=None, orientation=None, link=None, joints=None, type='',
                  name='', uuid=None, parent=None, append_type=True, editable=True,
                  deleteable=True, description=''):
         super(Location,self).__init__(
             position=position,
             orientation=orientation,
+            link=link,
             joints=joints,
             type=Location.type_string() + type if append_type else type,
             name=name,
@@ -51,7 +52,9 @@ class Location(Waypoint):
             description=description)
 
     def to_ros_marker(self, frame_id='app', id=0):
-        # The frame_id should be the application frame
+        # The frame_id should be the application frame, if none then rely on internal link
+        if frame_id == None:
+            frame_id = self.link
 
         marker = Marker()
         marker.header.frame_id = frame_id

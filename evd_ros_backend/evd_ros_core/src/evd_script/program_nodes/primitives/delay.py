@@ -42,7 +42,7 @@ class Delay(Primitive):
 
         if parameters == None:
             parameters = {
-                'duration': None
+                'duration': duration
             }
 
         super(Delay,self).__init__(
@@ -55,8 +55,6 @@ class Delay(Primitive):
             deleteable=deleteable,
             description=description,
             parameters=parameters)
-
-        self.duration = duration
 
     '''
     Data accessor/modifier methods
@@ -106,6 +104,7 @@ class Delay(Primitive):
 
             if total >= self.duration:
                 next = self.parent
-                del hooks.state[self.uuid]
-
+        
+        if next == self.parent:
+            del hooks.state[self.uuid]
         return next

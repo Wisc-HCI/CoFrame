@@ -10,7 +10,7 @@ the AST. Simple parameterization is provided.
 from .program_nodes.hierarchical import Hierarchical
 from .node_parser import NodeParser
 from .environment import Environment
-from .program_nodes.predefined_skills import predefined_skills_library
+from .program_nodes import skills_library
 from . import ALL_SKILLS_TYPES, ALL_PRIMITIVES_TYPES
 
 from .orphans import *
@@ -81,7 +81,7 @@ class Program(Hierarchical):
         if skills != None:
             self.skills = skills
         else: 
-            self.skills = [ps() for ps in predefined_skills_library]
+            self.skills = [ps() for ps in skills_library]
 
     def to_dct(self):
         msg = super(Program,self).to_dct()
