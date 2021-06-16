@@ -86,7 +86,7 @@ export class SimplePickAndPlace extends Skill {
                 }
             },
             generator: (block) => {
-                return [`console.log('simple_pick_and_place')`, Blockly.JavaScript.ORDER_ATOMIC];
+                return `console.log('simple_pick_and_place')`;
             }
         };
     }
