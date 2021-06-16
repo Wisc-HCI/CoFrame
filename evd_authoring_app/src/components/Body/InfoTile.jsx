@@ -29,18 +29,18 @@ export function InfoTile(_) {
             title = 'Info: Waypoints';
             if (frame ===  'safety') {
                 description = (
-                    <p>
+                    <div>
                         Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
                         <Alert showIcon message={'Pay special attention to placing waypoints around the occupancy zone of the human, since this is more likely to result in undesirable conflicts between the human and the robot.'}></Alert>
-                    </p>
+                    </div>
                 )
                 
             } else if (frame === 'performance') {
                 description = (
-                    <p>
+                    <div>
                         Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
                         <Alert showIcon message={'Pay special attention to the sequences of waypoints and where they are relative to one another within a trajectory. Longer trajectories take longer to execute and can contribute to greater space usage.'}></Alert>
-                    </p>
+                    </div>
                 )
             } else {
                 description = <p>Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.</p>
