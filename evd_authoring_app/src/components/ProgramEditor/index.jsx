@@ -28,10 +28,8 @@ export class ProgramEditor extends Component {
   }
 
   render() {
-    const { 
-        toolbox, 
-        initialXml 
-    } = this.state;
+    const toolbox = this.state.toolbox;
+    var initialXml = this.state.initialXml;
   
     return (
         
@@ -41,6 +39,11 @@ export class ProgramEditor extends Component {
             height:'100%'
           }}
           tools={toolbox}
+          onChange={(code, workspace) => {
+            initialXml = workspace;
+            console.log(initialXml)
+          }}
+          workspaceXML={initialXml}
           language={Blockly.JavaScript}
           appearance={
             {
