@@ -36,7 +36,8 @@ export class ProgramEditor extends Component {
         <BlocklyDrawer
           style={{ 
             width:'100%',
-            height:'100%'
+            height:'100%',
+            toolboxBackgroundColour: 'black',
           }}
           tools={toolbox}
           onChange={(code, workspace) => {

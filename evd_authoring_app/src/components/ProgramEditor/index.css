@@ -3,6 +3,10 @@
     color: #000;
 }
 
-.blocklyTreeLabel {
-    color: black;
+.blocklySvg {
+    background-color: #1b1a1a!important;
+}
+
+.blocklyToolboxDiv {
+    background: rgba(24, 23, 23, 0.85);
 }
