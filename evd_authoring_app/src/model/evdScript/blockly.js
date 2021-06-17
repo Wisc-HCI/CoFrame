@@ -271,7 +271,7 @@ export const evdScriptBlocklyInitialXML = (program = null) => {
 
     let xml = null;
     if (program === null) {
-        xml = '<xml id="root" xmlns="http://www.w3.org/1999/xhtml"></xml>';
+        xml = '<xml><block type="program" deletable="false"></block></xml>';
     }
 
     return xml;
