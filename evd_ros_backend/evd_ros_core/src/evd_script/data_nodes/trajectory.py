@@ -6,7 +6,7 @@ end location. When a trajectory is planned it produces a trace. Any change to th
 trajectory will result in a new trace needing to be computed.
 '''
 
-from .. import NUMBER_TYPE, ENUM_TYPE
+from ..type_defs import NUMBER_TYPE, ENUM_TYPE
 from .location import Location
 from .waypoint import Waypoint
 from ..node import Node

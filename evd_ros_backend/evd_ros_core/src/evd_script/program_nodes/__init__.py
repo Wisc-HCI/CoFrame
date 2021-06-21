@@ -43,10 +43,6 @@ def ProgramNodeParser(exactType, dct):
     if node != None:
         return node
 
-    node = HierarchicalTasksNodeParser(exactType, dct)
-    if node != None:
-        return node
-
     node = PredefinedSkillsNodeParser(exactType, dct)
     if node != None:
         return node

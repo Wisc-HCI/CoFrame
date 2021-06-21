@@ -14,4 +14,4 @@ from .environment import Environment
 from .attribute_trace_processor import AttributeTraceProcessor
 from .visualizable import VisualizeMarker, VisualizeMarkers, ColorTable
 
-from .type_defs import *
+import type_defs as TypeDefinitions

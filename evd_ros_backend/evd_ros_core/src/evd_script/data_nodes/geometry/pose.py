@@ -7,7 +7,7 @@ by link='app' or assumed by link=''. Link can also default to None in which case
 property is not being enforced / used for that pose node.
 '''
 
-from ... import STRING_TYPE
+from ...type_defs import STRING_TYPE
 import numpy as np
 import tf
 import geometry_msgs.msg as ros_msgs

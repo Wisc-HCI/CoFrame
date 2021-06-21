@@ -10,9 +10,8 @@ the AST. Simple parameterization is provided.
 from .node_parser import NodeParser
 from .environment import Environment
 from .program_nodes.hierarchical import Hierarchical
-from .environment_nodes.environment_node import EnvironmentNode
 from .program_nodes import skills_library
-from . import ALL_SKILLS_TYPES, ALL_PRIMITIVES_TYPES
+from .type_defs import ALL_SKILLS_TYPES, ALL_PRIMITIVES_TYPES
 
 from .orphans import *
 

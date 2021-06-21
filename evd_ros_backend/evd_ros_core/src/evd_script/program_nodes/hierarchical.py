@@ -11,7 +11,7 @@ elif isinstance(node,Primitive) and not node.uuid in [p.uuid for p in self.primi
 
 from .primitive import Primitive
 from ..node_parser import NodeParser
-from .. import ALL_PRIMITIVES_TYPES
+from ..type_defs import ALL_PRIMITIVES_TYPES
 
 
 class Hierarchical(Primitive):

@@ -2,7 +2,7 @@
 A region with a position uncertainty defined by a cuboid.
 '''
 
-from ... import NUMBER_TYPE
+from ...type_defs import NUMBER_TYPE
 from .region import Region
 from ...node_parser import NodeParser
 from ...visualizable import ColorTable

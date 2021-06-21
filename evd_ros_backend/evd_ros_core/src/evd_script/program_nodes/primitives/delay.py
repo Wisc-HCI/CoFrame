@@ -5,7 +5,7 @@ Simple primitive that delays the cobot's behavior for a fixed amount of time.
 import time
 
 from ..primitive import Primitive
-from ... import NUMBER_TYPE
+from ...type_defs import NUMBER_TYPE
 
 
 class Delay(Primitive):

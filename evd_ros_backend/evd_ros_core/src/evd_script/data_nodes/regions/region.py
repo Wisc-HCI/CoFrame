@@ -5,7 +5,7 @@ NOTE, right now regions are on parallel development to waypoints/locations and t
 not mingle when discussing robots. Future work should address this.
 '''
 
-from ... import BOOLEAN_TYPE, NUMBER_TYPE
+from ...type_defs import BOOLEAN_TYPE, NUMBER_TYPE
 from ...node_parser import NodeParser
 from ..geometry import Pose, Position, Orientation
 from ...visualizable import VisualizeMarker

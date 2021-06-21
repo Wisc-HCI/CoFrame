@@ -8,7 +8,7 @@ sub-nodes.
 
 from ..node import Node
 from ..node_parser import NodeParser
-from .. import ALL_NODES_TYPE, STRING_TYPE
+from ..type_defs import ALL_NODES_TYPE, STRING_TYPE
 
 
 class Container(Node):

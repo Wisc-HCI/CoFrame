@@ -2,7 +2,7 @@
 A region with position uncertainty defined by a sphere.
 '''
 
-from ... import NUMBER_TYPE
+from ...type_defs import NUMBER_TYPE
 from .region import Region
 from ...node_parser import NodeParser
 from ..geometry import Position, Orientation

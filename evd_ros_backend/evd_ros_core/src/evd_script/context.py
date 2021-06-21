@@ -15,7 +15,7 @@ from .data_nodes.location import Location
 from .data_nodes.thing_type import ThingType
 from .data_nodes.grade_type import GradeType
 from .data_nodes.trajectory import Trajectory
-from . import ALL_REGION_TYPES
+from .type_defs import ALL_REGION_TYPES
 
 from .orphans import *
 from .node_parser import NodeParser

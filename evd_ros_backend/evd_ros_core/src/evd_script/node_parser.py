@@ -22,7 +22,7 @@ def NodeParser(dct, no_cache=False, enforce_types=None):
     exactType = type[len(type) - 2]
 
     # We don't support deserialization of basic types from here
-    from . import STRING_TYPE, NUMBER_TYPE, BOOLEAN_TYPE, ENUM_TYPE, \
+    from .type_defs import STRING_TYPE, NUMBER_TYPE, BOOLEAN_TYPE, ENUM_TYPE, \
         ARBITRARY_OBJ_TYPE, PARAMETERS_FIELD_DCT
     if STRING_TYPE in enforce_types or NUMBER_TYPE in enforce_types \
             or BOOLEAN_TYPE in enforce_types or ENUM_TYPE in enforce_types \
@@ -30,8 +30,8 @@ def NodeParser(dct, no_cache=False, enforce_types=None):
         raise Exception('Basic types <string, numbers, booleans, enums, objs> cannot be parsed out!')
 
     # Expand out enforce list for generalized type descriptors
-    from . import ALL_NODES_TYPE, ALL_PRIMITIVES_TYPES, ALL_REGION_TYPES, \
-                  ALL_CONDITIONS_TYPES, ALL_SKILLS_TYPES, LOCATION_OR_WAYPOINT
+    from .type_defs import ALL_NODES_TYPE, ALL_PRIMITIVES_TYPES, ALL_REGION_TYPES, \
+        ALL_CONDITIONS_TYPES, ALL_SKILLS_TYPES, LOCATION_OR_WAYPOINT
     if ALL_NODES_TYPE in enforce_types:
         enforce_types = None # any node is valid so why enforce?
     

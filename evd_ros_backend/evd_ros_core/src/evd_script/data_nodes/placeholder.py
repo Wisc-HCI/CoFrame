@@ -14,7 +14,7 @@ and a set of fields subject to change.
 '''
 
 
-from .. import ARBITRARY_OBJ_TYPE, STRING_TYPE
+from ..type_defs import ARBITRARY_OBJ_TYPE, STRING_TYPE
 from ..node import Node
 
 

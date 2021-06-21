@@ -10,7 +10,7 @@ import uuid
 
 from abc import ABC
 from .cache import *
-from . import STRING_TYPE, BOOLEAN_TYPE
+from .type_defs import STRING_TYPE, BOOLEAN_TYPE
 
 class Node(ABC):
 

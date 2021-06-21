@@ -7,7 +7,7 @@ from .environment_node import EnvironmentNode
 from ..data_nodes.geometry import Pose
 from ..node_parser import NodeParser
 from ..visualizable import VisualizeMarker, ColorTable
-from .. import STRING_TYPE
+from ..type_defs import STRING_TYPE
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3

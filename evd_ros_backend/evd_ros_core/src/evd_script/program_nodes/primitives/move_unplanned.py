@@ -2,14 +2,12 @@
 Jogs the robot to a location without pre-planning a trajectory within EvD.
 
 THIS IS AN UNSAFE PRIMITIVE! Only use within the context of initialization.
-
-TODO implement thing token movement behavior
 '''
 
 import numpy as np
 
 from ..primitive import Primitive
-from ... import BOOLEAN_TYPE, ENUM_TYPE, NUMBER_TYPE
+from ...type_defs import BOOLEAN_TYPE, ENUM_TYPE, NUMBER_TYPE
 from ...data_nodes.location import Location
 from ...data_nodes.geometry.pose import Pose
 from ...data_nodes.geometry.position import Position

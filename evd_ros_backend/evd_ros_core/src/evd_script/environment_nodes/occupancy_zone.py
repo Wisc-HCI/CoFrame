@@ -9,7 +9,7 @@ Parameterization only makes sense for human agent zones.
 from .environment_node import EnvironmentNode
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data_nodes.geometry import Position
-from .. import NUMBER_TYPE, ENUM_TYPE
+from ..type_defs import NUMBER_TYPE, ENUM_TYPE
 
 
 from visualization_msgs.msg import Marker

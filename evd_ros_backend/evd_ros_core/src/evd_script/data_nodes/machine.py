@@ -19,7 +19,7 @@ handling this disconnect. Probably something like a variable location?
 '''
 
 from ..environment_nodes.collision_mesh import CollisionMesh
-from .. import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE
+from ..type_defs import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE
 from ..node import Node
 from .geometry import Pose
 from ..node_parser import NodeParser

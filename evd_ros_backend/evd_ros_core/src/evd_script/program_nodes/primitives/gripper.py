@@ -10,7 +10,7 @@ from ..primitive import Primitive
 from ...data_nodes import Thing
 from ...data_nodes.regions import SphereRegion
 from ...data_nodes.geometry import Pose, Position, Orientation
-from ... import NUMBER_TYPE, ENUM_TYPE
+from ...type_defs import NUMBER_TYPE, ENUM_TYPE
 
 
 class Gripper(Primitive):

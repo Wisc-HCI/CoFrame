@@ -19,7 +19,7 @@ from .data_nodes.thing_type import ThingType
 from .data_nodes.grade_type import GradeType
 from .data_nodes.trajectory import Trajectory
 from .node_parser import NodeParser
-from . import ALL_REGION_TYPES
+from .type_defs import ALL_REGION_TYPES
 
 
 class Environment(Context):

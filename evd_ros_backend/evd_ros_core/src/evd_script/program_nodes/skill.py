@@ -15,7 +15,7 @@ set of "shadow-params".
 from ..data_nodes.skill_argument import SkillArgument
 from .hierarchical import Hierarchical
 from ..node_parser import NodeParser
-from .. import ALL_PRIMITIVES_TYPES
+from ..type_defs import ALL_PRIMITIVES_TYPES
 
 
 class Skill(Hierarchical):

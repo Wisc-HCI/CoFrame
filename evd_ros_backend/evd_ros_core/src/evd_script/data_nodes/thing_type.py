@@ -3,7 +3,7 @@ ThingType defines a type system for things. This is useful for generating things
 run-time and for token processing during planning/simulation.
 '''
 
-from .. import BOOLEAN_TYPE, NUMBER_TYPE, STRING_TYPE
+from ..type_defs import BOOLEAN_TYPE, NUMBER_TYPE, STRING_TYPE
 from ..node import Node
 
 

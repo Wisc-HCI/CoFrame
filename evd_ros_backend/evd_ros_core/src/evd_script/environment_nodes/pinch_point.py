@@ -10,7 +10,7 @@ from .environment_node import EnvironmentNode
 from ..visualizable import VisualizeMarker, ColorTable
 from ..data_nodes.geometry import Orientation, Position
 from ..node_parser import NodeParser
-from .. import NUMBER_TYPE, ENUM_TYPE, STRING_TYPE
+from ..type_defs import NUMBER_TYPE, ENUM_TYPE, STRING_TYPE
 
 
 from visualization_msgs.msg import Marker
