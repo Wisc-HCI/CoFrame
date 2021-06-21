@@ -18,7 +18,7 @@ position is not supported. This is fine for the studies at this time but more co
 handling this disconnect. Probably something like a variable location?
 '''
 
-from evd_ros_backend.evd_ros_core.src.evd_script.environment_nodes.collision_mesh import CollisionMesh
+from ..environment_nodes.collision_mesh import CollisionMesh
 from .. import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE
 from ..node import Node
 from .geometry import Pose

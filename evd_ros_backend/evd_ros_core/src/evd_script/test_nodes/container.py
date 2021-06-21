@@ -182,6 +182,15 @@ class Container(Node):
 
         return success
 
+    def add_child(self, node):
+        success = False
+
+        if node.uuid not in [v.uuid for v in self._values]:
+            self.add(node)
+            success = True
+        
+        return success
+
     '''
     Update Methods
     '''

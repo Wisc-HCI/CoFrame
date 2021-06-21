@@ -641,7 +641,7 @@ class Context(Node):
         else:
             return success
 
-    def add_child(self, dct):
+    def add_child(self, node):
         success = True
 
         type = dct["type"].split('.')

@@ -66,6 +66,7 @@ add_message_files(
   MachineStatus.msg
   MachineStop.msg
 
+  Job.msg
   Issue.msg
   StringArray.msg
   ProgramRunnerStatus.msg
@@ -75,8 +76,6 @@ add_message_files(
 add_service_files(
   FILES
   SetData.srv
-  ClearIssue.srv
-
   SetRobotGrip.srv
   SetRobotMove.srv
   SetRobotMoveTrajectory.srv

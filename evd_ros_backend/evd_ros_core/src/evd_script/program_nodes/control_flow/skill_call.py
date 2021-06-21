@@ -3,7 +3,6 @@ Skill Call invokes a particular skill defined by its uuid. A skill call
 will generate a concrete hierarchical block to execute at run-time.
 '''
 
-from ... import ARBITRARY_OBJ_TYPE
 from ..primitive import Primitive
 from ..skill import Skill
 
@@ -77,11 +76,11 @@ class SkillCall(Primitive):
             skill = hooks.program.skills_dct[self.skill_uuid]
 
             #self.parameters -> keys are names of parameters, values are actual values
-            #skill.arguements_dct -> dict of SkillArguements (name is parameters key, we need uuid, is key)
+            #skill.arguments_dct -> dict of SkillArguments (name is parameters key, we need uuid, is key)
             
             arg_map = {}
             for param_name, param_value in self.parameters.items():
-                for arg_uuid, arg in skill.arguements_dct.items():
+                for arg_uuid, arg in skill.arguments_dct.items():
                     if arg.name == param_name:
                         arg_map[arg_uuid] = param_value
             

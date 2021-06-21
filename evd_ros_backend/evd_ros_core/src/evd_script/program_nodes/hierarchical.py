@@ -4,6 +4,9 @@ Hierarchical wraps a set of primitives that should be executed in order.
 In hierarchical task analysis (and/or those familiar with Authr) this is a "task".
 The purpose of this block is to abstract the base-primitives into more semantically
 meaningful behaviors.
+
+elif isinstance(node,Primitive) and not node.uuid in [p.uuid for p in self.primitives]:
+            self.add_primitive(node)
 '''
 
 from .primitive import Primitive

@@ -352,19 +352,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         super(Trajectory,self).add_to_cache()
 
     '''
-    Children methods
-    '''
-
-    def delete_child(self, uuid):
-        success = False
-
-        if self.trace != None and self.trace.uuid == uuid:
-            self.trace = None
-            success = True
-
-        return success
-
-    '''
     Update Methods
     '''
 

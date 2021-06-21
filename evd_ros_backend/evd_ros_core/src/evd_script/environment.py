@@ -1,6 +1,8 @@
 '''
 Environment extends context to provide additional global lookup of environment
 types. This node is directly used by program to expose top-level state.
+
+#TODO write add, delete, get methods for  pinchpoints, collisionmeshes, and occuancyzones
 '''
 
 from .context import Context
@@ -173,6 +175,27 @@ class Environment(Context):
 
             self.updated_attribute('pinch_points','set')
 
+    def get_pinch_point(self, uuid):
+        for p in self._pinch_points:
+            if p.uuid == uuid:
+                return p
+        return None
+
+    def add_pinch_point(self, pinchpoint):
+        pinchpoint.parent = self
+        self._pinch_points.append(pinchpoint)
+        self.updated_attribute('pinch_points','add')
+
+    def delete_pinch_point(self, uuid):
+        node = None
+        for p in self._pinch_points:
+            if p.uuid == uuid:
+                node = p
+                break
+
+        if node != None:
+            self._pinch_points.remove(node)
+
     @property
     def collision_meshes(self):
         return self._collision_meshes
@@ -262,6 +285,37 @@ class Environment(Context):
             o.add_to_cache()
 
         super(Environment,self).add_to_cache()
+
+    '''
+    Children Methods
+    '''
+
+    def delete_child(self, uuid):
+        success  = False
+
+        #TODO
+
+        return success
+
+    def add_child(self, node):
+        success = False
+
+        if isinstance(node,ReachSphere) and self.reach_sphere == None:
+            self.reach_sphere = node
+            success = True
+        elif isinstance(node,PinchPoint) and node.uuid not in [p.uuid for p in self.pinch_points]:
+            self.add_pinch_point(node)
+            success = True
+        elif isinstance(node,CollisionMesh) and node.uuid not in [c.uuid for c in self.collision_meshes]:
+            self.add_collision_mesh(node)
+            success = True
+        elif isinstance(node,OccupancyZone) and node.uuid not in [o.uuid for o in self.occupancy_zones]:
+            self.add_occupancy_zone(node)
+            success = True
+        else:
+            success = super(Environment,self).add_child(node)
+        
+        return success
 
     '''
     Update Methods

@@ -4,7 +4,7 @@ machining could be a pre-written CNC routine that gets invoked by this primitive
 waits until that routine finishes, and will perform any "cleanup" at end of the process.
 '''
 
-from ...data_nodes.skill_arguement import SkillArguement
+from ...data_nodes.skill_argument import SkillArgument
 from ..skill import Skill
 from ..primitives.machine_start import MachineStart
 from ..primitives.machine_stop import MachineStop
@@ -29,23 +29,23 @@ class MachineBlockingProcess(Skill):
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=None, arguements=None, parameters=None, type='', 
+    def __init__(self, primitives=None, arguments=None, parameters=None, type='', 
                  name='', uuid=None, parent=None, append_type=True, 
                  editable=False, deleteable=False, description=''):
 
         machine_uuid_arg = None
-        if arguements != None:
-            for a in arguements:
+        if arguments != None:
+            for a in arguments:
                 if a.parameter_key == 'machine_uuid':
                     machine_uuid_arg = a
                     break
 
             if machine_uuid_arg == None:
-                machine_uuid_arg = SkillArguement(parameter_key='machine_uuid', name='machine_uuid')
-                arguements.append(machine_uuid_arg)
+                machine_uuid_arg = SkillArgument(parameter_key='machine_uuid', name='machine_uuid')
+                arguments.append(machine_uuid_arg)
         else:
-            machine_uuid_arg = SkillArguement(parameter_key='machine_uuid', name='machine_uuid')
-            arguements = [machine_uuid_arg]
+            machine_uuid_arg = SkillArgument(parameter_key='machine_uuid', name='machine_uuid')
+            arguments = [machine_uuid_arg]
             
         if primitives == None:
             primitives=[
@@ -67,5 +67,5 @@ class MachineBlockingProcess(Skill):
             deleteable=deleteable,
             description=description,
             primitives=primitives,
-            arguements=arguements,
+            arguments=arguments,
             parameters=parameters)

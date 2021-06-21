@@ -10,26 +10,16 @@
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>
 
-  <node name="data_server" pkg="evd_ros_core" type="data_server.py" output="screen">
-    <param name="app_filepath" value="$(arg app_filepath)"/>
-  </node>
-
   <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py" output="screen"/>
 
   <node name="issue_server" pkg="evd_ros_core" type="issue_server.py" output="screen"/>
 
-  <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen">
+  <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen"/>
 
+  <node name="program_verifier" pkg="evd_ros_core" type="program_verifier.py" output="screen"/>
+
+  <node name="grasp_verifier" pkg="evd_ros_core" type="grasp_verifier.py" output="screen">
+    <param name="app_filepath" value="$(arg app_filepath)"/>
   </node>
-
-  <include file="$(find evd_ros_core)/launch/graders.launch">
-    <arg name="app_filepath" value="$(arg app_filepath)"/>
-    <arg name="ros_frame_id" value="$(arg ros_frame_id)"/>
-  </include>
-
-  <include file="$(find evd_ros_core)/launch/verifiers.launch">
-    <arg name="app_filepath" value="$(arg app_filepath)"/>
-    <arg name="ros_frame_id" value="$(arg ros_frame_id)"/>
-  </include>
 
 </launch>

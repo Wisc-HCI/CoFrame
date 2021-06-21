@@ -1,5 +1,0 @@
-string source
-string id
----
-bool status
-string message

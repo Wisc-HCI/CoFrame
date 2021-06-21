@@ -220,7 +220,7 @@ class Node(ABC):
         # write this for each sub-node type that has set of deletable children
         return False #no children in root node to delete
 
-    def add_child(self, dct):
+    def add_child(self, node):
         # write this for each sub-node type that has set of addable children
         return False #no children in root node can be added
 

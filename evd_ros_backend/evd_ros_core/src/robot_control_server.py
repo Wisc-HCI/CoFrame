@@ -36,7 +36,7 @@ class RobotControlServer:
         self._reset_sub = rospy.Subscriber('robot_control_server/reset',Empty,self._reset_cb)
         
         # Program execution point
-        self.set_program_srv = rospy.Service('robot_control_server/set_program',SetData,self._set_root_node_cb)
+        self.set_program_srv = rospy.Service('robot_control_server/set_program',SetData,self._set_program_cb)
 
         # Player Feedback
         self._at_start_pub = rospy.Publisher('robot_control_server/at_start',Bool, queue_size=10, latch=True)
@@ -58,7 +58,7 @@ class RobotControlServer:
     def _reset_cb(self, _):
         self._cmd_queue.append('reset')
 
-    def _set_root_node_cb(self, request):
+    def _set_program_cb(self, request):
         response = SetDataResponse()
 
         if self._playing:
