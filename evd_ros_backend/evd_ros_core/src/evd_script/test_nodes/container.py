@@ -174,20 +174,22 @@ class Container(Node):
     '''
 
     def delete_child(self, uuid):
-        success  = False
+        success = True
 
         if uuid in [v.uuid for v in self._values]:
             self.delete(uuid)
-            success = True
+        else:
+            success = super(Container,self).delete_child(uuid)
 
         return success
 
     def add_child(self, node):
-        success = False
+        success = True
 
         if node.uuid not in [v.uuid for v in self._values]:
             self.add(node)
-            success = True
+        else:
+            success = super(Container,self).add_child(node)
         
         return success
 

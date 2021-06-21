@@ -7,7 +7,6 @@ Nodes that reference data should do so through the context if they do not want t
 own the data with encapsulation.
 '''
 
-
 from .node import Node
 from .data_nodes.thing import Thing
 from .data_nodes.machine import Machine
@@ -634,25 +633,33 @@ class Context(Node):
         elif uuid in [g.uuid for g in self.grade_types]:
             self.delete_grade_type(uuid)
         else:
-            success = False
+            success = super(Context,self).delete_child(uuid)
 
-        if not success:
-            return super(Context,self).delete_child(uuid)
-        else:
-            return success
+        return success
 
     def add_child(self, node):
         success = True
 
-        type = dct["type"].split('.')
-        exactType = type[len(type) - 2]
-
-        #TODO
-
-        if not success:
-            return super(Context,self).add_child(dct)
+        if isinstance(node,Location) and node.uuid not in [l.uuid for l in self.locations]:
+            self.add_location(node)
+        elif isinstance(node,Machine) and node.uuid not in [m.uuid for m in self.machines]:
+            self.add_machine(node)
+        elif isinstance(node,Thing) and node.uuid not in [t.uuid for t in self.things]:
+            self.add_thing(node)
+        elif isinstance(node,Waypoint) and node.uuid not in [w.uuid for w in self.waypoints]:
+            self.add_waypoint(node)
+        elif isinstance(node,Trajectory) and node.uuid not in [t.uuid for t in self.trajectories]:
+            self.add_trajectory(node)
+        elif isinstance(node,ThingType) and node.uuid not in [t.uuid for t in self.thing_types]:
+            self.add_thing_type(node)
+        elif isinstance(node,Region) and node.uuid not in [r.uuid for r in self.regions]:
+            self.add_region(node)
+        elif isinstance(node,GradeType) and node.uuid not in [g.uuid for g in self.grade_types]:
+            self.add_grade_type(node)
         else:
-            return success
+            success = super(Context,self).add_child(node)
+
+        return success
 
     '''
     Update Methods

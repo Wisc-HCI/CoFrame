@@ -192,10 +192,17 @@ class Hierarchical(Primitive):
         if uuid in [p.uuid for p in self.primitives]:
             self.delete_primitive(uuid)
         else:
-            success = False
-
-        if not success:
             success = super(Hierarchical,self).delete_child(uuid)
+
+        return success
+
+    def add_child(self, node):
+        success = True
+
+        if isinstance(node,Primitive) and node.uuid not in [p.uuid for p in self.primitives]:
+            self.add_primitive(node)
+        else:
+            success = super(Hierarchical,self).add_child(node)
 
         return success
 

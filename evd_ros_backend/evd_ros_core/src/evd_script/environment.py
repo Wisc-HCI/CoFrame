@@ -5,6 +5,7 @@ types. This node is directly used by program to expose top-level state.
 #TODO write add, delete, get methods for  pinchpoints, collisionmeshes, and occuancyzones
 '''
 
+from Expert_View_Dashboard.evd_ros_backend.evd_ros_core.src.evd_script.environment_nodes.environment_node import EnvironmentNode
 from .context import Context
 from .environment_nodes.reach_sphere import ReachSphere
 from .environment_nodes.collision_mesh import CollisionMesh
@@ -216,6 +217,27 @@ class Environment(Context):
 
             self.updated_attribute('collision_meshes','set')
 
+    def get_collision_mesh(self, uuid):
+        for c in self._collision_meshes:
+            if c.uuid == uuid:
+                return c
+        return None
+
+    def add_collision_mesh(self, collision_mesh):
+        collision_mesh.parent = self
+        self._collision_meshes.append(collision_mesh)
+        self.updated_attribute('collision_meshes','add')
+
+    def delete_collision_mesh(self, uuid):
+        node = None
+        for c in self._collision_meshes:
+            if c.uuid == uuid:
+                node = c
+                break
+
+        if node != None:
+            self._collision_meshes.remove(node)
+
     @property
     def occupancy_zones(self):
         return self._occupancy_zones
@@ -235,6 +257,27 @@ class Environment(Context):
                 o.parent = self
 
             self.updated_attribute('occupancy_zones','set')
+
+    def get_occupancy_zone(self, uuid):
+        for o in self._occupancy_zones:
+            if o.uuid == uuid:
+                return o
+        return None
+
+    def add_occupancy_zone(self, occupancy_zone):
+        occupancy_zone.parent = self
+        self._occupancy_zones.append(occupancy_zone)
+        self.updated_attribute('occupancy_zones','add')
+
+    def delete_occupancy_zone(self, uuid):
+        node = None
+        for o in self._occupancy_zones:
+            if o.uuid == uuid:
+                node = o
+                break
+
+        if node != None:
+            self._occupancy_zones.remove(node)
 
     def set(self, dct):
 
@@ -291,9 +334,18 @@ class Environment(Context):
     '''
 
     def delete_child(self, uuid):
-        success  = False
+        success  = True
 
-        #TODO
+        if self.reach_sphere != None and uuid == self.reach_sphere.uuid:
+            self.reach_sphere = None
+        elif uuid in [p.uuid for p in self.pinch_points]:
+            self.delete_pinch_point(uuid)
+        elif uuid in [c.uuid for c in self.collision_meshes]:
+            self.delete_collision_mesh(uuid)
+        elif uuid in [o.uuid for o in self.occupancy_zones]:
+            self.delete_occupancy_zone(uuid)
+        else:
+            success = super(Environment,self).delete_child(uuid)
 
         return success
 

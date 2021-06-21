@@ -180,10 +180,17 @@ class Skill(Hierarchical):
         if uuid in [a.uuid for a in self.arguments]:
             self.delete_skill_arguement(uuid)
         else:
-            success = False
-
-        if not success: 
             success = super(Skill,self).delete_child(uuid)
+
+        return success
+
+    def add_child(self, node):
+        success = True
+
+        if isinstance(node,SkillArgument) and node.uuid not in [a.uuid for a in self.arguments]:
+            self.add_skill_arguement(node)
+        else:
+            success = super(Skill,self).add_child(node)
 
         return success
 
