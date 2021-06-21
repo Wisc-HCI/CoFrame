@@ -81,7 +81,7 @@ class Program(Hierarchical):
         if skills != None:
             self.skills = skills
         else: 
-            self.skills = [ps() for ps in skills_library]
+            self.skills = [s() for s in skills_library]
 
     def to_dct(self):
         msg = super(Program,self).to_dct()

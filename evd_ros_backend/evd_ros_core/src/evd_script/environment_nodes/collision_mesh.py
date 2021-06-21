@@ -80,7 +80,7 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
             description=description)
 
         self.mesh_id = mesh_id
-        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deletable=False, editable=editable)
+        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deleteable=False, editable=editable)
         self.link = link
 
     def to_dct(self):

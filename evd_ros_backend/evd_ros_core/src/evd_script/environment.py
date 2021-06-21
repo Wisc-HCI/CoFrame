@@ -5,7 +5,6 @@ types. This node is directly used by program to expose top-level state.
 #TODO write add, delete, get methods for  pinchpoints, collisionmeshes, and occuancyzones
 '''
 
-from Expert_View_Dashboard.evd_ros_backend.evd_ros_core.src.evd_script.environment_nodes.environment_node import EnvironmentNode
 from .context import Context
 from .environment_nodes.reach_sphere import ReachSphere
 from .environment_nodes.collision_mesh import CollisionMesh

@@ -28,7 +28,7 @@ class Initialize(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, primitives=None, arguments=None, parameters=None, type='', 
-                 name='', uuid=None, parent=None, append_type=True, 
+                 name=None, uuid=None, parent=None, append_type=True, 
                  editable=False, deleteable=False, description=''):
 
         loc_uuid_arg = None
@@ -62,6 +62,9 @@ class Initialize(Skill):
         else:
             primitives[0].machine_uuid = machine_uuids_arg.temporary_value
             primitives[2].location_uuid = loc_uuid_arg.temporary_value
+
+        if name == None:
+            name = 'Initialize'
 
         super(Initialize,self).__init__(
             type=Initialize.type_string() + type if append_type else type,

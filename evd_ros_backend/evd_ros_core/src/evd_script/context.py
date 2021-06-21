@@ -204,7 +204,7 @@ class Context(Node):
     def locations(self, value):
         uuids = []
 
-        for l in self._locations:
+        for l in self._locations.values():
             l.remove_from_cache()
             uuids.append(l.uuid)
         self._locations = {}
@@ -228,7 +228,7 @@ class Context(Node):
     def machines(self, value):
         uuids = []
 
-        for m in self._machines:
+        for m in self._machines.values():
             m.remove_from_cache()
             uuids.append(m.uuid)
         self._machines = {}
@@ -252,7 +252,7 @@ class Context(Node):
     def things(self, value):
         uuids = []
 
-        for t in self._things:
+        for t in self._things.values():
             t.remove_from_cache()
             uuids.append(t.uuid)
         self._things = {}
@@ -276,7 +276,7 @@ class Context(Node):
     def thing_types(self, value):
         uuids = []
 
-        for t in self._thing_types:
+        for t in self._thing_types.values():
             t.remove_from_cache()
             uuids.append(t.uuid)
         self._thing_types = {}
@@ -300,7 +300,7 @@ class Context(Node):
     def waypoints(self, value):
         uuids = []
 
-        for w in self._waypoints:
+        for w in self._waypoints.values():
             w.remove_from_cache()
             uuids.append(w.uuid)
 

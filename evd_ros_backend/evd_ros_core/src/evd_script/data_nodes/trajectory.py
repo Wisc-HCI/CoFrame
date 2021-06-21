@@ -149,6 +149,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         lineMarker.id = id_start
         lineMarker.scale = Vector3(0.01,0.01,0.01)
         lineMarker.color = ColorTable.TRAJECTORY_COLOR
+        lineMarker.pose.orientation.w = 1 # to remove uninitialized quaternion warning
 
         count = id_start + 1
 
@@ -169,24 +170,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         return lineMarker, waypoint_markers, waypoint_uuids
 
     def to_ros_marker(self, frame_id, id=0):
-        lineMarker = Marker()
-        lineMarker.header.frame_id = frame_id
-        lineMarker.type = Marker.LINE_STRIP
-        lineMarker.ns = 'trajectories'
-        lineMarker.id = id
-        lineMarker.scale = Vector3(0.01,0.01,0.01)
-        lineMarker.color = ColorTable.TRAJECTORY_COLOR
-
-        startLoc = self.context.get_location(self.start_location_uuid)
-        lineMarker.points.append(startLoc.position.to_ros())
-
-        for wpUuid in self.waypoint_uuids:
-            wp = self.context.get_waypoint(wpUuid)
-            lineMarker.points.append(wp.position.to_ros())
-
-        endLoc = self.context.get_location(self.end_location_uuid)
-        lineMarker.points.append(endLoc.position.to_ros())
-
+        lineMarker, _, _ = self.to_ros_markers(frame_id,id)
         return lineMarker
 
     '''

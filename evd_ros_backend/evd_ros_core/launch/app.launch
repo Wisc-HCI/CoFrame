@@ -2,7 +2,7 @@
 
   <arg name="app_filepath"/>
   <arg name="ros_frame_id"/>
-
+  <arg name="run_test" default="true"/>
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
@@ -12,14 +12,19 @@
 
   <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py" output="screen"/>
 
-  <node name="issue_server" pkg="evd_ros_core" type="issue_server.py" output="screen"/>
-
   <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen"/>
+
+  <node name="waypoint_processor" pkg="evd_ros_core" type="waypoint_processor.py" output="screen"/>
 
   <node name="program_verifier" pkg="evd_ros_core" type="program_verifier.py" output="screen"/>
 
   <node name="grasp_verifier" pkg="evd_ros_core" type="grasp_verifier.py" output="screen">
     <param name="app_filepath" value="$(arg app_filepath)"/>
   </node>
+
+  <!-- For Debug -->
+  <include if="$(arg run_test)" file="$(find evd_ros_core)/launch/test_core_application.launch">
+    <arg name="ros_frame_id" value="world"/>
+  </include>
 
 </launch>

@@ -24,8 +24,7 @@ import rospy
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
-from evd_ros_core.msg import RobotStop, RobotServo, RobotMove
-from evd_ros_core.msg import RobotMoveTrajectoryGoal
+from evd_ros_core.msg import RobotStop, RobotMove
 from trajectory_msgs.msg import JointTrajectoryPoint
 from geometry_msgs.msg import Pose, Quaternion, Vector3, Point
 from evd_ros_core.srv import SetPendingJobs, SetPendingJobsRequest, SetPendingJobsResponse
@@ -39,7 +38,7 @@ from evd_script.data_nodes.waypoint import Waypoint
 from evd_script.data_nodes.location import Location
 from evd_script.data_nodes.geometry import Pose, Position, Orientation
 
-
+"""
 class TraceProcessor:
 
     def __init__(self):
@@ -345,3 +344,4 @@ if __name__ == "__main__":
 
     node = TraceProcessor()
     node.spin()
+"""

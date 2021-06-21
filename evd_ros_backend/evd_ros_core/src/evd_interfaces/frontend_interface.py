@@ -10,6 +10,8 @@ Please select the specific behavior options when you initialize the interface.
 import json
 import rospy
 
+from evd_script import NodeParser
+
 from std_msgs.msg import String, Empty
 from evd_ros_core.msg import Job, Issue, StringArray
 
@@ -67,19 +69,25 @@ class FrontendInterface:
 
     def _update_cb(self, msg):
         if self._user_update_cb != None:
-            self._user_update_cb(json.loads(msg.data))
+            program = NodeParser(json.loads(msg.data))
+            self._user_update_cb(program)
 
     def _trace_request_cb(self, msg):
         if self._user_trace_cb != None:
-            self._user_trace_cb(msg.id, 'request', json.loads(msg.data))
+            data = json.loads(msg.data)
+
+            trajectory = NodeParser(data['trajectory'])
+            points = [NodeParser(p) for p in data['points']]
+            self._user_trace_cb(msg.id, 'request', trajectory, points)
 
     def _trace_clear_cb(self, msg):
         if self._user_trace_cb != None:
-            self._user_trace_cb(msg.id, 'clear', None)
+            self._user_trace_cb(msg.id, 'clear', None, None)
 
     def _joints_request_cb(self, msg):
         if self._user_joints_cb != None:
-            self._user_joints_cb(msg.id, 'request', json.loads(msg.data))
+            waypoint = NodeParser(json.loads(msg.data))
+            self._user_joints_cb(msg.id, 'request', waypoint)
 
     def _joints_clear_cb(self, msg):
         if self._user_joints_cb != None:
@@ -105,22 +113,22 @@ class FrontendInterface:
         msg = String(json.dumps(dct))
         self._registration_pub.publish(msg)
     
-    def submit_trace(self, dct, id):
+    def submit_trace(self, trace, id):
         if self._trace_submit_pub == None:
             raise Exception('Must define interface with use_trace')
 
         msg = Job()
         msg.id = id
-        msg.data = json.dumps(dct)
+        msg.data = json.dumps(trace.to_dct())
         self._trace_submit_pub.publish(msg)
 
-    def submit_joints(self, dct, id):
+    def submit_joints(self, joints, id):
         if self._joints_submit_pub != None:
             raise Exception('Must define interface with use_joints')
 
         msg = Job()
         msg.id = id
-        msg.data = json.dumps(dct)
+        msg.data = json.dumps(joints.to_dct())
         self._joints_submit_pub.publish(msg)
 
     def submit_issue(self, source, id, level=None, data=None, description=''):

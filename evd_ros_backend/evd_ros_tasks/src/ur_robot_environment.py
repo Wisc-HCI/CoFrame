@@ -3,7 +3,7 @@
 '''
 Registers robot and environment information with EvD.
 '''
-
+"""
 import rospy
 
 from evd_script import Position, ReachSphere, PinchPoint, CollisionMesh, OccupancyZone
@@ -71,3 +71,4 @@ if __name__ == "__main__":
     uuid = rospy.get_param('uuid','default-ur-environment-uuid')
 
     node = URRobotEnvironment(uuid)
+"""

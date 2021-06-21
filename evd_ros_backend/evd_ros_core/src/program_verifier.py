@@ -3,7 +3,7 @@
 import json
 import rospy
 
-from evd_interfaces.data_client_interface import DataClientInterface
+#from evd_interfaces.data_client_interface import DataClientInterface
 #from evd_interfaces.symbolic_program_runner import SymbolicProgramRunner
 
 
@@ -13,7 +13,7 @@ class Verifier:
         self._trace_table = {}
         self._pose_table = {}
 
-        self._data_client = DataClientInterface(on_program_update_cb=self._verify_program)
+        #self._data_client = DataClientInterface(on_program_update_cb=self._verify_program)
 
     def _verify_program(self):
 

@@ -81,7 +81,7 @@ class Cache(object):
         retVal = None
 
         if hint in self.instance_table.keys() and uuid in self.instance_table[hint]['table'].keys():
-            retVal = self.instance_table['hint']['table'][uuid]
+            retVal = self.instance_table[hint]['table'][uuid]
         else:
             retVal = self.data[uuid]
 

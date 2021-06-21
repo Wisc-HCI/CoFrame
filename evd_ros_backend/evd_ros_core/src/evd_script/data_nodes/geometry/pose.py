@@ -225,7 +225,7 @@ class Pose(Node):
     def link(self, value):
         if self._link != value:
             self._link = value
-            self.updated_attribute('link')
+            self.updated_attribute('link','set')
 
     def set(self, dct):
         pos = dct.get('position',None)

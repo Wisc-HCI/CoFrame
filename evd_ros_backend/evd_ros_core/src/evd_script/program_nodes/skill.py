@@ -29,7 +29,7 @@ class Skill(Hierarchical):
         return 'Skill'
 
     @classmethod
-    def type_string(cls, trailing_delim):
+    def type_string(cls, trailing_delim=True):
         return 'skill' + ('.' if trailing_delim else '')
     
     @classmethod
@@ -239,13 +239,13 @@ class Skill(Hierarchical):
         # ]
 
         for uuid in arg_uuids:
-                if uuid not in self._arguments.keys():
-                    raise Exception('Skill arguement is being used before it exists in the arguments list')
+            if uuid not in self._arguments.keys():
+                raise Exception('Skill arguement is being used before it exists in the arguments list')
 
-                key = self._arguments[uuid].parameter_key
-                value = self._arguments[uuid].temporary_value
+            key = self._arguments[uuid].parameter_key
+            value = self._arguments[uuid].temporary_value
 
-                getattr(prm,key) = value
+            setattr(prm,key,value)
 
     def resolve_to_hierarchical(self, arg_map):
         # arg_map = {

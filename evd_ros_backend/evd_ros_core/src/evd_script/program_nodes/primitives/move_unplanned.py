@@ -64,7 +64,7 @@ class MoveUnplanned(Primitive):
         })
         return template
 
-    def __init__(self, locUuid, manual_safety=True, move_type="joint", velocity=0,
+    def __init__(self, location_uuid=None, manual_safety=True, move_type="joint", velocity=0,
                  type='', name='', uuid=None, parent=None, append_type=True,
                  editable=True, deleteable=True, description='', parameters=None):
 
@@ -72,7 +72,7 @@ class MoveUnplanned(Primitive):
             parameters = {
                 'velocity': velocity,
                 'move_type': move_type,
-                'location_uuid': locUuid,
+                'location_uuid': location_uuid,
                 'manual_safety': manual_safety
             }
 

@@ -190,7 +190,7 @@ class Node(ABC):
         if type != None:
             self.type = type
 
-        if 'description' in dct.key():
+        if 'description' in dct.keys():
             self.description = dct['description']
 
     '''

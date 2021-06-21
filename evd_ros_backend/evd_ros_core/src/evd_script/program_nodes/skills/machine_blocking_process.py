@@ -30,7 +30,7 @@ class MachineBlockingProcess(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self, primitives=None, arguments=None, parameters=None, type='', 
-                 name='', uuid=None, parent=None, append_type=True, 
+                 name=None, uuid=None, parent=None, append_type=True, 
                  editable=False, deleteable=False, description=''):
 
         machine_uuid_arg = None
@@ -56,6 +56,9 @@ class MachineBlockingProcess(Skill):
         else: # make sure each has a fresh copy (only applicable since we predefined the primitives)
             for p in primitives:
                 p.machine_uuid = machine_uuid_arg.temporary_value
+
+        if name == None:
+            name = 'Machine Blocking Process'
 
         super(MachineBlockingProcess,self).__init__(
             type=MachineBlockingProcess.type_string() + type if append_type else type,

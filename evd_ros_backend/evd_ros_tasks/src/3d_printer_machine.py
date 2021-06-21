@@ -7,7 +7,7 @@ Behavior implementation hooks are stubbed. Machine and thing type registration i
 also handled.
 '''
 
-
+"""
 import rospy
 
 from evd_script import Machine, MachineRecipe, CubeRegion, Position, Orientation, ThingType
@@ -148,3 +148,4 @@ if __name__ == "__main__":
 
     node = PrinterMachineNode(position,orientation,uuid,prefix,rate,simulated)
     node.spin()
+"""

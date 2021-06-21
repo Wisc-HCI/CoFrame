@@ -24,10 +24,10 @@ class MachineStart(MachinePrimitive):
     def full_type_string(cls):
         return MachinePrimitive.full_type_string() + cls.type_string()
 
-    def __init__(self, machineUuid=None, parameters=None, type='', name='', uuid=None, parent=None,
+    def __init__(self, machine_uuid=None, parameters=None, type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):
         super(MachineStart,self).__init__(
-            machineUuid=machineUuid,
+            machine_uuid=machine_uuid,
             type=MachineStart.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,

@@ -20,7 +20,7 @@ class SkillArgument(Node):
         return 'Skill Argument'
 
     @classmethod
-    def type_string(cls, trailing_delim):
+    def type_string(cls, trailing_delim=True):
         return 'skill-argument' + ('.' if trailing_delim else '')
 
     @classmethod

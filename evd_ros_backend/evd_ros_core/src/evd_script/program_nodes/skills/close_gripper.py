@@ -27,7 +27,7 @@ class CloseGripper(Skill):
         return Skill.full_type_string() + cls.type_string()
 
     def __init__(self,  primitives=None, arguments=None, parameters=None, type='',
-                 name='', uuid=None, parent=None, append_type=True,
+                 name=None, uuid=None, parent=None, append_type=True,
                  editable=True, deleteable=True, description=''):
 
         thing_uuid_arg = None
@@ -55,6 +55,9 @@ class CloseGripper(Skill):
             ]
         else:
             primitives[0].thing_uuid = thing_uuid_arg.temporary_value
+
+        if name == None:
+            name = 'Close Gripper'
 
         super(CloseGripper,self).__init__(
             type=CloseGripper.type_string() + type if append_type else type,

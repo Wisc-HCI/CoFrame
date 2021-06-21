@@ -116,7 +116,7 @@ class Machine(Node):
         self.outputs = outputs if outputs != None else {}
         self.process_time = process_time
         self.mesh_id = mesh_id
-        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deletable=False, editable=editable)
+        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deleteable=False, editable=editable)
         self.link = link
         self.collision_mesh_uuid = collision_mesh_uuid
 
@@ -245,16 +245,14 @@ class Machine(Node):
 
     @outputs.setter
     def outputs(self, value):
-        if self._output_regions != value:
-            for k in self._output_regions.keys():
-                self._output_regions[k].remove_from_cache()
+        if self._outputs != value:
+            if value == None:
+                raise Exception('Must be a valid dictionary')
 
-            self._output_regions = value
-            for k in self._output_regions.keys():
-                self._output_regions[k].parent = self
+            self._outputs = value
 
             self._compute_type()
-            self.updated_attribute('output_regions','set')
+            self.updated_attribute('outputs','set')
 
     def add_output_region(self, thing_type_uuid, region_uuid, quantity, override=False):
         verb = 'add'
@@ -456,15 +454,15 @@ class Machine(Node):
     def _compute_type(self):
         type = None
 
-        if self.input_regions == None and self.output_regions == None:
+        if self.inputs == None and self.outputs == None:
             type = 'useless'
-        elif self.input_regions == None and self.output_regions != None:
-            if len(self.output_regions) > 0:
+        elif self.inputs == None and self.outputs != None:
+            if len(self.outputs) > 0:
                 type = 'generator'
             else:
                 type = 'useless'
-        elif self.input_regions != None and self.output_regions == None:
-            if len(self.input_regions) > 0:
+        elif self.inputs != None and self.outputs == None:
+            if len(self.inputs) > 0:
                 type = 'consumer'
             else:
                 type = 'useless'
