@@ -1,48 +1,31 @@
 import React from 'react';
-import { useDrag } from 'react-dnd';
 import { Card, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+
+import { ItemSortable } from './Wrappers';
 
 import useEvdStore from '../../stores/EvdStore';
 import useGuiStore from '../../stores/GuiStore';
 
-const style = {
-    position: 'absolute',
-    border: '1px solid gray',
-    borderRadius: 3,
-    color: 'black',
-    backgroundColor: 'white',
-    padding: '0.5rem 1rem',
-    cursor: 'move',
-};
-
 export const ProgramBlock = (_) => {
     
-    const {name,uuid,transform,primitiveIds,setName} = useEvdStore(state=>({
+    const {name,uuid,primitiveIds} = useEvdStore(state=>({
         name:state.name,
         uuid:state.uuid,
-        transform:state.transform,
         primitiveIds:state.primitiveIds,
-        setName:state.setName,
-        setTransform:state.setTransform
     }))
 
-    const [setFocusItem] = useGuiStore(state=>([state.setFocusItem]));
-    
-    const [{ isDragging }, drag] = useDrag(() => ({
-        type: 'program',
-        item: { id:uuid, left:transform.left, top:transform.top },
-        collect: (monitor) => ({
-            isDragging: monitor.isDragging(),
-        }),
-    }), [uuid, transform]);
-    
-    if (isDragging) {
-        return <div ref={drag} />;
-    }
+    const [dragItem,setFocusItem] = useGuiStore(state=>([
+        state.dragItem,
+        state.setFocusItem
+    ]));
 
     return (
-        <div ref={drag} style={{cursor:'move',position:'absolute',left:transform.left, top:transform.top}} role='Box'>
+        <div style={{display:'inline-block'}}>
             <Card 
                 title={name} 
                 role="Box" 
@@ -56,13 +39,14 @@ export const ProgramBlock = (_) => {
                         icon={<EllipsisOutlined />}
                     />
                 }>
-                <div style={{height:'100%',width:'100%'}}>
+                <SortableContext items={primitiveIds} strategy={verticalListSortingStrategy}>
                     {primitiveIds.map(id=>(
-                        <div style={{backgroundColor:'#1f1f1f',borderRadius:3,margin:4}}>{id}</div>
+                        <ItemSortable key={id} id={id} source={uuid} itemType='primitive' hide={dragItem!==null&&dragItem.uuid===id}/>
                     ))}
-                </div>
+                </SortableContext>
             </Card>
         </div>
+        
         
     );
 };

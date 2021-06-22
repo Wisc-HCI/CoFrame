@@ -11,7 +11,7 @@ const style = {
     cursor: 'move',
 };
 
-export const FunctionBlock = ({ uuid }) => {
+export const SkillBlock = ({ uuid }) => {
     
     const {item,setItemProperty} = useEvdStore(useCallback(state=>({
         item:state.data.primitives[uuid],

@@ -3,10 +3,6 @@ import ReactDOM from 'react-dom';
 import { App } from './App';
 import './index.css'
 import * as serviceWorker from './serviceWorker';
-import { evdScriptBlocklyInitialize } from './model/evdScript';
-
-
-evdScriptBlocklyInitialize();
 
 
 

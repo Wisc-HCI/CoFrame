@@ -6,7 +6,7 @@ import { flattenProgram } from './helpers';
 const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
 
-const typeToKey = (type) => {
+export const typeToKey = (type) => {
   let key;
   switch(type) {
     case 'trajectory':
@@ -26,7 +26,6 @@ const store = (set,get) => ({
     uuid: 'program',
     type: 'node.primitive.hierarchical.program.',
     description: 'Default Program Description',
-    transform: {top:30,left:30},
     data: {
       //TODO store other data
       gradeTypes: {},
@@ -52,7 +51,6 @@ const store = (set,get) => ({
       get().setUuid(program.uuid);
       get().setType(program.type);
       get().setDescription(program.description);
-      get().setTransform({top:3,left:3});
       
       program.environment.grade_types.forEach((gradeType)=>{
         get().addItem('gradeType',gradeType)
@@ -103,7 +101,6 @@ const store = (set,get) => ({
     setUuid: (text) => set((_)=>({uuid:text})),
     setType: (text) => set((_)=>({type:text})),
     setDescription: (text) => set((_)=>({description:text})),
-    setTransform: ({top, left}) => set((_)=>({transform:{top,left}})),
     insertPrimitiveId: (primitiveId, parentId, index) => set((state)=>{
       if (parentId === state.uuid) {
         // This is the top-level program, so add to top level list of uuids
@@ -122,13 +119,22 @@ const store = (set,get) => ({
         state.data.primitives[parentId].primitiveIds.push(primitiveId)
       }
     }),
-    deletePrimitiveId: (primitiveId, parentId) => set((state)=>{
+    deletePrimitiveId: (parentId, index) => set((state)=>{
       if (parentId === state.uuid) {
-        // This is the top-level program, so add to top level list of uuids
-        state.primitiveIds = state.primitiveIds.filter((id)=>id===primitiveId)
+        // This is the top-level program, so remove from top-level set of primitiveIds
+        state.primitiveIds.splice(index,1)
       } else {
         // This is some other child of the program, so look it up and edit in data
-        state.data.primitives[parentId].primitiveIds = state.data.primitives[parentId].primitiveIds.filter((id)=>id===primitiveId)
+        state.data.primitives[parentId].primitiveIds.splice(index,1)
+      }
+    }),
+    setPrimitiveIds: (primitiveIds, parentId) => set((state)=>{
+      if (parentId === state.uuid) {
+        // This is the top-level program, so add to top level list of uuids
+        state.primitiveIds = primitiveIds
+      } else {
+        // This is some other child of the program, so look it up and edit in data
+        state.data.primitives[parentId].primitiveIds = primitiveIds
       }
     }),
     // Piecewise update functions for data

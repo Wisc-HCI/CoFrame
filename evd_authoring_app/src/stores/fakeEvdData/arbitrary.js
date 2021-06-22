@@ -1109,7 +1109,7 @@ let program = {
         {
             type: 'node.primitive.skill-call',
             uuid: 'some-skill-call-uuid',
-            name: '',
+            name: 'Execute Skill',
             editable: false,
             deleteable: false,
             description: '',
@@ -1127,7 +1127,7 @@ let program = {
         {
             type: 'node.primitive.move-trajectory.',
             uuid: 'move-trajectory-uuid-0',
-            name: '',
+            name: 'Move Trajectory',
             editable: false,
             deleteable: false,
             description: '',
@@ -1139,7 +1139,7 @@ let program = {
         {
             type: 'node.primitive.gripper.',
             uuid: 'gripper-grasp-uuid-0',
-            name: '',
+            name: 'Grasp',
             editable: false,
             deleteable: false,
             description: '',
@@ -1154,7 +1154,7 @@ let program = {
         {
             type: 'node.primitive.move-trajectory.',
             uuid: 'move-trajectory-uuid-1',
-            name: '',
+            name: 'Move Trajectory',
             editable: false,
             deleteable: false,
             description: '',
@@ -1166,7 +1166,7 @@ let program = {
         {
             type: 'node.primitive.gripper.',
             uuid: 'gripper-grasp-uuid-1',
-            name: '',
+            name: 'Release',
             editable: false,
             deleteable: false,
             description: '',

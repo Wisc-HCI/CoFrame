@@ -67,7 +67,7 @@ export const Detail = (_) => {
                   {item.deleteable ? (
                       <Popover title= "Are you sure you want to delete this item?"
                                trigger = "click"
-                               placement ="left"
+                               placement ="top"
                                content = {content}>
                                   <Button
                                     danger

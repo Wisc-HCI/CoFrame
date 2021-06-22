@@ -30,7 +30,11 @@ const store = (set) => ({
     clearSearchTerm: () => set((_)=>({searchTerm:''})),
     // whether the sim window is expanded to the whole width
     simMode: 'default',
-    setSimMode: (mode) => set((_)=>({simMode:mode}))
+    setSimMode: (mode) => set((_)=>({simMode:mode})),
+    // for program editor, dragged item uuid and metadata
+    dragItem: null,
+    setDragItem: (item) => set((_)=>({dragItem:item})),
+    clearDragItem: () => set((_)=>({dragItem:null})),
 });
 
 const useGuiStore = create(immer(store));
