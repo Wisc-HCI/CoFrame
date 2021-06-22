@@ -12,15 +12,15 @@
 
   <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py" output="screen"/>
 
-  <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen"/>
+  <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen">
+    <param name="config_file" value="$(arg app_filepath)/processor_config.json" />
+  </node>
 
-  <node name="waypoint_processor" pkg="evd_ros_core" type="waypoint_processor.py" output="screen"/>
+  <node name="joint_processor" pkg="evd_ros_core" type="joint_processor.py" output="screen">
+    <param name="config_file" value="$(arg app_filepath)/processor_config.json" />
+  </node>
 
   <node name="program_verifier" pkg="evd_ros_core" type="program_verifier.py" output="screen"/>
-
-  <node name="grasp_verifier" pkg="evd_ros_core" type="grasp_verifier.py" output="screen">
-    <param name="app_filepath" value="$(arg app_filepath)"/>
-  </node>
 
   <!-- For Debug -->
   <include if="$(arg run_test)" file="$(find evd_ros_core)/launch/test_core_application.launch">

@@ -30,16 +30,20 @@ class FakeFrontendNode:
         self._registration_sub = rospy.Subscriber('{0}program/register'.format(prefix_fmt), StringArray, self._program_register_cb)
         self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5)
 
+        self._issues_submit_sub = rospy.Subscriber('{0}program/submit/issue'.format(prefix_fmt), Issue, self._issue_submit_cb)
+        self._issues_clear_sub = rospy.Subscriber('{0}program/clear/issue'.format(prefix_fmt), Issue, self._issue_clear_cb)
+
         self._trace_request_pub = rospy.Publisher('{0}program/request/trace'.format(prefix_fmt), Job, queue_size=5)
         self._trace_submit_sub = rospy.Subscriber('{0}program/submit/trace'.format(prefix_fmt), Job, self._trace_submit_cb)
-        self._trace_clear_pub = rospy.Publisher('{0}program/clear/trace'.format(prefix_fmt), Job, queue_size=5)
+        self._trace_clear_pub = rospy.Publisher('{0}program/clear/trace'.format(prefix_fmt), String, queue_size=5)
 
         self._joints_request_pub = rospy.Publisher('{0}program/request/joints'.format(prefix_fmt), Job, queue_size=5)
         self._joints_submit_sub = rospy.Subscriber('{0}program/submit/joints'.format(prefix_fmt), Job, self._joints_submit_cb)
-        self._joints_clear_pub = rospy.Publisher('{0}program/clear/joints'.format(prefix_fmt), Job, queue_size=5)
+        self._joints_clear_pub = rospy.Publisher('{0}program/clear/joints'.format(prefix_fmt), String, queue_size=5)
 
-        self._issues_submit_sub = rospy.Subscriber('{0}program/submit/issue'.format(prefix_fmt), Issue, self._issue_submit_cb)
-        self._issues_clear_sub = rospy.Subscriber('{0}program/clear/issue'.format(prefix_fmt), Issue, self._issue_clear_cb)
+        self._program_verification_request_pub = rospy.Publisher('{0}program/request/program_verification'.format(prefix_fmt), Job, queue_size=5)
+        self._program_verification_submit_sub = rospy.Subscriber('{0}program/submit/program_verification'.format(prefix_fmt), Job, self._program_verification_submit_cb)
+        self._program_verification_clear_pub = rospy.Publisher('{0}program/clear/program_verification'.format(prefix_fmt), String, queue_size=5)
 
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
 
@@ -51,6 +55,9 @@ class FakeFrontendNode:
         pass
 
     def _joints_submit_cb(self, msg):
+        pass
+
+    def _program_verification_submit_cb(self, msg):
         pass
 
     def _issue_submit_cb(self, msg):
