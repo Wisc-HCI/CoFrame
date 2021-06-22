@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 '''
+Mocked-up the expected interface between the javascript frontend and the ROS system.
 '''
 
 import json

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+'''
+Runs a full check on program and attempts to repair orphans
+'''
+
 import json
 import rospy
 

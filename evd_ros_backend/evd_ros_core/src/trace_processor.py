@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 '''
+Converts abstract trajectories into executed robot movement traces.
 
+Also applies graders to the traces to produce grade appraisals
 '''
 
 import json

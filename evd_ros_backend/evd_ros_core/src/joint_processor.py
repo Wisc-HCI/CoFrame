@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-
+Confirms reachability of waypoint or location. Generates a joint datastructure.
 '''
 
 import json

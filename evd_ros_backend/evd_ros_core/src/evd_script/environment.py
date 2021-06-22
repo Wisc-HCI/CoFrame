@@ -17,6 +17,7 @@ from .data_nodes.location import Location
 from .data_nodes.thing_type import ThingType
 from .data_nodes.grade_type import GradeType
 from .data_nodes.trajectory import Trajectory
+from .data_nodes.placeholder import Placeholder
 from .node_parser import NodeParser
 from .type_defs import ALL_REGION_TYPES
 
@@ -71,7 +72,7 @@ class Environment(Context):
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], 
                  occupancy_zones=[], locations=[], machines=[], things=[], 
                  thing_types=[], waypoints=[], trajectories=[], regions=[], 
-                 grade_types=[], name='', type='', uuid=None, parent=None, 
+                 grade_types=[], placeholders=[], name='', type='', uuid=None, parent=None, 
                  append_type=True, editable=True, deleteable=True, description=''):
 
         self._reach_sphere = None
@@ -88,6 +89,7 @@ class Environment(Context):
             thing_types=thing_types,
             regions=regions,
             grade_types=grade_types,
+            placeholders=placeholders,
             type=Environment.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
@@ -126,6 +128,7 @@ class Environment(Context):
                    thing_types=[NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']],
                    regions=[NodeParser(r, enforce_types=[ALL_REGION_TYPES]) for r in dct['regions']],
                    grade_types=[NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']],
+                   placeholders=[NodeParser(p, enforce_types=[Placeholder.type_string(trailing_delim=False)]) for p in dct['placeholders']],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
