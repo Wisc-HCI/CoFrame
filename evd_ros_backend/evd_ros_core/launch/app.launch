@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="app_filepath"/>
+  <arg name="config_filepath"/>
   <arg name="ros_frame_id"/>
   <arg name="run_test" default="true"/>
 
@@ -13,11 +13,11 @@
   <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py" output="screen"/>
 
   <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen">
-    <param name="config_file" value="$(arg app_filepath)/processor_config.json" />
+    <param name="config_file" value="$(arg config_filepath)" />
   </node>
 
   <node name="joint_processor" pkg="evd_ros_core" type="joint_processor.py" output="screen">
-    <param name="config_file" value="$(arg app_filepath)/processor_config.json" />
+    <param name="config_file" value="$(arg config_filepath)" />
   </node>
 
   <node name="program_verifier" pkg="evd_ros_core" type="program_verifier.py" output="screen"/>
