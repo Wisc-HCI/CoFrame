@@ -201,6 +201,51 @@ const skillArguement_template = {
     ]
 };
 
+const placholder_template = {
+    type: 'node.placeholder.',
+    name: 'Placeholder', // generated display name
+    meta_data: [ // defining instance meta data
+        {
+            type: '<string>',
+            key: 'type'
+        },
+        {
+            type: '<string>',
+            key: 'uuid'
+        },
+        {
+            type: '<string>',
+            key: 'name'
+        },
+        {
+            type: '<boolean>',
+            key: 'editable'
+        },
+        {
+            type: '<boolean>',
+            key: 'deleteable'
+        },
+        {
+            type: '<string>',
+            key: 'description'
+        }
+    ],
+    fields: [
+        {
+            type: '<arbitrary-obj>',
+            key: 'pending_node',
+            is_uuid: false,
+            is_list: false
+        },
+        {
+            type: '<string>',
+            key: 'pending_fields',
+            is_uuid: false,
+            is_list: true
+        }
+    ]
+};
+
 /***************************************************************** 
 *  Core geometry
 *****************************************************************/
@@ -2648,6 +2693,7 @@ const fields = {
     thingType_template,
     gradeType_template,
     skillArguement_template,
+    placholder_template,
     pose_template,
     position_template,
     orientation_template,

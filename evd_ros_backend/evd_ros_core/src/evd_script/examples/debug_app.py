@@ -141,3 +141,7 @@ if __name__ == "__main__":
     rospy.init_node('test_node_placeholder_name')
 
     program = generate()
+
+    import json
+    with open('debug_app_exported.json','w+') as f:
+        json.dump(program.to_dct(),f, indent=4)

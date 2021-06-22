@@ -10,6 +10,7 @@ const NUM_THINGS = 10;
 const NUM_TRAJECTORIES = 4;
 const NUM_COLLISION_MESHES = 2;
 const NUM_PINCH_POINTS = 5;
+const NUM_PLACEHOLDERS = 3;
 
 /***************************************************************** 
 * Type Declaration
@@ -43,6 +44,35 @@ for (let i=0; i<NUM_GRADE_TYPES; i++) {
         deleteable: false,
         editable: true,
         description: 'Some descriptor string'
+    });
+}
+
+let placeholders = [];
+for (let i=0; i<NUM_PLACEHOLDERS; i++) {
+    placeholders.push({
+        type: 'node.placeholder.',
+        uuid: `placeholder-js-${i}`,
+        name: `Plaeholder-${i}`,
+        deleteable: false,
+        editable: true,
+        description: 'Some descriptor string',
+        
+        pending_node: {
+            type: 'node.pose.thing.',
+            uuid: `thing-js-${i}`,
+            name: `Thing-${i}`,
+            deleteable: true,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+    
+            thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
+            position: '<pending>',
+            orientation: '<pending>'
+        },
+        pending_fields: [
+            'position',
+            'orientation'
+        ]
     });
 }
 
@@ -350,81 +380,6 @@ let regions = [
 * - Machine
 *****************************************************************/
 
-const machine_template = {
-    type: 'node.machine.',
-    name: 'Machine', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // defining instance fields
-        {
-            type: '<arbitrary-obj>', //dictionary of lists of dictionaries of region uuid and quantities with thing_type uuid as key
-            key: 'inputs',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<arbitrary-obj>', //dictionary of lists of dictionaries of region uuid and quantities with thing_type uuid as key
-            key: 'outputs',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<number>',
-            key: 'process_time',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<string>',
-            key: 'mesh_id',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: 'node.pose.',
-            key: 'pose_offset',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<string>',
-            key: 'link',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: 'node.environment-node.collision-mesh.',
-            key: 'collision_mesh_uuid',
-            is_uuid: true,
-            is_list: false
-        }
-    ]
-}
-
 const machine_generator = {
     type: 'node.machine.',
     uuid: `machine-js-generator`,
@@ -614,172 +569,6 @@ let machines = [
 * - Trajectory
 *   - Trace
 *****************************************************************/
-
-const trajectory_template = {
-    type: 'node.trajectory.',
-    name: 'Trajectory', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // defining instance fields
-        {
-            type: 'node.pose.waypoint.location.',
-            key: 'start_location_uuid',
-            is_uuid: true,
-            is_list: false
-        },
-        {
-            type: 'node.pose.waypoint.location.',
-            key: 'end_location_uuid',
-            is_uuid: true,
-            is_list: false
-        },
-        {
-            type: 'node.pose.waypoint.',
-            key: 'waypoint_uuid',
-            is_uuid: true,
-            is_list: true
-        },
-        {
-            type: '<number>',
-            key: 'velocity',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<enum>',
-            key: 'move_type',
-            is_uuid: false,
-            is_list: false,
-            enum_values: [
-                'joints',
-                'ee_ik'
-            ]
-        },
-        {
-            type: 'node.trace.',
-            key: 'trace',
-            is_uuid: false,
-            is_list: false
-        }
-    ] 
-}
-
-const trace_template = {
-    type: 'node.trace.',
-    name: 'Trace', // generated display name
-    meta_data: [ // defining instance meta data
-        {
-            type: '<string>',
-            key: 'type'
-        },
-        {
-            type: '<string>',
-            key: 'uuid'
-        },
-        {
-            type: '<string>',
-            key: 'name'
-        },
-        {
-            type: '<boolean>',
-            key: 'editable'
-        },
-        {
-            type: '<boolean>',
-            key: 'deleteable'
-        },
-        {
-            type: '<string>',
-            key: 'description'
-        }
-    ],
-    fields: [ // instance fields
-        {
-            type: '<number>',
-            key: 'time_data',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<string>',
-            key: 'joint_names',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<arbitrary-obj>', // array of number array
-            key: 'joint_data',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<arbitrary-obj>', // dict of array of simple poses with frame keys
-            key: 'tf_data',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<arbitrary-obj>', // dict of array of numbers with grade_type uuids as keys
-            key: 'grades',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<string>',
-            key: 'end_effector_path',
-            is_uuid: false,
-            is_list: false
-        },
-        {
-            type: '<string>',
-            key: 'joint_paths',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<string>',
-            key: 'tool_paths',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<string>',
-            key: 'component_paths',
-            is_uuid: false,
-            is_list: true
-        },
-        {
-            type: '<number>',
-            key: 'duration',
-            is_uuid: false,
-            is_list: false
-        }
-    ]
-}
 
 let trajectories = [];
 for (let i=0; i<NUM_TRAJECTORIES; i++) {
@@ -989,8 +778,6 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
 *   - Various Predefined
 * - Control Flow
 *****************************************************************/
-
-
 
 let program = {
     type: 'node.primitive.hierarchical.program.',
@@ -1327,7 +1114,8 @@ let program = {
         trajectories: trajectories,
         thing_types: thingTypes,
         regions: regions,
-        grade_types: gradeTypes
+        grade_types: gradeTypes,
+        placeholders: placeholders
     },
     
     primitives: [ // just initializes but that is enough to get the point across >(0_0)<
@@ -1370,6 +1158,7 @@ const fields = {
     collisionMeshes,
     occupancyZones,
     pinchPoints,
+    placeholders,
 
     // evd_program
     program
