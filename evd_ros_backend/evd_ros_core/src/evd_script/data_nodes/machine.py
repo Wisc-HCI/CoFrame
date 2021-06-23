@@ -22,6 +22,7 @@ from ..environment_nodes.collision_mesh import CollisionMesh
 from ..type_defs import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE
 from ..node import Node
 from .geometry import Pose
+from .placeholder import Placeholder
 from ..node_parser import NodeParser
 
 
@@ -91,8 +92,9 @@ class Machine(Node):
         return template
 
     def __init__(self, inputs=None, outputs=None, process_time=0, link='', mesh_id=None, 
-                 pose_offset=None, collision_mesh_uuid=None, type='', name='', uuid=None, 
-                 parent=None, append_type=True, editable=True, deleteable=True, description=''):
+                 pose_offset=None, collision_mesh_uuid=None, type='', 
+                 name='', uuid=None, parent=None, append_type=True, editable=True, 
+                 deleteable=True, description=''):
         self._inputs = None
         self._outputs = None
         self._process_time = None
@@ -254,7 +256,7 @@ class Machine(Node):
             self._compute_type()
             self.updated_attribute('outputs','set')
 
-    def add_output_region(self, thing_type_uuid, region_uuid, quantity, override=False):
+    def add_output_region(self, thing_type_uuid, region_uuid, placeholder_uuids, override=False):
         verb = 'add'
 
         if not thing_type_uuid in self._outputs.keys():
@@ -266,7 +268,8 @@ class Machine(Node):
                 if not override:
                     raise Exception('Region already exists, cannot add')
                 else:
-                    self._outputs[i]['quantity'] = quantity
+                    self._outputs[i]['quantity'] = len(placeholder_uuids)
+                    self._outputs[i]['placeholder_uuids'] = placeholder_uuids
                     verb = 'set'
                 found = True
                 break
@@ -274,10 +277,11 @@ class Machine(Node):
         if not found:
             self._outputs[thing_type_uuid].append({
                 'region_uuid': region_uuid,
-                'quantity': quantity })
+                'quantity': len(placeholder_uuids),
+                'placeholder_uuids': placeholder_uuids })
 
         self._compute_type()
-        self.updated_attribute('inputs',verb,region_uuid)
+        self.updated_attribute('outputs',verb,region_uuid)
 
     def delete_output_region(self, thing_type_uuid, region_uuid):
         if not thing_type_uuid in self._outputs.keys():
@@ -301,7 +305,7 @@ class Machine(Node):
 
         self._compute_type()
 
-    def set_output_region_quantity(self, thing_type_uuid, region_uuid, quantity):
+    def change_output_placeholders(self, thing_type_uuid, region_uuid, placeholder_uuids):
         if not thing_type_uuid in self._outputs.keys():
             raise Exception('No such thing `{0}` in outputs'.format(thing_type_uuid))
 
@@ -314,7 +318,8 @@ class Machine(Node):
         if idx == None:
             raise Exception('Region `{0}` not in outputs'.format(region_uuid))
         else:
-            self._outputs[thing_type_uuid][idx]['quantity'] = quantity
+            self._outputs[thing_type_uuid][idx]['quantity'] = len(placeholder_uuids)
+            self._outputs[thing_type_uuid][idx]['placeholder_uuids'] = placeholder_uuids
 
         self._compute_type()
         self.updated_attribute('outputs','set',region_uuid)

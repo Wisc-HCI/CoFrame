@@ -9,6 +9,7 @@ from .trajectory import Trajectory
 from .thing import Thing
 from .thing_type import ThingType
 from .grade_type import GradeType
+from .placeholder import Placeholder
 from .skill_argument import SkillArgument
 
 

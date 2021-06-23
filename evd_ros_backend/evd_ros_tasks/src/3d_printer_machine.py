@@ -9,7 +9,8 @@ also handled.
 
 import rospy
 
-from evd_script import Machine, CubeRegion, Position, Orientation, ThingType, CollisionMesh
+from evd_script import Machine, CubeRegion, Position, Orientation, ThingType, \
+    CollisionMesh, Placeholder, Thing
 
 from evd_interfaces.machine_template import MachineTemplate
 from evd_interfaces.frontend_interface import FrontendInterface
@@ -39,6 +40,16 @@ class PrinterMachineNode(MachineTemplate):
             mesh_id='package://evd_ros_core/markers/3DBenchy.stl',
             uuid=uuid+'+thing_type')
 
+        thing = Thing(thing_type_uuid=self._evd_thing_type.uuid, name='3D Print - Placeholder Object')
+
+        self._evd_thing_placeholder = Placeholder(
+            pending_node_dct=thing.to_dct(),
+            pending_fields=[
+                'position',
+                'orientation'
+            ]
+        )
+
         self._evd_region = CubeRegion(
             uuid=uuid+'+region',
             link='3d_printer_link', 
@@ -60,7 +71,10 @@ class PrinterMachineNode(MachineTemplate):
                 self._evd_thing_type.uuid: [
                     {
                         'region_uuid': self._evd_region.uuid,
-                        'quantity': 1
+                        'quantity': 1,
+                        'placeholder_uuids': [
+                            self._evd_thing_placeholder.uuid
+                        ]
                     }
                 ]
             },   
