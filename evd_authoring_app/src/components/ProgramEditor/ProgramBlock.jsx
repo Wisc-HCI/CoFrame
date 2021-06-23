@@ -19,6 +19,8 @@ export const ProgramBlock = (_) => {
         primitiveIds:state.primitiveIds,
     }))
 
+    console.log(primitiveIds)
+
     const [dragItem,setFocusItem] = useGuiStore(state=>([
         state.dragItem,
         state.setFocusItem

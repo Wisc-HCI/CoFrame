@@ -7,6 +7,7 @@ import {childLookup} from './childLookup';
 export function ItemSortable({id, itemType, source, hide}) {
 
   const data = useEvdStore(useCallback(state=>state.data[typeToKey(itemType)][id],[id,itemType]));
+  console.log(data)
 
   const {
     attributes,
@@ -24,7 +25,9 @@ export function ItemSortable({id, itemType, source, hide}) {
     transition,
   };
   
-  return (
-    <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data}/>
-  );
+  if (data) {
+    return <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data}/>
+  } else {
+    return null;
+  }
 }

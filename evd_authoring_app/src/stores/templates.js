@@ -1,7 +1,7 @@
 import { generateUuid } from "./generateUuid"
 
 const templates = {
-    'node.primitive.delay':{
+    'node.primitive.delay.':{
         name: 'Delay',
         description: 'Delay robot for a specified time',
         editable: true,
@@ -47,7 +47,7 @@ const templates = {
         editable: true,
         deleteable: true,
         parameters: {
-            machine_uuid: null
+            machine_uuid: 'test uuid'
         }
     },
     'node.primitive.machine-primitive.machine-wait.':{
@@ -89,7 +89,7 @@ const templates = {
         deleteable: true,
         parameters: {}
     },
-    'node.primitive.skill-call':{
+    'node.primitive.skill-call.':{
         name: 'Skill Call',
         description: 'Execute a skill',
         editable: true,

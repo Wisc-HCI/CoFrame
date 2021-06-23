@@ -15,7 +15,7 @@ export function GenericDraggable({type, itemType, source, hide}) {
     setNodeRef,
     transform,
     transition,
-  } = useDraggable({id: type, data:{source,type,itemType,action:'genericDrag',initial:data}});
+  } = useDraggable({id: type, data:{uuid:data.uuid,source,type,itemType,action:'genericDrag',initial:data}});
 
   const style = {
     opacity: hide ? 0 : 1,

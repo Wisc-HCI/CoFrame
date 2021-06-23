@@ -1107,7 +1107,7 @@ let program = {
     
     primitives: [ // just initializes but that is enough to get the point across >(0_0)<
         {
-            type: 'node.primitive.skill-call',
+            type: 'node.primitive.skill-call.',
             uuid: 'some-skill-call-uuid',
             name: 'Execute Skill',
             editable: false,

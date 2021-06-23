@@ -15,7 +15,7 @@ export function GenericSortable({type, itemType, source, hide}) {
     setNodeRef,
     transform,
     transition,
-  } = useSortable({id: type, data:{source,type,itemType,action:'genericSort',initial:data}});
+  } = useSortable({id: type, data:{uuid:data.uuid,source,type,itemType,action:'genericSort',initial:data}});
   
   const style = {
     opacity: hide ? 0 : 1,

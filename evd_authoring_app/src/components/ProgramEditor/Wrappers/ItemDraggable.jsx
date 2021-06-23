@@ -14,7 +14,7 @@ export function ItemDraggable({id, itemType, source, hide}) {
     setNodeRef,
     transform,
     transition,
-  } = useDraggable({id: id, data:{source,itemType,action:'itemDrag'}});
+  } = useDraggable({id: id, data:{uuid:id,source,itemType,action:'itemDrag'}});
 
   const Child = childLookup[itemType];
   
@@ -24,7 +24,5 @@ export function ItemDraggable({id, itemType, source, hide}) {
     transition,
   };
   
-  return (
-    <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data}/>
-  );
+  return <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data}/>
 }

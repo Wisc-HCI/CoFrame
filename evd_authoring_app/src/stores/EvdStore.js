@@ -119,13 +119,33 @@ const store = (set,get) => ({
         state.data.primitives[parentId].primitiveIds.push(primitiveId)
       }
     }),
-    deletePrimitiveId: (parentId, index) => set((state)=>{
+    deletePrimitiveId: (primitiveId, parentId) => set((state)=>{
       if (parentId === state.uuid) {
         // This is the top-level program, so remove from top-level set of primitiveIds
-        state.primitiveIds.splice(index,1)
+        state.primitiveIds = state.primitiveIds.filter(id=>id!==primitiveId)
       } else {
         // This is some other child of the program, so look it up and edit in data
-        state.data.primitives[parentId].primitiveIds.splice(index,1)
+        state.data.primitives[parentId].primitiveIds = state.data.primitives[parentId].primitiveIds.filter(id=>id!==primitiveId)
+      }
+    }),
+    movePrimitiveId: (primitiveId, parentId, index) => set((state)=>{
+      // remove from all locations
+      state.primitiveIds = state.primitiveIds.filter(id=>id!==primitiveId)
+      Object.keys(state.data.primitives).forEach(parentId=>{
+        if (state.data.primitives[parentId].type.includes('hierarchical')) {
+          state.data.primitives[parentId].primitiveIds = state.data.primitives[parentId].primitiveIds.filter(id=>id!==primitiveId)
+        }
+      })
+      Object.keys(state.data.skills).forEach(parentId=>{
+        state.data.skills[parentId].primitiveIds = state.data.skills[parentId].primitiveIds.filter(id=>id!==primitiveId)
+      })
+      // add into the correct location
+      if (parentId === state.uuid) {
+        // This is the top-level program, so add to top level list of uuids
+        state.primitiveIds.splice(index,0,primitiveId)
+      } else {
+        // This is some other child of the program, so look it up and edit in data
+        state.data.primitives[parentId].primitiveIds.splice(index,0,primitiveId)
       }
     }),
     setPrimitiveIds: (primitiveIds, parentId) => set((state)=>{

@@ -34,7 +34,10 @@ export const ProgramEditor = (_) => {
     state.clearDragItem
   ]));
 
-  const {containers, hierarchy, addItem, setPrimitiveIds, insertPrimitiveId, deletePrimitiveId} = useEvdStore(state=>{
+  const {containers, hierarchy, 
+         addItem, deleteItem, 
+         setPrimitiveIds, insertPrimitiveId, 
+         deletePrimitiveId, movePrimitiveId} = useEvdStore(state=>{
     let containers = {};
     let hierarchy = {};
 
@@ -61,9 +64,11 @@ export const ProgramEditor = (_) => {
     // TODO: Add waypoint/trajectory containers
     return {containers, hierarchy, 
             addItem:state.addItem, 
+            deleteItem:state.deleteItem,
             setPrimitiveIds:state.setPrimitiveIds, 
             insertPrimitiveId:state.insertPrimitiveId, 
-            deletePrimitiveId:state.deletePrimitiveId}
+            deletePrimitiveId:state.deletePrimitiveId,
+            movePrimitiveId:state.movePrimitiveId}
   })
 
   const sensors = useSensors(
@@ -73,58 +78,122 @@ export const ProgramEditor = (_) => {
     })
   );
 
-  const handleDragEnd = (event) => {
+  const handleDragStart = (event) => {
+    const { active } = event;
+    const data = active.data.current;
+    // If the action is a generic, add that data into the store.
+    if (data.action.includes('generic')) {
+      console.log(`adding ${data.itemType}`)
+      addItem(data.itemType,data.initial)
+    }
+    setDragItem(data);
+    setDrawerOpen(null);
+  }
+
+  const handleDragOver = (event) => {
     const { active, over } = event;
 
-    if (active.data.current.action === 'itemSort') {
-      if (active.data.current.itemType === 'primitive') {
-        if (containers[over.id] !== containers[active.id]) {
-          // If the item is moved from outside the current list
-          // Remove from the old list
-          const oldContainer = containers[active.id];
-          const oldIndex = hierarchy[oldContainer].indexOf(active.id);
-          deletePrimitiveId(oldContainer,oldIndex)
-          // Add the new list
-          const newContainer = containers[over.id];
-          const newIndex = hierarchy[newContainer].indexOf(over.id);
-          insertPrimitiveId(newIndex,newContainer)
-        } else {
-          // If the item is moved from within the current list
-          const container = containers[active.id];
-          const oldIndex = hierarchy[container].indexOf(active.id);
-          const newIndex = hierarchy[container].indexOf(over.id);
-          const newIds = arrayMove(hierarchy[container], oldIndex, newIndex);
-          setPrimitiveIds(newIds, container);
-        }
-      } else if (false /* This could be other drag item types (e.g. trajectories/waypoints) */) {
-      
+
+    // This only really applies to sortables at this time.
+    if (dragItem.action.includes('Drag')) {
+      return;
+    }
+
+    // Ensure that the over item exists and has an id
+    if (!over.id) {
+      return;
+    }
+
+    const activeId = dragItem.uuid;
+    const overId = over.id;
+
+    // Get the containers for each
+    let activeContainer = containers[activeId];
+    let overContainer = containers[overId];
+    if (!overContainer && overId in Object.keys(hierarchy)) {
+      console.log('fallback on container')
+      overContainer = overId
+    }
+
+    if (!activeContainer && active.data.current.source === 'drawer') {
+      activeContainer = 'drawer';
+    }
+
+    // If containers don't exist, cancel
+    if (!activeContainer || !overContainer) {
+      console.log('one container does not exist')
+      return;
+    }
+
+    const overItems = hierarchy[overContainer];
+    const overIndex = overItems.indexOf(overId);
+
+    let newIndex;
+    if (overId in hierarchy) {
+      newIndex = overItems.length + 1
+    } else {
+      const isBelowLastItem =
+            over &&
+            overIndex === overItems.length - 1 &&
+            active.rect.current.translated &&
+            active.rect.current.translated.offsetTop >
+            over.rect.offsetTop + over.rect.height;
+
+      const modifier = isBelowLastItem ? 1 : 0;
+
+      newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+    }
+
+    movePrimitiveId(activeId,overContainer,newIndex)
+  }
+
+  const handleDragEnd = (event) => {
+    const { over } = event;
+    const activeId = dragItem.uuid;
+    const activeType = dragItem.itemType;
+    const activeAction = dragItem.action;
+    const overId = over.id;
+    let overContainer = containers[overId];
+    if (!overContainer && overId in Object.keys(hierarchy)) {
+      console.log('fallback on container')
+      overContainer = overId
+    }
+
+    if (!overContainer) {
+      if (activeAction.includes('generic')) {
+        deleteItem(activeType,activeId)
       }
-    } else if (active.data.current.action === 'genericSort') {
-      if (active.data.current.itemType === 'primitive') {
-        // If copying, there should be a field 'primitiveData' attached to the current data
-        const newPrimitiveData = active.data.current.initial;
-        const container = containers[over.id];
-        addItem('primitive', newPrimitiveData);
-        insertPrimitiveId(newPrimitiveData.uuid, containers[over.id], hierarchy[container].indexOf(over.id))
-      } else if (false /* This could be other drag item types (e.g. trajectories/waypoints) */) {
-      
+      clearDragItem()
+    }
+
+    // Get the containers in 
+    if (activeType === 'primitive') {
+      if (overId && activeId) {
+        // Probably should add additional checks that the drop overId is compatible
+        const newIndex = hierarchy[overContainer].indexOf(overId);
+        movePrimitiveId(activeId,overContainer,newIndex)
       }
+    } else if (false /* This could be other drag item types (e.g. trajectories/waypoints) */) {
+    
     }
     clearDragItem()
   }
 
-  const handleDragStart = (event) => {
+  const handleDragCancel = (event) => {
     const { active } = event;
-    setDragItem(active.data.current);
-    setDrawerOpen(null);
+    const data = active.data.current;
+    // If the drag action was a generic, remove it from the store
+    if (data.action.includes('generic')) {
+      deleteItem(data.itemType,dragItem.uuid)
+    }
+    clearDragItem();
   }
 
   const toggle = () => setDrawerExpanded(!drawerExpanded);
 
   let overlay = null;
-  if (dragItem && dragItem.action === 'genericSort') {
-    overlay = <GenericOverlay type={dragItem.type} itemType={dragItem.itemType}/>
-  } else if (dragItem && dragItem.action === 'itemSort') {
+  if (dragItem) {
+    console.log(dragItem.uuid)
     overlay = <ItemOverlay id={dragItem.uuid} itemType={dragItem.itemType}/>
   }
 
@@ -132,8 +201,11 @@ export const ProgramEditor = (_) => {
     <div style={{ width: '100%', height: '100%', display: 'flex' }}>
       <DndContext sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}>
+        onDragCancel={handleDragCancel}
+        >
         <Layout style={{ flex: 1 }}>
           <Layout.Sider collapsible collapsed={!drawerExpanded} trigger={null} style={{ align: 'left', display: 'flex', flexDirection: 'column', padding: 5 }}>
             <Button type='primary' block icon={drawerExpanded ? <LeftOutlined /> : <RightOutlined />} onClick={toggle} style={{ marginBottom: 5 }} />
