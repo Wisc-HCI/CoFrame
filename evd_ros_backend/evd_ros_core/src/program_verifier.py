@@ -18,7 +18,7 @@ class Verifier:
         self._pose_table = {}
 
         self._frontend = FrontendInterface(use_update=True, update_cb=self._program_update_cb)
-        self._job_queue = JobQueue('program_verification', self._start_job, self._end_job, self._frontend)
+        self._job_queue = JobQueue('verification', self._start_job, self._end_job, self._frontend)
 
     def _program_update_cb(self, program):
         pass

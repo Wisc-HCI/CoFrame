@@ -111,7 +111,7 @@ class Region(Pose, VisualizeMarker):
             'center_orientation': self.orientation.to_dct(),
             'free_orientation': self.free_orientation,
             'uncertainty_orientation_limit': self.uncertainty_orientation_limit,
-            'uncertainty_orientation_alt_target': self.uncertainty_orientation_alt_target.to_dct()
+            'uncertainty_orientation_alt_target': self.uncertainty_orientation_alt_target.to_dct() if self.uncertainty_orientation_alt_target != None else None
         })
         return msg
 
@@ -123,7 +123,8 @@ class Region(Pose, VisualizeMarker):
             link=dct['link'],
             free_orientation=dct['free_orientation'],
             uncertainty_orientation_limit=dct['uncertainty_orientation_limit'],
-            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
+            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]) \
+                if dct['uncertainty_orientation_alt_target'] != None else None,
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
             editable=dct['editable'],
@@ -229,7 +230,8 @@ class Region(Pose, VisualizeMarker):
             self.uncertainty_orientation_limit = dct['uncertainty_orientation_limit']
 
         if 'uncertainty_orientation_alt_target' in dct.keys():
-            self.uncertainty_orientation_alt_target = NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]) if dct['uncertainty_orientation_alt_target'] != None else None
+            self.uncertainty_orientation_alt_target = NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]) \
+                if dct['uncertainty_orientation_alt_target'] != None else None
 
         super(Region,self).set(dct)
 

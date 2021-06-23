@@ -42,15 +42,16 @@ class FakeFrontendNode:
         self._joints_submit_sub = rospy.Subscriber('{0}program/submit/joints'.format(prefix_fmt), Job, self._joints_submit_cb)
         self._joints_clear_pub = rospy.Publisher('{0}program/clear/joints'.format(prefix_fmt), String, queue_size=5)
 
-        self._program_verification_request_pub = rospy.Publisher('{0}program/request/program_verification'.format(prefix_fmt), Job, queue_size=5)
-        self._program_verification_submit_sub = rospy.Subscriber('{0}program/submit/program_verification'.format(prefix_fmt), Job, self._program_verification_submit_cb)
-        self._program_verification_clear_pub = rospy.Publisher('{0}program/clear/program_verification'.format(prefix_fmt), String, queue_size=5)
+        self._verification_request_pub = rospy.Publisher('{0}program/request/verification'.format(prefix_fmt), Job, queue_size=5)
+        self._verification_submit_sub = rospy.Subscriber('{0}program/submit/verification'.format(prefix_fmt), Job, self._verification_submit_cb)
+        self._verification_clear_pub = rospy.Publisher('{0}program/clear/verification'.format(prefix_fmt), String, queue_size=5)
 
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
 
     def _program_register_cb(self, msg):
         for entry in msg.data:
             node = NodeParser(json.loads(entry))
+            self._program.add_child(node)
 
     def _trace_submit_cb(self, msg):
         pass
@@ -58,7 +59,7 @@ class FakeFrontendNode:
     def _joints_submit_cb(self, msg):
         pass
 
-    def _program_verification_submit_cb(self, msg):
+    def _verification_submit_cb(self, msg):
         pass
 
     def _issue_submit_cb(self, msg):
@@ -91,6 +92,9 @@ if __name__ == "__main__":
 
     prefix = rospy.get_param('~prefix','')
     rate = rospy.get_param('~rate',1)
+    load_debug_prog = rospy.get_param('~load_debug_program',False)
 
-    node = FakeFrontendNode(prefix,rate,CreateDebugApp())
+    default_prog = CreateDebugApp() if load_debug_prog else None
+
+    node = FakeFrontendNode(prefix,rate,default_prog)
     node.spin()

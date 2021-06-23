@@ -31,7 +31,7 @@ class FrontendInterface:
 
         if use_registration:
             self._registration_sub = rospy.Subscriber('{0}program/call_to_register'.format(prefix_fmt), Empty, self._register_cb)
-            self._registration_pub = rospy.Publisher('{0}program/register'.format(prefix_fmt, StringArray, queue_size=5))
+            self._registration_pub = rospy.Publisher('{0}program/register'.format(prefix_fmt), StringArray, queue_size=5)
         else: 
             self._registration_sub = None
             self._registration_pub = None
@@ -50,6 +50,7 @@ class FrontendInterface:
 
     def _update_cb(self, msg):
         if self._user_update_cb != None:
+
             program = NodeParser(json.loads(msg.data))
             self._user_update_cb(program)
 
@@ -57,6 +58,7 @@ class FrontendInterface:
         self._should_register = True
         if self._user_register_cb != None:
             self._user_register_cb()
+            self._should_register = False
 
     def _jobs_request_cb(self, job_type, msg):
         self._job_providers[job_type]['user_request_cb'](msg.id, msg.data)
@@ -70,13 +72,15 @@ class FrontendInterface:
             raise Exception("Must define interface with use_registration")
         return self._should_register
 
-    def register(self, dct):
+    def register(self, dct_list):
         if self._registration_pub == None:
             raise Exception('Must define interface with use_registration')
 
         self._should_register = False
 
-        msg = String(json.dumps(dct))
+        msg = StringArray()
+        for dct in dct_list:
+            msg.data.append(json.dumps(dct))
         self._registration_pub.publish(msg)
     
     def submit_issue(self, source, id, level=None, data=None, description=''):

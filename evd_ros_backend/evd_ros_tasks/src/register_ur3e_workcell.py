@@ -3,12 +3,12 @@
 '''
 Registers robot and environment information with EvD.
 '''
-"""
+
 import rospy
 
 from evd_script import Position, ReachSphere, PinchPoint, CollisionMesh, OccupancyZone
 
-from evd_interfaces.data_client_interface import DataClientInterface
+from evd_interfaces.frontend_interface import FrontendInterface
 
 
 class URRobotEnvironment:
@@ -24,10 +24,9 @@ class URRobotEnvironment:
             PinchPoint(link='simulated_wrist_3_link', radius=0.1, length=0.16, offset=Position.from_axis('z',0.1))
         ]
         self._collision_meshes = [
-            CollisionMesh(link='box_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl'),
-            CollisionMesh(link='table_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Table.stl'),
-            CollisionMesh(link='3d_printer_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl'),
-            CollisionMesh(link='ur3e_pedestal_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl')
+            CollisionMesh(link='box_link', mesh_id='package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Box.stl'),
+            CollisionMesh(link='table_link', mesh_id='package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Table.stl'),
+            CollisionMesh(link='ur3e_pedestal_link', mesh_id='package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Pedestal.stl')
         ]
         self._occupancy_zones = [
             OccupancyZone(OccupancyZone.HUMAN_TYPE, posZ=1, sclX=2, height=-0.77),
@@ -35,34 +34,19 @@ class URRobotEnvironment:
             OccupancyZone(OccupancyZone.ROBOT_TYPE, sclX=1.6, sclZ=1.2, height=-0.77)
         ]
 
-        self._data_client = DataClientInterface(
-            sub_to_update=False, 
-            store_program=False,
-            track_local_changes=False,
-            on_program_update_cb=self._on_server_program_push)
+        self._program = FrontendInterface(use_registration=True, register_cb=self._call_to_register)
 
-    def _on_server_program_push(self):
-        uuids = self._data_client.get_uuids(False)
+    def _call_to_register(self):
+        dct_list = []
 
-        data = []
-        if self._reach_sphere.uuid not in uuids:
-            data.append(self._reach_sphere.to_dct())
+        dct_list.append(self._reach_sphere.to_dct())
+        dct_list.extend([p.to_dct() for p in self._pinch_points])
+        dct_list.extend([c.to_dct() for c in self._collision_meshes])
+        dct_list.extend([o.to_dct() for o in self._occupancy_zones])
 
-        for pp in self._pinch_points:
-            if pp.uuid not in uuids:
-                data.append(pp.to_dct())
+        self._program.register(dct_list)
 
-        for cm in self._collision_meshes:
-            if cm.uuid not in uuids:
-                data.append(cm.to_dct())
-
-        for oz in self._occupancy_zones:
-            if oz.uuid not in uuids:
-                data.append(oz.to_dct())
-
-        if len(data) > 0:
-            #TODO need to reference root node (environment)
-            self._data_client.set_program_partials(data)
+        print('workcell-registered')
 
 
 if __name__ == "__main__":
@@ -71,4 +55,4 @@ if __name__ == "__main__":
     uuid = rospy.get_param('uuid','default-ur-environment-uuid')
 
     node = URRobotEnvironment(uuid)
-"""
+    rospy.spin()

@@ -372,7 +372,7 @@ class Context(Node):
 
         for r in value:
             self._regions[r.uuid] = r
-            r.parent - self
+            r.parent = self
             if r.uuid in uuids:
                 uuids.remove(r.uuid)
 
