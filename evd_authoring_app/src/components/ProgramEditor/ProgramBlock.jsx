@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import { Card, Button } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 import {
@@ -11,23 +11,32 @@ import { ItemSortable } from './Wrappers';
 import useEvdStore from '../../stores/EvdStore';
 import useGuiStore from '../../stores/GuiStore';
 
-export const ProgramBlock = (_) => {
-    
+import { acceptLookup } from './acceptLookup';
+
+
+
+export const ProgramBlock = forwardRef((props, ref) => {
+
     const {name,uuid,primitiveIds} = useEvdStore(state=>({
         name:state.name,
         uuid:state.uuid,
         primitiveIds:state.primitiveIds,
     }))
 
-    console.log(primitiveIds)
+    const ancestors = [
+        {uuid:uuid,...acceptLookup['node.primitive.hierarchical.program'].primitiveIds},
+        {uuid:'grid',...acceptLookup.grid.primitiveIds}
+    ];
 
     const [dragItem,setFocusItem] = useGuiStore(state=>([
         state.dragItem,
         state.setFocusItem
     ]));
 
+    const styles = {display:'inline-block'};
+
     return (
-        <div style={{display:'inline-block'}}>
+        <div {...props} ref={ref} style={{...props.style, ...styles}}>
             <Card 
                 title={name} 
                 role="Box" 
@@ -42,13 +51,11 @@ export const ProgramBlock = (_) => {
                     />
                 }>
                 <SortableContext items={primitiveIds} strategy={verticalListSortingStrategy}>
-                    {primitiveIds.map(id=>(
-                        <ItemSortable key={id} id={id} source={uuid} itemType='primitive' hide={dragItem!==null&&dragItem.uuid===id}/>
+                    {primitiveIds.map((id,idx)=>(
+                        <ItemSortable key={id} id={id} idx={idx} ancestors={ancestors} itemType='primitive' hide={dragItem!==null&&dragItem.uuid===id}/>
                     ))}
                 </SortableContext>
             </Card>
         </div>
-        
-        
     );
-};
+});

@@ -4,18 +4,17 @@ import {CSS} from '@dnd-kit/utilities';
 import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
 import {childLookup} from './childLookup';
 
-export function ItemSortable({id, itemType, source, hide}) {
+export function ItemSortable({id, idx, itemType, ancestors, hide}) {
 
   const data = useEvdStore(useCallback(state=>state.data[typeToKey(itemType)][id],[id,itemType]));
-  console.log(data)
-
+  
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-  } = useSortable({id: id, data:{uuid:id,source,itemType,action:'itemSort'}});
+  } = useSortable({id: id, data:{uuid:id,idx,ancestors,itemType,action:'itemSort',record:data}});
 
   const Child = childLookup[itemType];
   
@@ -25,9 +24,5 @@ export function ItemSortable({id, itemType, source, hide}) {
     transition,
   };
   
-  if (data) {
-    return <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data}/>
-  } else {
-    return null;
-  }
+  return <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data} idx={idx}/>
 }

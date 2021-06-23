@@ -1,12 +1,10 @@
 import React from 'react';
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
-import {fromTemplate} from '../../../stores/templates';
 import {childLookup} from './childLookup';
 
-export function GenericSortable({type, itemType, source, hide}) {
+export function GenericSortable({idx, itemType, data, ancestors, hide}) {
 
-  const data = fromTemplate(type);
   const Child = childLookup[itemType];
 
   const {
@@ -15,7 +13,7 @@ export function GenericSortable({type, itemType, source, hide}) {
     setNodeRef,
     transform,
     transition,
-  } = useSortable({id: type, data:{uuid:data.uuid,source,type,itemType,action:'genericSort',initial:data}});
+  } = useSortable({id: data.uuid, data:{uuid:data.uuid,idx,ancestors,itemType,action:'genericSort',record:data}});
   
   const style = {
     opacity: hide ? 0 : 1,
@@ -23,7 +21,5 @@ export function GenericSortable({type, itemType, source, hide}) {
     transition,
   };
   
-  return (
-    <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data}/>
-  );
+  return <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data} idx={idx}/>
 }
