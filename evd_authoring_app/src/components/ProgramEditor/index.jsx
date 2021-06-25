@@ -14,7 +14,7 @@ import {
 
 import { Layout, Button, Popover } from 'antd';
 import { ToolOutlined, PicCenterOutlined, SubnodeOutlined, LeftOutlined, RightOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Grid } from './Grid';
+import { Canvas } from './Canvas';
 import { ProgramBlock } from './ProgramBlock';
 import { PrimitivesDrawer } from './PrimitivesDrawer'
 import { ItemOverlay } from './Wrappers';
@@ -52,8 +52,8 @@ export const ProgramEditor = (_) => {
     state.clearDragItem
   ]));
 
-  const {hierarchy, 
-         addItem, deleteItem, 
+  const {hierarchy,
+         addItem, deleteItem,
          movePrimitiveId} = useEvdStore(state=>{
     let hierarchy = {};
 
@@ -76,7 +76,7 @@ export const ProgramEditor = (_) => {
 
     // TODO: Add waypoint/trajectory containers
     return {hierarchy,
-            addItem:state.addItem, 
+            addItem:state.addItem,
             deleteItem:state.deleteItem,
             movePrimitiveId:state.movePrimitiveId}
   })
@@ -150,7 +150,7 @@ export const ProgramEditor = (_) => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
     const overData = over.data.current;
-    
+
     // Get a bunch of info about the active item and what it is hovering over
     const activeId = dragItem.uuid;
     const activeAction = dragItem.action;
@@ -173,7 +173,7 @@ export const ProgramEditor = (_) => {
       clearDragItem()
     }
 
-    // Get the containers in 
+    // Get the containers in
     if (activeType === 'primitive') {
       if (overId && activeId) {
         // Probably should add additional checks that the drop overId is compatible
@@ -182,7 +182,7 @@ export const ProgramEditor = (_) => {
         movePrimitiveId(activeId,overContainer,newIndex)
       }
     } else if (false /* This could be other drag item types (e.g. trajectories/waypoints) */) {
-    
+
     }
     clearDragItem()
   }
@@ -241,9 +241,11 @@ export const ProgramEditor = (_) => {
             </Button>
           </Layout.Sider>
           <Layout.Content style={{ height: 'calc(100vh - 115pt)', overflow: 'scroll' }}>
-            <Grid>
+
+            <Canvas>
               <ProgramBlock />
-            </Grid>
+            </Canvas>
+          
           </Layout.Content>
         </Layout>
         <DragOverlay>
