@@ -46,7 +46,7 @@ export const WaypointDetail = ({uuid}) => {
       placement="left"
       content={
         <Space>
-          <h4 style={{ color: "red" }}>R</h4>
+          <h4 style={{ color: "red" }}>X</h4>
           <InputNumber
             precision={2}
             style={{ margin: "0 16px" }}
@@ -55,7 +55,7 @@ export const WaypointDetail = ({uuid}) => {
               }
             }}
           />
-          <h4 style={{ color: "lime" }}>P</h4>
+          <h4 style={{ color: "lime" }}>Y</h4>
           <InputNumber
             precision={2}
             style={{ margin: "0 16px" }}
@@ -64,7 +64,7 @@ export const WaypointDetail = ({uuid}) => {
               }
             }}
           />
-          <h4 style={{ color: "blue" }}>Y</h4>
+          <h4 style={{ color: "blue" }}>Z</h4>
           <InputNumber
             precision={2}
             style={{ margin: "0 16px" }}
