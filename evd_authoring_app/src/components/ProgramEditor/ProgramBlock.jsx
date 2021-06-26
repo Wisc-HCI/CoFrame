@@ -1,31 +1,23 @@
 import React, {forwardRef} from 'react';
 import { Card, Button } from 'antd';
-import { EllipsisOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, DragOutlined } from '@ant-design/icons';
 import {
     SortableContext,
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
 import { ItemSortable } from './Wrappers';
-
-import useEvdStore from '../../stores/EvdStore';
 import useGuiStore from '../../stores/GuiStore';
 
 import { acceptLookup } from './acceptLookup';
 
+export const ProgramBlock = forwardRef((props,ref) => {
 
-
-export const ProgramBlock = forwardRef((props, ref) => {
-
-    const {name,uuid,primitiveIds} = useEvdStore(state=>({
-        name:state.name,
-        uuid:state.uuid,
-        primitiveIds:state.primitiveIds,
-    }))
+    const {name,uuid,primitiveIds} = props.data;
 
     const ancestors = [
         {uuid:uuid,...acceptLookup['node.primitive.hierarchical.program'].primitiveIds},
-        {uuid:'grid',...acceptLookup.grid.primitiveIds}
+        ...props.ancestors
     ];
 
     const [dragItem,setFocusItem] = useGuiStore(state=>([
@@ -33,12 +25,14 @@ export const ProgramBlock = forwardRef((props, ref) => {
         state.setFocusItem
     ]));
 
-    const styles = {display:'inline-block'};
+    const styles = {
+        display:'inline-block'
+      };
 
     return (
-        <div {...props} ref={ref} style={{...props.style, ...styles}}>
+        <div {...props} style={{...props.style, ...styles}}>
             <Card 
-                title={name} 
+                title={<><Button type='text'  ref={ref} icon={<DragOutlined/>} style={{marginRight:10}}/>{name}</>} 
                 role="Box" 
                 style={{minWidth:250}}
                 headStyle={{backgroundColor:'#1f1f1f'}}

@@ -26,6 +26,7 @@ const store = (set,get) => ({
     uuid: 'program',
     type: 'node.primitive.hierarchical.program.',
     description: 'Default Program Description',
+    transform: {x:100,y:100},
     data: {
       //TODO store other data
       gradeTypes: {},
@@ -101,6 +102,7 @@ const store = (set,get) => ({
     setUuid: (text) => set((_)=>({uuid:text})),
     setType: (text) => set((_)=>({type:text})),
     setDescription: (text) => set((_)=>({description:text})),
+    setTransform: (x,y) => set((_)=>({transform:{x,y}})),
     insertPrimitiveId: (primitiveId, parentId, index) => set((state)=>{
       if (parentId === state.uuid) {
         // This is the top-level program, so add to top level list of uuids

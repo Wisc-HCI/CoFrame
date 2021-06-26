@@ -7,6 +7,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  defaultDropAnimation,
 } from '@dnd-kit/core';
 import {
   sortableKeyboardCoordinates
@@ -14,9 +15,9 @@ import {
 
 import { Layout, Button, Popover } from 'antd';
 import { ToolOutlined, PicCenterOutlined, SubnodeOutlined, LeftOutlined, RightOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Grid } from './Grid';
-import { ProgramBlock } from './ProgramBlock';
+import { Canvas } from './Canvas';
 import { PrimitivesDrawer } from './PrimitivesDrawer'
+import { ProgramOverlay } from './Wrappers/ProgramOverlay';
 import { ItemOverlay } from './Wrappers';
 import useGuiStore from '../../stores/GuiStore';
 import useEvdStore from '../../stores/EvdStore';
@@ -52,9 +53,12 @@ export const ProgramEditor = (_) => {
     state.clearDragItem
   ]));
 
+  const dropAnimation = {...defaultDropAnimation,dragSourceOpacity:0.5};
+
   const {hierarchy, 
          addItem, deleteItem, 
-         movePrimitiveId} = useEvdStore(state=>{
+         movePrimitiveId,
+         setTransform} = useEvdStore(state=>{
     let hierarchy = {};
 
     // first handle the program
@@ -78,7 +82,9 @@ export const ProgramEditor = (_) => {
     return {hierarchy,
             addItem:state.addItem, 
             deleteItem:state.deleteItem,
-            movePrimitiveId:state.movePrimitiveId}
+            movePrimitiveId:state.movePrimitiveId,
+            setTransform:state.setTransform,
+          }
   })
 
   const sensors = useSensors(
@@ -148,7 +154,7 @@ export const ProgramEditor = (_) => {
   }
 
   const handleDragEnd = (event) => {
-    const { active, over } = event;
+    const { active, over, delta } = event;
     const overData = over.data.current;
     
     // Get a bunch of info about the active item and what it is hovering over
@@ -166,7 +172,24 @@ export const ProgramEditor = (_) => {
       }
     })
 
+    // This only really applies to sortables at this time.
+    if (dragItem.action.includes('Drag')) {
+      if (overContainer && activeType === 'node.primitive.hierarchical.program.') {
+        console.log(dragItem)
+        console.log(delta)
+        setTransform(
+          dragItem.record.transform.x + delta.x, 
+          dragItem.record.transform.y + delta.y
+        )
+      } else if (overContainer) {
+        console.log(`handle moving ${activeType} to the correct container`)
+      }
+      clearDragItem()
+      return
+    }
+
     if (!overContainer) {
+      console.log('not over container')
       if (activeAction.includes('generic')) {
         deleteItem(activeType,activeId)
       }
@@ -181,8 +204,8 @@ export const ProgramEditor = (_) => {
         const newIndex = getNewIndex(active, over, overItems, overIndex, hierarchy)
         movePrimitiveId(activeId,overContainer,newIndex)
       }
-    } else if (false /* This could be other drag item types (e.g. trajectories/waypoints) */) {
-    
+    } else if (activeType === 'program') {
+      console.log('ending drag of program')
     }
     clearDragItem()
   }
@@ -199,8 +222,10 @@ export const ProgramEditor = (_) => {
   const toggle = () => setDrawerExpanded(!drawerExpanded);
 
   let overlay = null;
-  if (dragItem) {
+  if (dragItem && dragItem.itemType !== 'program') {
     overlay = <ItemOverlay id={dragItem.uuid} itemType={dragItem.itemType}/>
+  } else if (dragItem) {
+    overlay = <ProgramOverlay/>
   }
 
   return (
@@ -241,12 +266,10 @@ export const ProgramEditor = (_) => {
             </Button>
           </Layout.Sider>
           <Layout.Content style={{ height: 'calc(100vh - 115pt)', overflow: 'scroll' }}>
-            <Grid>
-              <ProgramBlock />
-            </Grid>
+            <Canvas/>
           </Layout.Content>
         </Layout>
-        <DragOverlay>
+        <DragOverlay dropAnimation={dropAnimation}>
           {overlay}
         </DragOverlay>
       </DndContext>

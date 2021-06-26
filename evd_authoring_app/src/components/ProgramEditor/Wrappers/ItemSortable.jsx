@@ -24,5 +24,5 @@ export function ItemSortable({id, idx, itemType, ancestors, hide}) {
     transition,
   };
   
-  return <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data} idx={idx}/>
+  return <Child ref={setNodeRef} style={style} {...attributes} {...listeners} data={data} idx={idx} ancestors={ancestors}/>
 }
