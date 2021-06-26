@@ -1,20 +1,38 @@
-import React, {useCallback} from 'react';
-
-
-
-import { Empty } from 'antd';
+import React, {useCallback,useState} from 'react';
 
 import useEvdStore from '../../stores/EvdStore';
 
 
 import { List, Space, Button, Popover,InputNumber,Divider,Col,Input } from 'antd';
 import { DeleteOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
-
-
-
-
+import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
+import {OrientationInput} from './OrientationInput';
+import {PositionInput} from './PositionInput';
 
 export const LocationDetail = ({uuid}) => {
+    const RAD_2_DEG = 180 / Math.PI;
+    const DEG_2_RAD = Math.PI / 180;
+
+    const eulerVecToDegrees = (vec) => {
+      return vec.map(v=>RAD_2_DEG*v)
+    }
+    const eulerVecToRadians = (vec) => {
+      return vec.map(v=>DEG_2_RAD*v)
+    }
+    const [eulerValues, setEulerValues] = useState(eulerVecToDegrees(eulerFromQuaternion(uuid)));
+    const DEGREE_STEP = uuid.step ? uuid.step*DEG_2_RAD : 1;
+    let limits = [-360,360];
+
+    let oriMinMax = [-2*Math.PI,2*Math.PI]
+
+    if (uuid.onlyPositive) {
+      limits[0] = 0
+    }
+
+
+
+
+
 
     const {location} = useEvdStore(useCallback(state=>({
         location:state.data.locations[uuid],
@@ -44,105 +62,9 @@ export const LocationDetail = ({uuid}) => {
       />
 
       <Divider/>
-
-      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
-      <b>Position:</b>
-      <Popover
-      placement="left"
-      content={
-        <Space>
-          <h4 style={{ color: "red" }}>X</h4>
-          <InputNumber
-            precision={2}
-            style={{ margin: "0 16px" }}
-            onChange={(v) => {
-              if (typeof v === "number") {
-              }
-            }}
-          />
-          <h4 style={{ color: "lime" }}>Y</h4>
-          <InputNumber
-            precision={2}
-            style={{ margin: "0 16px" }}
-            onChange={(v) => {
-              if (typeof v === "number") {
-              }
-            }}
-          />
-          <h4 style={{ color: "blue" }}>Z</h4>
-          <InputNumber
-            precision={2}
-            style={{ margin: "0 16px" }}
-            onChange={(v) => {
-              if (typeof v === "number") {
-              }
-            }}
-          />
-        </Space>
-      }
-      title="Set Rotation"
-      trigger="click"
-
-    >
-      <Button
-        block
-        icon={<EditOutlined />}
-        style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-      >
-      </Button>
-    </Popover>
-    </div>
-
-    <br />
-    <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
-    <b>Orientation:</b>
-    <Popover
-    placement="left"
-    content={
-      <Space>
-        <h4 style={{ color: "red" }}>R</h4>
-        <InputNumber
-          precision={2}
-          style={{ margin: "0 16px" }}
-          onChange={(v) => {
-            if (typeof v === "number") {
-            }
-          }}
-        />
-        <h4 style={{ color: "lime" }}>P</h4>
-        <InputNumber
-          precision={2}
-          style={{ margin: "0 16px" }}
-          onChange={(v) => {
-            if (typeof v === "number") {
-            }
-          }}
-        />
-        <h4 style={{ color: "blue" }}>Y</h4>
-        <InputNumber
-          precision={2}
-          style={{ margin: "0 16px" }}
-          onChange={(v) => {
-            if (typeof v === "number") {
-            }
-          }}
-        />
-      </Space>
-    }
-    title="Set Rotation"
-    trigger="click"
-
-  >
-    <Button
-      block
-      icon={<EditOutlined />}
-      style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-    >
-    </Button>
-  </Popover>
+    
 
 
-  </div>
   <Divider/>
 
 
