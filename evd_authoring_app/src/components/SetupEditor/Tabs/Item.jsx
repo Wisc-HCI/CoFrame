@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
-import { List, Space, Button, Popover } from 'antd';
-import { DeleteOutlined, EllipsisOutlined, } from '@ant-design/icons';
+import { List, Space, Button, Popover,InputNumber } from 'antd';
+import { DeleteOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
 
 import useEvdStore from '../../../stores/EvdStore';
 import useGuiStore from '../../../stores/GuiStore';
@@ -42,7 +42,7 @@ export function Item(props) {
       extra={
         <Space align='center'>
           <Button
-            onClick={() => setFocusItem(type, uuid)}
+            onClick={() => setFocusItem(type, uuid,description)}
             icon={<EllipsisOutlined />}
           />
 
@@ -69,7 +69,10 @@ export function Item(props) {
 
             )}
           </div>
-        </Space>}
+
+        </Space>
+
+      }
 
       style={{
         borderRadius: 3,

@@ -3,13 +3,16 @@ import { Card, Button } from 'antd';
 import { EllipsisOutlined, DragOutlined } from '@ant-design/icons';
 import {
     SortableContext,
-    verticalListSortingStrategy,
+    verticalListSortingStrategy
 } from '@dnd-kit/sortable';
+
+import { useDraggable } from "@dnd-kit/core";
 
 import { ItemSortable } from './Wrappers';
 import useGuiStore from '../../stores/GuiStore';
 
 import { acceptLookup } from './acceptLookup';
+import {CSS} from '@dnd-kit/utilities';
 
 export const ProgramBlock = forwardRef((props,ref) => {
 
@@ -29,6 +32,10 @@ export const ProgramBlock = forwardRef((props,ref) => {
         display:'inline-block'
       };
 
+
+
+
+
     return (
         <div {...props} style={{...props.style, ...styles}}>
             <Card 
@@ -43,7 +50,8 @@ export const ProgramBlock = forwardRef((props,ref) => {
                         onClick={() => false && setFocusItem('program', uuid)}
                         icon={<EllipsisOutlined />}
                     />
-                }>
+                }
+                >
                 <SortableContext items={primitiveIds} strategy={verticalListSortingStrategy}>
                     {primitiveIds.map((id,idx)=>(
                         <ItemSortable key={id} id={id} idx={idx} ancestors={ancestors} itemType='primitive' hide={dragItem!==null&&dragItem.uuid===id}/>

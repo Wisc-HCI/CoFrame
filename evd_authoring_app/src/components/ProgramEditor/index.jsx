@@ -80,7 +80,7 @@ export const ProgramEditor = (_) => {
 
     // TODO: Add waypoint/trajectory containers
     return {hierarchy,
-            addItem:state.addItem, 
+            addItem:state.addItem,
             deleteItem:state.deleteItem,
             movePrimitiveId:state.movePrimitiveId,
             setTransform:state.setTransform,
@@ -156,7 +156,7 @@ export const ProgramEditor = (_) => {
   const handleDragEnd = (event) => {
     const { active, over, delta } = event;
     const overData = over.data.current;
-    
+
     // Get a bunch of info about the active item and what it is hovering over
     const activeId = dragItem.uuid;
     const activeAction = dragItem.action;
@@ -196,7 +196,7 @@ export const ProgramEditor = (_) => {
       clearDragItem()
     }
 
-    // Get the containers in 
+    // Get the containers in
     if (activeType === 'primitive') {
       if (overId && activeId) {
         // Probably should add additional checks that the drop overId is compatible
