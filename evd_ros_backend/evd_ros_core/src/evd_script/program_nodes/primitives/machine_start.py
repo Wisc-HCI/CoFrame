@@ -1,6 +1,8 @@
 '''
 Commands machine to start running a routine. Actual implemenation subject
 to application engineer.
+
+#TODO handle thing behavior (consumers and transformers destroy original things)
 '''
 
 from ..machine_primitive import MachinePrimitive

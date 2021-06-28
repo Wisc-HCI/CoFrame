@@ -4,6 +4,8 @@ process.
 
 This behavior is required on implemetation of a machine lest programs assume
 a static timing (bad programming).
+
+#TODO handle thing behavior (at end, transformers and producers resolve placeholders into things)
 '''
 
 from ..machine_primitive import MachinePrimitive
