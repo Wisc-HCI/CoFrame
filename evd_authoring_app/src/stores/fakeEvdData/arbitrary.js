@@ -1111,7 +1111,7 @@ let program = {
             uuid: 'some-skill-call-uuid',
             name: 'Execute Skill',
             editable: false,
-            deleteable: false,
+            deleteable: true,
             description: '',
             parameters: {
                 skill_uuid: 'initialize-skill-uuid',

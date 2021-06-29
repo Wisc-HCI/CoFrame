@@ -15,7 +15,26 @@ export const acceptLookup = {
             placement:'free'
         }
     },
-    'node.primitive.hierarchical.program': {
+    'trash': {
+        all:{
+            accepts:[
+                'node.primitive.hierarchical.skill.',
+                'node.primitive.delay.',
+                'node.primitive.breakpoint',
+                'node.primitive.gripper.',
+                'node.primitive.machine-primitive.machine-initialize.',
+                'node.primitive.machine-primitive.machine-start.',
+                'node.primitive.machine-primitive.machine-stop.',
+                'node.primitive.machine-primitive.machine-wait.',
+                'node.primitive.move-trajectory.',
+                'node.primitive.move-unplanned.',
+                'node.primitive.skill-call.',
+                'node.primitive.hierarchical.'
+            ],
+            placement:'single'
+        }
+    },
+    'node.primitive.hierarchical.program.': {
         primitiveIds:{
             accepts:[
                 'node.primitive.delay.',
@@ -33,7 +52,7 @@ export const acceptLookup = {
             placement:'sequence'
         }
     },
-    'node.primitive.hierarchical.skill': {
+    'node.primitive.hierarchical.skill.': {
         primitiveIds:{
             accepts:[
                 'node.primitive.delay.',

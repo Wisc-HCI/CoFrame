@@ -3,5 +3,5 @@ import {ProgramBlock} from '../ProgramBlock';
 
 export const childLookup = {
     'primitive': PrimitiveBlock,
-    'program': ProgramBlock
+    // 'program': ProgramBlock
 }

@@ -35,6 +35,9 @@ const store = (set) => ({
     dragItem: null,
     setDragItem: (item) => set((_)=>({dragItem:item})),
     clearDragItem: () => set((_)=>({dragItem:null})),
+    dragHoverItem: null,
+    setDragHoverItem: (item) => set((_)=>({dragHoverItem:item})),
+    clearDragHoverItem: () => set((_)=>({dragHoverItem:null})),
 });
 
 const useGuiStore = create(immer(store));

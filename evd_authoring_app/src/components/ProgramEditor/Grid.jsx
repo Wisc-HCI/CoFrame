@@ -2,6 +2,7 @@
 import styled from 'styled-components';
 
 export const Grid = styled.div`
+  padding:40pt;
   height:2000pt;
   width:1000pt;
   background-size: 30pt 30pt;

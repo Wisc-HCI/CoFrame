@@ -1,6 +1,6 @@
 import { generateUuid } from "./generateUuid"
 
-const templates = {
+export const templates = {
     'node.primitive.delay.':{
         name: 'Delay',
         description: 'Delay robot for a specified time',
@@ -108,5 +108,5 @@ const templates = {
 export const primitiveTypes = Object.keys(templates).filter(type=>(!type.includes('skill')))
 
 export const fromTemplate = (type) => {
-    return {uuid:generateUuid(type),type:type,...templates[type]}
+    return {uuid:generateUuid(type),type:type,parentData:{type:'drawer',uuid:null},...templates[type]}
 }
