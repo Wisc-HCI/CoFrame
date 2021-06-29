@@ -1,7 +1,6 @@
 import React, {useCallback, useRef} from 'react';
-import { useDrag, useDrop, useDragDropManager } from 'react-dnd';
+import { useDrag, useDrop } from 'react-dnd';
 import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
-import useGuiStore from '../../../stores/GuiStore';
 import {childLookup} from './childLookup';
 
 export function ItemSortable({id, idx, itemType, ancestors}) {
@@ -11,8 +10,6 @@ export function ItemSortable({id, idx, itemType, ancestors}) {
   const data = useEvdStore(useCallback(state=>state.data[typeToKey(itemType)][id],[id,itemType]));
 
   const moveChildPrimitive = useEvdStore(state=>state.moveChildPrimitive);
-
-  // const [dragItem, setDragItem, clearDragItem] = useGuiStore(state=>([state.dragItem,state.setDragItem,state.clearDragItem]));
 
   const Child = childLookup[itemType];
 
@@ -24,18 +21,20 @@ export function ItemSortable({id, idx, itemType, ancestors}) {
     })
   }))
 
-  const [{}, drop] = useDrop({
+  const [{},drop] = useDrop({
     accept: ancestors[0].accepts,
     drop: (item, _) => {
-      console.log('drop')
+      moveChildPrimitive(item,ancestors[0].uuid,idx)
     },
     hover: (item, _) => {
+      if (!ref.current || item.uuid === id) {
+        return
+      }
       if (item.editable) {
         moveChildPrimitive(item,ancestors[0].uuid,idx)
       }
     },
-    canDrop: (item, _) => (ancestors[0].accepts.indexOf(item.type)>=0 && item.editable),
-
+    canDrop: (item, _) => (ancestors[0].accepts.indexOf(item.type)>=0 && item.editable)
   })
 
   drag(drop(ref))

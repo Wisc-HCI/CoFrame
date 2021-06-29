@@ -2,9 +2,8 @@ import React from 'react';
 import {useDrop} from 'react-dnd';
 import { acceptLookup } from './acceptLookup';
 import {ProgramBlock} from './ProgramBlock';
-import {SkillBlock} from './SkillBlock';
+import {ItemDraggable} from './Wrappers';
 import {Grid} from './Grid';
-import {DeleteZone} from './DeleteZone';
 import useEvdStore from '../../stores/EvdStore';
 
 export const Canvas = (_) => {
@@ -15,30 +14,31 @@ export const Canvas = (_) => {
         {uuid:'grid',...acceptLookup.grid.primitiveIds}
     ];
 
-    const [moveItem] = useEvdStore(state=>[state.moveItem]);
+    const [moveItem,skills] = useEvdStore(state=>[state.moveItem,state.data.skills]);
 
     // Do your draggable stuff here
-    const [{}, drop] = useDrop({
+    const [{},drop] = useDrop({
         accept: acceptTypes,
         drop: (item, monitor) => {
             const delta = monitor.getDifferenceFromInitialOffset();
             if (item.type === 'node.primitive.hierarchical.program.') {
                 moveItem('program',item.uuid,delta.x,delta.y)
             } else if (item.type === 'node.primitive.hierarchical.skill.') {
+                console.log('drop skill')
                 moveItem('skill',item.uuid,delta.x,delta.y)
+            } else {
+                console.log(item)
             }
         },
-        canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0),
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-            canDrop: monitor.canDrop()
-        })
+        canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0)
     })
 
     return (
         <Grid ref={drop}>
             <ProgramBlock ancestors={ancestors}/>
-            {/* Put the skills in here too */}
+            {Object.keys(skills).map(uuid=>(
+                <ItemDraggable key={uuid} id={uuid} itemType='skill' data={skills[uuid]} ancestors={ancestors} />
+            ))}
         </Grid>
     )
 }

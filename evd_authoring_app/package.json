@@ -30,7 +30,7 @@
     "serve": "^11.3.2",
     "styled-components": "^5.3.0",
     "uuid": "^8.3.2",
-    "zustand": "^3.5.1"
+    "zustand": "^3.5.4"
   },
   "scripts": {
     "start": "craco start",

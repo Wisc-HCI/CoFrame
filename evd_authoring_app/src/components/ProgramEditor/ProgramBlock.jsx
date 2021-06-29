@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Button } from 'antd';
-import { EllipsisOutlined, DragOutlined } from '@ant-design/icons';
-import { useDrop, useDrag } from 'react-dnd';
+import { EllipsisOutlined } from '@ant-design/icons';
+import { useDrag } from 'react-dnd';
 import { ItemSortable } from './Wrappers';
 import useGuiStore from '../../stores/GuiStore';
 import useEvdStore from '../../stores/EvdStore';

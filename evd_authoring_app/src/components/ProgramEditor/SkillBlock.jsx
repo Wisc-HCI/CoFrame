@@ -1,38 +1,48 @@
-import React, {useCallback} from 'react';
-import { useDrag } from 'react-dnd';
-import useEvdStore from '../../stores/EvdStore';
+import React, {forwardRef} from 'react';
+import { Card, Button } from 'antd';
+import { EllipsisOutlined } from '@ant-design/icons';
+import { ItemSortable } from './Wrappers';
+import useGuiStore from '../../stores/GuiStore';
+import { acceptLookup } from './acceptLookup';
 
-const style = {
-    position: 'absolute',
-    border: '1px solid gray',
-    borderRadius: 3,
-    backgroundColor: 'white',
-    padding: '0.5rem 1rem',
-    cursor: 'move',
-};
+export const SkillBlock = forwardRef((props, ref) => {
 
-export const SkillBlock = ({ uuid }) => {
-    
-    const {item,setItemProperty} = useEvdStore(useCallback(state=>({
-        item:state.data.primitives[uuid],
-        setItemProperty:state.setItemProperty
-    }),[uuid]))
-    
-    const [{ isDragging }, drag] = useDrag(() => ({
-        type: 'function',
-        item: { id:uuid, left:item.left, top:item.top },
-        collect: (monitor) => ({
-            isDragging: monitor.isDragging(),
-        }),
-    }), [uuid, item]);
-    
-    if (isDragging) {
-        return <div ref={drag} />;
-    }
+    const setFocusItem = useGuiStore(state=>state.setFocusItem);
+
+    const fieldData = acceptLookup['node.primitive.hierarchical.program.'].primitiveIds;
+
+    const ancestors = [
+        {uuid:props.data.uuid,...fieldData},
+        ...props.ancestors
+    ];
+
+    const blockStyles = {
+        display:'inline-block',
+        transform:`translate3d(${props.data.transform.x}px,${props.data.transform.y}px,0)`
+    };
 
     return (
-        <div ref={drag} style={{ ...style, left:item.left, top:item.top }} role="Box">
-            {item.name}
+        <div {...props} ref={ref} style={{...props.style,...blockStyles}}>
+            <Card 
+                title={<span><i><b>Macro </b></i>{props.data.name}</span>} 
+                role="Box" 
+                style={{minWidth:250}}
+                headStyle={{backgroundColor:'#62869e'}}
+                bodyStyle={{minHeight:30,padding:0}}
+                extra={
+                    <Button
+                        style={{marginLeft:20}}
+                        onClick={() => false && setFocusItem('program', props.data.uuid)}
+                        icon={<EllipsisOutlined />}
+                    />
+                }
+                >
+                <div>
+                    {props.data.primitiveIds.map((id,idx)=>(
+                        <ItemSortable key={id} id={id} idx={idx} ancestors={ancestors} itemType='primitive'/>
+                    ))}
+                </div>
+            </Card>
         </div>
-    );
-};
+    )
+});

@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useDragDropManager } from 'react-dnd';
+import React, { useState } from 'react';
 import { Layout, Button, Popover } from 'antd';
-import { ToolOutlined, PicCenterOutlined, SubnodeOutlined, LeftOutlined, RightOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ToolOutlined, PicCenterOutlined, SubnodeOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Canvas } from './Canvas';
 import { PrimitivesDrawer } from './PrimitivesDrawer'
 import { DeleteZone } from './DeleteZone';
-import useGuiStore from '../../stores/GuiStore';
 
 export const Editor = () => {
 

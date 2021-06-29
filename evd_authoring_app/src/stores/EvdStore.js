@@ -89,8 +89,8 @@ const store = (set,get) => ({
       flattenedPrimitives.forEach((primitive)=>{
         get().addItem('primitive',primitive)
       });
-      flattenedSkills.forEach((skill)=>{
-        get().addItem('skill',skill)
+      flattenedSkills.forEach((skill,idx)=>{
+        get().addItem('skill',{...skill,transform:{x:100,y:100+idx*20}})
       });
       program.primitives.forEach((primitive)=>{
         get().addChildPrimitive(primitive, program.uuid)
@@ -121,7 +121,7 @@ const store = (set,get) => ({
     }),
     deleteChildPrimitive: (primitiveId) => set((state)=>{
       const {type,uuid} = state.data.primitives[primitiveId].parentData;
-      if (type == 'program') {
+      if (type === 'program') {
         // console.log('removing primitive from program')
         state.primitiveIds = state.primitiveIds.filter(id=>id!==primitiveId)
       } else {
@@ -149,7 +149,7 @@ const store = (set,get) => ({
         return;
       }
       // remove from previous location
-      if (type == 'program') {
+      if (type === 'program') {
         state.primitiveIds = state.primitiveIds.filter(id=>id!==primitive.uuid)
       } else if (type === 'drawer') {} else {
         state.data[typeToKey(type)][uuid].primitiveIds = state.data[typeToKey(type)][uuid].primitiveIds.filter(id=>id!==primitive.uuid)
@@ -158,15 +158,16 @@ const store = (set,get) => ({
       if (parentId === state.uuid) {
         // This is the top-level program, so add to top level list of uuids
         state.primitiveIds.splice(index,0,primitive.uuid)
-        state.data.primitives[primitive.uuid].parentData = {type:'program',uuid:state.uuid}
+        state.data.primitives[primitive.uuid].parentData.type = 'program';
       } else if (state.data.primitives[parentId]) {
         // This is some other child of the program, so look it up and edit in data
         state.data.primitives[parentId].primitiveIds.splice(index,0,primitive.uuid)
-        state.data.primitives[primitive.uuid].parentData = {type:'primitive',uuid:parentId}
+        state.data.primitives[primitive.uuid].parentData.type = 'primitive';
       } else if (state.data.skills[parentId]) {
         state.data.skills[parentId].primitiveIds.splice(index,0,primitive.uuid)
-        state.data.primitives[primitive.uuid].parentData = {type:'skill',uuid:parentId}
+        state.data.primitives[primitive.uuid].parentData.type = 'skill';
       }
+      state.data.primitives[primitive.uuid].parentData.uuid = parentId;
     }),
     // Piecewise update functions for data
     addItem: (type, item) => set((state)=>{

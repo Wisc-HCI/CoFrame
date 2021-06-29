@@ -1,6 +1,5 @@
-import React, {useCallback, useRef} from 'react';
-import { useDrag, useDrop } from 'react-dnd';
-import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
+import React, {useRef} from 'react';
+import { useDrag } from 'react-dnd';
 import {childLookup} from './childLookup';
 
 export function GenericSortable({idx, itemType, data, ancestors}) {
