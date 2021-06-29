@@ -47,7 +47,7 @@ export const templates = {
         editable: true,
         deleteable: true,
         parameters: {
-            machine_uuid: 'test uuid'
+            machine_uuid: null
         }
     },
     'node.primitive.machine-primitive.machine-wait.':{

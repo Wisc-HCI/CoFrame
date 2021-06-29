@@ -1,4 +1,5 @@
 import React, {forwardRef} from 'react';
+import { ParameterZone } from './ParameterZone';
 
 export const PrimitiveBlock = forwardRef((props, ref) => {
 
@@ -13,11 +14,23 @@ export const PrimitiveBlock = forwardRef((props, ref) => {
         padding:5
     }
 
+    if (props.data.parameters.machine_uuid) {
+        console.log('found one')
+        console.log(props.data.parameters.machine_uuid)
+    }
+
     return (
         <div {...props} ref={ref} style={{...props.style, ...styles}}>
             <div style={{fontSize:16}}>{props.data.name}</div>
             {props.data.type.includes('node.primitive.machine-primitive') && (
-                <div>Machine: <div style={{minHeight: 20,backgroundColor:'grey',borderRadius:5,padding:3,textAlign:'center',boxShadow:'inset 0pt 0pt 2pt 1pt rgba(0,0,0,0.5)'}}>{props.data.parameters.machine_uuid?props.data.parameters.machine_uuid:'No Machine'}</div></div>
+                <div>Machine: <ParameterZone 
+                                displayText={props.data.parameters.machine_uuid}
+                                acceptTypes={['node.machine.']}
+                                itemType='machine' 
+                                canRemove={props.data.editable}
+                                onRemove={()=>console.log('delete param')}
+                                onDrop={(data)=>console.log(data)}/>
+                </div>
             )}
         </div>
     )
