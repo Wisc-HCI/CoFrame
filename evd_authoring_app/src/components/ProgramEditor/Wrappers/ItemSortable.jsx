@@ -30,7 +30,7 @@ export function ItemSortable({id, idx, itemType, ancestors}) {
       if (!ref.current || item.uuid === id) {
         return
       }
-      if (item.editable) {
+      if (item.editable && ancestors[0].accepts.indexOf(item.type)>=0) {
         moveChildPrimitive(item,ancestors[0].uuid,idx)
       }
     },

@@ -134,7 +134,7 @@ const store = (set,get) => ({
         state.data.primitives[primitive.uuid] = primitive;
       }
       const {type,uuid} = state.data.primitives[primitive.uuid].parentData;
-      // console.log(type)
+      
       // Short-circuit if no move needs to be done.
       if (type === 'program' && uuid === parentId && state.primitiveIds.indexOf(primitive.uuid) === index) {
         // console.log('program/index match')
@@ -175,6 +175,9 @@ const store = (set,get) => ({
     }),
     setItemProperty: (type, uuid, property, value) => set((state)=>{
       state.data[typeToKey(type)][uuid][property] = value
+    }),
+    setPrimitiveParameter: (type, uuid, property, value) => set((state)=>{
+      state.data[typeToKey(type)][uuid].parameters[property] = value
     }),
     deleteItem: (type, uuid) => set((state)=>{
       delete state.data[typeToKey(type)][uuid]

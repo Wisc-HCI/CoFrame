@@ -4,6 +4,7 @@ import { ParameterZone } from './ParameterZone';
 export const PrimitiveBlock = forwardRef((props, ref) => {
 
     // TODO: Render differently depending on the primitive properties
+    const setPrimitiveParameter = useEvdStore(state => state.setPrimitiveParameter);
 
     const styles = {
         backgroundColor: props.data.type === 'node.primitive.skill-call.' ? '#62869e' : '#629e6c',
