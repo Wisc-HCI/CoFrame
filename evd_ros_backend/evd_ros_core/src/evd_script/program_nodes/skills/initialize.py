@@ -3,7 +3,7 @@ Initialize should be the first skill evoked in the program to
 configure all machines and jog cobot to initial position.
 '''
 
-from ...data_nodes.skill_arguement import SkillArguement
+from ...data_nodes.skill_argument import SkillArgument
 from ..skill import Skill
 from ..hierarchical import Hierarchical
 from ..primitives import MoveUnplanned, MachineInitialize, Gripper
@@ -27,31 +27,31 @@ class Initialize(Skill):
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=None, arguements=None, parameters=None, type='', 
-                 name='', uuid=None, parent=None, append_type=True, 
+    def __init__(self, primitives=None, arguments=None, parameters=None, type='', 
+                 name=None, uuid=None, parent=None, append_type=True, 
                  editable=False, deleteable=False, description=''):
 
         loc_uuid_arg = None
         machine_uuids_arg = None
-        if arguements != None:
-            for a in arguements:
+        if arguments != None:
+            for a in arguments:
                 if a.name == 'home_location_uuid':
                     loc_uuid_arg = a
                 elif a.name == 'machine_uuids':
                     machine_uuids_arg = a
             
             if loc_uuid_arg == None:
-                loc_uuid_arg = SkillArguement(parameter_key='location_uuid', name='home_location_uuid')
-                arguements.append(loc_uuid_arg)
+                loc_uuid_arg = SkillArgument(parameter_key='location_uuid', name='home_location_uuid')
+                arguments.append(loc_uuid_arg)
             
             if machine_uuids_arg == None:
-                machine_uuids_arg = SkillArguement(parameter_key='machine_uuid', name='machine_uuids', description='Initialize performs expansion on the list for each primitive')
-                arguements.append(machine_uuids_arg)
+                machine_uuids_arg = SkillArgument(parameter_key='machine_uuid', name='machine_uuids', description='Initialize performs expansion on the list for each primitive')
+                arguments.append(machine_uuids_arg)
 
         else:
-            loc_uuid_arg = SkillArguement(parameter_key='location_uuid', name='home_location_uuid')
-            machine_uuids_arg = SkillArguement(parameter_key='machine_uuid', name='machine_uuids', description='Initialize performs expansion on the list for each primitive')
-            arguements = [loc_uuid_arg, machine_uuids_arg]
+            loc_uuid_arg = SkillArgument(parameter_key='location_uuid', name='home_location_uuid')
+            machine_uuids_arg = SkillArgument(parameter_key='machine_uuid', name='machine_uuids', description='Initialize performs expansion on the list for each primitive')
+            arguments = [loc_uuid_arg, machine_uuids_arg]
 
         if primitives == None:
             primitives = [
@@ -62,6 +62,9 @@ class Initialize(Skill):
         else:
             primitives[0].machine_uuid = machine_uuids_arg.temporary_value
             primitives[2].location_uuid = loc_uuid_arg.temporary_value
+
+        if name == None:
+            name = 'Initialize'
 
         super(Initialize,self).__init__(
             type=Initialize.type_string() + type if append_type else type,
@@ -74,7 +77,7 @@ class Initialize(Skill):
             description=description,
             parameters=parameters,
             primitives=primitives,
-            arguements=arguements)
+            arguments=arguments)
 
     '''
     Execution methods
@@ -108,16 +111,16 @@ class Initialize(Skill):
         #    ...
         # }
         
-        unmapped_args = self._arguements.keys()
+        unmapped_args = self._arguments.keys()
         primitives_copy = [p.to_dct() for p in self.primitives]
 
         for arg_uuid in arg_map.keys():
-            if arg_uuid in self._arguements.keys():
+            if arg_uuid in self._arguments.keys():
                 unmapped_args.remove(arg_uuid)
 
                 value = arg_map[arg_uuid]
-                key = self._arguements[arg_uuid].parameter_key
-                temp = self._arguements[arg_uuid].temporary_value
+                key = self._arguments[arg_uuid].parameter_key
+                temp = self._arguments[arg_uuid].temporary_value
 
                 if key == 'machine_uuid': # need to perform expansion (this is not normal behavior)
                     template_prm = primitives_copy.pop(0) #machine_initialize

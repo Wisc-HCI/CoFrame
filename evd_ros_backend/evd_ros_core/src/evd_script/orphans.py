@@ -26,9 +26,9 @@ def evd_orphan_repair():
     from .program_nodes.primitives.gripper import Gripper
     from .program_nodes.primitives.move_trajectory import MoveTrajectory
     from .program_nodes.primitives.move_unplanned import MoveUnplanned
-    from .program_nodes.machine_operations.machine_primitive import MachinePrimitive
-    from .data.thing import Thing
-    from .data.machine import Machine
+    from .program_nodes.machine_primitive import MachinePrimitive
+    from .data_nodes.thing import Thing
+    from .data_nodes.machine import Machine
     #TODO handle deletion of thing_types
 
     cache = get_evd_cache_obj()

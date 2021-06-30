@@ -7,7 +7,7 @@ is desired.
 TODO support conditional looping
 '''
 
-from ... import ALL_PRIMITIVES_TYPES, ALL_CONDITIONS_TYPES
+from ...type_defs import ALL_PRIMITIVES_TYPES, ALL_CONDITIONS_TYPES
 from ..hierarchical import Hierarchical
 from ...node_parser import NodeParser
 

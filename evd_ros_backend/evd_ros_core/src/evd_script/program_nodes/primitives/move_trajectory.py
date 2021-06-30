@@ -2,14 +2,12 @@
 Moves a robot according to a preplanned trajectory. This wraps the trajectory
 data structure with additional movement parameterization needed to actually
 execute on the robot.
-
-TODO implement thing token movement behavior
 '''
 
 import numpy as np
 
 from ..primitive import Primitive
-from ... import BOOLEAN_TYPE
+from ...type_defs import BOOLEAN_TYPE
 from ...data_nodes.trajectory import Trajectory
 from ...data_nodes.geometry.pose import Pose
 from ...data_nodes.geometry.position import Position

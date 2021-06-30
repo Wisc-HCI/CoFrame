@@ -1,6 +1,8 @@
 '''
 Environment extends context to provide additional global lookup of environment
 types. This node is directly used by program to expose top-level state.
+
+#TODO write add, delete, get methods for  pinchpoints, collisionmeshes, and occuancyzones
 '''
 
 from .context import Context
@@ -15,8 +17,9 @@ from .data_nodes.location import Location
 from .data_nodes.thing_type import ThingType
 from .data_nodes.grade_type import GradeType
 from .data_nodes.trajectory import Trajectory
+from .data_nodes.placeholder import Placeholder
 from .node_parser import NodeParser
-from . import ALL_REGION_TYPES
+from .type_defs import ALL_REGION_TYPES
 
 
 class Environment(Context):
@@ -69,7 +72,7 @@ class Environment(Context):
     def __init__(self, reach_sphere=None, pinch_points=[], collision_meshes=[], 
                  occupancy_zones=[], locations=[], machines=[], things=[], 
                  thing_types=[], waypoints=[], trajectories=[], regions=[], 
-                 grade_types=[], name='', type='', uuid=None, parent=None, 
+                 grade_types=[], placeholders=[], name='', type='', uuid=None, parent=None, 
                  append_type=True, editable=True, deleteable=True, description=''):
 
         self._reach_sphere = None
@@ -86,6 +89,7 @@ class Environment(Context):
             thing_types=thing_types,
             regions=regions,
             grade_types=grade_types,
+            placeholders=placeholders,
             type=Environment.type_string() + type if append_type else type,
             name=name,
             uuid=uuid,
@@ -124,6 +128,7 @@ class Environment(Context):
                    thing_types=[NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']],
                    regions=[NodeParser(r, enforce_types=[ALL_REGION_TYPES]) for r in dct['regions']],
                    grade_types=[NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']],
+                   placeholders=[NodeParser(p, enforce_types=[Placeholder.type_string(trailing_delim=False)]) for p in dct['placeholders']],
                    type=dct['type'] if 'type' in dct.keys() else '',
                    append_type=not 'type' in dct.keys(),
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
@@ -173,6 +178,27 @@ class Environment(Context):
 
             self.updated_attribute('pinch_points','set')
 
+    def get_pinch_point(self, uuid):
+        for p in self._pinch_points:
+            if p.uuid == uuid:
+                return p
+        return None
+
+    def add_pinch_point(self, pinchpoint):
+        pinchpoint.parent = self
+        self._pinch_points.append(pinchpoint)
+        self.updated_attribute('pinch_points','add')
+
+    def delete_pinch_point(self, uuid):
+        node = None
+        for p in self._pinch_points:
+            if p.uuid == uuid:
+                node = p
+                break
+
+        if node != None:
+            self._pinch_points.remove(node)
+
     @property
     def collision_meshes(self):
         return self._collision_meshes
@@ -193,6 +219,27 @@ class Environment(Context):
 
             self.updated_attribute('collision_meshes','set')
 
+    def get_collision_mesh(self, uuid):
+        for c in self._collision_meshes:
+            if c.uuid == uuid:
+                return c
+        return None
+
+    def add_collision_mesh(self, collision_mesh):
+        collision_mesh.parent = self
+        self._collision_meshes.append(collision_mesh)
+        self.updated_attribute('collision_meshes','add')
+
+    def delete_collision_mesh(self, uuid):
+        node = None
+        for c in self._collision_meshes:
+            if c.uuid == uuid:
+                node = c
+                break
+
+        if node != None:
+            self._collision_meshes.remove(node)
+
     @property
     def occupancy_zones(self):
         return self._occupancy_zones
@@ -212,6 +259,27 @@ class Environment(Context):
                 o.parent = self
 
             self.updated_attribute('occupancy_zones','set')
+
+    def get_occupancy_zone(self, uuid):
+        for o in self._occupancy_zones:
+            if o.uuid == uuid:
+                return o
+        return None
+
+    def add_occupancy_zone(self, occupancy_zone):
+        occupancy_zone.parent = self
+        self._occupancy_zones.append(occupancy_zone)
+        self.updated_attribute('occupancy_zones','add')
+
+    def delete_occupancy_zone(self, uuid):
+        node = None
+        for o in self._occupancy_zones:
+            if o.uuid == uuid:
+                node = o
+                break
+
+        if node != None:
+            self._occupancy_zones.remove(node)
 
     def set(self, dct):
 
@@ -262,6 +330,46 @@ class Environment(Context):
             o.add_to_cache()
 
         super(Environment,self).add_to_cache()
+
+    '''
+    Children Methods
+    '''
+
+    def delete_child(self, uuid):
+        success  = True
+
+        if self.reach_sphere != None and uuid == self.reach_sphere.uuid:
+            self.reach_sphere = None
+        elif uuid in [p.uuid for p in self.pinch_points]:
+            self.delete_pinch_point(uuid)
+        elif uuid in [c.uuid for c in self.collision_meshes]:
+            self.delete_collision_mesh(uuid)
+        elif uuid in [o.uuid for o in self.occupancy_zones]:
+            self.delete_occupancy_zone(uuid)
+        else:
+            success = super(Environment,self).delete_child(uuid)
+
+        return success
+
+    def add_child(self, node):
+        success = False
+
+        if isinstance(node,ReachSphere) and self.reach_sphere == None:
+            self.reach_sphere = node
+            success = True
+        elif isinstance(node,PinchPoint) and node.uuid not in [p.uuid for p in self.pinch_points]:
+            self.add_pinch_point(node)
+            success = True
+        elif isinstance(node,CollisionMesh) and node.uuid not in [c.uuid for c in self.collision_meshes]:
+            self.add_collision_mesh(node)
+            success = True
+        elif isinstance(node,OccupancyZone) and node.uuid not in [o.uuid for o in self.occupancy_zones]:
+            self.add_occupancy_zone(node)
+            success = True
+        else:
+            success = super(Environment,self).add_child(node)
+        
+        return success
 
     '''
     Update Methods

@@ -89,16 +89,15 @@ class Thing(Pose, VisualizeMarker):
         # The frame_id should be the application frame
         marker = None
 
-        if self.mesh_id != None:
-            marker = Marker()
-            marker.header.frame_id = frame_id
-            marker.type = Marker.MESH_RESOURCE
-            marker.ns = 'things'
-            marker.id = id
-            marker.pose = self.to_ros()
-            marker.scale = Vector3(1,1,1)
-            marker.color = ColorTable.THING_COLOR
-            marker.mesh_resource = self.mesh_id
+        marker = Marker()
+        marker.header.frame_id = frame_id
+        marker.type = Marker.MESH_RESOURCE
+        marker.ns = 'things'
+        marker.id = id
+        marker.pose = self.to_ros()
+        marker.scale = Vector3(1,1,1)
+        marker.color = ColorTable.THING_COLOR
+        marker.mesh_resource = self.context.get_thing_type(self.thing_type_uuid).mesh_id
 
         return marker
 

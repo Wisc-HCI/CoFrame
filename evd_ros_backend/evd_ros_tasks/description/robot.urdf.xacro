@@ -7,7 +7,7 @@
 	<link name="robot_common" />
 
 	<!-- UR3e Physical -->
-	<xacro:include filename="$(find ur_description)/urdf/ur3e.xacro" />
+	<xacro:include filename="$(find ur_description)/urdf/inc/ur3e_macro.xacro" />
 	<joint name="physical_common_joint" type="fixed">
 		<parent link="robot_common" />
 		<child link = "physical_base_link" />
@@ -23,7 +23,7 @@
 	</xacro:robotiq_85_gripper>
 
   <!-- UR3e Simulated -->
-	<xacro:include filename="$(find ur_description)/urdf/ur3e.xacro" />
+	<xacro:include filename="$(find ur_description)/urdf/inc/ur3e_macro.xacro" />
 	<joint name="simulated_common_joint" type="fixed">
 		<parent link="robot_common" />
 		<child link = "simulated_base_link" />
@@ -39,7 +39,7 @@
 	</xacro:robotiq_85_gripper>
 
 	<!-- UR3e Planner -->
-	<xacro:include filename="$(find ur_description)/urdf/ur3e.xacro" />
+	<xacro:include filename="$(find ur_description)/urdf/inc/ur3e_macro.xacro" />
 	<joint name="planner_world_joint" type="fixed">
 		<parent link="robot_common" />
 		<child link = "planner_base_link" />

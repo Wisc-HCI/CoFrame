@@ -9,7 +9,7 @@ import rospy
 
 from std_msgs.msg import Empty, Bool, String
 from evd_ros_core.msg import ProgramRunnerStatus
-from evd_ros_core.srv import SetRootNode, GetRootNode
+from evd_ros_core.srv import SetData
 
 
 class RobotControlInterface:
@@ -23,8 +23,7 @@ class RobotControlInterface:
         self._user_status_cb = status_cb
         self._user_error_cb = error_cb
 
-        self.set_root_node_srv = rospy.ServiceProxy('robot_control_server/set_root_node',SetRootNode)
-        self.get_root_node_srv = rospy.ServiceProxy('robot_control_server/get_root_node',GetRootNode)
+        self.set_program_srv = rospy.ServiceProxy('robot_control_server/set_program',SetData)
 
         self.play_pub = rospy.Publisher('robot_control_server/play',Empty,queue_size=10)
         self.stop_pub = rospy.Publisher('robot_control_server/stop',Empty,queue_size=10)
@@ -62,12 +61,10 @@ class RobotControlInterface:
         if self._user_error_cb != None:
             self._user_error_cb(msg.data)
 
-    def set_root_node(self, uuid):
-        response = self.set_root_node_srv(uuid)
+    def set_program(self, evd_prog):
+        data = json.dumps(evd_prog.to_dct())
+        response = self.set_program_srv('',data)
         return response.status, response.message
-
-    def get_root_node(self):
-        return self.get_root_node_srv().uuid
 
     def play(self):
         self.play_pub.publish(Empty())

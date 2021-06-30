@@ -1,7 +1,0 @@
-
-string source
-string[] ids
-string[] human_messages
-string[] data
----
-bool status

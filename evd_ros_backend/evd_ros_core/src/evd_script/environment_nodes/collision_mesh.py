@@ -7,7 +7,7 @@ from .environment_node import EnvironmentNode
 from ..data_nodes.geometry import Pose
 from ..node_parser import NodeParser
 from ..visualizable import VisualizeMarker, ColorTable
-from .. import STRING_TYPE
+from ..type_defs import STRING_TYPE
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Vector3
@@ -80,7 +80,7 @@ class CollisionMesh(EnvironmentNode,VisualizeMarker):
             description=description)
 
         self.mesh_id = mesh_id
-        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deletable=False, editable=editable)
+        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deleteable=False, editable=editable)
         self.link = link
 
     def to_dct(self):

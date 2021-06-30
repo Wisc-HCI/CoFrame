@@ -10,6 +10,7 @@ const NUM_THINGS = 10;
 const NUM_TRAJECTORIES = 4;
 const NUM_COLLISION_MESHES = 2;
 const NUM_PINCH_POINTS = 5;
+const NUM_PLACEHOLDERS = 3;
 
 /***************************************************************** 
 * Type Declaration
@@ -43,6 +44,35 @@ for (let i=0; i<NUM_GRADE_TYPES; i++) {
         deleteable: false,
         editable: true,
         description: 'Some descriptor string'
+    });
+}
+
+let placeholders = [];
+for (let i=0; i<NUM_PLACEHOLDERS; i++) {
+    placeholders.push({
+        type: 'node.placeholder.',
+        uuid: `placeholder-js-${i}`,
+        name: `Plaeholder-${i}`,
+        deleteable: false,
+        editable: true,
+        description: 'Some descriptor string',
+        
+        pending_node: {
+            type: 'node.pose.thing.',
+            uuid: `thing-js-${i}`,
+            name: `Thing-${i}`,
+            deleteable: true,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+    
+            thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
+            position: '<pending>',
+            orientation: '<pending>'
+        },
+        pending_fields: [
+            'position',
+            'orientation'
+        ]
     });
 }
 
@@ -759,8 +789,6 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
 * - Control Flow
 *****************************************************************/
 
-
-
 let program = {
     type: 'node.primitive.hierarchical.program.',
     uuid: `program-js`,
@@ -1102,7 +1130,8 @@ let program = {
         trajectories: trajectories,
         thing_types: thingTypes,
         regions: regions,
-        grade_types: gradeTypes
+        grade_types: gradeTypes,
+        placeholders: placeholders
     },
     
     primitives: [ // just initializes but that is enough to get the point across >(0_0)<
@@ -1201,6 +1230,7 @@ const fields = {
     collisionMeshes,
     occupancyZones,
     pinchPoints,
+    placeholders,
 
     // evd_program
     program

@@ -18,10 +18,11 @@ position is not supported. This is fine for the studies at this time but more co
 handling this disconnect. Probably something like a variable location?
 '''
 
-from evd_ros_backend.evd_ros_core.src.evd_script.environment_nodes.collision_mesh import CollisionMesh
-from .. import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE
+from ..environment_nodes.collision_mesh import CollisionMesh
+from ..type_defs import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE
 from ..node import Node
 from .geometry import Pose
+from .placeholder import Placeholder
 from ..node_parser import NodeParser
 
 
@@ -91,8 +92,9 @@ class Machine(Node):
         return template
 
     def __init__(self, inputs=None, outputs=None, process_time=0, link='', mesh_id=None, 
-                 pose_offset=None, collision_mesh_uuid=None, type='', name='', uuid=None, 
-                 parent=None, append_type=True, editable=True, deleteable=True, description=''):
+                 pose_offset=None, collision_mesh_uuid=None, type='', 
+                 name='', uuid=None, parent=None, append_type=True, editable=True, 
+                 deleteable=True, description=''):
         self._inputs = None
         self._outputs = None
         self._process_time = None
@@ -116,7 +118,7 @@ class Machine(Node):
         self.outputs = outputs if outputs != None else {}
         self.process_time = process_time
         self.mesh_id = mesh_id
-        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deletable=False, editable=editable)
+        self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deleteable=False, editable=editable)
         self.link = link
         self.collision_mesh_uuid = collision_mesh_uuid
 
@@ -245,18 +247,16 @@ class Machine(Node):
 
     @outputs.setter
     def outputs(self, value):
-        if self._output_regions != value:
-            for k in self._output_regions.keys():
-                self._output_regions[k].remove_from_cache()
+        if self._outputs != value:
+            if value == None:
+                raise Exception('Must be a valid dictionary')
 
-            self._output_regions = value
-            for k in self._output_regions.keys():
-                self._output_regions[k].parent = self
+            self._outputs = value
 
             self._compute_type()
-            self.updated_attribute('output_regions','set')
+            self.updated_attribute('outputs','set')
 
-    def add_output_region(self, thing_type_uuid, region_uuid, quantity, override=False):
+    def add_output_region(self, thing_type_uuid, region_uuid, placeholder_uuids, override=False):
         verb = 'add'
 
         if not thing_type_uuid in self._outputs.keys():
@@ -268,7 +268,8 @@ class Machine(Node):
                 if not override:
                     raise Exception('Region already exists, cannot add')
                 else:
-                    self._outputs[i]['quantity'] = quantity
+                    self._outputs[i]['quantity'] = len(placeholder_uuids)
+                    self._outputs[i]['placeholder_uuids'] = placeholder_uuids
                     verb = 'set'
                 found = True
                 break
@@ -276,10 +277,11 @@ class Machine(Node):
         if not found:
             self._outputs[thing_type_uuid].append({
                 'region_uuid': region_uuid,
-                'quantity': quantity })
+                'quantity': len(placeholder_uuids),
+                'placeholder_uuids': placeholder_uuids })
 
         self._compute_type()
-        self.updated_attribute('inputs',verb,region_uuid)
+        self.updated_attribute('outputs',verb,region_uuid)
 
     def delete_output_region(self, thing_type_uuid, region_uuid):
         if not thing_type_uuid in self._outputs.keys():
@@ -303,7 +305,7 @@ class Machine(Node):
 
         self._compute_type()
 
-    def set_output_region_quantity(self, thing_type_uuid, region_uuid, quantity):
+    def change_output_placeholders(self, thing_type_uuid, region_uuid, placeholder_uuids):
         if not thing_type_uuid in self._outputs.keys():
             raise Exception('No such thing `{0}` in outputs'.format(thing_type_uuid))
 
@@ -316,7 +318,8 @@ class Machine(Node):
         if idx == None:
             raise Exception('Region `{0}` not in outputs'.format(region_uuid))
         else:
-            self._outputs[thing_type_uuid][idx]['quantity'] = quantity
+            self._outputs[thing_type_uuid][idx]['quantity'] = len(placeholder_uuids)
+            self._outputs[thing_type_uuid][idx]['placeholder_uuids'] = placeholder_uuids
 
         self._compute_type()
         self.updated_attribute('outputs','set',region_uuid)
@@ -456,15 +459,15 @@ class Machine(Node):
     def _compute_type(self):
         type = None
 
-        if self.input_regions == None and self.output_regions == None:
+        if self.inputs == None and self.outputs == None:
             type = 'useless'
-        elif self.input_regions == None and self.output_regions != None:
-            if len(self.output_regions) > 0:
+        elif self.inputs == None and self.outputs != None:
+            if len(self.outputs) > 0:
                 type = 'generator'
             else:
                 type = 'useless'
-        elif self.input_regions != None and self.output_regions == None:
-            if len(self.input_regions) > 0:
+        elif self.inputs != None and self.outputs == None:
+            if len(self.inputs) > 0:
                 type = 'consumer'
             else:
                 type = 'useless'

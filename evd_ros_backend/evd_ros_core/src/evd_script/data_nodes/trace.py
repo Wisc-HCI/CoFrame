@@ -30,7 +30,7 @@ Conversion methods are available in the underlying data nodes (Pose, Joints) tha
 be used to reconstruct nodes from the trace data.
 '''
 
-from .. import NUMBER_TYPE, STRING_TYPE, ARBITRARY_OBJ_TYPE
+from ..type_defs import NUMBER_TYPE, STRING_TYPE, ARBITRARY_OBJ_TYPE
 from ..node import Node
 from .geometry import Pose
 from ..visualizable import VisualizeMarkers, ColorTable

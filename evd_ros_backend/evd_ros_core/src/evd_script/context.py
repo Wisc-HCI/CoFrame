@@ -7,7 +7,6 @@ Nodes that reference data should do so through the context if they do not want t
 own the data with encapsulation.
 '''
 
-
 from .node import Node
 from .data_nodes.thing import Thing
 from .data_nodes.machine import Machine
@@ -16,7 +15,8 @@ from .data_nodes.location import Location
 from .data_nodes.thing_type import ThingType
 from .data_nodes.grade_type import GradeType
 from .data_nodes.trajectory import Trajectory
-from . import ALL_REGION_TYPES
+from .data_nodes.placeholder import Placeholder
+from .type_defs import ALL_REGION_TYPES
 
 from .orphans import *
 from .node_parser import NodeParser
@@ -91,12 +91,18 @@ class Context(Node):
             'is_uuid': False,
             'is_list': True
         })
+        template['fields'].append({
+            'type': Placeholder.full_type_string(),
+            'key': 'placeholders',
+            'is_uuid': False,
+            'is_list': True
+        })
         return template
 
     def __init__(self, locations=[], machines=[], things=[], thing_types=[],
                  waypoints=[], trajectories=[], regions=[], grade_types=[],
-                 type='', name='', uuid=None, parent=None, append_type=True,
-                 editable=True, deleteable=True, description=''):
+                 placeholders=[], type='', name='', uuid=None, parent=None, 
+                 append_type=True, editable=True, deleteable=True, description=''):
 
         self._orphan_list = evd_orphan_list()
 
@@ -108,6 +114,7 @@ class Context(Node):
         self._trajectories = {}
         self._regions = {}
         self._grade_types = {}
+        self._placeholders = {}
 
         super(Context,self).__init__(
             type=Context.type_string() + type if append_type else type,
@@ -127,6 +134,7 @@ class Context(Node):
         self.thing_types = thing_types
         self.regions = regions
         self.grade_types = grade_types
+        self.placeholders = placeholders
 
     def to_dct(self):
         msg = super(Context,self).to_dct()
@@ -138,7 +146,8 @@ class Context(Node):
             'trajectories': [t.to_dct() for t in self.trajectories],
             'thing_types': [t.to_dct() for t in self.thing_types],
             'regions': [r.to_dct() for r in self.regions],
-            'grade_types': [g.to_dct() for g in self.grade_types]
+            'grade_types': [g.to_dct() for g in self.grade_types],
+            'placeholders': [p.to_dct() for p in self.placeholders]
         })
         return msg
 
@@ -159,7 +168,8 @@ class Context(Node):
             trajectories=[NodeParser(t, enforce_types=[Trajectory.type_string(trailing_delim=False)]) for t in dct['trajectories']],
             thing_types=[NodeParser(t, enforce_types=[ThingType.type_string(trailing_delim=False)]) for t in dct['thing_types']],
             regions=[NodeParser(r, enforce_types=[ALL_REGION_TYPES]) for r in dct['regions']],
-            grade_types=[NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']])
+            grade_types=[NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']],
+            placeholders=[NodeParser(p, enforce_types=[Placeholder.type_string(trailing_delim=False)]) for p in dct['placeholders']])
 
     def on_delete(self):
 
@@ -187,6 +197,9 @@ class Context(Node):
         for g in self.grade_types:
             self._orphan_list.add(g.uuid,'grade_type')
 
+        for p in self.placeholders:
+            self._orphan_list.add(p.uuid,'placeholder')
+
         super(Context,self).on_delete()
 
     '''
@@ -205,7 +218,7 @@ class Context(Node):
     def locations(self, value):
         uuids = []
 
-        for l in self._locations:
+        for l in self._locations.values():
             l.remove_from_cache()
             uuids.append(l.uuid)
         self._locations = {}
@@ -229,7 +242,7 @@ class Context(Node):
     def machines(self, value):
         uuids = []
 
-        for m in self._machines:
+        for m in self._machines.values():
             m.remove_from_cache()
             uuids.append(m.uuid)
         self._machines = {}
@@ -253,7 +266,7 @@ class Context(Node):
     def things(self, value):
         uuids = []
 
-        for t in self._things:
+        for t in self._things.values():
             t.remove_from_cache()
             uuids.append(t.uuid)
         self._things = {}
@@ -277,7 +290,7 @@ class Context(Node):
     def thing_types(self, value):
         uuids = []
 
-        for t in self._thing_types:
+        for t in self._thing_types.values():
             t.remove_from_cache()
             uuids.append(t.uuid)
         self._thing_types = {}
@@ -301,7 +314,7 @@ class Context(Node):
     def waypoints(self, value):
         uuids = []
 
-        for w in self._waypoints:
+        for w in self._waypoints.values():
             w.remove_from_cache()
             uuids.append(w.uuid)
 
@@ -359,7 +372,7 @@ class Context(Node):
 
         for r in value:
             self._regions[r.uuid] = r
-            r.parent - self
+            r.parent = self
             if r.uuid in uuids:
                 uuids.remove(r.uuid)
 
@@ -385,6 +398,29 @@ class Context(Node):
             g.parent = self
             if g.uuid in uuids:
                 uuids.remove(g.uuid)
+
+        for u in uuids:
+            self._orphan_list.add(u,'grade_type')
+
+    @property
+    def placeholders(self):
+        return self._placeholders.values()
+
+    @placeholders.setter
+    def placeholders(self, value):
+        uuids = []
+
+        for p in self._placeholders.values():
+            p.remove_from_cache()
+            uuids.append(p.uuid)
+
+        self._placeholders = {}
+
+        for p in value:
+            self._placeholders[p.uuid] = p
+            p.paren = self
+            if p.uuid in uuids:
+                uuids.remove(p.uuid)
 
         for u in uuids:
             self._orphan_list.add(u,'grade_type')
@@ -525,6 +561,23 @@ class Context(Node):
             self._orphan_list.add(uuid,'grade_type')
             self.updated_attribute('grade_types','delete', uuid)
 
+    def get_placeholder(self, uuid):
+        if uuid in self._placeholders.keys():
+            return self._placeholders[uuid]
+        else:
+            return None
+
+    def add_placeholder(self, placeholder):
+        placeholder.parent = self
+        self._placeholders[placeholder.uuid] = placeholder
+        self.updated_attribute('placeholders','add',placeholder.uuid)
+
+    def delete_placeholder(self, uuid):
+        if uuid in self._placeholders.keys():
+            self._placeholders.pop(uuid).remove_from_cache()
+            self._orphan_list.add(uuid,'placeholder')
+            self.updated_attribute('placeholder','delete',uuid)
+
     def set(self, dct):
         if 'locations' in dct.keys():
             self.locations = [NodeParser(l, enforce_types=[Location.type_string(trailing_delim=False)]) for l in dct['locations']]
@@ -549,6 +602,9 @@ class Context(Node):
 
         if 'grade_types' in dct.keys():
             self.grade_types = [NodeParser(g, enforce_types=[GradeType.type_string(trailing_delim=False)]) for g in dct['grade_types']]
+
+        if 'placeholders' in dct.keys():
+            self.placeholders = [NodeParser(p, enforce_types=[Placeholder.type_string(trailing_delim=False)]) for p in dct['placeholders']]
 
         super(Context,self).set(dct)
 
@@ -581,6 +637,9 @@ class Context(Node):
         for g in self.grade_types:
             g.remove_from_cache()
 
+        for p in self.placeholders:
+            p.remove_from_cache()
+
         super(Context,self).remove_from_cache()
 
     def add_to_cache(self):
@@ -608,6 +667,9 @@ class Context(Node):
         for g in self.grade_types:
             g.add_to_cache()
 
+        for p in self.placeholders:
+            p.add_to_cache()
+
         super(Context,self).add_to_cache()
 
     '''
@@ -633,26 +695,38 @@ class Context(Node):
             self.delete_region(uuid)
         elif uuid in [g.uuid for g in self.grade_types]:
             self.delete_grade_type(uuid)
+        elif uuid in [p.uuid for p in self.placeholders]:
+            self.delete_placeholder(uuid)
         else:
-            success = False
+            success = super(Context,self).delete_child(uuid)
 
-        if not success:
-            return super(Context,self).delete_child(uuid)
-        else:
-            return success
+        return success
 
-    def add_child(self, dct):
+    def add_child(self, node):
         success = True
 
-        type = dct["type"].split('.')
-        exactType = type[len(type) - 2]
-
-        #TODO
-
-        if not success:
-            return super(Context,self).add_child(dct)
+        if isinstance(node,Location) and node.uuid not in [l.uuid for l in self.locations]:
+            self.add_location(node)
+        elif isinstance(node,Machine) and node.uuid not in [m.uuid for m in self.machines]:
+            self.add_machine(node)
+        elif isinstance(node,Thing) and node.uuid not in [t.uuid for t in self.things]:
+            self.add_thing(node)
+        elif isinstance(node,Waypoint) and node.uuid not in [w.uuid for w in self.waypoints]:
+            self.add_waypoint(node)
+        elif isinstance(node,Trajectory) and node.uuid not in [t.uuid for t in self.trajectories]:
+            self.add_trajectory(node)
+        elif isinstance(node,ThingType) and node.uuid not in [t.uuid for t in self.thing_types]:
+            self.add_thing_type(node)
+        elif isinstance(node,Region) and node.uuid not in [r.uuid for r in self.regions]:
+            self.add_region(node)
+        elif isinstance(node,GradeType) and node.uuid not in [g.uuid for g in self.grade_types]:
+            self.add_grade_type(node)
+        elif isinstance(node,Placeholder) and node.uuid not in [p.uuid for p in self.placeholders]:
+            self.add_placeholder(node)
         else:
-            return success
+            success = super(Context,self).add_child(node)
+
+        return success
 
     '''
     Update Methods
@@ -684,6 +758,9 @@ class Context(Node):
         for g in self.grade_types:
             g.late_construct_update()
 
+        for p in self.placeholders:
+            p.late_construct_update()
+
         super(Context,self).late_construct_update()
 
     def deep_update(self):
@@ -712,6 +789,9 @@ class Context(Node):
         for g in self.grade_types:
             g.deep_update()
 
+        for p in self.placeholders:
+            p.deep_update()
+
         super(Context,self).deep_update()
 
         self.updated_attribute('machines','update')
@@ -722,6 +802,7 @@ class Context(Node):
         self.updated_attribute('thing_types','update')
         self.updated_attribute('regions','update')
         self.updated_attribute('grade_types','update')
+        self.updated_attribute('placeholders','update')
 
     def shallow_update(self):
         super(Context,self).shallow_update()
@@ -734,3 +815,4 @@ class Context(Node):
         self.updated_attribute('thing_types','update')
         self.updated_attribute('regions','update')
         self.updated_attribute('grade_types','update')
+        self.updated_attribute('placeholders','update')

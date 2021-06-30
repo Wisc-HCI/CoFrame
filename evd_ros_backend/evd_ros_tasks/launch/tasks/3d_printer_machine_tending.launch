@@ -33,12 +33,7 @@
 
   <!-- Core -->
   <include file="$(find evd_ros_core)/launch/app.launch">
-    <arg name="app_filepath" value="$(find evd_ros_tasks)/tasks/3d_printer_machine_tending/applications/"/>
-    <arg name="ros_frame_id" value="world"/>
-  </include>
-
-  <!-- For Debug -->
-  <include file="$(find evd_ros_core)/launch/test_core_application.launch">
+    <arg name="config_filepath" value="$(find evd_ros_tasks)/config/ur3e_processor_config.json"/>
     <arg name="ros_frame_id" value="world"/>
   </include>
 
@@ -49,12 +44,9 @@
   </group>
 
   <!-- 3D Printer -->
-  <node name="physical_printer" type="3d_printer_machine.py" pkg="evd_ros_tasks" output="screen">
-    <param name="prefix" value="physical"/>
-  </node>
+  <node name="machine_3d_printer" type="3d_printer_machine.py" pkg="evd_ros_tasks" output="screen"/>
 
-  <node name="simulated_printer" type="3d_printer_machine.py" pkg="evd_ros_tasks" output="screen">
-    <param name="prefix" value="simulated"/>
-  </node>
+  <!-- Workcell -->
+  <node name="workcell" type="register_ur3e_workcell.py" pkg="evd_ros_tasks" output="screen"/>
 
 </launch>

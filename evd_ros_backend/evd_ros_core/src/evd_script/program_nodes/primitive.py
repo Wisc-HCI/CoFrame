@@ -3,7 +3,7 @@ Primitive is a sub-type of node that indicates it can be executed in a program.
 '''
 
 from ..node import Node
-from .. import PARAMETERS_FIELD_DCT
+from ..type_defs import PARAMETERS_FIELD_DCT
 
 class Primitive(Node):
 

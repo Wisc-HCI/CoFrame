@@ -1,7 +1,5 @@
-bool all
-string data
-evd_ros_core/Version tag
+string uuid     # Optional idenitifer if desired
+string data     # Can be anything but probably should be valid JSON
 ---
 bool status
-string errors
 string message

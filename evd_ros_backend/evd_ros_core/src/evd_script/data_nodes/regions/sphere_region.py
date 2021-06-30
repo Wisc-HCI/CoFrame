@@ -2,7 +2,7 @@
 A region with position uncertainty defined by a sphere.
 '''
 
-from ... import NUMBER_TYPE
+from ...type_defs import NUMBER_TYPE
 from .region import Region
 from ...node_parser import NodeParser
 from ..geometry import Position, Orientation
@@ -80,7 +80,8 @@ class SphereRegion(Region):
             uncertainty_radius=dct['uncertainty_radius'],
             free_orientation=dct['free_orientation'],
             uncertainty_orientation_limit=dct['uncertainty_orientation_limit'],
-            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]),
+            uncertainty_orientation_alt_target=NodeParser(dct['uncertainty_orientation_alt_target'], enforce_types=[Orientation.type_string(trailing_delim=False)]) \
+                if dct['uncertainty_orientation_alt_target'] != None else None,
             type=dct['type'] if 'type' in dct.keys() else '',
             append_type=not 'type' in dct.keys(),
             editable=dct['editable'],

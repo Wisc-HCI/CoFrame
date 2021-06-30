@@ -7,7 +7,7 @@ by link='app' or assumed by link=''. Link can also default to None in which case
 property is not being enforced / used for that pose node.
 '''
 
-from evd_ros_backend.evd_ros_core.src.evd_script import STRING_TYPE
+from ...type_defs import STRING_TYPE
 import numpy as np
 import tf
 import geometry_msgs.msg as ros_msgs
@@ -16,9 +16,6 @@ from ...node import Node
 from .position import Position
 from .orientation import Orientation
 from ...node_parser import NodeParser
-from evd_ros_backend.evd_ros_core.src.evd_script.data_nodes.geometry import position
-
-from evd_ros_backend.evd_ros_core.src.evd_script.data_nodes.geometry import orientation
 
 
 class Pose(Node):
@@ -228,7 +225,7 @@ class Pose(Node):
     def link(self, value):
         if self._link != value:
             self._link = value
-            self.updated_attribute('link')
+            self.updated_attribute('link','set')
 
     def set(self, dct):
         pos = dct.get('position',None)

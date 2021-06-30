@@ -38,12 +38,12 @@ class MachinePrimitive(Primitive):
         })
         return template
 
-    def __init__(self, machineUuid=None, parameters=None, type='', name='', uuid=None, parent=None,
+    def __init__(self, machine_uuid=None, parameters=None, type='', name='', uuid=None, parent=None,
                  append_type=True, editable=True, deleteable=True, description=''):
 
         if parameters == None:
             parameters = {
-                'machine_uuid': machineUuid
+                'machine_uuid': machine_uuid
             }
 
         super(MachinePrimitive,self).__init__(

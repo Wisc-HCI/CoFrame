@@ -1,8 +1,0 @@
-bool filter_by_source
-string source
-string[] ids
-
-bool filter_by_level
-string level
----
-Issue[] issues

@@ -7,11 +7,11 @@ Program also provides a list of skills defined as "macros/functions" to be invok
 the AST. Simple parameterization is provided.
 '''
 
-from .program_nodes.hierarchical import Hierarchical
 from .node_parser import NodeParser
 from .environment import Environment
+from .program_nodes.hierarchical import Hierarchical
 from .program_nodes import skills_library
-from . import ALL_SKILLS_TYPES, ALL_PRIMITIVES_TYPES
+from .type_defs import ALL_SKILLS_TYPES, ALL_PRIMITIVES_TYPES
 
 from .orphans import *
 
@@ -81,7 +81,7 @@ class Program(Hierarchical):
         if skills != None:
             self.skills = skills
         else: 
-            self.skills = [ps() for ps in skills_library]
+            self.skills = [s() for s in skills_library]
 
     def to_dct(self):
         msg = super(Program,self).to_dct()
@@ -201,6 +201,38 @@ class Program(Hierarchical):
             s.add_to_cache()
 
         super(Program,self).add_to_cache()
+
+    '''
+    Children Methods
+    '''
+
+    def delete_child(self, uuid):
+        success  = False
+
+        if uuid in self.skills_dct.keys():
+            self.delete_skill(uuid)
+            success = True
+        else:
+            success = super(Program,self).delete_child(uuid)
+
+        if not success:
+            success = self.environment.delete_child(uuid)
+
+        return success
+
+    def add_child(self, node):
+        success = False
+
+        if isinstance(node,Skill) and not node.uuid in self.skills_dct.keys():
+            self.add_skill(node)
+            success = True
+        else:
+            success = super(Program,self).add_child(node)
+
+        if not success:
+            success = self.environment.add_child(node)
+        
+        return success
 
     '''
     Update Methods

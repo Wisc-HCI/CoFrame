@@ -4,11 +4,14 @@ Hierarchical wraps a set of primitives that should be executed in order.
 In hierarchical task analysis (and/or those familiar with Authr) this is a "task".
 The purpose of this block is to abstract the base-primitives into more semantically
 meaningful behaviors.
+
+elif isinstance(node,Primitive) and not node.uuid in [p.uuid for p in self.primitives]:
+            self.add_primitive(node)
 '''
 
 from .primitive import Primitive
 from ..node_parser import NodeParser
-from .. import ALL_PRIMITIVES_TYPES
+from ..type_defs import ALL_PRIMITIVES_TYPES
 
 
 class Hierarchical(Primitive):
@@ -189,10 +192,17 @@ class Hierarchical(Primitive):
         if uuid in [p.uuid for p in self.primitives]:
             self.delete_primitive(uuid)
         else:
-            success = False
-
-        if not success:
             success = super(Hierarchical,self).delete_child(uuid)
+
+        return success
+
+    def add_child(self, node):
+        success = True
+
+        if isinstance(node,Primitive) and node.uuid not in [p.uuid for p in self.primitives]:
+            self.add_primitive(node)
+        else:
+            success = super(Hierarchical,self).add_child(node)
 
         return success
 

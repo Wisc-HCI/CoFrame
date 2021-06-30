@@ -1,10 +1,8 @@
+#!/usr/bin/env python3
+
 '''
 This application is used to demonstrate EvDScript's modeling ability.
 '''
-
-
-import json
-import pprint
 
 from scipy import interpolate
 from evd_script import *
@@ -13,11 +11,11 @@ from evd_script import *
 def generate():
 
     cache = get_evd_cache_obj()
+    prog = Program()
 
     #===========================================================================
-    # Define Program
+    # Define Program Data
     #===========================================================================
-    prog = Program()
 
     # Define and add location
     home_loc = Location(Position(0,0.2,0),Orientation(x=0,y=0.7071068,z=0,w=0.7071068),name='home')
@@ -34,50 +32,41 @@ def generate():
     prog.context.add_location(pick_final_loc)
     prog.context.add_location(place_final_loc)
 
-    locations = [home_loc,pick_stock_loc,place_stock_loc,retract_loc,pick_final_loc,place_final_loc]
-
     # Define and add machines
     cnc = Machine(name='cnc',uuid="reserved-machine-cnc")
 
     prog.context.add_machine(cnc)
-    default_objs["machines"].append(cnc)
 
     # Define and add statically defined things
-    stock_type = ThingType('stock', is_safe=True, weight=0.1,
+    stock_type = ThingType(name='stock', is_safe=True, weight=0.1,
                            mesh_id='package://evd_ros_core/markers/3DBenchy.stl',
                            uuid="reserved-thing-type-stock")
-
     prog.context.add_thing_type(stock_type)
 
-    raw_stock = Thing(thing_type_uuid=stock_type.uuid,name='boat',uuid="reserved-thing-raw-stock")
-
+    raw_stock = Thing(thing_type_uuid=stock_type.uuid,
+                      name='boat',
+                      uuid="reserved-thing-raw-stock")
     prog.context.add_thing(raw_stock)
 
-    # Define and add primitives
-    prog.add_primitive(Initialize(
-        homeLocUuid=home_loc.uuid,
-        machineUuids=[cnc.uuid]))
+    # Define and add trajectories
 
-    prog.add_primitive(Loop(
-        primitives=[
-            SimplePickAndPlace(
-                startLocUuid=home_loc.uuid,
-                pickLocUuid=pick_stock_loc.uuid,
-                placeLocUuid=place_stock_loc.uuid),
-            MoveTrajectory(
-                startLocUuid=place_stock_loc.uuid,
-                endLocUuid=retract_loc.uuid),
-            MachineBlockingProcess(
-                machineUuid=cnc.uuid),
-            SimplePickAndPlace(
-                startLocUuid=retract_loc.uuid,
-                pickLocUuid=pick_final_loc.uuid,
-                placeLocUuid=place_final_loc.uuid)
-        ]
-    ))
+    traj1 = Trajectory(home_loc.uuid,pick_stock_loc.uuid)
+    traj2 = Trajectory(pick_stock_loc.uuid,place_stock_loc.uuid)
+    traj3 = Trajectory(place_stock_loc.uuid,retract_loc.uuid)
+    traj4 = Trajectory(retract_loc.uuid,pick_final_loc.uuid)
+    traj5 = Trajectory(pick_final_loc.uuid,place_final_loc.uuid)
+    traj6 = Trajectory(place_final_loc.uuid,home_loc.uuid)
 
-    for trajUuid in cache.trajectories.keys():
-        trajectory = cache.trajectories[trajUuid]
+    prog.context.add_trajectory(traj1)
+    prog.context.add_trajectory(traj2)
+    prog.context.add_trajectory(traj3)
+    prog.context.add_trajectory(traj4)
+    prog.context.add_trajectory(traj5)
+    prog.context.add_trajectory(traj6)
+
+    # Create fake waypoints for trajectories
+    for trajUuid in cache.get_uuids('trajectory'):
+        trajectory = cache.get(trajUuid,'trajectory')
 
         startLoc = prog.context.get_location(trajectory.start_location_uuid)
         endLoc = prog.context.get_location(trajectory.end_location_uuid)
@@ -109,16 +98,6 @@ def generate():
 
         trajectory.waypoint_uuids = waypoint_uuids
 
-        # Put a trace datapoint at each location and waypoint
-        datapoints = []
-        datapoints.append(TraceDataPoint(startLoc.position,startLoc.orientation))
-        for uuid in waypoint_uuids:
-            wp = prog.context.get_waypoint(uuid)
-            datapoints.append(TraceDataPoint(wp.position,wp.orientation))
-        datapoints.append(TraceDataPoint(endLoc.position,endLoc.orientation))
-
-        trajectory.trace = Trace('ee',{'ee': datapoints})
-
     #===========================================================================
     # Define Environment
     #===========================================================================
@@ -132,10 +111,10 @@ def generate():
         PinchPoint(link='simulated_wrist_3_link', radius=0.1, length=0.16, offset=Position.from_axis('z',0.1))
     ]
     prog.environment.collision_meshes = [
-        CollisionMesh(link='box_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl'),
-        CollisionMesh(link='table_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Table.stl'),
-        CollisionMesh(link='3d_printer_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl'),
-        CollisionMesh(link='ur3e_pedestal_link', mesh_id='package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl')
+        CollisionMesh(link='box_link', mesh_id='package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Box.stl'),
+        CollisionMesh(link='table_link', mesh_id='package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Table.stl'),
+        CollisionMesh(link='3d_printer_link', mesh_id='package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl'),
+        CollisionMesh(link='ur3e_pedestal_link', mesh_id='package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Pedestal.stl')
     ]
     prog.environment.occupancy_zones = [
         OccupancyZone(OccupancyZone.HUMAN_TYPE, posZ=1, sclX=2, height=-0.77),
@@ -144,24 +123,25 @@ def generate():
     ]
 
     #===========================================================================
-    # Repair all orphans and integrate all context patches
+    # Define Program Primitives
+    #===========================================================================
+
+    #TODO
+
+    #===========================================================================
+    # Done :)
     #===========================================================================
 
     prog.late_construct_update() # This will force the entire program to undergo patch/repair
-
-    #===========================================================================
-    # Debug Logging
-    #===========================================================================
-
-    #print '\n\n\n\n'
-    #print 'Data Server - Cache Log'
-    #pprint.pprint(cache.utility_cache_stats())
-
-    #pprint.pprint(prog.context.to_dct())
-
-    #print 'Data Server - Context Trajectories'
-    #pprint.pprint(prog.context.trajectories)
-
-    #print '\n\n\n\n'
-
     return prog
+
+
+if __name__ == "__main__":
+    import rospy
+    rospy.init_node('test_node_placeholder_name')
+
+    program = generate()
+
+    import json
+    with open('debug_app_exported.json','w+') as f:
+        json.dump(program.to_dct(),f, indent=4)

@@ -18,14 +18,14 @@ def get_evd_cache_obj():
     return cacheObj
 
 
-from .data.trajectory import Trajectory
-from .data.location import Location
-from .data.waypoint import Waypoint
-from .data.thing import Thing
-from .data.trace import Trace
-from .data.machine import Machine
-from .data.thing_type import ThingType
-from .data.regions.region import Region
+from .data_nodes.trajectory import Trajectory
+from .data_nodes.location import Location
+from .data_nodes.waypoint import Waypoint
+from .data_nodes.thing import Thing
+from .data_nodes.trace import Trace
+from .data_nodes.machine import Machine
+from .data_nodes.thing_type import ThingType
+from .data_nodes.regions.region import Region
 from .program_nodes.skill import Skill
 from .program_nodes.primitive import Primitive
 from .environment_nodes.environment_node import EnvironmentNode
@@ -81,7 +81,7 @@ class Cache(object):
         retVal = None
 
         if hint in self.instance_table.keys() and uuid in self.instance_table[hint]['table'].keys():
-            retVal = self.instance_table['hint']['table'][uuid]
+            retVal = self.instance_table[hint]['table'][uuid]
         else:
             retVal = self.data[uuid]
 

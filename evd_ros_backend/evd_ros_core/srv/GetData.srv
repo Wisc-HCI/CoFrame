@@ -1,8 +1,0 @@
-bool all
-string data
----
-string data
-evd_ros_core/Version tag
-bool status
-string errors
-string message

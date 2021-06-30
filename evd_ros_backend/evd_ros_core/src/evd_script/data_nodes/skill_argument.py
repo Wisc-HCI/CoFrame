@@ -5,7 +5,7 @@ are overrided with a temporary value and copied over to a real value on
 invocation.
 '''
 
-from .. import ALL_NODES_TYPE, BOOLEAN_TYPE, STRING_TYPE
+from ..type_defs import ALL_NODES_TYPE, BOOLEAN_TYPE, STRING_TYPE
 from ..node import Node
 
 
@@ -20,7 +20,7 @@ class SkillArgument(Node):
         return 'Skill Argument'
 
     @classmethod
-    def type_string(cls, trailing_delim):
+    def type_string(cls, trailing_delim=True):
         return 'skill-argument' + ('.' if trailing_delim else '')
 
     @classmethod

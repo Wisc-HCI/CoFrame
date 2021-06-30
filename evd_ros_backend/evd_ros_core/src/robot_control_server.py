@@ -7,27 +7,23 @@ High-level control of robot and machines for simulation
 import json
 import rospy
 
+from evd_script import NodeParser, Program
 from std_msgs.msg import Empty, Bool, String
 from evd_ros_core.msg import ProgramRunnerStatus
-from evd_ros_core.srv import SetRootNode, SetRootNodeResponse
-from evd_ros_core.srv import GetRootNode, GetRootNodeResponse
+from evd_ros_core.srv import SetData, SetDataResponse
 
 from evd_interfaces.program_runner import ProgramRunner
 from evd_interfaces.robot_interface import RobotInterface
 from evd_interfaces.machine_interface import MachineInterface
-from evd_interfaces.data_client_interface import DataClientInterface
 
 
 class RobotControlServer:
 
     def __init__(self):
-        self._root_node_uuid = ''
         self._playing = False
         self._cmd_queue = []
         self._program = None
-
-        # Data server interface
-        self._data_interface = DataClientInterface(use_application_interface=False)
+        self._player = None
 
         # External Interfaces
         self._machine_interface = MachineInterface()
@@ -40,8 +36,7 @@ class RobotControlServer:
         self._reset_sub = rospy.Subscriber('robot_control_server/reset',Empty,self._reset_cb)
         
         # Program execution point
-        self.set_root_node_srv = rospy.Service('robot_control_server/set_root_node',SetRootNode,self._set_root_node_cb)
-        self.get_root_node_srv = rospy.Service('robot_control_server/get_root_node',GetRootNode,self._get_root_node_cb)
+        self.set_program_srv = rospy.Service('robot_control_server/set_program',SetData,self._set_program_cb)
 
         # Player Feedback
         self._at_start_pub = rospy.Publisher('robot_control_server/at_start',Bool, queue_size=10, latch=True)
@@ -63,25 +58,26 @@ class RobotControlServer:
     def _reset_cb(self, _):
         self._cmd_queue.append('reset')
 
-    def _set_root_node_cb(self, request):
-        response = SetRootNodeResponse()
+    def _set_program_cb(self, request):
+        response = SetDataResponse()
 
         if self._playing:
             response.status = False
             response.message = 'Currently playing program - stop first!'
-        else:   
+        else:
+            old_prog = self._program
+            try:
+                raw = json.loads(request.data)
+                self._program = NodeParser(raw, enforce_types=[Program.type_string()])
 
-            if request.uuid != self._root_node_uuid:
-                self._root_node_uuid = request.uuid
-                self._program = None
+                response.status = True
+                response.message = ''
+            except:
+                response.status = False
+                response.message = 'Failed to deserialize program - reverting'
+                self._program = old_prog
             
-            response.status = True
-            response.message = ''
-
         return response
-
-    def _get_root_node_cb(self, _):
-        return GetRootNodeResponse(self._root_node_uuid)
 
     def set_at_start(self,state):
         self._at_start_pub.publish(Bool(state))
@@ -113,58 +109,47 @@ class RobotControlServer:
                     self._playing = False
 
                     # Try running with existing program
-                    if self._program != None:
+                    if self._player != None:
 
                         # If program is currently paused then resume
                         # If program is constructed and valid then start (unknown start state, will reset)
-                        if self._program.pause:
+                        if self._player.pause:
                             self._playing = True
-                            self._program.pause = False
-                            
-                        elif self._program.root_uuid == self._root_node_uuid:
+                            self._player.pause = False
+                        else:
                             self._playing = True
-                            self._program.start()
+                            self._player.start()
 
                     # If could not run with existing program (or there is none)
                     # then construct a new program runner
                     if not self._playing:
 
-                        # Find root level node to start executing
-                        uuid = self._root_node_uuid
-                        if uuid == '' or uuid == None:
-                            node = self._data_interface.program
-                        else: 
-                            try:
-                                node = self._data_interface.cache.get(uuid)
-                            except:
-                                node = None
-
                         # Create program runner and start running if all good
                         # otherwise we need to stop and report an error
-                        if node != None:
-                            self._program = ProgramRunner(
-                                full_program=self._data_interface.program,
-                                root_node=node,
+                        if self._program != None:
+                            self._player = ProgramRunner(
+                                full_program=self._program,
+                                root_node=self._program,
                                 symbolic=False,
                                 robot=self._robot_interface,
                                 machine=self._machine_interface,
                                 player=self)
                             
                             self._playing = True
-                            self._program.start()
+                            self._player.start()
                         
                         else:
                            self.set_error('root_node_uuid not valid')
 
                 elif action == 'stop' and self._playing:
                     self._playing = False
-                    self._program.stop()
+                    self._player.stop()
                 
                 elif action == 'stop' and not self._playing:
                     self.set_error('program is not running')
 
                 elif action == 'pause' and self._playing:
-                    self._program.pause = True
+                    self._player.pause = True
 
                 elif action == 'pause' and not self._playing:
                     self.set_error('program is not running')
@@ -172,13 +157,13 @@ class RobotControlServer:
                 elif action == 'reset':
                     if self._playing:
                         self._playing = False
-                        self._program.stop()
+                        self._player.stop()
                     
-                    self._program.reset()
+                    self._player.reset()
 
             # Update underlying program state on robot
             if self._playing:
-                self._program.update()
+                self._player.update()
             rate.sleep()
 
 

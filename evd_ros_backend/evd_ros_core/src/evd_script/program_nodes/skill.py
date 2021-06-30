@@ -15,7 +15,7 @@ set of "shadow-params".
 from ..data_nodes.skill_argument import SkillArgument
 from .hierarchical import Hierarchical
 from ..node_parser import NodeParser
-from .. import ALL_PRIMITIVES_TYPES
+from ..type_defs import ALL_PRIMITIVES_TYPES
 
 
 class Skill(Hierarchical):
@@ -29,7 +29,7 @@ class Skill(Hierarchical):
         return 'Skill'
 
     @classmethod
-    def type_string(cls, trailing_delim):
+    def type_string(cls, trailing_delim=True):
         return 'skill' + ('.' if trailing_delim else '')
     
     @classmethod
@@ -85,7 +85,8 @@ class Skill(Hierarchical):
             description=dct['description'],
             uuid=dct['uuid'],
             primitives=[NodeParser(p, enforce_types=[ALL_PRIMITIVES_TYPES]) for p in dct['primitives']],
-            arguments=[NodeParser(a, enforce_types=[SkillArgument.type_string(trailing_delim=False)]) for a in dct['arguments']])
+            arguments=[NodeParser(a, enforce_types=\
+                [SkillArgument.type_string(trailing_delim=False)]) for a in dct['arguments']])
 
     '''
     Data accessor/modifier methods
@@ -148,7 +149,8 @@ class Skill(Hierarchical):
     def set(self, dct):
 
         if 'arguments' in dct.keys():
-            self.arguments=[NodeParser(a, enforce_types=[SkillArgument.type_string(trailing_delim=False)]) for a in dct['arguments']]
+            self.arguments=[NodeParser(a, enforce_types=\
+                [SkillArgument.type_string(trailing_delim=False)]) for a in dct['arguments']]
 
         super(Skill,self).set(dct)
 
@@ -178,10 +180,17 @@ class Skill(Hierarchical):
         if uuid in [a.uuid for a in self.arguments]:
             self.delete_skill_argument(uuid)
         else:
-            success = False
-
-        if not success: 
             success = super(Skill,self).delete_child(uuid)
+
+        return success
+
+    def add_child(self, node):
+        success = True
+
+        if isinstance(node,SkillArgument) and node.uuid not in [a.uuid for a in self.arguments]:
+            self.add_skill_argument(node)
+        else:
+            success = super(Skill,self).add_child(node)
 
         return success
 
@@ -230,13 +239,13 @@ class Skill(Hierarchical):
         # ]
 
         for uuid in arg_uuids:
-                if uuid not in self._arguments.keys():
-                    raise Exception('Skill argument is being used before it exists in the arguments list')
+            if uuid not in self._arguments.keys():
+                raise Exception('Skill argument is being used before it exists in the arguments list')
 
-                key = self._arguments[uuid].parameter_key
-                value = self._arguments[uuid].temporary_value
+            key = self._arguments[uuid].parameter_key
+            value = self._arguments[uuid].temporary_value
 
-                getattr(prm,key) = value
+            setattr(prm,key,value)
 
     def resolve_to_hierarchical(self, arg_map):
         # arg_map = {

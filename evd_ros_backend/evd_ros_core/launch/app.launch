@@ -1,8 +1,8 @@
 <launch>
 
-  <arg name="app_filepath"/>
+  <arg name="config_filepath"/>
   <arg name="ros_frame_id"/>
-
+  <arg name="run_test" default="true"/>
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
 
@@ -10,26 +10,21 @@
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>
 
-  <node name="data_server" pkg="evd_ros_core" type="data_server.py" output="screen">
-    <param name="app_filepath" value="$(arg app_filepath)"/>
-  </node>
-
   <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py" output="screen"/>
 
-  <node name="issue_server" pkg="evd_ros_core" type="issue_server.py" output="screen"/>
-
   <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen">
-
+    <param name="config_file" value="$(arg config_filepath)" />
   </node>
 
-  <include file="$(find evd_ros_core)/launch/graders.launch">
-    <arg name="app_filepath" value="$(arg app_filepath)"/>
-    <arg name="ros_frame_id" value="$(arg ros_frame_id)"/>
-  </include>
+  <node name="joint_processor" pkg="evd_ros_core" type="joint_processor.py" output="screen">
+    <param name="config_file" value="$(arg config_filepath)" />
+  </node>
 
-  <include file="$(find evd_ros_core)/launch/verifiers.launch">
-    <arg name="app_filepath" value="$(arg app_filepath)"/>
-    <arg name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  <node name="program_verifier" pkg="evd_ros_core" type="program_verifier.py" output="screen"/>
+
+  <!-- For Debug -->
+  <include if="$(arg run_test)" file="$(find evd_ros_core)/launch/test_core_application.launch">
+    <arg name="ros_frame_id" value="world"/>
   </include>
 
 </launch>

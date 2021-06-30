@@ -10,7 +10,7 @@ import math
 import geometry_msgs.msg as ros_msgs
 
 from ...node import Node
-from ... import NUMBER_TYPE
+from ...type_defs import NUMBER_TYPE
 
 
 class Orientation(Node):

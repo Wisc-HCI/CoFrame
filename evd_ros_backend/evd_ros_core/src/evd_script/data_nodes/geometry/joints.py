@@ -2,7 +2,7 @@
 Joints provides an abstraction on joint information for a robot
 '''
 
-from ... import BOOLEAN_TYPE, NUMBER_TYPE, STRING_TYPE
+from ...type_defs import BOOLEAN_TYPE, NUMBER_TYPE, STRING_TYPE
 from ...node import Node
 from sensor_msgs.msg import JointState
 

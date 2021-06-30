@@ -6,7 +6,7 @@ end location. When a trajectory is planned it produces a trace. Any change to th
 trajectory will result in a new trace needing to be computed.
 '''
 
-from .. import NUMBER_TYPE, ENUM_TYPE
+from ..type_defs import NUMBER_TYPE, ENUM_TYPE
 from .location import Location
 from .waypoint import Waypoint
 from ..node import Node
@@ -149,6 +149,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         lineMarker.id = id_start
         lineMarker.scale = Vector3(0.01,0.01,0.01)
         lineMarker.color = ColorTable.TRAJECTORY_COLOR
+        lineMarker.pose.orientation.w = 1 # to remove uninitialized quaternion warning
 
         count = id_start + 1
 
@@ -169,24 +170,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
         return lineMarker, waypoint_markers, waypoint_uuids
 
     def to_ros_marker(self, frame_id, id=0):
-        lineMarker = Marker()
-        lineMarker.header.frame_id = frame_id
-        lineMarker.type = Marker.LINE_STRIP
-        lineMarker.ns = 'trajectories'
-        lineMarker.id = id
-        lineMarker.scale = Vector3(0.01,0.01,0.01)
-        lineMarker.color = ColorTable.TRAJECTORY_COLOR
-
-        startLoc = self.context.get_location(self.start_location_uuid)
-        lineMarker.points.append(startLoc.position.to_ros())
-
-        for wpUuid in self.waypoint_uuids:
-            wp = self.context.get_waypoint(wpUuid)
-            lineMarker.points.append(wp.position.to_ros())
-
-        endLoc = self.context.get_location(self.end_location_uuid)
-        lineMarker.points.append(endLoc.position.to_ros())
-
+        lineMarker, _, _ = self.to_ros_markers(frame_id,id)
         return lineMarker
 
     '''
@@ -350,19 +334,6 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             self._trace.add_to_cache()
 
         super(Trajectory,self).add_to_cache()
-
-    '''
-    Children methods
-    '''
-
-    def delete_child(self, uuid):
-        success = False
-
-        if self.trace != None and self.trace.uuid == uuid:
-            self.trace = None
-            success = True
-
-        return success
 
     '''
     Update Methods

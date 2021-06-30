@@ -8,7 +8,7 @@ sub-nodes.
 
 from ..node import Node
 from ..node_parser import NodeParser
-from .. import ALL_NODES_TYPE, STRING_TYPE
+from ..type_defs import ALL_NODES_TYPE, STRING_TYPE
 
 
 class Container(Node):
@@ -174,12 +174,23 @@ class Container(Node):
     '''
 
     def delete_child(self, uuid):
-        success  = False
+        success = True
 
         if uuid in [v.uuid for v in self._values]:
             self.delete(uuid)
-            success = True
+        else:
+            success = super(Container,self).delete_child(uuid)
 
+        return success
+
+    def add_child(self, node):
+        success = True
+
+        if node.uuid not in [v.uuid for v in self._values]:
+            self.add(node)
+        else:
+            success = super(Container,self).add_child(node)
+        
         return success
 
     '''

@@ -6,7 +6,7 @@ commands an end-effector to move to a target object, grasp it, move to final
 location, and then release it.
 '''
 
-from ...data_nodes.skill_arguement import SkillArguement
+from ...data_nodes.skill_argument import SkillArgument
 from ..skill import Skill
 from ..primitives import MoveTrajectory, Gripper
 
@@ -29,16 +29,16 @@ class SimplePickAndPlace(Skill):
     def full_type_string(cls):
         return Skill.full_type_string() + cls.type_string()
 
-    def __init__(self, primitives=None, arguements=None, parameters=None, type='', 
-                 name='', uuid=None, parent=None, append_type=True, 
+    def __init__(self, primitives=None, arguments=None, parameters=None, type='', 
+                 name=None, uuid=None, parent=None, append_type=True, 
                  editable=False, deleteable=False, description=''):
 
         pick_traj_arg = None
         place_traj_arg = None
         thing_arg = None
 
-        if arguements != None:
-            for a in arguements:
+        if arguments != None:
+            for a in arguments:
                 if a.parameter_key == 'trajectory_uuid':
                     if a.name == 'pick_trajectory':
                         pick_traj_arg = a
@@ -48,20 +48,20 @@ class SimplePickAndPlace(Skill):
                     thing_arg = a
 
             if pick_traj_arg == None:
-                pick_traj_arg = SkillArguement(parameter_key='trajectory_uuid', name='pick_trajectory'),
-                arguements.append(pick_traj_arg)
+                pick_traj_arg = SkillArgument(parameter_key='trajectory_uuid', name='pick_trajectory')
+                arguments.append(pick_traj_arg)
             if place_traj_arg == None:
-                place_traj_arg = SkillArguement(parameter_key='trajectory_uuid', name='place_trajectory'),
-                arguements.append(place_traj_arg)
+                place_traj_arg = SkillArgument(parameter_key='trajectory_uuid', name='place_trajectory')
+                arguments.append(place_traj_arg)
             if thing_arg == None:
-                thing_arg = SkillArguement(parameter_key='thing_uuid',name='thing_uuid')
-                arguements.append(thing_arg)
+                thing_arg = SkillArgument(parameter_key='thing_uuid',name='thing_uuid')
+                arguments.append(thing_arg)
 
         else:
-            pick_traj_arg = SkillArguement(parameter_key='trajectory_uuid', name='pick_trajectory'),
-            place_traj_arg = SkillArguement(parameter_key='trajectory_uuid', name='place_trajectory'),
-            thing_arg = SkillArguement(parameter_key='thing_uuid',name='thing_uuid')
-            arguements = [pick_traj_arg,place_traj_arg,thing_arg]
+            pick_traj_arg = SkillArgument(parameter_key='trajectory_uuid', name='pick_trajectory')
+            place_traj_arg = SkillArgument(parameter_key='trajectory_uuid', name='place_trajectory')
+            thing_arg = SkillArgument(parameter_key='thing_uuid',name='thing_uuid')
+            arguments = [pick_traj_arg,place_traj_arg,thing_arg]
 
         if primitives == None:
             primitives = [
@@ -92,6 +92,9 @@ class SimplePickAndPlace(Skill):
             primitives[2].trajectory_uuid = place_traj_arg.temporary_value
             primitives[3].thing_uuid = thing_arg.temporary_value
 
+        if name == None:
+            name = 'Simple Pick and Place'
+
         super(SimplePickAndPlace,self).__init__(
             type=SimplePickAndPlace.type_string() + type if append_type else type,
             name=name,
@@ -102,5 +105,5 @@ class SimplePickAndPlace(Skill):
             deleteable=deleteable,
             description=description,
             primitives=primitives,
-            arguements=arguements,
+            arguments=arguments,
             parameters=parameters)

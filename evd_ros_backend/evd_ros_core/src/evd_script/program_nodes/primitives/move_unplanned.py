@@ -2,14 +2,12 @@
 Jogs the robot to a location without pre-planning a trajectory within EvD.
 
 THIS IS AN UNSAFE PRIMITIVE! Only use within the context of initialization.
-
-TODO implement thing token movement behavior
 '''
 
 import numpy as np
 
 from ..primitive import Primitive
-from ... import BOOLEAN_TYPE, ENUM_TYPE, NUMBER_TYPE
+from ...type_defs import BOOLEAN_TYPE, ENUM_TYPE, NUMBER_TYPE
 from ...data_nodes.location import Location
 from ...data_nodes.geometry.pose import Pose
 from ...data_nodes.geometry.position import Position
@@ -66,7 +64,7 @@ class MoveUnplanned(Primitive):
         })
         return template
 
-    def __init__(self, locUuid, manual_safety=True, move_type="joint", velocity=0,
+    def __init__(self, location_uuid=None, manual_safety=True, move_type="joint", velocity=0,
                  type='', name='', uuid=None, parent=None, append_type=True,
                  editable=True, deleteable=True, description='', parameters=None):
 
@@ -74,7 +72,7 @@ class MoveUnplanned(Primitive):
             parameters = {
                 'velocity': velocity,
                 'move_type': move_type,
-                'location_uuid': locUuid,
+                'location_uuid': location_uuid,
                 'manual_safety': manual_safety
             }
 

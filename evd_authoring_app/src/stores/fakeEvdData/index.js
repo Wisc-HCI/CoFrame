@@ -7,13 +7,11 @@
 
 
 import arbitrary from './arbitrary';
-import debugApp from './debugApp';
 import template from './template';
 import comm from './comm';
 
 const fields = {
     arbitrary,
-    debugApp,
     template,
     comm
 };

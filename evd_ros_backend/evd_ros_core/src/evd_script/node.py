@@ -10,7 +10,7 @@ import uuid
 
 from abc import ABC
 from .cache import *
-from . import STRING_TYPE, BOOLEAN_TYPE
+from .type_defs import STRING_TYPE, BOOLEAN_TYPE
 
 class Node(ABC):
 
@@ -190,7 +190,7 @@ class Node(ABC):
         if type != None:
             self.type = type
 
-        if 'description' in dct.key():
+        if 'description' in dct.keys():
             self.description = dct['description']
 
     '''
@@ -220,7 +220,7 @@ class Node(ABC):
         # write this for each sub-node type that has set of deletable children
         return False #no children in root node to delete
 
-    def add_child(self, dct):
+    def add_child(self, node):
         # write this for each sub-node type that has set of addable children
         return False #no children in root node can be added
 

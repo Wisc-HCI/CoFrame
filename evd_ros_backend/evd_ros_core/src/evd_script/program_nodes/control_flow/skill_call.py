@@ -3,7 +3,6 @@ Skill Call invokes a particular skill defined by its uuid. A skill call
 will generate a concrete hierarchical block to execute at run-time.
 '''
 
-from ... import ARBITRARY_OBJ_TYPE
 from ..primitive import Primitive
 from ..skill import Skill
 
