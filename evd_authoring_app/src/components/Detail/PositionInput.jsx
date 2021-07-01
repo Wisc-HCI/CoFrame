@@ -10,6 +10,7 @@ import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
 function PositionInput (props)  {
    const [inputVec, setInputVec] = useState(props.value);
    let minMax = [-10,10];
+   let steps = 0.01;
 
    return(
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
@@ -22,7 +23,7 @@ function PositionInput (props)  {
          <InputNumber
          min= {minMax[0]}
          max= {minMax[1]}
-         step={props.step}
+         step= {steps}
          precision={2}
          style={{ margin: '0 16px' }}
          defaultValue={inputVec[0]}
@@ -36,7 +37,7 @@ function PositionInput (props)  {
          <InputNumber
          min= {minMax[0]}
          max= {minMax[1]}
-         step={props.step}
+         step= {steps}
          precision={2}
          style={{ margin: '0 16px' }}
          defaultValue={inputVec[1]}
@@ -50,7 +51,7 @@ function PositionInput (props)  {
          <InputNumber
           min= {minMax[0]}
           max= {minMax[1]}
-          step={props.step}
+          step={steps}
           precision={2}
           style={{ margin: '0 16px' }}
           defaultValue={inputVec[2]}
