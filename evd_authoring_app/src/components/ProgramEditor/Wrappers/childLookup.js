@@ -1,7 +1,7 @@
 import {PrimitiveBlock} from '../PrimitiveBlock';
-import {ProgramBlock} from '../ProgramBlock';
+import {SkillBlock} from '../SkillBlock';
 
 export const childLookup = {
     'primitive': PrimitiveBlock,
-    'program': ProgramBlock
+    'skill': SkillBlock
 }

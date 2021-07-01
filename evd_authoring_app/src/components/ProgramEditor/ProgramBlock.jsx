@@ -1,45 +1,55 @@
-import React, {forwardRef} from 'react';
+import React from 'react';
 import { Card, Button } from 'antd';
-import { EllipsisOutlined, DragOutlined } from '@ant-design/icons';
-import {
-    SortableContext,
-    verticalListSortingStrategy
-} from '@dnd-kit/sortable';
-
-import { useDraggable } from "@dnd-kit/core";
-
+import { EllipsisOutlined } from '@ant-design/icons';
+import { useDrag } from 'react-dnd';
 import { ItemSortable } from './Wrappers';
 import useGuiStore from '../../stores/GuiStore';
+import useEvdStore from '../../stores/EvdStore';
 
 import { acceptLookup } from './acceptLookup';
-import {CSS} from '@dnd-kit/utilities';
 
-export const ProgramBlock = forwardRef((props,ref) => {
+export const ProgramBlock = (props) => {
 
-    const {name,uuid,primitiveIds} = props.data;
+    const [uuid, name, type, transform, primitiveIds] = useEvdStore(state=>([
+        state.uuid,
+        state.name,
+        state.type,
+        state.transform,
+        state.primitiveIds
+    ]))
+
+    const data = {uuid,name,type,primitiveIds};
+
+    const fieldData = acceptLookup['node.primitive.hierarchical.program.'].primitiveIds;
 
     const ancestors = [
-        {uuid:uuid,...acceptLookup['node.primitive.hierarchical.program'].primitiveIds},
+        {uuid:uuid,...fieldData},
         ...props.ancestors
     ];
 
-    const [dragItem,setFocusItem] = useGuiStore(state=>([
-        state.dragItem,
+    const [setFocusItem] = useGuiStore(state=>([
         state.setFocusItem
     ]));
 
-    const styles = {
-        display:'inline-block'
-      };
+    // Code for handling the draggability of the program node itself
+    const [{isDragging}, drag] = useDrag({
+        type: data.type,
+        item: data,
+        collect: monitor => ({
+          isDragging: monitor.isDragging()
+        })
+    })
 
-
-
-
+    const blockStyles = {
+        display:'inline-block',
+        transform:`translate3d(${transform.x}px,${transform.y}px,0)`,
+        opacity: isDragging ? 0.4 : 1,
+    };
 
     return (
-        <div {...props} style={{...props.style, ...styles}}>
+        <div ref={drag} {...props} style={blockStyles}>
             <Card 
-                title={<><Button type='text'  ref={ref} icon={<DragOutlined/>} style={{marginRight:10}}/>{name}</>} 
+                title={name} 
                 role="Box" 
                 style={{minWidth:250}}
                 headStyle={{backgroundColor:'#1f1f1f'}}
@@ -52,12 +62,12 @@ export const ProgramBlock = forwardRef((props,ref) => {
                     />
                 }
                 >
-                <SortableContext items={primitiveIds} strategy={verticalListSortingStrategy}>
+                <div>
                     {primitiveIds.map((id,idx)=>(
-                        <ItemSortable key={id} id={id} idx={idx} ancestors={ancestors} itemType='primitive' hide={dragItem!==null&&dragItem.uuid===id}/>
+                        <ItemSortable key={id} id={id} idx={idx} ancestors={ancestors} itemType='primitive'/>
                     ))}
-                </SortableContext>
+                </div>
             </Card>
         </div>
     );
-});
+};

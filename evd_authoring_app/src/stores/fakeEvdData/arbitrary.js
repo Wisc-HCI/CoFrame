@@ -771,7 +771,7 @@ let program = {
 
     skills: [
         {
-            type: 'node.primitive.hierarchical.skill.machine-blocking-process.',
+            type: 'node.primitive.hierarchical.skill.',
             name: 'Machine Blocking Process',
             uuid: 'machine-blocking-process-skill-uuid',
             editable: false,
@@ -807,7 +807,7 @@ let program = {
                 {
                     type: 'node.primitive.machine-primitive.machine-wait.',
                     name: '',
-                    uuid: 'skill-machine-wait-uuid',
+                    uuid: 'skill-machine-wait-uuid-0',
                     editable: false,
                     deleteable: false,
                     description: '',
@@ -818,7 +818,7 @@ let program = {
                 {
                     type: 'node.primitive.machine-primitive.machine-wait.',
                     name: '',
-                    uuid: 'skill-machine-wait-uuid',
+                    uuid: 'skill-machine-wait-uuid-1',
                     editable: false,
                     deleteable: false,
                     description: '',
@@ -829,7 +829,7 @@ let program = {
             ]
         },
         {
-            type: 'node.primitive.hierarchical.skill.simple-pick-and-place.',
+            type: 'node.primitive.hierarchical.skill.',
             name: 'Simple Pick and Place',
             uuid: 'simple-pick-and-place-uuid',
             editable: false,
@@ -932,7 +932,7 @@ let program = {
             ]
         },
         {
-            type: 'node.primitive.hierarchical.skill.initialize.',
+            type: 'node.primitive.hierarchical.skill.',
             name: 'Initialize',
             uuid: 'initialize-uuid',
             editable: false,
@@ -1009,9 +1009,9 @@ let program = {
             ]
         },
         {
-            type: 'node.primitive.hierarchical.skill.open-gripper.',
+            type: 'node.primitive.hierarchical.skill.',
             uuid: 'open-gripper-skill-uuid',
-            name: '',
+            name: 'Open Gripper',
             editable: false,
             deleteable: false,
             description: '',
@@ -1049,9 +1049,9 @@ let program = {
             ]
         },
         {
-            type: 'node.primitive.hierarchical.skill.close-gripper.',
+            type: 'node.primitive.hierarchical.skill.',
             uuid: 'close-gripper-skill-uuid',
-            name: '',
+            name: 'Close Gripper',
             editable: false,
             deleteable: false,
             description: '',
@@ -1111,7 +1111,7 @@ let program = {
             uuid: 'some-skill-call-uuid',
             name: 'Execute Skill',
             editable: false,
-            deleteable: false,
+            deleteable: true,
             description: '',
             parameters: {
                 skill_uuid: 'initialize-skill-uuid',

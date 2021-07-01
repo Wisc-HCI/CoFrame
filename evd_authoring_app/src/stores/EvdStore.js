@@ -52,7 +52,7 @@ const store = (set,get) => ({
       get().setUuid(program.uuid);
       get().setType(program.type);
       get().setDescription(program.description);
-      
+
       program.environment.grade_types.forEach((gradeType)=>{
         get().addItem('gradeType',gradeType)
       });
@@ -85,79 +85,89 @@ const store = (set,get) => ({
         get().addItem('region',region)
       });
 
-      const [flattenedPrimitives,flattenedSkills] = flattenProgram(program.primitives,program.skills);
+      const [flattenedPrimitives,flattenedSkills] = flattenProgram(program.primitives,program.skills,{type:'program',uuid:program.uuid});
       flattenedPrimitives.forEach((primitive)=>{
         get().addItem('primitive',primitive)
       });
-      flattenedSkills.forEach((skill)=>{
-        get().addItem('skill',skill)
+      flattenedSkills.forEach((skill,idx)=>{
+        get().addItem('skill',{...skill,transform:{x:100,y:100+idx*20}})
       });
       program.primitives.forEach((primitive)=>{
-        get().addPrimitiveId(primitive.uuid, program.uuid)
+        get().addChildPrimitive(primitive, program.uuid)
       })
-
     },
     // Program-level updates
     setName: (text) => set((_)=>({name:text})),
     setUuid: (text) => set((_)=>({uuid:text})),
     setType: (text) => set((_)=>({type:text})),
     setDescription: (text) => set((_)=>({description:text})),
-    setTransform: (x,y) => set((_)=>({transform:{x,y}})),
-    insertPrimitiveId: (primitiveId, parentId, index) => set((state)=>{
+    addChildPrimitive: (primitive, parentId) => set((state)=>{
+      if (!state.data.primitives[primitive.uuid]) {
+        state.data.primitives[primitive.uuid] = primitive;
+      }
       if (parentId === state.uuid) {
         // This is the top-level program, so add to top level list of uuids
-        state.primitiveIds.splice(index,0,primitiveId)
-      } else {
-        // This is some other child of the program, so look it up and edit in data
-        state.data.primitives[parentId].primitiveIds.splice(index,0,primitiveId)
+        state.data.primitives[primitive.uuid].parentData = {type:'program',uuid:state.uuid}
+        state.primitiveIds.push(primitive.uuid)
+      } else if (state.data.primitives[parentId]) {
+        // This is a child of another primitive
+        state.data.primitives[primitive.uuid].parentData = {type:'primitive',uuid:parentId}
+        state.data.primitives[parentId].primitiveIds.push(primitive.uuid)
+      } else if (state.data.skills[parentId]) {
+        // This is a child of a skill
+        state.data.primitives[primitive.uuid].parentData = {type:'skill',uuid:parentId}
+        state.data.skills[parentId].primitiveIds.push(primitive.uuid)
       }
     }),
-    addPrimitiveId: (primitiveId, parentId) => set((state)=>{
-      if (parentId === state.uuid) {
-        // This is the top-level program, so add to top level list of uuids
-        state.primitiveIds.push(primitiveId)
-      } else {
-        // This is some other child of the program, so look it up and edit in data
-        state.data.primitives[parentId].primitiveIds.push(primitiveId)
-      }
-    }),
-    deletePrimitiveId: (primitiveId, parentId) => set((state)=>{
-      if (parentId === state.uuid) {
-        // This is the top-level program, so remove from top-level set of primitiveIds
+    deleteChildPrimitive: (primitiveId) => set((state)=>{
+      const {type,uuid} = state.data.primitives[primitiveId].parentData;
+      if (type === 'program') {
+        // console.log('removing primitive from program')
         state.primitiveIds = state.primitiveIds.filter(id=>id!==primitiveId)
       } else {
-        // This is some other child of the program, so look it up and edit in data
-        state.data.primitives[parentId].primitiveIds = state.data.primitives[parentId].primitiveIds.filter(id=>id!==primitiveId)
+        state.data[typeToKey(type)][uuid].primitiveIds = state.data[typeToKey(type)][uuid].primitiveIds.filter(id=>id!==primitiveId)
       }
+      delete state.data.primitives[primitiveId];
     }),
-    movePrimitiveId: (primitiveId, parentId, index) => set((state)=>{
-      // remove from all locations
-      state.primitiveIds = state.primitiveIds.filter(id=>id!==primitiveId)
-      Object.keys(state.data.primitives).forEach(parentId=>{
-        if (state.data.primitives[parentId].type.includes('hierarchical')) {
-          state.data.primitives[parentId].primitiveIds = state.data.primitives[parentId].primitiveIds.filter(id=>id!==primitiveId)
-        }
-      })
-      Object.keys(state.data.skills).forEach(parentId=>{
-        state.data.skills[parentId].primitiveIds = state.data.skills[parentId].primitiveIds.filter(id=>id!==primitiveId)
-      })
+    moveChildPrimitive: (primitive, parentId, index) => set((state)=>{
+      if (!state.data.primitives[primitive.uuid]) {
+        state.data.primitives[primitive.uuid] = primitive;
+      }
+      const {type,uuid} = state.data.primitives[primitive.uuid].parentData;
+      
+      // Short-circuit if no move needs to be done.
+      if (type === 'program' && uuid === parentId && state.primitiveIds.indexOf(primitive.uuid) === index) {
+        // console.log('program/index match')
+        return;
+      } else if (type === 'drawer') {
+        
+      } else if (type === 'primitive' && uuid === parentId && state.data.primitives[uuid].primitiveIds.indexOf(primitive.uuid) === index) {
+        // console.log('primitive/index match')
+        return;
+      } else if (type === 'skill' && uuid === parentId && state.data.skills[uuid].primitiveIds.indexOf(primitive.uuid) === index) {
+        // console.log('skill/index match')
+        return;
+      }
+      // remove from previous location
+      if (type === 'program') {
+        state.primitiveIds = state.primitiveIds.filter(id=>id!==primitive.uuid)
+      } else if (type === 'drawer') {} else {
+        state.data[typeToKey(type)][uuid].primitiveIds = state.data[typeToKey(type)][uuid].primitiveIds.filter(id=>id!==primitive.uuid)
+      }
       // add into the correct location
       if (parentId === state.uuid) {
         // This is the top-level program, so add to top level list of uuids
-        state.primitiveIds.splice(index,0,primitiveId)
-      } else {
+        state.primitiveIds.splice(index,0,primitive.uuid)
+        state.data.primitives[primitive.uuid].parentData.type = 'program';
+      } else if (state.data.primitives[parentId]) {
         // This is some other child of the program, so look it up and edit in data
-        state.data.primitives[parentId].primitiveIds.splice(index,0,primitiveId)
+        state.data.primitives[parentId].primitiveIds.splice(index,0,primitive.uuid)
+        state.data.primitives[primitive.uuid].parentData.type = 'primitive';
+      } else if (state.data.skills[parentId]) {
+        state.data.skills[parentId].primitiveIds.splice(index,0,primitive.uuid)
+        state.data.primitives[primitive.uuid].parentData.type = 'skill';
       }
-    }),
-    setPrimitiveIds: (primitiveIds, parentId) => set((state)=>{
-      if (parentId === state.uuid) {
-        // This is the top-level program, so add to top level list of uuids
-        state.primitiveIds = primitiveIds
-      } else {
-        // This is some other child of the program, so look it up and edit in data
-        state.data.primitives[parentId].primitiveIds = primitiveIds
-      }
+      state.data.primitives[primitive.uuid].parentData.uuid = parentId;
     }),
     // Piecewise update functions for data
     addItem: (type, item) => set((state)=>{
@@ -166,11 +176,21 @@ const store = (set,get) => ({
     setItemProperty: (type, uuid, property, value) => set((state)=>{
       state.data[typeToKey(type)][uuid][property] = value
     }),
+    setPrimitiveParameter: (type, uuid, property, value) => set((state)=>{
+      state.data[typeToKey(type)][uuid].parameters[property] = value
+    }),
     deleteItem: (type, uuid) => set((state)=>{
       delete state.data[typeToKey(type)][uuid]
     }),
-    getBlocklySkills: () => ({}),
-    getBlocklyPrimitives: () =>({})
+    moveItem: (type,uuid,x,y) => set((state)=>{
+      if (type==='program') {
+        state.transform.x += x;
+        state.transform.y += y;
+      } else if (type==='skill') {
+        state.data[typeToKey(type)][uuid].transform.x += x;
+        state.data[typeToKey(type)][uuid].transform.y += y;
+      }
+    })
 });
 
 const useEvdStore = create(immer(store));
