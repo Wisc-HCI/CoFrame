@@ -32,9 +32,7 @@ export const WaypointDetail = ({uuid}) => {
 
     return (
       <>
-      <p>
-      <b>Description:</b>
-      </p>
+
       <Space/>
 
       <TextArea
@@ -42,7 +40,9 @@ export const WaypointDetail = ({uuid}) => {
         disabled = {!waypoint.editable}
       />
 
-      <Divider/>
+      <Divider orientation="left" style={{color:'white',borderTopColor:'rgba(255,255,255,0.12)',lineHeight: '1.5715px',paddingTop:'20px',paddingBottom:'5px'}}>
+      Processing:
+      </Divider>
       <div style={{display:'flex',flexDirection:'column'}}>
       <PositionInput value={[waypoint.position.x, waypoint.position.y,waypoint.position.z]}
       onChange={e=>setItemProperty('waypoint',waypoint.uuid,'waypoint',{...waypoint.position, x :e[0],y : e[1],z: e[2]})}/>
@@ -58,7 +58,6 @@ export const WaypointDetail = ({uuid}) => {
 
       </div>
 
-  <Divider/>
 
 
 </>

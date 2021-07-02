@@ -32,17 +32,15 @@ export const LocationDetail = ({uuid}) => {
 
     return (
       <>
-      <p>
-      <b>Description:</b>
-      </p>
-      <Space/>
 
       <TextArea
         defaultValue={location.description}
         disabled = {!location.editable}
       />
 
-      <Divider/>
+      <Divider orientation="left" style={{color:'white',borderTopColor:'rgba(255,255,255,0.12)',lineHeight: '1.5715px',paddingTop:'20px',paddingBottom:'5px'}}>
+      Placement:
+      </Divider>
 
       <div style={{display:'flex',flexDirection:'column'}}>
       <PositionInput value={[location.position.x, location.position.y,location.position.z]}
@@ -62,7 +60,6 @@ export const LocationDetail = ({uuid}) => {
 
 
 
-  <Divider/>
 
 
 </>
