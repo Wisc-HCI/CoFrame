@@ -9,6 +9,7 @@ import { MachineDetail } from './MachineDetail';
 import { ThingDetail } from './ThingDetail';
 import { WaypointDetail } from './WaypointDetail';
 import { DeleteOutlined } from '@ant-design/icons';
+import {MachineRegion} from './MachineRegion'
 
 import useEvdStore from '../../stores/EvdStore';
 
@@ -19,6 +20,7 @@ export const Detail = (_) => {
         clearFocusItem:state.clearFocusItem
     }));
 
+
     const {item} = useEvdStore(useCallback(state=>({
         item:focusItem.type ? state.data[focusItem.type+'s'][focusItem.uuid] : null
     }),[focusItem]))
@@ -28,7 +30,12 @@ export const Detail = (_) => {
         setItemProperty:state.setItemProperty
     }));
 
-
+    const {secondaryFocusItem,setSecondaryFocusItem,clearSecondaryFocusItem} = useGuiStore(
+      state => ({
+        secondaryFocusItem : state.secondaryFocusItem,
+        clearSecondaryFocusItem : state.clearFocusItem,
+      })
+    )
 
     const handleOK = () =>{
         clearFocusItem();
@@ -49,6 +56,7 @@ export const Detail = (_) => {
 
     if (item) {
         return (
+          <div>
             <Drawer
                 title={
                     <Space>
@@ -61,7 +69,7 @@ export const Detail = (_) => {
                 visible={focusItem.uuid !== null && focusItem.type !== null}
                 onClose={clearFocusItem}
                 getContainer={false}
-                style={{ position: 'absolute' }}
+                mask = {false}
                 footer={
                   <div>
                   {item.deleteable ? (
@@ -91,13 +99,25 @@ export const Detail = (_) => {
 
                   </div>
                 }
-                width='50%'
+                width='25%'
             >
                 {focusItem.type === 'location' && (
                     <LocationDetail uuid={focusItem.uuid}/>
                 )}
                 {focusItem.type === 'machine' && (
-                    <MachineDetail uuid={focusItem.uuid}/>
+                  <>
+                    <div  >
+                    <MachineDetail uuid={focusItem.uuid} />
+                    <Drawer title = "Region"
+                            onClose = {clearSecondaryFocusItem}
+                            visible = {secondaryFocusItem.uuid !== null && secondaryFocusItem.type !== null}
+                            width='20%'
+                            placement = 'right'>
+                            <MachineRegion/>
+                    </Drawer>
+                    </div>
+                  </>
+
                 )}
                 {focusItem.type === 'waypoint' && (
                     <WaypointDetail uuid={focusItem.uuid}/>
@@ -109,18 +129,18 @@ export const Detail = (_) => {
                     <Empty/>
                 )}
             </Drawer>
+            </div>
         )
     } else {
         return  (
-            <Drawer
-                title={<span style={{textTransform:'capitalize'}}>{focusItem.type} </span>}
-                visible={focusItem.uuid !== null && focusItem.type !== null}
-                onClose={clearFocusItem}
-                getContainer={false}
-                style={{ position: 'absolute' }}
-                width='50%'
-            >
-            </Drawer>
+          <Drawer
+                  title={<span style={{textTransform:'capitalize'}}>{focusItem.type} </span>}
+                  visible={focusItem.uuid !== null && focusItem.type !== null}
+                  onClose={clearFocusItem}
+                  getContainer={false}
+                  width='100%'
+              >
+              </Drawer>
         )
 
     }

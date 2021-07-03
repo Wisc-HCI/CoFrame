@@ -38,6 +38,9 @@ const store = (set) => ({
     dragHoverItem: null,
     setDragHoverItem: (item) => set((_)=>({dragHoverItem:item})),
     clearDragHoverItem: () => set((_)=>({dragHoverItem:null})),
+    secondaryFocusItem: {type:null,uuid:null},
+    setSecondaryFocusItem: (type,uuid) => set((_)=>({secondaryFocusItem:{type:type,uuid:uuid}})),
+    clearSecondaryFocusItem: () => set((_)=>({secondaryFocusItem:{type:null,uuid:null}})),
 });
 
 const useGuiStore = create(immer(store));
