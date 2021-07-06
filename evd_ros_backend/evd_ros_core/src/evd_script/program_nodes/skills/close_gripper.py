@@ -8,6 +8,9 @@ from ..skill import Skill
 from ..primitives import Gripper
 
 
+#def CloseGripper()
+
+
 class CloseGripper(Skill):
 
     '''

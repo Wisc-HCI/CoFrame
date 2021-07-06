@@ -42,10 +42,6 @@ class FakeFrontendNode:
         self._joints_submit_sub = rospy.Subscriber('{0}program/submit/joints'.format(prefix_fmt), Job, self._joints_submit_cb)
         self._joints_clear_pub = rospy.Publisher('{0}program/clear/joints'.format(prefix_fmt), String, queue_size=5)
 
-        self._verification_request_pub = rospy.Publisher('{0}program/request/verification'.format(prefix_fmt), Job, queue_size=5)
-        self._verification_submit_sub = rospy.Subscriber('{0}program/submit/verification'.format(prefix_fmt), Job, self._verification_submit_cb)
-        self._verification_clear_pub = rospy.Publisher('{0}program/clear/verification'.format(prefix_fmt), String, queue_size=5)
-
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
 
     def _program_register_cb(self, msg):
@@ -57,9 +53,6 @@ class FakeFrontendNode:
         pass
 
     def _joints_submit_cb(self, msg):
-        pass
-
-    def _verification_submit_cb(self, msg):
         pass
 
     def _issue_submit_cb(self, msg):

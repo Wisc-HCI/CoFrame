@@ -400,7 +400,8 @@ const machine_generator = {
         'thing-type-js-0': [
             {
                 region_uuid: cube_region.uuid,
-                quantity: 1
+                quantity: 1,
+                placeholder_uuids: ['placeholder_thing_0']
             }
         ]
     },
@@ -523,7 +524,8 @@ const machine_transformer = {
         'thing-type-js-1': [
             {
                 region_uuid: sphere_region.uuid,
-                quantity: 1
+                quantity: 1,
+                placeholder_uuids: ['placeholder_thing_1']
             }
         ]
     },
