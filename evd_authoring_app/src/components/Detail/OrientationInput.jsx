@@ -1,10 +1,8 @@
-import React, {useCallback,useState,memo} from 'react';
-
-import useEvdStore from '../../stores/EvdStore';
+import React, {useState} from 'react';
 
 
-import { List, Space, Button, Popover,InputNumber,Divider,Col,Input } from 'antd';
-import { DeleteOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
+import { Space, Button, Popover,InputNumber } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
 
 

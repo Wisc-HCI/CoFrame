@@ -30,7 +30,7 @@ export const Detail = (_) => {
         setItemProperty:state.setItemProperty
     }));
 
-    const {secondaryFocusItem,setSecondaryFocusItem,clearSecondaryFocusItem} = useGuiStore(
+    const {secondaryFocusItem,clearSecondaryFocusItem} = useGuiStore(
       state => ({
         secondaryFocusItem : state.secondaryFocusItem,
         clearSecondaryFocusItem : state.clearFocusItem,

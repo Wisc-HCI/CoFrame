@@ -1,11 +1,9 @@
-import React, {useCallback,useState} from 'react';
+import React, {useCallback} from 'react';
 
 import useEvdStore from '../../stores/EvdStore';
 
 
-import { List, Space, Button, Popover,InputNumber,Divider,Col,Input,Switch } from 'antd';
-import { DeleteOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
-import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
+import { Space,Divider,Input,Switch } from 'antd';
 import OrientationInput from './OrientationInput';
 import PositionInput from './PositionInput';
 

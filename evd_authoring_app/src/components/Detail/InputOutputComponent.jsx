@@ -1,35 +1,35 @@
-import React, {useCallback,useState} from 'react';
+import React, { useCallback } from 'react';
 import useEvdStore from '../../stores/EvdStore';
 import useGuiStore from '../../stores/GuiStore';
-import { List, Space, Button, Popover,InputNumber,Divider,Col,Input,Drawer,Form,Row} from 'antd';
+import { List, Space, Button, InputNumber, Row } from 'antd';
 
 export const InputOutputComponent = (props) => {
-  const {type} = useEvdStore(useCallback(state=>({
-      type:state.data.thingTypes[props.typeuuid],
+  const type = useEvdStore(useCallback(state => state.data.thingTypes[props.typeuuid], [props.typeuuid]));
 
-  })
-    ,[props.typeuuid]))
-    console.log(type.name);
+  const setSecondaryFocusItem = useGuiStore(state => state.setSecondaryFocusItem);
 
-return (
-  <>
-  <List >
-  <List.Item>
-  <List.Item.Meta style= {{padding: '0.1px'}} title = {type.name} description = {<Row style = {{padding: '-10px'}}justify={"space-between"}>
-    <Col span = {12}><t>Quantity:</t> <Input style = {{width : "25%"}} compact value = {props.quantity}  /></Col>
-
-
-    <Col span = {12}>
-    <t style ={{paddingRight: '4px'}}>Region:</t>
-    <Button style ={{width : "40%"}}>
-      Edit
-    </Button>
-    </Col>
-  </Row>}/>
-
-  </List.Item>
-
-  </List>
-  </>
-)
+  return (
+    <List.Item.Meta title={type.name} description={
+      <List
+          size='small'
+          split={false}
+          dataSource={props.data}
+          renderItem={(data)=>(
+            <List.Item style={{padding:0}}>
+              <Row justify='space-between' style={{width:'100%', padding:10, marginTop: 4, borderRadius: 4, backgroundColor:'rgba(100,100,100,0.2)'}}>
+                <Space>
+                  <t>Quantity:</t> 
+                  <InputNumber style={{ maxWidth: 50 }} compact defaultValue={data.quantity} />
+                </Space>
+                <Space>
+                  <t style={{ paddingRight: '4px' }}>Region:</t>
+                  <Button onClick={()=>setSecondaryFocusItem('region',data.region_uuid)}>
+                    Edit
+                  </Button>
+                </Space>
+              </Row>
+            </List.Item>
+          )}
+      />
+  }/>)
 }

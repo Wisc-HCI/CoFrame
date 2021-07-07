@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
-import { List, Space, Button, Popover,InputNumber } from 'antd';
-import { DeleteOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
+import { List, Space, Button, Popover } from 'antd';
+import { DeleteOutlined, EllipsisOutlined } from '@ant-design/icons';
 
 import useEvdStore from '../../../stores/EvdStore';
 import useGuiStore from '../../../stores/GuiStore';

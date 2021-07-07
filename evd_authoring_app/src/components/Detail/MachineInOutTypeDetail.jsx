@@ -1,47 +1,32 @@
-import React, {useCallback,useState} from 'react';
-
-
-
-import { Empty } from 'antd';
-
-import useEvdStore from '../../stores/EvdStore';
-import useGuiStore from '../../stores/GuiStore';
-import { List, Space, Button, Popover,InputNumber,Divider,Col,Input,Drawer,Form } from 'antd';
+import React from 'react';
+import { List, Row, Button } from 'antd';
 import {InputOutputComponent} from './InputOutputComponent'
 
 
 
 export const MachineInOutTypeDetail = (props) => {
   let comKeys = null;
-  if (props.input === "true"){
-     comKeys = Object.keys(props.machine.inputs).map((item) => item);
+  if (props.input){
+     comKeys = Object.keys(props.machine.inputs);
   }else {
-     comKeys = Object.keys(props.machine.outputs).map((item) => item);
+     comKeys = Object.keys(props.machine.outputs);
   }
-
-
-
-
-
-  let inputComponent = null;
-  if (comKeys) {
-    inputComponent = comKeys.map((item) => {
-         return <InputOutputComponent typeuuid = {item} quantity = {props.machine.inputs[item][0].quantity}/>
-    } )
-  }else{
-    inputComponent = <b> No Input exist in this machine </b>
-  }
-
-
-  console.log(inputComponent)
+  
   return(
     <>
-    <br/>
-    <List bordered dataSource={inputComponent} renderItem = {component => (<List.Item> {component}</List.Item>)}>
+      <br/>
+      <List 
+        header={<Row align='middle' justify='space-between'>{props.input ? 'Inputs' : 'Outputs'}<Button>Add</Button></Row>}
+        split={false}
+        bordered 
+        dataSource={comKeys} 
+        renderItem = {(uuid) => (
+          <List.Item> 
+            <InputOutputComponent typeuuid={uuid} data = {props.machine[props.input ? 'inputs' : 'outputs'][uuid]}/>
+          </List.Item>
+        )}>
 
-    </List>
-
-
+      </List>
     </>)
 
 
