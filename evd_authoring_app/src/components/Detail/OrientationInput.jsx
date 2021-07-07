@@ -20,9 +20,9 @@ const eulerVecToRadians = (vec) => {
 
 function OrientationInput (props)  {
  const [eulerValues, setEulerValues] = useState(eulerVecToDegrees(eulerFromQuaternion(props.value)));
- const DEGREE_STEP = props.step ? props.step*DEG_2_RAD : 1;
 
  let limits = [-360,360];
+ let steps = Math.PI / 12;
  if (props.onlyPositive) {
    limits[0] = 0
  }
@@ -38,7 +38,7 @@ function OrientationInput (props)  {
         <InputNumber
          min={limits[0]}
          max={limits[1]}
-         step={DEGREE_STEP}
+         step={steps}
          precision={2}
          style={{ margin: '0 16px' }}
          defaultValue={eulerValues[0]}
@@ -52,7 +52,7 @@ function OrientationInput (props)  {
         <InputNumber
          min={limits[0]}
          max={limits[1]}
-         step={DEGREE_STEP}
+         step={steps}
          precision={2}
          style={{ margin: '0 16px' }}
          defaultValue={eulerValues[1]}
@@ -66,7 +66,7 @@ function OrientationInput (props)  {
         <InputNumber
          min={limits[0]}
          max={limits[1]}
-         step={DEGREE_STEP}
+         step={steps}
          precision={2}
          style={{ margin: '0 16px' }}
          defaultValue={eulerValues[2]}

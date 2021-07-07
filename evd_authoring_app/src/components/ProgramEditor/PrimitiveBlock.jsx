@@ -1,5 +1,7 @@
 import React, {forwardRef} from 'react';
 import { ParameterZone } from './ParameterZone';
+import useEvdStore from '../../stores/EvdStore';
+
 
 export const PrimitiveBlock = forwardRef((props, ref) => {
 
@@ -24,10 +26,10 @@ export const PrimitiveBlock = forwardRef((props, ref) => {
         <div {...props} ref={ref} style={{...props.style, ...styles}}>
             <div style={{fontSize:16}}>{props.data.name}</div>
             {props.data.type.includes('node.primitive.machine-primitive') && (
-                <div>Machine: <ParameterZone 
+                <div>Machine: <ParameterZone
                                 displayText={props.data.parameters.machine_uuid}
                                 acceptTypes={['node.machine.']}
-                                itemType='machine' 
+                                itemType='machine'
                                 canRemove={props.data.editable}
                                 onRemove={()=>console.log('delete param')}
                                 onDrop={(data)=>console.log(data)}/>
@@ -36,4 +38,3 @@ export const PrimitiveBlock = forwardRef((props, ref) => {
         </div>
     )
 });
-

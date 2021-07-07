@@ -12,7 +12,7 @@ const NUM_COLLISION_MESHES = 2;
 const NUM_PINCH_POINTS = 5;
 const NUM_PLACEHOLDERS = 3;
 
-/***************************************************************** 
+/*****************************************************************
 * Type Declaration
 * - ThingType
 * - GradeType
@@ -82,7 +82,7 @@ for (let i=0; i<NUM_PLACEHOLDERS; i++) {
 * - Location
 * - Thing (instances)
 *****************************************************************/
-
+//onChange={e=>setItemProperty(focusItem.type,focusItem.uuid,'name',e.target.value)}/>
 let waypoints = [];
 for (let i=0; i<NUM_WAYPOINTS; i++) {
     waypoints.push({
@@ -92,8 +92,8 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
         deleteable: true,
         editable: true,
         description: 'Some descriptor string (optional)', // could be ''
-        
-        link: '', //'' means default to world or app 
+
+        link: '', //'' means default to world or app
         joints: {
             type: 'node.joints.',
             uuid: `joints-js-waypoint-${i}`,
@@ -145,7 +145,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
         editable: ! (i % 4 === 0),
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         joints: {
             type: 'node.joints.',
             uuid: `joints-js-location-${i}`,
@@ -200,7 +200,7 @@ for (let i=0; i<NUM_THINGS; i++) {
         editable: true,
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
         position: {
             type: 'node.position.',
@@ -230,7 +230,7 @@ for (let i=0; i<NUM_THINGS; i++) {
     });
 }
 
-/***************************************************************** 
+/*****************************************************************
 * Regions
 *****************************************************************/
 
@@ -243,7 +243,7 @@ const generic_region = {
     editable: true,
     description: 'Some descriptor string (optional)', // could be ''
 
-    link: '', //'' means default to world or app 
+    link: '', //'' means default to world or app
     // position is known in a default region, just uncertainty in orientation
     center_position: {
         type: 'node.position.',
@@ -300,7 +300,7 @@ const cube_region = {
     editable: false,
     description: 'Some descriptor string (optional)', // could be ''
 
-    link: '', //'' means default to world or app 
+    link: '', //'' means default to world or app
     center_position: {
         type: 'node.position.',
         uuid: `position-js-cube-region-1`,
@@ -343,7 +343,7 @@ const sphere_region = {
     editable: false,
     description: 'Some descriptor string (optional)', // could be ''
 
-    link: '', //'' means default to world or app 
+    link: '', //'' means default to world or app
     center_position: {
         type: 'node.position.',
         uuid: `position-js-sphere-region-3`,
@@ -381,7 +381,7 @@ let regions = [
     sphere_region
 ];
 
-/***************************************************************** 
+/*****************************************************************
 * Machines
 * - Machine
 *****************************************************************/
@@ -395,7 +395,25 @@ const machine_generator = {
     description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 5, //sec
-    inputs: {}, // make this a tuple as value of keys
+    inputs: {
+      'thing-type-js-0' :[
+        {
+            region_uuid: cube_region.uuid,
+            quantity: 1
+        }
+    ],
+    'thing-type-js-1' :[
+      {
+          region_uuid: cube_region.uuid,
+          quantity: 1
+      }
+  ]
+
+
+  }
+
+    , // make this a tuple as value of keys
+
     outputs: {
         'thing-type-js-0': [
             {
@@ -413,7 +431,7 @@ const machine_generator = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-0`,
@@ -460,8 +478,14 @@ const machine_consumer = {
                 quantity: 1
             }
         ]
-    }, 
-    outputs: { },
+    },
+    outputs: {
+      'thing-type-js-0': [
+        {
+            region_uuid: cube_region.uuid,
+            quantity: 1
+        }
+    ] },
     mesh_id: 'package:/app/meshes/3d_printer.fbx',
     pose_offset: { // Local transform
         type: 'node.pose.',
@@ -471,7 +495,7 @@ const machine_consumer = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-1`,
@@ -518,7 +542,7 @@ const machine_transformer = {
                 quantity: 1
             }
         ]
-    }, 
+    },
     outputs: {
         'thing-type-js-1': [
             {
@@ -536,7 +560,7 @@ const machine_transformer = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-2`,
@@ -573,7 +597,7 @@ let machines = [
     machine_transformer
 ];
 
-/***************************************************************** 
+/*****************************************************************
 * Trajectories
 * - Trajectory
 *   - Trace
@@ -634,7 +658,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
     });
 }
 
-/***************************************************************** 
+/*****************************************************************
 * Environment Objects
 * - Reach Sphere
 * - Collision Mesh
@@ -684,7 +708,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            link: '', //'' means default to world or app 
+            link: '', //'' means default to world or app
             position: {
                 type: 'node.position.',
                 uuid: `position-js-collision-mesh-${i}`,
@@ -778,7 +802,7 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
     });
 }
 
-/***************************************************************** 
+/*****************************************************************
 * Program
 * - Program (object)
 * - Skills
@@ -1117,7 +1141,7 @@ let program = {
             ]
         }
     ],
-    
+
     environment: {
         reach_sphere: reachSphere,
         pinch_points: pinchPoints,
@@ -1133,7 +1157,7 @@ let program = {
         grade_types: gradeTypes,
         placeholders: placeholders
     },
-    
+
     primitives: [ // just initializes but that is enough to get the point across >(0_0)<
         {
             type: 'node.primitive.skill-call.',
@@ -1207,7 +1231,7 @@ let program = {
                 thing_uuid: 'uuid'
             }
         }
-        
+
     ]
 };
 
