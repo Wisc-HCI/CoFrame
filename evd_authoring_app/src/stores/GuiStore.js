@@ -41,6 +41,9 @@ const store = (set) => ({
     secondaryFocusItem: {type:null,uuid:null},
     setSecondaryFocusItem: (type,uuid) => set((_)=>({secondaryFocusItem:{type:type,uuid:uuid}})),
     clearSecondaryFocusItem: () => set((_)=>({secondaryFocusItem:{type:null,uuid:null}})),
+    childrenDrawer: false,
+    setChildrenDrawer: (input) => set((_)=>({childrenDrawer: input})),
+    clearChildrenDrawer : () => set((_)=>({childrenDrawer: false}))
 });
 
 const useGuiStore = create(immer(store));

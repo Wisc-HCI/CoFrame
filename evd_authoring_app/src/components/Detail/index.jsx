@@ -9,7 +9,7 @@ import { MachineDetail } from './MachineDetail';
 import { ThingDetail } from './ThingDetail';
 import { WaypointDetail } from './WaypointDetail';
 import { DeleteOutlined } from '@ant-design/icons';
-import {MachineRegion} from './MachineRegion'
+import {MachineInOutRegionDetail} from './MachineInOutRegionDetail'
 
 import useEvdStore from '../../stores/EvdStore';
 
@@ -19,6 +19,10 @@ export const Detail = (_) => {
         focusItem:state.focusItem,
         clearFocusItem:state.clearFocusItem
     }));
+    const {childrenDrawer,clearChildrenDrawer} = useGuiStore(state => ({
+      childrenDrawer: state.childrenDrawer,
+      clearChildrenDrawer : state.clearChildrenDrawer
+    }))
 
 
     const {item} = useEvdStore(useCallback(state=>({
@@ -30,12 +34,6 @@ export const Detail = (_) => {
         setItemProperty:state.setItemProperty
     }));
 
-    const {secondaryFocusItem,clearSecondaryFocusItem} = useGuiStore(
-      state => ({
-        secondaryFocusItem : state.secondaryFocusItem,
-        clearSecondaryFocusItem : state.clearFocusItem,
-      })
-    )
 
     const handleOK = () =>{
         clearFocusItem();
@@ -109,11 +107,11 @@ export const Detail = (_) => {
                     <div>
                     <MachineDetail uuid={focusItem.uuid} />
                     <Drawer title = "Region"
-                            onClose = {clearSecondaryFocusItem}
-                            visible = {secondaryFocusItem.uuid !== null && secondaryFocusItem.type !== null}
+                            onClose = {clearChildrenDrawer}
+                            visible = {childrenDrawer}
                             width='20%'
                             placement = 'right'>
-                            <MachineRegion/>
+                            <MachineInOutRegionDetail/>
                     </Drawer>
                     </div>
                   </>
