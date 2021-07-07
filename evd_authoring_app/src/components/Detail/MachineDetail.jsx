@@ -100,12 +100,6 @@ export const MachineDetail = ({uuid}) => {
   <br/>
 
 
-  <Button style = {{width : "100%"}} onClick={()=> setSecondaryFocusItem('region')}>
-  Region
-
-  </Button>
-
-
 
   </>
 
