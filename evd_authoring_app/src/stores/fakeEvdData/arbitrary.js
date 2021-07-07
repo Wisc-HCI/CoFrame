@@ -365,7 +365,25 @@ const machine_generator = {
     description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 5, //sec
-    inputs: {}, // make this a tuple as value of keys
+    inputs: {
+      'thing-type-js-0' :[
+        {
+            region_uuid: cube_region.uuid,
+            quantity: 1
+        }
+    ],
+    'thing-type-js-1' :[
+      {
+          region_uuid: cube_region.uuid,
+          quantity: 1
+      }
+  ]
+
+
+  }
+
+    , // make this a tuple as value of keys
+
     outputs: {
         'thing-type-js-0': [
             {
@@ -431,7 +449,13 @@ const machine_consumer = {
             }
         ]
     },
-    outputs: { },
+    outputs: {
+      'thing-type-js-0': [
+        {
+            region_uuid: cube_region.uuid,
+            quantity: 1
+        }
+    ] },
     mesh_id: 'package:/app/meshes/3d_printer.fbx',
     pose_offset: { // Local transform
         type: 'node.pose.',

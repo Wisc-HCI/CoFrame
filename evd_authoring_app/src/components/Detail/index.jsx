@@ -106,7 +106,7 @@ export const Detail = (_) => {
                 )}
                 {focusItem.type === 'machine' && (
                   <>
-                    <div  >
+                    <div>
                     <MachineDetail uuid={focusItem.uuid} />
                     <Drawer title = "Region"
                             onClose = {clearSecondaryFocusItem}

@@ -8,12 +8,14 @@ import useEvdStore from '../../stores/EvdStore';
 import useGuiStore from '../../stores/GuiStore';
 
 
-import { List, Space, Button, Popover,InputNumber,Divider,Col,Input,Drawer,Form } from 'antd';
+import { List, Space, Button, Popover,InputNumber,Divider,Col,Input,Drawer,Form,Card } from 'antd';
 import { DeleteOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
 import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
 import OrientationInput from './OrientationInput';
 import PositionInput from './PositionInput';
-import {MachineRegion} from './MachineRegion'
+import {MachineRegion} from './MachineRegion';
+import {MachineInOutTypeDetail} from './MachineInOutTypeDetail';
+
 
 export const MachineDetail = ({uuid}) => {
 
@@ -35,13 +37,19 @@ export const MachineDetail = ({uuid}) => {
         setSecondaryFocusItem: state.setSecondaryFocusItem
       })
     )
-    let type = 'region'
-    let searchTerm = 'region'
-    const RegionUUIDS = useEvdStore(useCallback(state => Object.keys(state.data[type + 's'])
-      .filter(Regionuuid => {
-          return state.data[type + 's'][Regionuuid].name.toLowerCase().includes(searchTerm.toLowerCase())
-      }), [type, searchTerm])
-    )
+
+//1, multiple region id, which one to use for the current machine?
+// answer:
+//2. how to pass in props into MachineRegion ?
+//3. quantity?
+//4.
+
+
+
+
+
+
+
 
 
     // const { deleteItem, setItemProperty } = useEvdStore(state=>({
@@ -65,22 +73,19 @@ export const MachineDetail = ({uuid}) => {
       Processing:
       </Divider>
       <br/>
-      <Form labelCol = {{span : 4}} wrapperCol={{span : 100}} layout = 'horizontal' >
 
-      <Form.Item label="Time">
-      <Input style={{width:'10%'}} value={machine.process_time} disabled = 'true'>
+      <Card>
+       <b style = {{paddingRight : '10px'}}>Time :</b> <Input style={{width:'12%'}} value={machine.process_time} disabled = 'true'>
       </Input>
-      </Form.Item>
+      <br/>
+      <br/>
 
-      <br/>
-      <Form.Item label = "Input">
-      <Input style={{width:'80%'}}/>
-      </Form.Item>
-      <br/>
-      <Form.Item label = "Output">
-      <Input style={{width:'80%'}}/>
-      </Form.Item>
-      </Form>
+       <b style = {{paddingRight : '10px'}}>Input :</b> <MachineInOutTypeDetail machine = {machine} input = "true"/>
+
+
+        <b style = {{paddingRight : '10px'}}>Output :</b> <MachineInOutTypeDetail machine = {machine} input = "false"/>
+
+      </Card>
 
   <Divider orientation="left" style={{color:'white',borderTopColor:'rgba(255,255,255,0.12)',lineHeight: '1.5715px',paddingTop:'20px',paddingBottom:'5px'}}>
   Placement:
@@ -92,8 +97,10 @@ export const MachineDetail = ({uuid}) => {
   <OrientationInput value={[machine.pose_offset.orientation.w, machine.pose_offset.orientation.x, machine.pose_offset.orientation.y, machine.pose_offset.orientation.z]}
   onChange={e=>setItemProperty('machine',machine.uuid,'orientation',{...machine.pose_offset.orientation, w:e[0],x :e[1],y : e[2],z: e[3]})}/>
   </div>
+  <br/>
 
-  <Button onClick={()=> setSecondaryFocusItem('regions',RegionUUIDS)}>
+
+  <Button style = {{width : "100%"}} onClick={()=> setSecondaryFocusItem('region')}>
   Region
 
   </Button>

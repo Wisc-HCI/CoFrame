@@ -13,19 +13,69 @@ import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
 import OrientationInput from './OrientationInput';
 import PositionInput from './PositionInput';
 
-export const MachineRegion = ({uuid}) => {
+export const MachineRegion = (props) => {
 
-  const {region} = useEvdStore(useCallback(state=>({
-      region:state.data.regions[uuid],
-
+  const {type} = useEvdStore(useCallback(state=>({
+      type:state.data.thingTypes[props.uuid]
   })
-    ,[uuid]))
+    ,[props.uuid]))
+
+
 
 
 
 return (
-  <Button >
-  sfesf
+  <>
+
+  <Divider orientation="left" style={{color:'white',borderTopColor:'rgba(255,255,255,0.12)',lineHeight: '1.5715px',paddingTop:'20px',paddingBottom:'5px'}}>
+  Input:
+  </Divider>
+  <br/>
+  //name
+  <br/>
+  <br/>
+  <div style={{ color : 'white',display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
+  Quantity :
+  <Input style= {{width :'20%'}} value = {props.inputQuantity}/>
+  </div>
+  <br/>
+  <div style={{ color : 'white',display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
+  Region:
+  <Button style= {{width :'20%'}} >
+  Edit
   </Button>
+
+
+  </div>
+
+
+
+
+  <Divider orientation="left" style={{color:'white',borderTopColor:'rgba(255,255,255,0.12)',lineHeight: '1.5715px',paddingTop:'20px',paddingBottom:'5px'}}>
+  Output:
+  </Divider>
+  <br/>
+  <b style ={{color: 'white'}}> region.name </b>
+  <br/>
+  <br/>
+  <div style={{ color : 'white',display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
+  Quantity :
+  <Input style= {{width :'20%'}} value = {props.outputQuantity}/>
+  </div>
+  <br/>
+  <div style={{ color : 'white',display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
+  Region:
+  <Button style= {{width :'20%'}} >
+  Edit
+  </Button>
+
+  </div>
+  <Divider/>
+  </>
+
+
+
+
+
 )
 }
