@@ -24,10 +24,27 @@ export const Detail = (_) => {
       clearChildrenDrawer : state.clearChildrenDrawer
     }))
 
+    const {secondaryFocusItem} = useGuiStore(state => ({
+      secondaryFocusItem : state.secondaryFocusItem
+    }))
+
+
+
 
     const {item} = useEvdStore(useCallback(state=>({
         item:focusItem.type ? state.data[focusItem.type+'s'][focusItem.uuid] : null
     }),[focusItem]))
+
+    let {childItem} = useEvdStore(useCallback(state=>({
+        childItem:secondaryFocusItem.type ? state.data[secondaryFocusItem.type+'s'][secondaryFocusItem.uuid] : null
+    }),[secondaryFocusItem]))
+
+    if (!childItem){
+      childItem = {
+        name : 'nothing',
+        editable : false
+      }
+    }// dummy class
 
     const { deleteItem, setItemProperty } = useEvdStore(state=>({
         deleteItem:state.deleteItem,
@@ -52,7 +69,7 @@ export const Detail = (_) => {
 
     )
 
-    if (item) {
+    if (item && childItem) {
         return (
           <div>
             <Drawer
@@ -106,12 +123,19 @@ export const Detail = (_) => {
                   <>
                     <div>
                     <MachineDetail uuid={focusItem.uuid} />
-                    <Drawer title = "Region"
+                    <Drawer  title={
+                          <Space>
+                              <span style={{textTransform:'capitalize'}}>{secondaryFocusItem.type} </span>
+                              <Input
+                                  defaultValue={childItem.name}
+                                  disabled={!childItem.editable}
+                                  onChange={e=>setItemProperty(secondaryFocusItem.type,secondaryFocusItem.uuid,'name',e.target.value)}/>
+                          </Space>}
                             onClose = {clearChildrenDrawer}
                             visible = {childrenDrawer}
                             width='20%'
                             placement = 'right'>
-                            <MachineInOutRegionDetail/>
+                            <MachineInOutRegionDetail uuid = {secondaryFocusItem.uuid}/>
                     </Drawer>
                     </div>
                   </>

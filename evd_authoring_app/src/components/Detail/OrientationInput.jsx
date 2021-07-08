@@ -27,7 +27,7 @@ function OrientationInput (props)  {
 
   return(
     <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
-    <b>Orientation:</b>
+    <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Orientation:</b>
     <Popover
     placement="left"
     content={

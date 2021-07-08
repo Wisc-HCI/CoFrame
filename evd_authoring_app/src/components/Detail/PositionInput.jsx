@@ -9,7 +9,7 @@ function PositionInput (props)  {
 
    return(
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
-     <b>Position:</b>
+     <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Position:</b>
      <Popover
      placement="left"
      content={
