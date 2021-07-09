@@ -39,7 +39,7 @@ export const MachineDetail = ({ uuid }) => {
         <b>Time :</b>
         <Input style={{maxWidth:100}} value={machine.process_time} disabled={!machine.editable} suffix='sec'/>
       </Row>
-      
+
       <MachineInOutTypeDetail machine={machine} input />
       <MachineInOutTypeDetail machine={machine} />
 
@@ -49,7 +49,7 @@ export const MachineDetail = ({ uuid }) => {
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <PositionInput value={[machine.pose_offset.position.x, machine.pose_offset.position.y, machine.pose_offset.position.z]}
-          onChange={e => setItemProperty('machine', machine.uuid, 'machine', { ...machine.pose_offset.position, x: e[0], y: e[1], z: e[2] })} />
+          onChange={e => setItemProperty('machine', machine.uuid, 'position', { ...machine.pose_offset.position, x: e[0], y: e[1], z: e[2] })} />
         <OrientationInput value={[machine.pose_offset.orientation.w, machine.pose_offset.orientation.x, machine.pose_offset.orientation.y, machine.pose_offset.orientation.z]}
           onChange={e => setItemProperty('machine', machine.uuid, 'orientation', { ...machine.pose_offset.orientation, w: e[0], x: e[1], y: e[2], z: e[3] })} />
       </div>

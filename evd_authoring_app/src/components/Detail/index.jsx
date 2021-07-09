@@ -134,6 +134,7 @@ export const Detail = (_) => {
                             onClose = {clearChildrenDrawer}
                             visible = {childrenDrawer}
                             width='20%'
+                            mask = {false}
                             placement = 'right'>
                             <MachineInOutRegionDetail uuid = {secondaryFocusItem.uuid}/>
                     </Drawer>
