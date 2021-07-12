@@ -9,6 +9,7 @@ import { MachineDetail } from './MachineDetail';
 import { ThingDetail } from './ThingDetail';
 import { WaypointDetail } from './WaypointDetail';
 import { DeleteOutlined } from '@ant-design/icons';
+import {MachineInOutRegionDetail} from './MachineInOutRegionDetail'
 
 import useEvdStore from '../../stores/EvdStore';
 
@@ -18,16 +19,37 @@ export const Detail = (_) => {
         focusItem:state.focusItem,
         clearFocusItem:state.clearFocusItem
     }));
+    const {childrenDrawer,clearChildrenDrawer} = useGuiStore(state => ({
+      childrenDrawer: state.childrenDrawer,
+      clearChildrenDrawer : state.clearChildrenDrawer
+    }))
+
+    const {secondaryFocusItem} = useGuiStore(state => ({
+      secondaryFocusItem : state.secondaryFocusItem
+    }))
+
+
+
 
     const {item} = useEvdStore(useCallback(state=>({
         item:focusItem.type ? state.data[focusItem.type+'s'][focusItem.uuid] : null
     }),[focusItem]))
 
+    let {childItem} = useEvdStore(useCallback(state=>({
+        childItem:secondaryFocusItem.type ? state.data[secondaryFocusItem.type+'s'][secondaryFocusItem.uuid] : null
+    }),[secondaryFocusItem]))
+
+    if (!childItem){
+      childItem = {
+        name : 'nothing',
+        editable : false
+      }
+    }// dummy class
+
     const { deleteItem, setItemProperty } = useEvdStore(state=>({
         deleteItem:state.deleteItem,
         setItemProperty:state.setItemProperty
     }));
-
 
 
     const handleOK = () =>{
@@ -47,8 +69,9 @@ export const Detail = (_) => {
 
     )
 
-    if (item) {
+    if (item && childItem) {
         return (
+          <div>
             <Drawer
                 title={
                     <Space>
@@ -61,7 +84,7 @@ export const Detail = (_) => {
                 visible={focusItem.uuid !== null && focusItem.type !== null}
                 onClose={clearFocusItem}
                 getContainer={false}
-                style={{ position: 'absolute' }}
+                mask = {false}
                 footer={
                   <div>
                   {item.deleteable ? (
@@ -91,13 +114,33 @@ export const Detail = (_) => {
 
                   </div>
                 }
-                width='50%'
+                width='25%'
             >
                 {focusItem.type === 'location' && (
                     <LocationDetail uuid={focusItem.uuid}/>
                 )}
                 {focusItem.type === 'machine' && (
-                    <MachineDetail uuid={focusItem.uuid}/>
+                  <>
+                    <div>
+                    <MachineDetail uuid={focusItem.uuid} />
+                    <Drawer  title={
+                          <Space>
+                              <span style={{textTransform:'capitalize'}}>{secondaryFocusItem.type} </span>
+                              <Input
+                                  defaultValue={childItem.name}
+                                  disabled={!childItem.editable}
+                                  onChange={e=>setItemProperty(secondaryFocusItem.type,secondaryFocusItem.uuid,'name',e.target.value)}/>
+                          </Space>}
+                            onClose = {clearChildrenDrawer}
+                            visible = {childrenDrawer}
+                            width='20%'
+                            mask = {false}
+                            placement = 'right'>
+                            <MachineInOutRegionDetail uuid = {secondaryFocusItem.uuid}/>
+                    </Drawer>
+                    </div>
+                  </>
+
                 )}
                 {focusItem.type === 'waypoint' && (
                     <WaypointDetail uuid={focusItem.uuid}/>
@@ -109,18 +152,18 @@ export const Detail = (_) => {
                     <Empty/>
                 )}
             </Drawer>
+            </div>
         )
     } else {
         return  (
-            <Drawer
-                title={<span style={{textTransform:'capitalize'}}>{focusItem.type} </span>}
-                visible={focusItem.uuid !== null && focusItem.type !== null}
-                onClose={clearFocusItem}
-                getContainer={false}
-                style={{ position: 'absolute' }}
-                width='50%'
-            >
-            </Drawer>
+          <Drawer
+                  title={<span style={{textTransform:'capitalize'}}>{focusItem.type} </span>}
+                  visible={focusItem.uuid !== null && focusItem.type !== null}
+                  onClose={clearFocusItem}
+                  getContainer={false}
+                  width='100%'
+              >
+              </Drawer>
         )
 
     }

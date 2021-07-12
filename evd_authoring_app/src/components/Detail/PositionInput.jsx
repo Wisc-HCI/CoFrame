@@ -1,19 +1,15 @@
-import React, {useCallback,useState,memo} from 'react';
-
-import useEvdStore from '../../stores/EvdStore';
-
-
-import { List, Space, Button, Popover,InputNumber,Divider,Col,Input } from 'antd';
-import { DeleteOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
-import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
+import React, {useState} from 'react';
+import { Space, Button, Popover,InputNumber } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 
 function PositionInput (props)  {
    const [inputVec, setInputVec] = useState(props.value);
    let minMax = [-10,10];
+   let steps = 0.01;
 
    return(
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
-     <b>Position:</b>
+     <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Position:</b>
      <Popover
      placement="left"
      content={
@@ -22,7 +18,7 @@ function PositionInput (props)  {
          <InputNumber
          min= {minMax[0]}
          max= {minMax[1]}
-         step={props.step}
+         step= {steps}
          precision={2}
          style={{ margin: '0 16px' }}
          defaultValue={inputVec[0]}
@@ -36,7 +32,7 @@ function PositionInput (props)  {
          <InputNumber
          min= {minMax[0]}
          max= {minMax[1]}
-         step={props.step}
+         step= {steps}
          precision={2}
          style={{ margin: '0 16px' }}
          defaultValue={inputVec[1]}
@@ -50,7 +46,7 @@ function PositionInput (props)  {
          <InputNumber
           min= {minMax[0]}
           max= {minMax[1]}
-          step={props.step}
+          step={steps}
           precision={2}
           style={{ margin: '0 16px' }}
           defaultValue={inputVec[2]}

@@ -1,201 +1,67 @@
-import React, {useCallback,useState} from 'react';
-
-
-
-import { Empty } from 'antd';
+import React, { useCallback } from 'react';
 
 import useEvdStore from '../../stores/EvdStore';
 
-
-import { List, Space, Button, Popover,InputNumber,Divider,Col,Input } from 'antd';
-import { DeleteOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
-import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
-
-export const MachineDetail = ({uuid}) => {
-    const RAD_2_DEG = 180 / Math.PI;
-    const DEG_2_RAD = Math.PI / 180;
-
-    const eulerVecToDegrees = (vec) => {
-      return vec.map(v=>RAD_2_DEG*v)
-    }
-    const eulerVecToRadians = (vec) => {
-      return vec.map(v=>DEG_2_RAD*v)
-    }
-    const [eulerValues, setEulerValues] = useState(eulerVecToDegrees(eulerFromQuaternion(uuid)));
-    const DEGREE_STEP = uuid.step ? uuid.step*DEG_2_RAD : 1;
-    let limits = [-360,360];
-    let minMax = [-10,10];
-
-    if (uuid.onlyPositive) {
-      limits[0] = 0
-    }
-
-    const [inputVec, setInputVec] = useState(uuid);
+import { Space, Divider, Row, Input } from 'antd';
+import OrientationInput from './OrientationInput';
+import PositionInput from './PositionInput';
+import { MachineInOutTypeDetail } from './MachineInOutTypeDetail';
 
 
+export const MachineDetail = ({ uuid }) => {
 
+  const { machine } = useEvdStore(useCallback(state => ({
+    machine: state.data.machines[uuid],
 
-    const {machine} = useEvdStore(useCallback(state=>({
-        machine:state.data.machine[uuid],
+  })
+    , [uuid]))
+  const { setItemProperty } = useEvdStore(state => ({
+    setItemProperty: state.setItemProperty
+  }));
 
-    })
-      ,[uuid]))
+  const { TextArea } = Input;
 
-    const { TextArea } = Input;
+  return (
+    <>
 
-    // const { deleteItem, setItemProperty } = useEvdStore(state=>({
-    //     deleteItem:state.deleteItem,
-    //     setItemProperty:state.setItemProperty
-    // }));
-
-    console.log(machine);
-
-    return (
-      <>
-      <p>
-      <b>Description:</b>
-      </p>
-      <Space/>
+      <Space />
 
       <TextArea
         defaultValue={machine.description}
-        disabled = {!machine.editable}
+        disabled={!machine.editable}
       />
 
-      <Divider/>
+      <Divider orientation="left" style={{ color: 'white', borderTopColor: 'rgba(255,255,255,0.12)', lineHeight: '1.5715px', paddingTop: '20px', paddingBottom: '5px' }}>
+        Processing:
+      </Divider>
 
-      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
-      <b>Position:</b>
-      <Popover
-      placement="left"
-      content={
-        <Space>
-          <h4 style={{ color: "red" }}>X</h4>
-          <InputNumber
-          min= {minMax[0]}
-          max= {minMax[1]}
-          step={uuid.step}
-          precision={2}
-          style={{ margin: '0 16px' }}
-          defaultValue={inputVec[0]}
-          onChange={(v)=>{if (typeof v === 'number') {
-            let updatedVec = [v,inputVec[1],inputVec[2]];
-            setInputVec(updatedVec)
-            uuid.onChange(updatedVec)
-          }}}
-          />
-          <h4 style={{ color: "lime" }}>Y</h4>
-          <InputNumber
-          min= {minMax[0]}
-          max= {minMax[1]}
-          step={uuid.step}
-          precision={2}
-          style={{ margin: '0 16px' }}
-          defaultValue={inputVec[1]}
-          onChange={(v)=>{if (typeof v === 'number') {
-            let updatedVec = [inputVec[0],v,inputVec[2]]
-            setInputVec(updatedVec)
-            uuid.onChange(updatedVec)
-          }}}
-          />
-          <h4 style={{ color: "blue" }}>Z</h4>
-          <InputNumber
-           min= {minMax[0]}
-           max= {minMax[1]}
-           step={uuid.step}
-           precision={2}
-           style={{ margin: '0 16px' }}
-           defaultValue={inputVec[2]}
-           onChange={(v)=>{if (typeof v === 'number') {
-             let updatedVec = [inputVec[0],inputVec[1],v];
-             setInputVec(updatedVec)
-             uuid.onChange(updatedVec)
-           }}}
-          />
-        </Space>
-      }
-      title="Set Rotation"
-      trigger="click"
+      <Row justify='space-between' style={{paddingRight:20,paddingTop:10,paddingLeft:20}}>
+        <b>Time :</b>
+        <Input style={{maxWidth:100}} value={machine.process_time} disabled={!machine.editable} suffix='sec'/>
+      </Row>
 
-    >
-      <Button
-        block
-        icon={<EditOutlined />}
-        style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-      >
-      </Button>
-    </Popover>
-    </div>
+      <MachineInOutTypeDetail machine={machine} input />
+      <MachineInOutTypeDetail machine={machine} />
 
-    <br />
-    <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
-    <b>Orientation:</b>
-    <Popover
-    placement="left"
-    content={
-      <Space>
-        <h4 style={{ color: "red" }}>R</h4>
-        <InputNumber
-         min={limits[0]}
-         max={limits[1]}
-         step={DEGREE_STEP}
-         precision={2}
-         style={{ margin: '0 16px' }}
-         defaultValue={eulerValues[0]}
-         onChange={(v)=>{if (typeof v === 'number') {
-           let updatedEulerValues = [v,eulerValues[1],eulerValues[2]];
-           setEulerValues(updatedEulerValues);
-           uuid.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
-         }}}
-        />
-        <h4 style={{ color: "lime" }}>P</h4>
-        <InputNumber
-         min={limits[0]}
-         max={limits[1]}
-         step={DEGREE_STEP}
-         precision={2}
-         style={{ margin: '0 16px' }}
-         defaultValue={eulerValues[1]}
-         onChange={(v)=>{if (typeof v === 'number') {
-           let updatedEulerValues = [eulerValues[0],v,eulerValues[2]];
-           setEulerValues(updatedEulerValues);
-           uuid.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
-         }}}
-        />
-        <h4 style={{ color: "blue" }}>Y</h4>
-        <InputNumber
-        min={limits[0]}
-         max={limits[1]}
-         step={DEGREE_STEP}
-         precision={2}
-         style={{ margin: '0 16px' }}
-         defaultValue={eulerValues[2]}
-         onChange={(v)=>{if (typeof v === 'number') {
-           let updatedEulerValues = [eulerValues[0],eulerValues[1],v];
-           setEulerValues(updatedEulerValues);
-           uuid.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
-         }}}
-        />
-      </Space>
-    }
-    title="Set Rotation"
-    trigger="click"
+      <Divider orientation="left" style={{ color: 'white', borderTopColor: 'rgba(255,255,255,0.12)', lineHeight: '1.5715px', paddingTop: '20px', paddingBottom: '5px' }}>
+        Placement:
+      </Divider>
 
-  >
-    <Button
-      block
-      icon={<EditOutlined />}
-      style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-    >
-    </Button>
-  </Popover>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <PositionInput value={[machine.pose_offset.position.x, machine.pose_offset.position.y, machine.pose_offset.position.z]}
+          onChange={e => setItemProperty('machine', machine.uuid, 'position', { ...machine.pose_offset.position, x: e[0], y: e[1], z: e[2] })} />
+        <OrientationInput value={[machine.pose_offset.orientation.w, machine.pose_offset.orientation.x, machine.pose_offset.orientation.y, machine.pose_offset.orientation.z]}
+          onChange={e => setItemProperty('machine', machine.uuid, 'orientation', { ...machine.pose_offset.orientation, w: e[0], x: e[1], y: e[2], z: e[3] })} />
+      </div>
+      <br />
 
 
-  </div>
-  <Divider/>
+
+    </>
 
 
-</>
+
+
 
   )
 }

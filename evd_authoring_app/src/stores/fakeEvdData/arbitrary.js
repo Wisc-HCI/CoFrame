@@ -12,18 +12,18 @@ const NUM_COLLISION_MESHES = 2;
 const NUM_PINCH_POINTS = 5;
 const NUM_PLACEHOLDERS = 3;
 
-/***************************************************************** 
+/*****************************************************************
 * Type Declaration
 * - ThingType
 * - GradeType
 *****************************************************************/
 
 let thingTypes = [];
-for (let i=0; i<NUM_THING_TYPES; i++) {
+for (let i = 0; i < NUM_THING_TYPES; i++) {
     thingTypes.push({
         type: 'node.thing-type.',
         uuid: `thing-type-js-${i}`,
-        name: `Thing-Type-${i}`,
+        name: `ThingType ${i} Name`,
         deleteable: false,
         editable: true,
         description: 'Some descriptor string',
@@ -36,7 +36,7 @@ for (let i=0; i<NUM_THING_TYPES; i++) {
 }
 
 let gradeTypes = [];
-for (let i=0; i<NUM_GRADE_TYPES; i++) {
+for (let i = 0; i < NUM_GRADE_TYPES; i++) {
     gradeTypes.push({
         type: 'node.grade-type.',
         uuid: `grade-type-js-${i}`,
@@ -48,7 +48,7 @@ for (let i=0; i<NUM_GRADE_TYPES; i++) {
 }
 
 let placeholders = [];
-for (let i=0; i<NUM_PLACEHOLDERS; i++) {
+for (let i = 0; i < NUM_PLACEHOLDERS; i++) {
     placeholders.push({
         type: 'node.placeholder.',
         uuid: `placeholder-js-${i}`,
@@ -56,7 +56,7 @@ for (let i=0; i<NUM_PLACEHOLDERS; i++) {
         deleteable: false,
         editable: true,
         description: 'Some descriptor string',
-        
+
         pending_node: {
             type: 'node.pose.thing.',
             uuid: `thing-js-${i}`,
@@ -64,7 +64,7 @@ for (let i=0; i<NUM_PLACEHOLDERS; i++) {
             deleteable: true,
             editable: true,
             description: 'Some descriptor string (optional)', // could be ''
-    
+
             thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
             position: '<pending>',
             orientation: '<pending>'
@@ -76,15 +76,15 @@ for (let i=0; i<NUM_PLACEHOLDERS; i++) {
     });
 }
 
-/***************************************************************** 
+/*****************************************************************
 *  Positional Data
 * - Waypoint
 * - Location
 * - Thing (instances)
 *****************************************************************/
-
+//onChange={e=>setItemProperty(focusItem.type,focusItem.uuid,'name',e.target.value)}/>
 let waypoints = [];
-for (let i=0; i<NUM_WAYPOINTS; i++) {
+for (let i = 0; i < NUM_WAYPOINTS; i++) {
     waypoints.push({
         type: 'node.pose.waypoint.',
         uuid: `waypoint-js-${i}`,
@@ -92,8 +92,8 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
         deleteable: true,
         editable: true,
         description: 'Some descriptor string (optional)', // could be ''
-        
-        link: '', //'' means default to world or app 
+
+        link: '', //'' means default to world or app
         joints: {
             type: 'node.joints.',
             uuid: `joints-js-waypoint-${i}`,
@@ -102,8 +102,8 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
             editable: true,
             description: 'Some descriptor string (optional)', // could be ''
 
-            joint_positions: [0,0,0], // or null
-            joint_names: ['j1','j2','j3'], // or null
+            joint_positions: [0, 0, 0], // or null
+            joint_names: ['j1', 'j2', 'j3'], // or null
             reachable: false, // better than having to check the array to generate the flag
             length: 3 // this is enforced on the backend for positions and names
         },
@@ -136,16 +136,16 @@ for (let i=0; i<NUM_WAYPOINTS; i++) {
 }
 
 let locations = [];
-for (let i=0; i<NUM_LOCATIONS; i++) {
+for (let i = 0; i < NUM_LOCATIONS; i++) {
     locations.push({
         type: 'node.pose.waypoint.location.',
         uuid: `location-js-${i}`,
         name: `Location-${i}`,
-        deleteable: ! (i === 3),
-        editable: ! (i % 4 === 0),
+        deleteable: !(i === 3),
+        editable: !(i % 4 === 0),
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         joints: {
             type: 'node.joints.',
             uuid: `joints-js-location-${i}`,
@@ -154,8 +154,8 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
             editable: true,
             description: 'Some descriptor string (optional)', // could be ''
 
-            joint_positions: [0,0,0], // or null
-            joint_names: ['j1','j2','j3'], // or null
+            joint_positions: [0, 0, 0], // or null
+            joint_names: ['j1', 'j2', 'j3'], // or null
             reachable: false, // better than having to check the array to generate the flag
             length: 3 // this is enforced on the backend for positions and names
         },
@@ -191,7 +191,7 @@ for (let i=0; i<NUM_LOCATIONS; i++) {
 
 //NOTE: Andy is simmering (but like not upset) in regards to shadow things
 let things = [];
-for (let i=0; i<NUM_THINGS; i++) {
+for (let i = 0; i < NUM_THINGS; i++) {
     things.push({
         type: 'node.pose.thing.',
         uuid: `thing-js-${i}`,
@@ -200,7 +200,7 @@ for (let i=0; i<NUM_THINGS; i++) {
         editable: true,
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
         position: {
             type: 'node.position.',
@@ -230,7 +230,7 @@ for (let i=0; i<NUM_THINGS; i++) {
     });
 }
 
-/***************************************************************** 
+/*****************************************************************
 * Regions
 *****************************************************************/
 
@@ -243,7 +243,7 @@ const generic_region = {
     editable: true,
     description: 'Some descriptor string (optional)', // could be ''
 
-    link: '', //'' means default to world or app 
+    link: '', //'' means default to world or app
     // position is known in a default region, just uncertainty in orientation
     center_position: {
         type: 'node.position.',
@@ -274,7 +274,7 @@ const generic_region = {
     uncertainty_orientation_limit: 1.0,
     // if free_orientation then it is null (don't care case)
     // if not free_orientation it can be null meaning use the center_orientation as target
-        // target relative to other node for qaternion distance
+    // target relative to other node for qaternion distance
     // otherwise switch over to alt target as the relative node for distance calc
     uncertainty_orientation_alt_target: {
         type: 'node.orientation.',
@@ -300,7 +300,7 @@ const cube_region = {
     editable: false,
     description: 'Some descriptor string (optional)', // could be ''
 
-    link: '', //'' means default to world or app 
+    link: '', //'' means default to world or app
     center_position: {
         type: 'node.position.',
         uuid: `position-js-cube-region-1`,
@@ -343,7 +343,7 @@ const sphere_region = {
     editable: false,
     description: 'Some descriptor string (optional)', // could be ''
 
-    link: '', //'' means default to world or app 
+    link: '', //'' means default to world or app
     center_position: {
         type: 'node.position.',
         uuid: `position-js-sphere-region-3`,
@@ -381,7 +381,7 @@ let regions = [
     sphere_region
 ];
 
-/***************************************************************** 
+/*****************************************************************
 * Machines
 * - Machine
 *****************************************************************/
@@ -395,12 +395,16 @@ const machine_generator = {
     description: 'Some descriptor string (optional)', // could be ''
 
     process_time: 5, //sec
-    inputs: {}, // make this a tuple as value of keys
+    inputs: {}
+
+    , // make this a tuple as value of keys
+
     outputs: {
         'thing-type-js-0': [
             {
                 region_uuid: cube_region.uuid,
-                quantity: 1
+                quantity: 1,
+                placeholder_uuids: ['placeholder_thing_0']
             }
         ]
     },
@@ -413,7 +417,7 @@ const machine_generator = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-0`,
@@ -422,9 +426,9 @@ const machine_generator = {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x:0,
-            y:0,
-            z:0
+            x: 0,
+            y: 0,
+            z: 0
         },
         orientation: {
             type: 'node.orientation.',
@@ -434,10 +438,10 @@ const machine_generator = {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x:0,
-            y:0,
-            z:0,
-            w:1
+            x: 0,
+            y: 0,
+            z: 0,
+            w: 1
         }
     },
     link: 'app',
@@ -460,8 +464,8 @@ const machine_consumer = {
                 quantity: 1
             }
         ]
-    }, 
-    outputs: { },
+    },
+    outputs: {},
     mesh_id: 'package:/app/meshes/3d_printer.fbx',
     pose_offset: { // Local transform
         type: 'node.pose.',
@@ -471,7 +475,7 @@ const machine_consumer = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-1`,
@@ -480,9 +484,9 @@ const machine_consumer = {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x:0,
-            y:0,
-            z:0
+            x: 0,
+            y: 0,
+            z: 0
         },
         orientation: {
             type: 'node.orientation.',
@@ -492,10 +496,10 @@ const machine_consumer = {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x:0,
-            y:0,
-            z:0,
-            w:1
+            x: 0,
+            y: 0,
+            z: 0,
+            w: 1
         }
     },
     link: 'app',
@@ -516,14 +520,19 @@ const machine_transformer = {
             {
                 region_uuid: sphere_region.uuid,
                 quantity: 1
+            },
+            {
+                region_uuid: sphere_region.uuid,
+                quantity: 2
             }
         ]
-    }, 
+    },
     outputs: {
         'thing-type-js-1': [
             {
                 region_uuid: sphere_region.uuid,
-                quantity: 1
+                quantity: 1,
+                placeholder_uuids: ['placeholder_thing_1']
             }
         ]
     },
@@ -536,7 +545,7 @@ const machine_transformer = {
         editable: false,
         description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app 
+        link: '', //'' means default to world or app
         position: {
             type: 'node.position.',
             uuid: `position-js-machine-2`,
@@ -545,9 +554,9 @@ const machine_transformer = {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x:0,
-            y:0,
-            z:0
+            x: 0,
+            y: 0,
+            z: 0
         },
         orientation: {
             type: 'node.orientation.',
@@ -557,10 +566,10 @@ const machine_transformer = {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x:0,
-            y:0,
-            z:0,
-            w:1
+            x: 0,
+            y: 0,
+            z: 0,
+            w: 1
         }
     },
     link: 'app',
@@ -573,14 +582,14 @@ let machines = [
     machine_transformer
 ];
 
-/***************************************************************** 
+/*****************************************************************
 * Trajectories
 * - Trajectory
 *   - Trace
 *****************************************************************/
 
 let trajectories = [];
-for (let i=0; i<NUM_TRAJECTORIES; i++) {
+for (let i = 0; i < NUM_TRAJECTORIES; i++) {
     trajectories.push({
         type: 'node.trajectory.',
         uuid: `trajectory-js-${i}`,
@@ -603,13 +612,13 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
             description: 'Some descriptor string (optional)', // could be ''
 
             time_data: [0, /*...*/], // each timestep, time from relative start
-            joint_names: ['j1','j2','j3','j4','j5','j6'], // name for each joint corresponding to inner array on joint_data
-            joint_data: [[0,0,0,0,0,0]], // joint state of robot at each timestep (NOTE that this is not an EvD Joints just a simple list)
+            joint_names: ['j1', 'j2', 'j3', 'j4', 'j5', 'j6'], // name for each joint corresponding to inner array on joint_data
+            joint_data: [[0, 0, 0, 0, 0, 0]], // joint state of robot at each timestep (NOTE that this is not an EvD Joints just a simple list)
             tf_data: {
                 'ee_link': [ // Pose at that frame at each timestep (NOTE that this is not an EvD Pose just a simple dict)
                     {
-                        position: {x:0, y:0, z:0},
-                        orientation: {x:0, y:0, z:0, w:0},
+                        position: { x: 0, y: 0, z: 0 },
+                        orientation: { x: 0, y: 0, z: 0, w: 0 },
                     }
                     /*...*/
                 ],
@@ -625,7 +634,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
 
             duration: 1, // sec (full time to complete action Note approximate)
             end_effector_path: 'ee_link', //the frame of the end-effector,
-            joints_paths: ['joint_tf_frame_1','joint_tf_frame_2'], // tf-frames of arm joints being tracked
+            joints_paths: ['joint_tf_frame_1', 'joint_tf_frame_2'], // tf-frames of arm joints being tracked
             tool_paths: ['gripper_tf_frame_1'], // tf-frames for grippers
             component_paths: ['thing_tf_frame'], // (optional / may no longer be needed)
         },
@@ -634,7 +643,7 @@ for (let i=0; i<NUM_TRAJECTORIES; i++) {
     });
 }
 
-/***************************************************************** 
+/*****************************************************************
 * Environment Objects
 * - Reach Sphere
 * - Collision Mesh
@@ -666,7 +675,7 @@ let reachSphere = {
 };
 
 let collisionMeshes = [];
-for (let i=0; i<NUM_COLLISION_MESHES; i++) {
+for (let i = 0; i < NUM_COLLISION_MESHES; i++) {
     collisionMeshes.push({
         type: 'node.environment-node.collision-mesh.',
         uuid: `collision-mesh-js-${i}`,
@@ -684,7 +693,7 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            link: '', //'' means default to world or app 
+            link: '', //'' means default to world or app
             position: {
                 type: 'node.position.',
                 uuid: `position-js-collision-mesh-${i}`,
@@ -693,9 +702,9 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
                 editable: false,
                 description: 'Some descriptor string (optional)', // could be ''
 
-                x:0,
-                y:0,
-                z:0
+                x: 0,
+                y: 0,
+                z: 0
             },
             orientation: {
                 type: 'node.orientation.',
@@ -705,10 +714,10 @@ for (let i=0; i<NUM_COLLISION_MESHES; i++) {
                 editable: false,
                 description: 'Some descriptor string (optional)', // could be ''
 
-                x:0,
-                y:0,
-                z:0,
-                w:1
+                x: 0,
+                y: 0,
+                z: 0,
+                w: 1
             }
         },
         link: 'some_frame' // Can be used in the TF tree as a frame (could be '' or 'app' which means 'world')
@@ -749,7 +758,7 @@ let occupancyZones = [ // assume frame is app / world
 ];
 
 let pinchPoints = [];
-for (let i=0; i<NUM_PINCH_POINTS; i++) {
+for (let i = 0; i < NUM_PINCH_POINTS; i++) {
     pinchPoints.push({
         type: 'node.environment-node.pinch-point.',
         uuid: `pinch-points-js-${i}`,
@@ -768,9 +777,9 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
             editable: false,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x:0,
-            y:0,
-            z:0
+            x: 0,
+            y: 0,
+            z: 0
         },
         link: 'some_robot_frame',
         radius: 0.25,
@@ -778,7 +787,7 @@ for (let i=0; i<NUM_PINCH_POINTS; i++) {
     });
 }
 
-/***************************************************************** 
+/*****************************************************************
 * Program
 * - Program (object)
 * - Skills
@@ -994,7 +1003,7 @@ let program = {
             ],
             primitives: [
                 { // This is only for display purposes. what really happens in that this
-                  // gets expanded for each machine at runtime
+                    // gets expanded for each machine at runtime
                     type: 'node.primitive.machine-primitive.machine-initialize.',
                     uuid: 'machine-init-uuid-0',
                     name: '',
@@ -1117,7 +1126,7 @@ let program = {
             ]
         }
     ],
-    
+
     environment: {
         reach_sphere: reachSphere,
         pinch_points: pinchPoints,
@@ -1133,7 +1142,7 @@ let program = {
         grade_types: gradeTypes,
         placeholders: placeholders
     },
-    
+
     primitives: [ // just initializes but that is enough to get the point across >(0_0)<
         {
             type: 'node.primitive.skill-call.',
@@ -1207,7 +1216,7 @@ let program = {
                 thing_uuid: 'uuid'
             }
         }
-        
+
     ]
 };
 
