@@ -11,64 +11,23 @@ from ..primitives.machine_stop import MachineStop
 from ..primitives.machine_wait import MachineWait
 
 
-class MachineBlockingProcess(Skill):
+def MachineBlockingProcess(name=None, uuid=None, parent=None, editable=True, deleteable=False, description=''):
 
-    '''
-    Data structure methods
-    '''
+    machine_uuid_arg = SkillArgument(parameter_key='machine_uuid', name='machine_uuid')
+    arguments = [machine_uuid_arg]
 
-    @classmethod
-    def display_name(cls):
-        return 'Machine Blocking Process Skill'
+    primitives=[
+        MachineStart(machine_uuid=machine_uuid_arg.temporary_value, editable=editable, deleteable=False),
+        MachineWait(machine_uuid=machine_uuid_arg.temporary_value, editable=editable, deleteable=False),
+        MachineStop(machine_uuid=machine_uuid_arg.temporary_value, editable=editable, deleteable=False)
+    ]
 
-    @classmethod
-    def type_string(cls, trailing_delim=True):
-        return 'machine-blocking-process' + ('.' if trailing_delim else '')
-
-    @classmethod
-    def full_type_string(cls):
-        return Skill.full_type_string() + cls.type_string()
-
-    def __init__(self, primitives=None, arguments=None, parameters=None, type='', 
-                 name=None, uuid=None, parent=None, append_type=True, 
-                 editable=False, deleteable=False, description=''):
-
-        machine_uuid_arg = None
-        if arguments != None:
-            for a in arguments:
-                if a.parameter_key == 'machine_uuid':
-                    machine_uuid_arg = a
-                    break
-
-            if machine_uuid_arg == None:
-                machine_uuid_arg = SkillArgument(parameter_key='machine_uuid', name='machine_uuid')
-                arguments.append(machine_uuid_arg)
-        else:
-            machine_uuid_arg = SkillArgument(parameter_key='machine_uuid', name='machine_uuid')
-            arguments = [machine_uuid_arg]
-            
-        if primitives == None:
-            primitives=[
-                MachineStart(machine_uuid=machine_uuid_arg.temporary_value, editable=editable, deleteable=False),
-                MachineWait(machine_uuid=machine_uuid_arg.temporary_value, editable=editable, deleteable=False),
-                MachineStop(machine_uuid=machine_uuid_arg.temporary_value, editable=editable, deleteable=False)
-            ]
-        else: # make sure each has a fresh copy (only applicable since we predefined the primitives)
-            for p in primitives:
-                p.machine_uuid = machine_uuid_arg.temporary_value
-
-        if name == None:
-            name = 'Machine Blocking Process'
-
-        super(MachineBlockingProcess,self).__init__(
-            type=MachineBlockingProcess.type_string() + type if append_type else type,
-            name=name,
-            uuid=uuid,
-            parent=parent,
-            append_type=append_type,
-            editable=editable,
-            deleteable=deleteable,
-            description=description,
-            primitives=primitives,
-            arguments=arguments,
-            parameters=parameters)
+    return Skill(
+        name= name if name != None else 'Machine Blocking Process',
+        uuid=uuid,
+        parent=parent,
+        editable=editable,
+        deleteable=deleteable,
+        description=description,
+        arguments=arguments,
+        primitives=primitives)

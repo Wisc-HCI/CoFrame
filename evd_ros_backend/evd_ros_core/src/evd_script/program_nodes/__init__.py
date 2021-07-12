@@ -43,10 +43,6 @@ def ProgramNodeParser(exactType, dct):
     if node != None:
         return node
 
-    node = PredefinedSkillsNodeParser(exactType, dct)
-    if node != None:
-        return node
-
     if exactType == Hierarchical.type_string(trailing_delim=False):
         node = Hierarchical.from_dct(dct)
     elif exactType == Primitive.type_string(trailing_delim=False):
