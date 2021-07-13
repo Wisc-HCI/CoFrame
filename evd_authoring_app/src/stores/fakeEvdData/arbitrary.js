@@ -834,7 +834,7 @@ let program = {
                     type: 'node.primitive.machine-primitive.machine-start.',
                     name: '',
                     uuid: 'skill-machine-start-uuid',
-                    editable: false,
+                    editable: true,
                     deleteable: false,
                     description: '',
                     parameters: {

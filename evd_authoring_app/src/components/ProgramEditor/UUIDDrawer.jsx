@@ -1,0 +1,27 @@
+import React, {useCallback} from 'react';
+// import {
+//     SortableContext,
+//     verticalListSortingStrategy,
+// } from '@dnd-kit/sortable';
+import { GenericDraggable } from './Wrappers';
+import { acceptLookup } from './acceptLookup';
+import useEvdStore, {typeToKey} from "../../stores/EvdStore";
+
+export const UUIDDrawer = ({itemType}) => {
+    // itemType is the "type" of item from the EvdStore that the uuid corresponds to.
+    // e.g. 'thingType', 'machine', 'waypoint', etc.
+
+    const uuids = useEvdStore(useCallback(state=>Object.keys(state.data[typeToKey(itemType)]),[itemType]));
+    
+    const ancestors = [
+        {uuid:'drawer',...acceptLookup.drawer.default}
+    ];
+
+    return (
+        <React.Fragment>
+            {uuids.map((uuid)=>(
+                <GenericDraggable key={uuid} ancestors={ancestors} itemType='uuid' data={{itemType,uuid,type:`uuid-${itemType}`}}/>
+            ))}
+        </React.Fragment>
+    );
+};

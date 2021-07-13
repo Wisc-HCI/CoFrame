@@ -31,7 +31,7 @@ export const PrimitiveBlock = forwardRef((props, ref) => {
           Machine:{" "}
           <ParameterZone
             displayText={props.data.parameters.machine_uuid}
-            acceptTypes={["node.machine."]}
+            acceptTypes={['uuid-machine']}
             itemType="machine"
             canRemove={props.data.editable}
             onRemove={() => console.log("delete param")}
