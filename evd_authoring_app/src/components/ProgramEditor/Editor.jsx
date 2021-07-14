@@ -26,6 +26,33 @@ export const Editor = () => {
               </Button>
             </Popover>
             <Popover 
+                title='Locations'
+                placement='right'
+                content={<UUIDDrawer itemType='location'/>}
+              >
+              <Button type='text' block icon={<SubnodeOutlined />} style={{ marginBottom: 5, alignItems: 'left' }}>
+                {drawerExpanded && 'Locations'}
+              </Button>
+            </Popover>
+            <Popover 
+                title='Things'
+                placement='right'
+                content={<UUIDDrawer itemType='thing'/>}
+              >
+              <Button type='text' block icon={<SubnodeOutlined />} style={{ marginBottom: 5, alignItems: 'left' }}>
+                {drawerExpanded && 'Things'}
+              </Button>
+            </Popover>
+            <Popover 
+                title='Waypoints'
+                placement='right'
+                content={<UUIDDrawer itemType='waypoint'/>}
+              >
+              <Button type='text' block icon={<SubnodeOutlined />} style={{ marginBottom: 5, alignItems: 'left' }}>
+                {drawerExpanded && 'Waypoints'}
+              </Button>
+            </Popover>
+            <Popover 
                 title='Macros'
                 placement='right'>
               <Button type='text' block icon={<ToolOutlined />} style={{ marginBottom: 5 }}>
