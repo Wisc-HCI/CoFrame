@@ -20,7 +20,9 @@ export const UUIDDrawer = ({itemType}) => {
     return (
         <React.Fragment>
             {uuids.map((uuid)=>(
-                <GenericDraggable key={uuid} ancestors={ancestors} itemType='uuid' data={{itemType,uuid,type:`uuid-${itemType}`}}/>
+                <div key={uuid} style={{paddingTop:5}} >
+                    <GenericDraggable ancestors={ancestors} itemType='uuid' data={{itemType,uuid,type:`uuid-${itemType}`}}/>
+                </div>
             ))}
         </React.Fragment>
     );

@@ -1034,7 +1034,7 @@ let program = {
                     uuid: 'move-unplanned-uuid-0',
                     name: '',
                     deleteable: false,
-                    editable: false,
+                    editable: true,
                     description: '',
                     parameters: {
                         manual_safety: false,
