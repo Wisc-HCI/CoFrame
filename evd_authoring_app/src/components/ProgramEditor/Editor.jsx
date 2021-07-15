@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Layout, Button, Popover } from 'antd';
-import Icon, { ToolOutlined, PicCenterOutlined, SubnodeOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import Icon, { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Canvas } from './Canvas';
 import { PrimitivesDrawer } from './PrimitivesDrawer';
 import { UUIDDrawer } from './UUIDDrawer';
