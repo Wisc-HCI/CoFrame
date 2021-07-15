@@ -845,7 +845,7 @@ let program = {
                     type: 'node.primitive.machine-primitive.machine-wait.',
                     name: '',
                     uuid: 'skill-machine-wait-uuid-0',
-                    editable: false,
+                    editable: true,
                     deleteable: false,
                     description: '',
                     parameters: {
@@ -856,7 +856,7 @@ let program = {
                     type: 'node.primitive.machine-primitive.machine-wait.',
                     name: '',
                     uuid: 'skill-machine-wait-uuid-1',
-                    editable: false,
+                    editable: true,
                     deleteable: false,
                     description: '',
                     parameters: {
@@ -928,7 +928,7 @@ let program = {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-2',
                     name: '',
-                    editable: false,
+                    editable: true,
                     deleteable: false,
                     description: '',
                     parameters: {
@@ -955,7 +955,7 @@ let program = {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-3',
                     name: '',
-                    editable: false,
+                    editable: true,
                     deleteable: false,
                     description: '',
                     parameters: {
@@ -1008,7 +1008,7 @@ let program = {
                     uuid: 'machine-init-uuid-0',
                     name: '',
                     deleteable: false,
-                    editable: false,
+                    editable: true,
                     description: '',
                     parameters: {
                         machine_uuid: '<<arbitrary-value-0>>'
@@ -1018,7 +1018,7 @@ let program = {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-5',
                     name: '',
-                    editable: false,
+                    editable: true,
                     deleteable: false,
                     description: '',
                     parameters: {
@@ -1072,7 +1072,7 @@ let program = {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-6',
                     name: '',
-                    editable: false,
+                    editable: true,
                     deleteable: false,
                     description: '',
                     parameters: {
@@ -1112,7 +1112,7 @@ let program = {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-7',
                     name: '',
-                    editable: false,
+                    editable: true,
                     deleteable: false,
                     description: '',
                     parameters: {
@@ -1178,7 +1178,7 @@ let program = {
             type: 'node.primitive.gripper.',
             uuid: 'gripper-grasp-uuid-0',
             name: 'Grasp',
-            editable: false,
+            editable: true,
             deleteable: false,
             description: '',
             parameters: {
@@ -1205,7 +1205,7 @@ let program = {
             type: 'node.primitive.gripper.',
             uuid: 'gripper-grasp-uuid-1',
             name: 'Release',
-            editable: false,
+            editable: true,
             deleteable: false,
             description: '',
             parameters: {
