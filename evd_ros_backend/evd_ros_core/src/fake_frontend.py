@@ -29,7 +29,7 @@ class FakeFrontendNode:
 
         self._registration_pub = rospy.Publisher('{0}program/call_to_register'.format(prefix_fmt), Empty, queue_size=5)
         self._registration_sub = rospy.Subscriber('{0}program/register'.format(prefix_fmt), StringArray, self._program_register_cb)
-        self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5)
+        self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5) #this is optional
 
         self._issues_submit_sub = rospy.Subscriber('{0}program/submit/issue'.format(prefix_fmt), Issue, self._issue_submit_cb)
         self._issues_clear_sub = rospy.Subscriber('{0}program/clear/issue'.format(prefix_fmt), Issue, self._issue_clear_cb)

@@ -76,6 +76,59 @@ for (let i = 0; i < NUM_PLACEHOLDERS; i++) {
     });
 }
 
+let things = [];
+for (let i = 0; i < NUM_THINGS; i++) {
+    let t = {
+        type: 'node.pose.thing.',
+        uuid: `thing-js-${i}`,
+        name: `Thing-${i}`,
+        deleteable: true,
+        editable: true,
+        description: 'Some descriptor string (optional)', // could be ''
+
+        link: '', //'' means default to world or app
+        thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
+        position: {
+            type: 'node.position.',
+            uuid: `position-js-thing-${i}`,
+            name: '',
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x: 0,
+            y: 0,
+            z: 0
+        },
+        orientation: {
+            type: 'node.orientation.',
+            uuid: `orientation-js-thing-${i}`,
+            name: '',
+            deleteable: false,
+            editable: true,
+            description: 'Some descriptor string (optional)', // could be ''
+
+            x: 0,
+            y: 0,
+            z: 0,
+            w: 1
+        }
+    };
+
+    things.push(t);
+    placeholders.push({
+        type: 'node.placeholder.',
+        uuid: `placeholder-js-${NUM_PLACEHOLDERS+i}`,
+        name: `Plaeholder-${NUM_PLACEHOLDERS+i}`,
+        deleteable: false,
+        editable: true,
+        description: 'Some descriptor string',
+
+        pending_node: t,
+        pending_fields: []
+    })
+}
+
 /*****************************************************************
 *  Positional Data
 * - Waypoint
@@ -190,45 +243,7 @@ for (let i = 0; i < NUM_LOCATIONS; i++) {
 
 
 //NOTE: Andy is simmering (but like not upset) in regards to shadow things
-let things = [];
-for (let i = 0; i < NUM_THINGS; i++) {
-    things.push({
-        type: 'node.pose.thing.',
-        uuid: `thing-js-${i}`,
-        name: `Thing-${i}`,
-        deleteable: true,
-        editable: true,
-        description: 'Some descriptor string (optional)', // could be ''
 
-        link: '', //'' means default to world or app
-        thing_type_uuid: thingTypes[0].uuid, // gets a thing_type from other fake data
-        position: {
-            type: 'node.position.',
-            uuid: `position-js-thing-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
-            description: 'Some descriptor string (optional)', // could be ''
-
-            x: 0,
-            y: 0,
-            z: 0
-        },
-        orientation: {
-            type: 'node.orientation.',
-            uuid: `orientation-js-thing-${i}`,
-            name: '',
-            deleteable: false,
-            editable: true,
-            description: 'Some descriptor string (optional)', // could be ''
-
-            x: 0,
-            y: 0,
-            z: 0,
-            w: 1
-        }
-    });
-}
 
 /*****************************************************************
 * Regions
@@ -404,7 +419,7 @@ const machine_generator = {
             {
                 region_uuid: cube_region.uuid,
                 quantity: 1,
-                placeholder_uuids: ['placeholder_thing_0']
+                placeholder_uuids: ['placeholder-js-0']
             }
         ]
     },
@@ -532,7 +547,7 @@ const machine_transformer = {
             {
                 region_uuid: sphere_region.uuid,
                 quantity: 1,
-                placeholder_uuids: ['placeholder_thing_1']
+                placeholder_uuids: ['placeholder-js-1']
             }
         ]
     },
@@ -1134,7 +1149,6 @@ let program = {
         occupancy_zones: occupancyZones,
         locations: locations,
         machines: machines,
-        things: things,
         waypoints: waypoints,
         trajectories: trajectories,
         thing_types: thingTypes,
@@ -1232,7 +1246,6 @@ const fields = {
     machines,
     thingTypes,
     gradeTypes,
-    things,
     regions,
     trajectories,
     reachSphere,
