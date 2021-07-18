@@ -11,7 +11,7 @@ from .node_parser import NodeParser
 from .environment import Environment
 from .program_nodes.hierarchical import Hierarchical
 from .program_nodes import skills_library
-from .type_defs import ALL_SKILLS_TYPES, ALL_PRIMITIVES_TYPES
+from .type_defs import ALL_PRIMITIVES_TYPES
 
 from .orphans import *
 
@@ -100,7 +100,7 @@ class Program(Hierarchical):
             uuid=dct['uuid'],
             primitives=[NodeParser(p, enforce_types=[ALL_PRIMITIVES_TYPES]) for p in dct['primitives']],
             environment=NodeParser(dct['environment'], enforce_types=[Environment.type_string(trailing_delim=False)]),
-            skills=[NodeParser(s, enforce_types=[ALL_SKILLS_TYPES]) for s in dct['skills']])
+            skills=[NodeParser(s, enforce_types=[Skill.type_string(trailing_delim=False)]) for s in dct['skills']])
 
     '''
     Data accessor/modifier methods
@@ -178,7 +178,7 @@ class Program(Hierarchical):
             self.environment = NodeParser(dct['environment'], enforce_type=Environment.type_string(trailing_delim=False))
 
         if 'skills' in dct.keys():
-            self.skills = [NodeParser(s, enforce_types=[ALL_SKILLS_TYPES]) for s in dct['skills']]
+            self.skills = [NodeParser(s, enforce_types=[Skill.type_string(trailing_delim=False)]) for s in dct['skills']]
 
         super(Program,self).set(dct)
 

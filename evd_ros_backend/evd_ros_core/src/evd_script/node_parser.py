@@ -33,7 +33,7 @@ def NodeParser(dct, no_cache=False, enforce_types=None):
 
         # Expand out enforce list for generalized type descriptors
         from .type_defs import ALL_NODES_TYPE, ALL_PRIMITIVES_TYPES, ALL_REGION_TYPES, \
-            ALL_CONDITIONS_TYPES, ALL_SKILLS_TYPES, LOCATION_OR_WAYPOINT
+            ALL_CONDITIONS_TYPES, LOCATION_OR_WAYPOINT
         if ALL_NODES_TYPE in enforce_types:
             enforce_types = None # any node is valid so why enforce?
         
@@ -54,12 +54,6 @@ def NodeParser(dct, no_cache=False, enforce_types=None):
         elif ALL_CONDITIONS_TYPES in enforce_types:
             pass # Not supported right now
         
-        elif ALL_SKILLS_TYPES in enforce_types:
-            from .program_nodes import Skill, skills_library
-            enforce_types.extend([x.type_string(trailing_delim=False) for x in skills_library])
-            enforce_types.extend([
-                Skill.type_string(trailing_delim=False)])
-
         elif LOCATION_OR_WAYPOINT in enforce_types:
             from .data_nodes import Location, Waypoint
             enforce_types.extend([

@@ -2,7 +2,6 @@ ALL_NODES_TYPE = '<all>'
 ALL_PRIMITIVES_TYPES = '<all-primitives>'
 ALL_REGION_TYPES = '<all-regions>'
 ALL_CONDITIONS_TYPES = '<all-conditions>'
-ALL_SKILLS_TYPES = '<all-skills>'
 
 LOCATION_OR_WAYPOINT = '<location-or-waypoint>'
 
