@@ -36,3 +36,28 @@ export function objectMap(object, mapFn) {
       return result
     }, {})
   }
+
+export function unFlattenProgramPrimitives(primitives, ids) {
+    let unFlattenedPrimitives = [];
+    console.log(primitives);
+    console.log(ids);
+    ids.forEach(id=>{
+        let newPrimitive = lodash.omit(primitives[id],'primitiveIds');
+        if (newPrimitive.type.includes('hierarchical')) {
+            newPrimitive.primitives = unFlattenProgramPrimitives(primitives, primitives[id].primitiveIds);
+        };
+        unFlattenedPrimitives.push(newPrimitive);
+    });
+    return unFlattenedPrimitives;
+}
+
+export function unFlattenProgramSkills(skills, primitives) {
+    let unflattenedSkillSet = Object.values(skills);
+    let unFlattenedSkills = [];
+    unflattenedSkillSet.forEach(skill=>{
+        let newSkill = lodash.omit(skill,'primitiveIds');
+        newSkill.primitives = unFlattenProgramPrimitives(primitives, skill.primitiveIds);
+        unFlattenedSkills.push(newSkill);
+    });
+    return unFlattenedSkills;
+}

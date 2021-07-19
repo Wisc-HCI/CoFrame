@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { Modal, Form, Input } from 'antd';
+import { Modal, Input, Alert } from 'antd';
 
-import useApplicationStore from '../../stores/ApplicationStore';
 import useGuiStore from '../../stores/GuiStore';
 import useRosStore from '../../stores/RosStore';
 
@@ -18,11 +17,7 @@ export const SettingsModal = (_) => {
         connection:state.connection,
         connect:state.connect
     }))
-    const {filename, setFilename} = useApplicationStore(state=>({
-        filename:state.filename,
-        setFilename:state.setFilename
-    }))
-
+    
     let connectButtonText = 'Connect';
     if (connection === 'connecting') {
         connectButtonText = 'Connecting'
@@ -32,26 +27,27 @@ export const SettingsModal = (_) => {
 
     return (
         <Modal title="Settings" visible={activeModal === 'settings'} onOk={closeModal} onCancel={closeModal}>
-            <Form>
-                <Form.Item label="Project Name" name="project-name">
-                    <Input placeholder="e.g. My-First-Project" size="large" onChange={e=>setFilename(e.target.value)} defaultValue={filename}/>
-                </Form.Item>
-            </Form>
-
-            <Form>
-                <Form.Item label="Server" name="server">
-                    <Input.Search 
-                        placeholder="e.g. ws://localhost:9090" 
-                        defaultValue={url} 
-                        onChange={(e)=>setUrl(e.target.value)}
-                        enterButton={connectButtonText} 
-                        size="large" 
-                        loading={connection === 'connecting'} 
-                        onSearch={connect}
-                        disabled={connection === 'connecting'}
-                    />
-                </Form.Item>
-            </Form>
+            {connection === 'connected' && (
+                <Alert type="success" showIcon message="Connected!"/>
+            )}
+            {connection === 'connecting' && (
+                <Alert type="warning" showIcon message="Connecting..."/>
+            )}
+            {connection === 'disconnected' && (
+                <Alert type="error" showIcon message="Not Connected!"/>
+            )}
+            
+            <Input.Search 
+                style={{marginTop:20}}
+                placeholder="e.g. ws://localhost:9090" 
+                defaultValue={url} 
+                onChange={(e)=>setUrl(e.target.value)}
+                enterButton={connectButtonText} 
+                size="large" 
+                loading={connection === 'connecting'} 
+                onSearch={connect}
+                disabled={connection === 'connecting'}
+            />
         </Modal>
     );
 }

@@ -1,7 +1,7 @@
 import create from "zustand";
 import produce from "immer";
 import fakeEvdData from './fakeEvdData';
-import { flattenProgram } from './helpers';
+import { flattenProgram, unFlattenProgramPrimitives, unFlattenProgramSkills } from './helpers';
 
 const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
@@ -38,7 +38,7 @@ const store = (set,get) => ({
       waypoints: {},
       machines: {},
       thingTypes: {},
-      things: {},      // Only shown through thingTypes
+      placeholders: {},      // Only shown through thingTypes
       regions: {},      // Only shown through machines (I added regions back in after reworking machines)
       primitives: {}, //lookup table (of flattened hierarchicals)
       // for hierarchical primitives, extract children from primtives list, 
@@ -78,13 +78,12 @@ const store = (set,get) => ({
       program.environment.thing_types.forEach((thingType)=>{
         get().addItem('thingType',thingType)
       });
-      program.environment.things.forEach((thing)=>{
-        get().addItem('thing',thing)
+      program.environment.placeholders.forEach((placeholder)=>{
+        get().addItem('placeholder',placeholder)
       });
       program.environment.regions.forEach((region)=>{
         get().addItem('region',region)
       });
-
       const [flattenedPrimitives,flattenedSkills] = flattenProgram(program.primitives,program.skills,{type:'program',uuid:program.uuid});
       flattenedPrimitives.forEach((primitive)=>{
         get().addItem('primitive',primitive)
@@ -96,6 +95,28 @@ const store = (set,get) => ({
         get().addChildPrimitive(primitive, program.uuid)
       })
     },
+    getProgram: () => ({
+      name:get().name,
+      uuid:get().uuid,
+      type:get().type,
+      description:get().description,
+      transform:get().transform,
+      environment:{
+        grade_types:Object.values(get().data.gradeTypes),
+        occupancy_zones:Object.values(get().data.occupancyZones),
+        collision_meshes:Object.values(get().data.collisionMeshes),
+        pinch_points:Object.values(get().data.pinchPoints),
+        reach_sphere:Object.values(get().data.reachSpheres)[0],
+        locations:Object.values(get().data.locations),
+        waypoints:Object.values(get().data.waypoints),
+        machines:Object.values(get().data.machines),
+        thing_types:Object.values(get().data.thingTypes),
+        placeholders:Object.values(get().data.placeholders),
+        regions:Object.values(get().data.regions),
+      },
+      primitives:unFlattenProgramPrimitives(get().data.primitives, get().primitiveIds),
+      skills:unFlattenProgramSkills(get().data.skills, get().data.primitives)
+    }),
     // Program-level updates
     setName: (text) => set((_)=>({name:text})),
     setUuid: (text) => set((_)=>({uuid:text})),
