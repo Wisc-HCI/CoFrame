@@ -2,7 +2,7 @@ import React, {useRef} from 'react';
 
 import { saveAs } from 'file-saver';
 import YAML from 'yaml';
-import { Modal, Button, Row, Col, Upload, message } from 'antd';
+import { Modal, Button, Row, Col, message } from 'antd';
 import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 
 import useGuiStore from '../../stores/GuiStore';
