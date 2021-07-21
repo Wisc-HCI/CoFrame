@@ -31,7 +31,7 @@ export const PrimitiveBlock = forwardRef((props, ref) => {
           Machine:{" "}
           <ParameterZone
             displayText={props.data.parameters.machine_uuid}
-            acceptTypes={["node.machine."]}
+            acceptTypes={['uuid-machine']}
             itemType="machine"
             canRemove={props.data.editable}
             onRemove={() => console.log("delete param")}
@@ -57,7 +57,7 @@ export const PrimitiveBlock = forwardRef((props, ref) => {
           To Location:{" "}
           <ParameterZone
             displayText={props.data.parameters.location_uuid}
-            acceptTypes={["node.pose.waypoint.location."]}
+            acceptTypes={['uuid-location']}
             itemType="location"
             canRemove={props.data.editable}
             onRemove={() => console.log("delete param")}
@@ -90,7 +90,7 @@ export const PrimitiveBlock = forwardRef((props, ref) => {
           Thing:{" "}
           <ParameterZone
             displayText={props.data.parameters.thing_uuid}
-            acceptTypes={["node.thing-type."]}
+            acceptTypes={['uuid-thing']}
             itemType="thing"
             canRemove={props.data.editable}
             onRemove={() => console.log("delete param")}
