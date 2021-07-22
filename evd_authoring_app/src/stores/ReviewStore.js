@@ -11,7 +11,19 @@ const immer = (config) => (set, get, api) =>
 
 const store = (set) => ({
     // Issues are stored in a flat lookup
-    issues: {},
+    issues: {
+        /* 
+        Each issue has the following structure:
+        {
+            uuid: str (unique uuid for this issue)
+            requiresChanges: bool (whether the issue is one that requires changes to the program and a refresh. Similar to warning vs. error)
+            description: str (text string for error information)
+            complete: bool (mainly for issues that don't require changes, whether it has been marked as complete)
+            focus: {uuid:str, type:str} (what type of item to focus on in the gui when issue is selected)
+            graphData: 🤷
+        }
+        */
+    },
     sections: {
         endEffectorPoses:{
             name:'End Effector Poses',
