@@ -23,7 +23,7 @@ const store = (set) => ({
     // the focusItem specifies the type and uuid of data to focus on
     focusItem: {type:null,uuid:null},
     setFocusItem: (type,uuid) => set((_)=>({focusItem:{type:type,uuid:uuid}})),
-    clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null}})),
+    clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null},secondaryFocusItem:{type:null,uuid:null}})),
     // the search terms they have entered
     searchTerm: '',
     setSearchTerm: (term) => set((_)=>({searchTerm:term})),

@@ -11,6 +11,7 @@ import useReviewStore from '../../stores/ReviewStore';
 import { ReviewSection } from '../Review/ReviewSection';
 
 const isComplete = (state, sectionId) => (state.sections[sectionId].issues.map(issueId=>state.issues[issueId]).filter(issue=>!issue.complete).length === 0);
+const isBlocked = (state, sectionId) => (state.sections[sectionId].dependencies.filter(dep=>!isComplete(state,dep)).length > 0)
 
 const FRAMES = [
     { key: 'safety', title: 'Safety Concerns', sections: ['endEffectorPoses', 'thingMovement', 'pinchPoints', 'collisions', 'occupancy'] },
@@ -20,12 +21,10 @@ const FRAMES = [
 ]
 
 export const ReviewTile = (_) => {
-    const { frameId, setFrame } = useGuiStore(state => ({ frameId: state.frame, setFrame: state.setFrame }));
+    const { frameId, setFrame, primaryColor } = useGuiStore(state => ({ frameId: state.frame, setFrame: state.setFrame, primaryColor: state.primaryColor }));
     const refresh = useReviewStore(state => state.refresh);
-    const blockages = useReviewStore(state => FRAMES.map(frameInfo=>Math.min(...frameInfo.sections.map((sectionId,idx)=>!isComplete(state,sectionId)?idx:100))));
+    const blockages = useReviewStore(state => FRAMES.map(frameInfo=>Math.min(...frameInfo.sections.map((sectionId,idx)=>isBlocked(state,sectionId)?idx:100))));
     const frameIdx = FRAMES.map(frame=>frame.key).indexOf(frameId);
-
-    console.log(blockages);
 
     return (
         <div style={{ height: '100%', paddingLeft: 10, paddingRight: 10, paddingBottom: 10, display: 'flex', flexDirection: 'column' }}>
@@ -40,7 +39,7 @@ export const ReviewTile = (_) => {
                 ))}
             </Space>
             <Card
-                extra={<Button icon={<SyncOutlined />} onClick={refresh}>Refresh</Button>}
+                extra={<Button icon={<SyncOutlined/>} onClick={refresh}>Refresh</Button>}
                 style={{ flex: 1 }}
                 bodyStyle={{ padding: 0, height:'calc(100vh - 165pt)',overflow:'auto'}}
                 title="Review"

@@ -134,8 +134,8 @@ const store = (set) => ({
             issues:[]
         }
     },
-    completeIssue: (uuid) => set(state=>{
-        state.issues[uuid].complete = true
+    setIssueCompletion: (uuid,complete) => set(state=>{
+        state.issues[uuid].complete = complete
     }),
     refresh: () => set(state=>{
         //state.issues = {};
@@ -151,7 +151,8 @@ const store = (set) => ({
                 let existingIssue = state.issues[issueKey];
                 if (existingIssue.complete) {
                     Object.entries(newSectionIssues).forEach(([newIssueKey,newIssue])=>{
-                        if (newIssue.focus === existingIssue.focus && !newIssue.requiresChanges) {
+                        //console.log(`${newIssue.focus.type} ${existingIssue.focus.type} ${newIssue.focus.uuid} ${existingIssue.focus.uuid}`)
+                        if (newIssue.focus.uuid === existingIssue.focus.uuid && !newIssue.requiresChanges) {
                             newSectionIssues[newIssueKey].complete = true;
                         }
                     })

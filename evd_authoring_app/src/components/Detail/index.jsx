@@ -36,7 +36,8 @@ export const Detail = (_) => {
     }),[focusItem]))
 
     let {childItem} = useEvdStore(useCallback(state=>({
-        childItem:secondaryFocusItem.type ? state.data[secondaryFocusItem.type+'s'][secondaryFocusItem.uuid] : null
+      // Right now, only support secondaryFocusItems that are machines
+      childItem:['region'].indexOf(secondaryFocusItem.type)>-1 ? state.data[secondaryFocusItem.type+'s'][secondaryFocusItem.uuid] : null
     }),[secondaryFocusItem]))
 
     if (!childItem){

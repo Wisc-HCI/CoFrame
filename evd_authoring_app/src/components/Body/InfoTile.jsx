@@ -1,21 +1,28 @@
 import React from 'react';
 import { Card, Alert } from 'antd';
 import useGuiStore from '../../stores/GuiStore';
+import useReviewStore from '../../stores/ReviewStore';
 
 export function InfoTile(_) {
 
-    const { editorPane, setupTab, focusItem, frame, primaryColor } = useGuiStore(state=>({
+    const { editorPane, setupTab, focusItem, secondaryFocusItem, frame, primaryColor } = useGuiStore(state=>({
         editorPane:state.editorPane,
         setupTab:state.setupTab,
         focusItem:state.focusItem,
+        secondaryFocusItem:state.secondaryFocusItem,
         frame:state.frame,
         primaryColor:state.primaryColor
     }))
 
+    const currentIssue = useReviewStore(state=>(secondaryFocusItem.type==='issue'?state.issues[secondaryFocusItem.uuid]:null));
+
     let title = '';
     let description = <p></p>
 
-    if (editorPane === 'program') {
+    if (secondaryFocusItem.type === 'issue' && currentIssue) {
+        title = 'Info: Issue';
+        description = currentIssue.description;
+    } else if (editorPane === 'program') {
         title = 'Info: The Program Editor';
         description = <p>You can adjust the program in the Program Editor by dragging elements from the drawer into the canvas. Elements can be modified by clicking on them from within the canvas.</p>
     } else if (editorPane === 'setup' && focusItem.type === null) {

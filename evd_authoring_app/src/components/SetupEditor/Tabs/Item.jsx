@@ -76,9 +76,10 @@ export function Item(props) {
 
       style={{
         borderRadius: 3,
-        backgroundColor: '#1f1f1f',
         margin: 5, padding: 10,
-        boxShadow: focusItem.type === type && focusItem.uuid === uuid ? 'inset 0 0 2.5pt ' + primaryColor : null
+        borderRadius:4,
+        boxShadow: focusItem.type === type && focusItem.uuid === uuid ? `inset 0pt 0pt 1pt 1pt ${primaryColor}` : null,
+        backgroundColor: focusItem.type === type && focusItem.uuid === uuid ? `${primaryColor}22` : '#1f1f1f'
       }}
     >
       <List.Item.Meta
