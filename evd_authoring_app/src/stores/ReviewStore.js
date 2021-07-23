@@ -17,7 +17,8 @@ const store = (set) => ({
         {
             uuid: str (unique uuid for this issue)
             requiresChanges: bool (whether the issue is one that requires changes to the program and a refresh. Similar to warning vs. error)
-            description: str (text string for error information)
+            title: str (short title for issue)
+            description: str (text string for error information, displayed in issue)
             complete: bool (mainly for issues that don't require changes, whether it has been marked as complete)
             focus: {uuid:str, type:str} (what type of item to focus on in the gui when issue is selected)
             graphData: 🤷
@@ -28,7 +29,7 @@ const store = (set) => ({
         endEffectorPoses:{
             name:'End Effector Poses',
             updater:findEndEffectorPoseIssues,
-            dependencies:['reachability'],
+            dependencies:[],
             issues:[]
         },
         pinchPoints:{
