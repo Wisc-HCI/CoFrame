@@ -140,10 +140,10 @@ const store = (set) => ({
     refresh: () => set(state=>{
         //state.issues = {};
         let newIssues = {};
-        let program = useEvdStore.getState().getProgram();
+        let programState = useEvdStore.getState();
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
-            let newSectionIssues = section.updater(program);
+            let newSectionIssues = section.updater(programState);
             // Enumerate the existing issues
             // For any issues that are already completed, exist in the new set, 
             // and don't now require changes, set them as complete.

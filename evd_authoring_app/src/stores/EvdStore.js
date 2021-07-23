@@ -35,6 +35,7 @@ const store = (set,get) => ({
       pinchPoints: {},
       reachSpheres: {},
       locations: {},
+      trajectories: {},
       waypoints: {},
       machines: {},
       thingTypes: {},
@@ -64,6 +65,9 @@ const store = (set,get) => ({
       });
       program.environment.pinch_points.forEach((pinchPoint)=>{
         get().addItem('pinchPoint',pinchPoint)
+      });
+      program.environment.trajectories.forEach((trajectory)=>{
+        get().addItem('trajectory',trajectory)
       });
       get().addItem('reachSphere',program.environment.reach_sphere);
       program.environment.locations.forEach((location)=>{
@@ -110,6 +114,7 @@ const store = (set,get) => ({
         locations:Object.values(get().data.locations),
         waypoints:Object.values(get().data.waypoints),
         machines:Object.values(get().data.machines),
+        trajectories:Object.values(get().data.trajectories),
         thing_types:Object.values(get().data.thingTypes),
         placeholders:Object.values(get().data.placeholders),
         regions:Object.values(get().data.regions),

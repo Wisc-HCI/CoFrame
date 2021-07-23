@@ -25,6 +25,8 @@ export const ReviewTile = (_) => {
     const blockages = useReviewStore(state => FRAMES.map(frameInfo=>Math.min(...frameInfo.sections.map((sectionId,idx)=>!isComplete(state,sectionId)?idx:100))));
     const frameIdx = FRAMES.map(frame=>frame.key).indexOf(frameId);
 
+    console.log(blockages);
+
     return (
         <div style={{ height: '100%', paddingLeft: 10, paddingRight: 10, paddingBottom: 10, display: 'flex', flexDirection: 'column' }}>
             <Space style={{ flexDirection: 'row', display: 'flex', justifyContent: 'space-between', margin: 5 }}>
