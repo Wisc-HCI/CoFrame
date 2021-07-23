@@ -10,7 +10,7 @@ export const ParameterZone = ({itemType,displayText,acceptTypes,onDrop,onRemove,
             console.log(item)
             onDrop(item)
         },
-        canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0 && item.deleteable),
+        canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0 && canRemove),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop()
@@ -36,7 +36,7 @@ export const ParameterZone = ({itemType,displayText,acceptTypes,onDrop,onRemove,
 
     return (
         <div ref={drop} style={containerStyle} >
-            {displayText && !isOver && (
+            {displayText && (!isOver || !canDrop) && (
             <Tag color={itemTypeColorLookup[itemType]} closable={canRemove} onClose={onRemove} style={{width:'100%'}}>
                 {displayText}
             </Tag>

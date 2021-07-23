@@ -18,6 +18,8 @@ export const acceptLookup = {
     'trash': {
         all:{
             accepts:[
+                'uuid-machine',
+                'uuid-waypoint',
                 'node.primitive.hierarchical.skill.',
                 'node.primitive.delay.',
                 'node.primitive.breakpoint',
@@ -92,7 +94,12 @@ export const acceptLookup = {
     'node.primitive.breakpoint':{},
     'node.primitive.gripper.':{},
     'node.primitive.machine-primitive.machine-initialize.':{},
-    'node.primitive.machine-primitive.machine-start.':{},
+    'node.primitive.machine-primitive.machine-start.':{
+        machine_uuid: {
+            accepts:['uuid-machine'],
+            placment: 'single'
+        }
+    },
     'node.primitive.machine-primitive.machine-stop.':{},
     'node.primitive.machine-primitive.machine-wait.':{},
     'node.primitive.move-trajectory.':{},
