@@ -5,9 +5,11 @@ import {ProgramBlock} from './ProgramBlock';
 import {ItemDraggable} from './Wrappers';
 import {Grid} from './Grid';
 import useEvdStore from '../../stores/EvdStore';
+import useGuiStore from '../../stores/GuiStore';
 
 export const Canvas = (_) => {
 
+    const clearFocusItem = useGuiStore(state=>state.clearFocusItem);
     const acceptTypes = acceptLookup.grid.primitiveIds.accepts;
 
     const ancestors = [
@@ -34,7 +36,7 @@ export const Canvas = (_) => {
     })
 
     return (
-        <Grid ref={drop}>
+        <Grid ref={drop} onClick={clearFocusItem} >
             <ProgramBlock ancestors={ancestors}/>
             {Object.keys(skills).map(uuid=>(
                 <ItemDraggable key={uuid} id={uuid} itemType='skill' data={skills[uuid]} ancestors={ancestors} />

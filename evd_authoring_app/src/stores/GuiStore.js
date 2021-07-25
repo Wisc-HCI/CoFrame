@@ -2,6 +2,8 @@ import create from "zustand";
 import produce from "immer";
 import frameStyles from '../frameStyles';
 
+const EDITOR_TYPES = ['primitive','skill','program','trajectory'];
+
 const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
 
@@ -22,8 +24,8 @@ const store = (set) => ({
     setSetupTab: (tab) => set((_)=>({setupTab:tab})),
     // the focusItem specifies the type and uuid of data to focus on
     focusItem: {type:null,uuid:null},
-    setFocusItem: (type,uuid) => set((_)=>({focusItem:{type:type,uuid:uuid}})),
-    clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null}})),
+    setFocusItem: (type,uuid) => set((_)=>({focusItem:{type:type,uuid:uuid},editorPane:EDITOR_TYPES.indexOf(type)>=0?'editor':'setup'})),
+    clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null},secondaryFocusItem:{type:null,uuid:null}})),
     // the search terms they have entered
     searchTerm: '',
     setSearchTerm: (term) => set((_)=>({searchTerm:term})),

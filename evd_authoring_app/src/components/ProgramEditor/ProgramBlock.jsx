@@ -5,6 +5,8 @@ import { useDrag } from 'react-dnd';
 import { ItemSortable } from './Wrappers';
 import useGuiStore from '../../stores/GuiStore';
 import useEvdStore from '../../stores/EvdStore';
+import blockStyles from './blockStyles';
+import './highlight.css';
 
 import { acceptLookup } from './acceptLookup';
 
@@ -27,9 +29,13 @@ export const ProgramBlock = (props) => {
         ...props.ancestors
     ];
 
-    const [setFocusItem] = useGuiStore(state=>([
+    const [frame,focusItem,setFocusItem] = useGuiStore(state=>([
+        state.frame,
+        state.focusItem,
         state.setFocusItem
     ]));
+
+    const focused = focusItem.uuid === uuid;
 
     // Code for handling the draggability of the program node itself
     const [{isDragging}, drag] = useDrag({
@@ -40,20 +46,21 @@ export const ProgramBlock = (props) => {
         })
     })
 
-    const blockStyles = {
+    const dragBlockStyles = {
         display:'inline-block',
         transform:`translate3d(${transform.x}px,${transform.y}px,0)`,
         opacity: isDragging ? 0.4 : 1,
     };
 
     return (
-        <div ref={drag} {...props} style={blockStyles}>
+        <div ref={drag} {...props} style={dragBlockStyles} className={focused?`focus-${frame}`:null}>
             <Card 
                 title={name} 
                 role="Box" 
                 style={{minWidth:250}}
-                headStyle={{backgroundColor:'#1f1f1f'}}
+                headStyle={{backgroundColor:blockStyles['node.primitive.hierarchical.program.']}}
                 bodyStyle={{minHeight:30,padding:0}}
+                className={focusItem.type==='program'&&`focus-${frame}`}
                 extra={
                     <Button
                         style={{marginLeft:20}}

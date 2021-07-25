@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { Layout, Row, Col, Button } from 'antd';
-import { FolderOpenOutlined, SaveOutlined, 
-         UploadOutlined, DownloadOutlined, 
-         SettingOutlined } from '@ant-design/icons';
+import { Layout, Row, Col, Button, Badge, Space } from 'antd';
+import Icon, { SyncOutlined, SettingOutlined } from '@ant-design/icons';
+import {ReactComponent as EvdIcon} from './components/CustomIcons/EVD.svg';
 import './themes/safety.less';
 import './themes/quality.less';
 import './themes/performance.less';
@@ -13,18 +12,19 @@ import { ProgramTile } from "./components/Body/ProgramTile";
 
 import { Modals } from "./components/Modals";
 
-import useApplicationStore from "./stores/ApplicationStore";
 import useGuiStore from "./stores/GuiStore";
+import useRosStore from "./stores/RosStore";
 
-import Logo from './content/logo.svg';
+import useEvdStore from "./stores/EvdStore";
 
 
-export function App(props) {
+export function App() {
 
-    const filename = useApplicationStore(state=>state.filename);
     const setActiveModal = useGuiStore(state=>state.setActiveModal);
-    const frame = useGuiStore(state=>state.frame);
+    const [frame,primaryColor] = useGuiStore(state=>[state.frame,state.primaryColor]);
     const simMode = useGuiStore(state=>state.simMode);
+    const connection = useRosStore(state=>state.connection);
+    const programName = useEvdStore(state=>state.name);
 
     useEffect(() => {
         if (frame === 'safety') {
@@ -53,29 +53,14 @@ export function App(props) {
 
     const menuItems = [
         {
-            modalKey: 'open',
-            name: 'Open',
-            icon: <FolderOpenOutlined />
-        },
-        {
-            modalKey: 'save',
-            name: 'Save',
-            icon: <SaveOutlined />
-        },
-        {
-            modalKey: 'upload',
-            name: 'Upload',
-            icon: <UploadOutlined />
-        },
-        {
-            modalKey: 'download',
-            name: 'Download',
-            icon: <DownloadOutlined />
-        },
-        {
             modalKey: 'settings',
             name: 'Settings',
             icon: <SettingOutlined />
+        },
+        {
+            modalKey: 'sync',
+            name: 'Sync',
+            icon: <SyncOutlined />
         }
     ];
 
@@ -83,26 +68,27 @@ export function App(props) {
         <>
             <Layout style={{height:'100vh',width:'100vw'}}>
                 <Layout.Header className="header">
-                    <img
-                        src={Logo}
-                        alt="EvD Logo"
-                        style={{
-                            float: 'left',
-                            margin: '12pt',
-                            height: '30pt'
-                        }}
-                    />
-
-                    <Row align={'middle'} justify='space-between'>
-                        <h2 style={{paddingLeft:20}}><b>Expert View Dashboard<i> - {filename}</i></b></h2>
+                    <Row align='middle' justify='space-between'>
+                        <Space style={{float:'left'}} >
+                            <Icon style={{color:primaryColor,fontSize:30}} component={EvdIcon}/>
+                            <h2 style={{paddingLeft:20}}><b>Expert View Dashboard<i> - {programName}</i></b></h2>
+                        </Space>
                         <span style={{float:'right'}} >
-                        {menuItems.map(entry => (
-                            <Button type='text' key={entry.modalKey} icon={entry.icon} onClick={()=>{console.log(entry.modalKey);setActiveModal(entry.modalKey)}}>
-                                {entry.name}
-                            </Button>
-                        ))}
+                            {menuItems.map(entry => (
+                                <Button type='text' key={entry.modalKey} icon={entry.icon} onClick={()=>setActiveModal(entry.modalKey)}>
+                                    {entry.name}
+                                </Button>
+                            ))}
+                            {connection === 'connected' && (
+                                <Badge status="success" />
+                            )}
+                            {connection === 'connecting' && (
+                                <Badge status="warning" />
+                            )}
+                            {connection === 'disconnected' && (
+                                <Badge status="error" />
+                            )}
                         </span>
-                        
                     </Row>
                 </Layout.Header>
                 <Layout>

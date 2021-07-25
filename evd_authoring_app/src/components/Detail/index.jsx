@@ -13,6 +13,8 @@ import {MachineInOutRegionDetail} from './MachineInOutRegionDetail'
 
 import useEvdStore from '../../stores/EvdStore';
 
+const EDITOR_TYPES = ['primitive','skill','program','trajectory']
+
 export const Detail = (_) => {
 
     const {focusItem, clearFocusItem} = useGuiStore(state=>({
@@ -36,7 +38,8 @@ export const Detail = (_) => {
     }),[focusItem]))
 
     let {childItem} = useEvdStore(useCallback(state=>({
-        childItem:secondaryFocusItem.type ? state.data[secondaryFocusItem.type+'s'][secondaryFocusItem.uuid] : null
+      // Right now, only support secondaryFocusItems that are machines
+      childItem:['region'].indexOf(secondaryFocusItem.type)>-1 ? state.data[secondaryFocusItem.type+'s'][secondaryFocusItem.uuid] : null
     }),[secondaryFocusItem]))
 
     if (!childItem){
@@ -69,7 +72,7 @@ export const Detail = (_) => {
 
     )
 
-    if (item && childItem) {
+    if (EDITOR_TYPES.indexOf(focusItem.type)<0 && item && childItem) {
         return (
           <div>
             <Drawer
@@ -158,12 +161,12 @@ export const Detail = (_) => {
         return  (
           <Drawer
                   title={<span style={{textTransform:'capitalize'}}>{focusItem.type} </span>}
-                  visible={focusItem.uuid !== null && focusItem.type !== null}
+                  visible={focusItem.uuid !== null && focusItem.type !== null && EDITOR_TYPES.indexOf(focusItem.type)<0}
                   onClose={clearFocusItem}
                   getContainer={false}
-                  width='100%'
+                  width='25%'
               >
-              </Drawer>
+          </Drawer>
         )
 
     }
