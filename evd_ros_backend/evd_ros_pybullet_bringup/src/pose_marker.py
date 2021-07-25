@@ -11,16 +11,15 @@ from interactive_markers.interactive_marker_server import *
 from geometry_msgs.msg import Vector3, Quaternion, Pose
 
 
-DEFAULT_BASE_FRAME = '/app'
-DEFAULT_EE_FRAME = '/ee_link'
+DEFAULT_BASE_FRAME = 'planner_base_link'
+DEFAULT_EE_FRAME = 'planner_ee_link'
 
 
-class LocationPlotter:
+class PoseMarkerNode:
 
-    def __init__(self, filepath, base_frame, ee_frame):
+    def __init__(self, base_frame, ee_frame):
         self._base_frame = base_frame
         self._ee_frame = ee_frame
-        self._filepath = filepath
 
         # Marker
         self._marker_server = InteractiveMarkerServer("robot_controls")
@@ -29,41 +28,24 @@ class LocationPlotter:
         self._marker_server.applyChanges()
 
         self._listener = tf.TransformListener()
+        self._target_pub = rospy.Publisher('lively_tk/target_pose',Pose,queue_size=10)
 
     def _marker_feedback(self, feedback):
-        print("Marker Feedback:", feedback, "\n\n")
         self._target_marker.pose = feedback.pose
-
-    def spin(self):
-        data = {
-            'base_frame': self._base_frame,
-            'ee_frame': self._ee_frame,
-            'path': []
-        }
-
-        if self._filepath != None:
-            file = open(self._filepath,'w')
-
-        try:
-            while not rospy.is_shutdown():
-                if self._filepath != None:
-                    inStr = raw_input('Press enter to capture pose (or press q to quit)')
-                    if inStr.lower() == 'q':
-                        break
-                    (pos, rot) = self._listener.lookupTransform(self._base_frame, self._ee_frame, rospy.Time(0))
-                    data['path'].append({'position': pos, 'orientation': rot})
-                else:
-                    pass
-        except:
-            pass
-
-        if self._filepath != None:
-            json.dump(data, file, indent=4)
-            file.close()
+        self._target_pub.publish(feedback.pose)
 
     def _make_marker(self):
-        loc = Location()
-        return loc.to_ros_marker()
+        marker = Marker()
+        marker.type = Marker.ARROW
+        marker.pose.orientation = Quaternion(0,0,0,1)
+        marker.scale.x = 0.125
+        marker.scale.y = 0.05
+        marker.scale.z = 0.05
+        marker.color.r = 0.5
+        marker.color.g = 0.5
+        marker.color.b = 0.5
+        marker.color.a = 0.5
+        return marker
 
     def _make_target_marker(self):
         marker = InteractiveMarker()
@@ -137,11 +119,10 @@ class LocationPlotter:
 
 
 if __name__ == "__main__":
-    rospy.init_node('location_plotter')
+    rospy.init_node('pose_marker')
 
-    filepath = rospy.get_param('~filepath',None)
     base_frame = rospy.get_param('~base_frame',DEFAULT_BASE_FRAME)
     ee_frame = rospy.get_param('~ee_frame',DEFAULT_EE_FRAME)
 
-    node = LocationPlotter(filepath, base_frame, ee_frame)
-    node.spin()
+    node = PoseMarkerNode(base_frame, ee_frame)
+    rospy.spin()

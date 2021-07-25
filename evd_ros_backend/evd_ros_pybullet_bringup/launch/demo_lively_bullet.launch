@@ -8,8 +8,9 @@
 
     <node name="pose_marker" pkg="evd_ros_pybullet_bringup" type="pose_marker.py" output="screen"/>
 
-    <node name="lively_demo" pkg="evd_ros_pybullet_bringup" type="lively_demo.py" output="screen">
+    <node name="lively_bullet" pkg="evd_ros_pybullet_bringup" type="lively_bullet.py" output="screen">
         <param name="config_file" value="$(find evd_ros_pybullet_bringup)/description/ur3e_config_v1.json"/>
+        <param name="path" value="$(find evd_ros_pybullet_bringup)/description/"/>
     </node> 
 
     <param name="robot_description" command="$(find xacro)/xacro '$(arg application_description_xacro)' kinematics_config:=$(arg kinematics_config)"/>

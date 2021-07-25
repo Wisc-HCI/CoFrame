@@ -1,0 +1,7 @@
+<launch>
+
+    <node name="pybullet_demo" pkg="evd_ros_pybullet_bringup" type="pybullet_demo.py" output="screen">
+        <param name="path" value="$(find evd_ros_pybullet_bringup)/description/"/>
+    </node> 
+
+</launch>

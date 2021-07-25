@@ -4,8 +4,12 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Global Options1
+        - /Status1
+        - /Axes1
         - /MarkerArray1
         - /MarkerArray1/Namespaces1
+        - /InteractiveMarkers1
       Splitter Ratio: 0.5
     Tree Height: 459
   - Class: rviz/Selection
@@ -65,25 +69,11 @@ Visualization Manager:
       Collision Enabled: false
       Enabled: true
       Links:
-        3d_printer_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        app:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        box_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         physical_base:
           Alpha: 1
           Show Axes: false
@@ -376,20 +366,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        table_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        ur3e_pedestal_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        world:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -404,11 +380,20 @@ Visualization Manager:
         {}
       Queue Size: 100
       Value: true
+    - Class: rviz/InteractiveMarkers
+      Enable Transparency: true
+      Enabled: true
+      Name: InteractiveMarkers
+      Show Axes: false
+      Show Descriptions: true
+      Show Visual Aids: false
+      Update Topic: /robot_controls/update
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: app
+    Fixed Frame: physical_base_link
     Frame Rate: 30
   Name: root
   Tools:
