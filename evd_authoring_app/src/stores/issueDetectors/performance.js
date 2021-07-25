@@ -1,6 +1,6 @@
 import { generateUuid } from "../generateUuid"
 
-export const findReachabilityIssues = (program) => {
+export const findReachabilityIssues = (program) => { // requires joint_processor to produce joints for each waypoint/location
     let issues = {};
     let usedPoses = [];
     // First check through the trajectories that are used.
@@ -92,25 +92,25 @@ export const findReachabilityIssues = (program) => {
     return issues;
 }
 
-export const findJointSpeedIssues = (program) => {
+export const findJointSpeedIssues = (program) => { // requires trace processor, joint speed grader (can also use intermediate type)
     let issues = {};
 
     return issues;
 }
 
-export const findEndEffectorSpeedIssues = (program) => {
+export const findEndEffectorSpeedIssues = (program) => { // requires trace processor, end effector grader + intermediate end effector speed interediate type
     let issues = {};
 
     return issues;
 }
 
-export const findPayloadIssues = (program) => {
+export const findPayloadIssues = (program) => { // Shouldn't change during a trajectory so more of a check on thing weight vs. robot payload (e.g., 3kg in 1g)
     let issues = {};
 
     return issues;
 }
 
-export const findSpaceUsageIssues = (program) => {
+export const findSpaceUsageIssues = (program) => { // Requires a convex hall operation on joint frames in traces. This volume can be compared against whole workcell (fraction) and can be used for intersection with extruded human occupancy zones 
     let issues = {};
 
     return issues;
