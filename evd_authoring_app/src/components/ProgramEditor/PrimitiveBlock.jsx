@@ -1,17 +1,28 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useCallback } from "react";
 import { ParameterZone } from "./ParameterZone";
 import { InputNumber } from "antd";
 import useEvdStore from "../../stores/EvdStore";
+import useGuiStore from "../../stores/GuiStore";
+import blockStyles from "./blockStyles";
+import './highlight.css';
 
 export const PrimitiveBlock = forwardRef((props, ref) => {
+  const {uuid} = props.data;
+  const focused = useGuiStore(useCallback(state=>state.focusItem.uuid === uuid,[uuid]));
+  const focusExists = useGuiStore(state=>state.focusItem.type !== null);
+  const [frame, clearFocusItem] = useGuiStore(state=>[state.frame,state.clearFocusItem]);
+  const unfocused = focusExists && !focused;
+
   const styles = {
     backgroundColor:
-      props.data.type === "node.primitive.skill-call." ? "#62869e" : "#629e6c",
+      blockStyles[props.data.type],
     minHeight: 30,
     minWidth: 200,
     borderRadius: 3,
     margin: 4,
     padding: 5,
+    position:'relative',
+    zIndex:focused?100:1
   };
 
   const setPrimitiveParameter = useEvdStore(
@@ -24,7 +35,7 @@ export const PrimitiveBlock = forwardRef((props, ref) => {
   }
 
   return (
-    <div {...props} ref={ref} style={{ ...props.style, ...styles }}>
+    <div {...props} ref={ref} style={{ ...props.style, ...styles }} className={focused?`focus-${frame}`:null} onClick={(e)=>{e.stopPropagation();unfocused&&clearFocusItem()}}>
       <div style={{ fontSize: 16 }}>{props.data.name}</div>
       {props.data.type.includes("node.primitive.machine-primitive") && (
         <div>

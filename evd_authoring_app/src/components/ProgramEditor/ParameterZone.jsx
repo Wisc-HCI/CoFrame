@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tag } from 'antd';
 import { useDrop } from 'react-dnd';
+import blockStyles from './blockStyles';
 
 export const ParameterZone = ({itemType,displayText,acceptTypes,onDrop,onRemove,canRemove}) => {
 
@@ -27,17 +28,10 @@ export const ParameterZone = ({itemType,displayText,acceptTypes,onDrop,onRemove,
         textAlign:'center'
     }
 
-    const itemTypeColorLookup = {
-        waypoint: '#AD1FDE',
-        thing: '#E08024',
-        location: '#8624E0',
-        machine: '#B3A533'
-    }
-
     return (
         <div ref={drop} style={containerStyle} >
             {displayText && (!isOver || !canDrop) && (
-            <Tag color={itemTypeColorLookup[itemType]} closable={canRemove} onClose={onRemove} style={{width:'100%'}}>
+            <Tag color={blockStyles[itemType]} closable={canRemove} onClose={onRemove} style={{width:'100%'}}>
                 {displayText}
             </Tag>
             )}
