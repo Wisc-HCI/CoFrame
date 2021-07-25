@@ -75,7 +75,6 @@ export function Item(props) {
       }
 
       style={{
-        borderRadius: 3,
         margin: 5, padding: 10,
         borderRadius:4,
         boxShadow: focusItem.type === type && focusItem.uuid === uuid ? `inset 0pt 0pt 1pt 1pt ${primaryColor}` : null,

@@ -7,7 +7,7 @@ import {Grid} from './Grid';
 import useEvdStore from '../../stores/EvdStore';
 import useGuiStore from '../../stores/GuiStore';
 
-export const Canvas = (_) => {
+export const Canvas = () => {
 
     const clearFocusItem = useGuiStore(state=>state.clearFocusItem);
     const acceptTypes = acceptLookup.grid.primitiveIds.accepts;
@@ -19,7 +19,8 @@ export const Canvas = (_) => {
     const [moveItem,skills] = useEvdStore(state=>[state.moveItem,state.data.skills]);
 
     // Do your draggable stuff here
-    const [{},drop] = useDrop({
+    // We only care about the second value returned from useDrop (hence the [1] at the end)
+    const drop = useDrop({
         accept: acceptTypes,
         drop: (item, monitor) => {
             const delta = monitor.getDifferenceFromInitialOffset();
@@ -33,7 +34,7 @@ export const Canvas = (_) => {
             }
         },
         canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0)
-    })
+    })[1]
 
     return (
         <Grid ref={drop} onClick={clearFocusItem} >
