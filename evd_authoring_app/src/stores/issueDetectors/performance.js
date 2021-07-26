@@ -57,6 +57,29 @@ export const findReachabilityIssues = (program) => { // requires joint_processor
             }
         })
     })
+
+    // The initialize skill takes in a location parameter, so check for calls that use it.
+    Object.values(program.data.primitives).forEach(primitive=>{
+        if (primitive.type === 'node.primitive.skill-call.') {
+            Object.keys(primitive.parameters).filter(key=>key.includes('location')).forEach(key=>{
+                const location_uuid = primitive.parameters[key];
+                console.log(location_uuid);
+                if (location_uuid && program.data.locations[location_uuid].joints && !program.data.locations[location_uuid].joints.reachable) {
+                    const uuid = generateUuid('issue');
+                    issues[uuid] = {
+                        uuid: uuid,
+                        requiresChanges: true,
+                        title: `Initial robot Location "${program.data.locations[location_uuid].name}" not reachable`,
+                        description: `Location "${program.data.locations[location_uuid].name}" is used for initialization but is not reachable.`,
+                        complete: false,
+                        focus: {uuid:location_uuid, type:'location'},
+                        graphData: null
+                    }
+                }
+            })
+        }
+    })
+
     // Enumerate locations and add warnings for those not used in the program.
     Object.values(program.data.locations).forEach(location=>{
         if (!location.joints.reachable && usedPoses.indexOf(location.uuid) < 0) {
@@ -112,6 +135,8 @@ export const findPayloadIssues = (program) => { // Shouldn't change during a tra
 
 export const findSpaceUsageIssues = (program) => { // Requires a convex hall operation on joint frames in traces. This volume can be compared against whole workcell (fraction) and can be used for intersection with extruded human occupancy zones 
     let issues = {};
+
+    
 
     return issues;
 }

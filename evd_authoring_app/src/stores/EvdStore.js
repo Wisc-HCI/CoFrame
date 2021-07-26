@@ -97,7 +97,7 @@ const store = (set,get) => ({
       });
       program.primitives.forEach((primitive)=>{
         get().addChildPrimitive(primitive, program.uuid)
-      })
+      });
     },
     getProgram: () => ({
       name:get().name,
@@ -223,7 +223,7 @@ const useEvdStore = create(immer(store));
 
 console.log(fakeEvdData.arbitrary.program)
 // Remove for ROS-based updates later (useful for frontend dev)
-useEvdStore.getState().setProgram(fakeEvdData.arbitrary.program)
+useEvdStore.getState().setProgram(fakeEvdData.arbitrary.program);
 
 console.log('Primitives');
 console.log(useEvdStore.getState().data.primitives);
