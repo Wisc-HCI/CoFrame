@@ -5,7 +5,8 @@ setup_args = generate_distutils_setup(
     packages=[
         'evd_script',
         'evd_interfaces',
-        'evd_version_tracking'
+        'evd_version_tracking',
+        'evd_sim'
     ],
     scripts=[''],
     package_dir={'':'src'})

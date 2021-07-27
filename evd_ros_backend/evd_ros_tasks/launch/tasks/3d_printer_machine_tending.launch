@@ -33,7 +33,8 @@
 
   <!-- Core -->
   <include file="$(find evd_ros_core)/launch/app.launch">
-    <arg name="config_filepath" value="$(find evd_ros_tasks)/config/ur3e_processor_config.json"/>
+    <arg name="config_path" value="$(find evd_ros_tasks)/config/"/>
+    <arg name="config_file_name" value="ur3e_processor_config.json"/>
     <arg name="ros_frame_id" value="world"/>
   </include>
 
