@@ -53,7 +53,7 @@ class LivelyTKSolver(object):
             max_iterations=self.iterations)
 
         msg = JointState()
-        msg.name = ['simulated_' + x for x in self.config_data["joint_ordering"]]
+        msg.name = self.config_data["joint_ordering"]
         msg.position = joints
 
         return msg

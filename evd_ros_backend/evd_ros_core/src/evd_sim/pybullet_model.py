@@ -2,57 +2,60 @@
 import time
 import pybullet
 
-#/home/curt/catkin_ws/src/Expert_View_Dashboard/evd_ros_backend/evd_ros_tasks/config/pybullet/planner_ur3e_robotiq85_plus_workcell.urdf
+from sensor_msgs.msg import JointState
 
 
 class PyBulletModel(object):
     
-    def __init__(self, urdf_path, config, realTime=False, gui=False):
-        self._realtime = realTime
-
-        print('\n\n\n',urdf_path,'\n\n\n')
-
-         #pybullet setup
-        physicsClient = pybullet.connect(pybullet.GUI if gui else pybullet.DIRECT) # or pybullet.DIRECT for non-gui
-        #pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_Y_AXIS_UP,1)
-        #pybullet.setAdditionalSearchPath(pybullet_data.getDataPath()) #used by loadURDF
-        pybullet.setAdditionalSearchPath(urdf_path)
-        pybullet.setGravity(0, 0, -9.8)
-
+    def __init__(self, urdf_path, config, gui=True):
         self.timeStep = config['timestep']
+
+        #pybullet setup
+        physicsClient = pybullet.connect(pybullet.GUI if gui else pybullet.DIRECT)
+        pybullet.setAdditionalSearchPath(urdf_path)
+        pybullet.setRealTimeSimulation(False)
+        pybullet.setGravity(0, 0, -9.8)
         pybullet.setTimeStep(self.timeStep)
+        pybullet.setRealTimeSimulation(False)
 
-        print('\n\n\n',config['urdf'],'\n\n\n')
+        #flags = pybullet.URDF_USE_SELF_COLLISION|pybullet.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS 
+        flags = pybullet.URDF_MERGE_FIXED_LINKS
 
-        self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True)
+        self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True, flags=flags)
         self.jointIds = {}
         for j in range(pybullet.getNumJoints(self.robotId)):
             info = pybullet.getJointInfo(self.robotId, j)
             jointName = info[1].decode("utf-8") 
-            self.jointIds[jointName] = j
+            self.jointIds[jointName] = j     
 
-        pybullet.setRealTimeSimulation(self._realtime)
+        print('\n\n\n\n',self.jointIds,'\n\n\n\n')   
 
-    def step(self):
+    def step(self, jMsg):
 
-        lastTime = time.time()
-         # Set each joint in pybullet
+        # Set each joints in pybullet
         for name, id in self.jointIds.items():
-
             index = -1
-            for i, n in enumerate(self.config_data["joint_ordering"]):
-                #print(name, 'simulated_' + self.config_data["joint_ordering"][i])
-                if name == 'simulated_' + n:
+            for i, n in enumerate(jMsg.name):
+                if n == name:
                     index = i
+                    break
 
             if index != -1:
-                val = joints[i]
+                val = jMsg.position[index]
                 pybullet.setJointMotorControl2(
                     self.robotId,
-                    id,
-                    pybullet.POSITION_CONTROL, 
-                    targetPosition=val)
+                    jointIndex=id,
+                    controlMode=pybullet.POSITION_CONTROL, 
+                    targetPosition=val,
+                    maxVelocity=1000,
+                    force=5 * 240.)
 
+        # Run simulation
         pybullet.stepSimulation()
-        if self._realtime:
-            time.sleep(self.timeStep)
+
+        # Read current joint state
+        msg = JointState()
+        return msg
+
+    def cleanup(self):
+        pybullet.disconnect()
