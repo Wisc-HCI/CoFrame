@@ -21,7 +21,7 @@ const FRAMES = [
 ]
 
 export const ReviewTile = (_) => {
-    const { frameId, setFrame, primaryColor } = useGuiStore(state => ({ frameId: state.frame, setFrame: state.setFrame, primaryColor: state.primaryColor }));
+    const { frameId, setFrame } = useGuiStore(state => ({ frameId: state.frame, setFrame: state.setFrame }));
     const refresh = useReviewStore(state => state.refresh);
     const blockages = useReviewStore(state => FRAMES.map(frameInfo=>Math.min(...frameInfo.sections.map((sectionId,idx)=>isBlocked(state,sectionId)?idx:100))));
     const frameIdx = FRAMES.map(frame=>frame.key).indexOf(frameId);

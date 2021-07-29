@@ -21,7 +21,8 @@ export function ItemSortable({id, idx, itemType, ancestors}) {
     })
   }))
 
-  const [{},drop] = useDrop({
+  // We only care about the second value returned from useDrop (hence the [1] at the end)
+  const drop = useDrop({
     accept: ancestors[0].accepts,
     drop: (item, _) => {
       moveChildPrimitive(item,ancestors[0].uuid,idx)
@@ -35,7 +36,7 @@ export function ItemSortable({id, idx, itemType, ancestors}) {
       }
     },
     canDrop: (item, _) => (ancestors[0].accepts.indexOf(item.type)>=0 && item.editable)
-  })
+  })[1]
 
   drag(drop(ref))
 

@@ -52,7 +52,7 @@ export const Editor = () => {
             <Popover 
                 title={<span><Icon style={{marginRight:10}} component={ThingIcon}/>Things</span>}
                 placement='right'
-                content={<UUIDDrawer itemType='thing'/>}
+                content={<UUIDDrawer itemType='placeholder'/>}
               >
               <Button type='text' block icon={<Icon component={ThingIcon}/>} style={{ marginBottom: 5, alignItems: 'left' }}>
                 {drawerExpanded && 'Things'}

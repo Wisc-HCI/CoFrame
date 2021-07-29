@@ -29,13 +29,13 @@ const store = (set) => ({
         endEffectorPoses:{
             name:'End Effector Poses',
             updater:findEndEffectorPoseIssues,
-            dependencies:[],
+            dependencies:['reachability'],
             issues:[]
         },
         pinchPoints:{
             name:'Pinch Points',
             updater:findPinchPointIssues,
-            dependencies:['reachability'],
+            dependencies:[],
             issues:[]
         }, 
         collisions:{

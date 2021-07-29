@@ -1,7 +1,7 @@
  const PRIMITIVE_STYLE = '#629e6c';
  const SKILL_STYLE = '#62869e';
  
- export default {
+const blockStyles = {
     'node.primitive.delay.':PRIMITIVE_STYLE,
     'node.primitive.breakpoint':PRIMITIVE_STYLE,
     'node.primitive.gripper.':PRIMITIVE_STYLE,
@@ -21,3 +21,5 @@
     machine: '#B3A533',
     trajectory: '#c5329a'
  } 
+
+export default blockStyles

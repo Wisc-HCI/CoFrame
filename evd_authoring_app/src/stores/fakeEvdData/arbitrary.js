@@ -847,7 +847,7 @@ let program = {
             primitives: [
                 {
                     type: 'node.primitive.machine-primitive.machine-start.',
-                    name: '',
+                    name: 'Machine Start',
                     uuid: 'skill-machine-start-uuid',
                     editable: true,
                     deleteable: false,
@@ -858,7 +858,7 @@ let program = {
                 },
                 {
                     type: 'node.primitive.machine-primitive.machine-wait.',
-                    name: '',
+                    name: 'Machine Wait',
                     uuid: 'skill-machine-wait-uuid-0',
                     editable: true,
                     deleteable: false,
@@ -869,7 +869,7 @@ let program = {
                 },
                 {
                     type: 'node.primitive.machine-primitive.machine-wait.',
-                    name: '',
+                    name: 'Machine Wait',
                     uuid: 'skill-machine-wait-uuid-1',
                     editable: true,
                     deleteable: false,
@@ -930,7 +930,7 @@ let program = {
                 {
                     type: 'node.primitive.move-trajectory.',
                     uuid: 'move-trajectory-uuid-2',
-                    name: '',
+                    name: 'Move Trajectory',
                     editable: false,
                     deleteable: false,
                     description: '',
@@ -942,7 +942,7 @@ let program = {
                 {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-2',
-                    name: '',
+                    name: 'Grasp',
                     editable: true,
                     deleteable: false,
                     description: '',
@@ -957,7 +957,7 @@ let program = {
                 {
                     type: 'node.primitive.move-trajectory.',
                     uuid: 'move-trajectory-uuid-3',
-                    name: '',
+                    name: 'Move Trajectory',
                     editable: false,
                     deleteable: false,
                     description: '',
@@ -969,7 +969,7 @@ let program = {
                 {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-3',
-                    name: '',
+                    name: 'Release',
                     editable: true,
                     deleteable: false,
                     description: '',
@@ -986,21 +986,21 @@ let program = {
         {
             type: 'node.primitive.hierarchical.skill.',
             name: 'Initialize',
-            uuid: 'initialize-uuid',
+            uuid: 'initialize-skill-uuid',
             editable: false,
             deleteable: false,
             parameters: {},
             arguments: [ // did I spell arguments
                 {
                     type: 'node.skill-argument.',
-                    name: 'machine_uuids',
+                    name: 'machine_uuids', // Human-readable name for this variable
                     uuid: 'skill-arg-uuid-0',
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'machine_uuid',
-                    temporary_value: '<<arbitrary-value-0>>',
-                    parameter_type: 'node.machine.',
+                    parameter_key: 'machine_uuid', // Backend-relevant code, indicates what fields this argument _can possibly_ fill.
+                    temporary_value: '<<arbitrary-value-0>>', // If the key matches in any of the children primitives' parameters, and the value for that parameter matches _this_ value, this argument is passed in.
+                    parameter_type: 'node.machine.', // The enforced type of whatever node object this argument would refer to.
                     is_list: true
                 },
                 {
@@ -1021,7 +1021,7 @@ let program = {
                     // gets expanded for each machine at runtime
                     type: 'node.primitive.machine-primitive.machine-initialize.',
                     uuid: 'machine-init-uuid-0',
-                    name: '',
+                    name: 'Initialize Machine',
                     deleteable: false,
                     editable: true,
                     description: '',
@@ -1032,7 +1032,7 @@ let program = {
                 {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-5',
-                    name: '',
+                    name: 'Reset Gripper',
                     editable: true,
                     deleteable: false,
                     description: '',
@@ -1047,7 +1047,7 @@ let program = {
                 {
                     type: 'node.primitive.move-unplanned.',
                     uuid: 'move-unplanned-uuid-0',
-                    name: '',
+                    name: 'Move Unplanned',
                     deleteable: false,
                     editable: true,
                     description: '',
@@ -1086,7 +1086,7 @@ let program = {
                 {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-6',
-                    name: '',
+                    name: 'Release',
                     editable: true,
                     deleteable: false,
                     description: '',
@@ -1126,7 +1126,7 @@ let program = {
                 {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-7',
-                    name: '',
+                    name: 'Grasp',
                     editable: true,
                     deleteable: false,
                     description: '',
@@ -1172,7 +1172,7 @@ let program = {
                     'machine-2-uuid',
                     /*etc.*/
                 ],
-                home_location_uuid: 'home-location-uuid'
+                home_location_uuid: 'location-js-5'
             }
         },
 

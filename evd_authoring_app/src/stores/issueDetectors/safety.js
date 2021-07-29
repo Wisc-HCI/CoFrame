@@ -1,4 +1,4 @@
-import { generateUuid } from "../generateUuid"
+// import { generateUuid } from "../generateUuid"
 
 export const findEndEffectorPoseIssues = (program) => { // Requires trace pose information
     let issues = {};
