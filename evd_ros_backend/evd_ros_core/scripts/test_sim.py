@@ -27,6 +27,10 @@ class TestSimNode:
         self._pybullet_js_pub = rospy.Publisher('pybullet/joints',JointState,queue_size=10)
 
     def spin(self):
+
+        self.ltk.reset()
+        self.pyb.reset()
+
         rate = rospy.Rate(1/self._config['pybullet']['timestep'])
         while not rospy.is_shutdown():
             
@@ -36,13 +40,21 @@ class TestSimNode:
             pose.orientation = Quaternion(0,0,0,1)
 
             # run model
-            lv_jMsg = self.ltk.step(pose)
+            lv_joints, lv_names, lv_frames = self.ltk.step(pose)
             #print('Lively Joint Msg:',lv_jMsg)
-            pb_jMsg = self.pyb.step(lv_jMsg)
+            pb_joints, pb_names, pb_frames = self.pyb.step(lv_joints, lv_names)
+            pb_collisions = self.pyb.collision()
             #print('Pybullet Joint Msg:',pb_jMsg)
 
             # Publish results
+            lv_jMsg = JointState()
+            lv_jMsg.name = lv_names
+            lv_jMsg.position = lv_joints
             self._lively_js_pub.publish(lv_jMsg)
+
+            pb_jMsg = JointState()
+            pb_jMsg.name = pb_names
+            pb_jMsg.position = pb_joints
             self._pybullet_js_pub.publish(pb_jMsg)
 
             rate.sleep()

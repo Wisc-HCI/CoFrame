@@ -4,6 +4,7 @@
 Mocked-up the expected interface between the javascript frontend and the ROS system.
 '''
 
+import time
 import json
 import rospy
 
@@ -29,7 +30,8 @@ class FakeFrontendNode:
 
         self._registration_pub = rospy.Publisher('{0}program/call_to_register'.format(prefix_fmt), Empty, queue_size=5)
         self._registration_sub = rospy.Subscriber('{0}program/register'.format(prefix_fmt), StringArray, self._program_register_cb)
-        self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5) #this is optional
+        self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5) #this is optional (I use it for visualization)
+        self._configure_processors = rospy.Publisher('{0}program/configure/processors'.format(prefix_fmt), String, queue_size=5) # This is a json obj of all nodes needed for trace processing
 
         self._issues_submit_sub = rospy.Subscriber('{0}program/submit/issue'.format(prefix_fmt), Issue, self._issue_submit_cb)
         self._issues_clear_sub = rospy.Subscriber('{0}program/clear/issue'.format(prefix_fmt), Issue, self._issue_clear_cb)
@@ -74,9 +76,21 @@ class FakeFrontendNode:
 
         self._registration_pub.publish(Empty()) #request registration
 
+        start = time.time()
         rate = rospy.Rate(self._rate)
         while not rospy.is_shutdown():
-            #TODO run frontend CLI
+            if start + 2.5 < time.time():
+
+                # We are simulating an update of the processors.
+                msg = String()
+                msg.data = json.dumps({
+                    'collision_meshes': [x.to_dct() for x in self._program.environment.collision_meshes],
+                    'pinch_points': [x.to_dct() for x in self._program.environment.pinch_points],
+                    'occupancy_zones': [x.to_dct() for x in self._program.environment.occupancy_zones]
+                })
+
+                self._configure_processors.publish(msg)
+
             rate.sleep()
 
 

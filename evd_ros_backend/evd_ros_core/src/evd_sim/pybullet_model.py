@@ -30,23 +30,22 @@ class PyBulletModel(object):
 
         print('\n\n\n\n',self.jointIds,'\n\n\n\n')   
 
-    def step(self, jMsg):
+    def step(self, joints, names):
 
         # Set each joints in pybullet
         for name, id in self.jointIds.items():
             index = -1
-            for i, n in enumerate(jMsg.name):
+            for i, n in enumerate(names):
                 if n == name:
                     index = i
                     break
 
             if index != -1:
-                val = jMsg.position[index]
                 pybullet.setJointMotorControl2(
                     self.robotId,
                     jointIndex=id,
                     controlMode=pybullet.POSITION_CONTROL, 
-                    targetPosition=val,
+                    targetPosition=joints[index],
                     maxVelocity=1000,
                     force=5 * 240.)
 

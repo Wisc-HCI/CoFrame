@@ -1,7 +1,6 @@
 
 import json
 
-from sensor_msgs.msg import JointState
 from lively_tk import ObjectiveInput, Solver, parse_config_data
 from datetime import datetime
 
@@ -32,6 +31,11 @@ class LivelyTKSolver(object):
 
         self.target_directions = _directions
 
+    def reset(self):
+        solver.reset(
+            self.config_data['starting_config'][0],
+            self.config_data['starting_config'][1])
+
     def step(self, pose):
         if self.solver == None:
             raise Exception('Solver not initialized')
@@ -46,15 +50,14 @@ class LivelyTKSolver(object):
             input_value.update(self.target_directions[idx])
             inputs.append(ObjectiveInput(**input_value))
 
-        base_tf, joints, _ = self.solver.solve(
+        names = self.config_data["joint_ordering"]
+        base_tf, joints, frames = self.solver.solve(
             inputs,
             datetime.utcnow().timestamp(),
             max_retries=0,
-            max_iterations=self.iterations)
+            max_iterations=self.iterations,
+            only_core=True,
+            return_frames=True)
 
-        msg = JointState()
-        msg.name = self.config_data["joint_ordering"]
-        msg.position = joints
-
-        return msg
+        return joints, names, frames
 
