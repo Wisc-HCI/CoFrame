@@ -4,7 +4,7 @@ import pybullet
 
 from sensor_msgs.msg import JointState
 
-
+ 
 class PyBulletModel(object):
     
     def __init__(self, urdf_path, config, gui=True):
@@ -28,7 +28,8 @@ class PyBulletModel(object):
             jointName = info[1].decode("utf-8") 
             self.jointIds[jointName] = j     
 
-        print('\n\n\n\n',self.jointIds,'\n\n\n\n')   
+    def reset(self):
+        pass #TODO
 
     def step(self, joints, names):
 
@@ -52,9 +53,11 @@ class PyBulletModel(object):
         # Run simulation
         pybullet.stepSimulation()
 
-        # Read current joint state
-        msg = JointState()
-        return msg
+        # (joints, names), (frames, names)
+        return ([], []), (None, None)
+
+    def collision(self):
+        return None #TODO
 
     def cleanup(self):
         pybullet.disconnect()

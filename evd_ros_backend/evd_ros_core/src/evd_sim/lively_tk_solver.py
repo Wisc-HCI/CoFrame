@@ -3,11 +3,14 @@ import json
 
 from lively_tk import ObjectiveInput, Solver, parse_config_data
 from datetime import datetime
+from geometry_msgs.msg import Pose
 
 
 class LivelyTKSolver(object):
     
-    def __init__(self, config_file_path):
+    def __init__(self, config_file_path, return_frames=True):
+        self._returnFrames = return_frames
+
         # Load config file
         with open(config_file_path) as f:
             self.config_data = json.load(f)
@@ -32,7 +35,7 @@ class LivelyTKSolver(object):
         self.target_directions = _directions
 
     def reset(self):
-        solver.reset(
+        self.solver.reset(
             self.config_data['starting_config'][0],
             self.config_data['starting_config'][1])
 
@@ -50,14 +53,34 @@ class LivelyTKSolver(object):
             input_value.update(self.target_directions[idx])
             inputs.append(ObjectiveInput(**input_value))
 
-        names = self.config_data["joint_ordering"]
+        jNames = self.config_data["joint_ordering"]
+        fNames = self.config_data["joint_names"][0] + [self.config_data["ee_fixed_joints"][0]]
+        
         base_tf, joints, frames = self.solver.solve(
             inputs,
             datetime.utcnow().timestamp(),
             max_retries=0,
             max_iterations=self.iterations,
             only_core=True,
-            return_frames=True)
+            return_frames=self._returnFrames)
 
-        return joints, names, frames
+        return (joints, jNames), (frames, fNames)
 
+    @classmethod
+    def get_ee_pose(cls, frames):
+        pose = Pose()
+
+        pos, rot = frames[0][-1]
+
+        (x,y,z) = pos
+        pose.position.x = x
+        pose.position.y = y
+        pose.position.z = z
+
+        (w,x,y,z) = rot
+        pose.orientation.w = w
+        pose.orientation.x = x
+        pose.orientation.y = y
+        pose.orientation.z = z
+
+        return pose
