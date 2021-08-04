@@ -13,9 +13,9 @@ const store = (set,get) => ({
             collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl",
             name: "Table",
             frame: "world",
-            position: { x: 0, y: 0, z: -0.37 }, 
+            position: { x: 0, y: 0.36, z: -0.37 },
             rotation: { w: 1, x: 0, y: 0, z: 0 },
-            color: {r: 10, g: 10, b: 10, a: 1},
+            color: {r: 40, g: 40, b: 40, a: 1},
             showCollision: false,
             highlighted: false,
             scale: {x:1,y:1,z:1}
@@ -25,9 +25,9 @@ const store = (set,get) => ({
             collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl",
             name: "Pedestal",
             frame: "world",
-            position: { x: 0, y: 0, z: 0 },
+            position: { x: 0, y: 0, z: -0.38 },
             rotation: { w: 1, x: 0, y: 0, z: 0 },
-            color: {r: 7, g: 7, b: 7, a: 1},
+            color: {r: 50, g: 50, b: 50, a: 1},
             showCollison: false,
             highlighted: false,
             scale: {x:1,y:1,z:1}
@@ -37,7 +37,7 @@ const store = (set,get) => ({
             collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl",
             name: "Box",
             frame: "world",
-            position: { x: 0.35, y: 0.415, z: -0.3 },
+            position: { x: 0.35, y: 0.35, z: 0.07 },
             rotation: { w: 1, x: 0, y: 0, z: 0 },
             showCollison: false,
             highlighted: false,
@@ -48,11 +48,11 @@ const store = (set,get) => ({
             collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
             name: "3D Printer",
             frame: "world",
-            position: { x: -0.28, y: 0.68, z: -0.35 },   
+            position: { x: -0.28, y: 0.32, z: 0.3 },
             rotation: { w: 1, x: 0, y: 0, z: 0 },
             showCollison: false,
             highlighted: true,
-            scale: {x:0.1,y:0.1,z:0.1}
+            scale: {x:1,y:1,z:1}
         }
     },
     robot: {},
@@ -69,10 +69,10 @@ const store = (set,get) => ({
                     rotation: item.rotation,
                     color: item.color,
                     scale: item.scale,
-                    editMode: 'inactive',
+                    transformMode: 'inactive',
                     highlighted: item.highlighted,
                     onClick: () => {console.log(itemKey)},
-                    onTransform: (transform) => {console.log(transform)}
+                    onMove: (transform) => {console.log(transform)}
                 };
                 if (item.showCollision) {
                     items[itemKey+'-collision'] = {
@@ -83,23 +83,14 @@ const store = (set,get) => ({
                         rotation: item.rotation,
                         scale: { x: 1, y: 1, z: 1 },
                         color: {r: 250, g: 50, b: 50, a: 0.5},
-                        editMode: 'inactive',
+                        transformMode: 'inactive',
                         highlighted: false,
                         onClick: () => {console.log(itemKey)},
-                        onTransform: (transform) => {console.log(transform)}
+                        onMove: (transform) => {console.log(transform)}
                     };
                 }
             })
         console.log(items);
-        useSceneStore.getState().setTfs(
-            {
-                world: {
-                    name: 'world',
-                    translation: { x: 0, y: 0, z: 0 },
-                    rotation: { w: 1, x: 0, y: 0, z: 0 }
-                }
-            }
-        );
         useSceneStore.getState().setItems(items);
         useSceneStore.getState().clearLines();
     }),
