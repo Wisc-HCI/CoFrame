@@ -29,7 +29,7 @@ export const SimulatorTile = (props) => {
                             backgroundColor='#1e1e1e'
                             planeColor='#141414'
                             highlightColor={frameStyles.colors[frame]}
-                            plane={-0.36}
+                            plane={-0.75}
                         />
 
                     </div>
