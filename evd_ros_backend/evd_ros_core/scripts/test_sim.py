@@ -34,8 +34,8 @@ class TestSimNode:
 
     def spin(self):
 
-        self.ltk.reset()
-        self.pyb.reset()
+        defaultJs, names = self.ltk.reset()
+        self.pyb.set_joints(defaultJs, names)
 
         velocity = 0.05
 
@@ -64,7 +64,7 @@ class TestSimNode:
             self.jsf.append(lv_joints[0])
 
             pb_joints, pb_frames = self.pyb.step(lv_joints[0], lv_joints[1])
-            pb_collisions = self.pyb.collision()
+            pb_collisions = self.pyb.collisionCheck()
 
             # Publish results
             lv_jMsg = JointState()
@@ -73,8 +73,9 @@ class TestSimNode:
             self._lively_js_pub.publish(lv_jMsg)
 
             pb_jMsg = JointState()
-            pb_jMsg.name = pb_joints[1]
+            pb_jMsg.name = pb_joints[2]
             pb_jMsg.position = pb_joints[0]
+            pb_jMsg.velocity = pb_joints[1]
             self._pybullet_js_pub.publish(pb_jMsg)
 
             rate.sleep()

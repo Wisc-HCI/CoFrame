@@ -23,13 +23,31 @@ class PyBulletModel(object):
 
         self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True, flags=flags)
         self.jointIds = {}
+        self.linkIds = {}
         for j in range(pybullet.getNumJoints(self.robotId)):
             info = pybullet.getJointInfo(self.robotId, j)
+            
+            print(info)
+            
             jointName = info[1].decode("utf-8") 
-            self.jointIds[jointName] = j     
+            linkName = info[12].decode("utf-8")
+            self.jointIds[jointName] = j 
+            self.linkIds[linkName] = j   
 
-    def reset(self):
-        pass #TODO
+    def set_joints(self, joints, names):
+        for name, id in self.jointIds.items():
+            index = -1
+            for i, n in enumerate(names):
+                if n == name:
+                    index = i
+                    break
+
+            if index != -1:
+                pybullet.resetJointState(
+                    self.robotId,
+                    jointIndex=id,
+                    targetValue=joints[index],
+                    targetVelocity=0)
 
     def step(self, joints, names):
 
@@ -52,11 +70,48 @@ class PyBulletModel(object):
 
         # Run simulation
         pybullet.stepSimulation()
+  
+        # (jointPositions, jointVelocities, names), (frames, names)
+        return self.readJointState(names), self.readFrames()
 
-        # (joints, names), (frames, names)
-        return ([], []), (None, None)
+    def readJointState(self, names):
+        jointPositions = [0] * len(names)
+        jointVelocities = [0] * len(names)
+        for name, id in self.jointIds.items():
+            index = -1
+            for i, n in enumerate(names):
+                if n == name:
+                    index = i
+                    break
 
-    def collision(self):
+            if index != -1:
+                pos, vel, _, _ = pybullet.getJointState(
+                    self.robotId,
+                    jointIndex=id)
+
+                jointPositions[index] = pos
+                jointVelocities[index] = vel
+
+        return (jointPositions, jointVelocities, names)
+
+    def readFrames(self):
+
+        frames = []
+        names = []
+        for name, id in self.linkIds.items():
+            info = pybullet.getLinkState(
+                self.robotId,
+                linkIndex=id)
+
+            pos = info[2]
+            rot = info[3]
+
+            names.append(name)
+            frames.append((pos, rot))
+
+        return (frames, names)
+
+    def collisionCheck(self):
         return None #TODO
 
     def cleanup(self):

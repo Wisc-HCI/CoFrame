@@ -38,6 +38,12 @@ class LivelyTKSolver(object):
         self.solver.reset(
             self.config_data['starting_config'][0],
             self.config_data['starting_config'][1])
+        return self.config_data['starting_config'][1], self.config_data["joint_ordering"]
+
+    def set_joints(self, joints):
+        self.solver.reset(
+            self.config_data['starting_config'][0],
+            joints)
 
     def step(self, pose):
         if self.solver == None:
