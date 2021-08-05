@@ -990,16 +990,15 @@ let program = {
             editable: false,
             deleteable: false,
             parameters: {},
-            arguments: [ // did I spell arguments
+            arguments: [ 
                 {
                     type: 'node.skill-argument.',
                     name: 'machine_uuids', // Human-readable name for this variable
-                    uuid: 'skill-arg-uuid-0',
+                    uuid: 'skill-arg-uuid-0', // Use this value as the parameter key in the skill-call that calls this skill.
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'machine_uuid', // Backend-relevant code, indicates what fields this argument _can possibly_ fill.
-                    temporary_value: '<<arbitrary-value-0>>', // If the key matches in any of the children primitives' parameters, and the value for that parameter matches _this_ value, this argument is passed in.
+                    temporary_value: '<<arbitrary-value-0>>', // If this shows up in the parameter lookups of any of the children primitives, replace that value with the value retrieved from argument passing
                     parameter_type: 'node.machine.', // The enforced type of whatever node object this argument would refer to.
                     is_list: true
                 },
