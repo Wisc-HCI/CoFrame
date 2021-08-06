@@ -19,11 +19,10 @@ export const ParameterZone = ({itemType,displayText,acceptTypes,onDrop,onRemove,
     })
 
     const containerStyle = {
-        backgroundColor: 'grey',
-        boxShadow:'inset 0pt 0pt 2pt 1pt rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 5,
         minWidth: 20,
-        minHeight:25,
+        minHeight:27,
         padding:3,
         textAlign:'center'
     }

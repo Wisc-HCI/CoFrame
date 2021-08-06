@@ -11,7 +11,7 @@ export function ItemDraggable({id, itemType, ancestors}) {
 
   const Child = childLookup[itemType];
 
-  const [{opacity}, drag] = useDrag(()=>({
+  const [{opacity}, drag, preview] = useDrag(()=>({
     type: data.type,
     item: data,
     collect: monitor => ({
@@ -21,5 +21,5 @@ export function ItemDraggable({id, itemType, ancestors}) {
 
   drag(ref)
   
-  return data ? <Child ref={ref} style={{opacity}} data={data} ancestors={ancestors}/> : null
+  return data ? <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors}/> : null
 }

@@ -2,6 +2,7 @@ import create from "zustand";
 import produce from "immer";
 import fakeEvdData from './fakeEvdData';
 import { flattenProgram, unFlattenProgramPrimitives, unFlattenProgramSkills } from './helpers';
+import lodash from 'lodash';
 
 const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
@@ -26,7 +27,7 @@ const store = (set,get) => ({
     uuid: 'program',
     type: 'node.primitive.hierarchical.program.',
     description: 'Default Program Description',
-    transform: {x:100,y:100},
+    transform: {x:2,y:2},
     data: {
       //TODO store other data
       gradeTypes: {},
@@ -93,7 +94,8 @@ const store = (set,get) => ({
         get().addItem('primitive',primitive)
       });
       flattenedSkills.forEach((skill,idx)=>{
-        get().addItem('skill',{...skill,transform:{x:100,y:100+idx*20}})
+
+        get().addItem('skill',{...skill,transform:{x:2+idx*4,y:2+idx*10}})
       });
       program.primitives.forEach((primitive)=>{
         get().addChildPrimitive(primitive, program.uuid)
@@ -153,8 +155,33 @@ const store = (set,get) => ({
       } else {
         state.data[typeToKey(type)][uuid].primitiveIds = state.data[typeToKey(type)][uuid].primitiveIds.filter(id=>id!==primitiveId)
       }
+      if (state.data.primitives[primitiveId].type === 'node.primitive.move-trajectory.' && state.data.primitives[primitiveId].parameters.trajectory_uuid) {
+        delete state.data.trajectories[state.data.primitives[primitiveId].parameters.trajectory_uuid]
+      }
       delete state.data.primitives[primitiveId];
     }),
+    deleteHierarchical: (hierarchical) => {
+      // First, clean out all the contents recursively
+      hierarchical.primitiveIds.forEach(id=>{
+        if (get().data.primitives[id].type.includes('hierarchical')) {
+          get().deleteHierarchical(get().data.primitives[id])
+        } else {
+          get().deleteChildPrimitive(id)
+        }
+      })
+      // If a skill, go through and delete all calls using this skill.
+      if (hierarchical.type === 'node.primitive.hierarchical.skill.') {
+        Object.values(get().data.primitives).forEach(primitive=>{
+          if (primitive.type === 'node.primitive.skill-call' && primitive.parameters.skill_uuid) {
+            get().deleteChildPrimitive(primitive.uuid)
+          }
+        })
+        get().deleteItem('skill',hierarchical.uuid)
+      } else { 
+        get().deleteItem('primitive',hierarchical.uuid)
+      }
+      
+    },
     moveChildPrimitive: (primitive, parentId, index) => set((state)=>{
       if (!state.data.primitives[primitive.uuid]) {
         state.data.primitives[primitive.uuid] = primitive;
@@ -215,6 +242,11 @@ const store = (set,get) => ({
       } else if (type==='skill') {
         state.data[typeToKey(type)][uuid].transform.x += x;
         state.data[typeToKey(type)][uuid].transform.y += y;
+      }
+    }),
+    createAndPlaceItem: (type,item,x,y) => set((state)=>{
+      if (type==='skill') {
+        state.data[typeToKey(type)][item.uuid] = lodash.omit({...item,transform:{x,y}},'parentData');
       }
     })
 });

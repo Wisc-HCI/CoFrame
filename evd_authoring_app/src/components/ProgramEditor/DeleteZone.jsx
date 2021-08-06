@@ -9,15 +9,20 @@ export const DeleteZone = (_) => {
 
     const acceptTypes = acceptLookup.trash.all.accepts;
 
-    const deleteChildPrimitive = useEvdStore(state=>state.deleteChildPrimitive);
+    const [deleteChildPrimitive,deleteHierarchical] = useEvdStore(state=>[state.deleteChildPrimitive,state.deleteHierarchical]);
 
     const [{isOver, canDrop}, drop] = useDrop({
         accept: acceptTypes,
         drop: (item, _) => {
             console.log(item)
-            if (item.type.includes('primitive')) {
+            if (item.type.includes('hierarchical')) {
+                console.log('deleting hierarchical')
+                deleteHierarchical(item)
+            } else if (item.type.includes('primitive')) {
                 console.log('deleting primitive')
                 deleteChildPrimitive(item.uuid)
+            } else {
+                console.log(`item type ${item.type} not recognized`)
             }
         },
         canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0 && item.deleteable),
