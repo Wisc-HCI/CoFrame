@@ -40,6 +40,7 @@ export const Canvas = () => {
             } else if (item.type === 'node.primitive.hierarchical.skill.' && item.parentData) {
                 const offset = monitor.getClientOffset();
                 const rect = ref.current.getBoundingClientRect();
+                console.log(rect)
 
                 createAndPlaceItem('skill',item,offset.x-rect.x,offset.y-rect.y)
             } else if (item.type === 'node.primitive.hierarchical.skill.') {
@@ -54,9 +55,9 @@ export const Canvas = () => {
 
     return (
         <Grid ref={drop(ref)} onClick={clearFocusItem} >
-            <ProgramBlock ancestors={ancestors}/>
+            <ProgramBlock ancestors={ancestors}></ProgramBlock>
             {Object.keys(skills).map(uuid=>(
-                <ItemDraggable key={uuid} id={uuid} itemType='skill' data={skills[uuid]} ancestors={ancestors} />
+                <ItemDraggable key={uuid} id={uuid} itemType='skill' data={skills[uuid]} ancestors={ancestors}></ItemDraggable>
             ))}
         </Grid>
     )

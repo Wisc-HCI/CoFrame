@@ -27,7 +27,7 @@ const store = (set,get) => ({
     uuid: 'program',
     type: 'node.primitive.hierarchical.program.',
     description: 'Default Program Description',
-    transform: {x:2,y:2},
+    transform: {x:10,y:10},
     data: {
       //TODO store other data
       gradeTypes: {},
@@ -94,8 +94,7 @@ const store = (set,get) => ({
         get().addItem('primitive',primitive)
       });
       flattenedSkills.forEach((skill,idx)=>{
-
-        get().addItem('skill',{...skill,transform:{x:2+idx*4,y:2+idx*10}})
+        get().addItem('skill',{...skill,transform:{x:310+idx*300,y:10}})
       });
       program.primitives.forEach((primitive)=>{
         get().addChildPrimitive(primitive, program.uuid)
@@ -239,6 +238,7 @@ const store = (set,get) => ({
       if (type==='program') {
         state.transform.x += x;
         state.transform.y += y;
+        console.log(state.transform)
       } else if (type==='skill') {
         state.data[typeToKey(type)][uuid].transform.x += x;
         state.data[typeToKey(type)][uuid].transform.y += y;

@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react';
-import { Row, Button } from 'antd';
+import { Col, Row, Button } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons';
 import { ItemSortable } from './Wrappers';
 import useGuiStore from '../../stores/GuiStore';
@@ -33,7 +33,10 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview}, ref) => {
 
     const dragBlockStyles = {
         display:'inline-block',
-        transform:`translate3d(${data.transform.x}px,${data.transform.y}px,0)`,
+        position: ancestors[0].uuid == 'drawer' ? 'relative' : 'absolute',
+        // transform:`translate3d(${data.transform.x}px,${data.transform.y}px,0)`,
+        left:data.transform.x,
+        top:data.transform.y,
         backgroundColor:
           blockStyles['node.primitive.hierarchical.skill.'],
         minHeight: 30,
@@ -41,25 +44,26 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview}, ref) => {
         borderRadius: 3,
         margin: 4,
         padding: 5,
-        position: 'relative',
         zIndex: focused ? 100 : 1
     };
 
+    console.log(`${data.name} ${data.transform.x} ${data.transform.y}`)
+
     return (
         <div ref={preview} style={{...style,...dragBlockStyles}} className={focused?`focus-${frame}`:null}>
-            <Row ref={ref} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-                <span>
+            <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
+                <Col ref={ref} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4}}>
                     <Icon style={{marginLeft:4}} component={ContainerIcon} />{' '}{data.name}
-                </span>
-                <span style={{marginLeft:15}}>
+                </Col>
+                <Col span={6} offset={1}>
                     {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
                     <Button
                         type='text'
                         style={{marginLeft:2}}
-                        onClick={() => setFocusItem('skill', data.uuid)}
+                        onClick={(e) => {e.stopPropagation();setFocusItem('skill', data.uuid)}}
                         icon={<EllipsisOutlined />}
                     />
-                </span>
+                </Col>
             </Row>
             <div style={primitiveBinStyle}>
                 {data.primitiveIds.map((id,idx)=>(

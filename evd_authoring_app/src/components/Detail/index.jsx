@@ -30,11 +30,8 @@ export const Detail = (_) => {
       secondaryFocusItem : state.secondaryFocusItem
     }))
 
-
-
-
     const {item} = useEvdStore(useCallback(state=>({
-        item:focusItem.type ? state.data[focusItem.type+'s'][focusItem.uuid] : null
+        item:focusItem.type && focusItem.type !== 'program' ? state.data[focusItem.type+'s'][focusItem.uuid] : null
     }),[focusItem]))
 
     let {childItem} = useEvdStore(useCallback(state=>({

@@ -42,6 +42,7 @@ export const DeleteZone = (_) => {
     const styles = {
         backgroundColor: '#a61d24',
         width,
+        zIndex: 100,
         position: 'absolute',
         right:30,
         bottom:30,

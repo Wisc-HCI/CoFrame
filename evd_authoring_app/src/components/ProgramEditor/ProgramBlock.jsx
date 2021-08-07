@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Button } from 'antd';
+import { Col, Row, Button } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useDrag } from 'react-dnd';
 import { ItemSortable } from './Wrappers';
@@ -52,7 +52,10 @@ export const ProgramBlock = (props) => {
 
     const dragBlockStyles = {
         display:'inline-block',
-        transform:`translate3d(${transform.x}px,${transform.y}px,0)`,
+        position:'absolute',
+        // transform:`translate3d(${transform.x}px,${transform.y}px,0)`,
+        left:transform.x,
+        top:transform.y,
         opacity: isDragging ? 0.4 : 1,
         backgroundColor:
           blockStyles['node.primitive.hierarchical.program.'],
@@ -61,25 +64,26 @@ export const ProgramBlock = (props) => {
         borderRadius: 3,
         margin: 4,
         padding: 5,
-        //position: 'relative',
         zIndex: focused ? 100 : 1
     };
 
+    console.log(`program ${transform.x} ${transform.y}`)
+
     return (
         <div ref={preview} {...props} style={dragBlockStyles} className={focused?`focus-${frame}`:null}>
-            <Row ref={drag} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-                <span>
+            <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
+                <Col ref={drag} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4}}>
                     <Icon style={{marginLeft:4}} component={ContainerIcon} />{' '}{name}
-                </span>
-                <span style={{marginLeft:15}}>
+                </Col>
+                <Col span={6} offset={1}>
                     <UnlockOutlined/>
                     <Button
                         type='text'
                         style={{marginLeft:2}}
-                        onClick={() => setFocusItem('program', uuid)}
+                        onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}
                         icon={<EllipsisOutlined />}
                     />
-                </span>
+                </Col>
             </Row>
             <NodeZone
               ancestors={ancestors}
