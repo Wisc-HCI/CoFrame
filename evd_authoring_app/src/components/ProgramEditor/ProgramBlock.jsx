@@ -53,7 +53,6 @@ export const ProgramBlock = (props) => {
     const dragBlockStyles = {
         display:'inline-block',
         position:'absolute',
-        // transform:`translate3d(${transform.x}px,${transform.y}px,0)`,
         left:transform.x,
         top:transform.y,
         opacity: isDragging ? 0.4 : 1,
@@ -66,8 +65,6 @@ export const ProgramBlock = (props) => {
         padding: 5,
         zIndex: focused ? 100 : 1
     };
-
-    console.log(`program ${transform.x} ${transform.y}`)
 
     return (
         <div ref={preview} {...props} style={dragBlockStyles} className={focused?`focus-${frame}`:null}>

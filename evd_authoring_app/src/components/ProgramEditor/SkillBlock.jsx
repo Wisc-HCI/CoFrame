@@ -34,7 +34,6 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview}, ref) => {
     const dragBlockStyles = {
         display:'inline-block',
         position: ancestors[0].uuid == 'drawer' ? 'relative' : 'absolute',
-        // transform:`translate3d(${data.transform.x}px,${data.transform.y}px,0)`,
         left:data.transform.x,
         top:data.transform.y,
         backgroundColor:
@@ -46,8 +45,6 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview}, ref) => {
         padding: 5,
         zIndex: focused ? 100 : 1
     };
-
-    console.log(`${data.name} ${data.transform.x} ${data.transform.y}`)
 
     return (
         <div ref={preview} style={{...style,...dragBlockStyles}} className={focused?`focus-${frame}`:null}>
