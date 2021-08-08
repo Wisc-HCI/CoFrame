@@ -4,8 +4,6 @@ import tf
 import json
 import rospy
 
-from evd_ros_core.evd_script import *
-
 from visualization_msgs.msg import *
 from interactive_markers.menu_handler import *
 from interactive_markers.interactive_marker_server import *
@@ -43,20 +41,25 @@ class LocationPlotter:
             'path': []
         }
 
-        file = open(self._filepath,'w')
+        if self._filepath != None:
+            file = open(self._filepath,'w')
 
         try:
             while not rospy.is_shutdown():
-                inStr = raw_input('Press enter to capture pose (or press q to quit)')
-                if inStr.lower() == 'q':
-                    break
-                (pos, rot) = self._listener.lookupTransform(self._base_frame, self._ee_frame, rospy.Time(0))
-                data['path'].append({'position': pos, 'orientation': rot})
+                if self._filepath != None:
+                    inStr = raw_input('Press enter to capture pose (or press q to quit)')
+                    if inStr.lower() == 'q':
+                        break
+                    (pos, rot) = self._listener.lookupTransform(self._base_frame, self._ee_frame, rospy.Time(0))
+                    data['path'].append({'position': pos, 'orientation': rot})
+                else:
+                    pass
         except:
             pass
 
-        json.dump(data, file, indent=4)
-        file.close()
+        if self._filepath != None:
+            json.dump(data, file, indent=4)
+            file.close()
 
     def _make_marker(self):
         loc = Location()
@@ -136,7 +139,7 @@ class LocationPlotter:
 if __name__ == "__main__":
     rospy.init_node('location_plotter')
 
-    filepath = rospy.get_param('~filepath')
+    filepath = rospy.get_param('~filepath',None)
     base_frame = rospy.get_param('~base_frame',DEFAULT_BASE_FRAME)
     ee_frame = rospy.get_param('~ee_frame',DEFAULT_EE_FRAME)
 

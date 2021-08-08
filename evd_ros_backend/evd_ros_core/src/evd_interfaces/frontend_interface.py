@@ -20,7 +20,7 @@ from evd_ros_core.msg import Job, Issue, StringArray
 class FrontendInterface:
 
     def __init__(self, prefix='', use_update=False, use_registration=False, use_issues=False,
-                 update_cb=None, register_cb=None):
+                 update_cb=None, register_cb=None, use_processor_configure=False, processor_configure_cb=None):
         self._prefix = prefix
         prefix_fmt = prefix + '/' if prefix != '' else prefix
         self._should_register = False
@@ -28,6 +28,7 @@ class FrontendInterface:
 
         self._user_update_cb = update_cb
         self._user_register_cb = register_cb
+        self._user_processor_config_cb = processor_configure_cb
 
         if use_registration:
             self._registration_sub = rospy.Subscriber('{0}program/call_to_register'.format(prefix_fmt), Empty, self._register_cb)
@@ -48,6 +49,9 @@ class FrontendInterface:
             self._issues_submit_pub = None
             self._issues_clear_pub = None
 
+        if use_processor_configure:
+            self._configure_processors = rospy.Subscriber('{0}program/configure/processors'.format(prefix_fmt), String, self._processor_configure_cb)
+
     def _update_cb(self, msg):
         if self._user_update_cb != None:
 
@@ -65,6 +69,15 @@ class FrontendInterface:
 
     def _jobs_clear_cb(self, job_type, msg):
         self._job_providers[job_type]['user_clear_cb'](msg.id)
+
+    def _processor_configure_cb(self, msg):
+        if self._user_processor_config_cb != None:
+            dct = json.loads(msg.data)
+
+            #TODO convert dct into the node represntation.
+            data = dct
+
+            self._user_processor_config_cb(data)
 
     @property
     def should_register(self):
