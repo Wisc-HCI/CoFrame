@@ -833,13 +833,15 @@ let program = {
             arguments: [
                 {
                     type: 'node.skill-argument.',
-                    name: 'machine_uuid',
-                    uuid: 'skill-arg-uuid-0',
+                    // The human-readable name of this argument
+                    name: 'This Machine',
+                    // If the uuid is found in any fields for the children primitives' parameters, replace it with the corresponding value. 
+                    // This also serves as the key for any corresponding skill-call's parameters.
+                    uuid: 'skill-arg-uuid-0', 
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'machine_uuid',
-                    temporary_value: '<<arbitrary-value-0>>',
+                    // The type of the argument
                     parameter_type: 'node.machine.',
                     is_list: false
                 }
@@ -853,7 +855,7 @@ let program = {
                     deleteable: false,
                     description: '',
                     parameters: {
-                        machine_uuid: '<<arbitrary-value-0>>'
+                        machine_uuid: 'skill-arg-uuid-0'
                     }
                 },
                 {
@@ -864,7 +866,7 @@ let program = {
                     deleteable: false,
                     description: '',
                     parameters: {
-                        machine_uuid: '<<arbitrary-value-0>>'
+                        machine_uuid: 'skill-arg-uuid-0'
                     }
                 },
                 {
@@ -875,7 +877,7 @@ let program = {
                     deleteable: false,
                     description: '',
                     parameters: {
-                        machine_uuid: '<<arbitrary-value-0>>'
+                        machine_uuid: 'skill-arg-uuid-0'
                     }
                 },
             ]
@@ -891,37 +893,31 @@ let program = {
             arguments: [
                 {
                     type: 'node.skill-argument.',
-                    name: 'pick_trajectory',
-                    uuid: 'some-uuid',
+                    name: 'Pick Trajectory',
+                    uuid: 'skill-arg-uuid-1',
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'trajectory_uuid',
-                    temporary_value: '<<arg-pick-traj>>',
                     parameter_type: 'node.trajectory.',
                     is_list: false
                 },
                 {
                     type: 'node.skill-argument.',
-                    name: 'place_trajectory',
-                    uuid: 'some-uuid',
+                    name: 'Place Trajectory',
+                    uuid: 'skill-arg-uuid-2',
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'trajectory_uuid',
-                    temporary_value: '<<arg-place-traj>>',
                     parameter_type: 'node.trajectory.',
                     is_list: false
                 },
                 {
                     type: 'node.skill-argument.',
-                    name: 'thing_uuid',
-                    uuid: 'some-uuid',
+                    name: 'Thing to Pick',
+                    uuid: 'skill-arg-uuid-3',
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'thing_uuid',
-                    temporary_value: '<<arg-thing>>',
                     parameter_type: 'node.pose.thing.',
                     is_list: false
                 }
@@ -936,7 +932,7 @@ let program = {
                     description: '',
                     parameters: {
                         manual_safety: false,
-                        trajectory_uuid: '<<arg-pick-traj>>'
+                        trajectory_uuid: 'skill-arg-uuid-1'
                     }
                 },
                 {
@@ -951,7 +947,7 @@ let program = {
                         speed: 1,
                         effort: 1,
                         semantic: 'grasping',
-                        thing_uuid: '<<arg-thing>>'
+                        thing_uuid: 'skill-arg-uuid-3'
                     }
                 },
                 {
@@ -963,7 +959,7 @@ let program = {
                     description: '',
                     parameters: {
                         manual_safety: false,
-                        trajectory_uuid: '<<arg-place-traj>>'
+                        trajectory_uuid: 'skill-arg-uuid-2'
                     }
                 },
                 {
@@ -978,7 +974,7 @@ let program = {
                         speed: 1,
                         effort: 1,
                         semantic: 'releasing',
-                        thing_uuid: '<<arg-thing>>'
+                        thing_uuid: 'skill-arg-uuid-3'
                     }
                 }
             ]
@@ -993,24 +989,21 @@ let program = {
             arguments: [ 
                 {
                     type: 'node.skill-argument.',
-                    name: 'machine_uuids', // Human-readable name for this variable
-                    uuid: 'skill-arg-uuid-0', // Use this value as the parameter key in the skill-call that calls this skill.
+                    name: 'This Machine', // Human-readable name for this variable
+                    uuid: 'skill-arg-uuid-4', // Use this value as the parameter key in the skill-call that calls this skill.
                     editable: false,
                     deleteable: false,
                     description: '',
-                    temporary_value: '<<arbitrary-value-0>>', // If this shows up in the parameter lookups of any of the children primitives, replace that value with the value retrieved from argument passing
                     parameter_type: 'node.machine.', // The enforced type of whatever node object this argument would refer to.
-                    is_list: true
+                    is_list: false
                 },
                 {
                     type: 'node.skill-argument.',
-                    name: 'home_location_uuid',
-                    uuid: 'skill-arg-uuid-1',
+                    name: 'Starting Location',
+                    uuid: 'skill-arg-uuid-5',
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'location_uuid',
-                    temporary_value: '<<home-location>>',
                     parameter_type: 'node.pose.waypoint.location.',
                     is_list: false
                 }
@@ -1025,7 +1018,7 @@ let program = {
                     editable: true,
                     description: '',
                     parameters: {
-                        machine_uuid: '<<arbitrary-value-0>>'
+                        machine_uuid: 'skill-arg-uuid-4'
                     }
                 },
                 {
@@ -1054,7 +1047,7 @@ let program = {
                         manual_safety: false,
                         velocity: 1,
                         move_type: 'joint',
-                        location_uuid: '<<home-location>>'
+                        location_uuid: 'skill-arg-uuid-5'
                     }
                 }
             ]
@@ -1062,7 +1055,7 @@ let program = {
         {
             type: 'node.primitive.hierarchical.skill.',
             uuid: 'open-gripper-skill-uuid',
-            name: 'Open Gripper',
+            name: 'Release',
             editable: false,
             deleteable: false,
             description: '',
@@ -1070,13 +1063,11 @@ let program = {
             arguments: [
                 {
                     type: 'node.skill-argument.',
-                    uuid: 'some-uuid',
-                    name: 'thing_uuid',
+                    uuid: 'skill-arg-uuid-6',
+                    name: 'Thing to Release',
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'thing_uuid',
-                    temporary_value: '<<temp-thing>>',
                     parameter_type: 'node.pose.thing.',
                     is_list: false
                 }
@@ -1085,7 +1076,7 @@ let program = {
                 {
                     type: 'node.primitive.gripper.',
                     uuid: 'gripper-grasp-uuid-6',
-                    name: 'Release',
+                    name: 'Open Gripper',
                     editable: true,
                     deleteable: false,
                     description: '',
@@ -1094,7 +1085,7 @@ let program = {
                         speed: 1,
                         effort: 1,
                         semantic: 'releasing',
-                        thing_uuid: '<<temp-thing>>'
+                        thing_uuid: 'skill-arg-uuid-6'
                     }
                 }
             ]
@@ -1110,13 +1101,11 @@ let program = {
             arguments: [
                 {
                     type: 'node.skill-argument.',
-                    uuid: 'some-uuid',
-                    name: 'thing_uuid',
+                    uuid: 'skill-arg-uuid-7',
+                    name: 'Thing to Grasp',
                     editable: false,
                     deleteable: false,
                     description: '',
-                    parameter_key: 'thing_uuid',
-                    temporary_value: '<<temp-thing>>',
                     parameter_type: 'node.pose.thing.',
                     is_list: false
                 }
@@ -1134,7 +1123,7 @@ let program = {
                         speed: 1,
                         effort: 1,
                         semantic: 'grasping',
-                        thing_uuid: '<<temp-thing>>'
+                        thing_uuid: 'skill-arg-uuid-7'
                     }
                 }
             ]
@@ -1199,7 +1188,7 @@ let program = {
                 speed: 1,
                 effort: 1,
                 semantic: 'grasping',
-                thing_uuid: 'uuid'
+                thing_uuid: 'placeholder-js-0'
             }
         },
         {
@@ -1226,7 +1215,7 @@ let program = {
                 speed: 1,
                 effort: 1,
                 semantic: 'releasing',
-                thing_uuid: 'uuid'
+                thing_uuid: 'placeholder-js-0'
             }
         }
 

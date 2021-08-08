@@ -89,7 +89,7 @@ export const ProgramBlock = (props) => {
               enabled={true}
             >
                 {primitiveIds.map((id,idx)=>(
-                    <ItemSortable key={id} id={id} idx={idx} ancestors={ancestors} itemType='primitive'/>
+                    <ItemSortable key={id} id={id} idx={idx} ancestors={ancestors} itemType='primitive' context={props.context} />
                 ))}
             </NodeZone>
         </div>

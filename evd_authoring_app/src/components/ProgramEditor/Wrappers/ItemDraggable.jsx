@@ -3,7 +3,7 @@ import { useDrag } from 'react-dnd';
 import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
 import {childLookup} from './childLookup';
 
-export function ItemDraggable({id, itemType, ancestors}) {
+export function ItemDraggable({id, itemType, ancestors, context}) {
 
   const ref = useRef(null);
 
@@ -21,5 +21,5 @@ export function ItemDraggable({id, itemType, ancestors}) {
 
   drag(ref)
   
-  return data ? <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors}/> : null
+  return data ? <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors} context={context}/> : null
 }

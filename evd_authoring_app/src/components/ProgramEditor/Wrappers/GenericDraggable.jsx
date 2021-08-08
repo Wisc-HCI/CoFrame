@@ -18,5 +18,5 @@ export function GenericDraggable({itemType, data, ancestors}) {
 
   drag(ref);
 
-  return <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors}/>
+  return <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors} context={{}}/>
 }

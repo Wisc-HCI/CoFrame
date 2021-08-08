@@ -6,7 +6,28 @@ const immer = (config) => (set, get, api) =>
   config((fn) => set(produce(fn)), get, api);
 
 const store = (set,get) => ({
-    // The frame specifies the expert (color) frame
+    tfs:{
+        'simulated_base_link_inertia':{
+            frame:'world',
+            translation: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+        },
+        'simulated_shoulder_link':{
+            frame:'simulated_base_link_inertia',
+            translation: { x: 0, y: 0, z: 0.15185 },
+            rotation: { w: 0.8236985806242969, x: 0, y: 0, z: 0.5670279078471523 },
+        },
+        'simulated_upper_arm_link':{
+            frame:'simulated_shoulder_link',
+            translation: { x: 0, y: 0, z: 0 },
+            rotation: { w: 0.6506432546460919, x: 0.650643254779541, y: -0.2768814820684781, z: 0.2768814820116888 }
+        },
+        // 'simulated_forearm_link':{
+        //     frame:'simulated_upper_arm_link',
+        //     translation: { x: -0.24355, y: 0, z: 0 },
+        //     rotation: { w: 0.5211812959955269, x: 0, y: 0, z: 0.8534459893305628 },
+        // }
+    },
     staticScene: {
         table: {
             visual: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl",
@@ -53,9 +74,85 @@ const store = (set,get) => ({
             showCollison: false,
             highlighted: true,
             scale: {x:1,y:1,z:1}
+        },
+        base: {
+            visual: "package://universal_robot/ur_description/meshes/ur3/visual/base.dae",
+            collision: "package://universal_robot/ur_description/meshes/ur3/collision/base.stl",
+            name: 'Base',
+            frame: "simulated_base_link_inertia",
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+            scale: {x:1,y:1,z:1},
+            showCollison: false,
+            highlighted: false
+        },
+        shoulderLink: {
+            visual: "package://universal_robot/ur_description/meshes/ur3/visual/shoulder.dae",
+            collision: "package://universal_robot/ur_description/meshes/ur3/collision/shoulder.stl",
+            name: 'Shoulder Link',
+            frame: "simulated_shoulder_link",
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+            scale: {x:1,y:1,z:1},
+            showCollison: false,
+            highlighted: false,
+        },
+        upperArmLink: {
+            visual: "package://universal_robot/ur_description/meshes/ur3/visual/upperarm.dae",
+            collision: "package://universal_robot/ur_description/meshes/ur3/collision/upperarm.stl",
+            name: "Upper Arm Link",
+            frame: "simulated_upper_arm_link",
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+            scale: {x:1,y:1,z:1},
+            showCollison: false,
+            highlighted: false,
+        },
+        forearmLink: {
+            visual: "package://universal_robot/ur_description/meshes/ur3/visual/forearm.dae",
+            collision: "package://universal_robot/ur_description/meshes/ur3/collision/forearm.stl",
+            name: "Forearm Link",
+            frame: "simulated_forearm_link",
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+            scale: {x:1,y:1,z:1},
+            showCollison: false,
+            highlighted: false,
+        },
+        wrist1Link: {
+            visual: "package://universal_robot/ur_description/meshes/ur3/visual/wrist1.dae",
+            collision: "package://universal_robot/ur_description/meshes/ur3/collision/wrist1.stl",
+            name: "Wrist 1 Link",
+            frame: "simulated_wrist_1_link",
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+            scale: {x:1,y:1,z:1},
+            showCollison: false,
+            highlighted: false,
+        },
+        wrist2Link: {
+            visual: "package://universal_robot/ur_description/meshes/ur3/visual/wrist2.dae",
+            collision: "package://universal_robot/ur_description/meshes/ur3/collision/wrist2.stl",
+            name: "Wrist 2 Link",
+            frame: "simulated_wrist_2_link",
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+            scale: {x:1,y:1,z:1},
+            showCollison: false,
+            highlighted: false,
+        },
+        wrist3Link: {
+            visual: "package://universal_robot/ur_description/meshes/ur3/visual/wrist3.dae",
+            collision: "package://universal_robot/ur_description/meshes/ur3/collision/wrist3.stl",
+            name: "Wrist 3 Link",
+            frame: "simulated_wrist_3_link",
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+            scale: {x:1,y:1,z:1},
+            showCollison: false,
+            highlighted: false,
         }
     },
-    robot: {},
     setup: ()=>set((state)=>{
         let items = {};
         Object.keys(state.staticScene)
@@ -91,7 +188,9 @@ const store = (set,get) => ({
                 }
             })
         console.log(items);
+        console.log(get().tfs)
         useSceneStore.getState().setItems(items);
+        useSceneStore.getState().setTfs(get().tfs);
         useSceneStore.getState().clearLines();
     }),
 });

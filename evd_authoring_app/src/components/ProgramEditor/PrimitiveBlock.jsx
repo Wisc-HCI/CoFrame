@@ -11,7 +11,7 @@ import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg';
 import Icon, { UnlockOutlined, LockOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
 import './highlight.css';
 
-export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors}, ref) => {
+export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}, ref) => {
   const { uuid } = data;
   const focused = useGuiStore(useCallback(state => state.focusItem.uuid === uuid, [uuid]));
   const focusExists = useGuiStore(state => state.focusItem.type !== null);
@@ -22,6 +22,10 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors}, ref) =
   const editingEnabled = !inDrawer && data.editable;
 
   const [settingsExpanded, setSettingsExpanded] = useState(false);
+
+  console.log(context)
+  console.log(data.type)
+  console.log(data.parameters)
 
   const primitivesWithSettings = [
     'node.primitive.gripper.',
@@ -159,7 +163,7 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors}, ref) =
           <Col span="8">Machine:</Col>
           <Col span="16">
             <ParameterZone
-              displayText={data.parameters.machine_uuid}
+              displayText={context[data.parameters.machine_uuid]}
               acceptTypes={['uuid-machine']}
               itemType="machine"
               canRemove={editingEnabled}
@@ -188,7 +192,7 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors}, ref) =
           <Col span="8">To Location:</Col>
           <Col span="16">
             <ParameterZone
-              displayText={data.parameters.location_uuid}
+              displayText={context[data.parameters.location_uuid]}
               acceptTypes={['uuid-location']}
               itemType="location"
               canRemove={editingEnabled}
@@ -203,7 +207,7 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors}, ref) =
           <Col span="8">Thing:</Col>
           <Col span="16">
             <ParameterZone
-              displayText={data.parameters.thing_uuid}
+              displayText={context[data.parameters.thing_uuid]}
               acceptTypes={['uuid-thing']}
               itemType="thing"
               canRemove={editingEnabled}

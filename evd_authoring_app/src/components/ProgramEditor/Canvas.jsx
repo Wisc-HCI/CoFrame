@@ -6,6 +6,7 @@ import {ItemDraggable} from './Wrappers';
 import {Grid} from './Grid';
 import useEvdStore from '../../stores/EvdStore';
 import useGuiStore from '../../stores/GuiStore';
+import { objectMap } from '../../stores/helpers';
 
 export const Canvas = () => {
 
@@ -18,6 +19,12 @@ export const Canvas = () => {
     ];
 
     const [moveItem,createAndPlaceItem,skills] = useEvdStore(state=>[state.moveItem,state.createAndPlaceItem,state.data.skills]);
+    const nameLookup = useEvdStore(state=>({
+        ...objectMap(state.data.placeholders,(placeholder)=>placeholder.pending_node.name),
+        ...objectMap(state.data.locations,(location)=>location.name),
+        ...objectMap(state.data.waypoints,(waypoint)=>waypoint.name),
+        ...objectMap(state.data.machines,(machine)=>machine.name),
+    }))
 
     // Do your draggable stuff here
     // We only care about the second value returned from useDrop (hence the [1] at the end)
@@ -55,9 +62,9 @@ export const Canvas = () => {
 
     return (
         <Grid ref={drop(ref)} onClick={clearFocusItem} >
-            <ProgramBlock ancestors={ancestors}></ProgramBlock>
+            <ProgramBlock ancestors={ancestors} context={nameLookup}></ProgramBlock>
             {Object.keys(skills).map(uuid=>(
-                <ItemDraggable key={uuid} id={uuid} itemType='skill' data={skills[uuid]} ancestors={ancestors}></ItemDraggable>
+                <ItemDraggable key={uuid} id={uuid} itemType='skill' data={skills[uuid]} ancestors={ancestors} context={nameLookup}></ItemDraggable>
             ))}
         </Grid>
     )

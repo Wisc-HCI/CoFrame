@@ -8,7 +8,7 @@ import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
 
-export const SkillBlock = forwardRef(({style,data,ancestors,preview}, ref) => {
+export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, ref) => {
 
     const [frame,focusItem,setFocusItem] = useGuiStore(state=>([state.frame,state.focusItem,state.setFocusItem]));
     const focused = focusItem.uuid === data.uuid;
@@ -23,6 +23,13 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview}, ref) => {
         ...ancestors
     ];
 
+    let currentContext = {
+        ...context
+    };
+    data.arguments.forEach(arg=>{
+        currentContext[arg.uuid] = arg.name
+    })
+
     const primitiveBinStyle = {
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 5,
@@ -33,7 +40,7 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview}, ref) => {
 
     const dragBlockStyles = {
         display:'inline-block',
-        position: ancestors[0].uuid == 'drawer' ? 'relative' : 'absolute',
+        position: ancestors[0].uuid === 'drawer' ? 'relative' : 'absolute',
         left:data.transform.x,
         top:data.transform.y,
         backgroundColor:
@@ -64,7 +71,7 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview}, ref) => {
             </Row>
             <div style={primitiveBinStyle}>
                 {data.primitiveIds.map((id,idx)=>(
-                    <ItemSortable key={id} id={id} idx={idx} ancestors={skillAncestors} itemType='primitive'/>
+                    <ItemSortable key={id} id={id} idx={idx} ancestors={skillAncestors} itemType='primitive' context={currentContext}/>
                 ))}
             </div>
         </div>

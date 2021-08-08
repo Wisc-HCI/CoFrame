@@ -5,7 +5,7 @@ import {childLookup} from './childLookup';
 
 const validDrop=(item,ancestors) => ancestors[0].accepts.indexOf(item.type)>=0 && item.editable && (ancestors.map(ancestor=>ancestor.uuid).indexOf(item.parentData.uuid)>=0 || item.parentData.type === 'drawer');
 
-export function ItemSortable({id, idx, itemType, ancestors}) {
+export function ItemSortable({id, idx, itemType, ancestors, context}) {
 
   const ref = useRef(null);
 
@@ -44,5 +44,5 @@ export function ItemSortable({id, idx, itemType, ancestors}) {
 
   // In case there is some lag in updating the store, only render the component if there is actually data.
 
-  return data ? <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors} idx={idx}/> : null
+  return data ? <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors} idx={idx} context={context}/> : null
 }
