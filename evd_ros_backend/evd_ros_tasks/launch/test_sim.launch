@@ -32,7 +32,9 @@
         <rosparam param="/source_list">[lively_mapped_joints,pybullet_mapped_joints]</rosparam>
     </node>
 
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
+        <param name="use_tf_static" value="false"/>
+    </node>
 
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find evd_ros_tasks)/rviz/3d_printer_machine_tending.rviz"/>
 
