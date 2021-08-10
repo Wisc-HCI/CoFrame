@@ -23,7 +23,7 @@ export const SimulatorTile = (props) => {
                     <div style={{flex:1,backgroundColor: frameStyles.colors[frame], padding: 5, width:'100%'}}>
 
                         <Scene
-                            displayTfs={true}
+                            displayTfs={false}
                             displayGrid={true}
                             isPolar={false}
                             backgroundColor='#1e1e1e'
