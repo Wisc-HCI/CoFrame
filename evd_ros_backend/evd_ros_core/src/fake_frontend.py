@@ -9,9 +9,10 @@ import json
 import rospy
 
 from std_msgs.msg import String, Empty
+from geometry_msgs.msg import PoseStamped
 from evd_ros_core.msg import Job, Issue, StringArray
 
-from evd_script import Program, NodeParser
+from evd_script import Program, NodeParser, Pose
 from evd_script.examples import CreateDebugApp
 
 
@@ -27,6 +28,10 @@ class FakeFrontendNode:
             self._program = Program()
         else:
             self._program = default_program
+
+        self._app_frame_pub = rospy.Publisher('application/app_to_ros_frame', PoseStamped, queue_size=5)
+        self._camera_pose_pub = rospy.Publisher('application/camera_pose', PoseStamped, queue_size=5)
+        self._control_target_pose_pub = rospy.Publisher('application/control_target_pose', PoseStamped, queue_size=5)
 
         self._registration_pub = rospy.Publisher('{0}program/call_to_register'.format(prefix_fmt), Empty, queue_size=5)
         self._registration_sub = rospy.Subscriber('{0}program/register'.format(prefix_fmt), StringArray, self._program_register_cb)
@@ -74,22 +79,37 @@ class FakeFrontendNode:
 
         rospy.sleep(2.5) #seconds
 
-        self._registration_pub.publish(Empty()) #request registration
+        # At some point the frontend should define the `app` transform and then two poses from that.
+        # `world` (which is the ROS root) will be relative to `app`
+        self._app_frame_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='app').to_ros(stamped=True))
+        self._camera_pose_pub.publish(Pose(Position.from_axis('x'),Orientation.Identity(), link='app').to_ros(stamped=True))
+        self._control_target_pose_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='app').to_ros(stamped=True))
 
+        #request registration from the backend (this gets information known about the setup)
+        self._registration_pub.publish(Empty()) 
+
+        # Push out the current aggregated state of the environment ot the processors
+        # (This should happen whenever there is a change to these)
+        # (Note that pushing these will invalidate any pending jobs plus you should clear out any
+        #  previously processed results so update this with caution)
+        msg = String()
+        msg.data = json.dumps({
+            'collision_meshes': [x.to_dct() for x in self._program.environment.collision_meshes],
+            'pinch_points': [x.to_dct() for x in self._program.environment.pinch_points],
+            'occupancy_zones': [x.to_dct() for x in self._program.environment.occupancy_zones]
+        })
+        self._configure_processors.publish(msg)
+
+        # now that the backend is fully set up do what ever the hell you want in the frontend
         start = time.time()
         rate = rospy.Rate(self._rate)
         while not rospy.is_shutdown():
-            if start + 2.5 < time.time():
 
-                # We are simulating an update of the processors.
-                msg = String()
-                msg.data = json.dumps({
-                    'collision_meshes': [x.to_dct() for x in self._program.environment.collision_meshes],
-                    'pinch_points': [x.to_dct() for x in self._program.environment.pinch_points],
-                    'occupancy_zones': [x.to_dct() for x in self._program.environment.occupancy_zones]
-                })
-
-                self._configure_processors.publish(msg)
+            # Note: update processors if the relevant environment has changes
+            # Note: update the control target if the interactive marker is moved
+            # Note: update the camera pose if the user moves it around
+            # Note: send out requests to the processors
+            # Note: handle issues
 
             rate.sleep()
 

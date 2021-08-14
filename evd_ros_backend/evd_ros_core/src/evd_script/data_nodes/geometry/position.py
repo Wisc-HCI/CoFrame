@@ -152,7 +152,7 @@ class Position(Node):
             return cls(0,scale,0)
         elif axis == '-y':
             return cls(0,-scale,0)
-        elif axis == 'z' or axis == '+x':
+        elif axis == 'z' or axis == '+z':
             return cls(0,0,scale)
         elif axis == '-z':
             return cls(0,0,-scale)
@@ -162,6 +162,10 @@ class Position(Node):
     @classmethod
     def Unknown(cls):
         return cls(x='?', y='?', z='?')
+
+    @classmethod
+    def Zero(cls):
+        return cls(x=0, y=0, z=0)
         
     '''
     Data accessor/modifier methods

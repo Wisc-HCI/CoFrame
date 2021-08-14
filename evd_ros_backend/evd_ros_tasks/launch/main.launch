@@ -3,8 +3,14 @@
   <arg name="task" default="3d_printer_machine_tending"/>
   <arg name="simulate_physical_robot" default="true"/>
 
-  <include if="$(eval arg('task') == '3d_printer_machine_tending')" file="$(find evd_ros_tasks)/launch/tasks/3d_printer_machine_tending.launch">
+  <include if="$(eval arg('task') == '3d_printer_machine_tending')" file="$(find evd_ros_tasks)/launch/3d_printer_machine_tending/3d_printer_machine_tending.launch">
     <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
   </include>
+
+  <include if="$(eval arg('task') == 'test_simulation')" file="$(find evd_ros_tasks)/launch/_test/test_simulation.launch"/>
+
+  <include if="$(eval arg('task') == 'test_robot_bringup')" file="$(find evd_ros_tasks)/launch/_test/test_robot_bringup.launch"/>
+
+  <include if="$(eval arg('task') == 'test_urcontroller')" file="$(find evd_ros_tasks)/launch/_test/test_urcontroller.launch"/>
 
 </launch>

@@ -23,7 +23,7 @@ class ApplicationTfHandlerNode:
     def __init__(self, ros_frame_id):
         self._ros_frame_id = ros_frame_id
         self._tf_br = tf.TransformBroadcaster()
-        self._ros_frame_sub = rospy.Subscriber('application/ros_frame',PoseStamped,self.ros_frame_cb)
+        self._ros_frame_sub = rospy.Subscriber('application/app_to_ros_frame',PoseStamped,self.ros_frame_cb)
         self._camera_pose_sub = rospy.Subscriber('application/camera_pose',PoseStamped,self.camera_pose_frame_cb)
         self._control_target_pose_sub = rospy.Subscriber('application/control_target_pose',PoseStamped,self.control_target_pose_cb)
 
