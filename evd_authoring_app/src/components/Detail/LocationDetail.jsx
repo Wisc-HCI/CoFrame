@@ -48,7 +48,7 @@ export const LocationDetail = ({uuid}) => {
       <br/>
       <div style={{paddingTop: '5px',display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
        <b>Reachable:</b>
-       <Switch disabled = 'true' checked = {location.joints.reachable} style={{left :'-30px' }}/>
+       <Switch disabled ={true} checked = {location.joints.reachable} style={{left :'-30px' }}/>
 
 
       </div>

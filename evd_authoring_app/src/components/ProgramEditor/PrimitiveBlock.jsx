@@ -1,7 +1,8 @@
 import React, { forwardRef, useCallback, useState } from "react";
 import { ParameterZone } from "./ParameterZone";
 import { NodeZone } from "./NodeZone";
-import { InputNumber, Row, Col, Button } from "antd";
+import { ItemSortable } from "./Wrappers";
+import { InputNumber, Row, Col, Button, Tag } from "antd";
 import useEvdStore from "../../stores/EvdStore";
 import useGuiStore from "../../stores/GuiStore";
 import blockStyles from "./blockStyles";
@@ -22,10 +23,6 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
   const editingEnabled = !inDrawer && data.editable;
 
   const [settingsExpanded, setSettingsExpanded] = useState(false);
-
-  console.log(context)
-  console.log(data.type)
-  console.log(data.parameters)
 
   const primitivesWithSettings = [
     'node.primitive.gripper.',
@@ -52,9 +49,12 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
     backgroundColor: "rgba(0,0,0,0.1)"
   }
 
-  const setPrimitiveParameter = useEvdStore(
-    (state) => state.setPrimitiveParameter
+  const [setPrimitiveParameter,moveTrajectoryBlock] = useEvdStore(
+    (state) => [state.setPrimitiveParameter,state.moveTrajectoryBlock]
   );
+
+  const trajectoryUuids = useEvdStore(state=>Object.keys(state.data.trajectories));
+  const localOnly = Object.keys(context).filter(uuid=>trajectoryUuids.indexOf(uuid) < 0)
 
   let Glyph = null;
   if (data.type === 'node.primitive.skill-call.') {
@@ -78,7 +78,7 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
           <Col span="20">Settings:</Col>
           <Col span="4">
             <Button
-              disabled={!editingEnabled}
+              disabled={inDrawer}
               onClick={() => setSettingsExpanded(!settingsExpanded)}
               type='text'
               icon={settingsExpanded ? (
@@ -94,8 +94,8 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
             {data.type === 'node.primitive.gripper.' && (
               <>
                 <Row align="middle" style={fieldStyle}>
-                  <Col span="8">Position:</Col>
-                  <Col span="16" style={{ textAlign: 'right' }}>
+                  <Col flex={2}>Position:</Col>
+                  <Col flex={3} style={{ textAlign: 'right' }}>
                     <InputNumber
                       min={0}
                       max={5}
@@ -108,8 +108,8 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
                   </Col>
                 </Row>
                 <Row align="middle" style={fieldStyle}>
-                  <Col span="8">Effort:</Col>
-                  <Col span="16" style={{ textAlign: 'right' }}>
+                  <Col flex={2}>Effort:</Col>
+                  <Col flex={3} style={{ textAlign: 'right' }}>
                     <InputNumber
                       min={0}
                       max={5}
@@ -122,8 +122,8 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
                   </Col>
                 </Row>
                 <Row align="middle" style={fieldStyle}>
-                  <Col span="8">Speed:</Col>
-                  <Col span="16" style={{ textAlign: 'right' }}>
+                  <Col flex={2}>Speed:</Col>
+                  <Col flex={3} style={{ textAlign: 'right' }}>
                     <InputNumber
                       min={0}
                       max={5}
@@ -140,8 +140,8 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
             {data.type === 'node.primitive.delay.' && (
               <>
                 <Row align="middle" style={fieldStyle}>
-                  <Col span="8">Duration:</Col>
-                  <Col span="16" style={{ textAlign: 'right' }}>
+                  <Col flex={2}>Duration:</Col>
+                  <Col flex={3} style={{ textAlign: 'right' }}>
                     <InputNumber
                       min={0}
                       max={5}
@@ -160,59 +160,89 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
       </div>
       {data.type.includes("node.primitive.machine-primitive") && (
         <Row align="middle" style={fieldStyle}>
-          <Col span="8">Machine:</Col>
-          <Col span="16">
+          <Col flex={2}>Machine:</Col>
+          <Col flex={3}>
             <ParameterZone
               displayText={context[data.parameters.machine_uuid]}
               acceptTypes={['uuid-machine']}
               itemType="machine"
               canRemove={editingEnabled}
-              onRemove={() => console.log("delete param")}
-              onDrop={(data) => console.log(data)}
+              onRemove={() => setPrimitiveParameter('primitive',data.uuid,'machine_uuid',null)}
+              onDrop={(dropData) => setPrimitiveParameter('primitive',data.uuid,'machine_uuid',dropData.uuid)}
             />
           </Col>
         </Row>
       )}
       {data.type.includes("node.primitive.move-trajectory") && (
         <Row align="middle" style={fieldStyle}>
-          <Col span="8">Trajectory:</Col>
-          <Col span="16">
+          <Col flex={2}>Trajectory:</Col>
+          <Col flex={3}>
             <NodeZone
               ancestors={[{uuid,accepts:['uuid-trajectory','node.trajectory.']},...ancestors]}
-              onDrop={(data) => console.log(data)}
+              onMove={(dropData) => {
+                if (localOnly.indexOf(dropData) >= 0) {
+                  setPrimitiveParameter('primitive',data.uuid,'trajectory_uuid',dropData.uuid)
+                } else {
+                  moveTrajectoryBlock(dropData,data.uuid,null)
+                }
+              }}
               emptyMessage='No Trajectory'
               enabled={editingEnabled}
             >
+              {data.parameters.trajectory_uuid && (
+                trajectoryUuids.indexOf(data.parameters.trajectory_uuid) >= 0 ? (
+                  <ItemSortable 
+                    id={data.parameters.trajectory_uuid} 
+                    idx={0} 
+                    ancestors={[{uuid,accepts:['uuid-trajectory','node.trajectory.']},...ancestors]} 
+                    itemType='trajectory' 
+                    context={context} 
+                    onMove={(dropData) => {
+                      if (localOnly.indexOf(dropData) >= 0) {
+                        setPrimitiveParameter('primitive',data.uuid,'trajectory_uuid',dropData.uuid)
+                      } else {
+                        moveTrajectoryBlock(dropData,data.uuid,null)
+                      }
+                    }}
+                    disabled={!editingEnabled}/>
+                ) : (
+                  <Tag 
+                    color={blockStyles['trajectory']} 
+                    closable={editingEnabled} 
+                    onClose={() => setPrimitiveParameter('primitive',data.uuid,'trajectory_uuid',null)} 
+                    style={{width:'100%'}}>{context[data.parameters.trajectory_uuid]}</Tag>
+                )
+              )}
             </NodeZone>
           </Col>
         </Row>
       )}
       {data.type.includes("node.primitive.move-unplanned") && (
         <Row align="middle" style={fieldStyle}>
-          <Col span="8">To Location:</Col>
-          <Col span="16">
+          <Col flex={2}>To Location:</Col>
+          <Col flex={3}>
             <ParameterZone
               displayText={context[data.parameters.location_uuid]}
               acceptTypes={['uuid-location']}
               itemType="location"
               canRemove={editingEnabled}
-              onRemove={() => console.log("delete param")}
-              onDrop={(data) => console.log(data)}
+              onRemove={() => setPrimitiveParameter('primitive',data.uuid,'location_uuid',null)}
+              onDrop={(dropData) => setPrimitiveParameter('primitive',data.uuid,'location_uuid',dropData.uuid)}
             />
           </Col>
         </Row>
       )}
       {data.type.includes("node.primitive.gripper") && (
         <Row align="middle" style={fieldStyle}>
-          <Col span="8">Thing:</Col>
-          <Col span="16">
+          <Col flex={2}>Thing:</Col>
+          <Col flex={3}>
             <ParameterZone
               displayText={context[data.parameters.thing_uuid]}
               acceptTypes={['uuid-thing']}
               itemType="thing"
               canRemove={editingEnabled}
-              onRemove={() => console.log("delete param")}
-              onDrop={(data) => console.log(data)}
+              onRemove={() => setPrimitiveParameter('primitive',data.uuid,'thing_uuid',null)}
+              onDrop={(dropData) => setPrimitiveParameter('primitive',data.uuid,'thing_uuid',dropData.uuid)}
             />
           </Col>
         </Row>

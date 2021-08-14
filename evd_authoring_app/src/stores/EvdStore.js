@@ -27,7 +27,7 @@ const store = (set,get) => ({
     uuid: 'program',
     type: 'node.primitive.hierarchical.program.',
     description: 'Default Program Description',
-    transform: {x:10,y:10},
+    transform: {x:30,y:10},
     data: {
       //TODO store other data
       gradeTypes: {},
@@ -94,7 +94,7 @@ const store = (set,get) => ({
         get().addItem('primitive',primitive)
       });
       flattenedSkills.forEach((skill,idx)=>{
-        get().addItem('skill',{...skill,transform:{x:310+idx*300,y:10}})
+        get().addItem('skill',{...skill,transform:{x:460+idx*300,y:10}})
       });
       program.primitives.forEach((primitive)=>{
         get().addChildPrimitive(primitive, program.uuid)
@@ -181,45 +181,67 @@ const store = (set,get) => ({
       }
       
     },
-    moveChildPrimitive: (primitive, parentId, index) => set((state)=>{
-      if (!state.data.primitives[primitive.uuid]) {
-        state.data.primitives[primitive.uuid] = primitive;
+    moveTrajectoryWaypoint: (waypoint, newParentId, index) => set((state)=>{
+
+    }),
+    moveTrajectoryBlock: (trajectory, newParentId, argKey) => set((state)=>{
+      const onFile = state.data.trajectories[trajectory.uuid];
+      if (onFile) {
+        // It is either a parameter for a skill-call or move-trajectory primitive
+        const oldParentNode = state.data.primitives[onFile.parentData.uuid];
+        if (oldParentNode.type === 'node.primitive.skill-call.') {
+          Object.entries(oldParentNode.parameters).some((keyValuePair)=>{
+            if (keyValuePair[1] === trajectory.uuid) {
+              state.data.primitives[onFile.parentData.uuid].parameters[keyValuePair[0]] = null
+              // Short-circuits the iteration
+              return true
+            } else {return false}
+          })
+        } else if (oldParentNode.type === 'node.primitive.move-trajectory.') {
+          state.data.primitives[onFile.parentData.uuid].parameters.trajectory_uuid = null
+        }
       }
-      const {type,uuid} = state.data.primitives[primitive.uuid].parentData;
-      
-      // Short-circuit if no move needs to be done.
-      if (type === 'program' && uuid === parentId && state.primitiveIds.indexOf(primitive.uuid) === index) {
-        // console.log('program/index match')
-        return;
-      } else if (type === 'drawer') {
-        
-      } else if (type === 'primitive' && uuid === parentId && state.data.primitives[uuid].primitiveIds.indexOf(primitive.uuid) === index) {
-        // console.log('primitive/index match')
-        return;
-      } else if (type === 'skill' && uuid === parentId && state.data.skills[uuid].primitiveIds.indexOf(primitive.uuid) === index) {
-        // console.log('skill/index match')
-        return;
+      const newParentNode = state.data.primitives[newParentId];
+      if (newParentNode.type === 'node.primitive.skill-call') {
+        state.data.primitives[newParentId].parameters[argKey] = trajectory.uuid
+      } else if (newParentNode.type === 'node.primitive.move-trajectory.') {
+        state.data.primitives[newParentId].parameters.trajectory_uuid = trajectory.uuid
       }
-      // remove from previous location
-      if (type === 'program') {
-        state.primitiveIds = state.primitiveIds.filter(id=>id!==primitive.uuid)
-      } else if (type === 'drawer') {} else {
-        state.data[typeToKey(type)][uuid].primitiveIds = state.data[typeToKey(type)][uuid].primitiveIds.filter(id=>id!==primitive.uuid)
-      }
-      // add into the correct location
-      if (parentId === state.uuid) {
-        // This is the top-level program, so add to top level list of uuids
+      // Update the new parent data for this trajectory
+      state.data.trajectories[trajectory.uuid].parentData = {type:'primitive',uuid:newParentId};
+    }),
+    moveChildPrimitive: (primitive, newParentId, newParentType, index) => set((state)=>{
+      const onFile = state.data.primitives[primitive.uuid];
+      if (onFile) {
+        const oldParentData = state.data.primitives[primitive.uuid].parentData;
+        // Short-circuit if no move needs to be done.
+        if (oldParentData.type === 'program' && oldParentData.uuid === newParentId && state.primitiveIds.indexOf(primitive.uuid) === index) {
+          // console.log('program/index match')
+          return;
+        } else if (oldParentData.type === 'drawer') {
+          // Don't bother moving
+        } else if (oldParentData.type === 'primitive' && oldParentData.uuid === newParentId && state.data.primitives[oldParentData.uuid].primitiveIds.indexOf(primitive.uuid) === index) {
+          // console.log('primitive/index match')
+          return;
+        } else if (oldParentData.type === 'skill' && oldParentData.uuid === newParentId && state.data.skills[oldParentData.uuid].primitiveIds.indexOf(primitive.uuid) === index) {
+          // console.log('skill/index match')
+          return;
+        }
+        // Remove from previous location
+        if (oldParentData.type === 'program') {
+          state.primitiveIds = state.primitiveIds.filter(id=>id!==primitive.uuid)
+        } else if (oldParentData.type === 'drawer') {} else {
+          state.data[typeToKey(oldParentData.type)][oldParentData.uuid].primitiveIds = state.data[typeToKey(oldParentData.type)][oldParentData.uuid].primitiveIds.filter(id=>id!==primitive.uuid)
+        }
+      } 
+      state.data.primitives[primitive.uuid] = {...primitive,parentData:{type:newParentType,uuid:newParentId}};
+      if (newParentType === 'program') {
         state.primitiveIds.splice(index,0,primitive.uuid)
-        state.data.primitives[primitive.uuid].parentData.type = 'program';
-      } else if (state.data.primitives[parentId]) {
-        // This is some other child of the program, so look it up and edit in data
-        state.data.primitives[parentId].primitiveIds.splice(index,0,primitive.uuid)
-        state.data.primitives[primitive.uuid].parentData.type = 'primitive';
-      } else if (state.data.skills[parentId]) {
-        state.data.skills[parentId].primitiveIds.splice(index,0,primitive.uuid)
-        state.data.primitives[primitive.uuid].parentData.type = 'skill';
+      } else if (newParentType === 'skill') {
+        state.data.skills[newParentId].primitiveIds.splice(index,0,primitive.uuid)
+      } else if (newParentType === 'primitive') {
+        state.data.primitives[newParentId].primitiveIds.splice(index,0,primitive.uuid)
       }
-      state.data.primitives[primitive.uuid].parentData.uuid = parentId;
     }),
     // Piecewise update functions for data
     addItem: (type, item) => set((state)=>{

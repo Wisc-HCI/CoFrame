@@ -1,15 +1,15 @@
 import React from "react";
 import { useDrop } from 'react-dnd';
 
-const validDrop=(item,ancestors,count) => count === 0 && ancestors[0].accepts.indexOf(item.type)>=0 && item.editable && (ancestors.map(ancestor=>ancestor.uuid).indexOf(item.parentData.uuid)>=0 || item.parentData.type === 'drawer');
+const validDrop=(item,ancestors,count) => count === 0 && ancestors[0].accepts.indexOf(item.type)>=0 && (ancestors.map(ancestor=>ancestor.uuid).indexOf(item.parentData.uuid)>=0 || item.parentData.type === 'drawer');
 
-export const NodeZone = ({ancestors,children,onDrop,emptyMessage,enabled}) => {
+export const NodeZone = ({ancestors,children,onMove,emptyMessage,enabled}) => {
 
     const drop = useDrop({
         accept: ancestors[0].accepts,
-        drop: (item, _) => onDrop(item),
+        drop: (item, _) => onMove(item),
         hover: (item, _) => {
-          if (enabled && item.editable && validDrop(item,ancestors,children ? children.length: 0)) {onDrop(item)}
+          if (enabled && item.editable && validDrop(item,ancestors,children ? children.length: 0)) {onMove(item)}
         },
         canDrop: (item, _) => enabled && validDrop(item,ancestors,children ? children.length: 0)
       })[1]
@@ -20,7 +20,8 @@ export const NodeZone = ({ancestors,children,onDrop,emptyMessage,enabled}) => {
         minWidth: 20,
         minHeight:27,
         padding:3,
-        textAlign:'center'
+        textAlign:'center',
+        fontSize:14
     }
 
     return (

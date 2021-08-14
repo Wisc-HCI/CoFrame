@@ -41,7 +41,7 @@ export const ReviewTile = (_) => {
             <Card
                 extra={<Button icon={<SyncOutlined/>} onClick={refresh}>Refresh</Button>}
                 style={{ flex: 1 }}
-                bodyStyle={{ padding: 0, height:'calc(100vh - 165pt)',overflow:'auto'}}
+                bodyStyle={{ padding: 0, height:'calc(100vh - 150pt)',overflow:'auto'}}
                 title="Review"
             >
                 <div style={{ height: '100%', borderWidth: 5, borderColor: frameStyles.colors[frameId] }}>

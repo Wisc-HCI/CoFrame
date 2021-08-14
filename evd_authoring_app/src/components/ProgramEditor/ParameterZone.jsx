@@ -21,9 +21,9 @@ export const ParameterZone = ({itemType,displayText,acceptTypes,onDrop,onRemove,
     const containerStyle = {
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 5,
-        minWidth: 20,
-        minHeight:27,
-        padding:3,
+        minWidth: 22,
+        minHeight:29,
+        padding:4,
         textAlign:'center'
     }
 

@@ -2,7 +2,9 @@ import React, {forwardRef} from 'react';
 import { Col, Row, Button } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons';
 import { ItemSortable } from './Wrappers';
+import { NodeZone } from './NodeZone';
 import useGuiStore from '../../stores/GuiStore';
+import useEvdStore from '../../stores/EvdStore';
 import { acceptLookup } from './acceptLookup';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
@@ -11,6 +13,7 @@ import './highlight.css';
 export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, ref) => {
 
     const [frame,focusItem,setFocusItem] = useGuiStore(state=>([state.frame,state.focusItem,state.setFocusItem]));
+    const moveChildPrimitive = useEvdStore(state=>state.moveChildPrimitive);
     const focused = focusItem.uuid === data.uuid;
 
     const fieldData = acceptLookup['node.primitive.hierarchical.skill.'].primitiveIds;
@@ -23,20 +26,13 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
         ...ancestors
     ];
 
+    // Extend the current context with any arg-based values
     let currentContext = {
         ...context
     };
     data.arguments.forEach(arg=>{
         currentContext[arg.uuid] = arg.name
     })
-
-    const primitiveBinStyle = {
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        borderRadius: 5,
-        minWidth: 20,
-        minHeight: 25,
-        padding: 3,
-      }
 
     const dragBlockStyles = {
         display:'inline-block',
@@ -69,11 +65,25 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
                     />
                 </Col>
             </Row>
-            <div style={primitiveBinStyle}>
+            <NodeZone
+              ancestors={skillAncestors}
+              onDrop={(dropData) => moveChildPrimitive(dropData,data.uuid,'skill',0)}
+              emptyMessage='No Actions'
+              enabled={true}
+            >
                 {data.primitiveIds.map((id,idx)=>(
-                    <ItemSortable key={id} id={id} idx={idx} ancestors={skillAncestors} itemType='primitive' context={currentContext}/>
+                    <ItemSortable 
+                        key={id} 
+                        id={id} 
+                        idx={idx} 
+                        ancestors={skillAncestors} 
+                        itemType='primitive' 
+                        context={currentContext} 
+                        onMove={(dropData)=>moveChildPrimitive(dropData,data.uuid,'skill',idx)}
+                        disabled={!editingEnabled}
+                    />
                 ))}
-            </div>
+            </NodeZone>
         </div>
     )
 });

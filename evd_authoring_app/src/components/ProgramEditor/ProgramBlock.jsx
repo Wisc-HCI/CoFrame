@@ -21,7 +21,7 @@ export const ProgramBlock = (props) => {
         state.transform,
         state.primitiveIds
     ]))
-
+    
     const moveChildPrimitive = useEvdStore(state=>state.moveChildPrimitive);
 
     const data = {uuid,name,type,primitiveIds,transform};
@@ -84,12 +84,21 @@ export const ProgramBlock = (props) => {
             </Row>
             <NodeZone
               ancestors={ancestors}
-              onDrop={(data) => moveChildPrimitive(data,uuid,0)}
+              onDrop={(data) => moveChildPrimitive(data,uuid,'program',0)}
               emptyMessage='No Actions'
               enabled={true}
             >
                 {primitiveIds.map((id,idx)=>(
-                    <ItemSortable key={id} id={id} idx={idx} ancestors={ancestors} itemType='primitive' context={props.context} />
+                    <ItemSortable 
+                        key={id} 
+                        id={id} 
+                        idx={idx} 
+                        ancestors={ancestors} 
+                        itemType='primitive' 
+                        context={props.context} 
+                        onMove={(dropData)=>moveChildPrimitive(dropData,uuid,'program',idx)}
+                        disabled={false}
+                    />
                 ))}
             </NodeZone>
         </div>

@@ -617,6 +617,9 @@ for (let i = 0; i < NUM_TRAJECTORIES; i++) {
         end_location_uuid: locations[1].uuid,
         waypoint_uuids: [
             // presumably filled with arbitrary (ordered) list of waypoint uuids
+            `waypoint-js-${i*2}`,
+            `waypoint-js-${i*2+1}`,
+            `waypoint-js-${i*2+2}`
         ],
         trace: { // trace can be null, supplied by backend when planning is complete
             type: 'node.trace.',
@@ -1173,7 +1176,7 @@ let program = {
             description: '',
             parameters: {
                 manual_safety: false,
-                trajectory_uuid: 'uuid'
+                trajectory_uuid: 'trajectory-js-0'
             }
         },
         {
@@ -1200,7 +1203,7 @@ let program = {
             description: '',
             parameters: {
                 manual_safety: false,
-                trajectory_uuid: 'uuid'
+                trajectory_uuid: 'trajectory-js-1'
             }
         },
         {
