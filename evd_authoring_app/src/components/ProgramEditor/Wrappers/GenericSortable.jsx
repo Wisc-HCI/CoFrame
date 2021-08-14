@@ -8,7 +8,7 @@ export function GenericSortable({idx, itemType, data, ancestors}) {
 
   const Child = childLookup[itemType];
 
-  const [{opacity}, drag] = useDrag({
+  const [{opacity}, drag, preview] = useDrag({
     type: data.type,
     item: data,
     collect: monitor => ({
@@ -18,5 +18,5 @@ export function GenericSortable({idx, itemType, data, ancestors}) {
 
   drag(ref);
 
-  return <Child ref={ref} style={{opacity}} data={data} ancestors={ancestors} idx={idx}/>
+  return <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors} idx={idx} context={{}}/>
 }

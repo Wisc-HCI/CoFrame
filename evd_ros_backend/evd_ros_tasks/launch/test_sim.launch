@@ -8,6 +8,8 @@
     <arg name="config_path" default="$(find evd_ros_tasks)/config/"/>
     <arg name="config_file_name" default="ur3e_processor_config.json"/>
 
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+
     <node name="test_sim" pkg="evd_ros_core" type="test_sim.py" output="screen">
         <param name="config_path" value="$(arg config_path)" />
         <param name="config_file_name" value="$(arg config_file_name)"/>

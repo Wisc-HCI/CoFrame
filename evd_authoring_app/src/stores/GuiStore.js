@@ -11,7 +11,14 @@ const store = (set) => ({
     // The frame specifies the expert (color) frame
     frame: 'safety',
     primaryColor: frameStyles.colors['safety'],
-    setFrame: (frame) => set((_)=>({frame:frame,primaryColor:frameStyles.colors[frame]})),
+    setFrame: (frame) => set(state=>{
+      state.frame = frame;
+      state.primaryColor = frameStyles.colors[frame];
+      if (state.secondaryFocusItem.type === 'issue') {
+        state.focusItem = {type:null,uuid:null};
+        state.secondaryFocusItem = {type:null,uuid:null};
+      }
+    }),
     // The editorPane specifies the section of the ProgramTile that is shown
     editorPane: 'setup',
     setEditorPane: (pane) => set((_)=>({editorPane:pane})),
