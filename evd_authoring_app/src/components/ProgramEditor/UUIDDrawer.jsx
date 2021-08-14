@@ -11,8 +11,6 @@ export const UUIDDrawer = ({itemType}) => {
     // itemType is the "type" of item from the EvdStore that the uuid corresponds to.
     // e.g. 'thingType', 'machine', 'waypoint', etc.
 
-    console.log(itemType)
-
     const uuids = useEvdStore(useCallback(state=>Object.keys(state.data[typeToKey(itemType)]),[itemType]));
     
     const ancestors = [

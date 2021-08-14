@@ -7,6 +7,11 @@
 
   <include file="$(find evd_ros_core)/launch/rosbridge.launch"/>
 
+  <!-- <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/> -->
+  <!-- <node name="tf_world_publisher" pkg="evd_ros_core" type="tf_world_publisher.py" output="screen">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node> -->
+
   <node name="application_tf_handler" pkg="evd_ros_core" type="application_tf_handler.py" output="screen">
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>

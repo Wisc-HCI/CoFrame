@@ -16,6 +16,7 @@ const store = (set) => ({
     getProgramSrv: null,
     setProgramSrv: null,
     updateProgramTopic: null,
+    updateTfsTopic: null,
     onConnection: () => set({connection:'connected'}),
     onError: () => set({connection:'disconnected'}),
     onClose: () => set({connection:'disconnected'}),
@@ -61,7 +62,16 @@ const store = (set) => ({
             messageType: 'evd_ros_core/UpdateData'
         });
 
+        const updateTfsTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: 'tf',
+            messageType: 'tf2_msgs/TFMessage'
+        });
+
+        const updateFn = useSimStore.getState().updateFromTfs;
         updateProgramTopic.subscribe(useEvdStore.getState().updateProgram);
+        // updateTfsTopic.subscribe(useSimStore.getState().updateFromTfs)
+        updateTfsTopic.subscribe(updateFn);
 
         ros.connect();
         return {
@@ -73,7 +83,8 @@ const store = (set) => ({
             getAppOptionsSrv:getAppOptionsSrv,
             getProgramSrv:getProgramSrv,
             setProgramSrv:setProgramSrv,
-            updateProgramTopic:updateProgramTopic
+            updateProgramTopic:updateProgramTopic,
+            updateTfsTopic:updateTfsTopic
         };
     })
 });

@@ -9,6 +9,13 @@
     <arg name="config_path" default="$(find evd_ros_tasks)/config/"/>
     <arg name="config_file_name" default="ur3e_processor_config.json"/>
 
+    <include file="$(find evd_ros_core)/launch/rosbridge.launch"/>
+
+    <!-- <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/> -->
+    <!-- <node name="tf_world_publisher" pkg="evd_ros_core" type="tf_world_publisher.py" output="screen">
+        <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+    </node> -->
+
     <node name="test_simulation" pkg="evd_ros_core" type="test_simulation.py" output="screen">
         <param name="config_path" value="$(arg config_path)" />
         <param name="config_file_name" value="$(arg config_file_name)"/>

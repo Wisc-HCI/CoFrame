@@ -1,15 +1,12 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useRef} from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
 import {childLookup} from './childLookup';
 
 const validDrop=(item,ancestors) => ancestors[0].accepts.indexOf(item.type)>=0 && (ancestors.map(ancestor=>ancestor.uuid).indexOf(item.parentData.uuid)>=0 || item.parentData.type === 'drawer');
 
-export function ItemSortable({id, itemType, ancestors, context, disabled, onMove}) {
+export function StaticSortable({id, itemType, ancestors, context, disabled, onMove, data}) {
 
   const ref = useRef(null);
-
-  const data = useEvdStore(useCallback(state=>state.data[typeToKey(itemType)][id],[id,itemType]));
 
   const Child = childLookup[itemType];
 
@@ -42,5 +39,7 @@ export function ItemSortable({id, itemType, ancestors, context, disabled, onMove
 
   // In case there is some lag in updating the store, only render the component if there is actually data.
 
-  return data ? <Child ref={disabled ? null : ref} preview={disabled ? null : preview} style={{opacity}} data={data} ancestors={ancestors} context={context}/> : null
+  return (
+    data ? <Child ref={disabled ? null : ref} preview={disabled ? null : preview} style={{opacity}} data={data} ancestors={ancestors} context={context}/> : null
+  )
 }

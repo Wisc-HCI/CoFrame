@@ -5,7 +5,7 @@ import React from 'react';
 // } from '@dnd-kit/sortable';
 import { GenericSortable } from './Wrappers';
 
-import { primitiveTypes, fromTemplate } from '../../stores/templates';
+import { primitiveTypes, fromPrimitiveTemplate } from '../../stores/templates';
 import { acceptLookup } from './acceptLookup';
 
 export const PrimitivesDrawer = (_) => {
@@ -17,7 +17,7 @@ export const PrimitivesDrawer = (_) => {
     return (
         <React.Fragment>
             {primitiveTypes.map((type)=>(
-                <GenericSortable key={type} ancestors={ancestors} itemType='primitive' data={fromTemplate(type)}/>
+                <GenericSortable key={type} ancestors={ancestors} itemType='primitive' data={fromPrimitiveTemplate(type)}/>
             ))}
         </React.Fragment>
     );

@@ -1,6 +1,6 @@
 import { generateUuid } from "./generateUuid"
 
-export const templates = {
+export const primitiveTemplates = {
     'node.primitive.delay.':{
         name: 'Delay',
         description: 'Delay robot for a specified time',
@@ -95,18 +95,50 @@ export const templates = {
         editable: true,
         deleteable: true,
         parameters: {} // TODO: FILL IN
-    },
-    'node.primitive.hierarchical.skill.':{
-        name: 'New Skill',
-        description: 'A sequence of other actions or skills',
-        editable: true,
-        deleteable: true,
-        parameters: {} // TODO: FILL IN
-    },
+    }
 }
 
-export const primitiveTypes = Object.keys(templates).filter(type=>(!type.includes('skill')))
+export const containerTemplates = {
+    'node.trajectory.':{
+        name: 'New Trajectory',
+        deleteable: true,
+        editable: true,
+        description: 'A movement by the robot from one location to another.', // could be ''
 
-export const fromTemplate = (type) => {
-    return {uuid:generateUuid(type),type:type,parentData:{type:'drawer',uuid:null},...templates[type]}
+        start_location_uuid: null,
+        end_location_uuid: null,
+        waypoint_uuids: [],
+        trace: null,
+        velocity: 0.5, // suggestion (user configured)
+        move_type: 'ee_ik' // or 'ee_ik'
+    },
+    'node.primitive.hierarchical.skill.':{
+        name: 'New Macro',
+        transform: {x:0,y:0},
+        editable: true,
+        deleteable: true,
+        description: 'A reusable and configurable behavior that can be executed from the elsewhere in the program.',
+        parameters: {},
+        arguments: [],
+        primitiveIds: []
+    },
+    'node.primitive.hierarchical.':{
+        name: 'New Hierarchical',
+        editable: true,
+        deleteable: true,
+        description: 'A simple grouping structure for related actions.',
+        parameters: {},
+        primitiveIds: []
+    }
+}
+
+export const primitiveTypes = Object.keys(primitiveTemplates).filter(type=>(!type.includes('skill')));
+export const containerTypes = Object.keys(containerTemplates);
+
+export const fromPrimitiveTemplate = (type) => {
+    return {uuid:generateUuid(type),type:type,parentData:{type:'drawer',uuid:null},...primitiveTemplates[type]}
+}
+
+export const fromContainerTemplate = (type) => {
+    return {uuid:generateUuid(type),type:type,parentData:{type:'drawer',uuid:null},...containerTemplates[type]}
 }
