@@ -51,11 +51,7 @@ class TFWorldPublisher:
 if __name__ == "__main__":
     rospy.init_node('tf_world_publisher')
 
-    try:
-        ros_frame_id = rospy.get_param('~ros_frame_id',DEFAULT_ROS_FRAME_ID)
-    except:
-        ros_frame_id = 'world'
+    ros_frame_id = rospy.get_param('~ros_frame_id','world')
 
     node = TFWorldPublisher(ros_frame_id)
-
     node.spin()

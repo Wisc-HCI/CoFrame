@@ -4,28 +4,21 @@
 <!--  Arguements                                                             -->
 <!--=========================================================================-->
 
+  <arg name="run_robot" default="false"/>
   <arg name="simulate_physical_robot" default="true"/>
 
   <arg name="launch_rviz" default="true"/>
   <arg name="load_rviz_cfg" default="true"/>
 
-  <arg name="run_robot" default="false"/>
-
 <!--=========================================================================-->
 <!--  Robot (All interfaces)                                                 -->
 <!--=========================================================================-->
 
-  <group if="$(arg run_robot)">
-    <include file="$(find evd_ros_tasks)/launch/robot_bringup.launch">
-      <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
-      <arg name="application_description_xacro" value="$(find evd_ros_tasks)/description/3d_printer_machine_tending.urdf.xacro"/>
-    </include>
-  </group>
-  <group unless="$(arg run_robot)">
-    <include file="$(find evd_ros_tasks)/launch/robot_no_bringup.launch">
-      <arg name="application_description_xacro" value="$(find evd_ros_tasks)/description/3d_printer_machine_tending.urdf.xacro"/>
-    </include>
-  </group>
+  <include file="$(find evd_ros_tasks)/launch/_common/ur3e.launch">
+    <arg name="bringup" value="$(arg run_robot)"/>
+    <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
+    <arg name="robot_description_xacro" value="$(find evd_ros_tasks)/description/3d_printer_machine_tending.urdf.xacro"/>
+  </include>
 
 <!--=========================================================================-->
 <!--  Application                                                            -->

@@ -25,6 +25,10 @@ class JobQueue:
     def _handle_clear_cb(self, id):
         self.cancel(id)
 
+    @property
+    def active_job(self):
+        return self._active_job
+
     def add(self, id, data, allow_update_on_active_job=True):
 
         job = {

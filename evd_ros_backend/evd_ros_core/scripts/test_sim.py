@@ -26,7 +26,7 @@ class TestSimNode:
             self._config = json.load(f)
 
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
-        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet/'), self._config['pybullet'], gui=True)
+        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=True)
         self.jsf = JointsStabilizedFilter(20,0.001)
 
         self._lively_js_pub = rospy.Publisher('lively_tk/joints',JointState,queue_size=10)
