@@ -28,6 +28,8 @@ it opts to just package the raw data. This is for performance and memory reasons
 (consider the additional meta-data needed for each node plus time to construct).
 Conversion methods are available in the underlying data nodes (Pose, Joints) that can
 be used to reconstruct nodes from the trace data.
+
+But I could produce a "nice" generator?
 '''
 
 from ..type_defs import NUMBER_TYPE, STRING_TYPE, ARBITRARY_OBJ_TYPE

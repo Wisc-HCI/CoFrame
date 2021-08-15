@@ -38,6 +38,10 @@ class PoseInterpolator:
         else:
             self._fullTime = minTime # for rotation only movements
 
+    @property
+    def full_time(self):
+        return self._fullTime
+
     def step(self, time):
 
         pose = Pose()

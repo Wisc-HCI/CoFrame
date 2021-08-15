@@ -33,6 +33,7 @@ class TraceProcessor:
 
     def __init__(self, config_path, config_file_name):
         self._path = None
+        self._type = None
         self._trace_data = None
 
         with open(os.path.join(config_path, config_file_name),'r') as f:
@@ -53,16 +54,41 @@ class TraceProcessor:
     def _start_job(self, data):
         dct = json.loads(data)
         trajectory = NodeParser(dct['trajectory'])
-        points = [NodeParser(p) for p in dct['points']]
+        points = {p['uuid']: NodeParser(p) for p in dct['points']}
+
+        # produce path from trajectory and points
+        self._path = []
+        self._type = trajectory.move_type
+        if self._type == 'joint':
+            locStart = points[trajectory.start_location_uuid]
+            lastJoints = locStart.joints.joint_positions
+
+            for way in [points[id] for id in trajectory.waypoint_uuids]:
+                self._path.append(JointInterpolator([lastJoints, way.joints.joint_positions], trajectory.velocity))
+                lastJoints = way.joints.joint_positions
+
+            locEnd = points[trajectory.end_location_uuid]
+            self._path.append(JointInterpolator([lastJoints, locEnd.joint_positions], trajectory.velocity))
+
+        else: # ee_ik
+            locStart = points[trajectory.start_location_uuid]
+            lastPose = locStart.to_ros()
+
+            for way in [points[id] for id in trajectory.waypoint_uuids]:
+                self._path.append(PoseInterpolator(lastPose, way.to_ros(), trajectory.velocity))
+                lastPose = way.to_ros()
+
+            locEnd = points[trajectory.end_location_uuid]
+            self._path.append(PoseInterpolator(lastPose, locEnd.to_ros(), trajectory.velocity))
+
+        # structure the data to be captured
         self._trace_data = {
             #TODO fill this in for update
         }
-        #TODO produce path from trajectory and points
-        self._path = []
 
         self.jsf.clear()
-        self.ltk.set_joints(jp) # or jog to pose?
-        self.pyb.set_joints(jp, jn)
+        self.ltk.set_joints(locStart.joints.joint_positions) # or jog to pose?
+        self.pyb.set_joints(locStart.joints.joint_positions, locStart.joints.joint_names)
 
     def _end_job(self, status, submit_fnt):
         self._trajectory = None
@@ -78,7 +104,7 @@ class TraceProcessor:
     def _update_cb(self):
         # If the job has been started
         # step through trajectory and record the joints / frames as they occur
-        if self._path != None and self._trace_data != None:
+        if self._path != None and self._type != None and self._trace_data != None:
             pass
 
     def spin(self):
