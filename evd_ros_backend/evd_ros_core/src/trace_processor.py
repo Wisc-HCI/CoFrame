@@ -25,15 +25,22 @@ SPIN_RATE = 5
 UPDATE_RATE = 1000
 JSF_NUM_STEPS = 20
 JSF_DISTANCE_THRESHOLD = 0.001
+
+POSITION_INTERMEDIATE_DISTANCE_THRESHOLD = 0.1
+ORIENTATION_INTERMEDIATE_DISTANCE_THRESHOLD = 0.02
+
 POSITION_DISTANCE_THRESHOLD = 0.05
 ORIENTATION_DISTANCE_THRESHOLD = 0.02
 
+JOINTS_INTERMEDIATE_DISTANCE_THRESHOLD = 0.1
+JOINTS_DISTANCE_THRESHOLD = 0.1
 
 class TraceProcessor:
 
     def __init__(self, config_path, config_file_name):
         self._path = None
         self._type = None
+        self._thresholds = None
         self._trace_data = None
 
         with open(os.path.join(config_path, config_file_name),'r') as f:
@@ -49,6 +56,8 @@ class TraceProcessor:
         self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=True)
         self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
+        self._timestep = self._config['pybullet']['timestep']
+
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _start_job(self, data):
@@ -58,6 +67,7 @@ class TraceProcessor:
 
         # produce path from trajectory and points
         self._path = []
+        self._thresholds = []
         self._type = trajectory.move_type
         if self._type == 'joint':
             locStart = points[trajectory.start_location_uuid]
@@ -66,9 +76,11 @@ class TraceProcessor:
             for way in [points[id] for id in trajectory.waypoint_uuids]:
                 self._path.append(JointInterpolator([lastJoints, way.joints.joint_positions], trajectory.velocity))
                 lastJoints = way.joints.joint_positions
-
+                self._thresholds.append([JOINTS_INTERMEDIATE_DISTANCE_THRESHOLD]*len(way.joints.joint_positions))
+                
             locEnd = points[trajectory.end_location_uuid]
-            self._path.append(JointInterpolator([lastJoints, locEnd.joint_positions], trajectory.velocity))
+            self._path.append(JointInterpolator([lastJoints, locEnd.joints.joint_positions], trajectory.velocity))
+            self._thresholds.append([JOINTS_DISTANCE_THRESHOLD]*len(locEnd.joints.joint_positions))
 
         else: # ee_ik
             locStart = points[trajectory.start_location_uuid]
@@ -77,13 +89,27 @@ class TraceProcessor:
             for way in [points[id] for id in trajectory.waypoint_uuids]:
                 self._path.append(PoseInterpolator(lastPose, way.to_ros(), trajectory.velocity))
                 lastPose = way.to_ros()
+                self._thresholds.append((POSITION_INTERMEDIATE_DISTANCE_THRESHOLD,ORIENTATION_INTERMEDIATE_DISTANCE_THRESHOLD))
 
             locEnd = points[trajectory.end_location_uuid]
             self._path.append(PoseInterpolator(lastPose, locEnd.to_ros(), trajectory.velocity))
+            self._thresholds.append((POSITION_DISTANCE_THRESHOLD,ORIENTATION_DISTANCE_THRESHOLD))
 
         # structure the data to be captured
         self._trace_data = {
-            #TODO fill this in for update
+            "time_data": [],
+            "joint_names": self._joint_names,
+            "joint_data": {key:[] for key in self._joint_names},
+            "tf_data": {key:[] for key in [ self._link_groups['end_effector_path'] 
+                                          + self._link_groups['joint_paths'] 
+                                          + self._link_groups['tool_paths'] 
+                                          + self._link_groups['component_paths']]},
+            "grades": None,
+            "duration": 0,
+            "end_effector_path": self._link_groups['end_effector_path'],
+            "joint_paths": self._link_groups['joint_paths'],
+            "tool_paths": self._link_groups['tool_paths'],
+            "component_paths": self._link_groups['component_paths']
         }
 
         self.jsf.clear()
@@ -91,11 +117,11 @@ class TraceProcessor:
         self.pyb.set_joints(locStart.joints.joint_positions, locStart.joints.joint_names)
 
     def _end_job(self, status, submit_fnt):
-        self._trajectory = None
-        self._points = None
+        trace = Trace.from_dct(self._trace_data)
 
-        #TODO pack trace
-        trace = Trace()
+        self._path = None
+        self._type = None
+        self._thresholds = None
         self._trace_data = None
 
         data = trace.to_dct() if status else None
@@ -104,7 +130,7 @@ class TraceProcessor:
     def _update_cb(self):
         # If the job has been started
         # step through trajectory and record the joints / frames as they occur
-        if self._path != None and self._type != None and self._trace_data != None:
+        if self._path != None and self._thresholds != None and self._type != None and self._trace_data != None:
             pass
 
     def spin(self):

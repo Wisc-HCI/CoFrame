@@ -16,7 +16,6 @@ class PyBulletModel(object):
         pybullet.setRealTimeSimulation(False)
         pybullet.setGravity(0, 0, -9.8)
         pybullet.setTimeStep(self.timeStep)
-        pybullet.setRealTimeSimulation(False)
 
         #flags = pybullet.URDF_USE_SELF_COLLISION|pybullet.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS 
         flags = pybullet.URDF_MERGE_FIXED_LINKS
