@@ -31,7 +31,11 @@ const store = (set) => ({
     setSetupTab: (tab) => set((_)=>({setupTab:tab})),
     // the focusItem specifies the type and uuid of data to focus on
     focusItem: {type:null,uuid:null},
-    setFocusItem: (type,uuid) => set((_)=>({focusItem:{type:type,uuid:uuid},editorPane:EDITOR_TYPES.indexOf(type)>=0?'editor':'setup'})),
+    setFocusItem: (type,uuid) => set((_)=>({
+      focusItem:{type:type,uuid:uuid},
+      editorPane:EDITOR_TYPES.indexOf(type)>=0?'editor':'setup',
+      setupTab:EDITOR_TYPES.indexOf(type)>=0?'locations':type
+    })),
     clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null},secondaryFocusItem:{type:null,uuid:null}})),
     // the search terms they have entered
     searchTerm: '',

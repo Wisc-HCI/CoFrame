@@ -62,7 +62,7 @@ export function InfoTile(_) {
     } 
 
     return (
-        <Card title={title} style={{flex:1}} bodyStyle={{overflowY:'scroll'}}>
+        <Card title={title} style={{flex:1}} bodyStyle={{overflowY:'scroll',height:'calc(100vh - 650pt)'}}>
             {description}
         </Card>
     )
