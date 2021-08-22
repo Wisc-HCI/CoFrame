@@ -19,7 +19,7 @@ from evd_ros_core.msg import Job, Issue, StringArray
 
 class FrontendInterface:
 
-    def __init__(self, prefix='', use_update=False, use_registration=False, use_issues=False,
+    def __init__(self, prefix='', use_update=False, use_registration=False,
                  update_cb=None, register_cb=None, use_processor_configure=False, processor_configure_cb=None):
         self._prefix = prefix
         prefix_fmt = prefix + '/' if prefix != '' else prefix
@@ -41,13 +41,6 @@ class FrontendInterface:
             self._update_sub = rospy.Subscriber('{0}program/update'.format(prefix_fmt), String, self._update_cb)
         else:
             self._update_sub = None
-
-        if use_issues:
-            self._issues_submit_pub = rospy.Publisher('{0}program/submit/issue'.format(prefix_fmt), Issue, queue_size=5)
-            self._issues_clear_pub = rospy.Publisher('{0}program/clear/issue'.format(prefix_fmt), Issue, queue_size=5)
-        else:
-            self._issues_submit_pub = None
-            self._issues_clear_pub = None
 
         if use_processor_configure:
             self._configure_processors = rospy.Subscriber('{0}program/configure/processors'.format(prefix_fmt), String, self._processor_configure_cb)

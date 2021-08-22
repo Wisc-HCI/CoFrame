@@ -38,9 +38,6 @@ class FakeFrontendNode:
         self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5) #this is optional (I use it for visualization)
         self._configure_processors = rospy.Publisher('{0}program/configure/processors'.format(prefix_fmt), String, queue_size=5) # This is a json obj of all nodes needed for trace processing
 
-        self._issues_submit_sub = rospy.Subscriber('{0}program/submit/issue'.format(prefix_fmt), Issue, self._issue_submit_cb)
-        self._issues_clear_sub = rospy.Subscriber('{0}program/clear/issue'.format(prefix_fmt), Issue, self._issue_clear_cb)
-
         self._trace_request_pub = rospy.Publisher('{0}program/request/trace'.format(prefix_fmt), Job, queue_size=5)
         self._trace_submit_sub = rospy.Subscriber('{0}program/submit/trace'.format(prefix_fmt), Job, self._trace_submit_cb)
         self._trace_clear_pub = rospy.Publisher('{0}program/clear/trace'.format(prefix_fmt), String, queue_size=5)
