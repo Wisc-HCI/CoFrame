@@ -12,6 +12,9 @@ class PoseInterpolator:
         param: poseEnd is target ending pose
         param: velocity scalar for positional intepolation
         '''
+        self._poseStart = poseStart
+        self._poseEnd = poseEnd
+        self._velocity = velocity
 
         pos0 = poseStart.position
         pos1 = poseEnd.position
@@ -57,6 +60,18 @@ class PoseInterpolator:
         pose.orientation.z = q.z
 
         return pose
+
+    @property
+    def end_pose(self):
+        return self._poseEnd
+
+    @property
+    def start_pose(self):
+        return self._poseStart
+
+    @property
+    def velocity(self):
+        return self._velocity
 
     def clamp(self, val, lower, upper):
         if val < lower:

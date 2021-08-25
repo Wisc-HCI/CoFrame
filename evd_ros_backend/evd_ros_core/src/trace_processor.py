@@ -42,6 +42,9 @@ class TraceProcessor:
         self._type = None
         self._thresholds = None
         self._trace_data = None
+        self._time_overall = 0
+        self._time_step = 0
+        self._index = 0
 
         with open(os.path.join(config_path, config_file_name),'r') as f:
             self._config = json.load(f)
@@ -66,8 +69,11 @@ class TraceProcessor:
         points = {p['uuid']: NodeParser(p) for p in dct['points']}
 
         # produce path from trajectory and points
+        self._time_overall = 0
+        self._time_step = 0
         self._path = []
         self._thresholds = []
+        self._index = 0
         self._type = trajectory.move_type
         if self._type == 'joint':
             locStart = points[trajectory.start_location_uuid]
@@ -95,21 +101,15 @@ class TraceProcessor:
             self._path.append(PoseInterpolator(lastPose, locEnd.to_ros(), trajectory.velocity))
             self._thresholds.append((POSITION_DISTANCE_THRESHOLD,ORIENTATION_DISTANCE_THRESHOLD))
 
-        # structure the data to be captured
+        # structure the data to be captured (starts with initial state)
         self._trace_data = {
-            "time_data": [],
-            "joint_names": self._joint_names,
-            "joint_data": {key:[] for key in self._joint_names},
-            "tf_data": {key:[] for key in [ self._link_groups['end_effector_path'] 
-                                          + self._link_groups['joint_paths'] 
-                                          + self._link_groups['tool_paths'] 
-                                          + self._link_groups['component_paths']]},
-            "grades": None,
-            "duration": 0,
-            "end_effector_path": self._link_groups['end_effector_path'],
-            "joint_paths": self._link_groups['joint_paths'],
-            "tool_paths": self._link_groups['tool_paths'],
-            "component_paths": self._link_groups['component_paths']
+            "time_data": [0],
+            "lively_joint_data": [locStart.joints.joint_positions],
+            "lively_frame_data": [None],
+            "pybullet_joint_data": [None],
+            "pybullet_frame_data": [None],
+            "pybullet_collisions": [None],
+            "duration": 0
         }
 
         self.jsf.clear()
@@ -131,7 +131,47 @@ class TraceProcessor:
         # If the job has been started
         # step through trajectory and record the joints / frames as they occur
         if self._path != None and self._thresholds != None and self._type != None and self._trace_data != None:
-            pass
+
+            # self._path = [<interpolator>]
+            # self._thresholds = [<reached_thresh>]
+            # self._time_overall = <number>
+            # self._time_step = <number>
+            # self._trace_data = {data}
+            # self._timestep = <number>
+            # self._index = <number>
+            if self._type == 'ee_ik':
+                # interpolate pose in this leg of trajectory
+                interpolator = self._path[self._index]
+                ee_pose_itp = interpolator.step(self._time_step)
+
+                # run lively-ik
+                (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
+                ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
+                self.jsf.append(jp_ltk[0]) # append to joint filter to know when lively is done
+
+                # run pybullet model
+                pb_joints, pb_frames = self.pyb.step(jp_ltk, jn_ltk)
+                ee_pose_pyb = PyBulletModel.get_ee_pose(pb_frames)
+                pb_collisions = self.pyb.collisionCheck()
+                
+                # check if leg of trajectory is done
+                (posThreshold, ortThreshold) = self._thresholds[self._index]
+                if self.jsf.isStable() and poseReached(ee_pose_pyb, interpolator.end_pose, posThreshold, ortThreshold):
+                    self._index += 1
+                    self._time_step = 0
+                else:
+                    self._time_step += self._timestep
+
+            else: # self._type == 'joint'
+                pass
+
+            # record timing info
+            self._time_overall += self._timestep
+            self._trace_data['time_data'].append(self._time_overall)
+
+            # end condition is when trajectory has been fully traced
+            if self._index >= len(self._path):
+                self._job_queue.completed()
 
     def spin(self):
         rate = rospy.Rate(SPIN_RATE)

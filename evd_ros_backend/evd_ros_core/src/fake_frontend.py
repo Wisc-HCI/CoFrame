@@ -29,23 +29,52 @@ class FakeFrontendNode:
         else:
             self._program = default_program
 
+        ## Publish these as PoseStamped, the backend will create TFs from these
         self._app_frame_pub = rospy.Publisher('application/app_to_ros_frame', PoseStamped, queue_size=5)
         self._camera_pose_pub = rospy.Publisher('application/camera_pose', PoseStamped, queue_size=5)
         self._control_target_pose_pub = rospy.Publisher('application/control_target_pose', PoseStamped, queue_size=5)
 
+        ## Handle object registration. 
+        # Object registration is how backend EvDScript objects get propogated to the frontend
+        # and update/configure processors is how EvDScript in the frontend ends up in the backend
+        # 1) Send out a call to register
+        # 2) Receive all objects on registration
+        # 3) (Optionally) Periodically publish full EvD program (useful for RViz right now)
+        # 4) Publish all relevant EvDscript data to processors as JSON string of dict with fields
+        #           - collision_meshes : []
+        #           - pinch_points : []
+        #           - occupancy_zones : []
         self._registration_pub = rospy.Publisher('{0}program/call_to_register'.format(prefix_fmt), Empty, queue_size=5)
         self._registration_sub = rospy.Subscriber('{0}program/register'.format(prefix_fmt), StringArray, self._program_register_cb)
         self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5) #this is optional (I use it for visualization)
         self._configure_processors = rospy.Publisher('{0}program/configure/processors'.format(prefix_fmt), String, queue_size=5) # This is a json obj of all nodes needed for trace processing
 
+        ## Communication with trace processor
+        # This processor produces graded traces from trajectories.
+        # 1) Publish JOB with data JSON string of form below and an ID
+        # {
+        #    "trajectory": <EVD Trajectory OBJ>,
+        #    "points": [ //For all locations and waypoints used by trajectory
+        #       <EVD Waypoint>, ....,
+        #       <EvD Location>, ...
+        #    ]     
+        # }
+        # 2) Receive trace data as JSON string or null if processor unable to compute trace (its packed as a Job)
+        # 3) (Optionally) cancel the job with its ID
         self._trace_request_pub = rospy.Publisher('{0}program/request/trace'.format(prefix_fmt), Job, queue_size=5)
         self._trace_submit_sub = rospy.Subscriber('{0}program/submit/trace'.format(prefix_fmt), Job, self._trace_submit_cb)
         self._trace_clear_pub = rospy.Publisher('{0}program/clear/trace'.format(prefix_fmt), String, queue_size=5)
 
+        ## Communication with joint processor
+        # This processor produces joints EvD objects from waypoints or locations
+        # 1) Publish Job with data JSON string of waypoint or location
+        # 2) Receive joints data JSON string or null if processor unable to compute
+        # 3) (Optionally) cancel the job with its ID
         self._joints_request_pub = rospy.Publisher('{0}program/request/joints'.format(prefix_fmt), Job, queue_size=5)
         self._joints_submit_sub = rospy.Subscriber('{0}program/submit/joints'.format(prefix_fmt), Job, self._joints_submit_cb)
         self._joints_clear_pub = rospy.Publisher('{0}program/clear/joints'.format(prefix_fmt), String, queue_size=5)
 
+        # NOTE: this is just for the fake frontend to publish periodic updates
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
 
     def _program_register_cb(self, msg):

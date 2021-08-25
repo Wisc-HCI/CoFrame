@@ -20,7 +20,8 @@ class PyBulletModel(object):
         #flags = pybullet.URDF_USE_SELF_COLLISION|pybullet.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS 
         flags = pybullet.URDF_MERGE_FIXED_LINKS
 
-        self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True, flags=flags)
+        #self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True, flags=flags)
+        self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True)
         self.jointIds = {}
         self.linkIds = {}
         for j in range(pybullet.getNumJoints(self.robotId)):
@@ -109,6 +110,11 @@ class PyBulletModel(object):
             frames.append((pos, rot))
 
         return (frames, names)
+
+    @classmethod
+    def get_ee_pose(cls, frames, ee_frame='ee_link'):
+        #TODO
+        return pose
 
     def collisionCheck(self):
         return None #TODO
