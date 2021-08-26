@@ -42,5 +42,5 @@ export function ItemSortable({id, itemType, ancestors, context, disabled, onMove
 
   // In case there is some lag in updating the store, only render the component if there is actually data.
 
-  return data ? <Child ref={disabled ? null : ref} preview={disabled ? null : preview} style={{opacity}} data={data} ancestors={ancestors} context={context}/> : null
+  return data ? <Child key={data.uuid} ref={disabled ? null : ref} preview={disabled ? null : preview} style={{opacity}} data={data} ancestors={ancestors} context={context}/> : null
 }

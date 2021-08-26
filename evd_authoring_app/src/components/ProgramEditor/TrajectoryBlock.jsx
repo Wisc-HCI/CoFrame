@@ -138,7 +138,7 @@ export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context
             enabled={true}
           >
               {data.waypoint_uuids.map((id,idx)=>(
-                <div style={{marginBottom:idx===data.waypoint_uuids.length-1?0:3}}>
+                <div key={id} style={{marginBottom:idx===data.waypoint_uuids.length-1?0:3}}>
                   <StaticSortable 
                       key={id} 
                       id={id} 

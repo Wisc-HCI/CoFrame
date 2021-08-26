@@ -57,14 +57,14 @@ export function InfoTile(_) {
         tabs = getMachineInfo(issueParams)
     } else if (focusItem.type === 'thing' || (editorPane === 'setup' && setupTab === 'thingTypes')) {
         tabs = getThingInfo(issueParams)
-    // } else if (focusItem.type === 'program' || editorPane === 'program') {
-    //     tabs = getProgramInfo(issueParams)
-    // } else if (focusItem.type === 'skill') {
-    //     tabs = getSkillInfo(issueParams)
-    // } else if (focusItem.type === 'primitive') {
-    //     tabs = getPrimitiveInfo(issueParams)
-    // } else if (focusItem.type === 'trajectory') {
-    //     tabs = getTrajectoryInfo(issueParams)
+    } else if (focusItem.type === 'program' || ( editorPane === 'editor' && !focusItem.uuid)) {
+        tabs = getProgramInfo(issueParams)
+    } else if (focusItem.type === 'skill') {
+        tabs = getSkillInfo(issueParams)
+    } else if (focusItem.type === 'primitive') {
+        tabs = getPrimitiveInfo(issueParams)
+    } else if (focusItem.type === 'trajectory') {
+        tabs = getTrajectoryInfo(issueParams)
     } 
 
     return (
@@ -72,6 +72,7 @@ export function InfoTile(_) {
             <Row style={{margin:6}}>
                 {tabs.map((tab,i)=>
                     <Button 
+                        key={i}
                         style={{marginRight:10}}
                         type={i===currentTab || (i===0 && currentTab >= tabs.length) ? 'primary' : 'ghost'} 
                         onClick={()=>setCurrentTab(i)}>{tab.title}
