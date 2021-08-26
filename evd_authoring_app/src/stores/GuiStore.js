@@ -1,6 +1,7 @@
 import create from "zustand";
 import produce from "immer";
 import frameStyles from '../frameStyles';
+import { typeToKey } from "./EvdStore";
 
 const EDITOR_TYPES = ['primitive','skill','program','trajectory'];
 
@@ -34,7 +35,7 @@ const store = (set) => ({
     setFocusItem: (type,uuid) => set((_)=>({
       focusItem:{type:type,uuid:uuid},
       editorPane:EDITOR_TYPES.indexOf(type)>=0?'editor':'setup',
-      setupTab:EDITOR_TYPES.indexOf(type)>=0?'locations':type
+      setupTab:EDITOR_TYPES.indexOf(type)>=0?'locations':typeToKey(type)
     })),
     clearFocusItem: () => set((_)=>({focusItem:{type:null,uuid:null},secondaryFocusItem:{type:null,uuid:null}})),
     // the search terms they have entered

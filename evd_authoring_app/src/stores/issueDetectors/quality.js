@@ -1,6 +1,6 @@
 import { generateUuid } from "../generateUuid"
 
-export const findMissingBlockIssues = (program) => {
+export const findMissingBlockIssues = ({program}) => {
     let issues = {};
     // Enumerate all primitives and notify if they are missing any trajectories
     Object.values(program.data.primitives).forEach(primitive=>{
@@ -20,10 +20,10 @@ export const findMissingBlockIssues = (program) => {
         }
     })
     // More missing blocks could be added later
-    return issues;
+    return [issues, {}];
 }
 
-export const findMissingParameterIssues = (program) => {
+export const findMissingParameterIssues = ({program}) => {
     let issues = {};
     // Enumerate all primitives
     Object.values(program.data.primitives).forEach(primitive=>{
@@ -67,10 +67,10 @@ export const findMissingParameterIssues = (program) => {
             };
         })
     })
-    return issues;
+    return [issues, {}];
 }
 
-export const findUnusedSkillIssues = (program) => {
+export const findUnusedSkillIssues = ({program}) => {
     // Right now we do a naive search of skill calls and indicate any that have no calls in the program. 
     // However, this may not catch all cases where they are not used, in cases where that skill calls occurs in an unused skill.
     // This could be improved in the future.
@@ -98,10 +98,10 @@ export const findUnusedSkillIssues = (program) => {
             graphData: null
         }
     })
-    return issues;
+    return [issues, {}];
 }
 
-export const findUnusedFeatureIssues = (program) => {
+export const findUnusedFeatureIssues = ({program}) => {
     // Right now we do a naive search of primitives and indicate any that have no references to features in the program. 
     // However, this may not catch all cases where they are not used, in cases where that usage occurs in an unused skill.
     // This could be improved in the future.
@@ -222,10 +222,10 @@ export const findUnusedFeatureIssues = (program) => {
         }
     })
 
-    return issues;
+    return [issues, {}];
 }
 
-export const findEmptyBlockIssues = (program) => {
+export const findEmptyBlockIssues = ({program}) => {
     let issues = {};
     // Enumerate skills and return warnings about ones that have a primitiveIds list of length 0
     Object.values(program.data.skills).forEach(skill=>{
@@ -271,5 +271,5 @@ export const findEmptyBlockIssues = (program) => {
         }
     }
 
-    return issues;
+    return [issues, {}];
 }

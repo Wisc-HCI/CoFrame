@@ -11,6 +11,7 @@ const immer = (config) => (set, get, api) =>
 
 const store = (set) => ({
     // Issues are stored in a flat lookup
+    stats: [],
     issues: {
         /* 
         Each issue has the following structure:
@@ -142,9 +143,13 @@ const store = (set) => ({
         //state.issues = {};
         let newIssues = {};
         let programState = useEvdStore.getState();
+        let unrolledProgram = null;
+        let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
-            let newSectionIssues = section.updater(programState);
+            let [newSectionIssues, newStats] = section.updater({program:programState,unrolled:unrolledProgram,stats:state.stats});
+            // Augment allNewStats with the new incoming stats.
+            allNewStats = {...allNewStats,...newStats};
             // Enumerate the existing issues
             // For any issues that are already completed, exist in the new set, 
             // and don't now require changes, set them as complete.
@@ -165,6 +170,8 @@ const store = (set) => ({
         })
         // Update the issues set.
         state.issues = newIssues;
+        // Update the stats set.
+        state.stats.push(allNewStats);
     })
 });
 

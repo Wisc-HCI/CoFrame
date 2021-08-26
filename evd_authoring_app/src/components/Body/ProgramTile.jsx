@@ -18,7 +18,7 @@ export const ProgramTile = (props) => {
     }))
 
     return (
-        <div style={{height:'100%',paddingRight:10,paddingTop:10,paddingBottom:10}}>
+        <div style={{height:'calc(100vh - 48pt)',paddingRight:10,paddingTop:10,paddingBottom:10}}>
             <Card 
                 extra={
                     <Button onClick={() => { 

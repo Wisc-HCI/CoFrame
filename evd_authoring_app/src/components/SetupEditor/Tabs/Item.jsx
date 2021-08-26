@@ -5,6 +5,7 @@ import { DeleteOutlined, EllipsisOutlined } from '@ant-design/icons';
 
 import useEvdStore from '../../../stores/EvdStore';
 import useGuiStore from '../../../stores/GuiStore';
+// import { typeToKey } from '../../../stores/EvdStore';
 
 
 export function Item(props) {

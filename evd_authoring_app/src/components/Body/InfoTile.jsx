@@ -1,5 +1,5 @@
-import React, {useCallback} from 'react';
-import { Card } from 'antd';
+import React, {useCallback, useState} from 'react';
+import { Row, Button } from 'antd';
 import useGuiStore from '../../stores/GuiStore';
 import useReviewStore from '../../stores/ReviewStore';
 import useEvdStore, {typeToKey} from '../../stores/EvdStore';
@@ -23,6 +23,8 @@ export function InfoTile(_) {
         primaryColor:state.primaryColor
     }))
 
+    const [currentTab, setCurrentTab] = useState(0);
+
     const currentIssue = useReviewStore(state=>(secondaryFocusItem.type==='issue'?state.issues[secondaryFocusItem.uuid]:null));
     const [focusData, secondaryFocusData] = useEvdStore(useCallback(state=>{
         let focusData = null;
@@ -38,79 +40,47 @@ export function InfoTile(_) {
         return [focusData,secondaryFocusData]
     },[focusItem,secondaryFocusItem]))
 
-    let title = '';
-    let description = <p></p>
+    let tabs = [
+        {
+            title: 'No Data',
+            contents: <div></div>
+        }
+    ]
 
     const issueParams = {editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}
 
     if (focusItem.type === 'location' || (editorPane === 'setup' && setupTab === 'locations')) {
-        [title, description] = getLocationInfo(issueParams)
+        tabs = getLocationInfo(issueParams)
     } else if (focusItem.type === 'waypoint' || (editorPane === 'setup' && setupTab === 'waypoints')) {
-        [title, description] = getWaypointInfo(issueParams)
+        tabs = getWaypointInfo(issueParams)
     } else if (focusItem.type === 'machine' || (editorPane === 'setup' && setupTab === 'machines')) {
-        [title, description] = getMachineInfo(issueParams)
+        tabs = getMachineInfo(issueParams)
     } else if (focusItem.type === 'thing' || (editorPane === 'setup' && setupTab === 'thingTypes')) {
-        [title, description] = getThingInfo(issueParams)
-    } else if (focusItem.type === 'program' || editorPane === 'program') {
-        [title, description] = getProgramInfo(issueParams)
-    } else if (focusItem.type === 'skill') {
-        [title, description] = getSkillInfo(issueParams)
-    } else if (focusItem.type === 'primitive') {
-        [title, description] = getPrimitiveInfo(issueParams)
-    } else if (focusItem.type === 'trajectory') {
-        [title, description] = getTrajectoryInfo(issueParams)
+        tabs = getThingInfo(issueParams)
+    // } else if (focusItem.type === 'program' || editorPane === 'program') {
+    //     tabs = getProgramInfo(issueParams)
+    // } else if (focusItem.type === 'skill') {
+    //     tabs = getSkillInfo(issueParams)
+    // } else if (focusItem.type === 'primitive') {
+    //     tabs = getPrimitiveInfo(issueParams)
+    // } else if (focusItem.type === 'trajectory') {
+    //     tabs = getTrajectoryInfo(issueParams)
     } 
 
     return (
-        <Card title={title} style={{flex:1}} bodyStyle={{overflowY:'scroll',height:'calc(100vh - 650pt)'}}>
-            {description}
-        </Card>
+        <div style={{height:'calc(100vh - 494pt)',backgroundColor:'rgba(100,100,100,0.3)', padding: 10, borderRadius: 3}}>
+            <Row style={{margin:6}}>
+                {tabs.map((tab,i)=>
+                    <Button 
+                        style={{marginRight:10}}
+                        type={i===currentTab || (i===0 && currentTab >= tabs.length) ? 'primary' : 'ghost'} 
+                        onClick={()=>setCurrentTab(i)}>{tab.title}
+                    </Button>
+                )}
+            </Row>
+            <div style={{height:'calc(100vh - 546pt)',backgroundColor:'rgba(0,0,0,0.6)', marginTop:10, padding: 10, borderRadius: 3, color:'white'}}>
+                {tabs[currentTab] ? tabs[currentTab].contents : tabs[0].contents}
+            </div>
+        </div>
     )
-
-    // if (secondaryFocusItem.type === 'issue' && currentIssue) {
-    //     title = 'Info: Issue';
-    //     description = currentIssue.description;
-    // } else if (editorPane === 'program') {
-    //     title = 'Info: The Program Editor';
-    //     description = <p>You can adjust the program in the Program Editor by dragging elements from the drawer into the canvas. Elements can be modified by clicking on them from within the canvas.</p>
-    // } else if (editorPane === 'setup' && focusItem.type === null) {
-    //     if (setupTab === 'locations') {
-    //         title = 'Info: Locations';
-    //         description = <p>Locations are meaningful positions in the scene. For example, they can be used to define goals for placing or picking up <i>Things</i>, or specifying starting or ending positions for the robot.</p>
-    //     } else if (setupTab === 'machines') {
-    //         title = 'Info: Machines';
-    //         description = <p>Machines are items in the workspace that perform tasks, such as modifying or combining <i>Things</i> after placement in defined configurations. They also encode the duration for each process.</p>
-    //     } else if (setupTab === 'waypoints') {
-    //         title = 'Info: Waypoints';
-    //         if (frame ===  'safety') {
-    //             description = (
-    //                 <div>
-    //                     Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
-    //                     <Alert showIcon message={'Pay special attention to placing waypoints around the occupancy zone of the human, since this is more likely to result in undesirable conflicts between the human and the robot.'}></Alert>
-    //                 </div>
-    //             )
-                
-    //         } else if (frame === 'performance') {
-    //             description = (
-    //                 <div>
-    //                     Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
-    //                     <Alert showIcon message={'Pay special attention to the sequences of waypoints and where they are relative to one another within a trajectory. Longer trajectories take longer to execute and can contribute to greater space usage.'}></Alert>
-    //                 </div>
-    //             )
-    //         } else {
-    //             description = <p>Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.</p>
-    //         }
-            
-    //     } else if (setupTab === 'thingTypes') {
-
-    //     }
-    // } else if (focusItem.type !== null) {
-    //     title = 'Info: Detail';
-    //     description = <p>Specific info for this thing</p>
-    // }
-
-
-    // return (
-        
-    // )
 }
