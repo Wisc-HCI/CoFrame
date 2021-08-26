@@ -5,7 +5,8 @@
   <arg name="ros_frame_id"/>
   <arg name="run_test" default="true"/>
 
-  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+  <include file="$(find evd_ros_core)/launch/rosbridge.launch"/>
+
   <!-- <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/> -->
   <!-- <node name="tf_world_publisher" pkg="evd_ros_core" type="tf_world_publisher.py" output="screen">
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
@@ -27,10 +28,8 @@
     <param name="config_file_name" value="$(arg config_file_name)"/>
   </node>
 
-  <node name="program_verifier" pkg="evd_ros_core" type="program_verifier.py" output="screen"/>
-
   <!-- For Debug -->
-  <include if="$(arg run_test)" file="$(find evd_ros_core)/launch/test_core_application.launch">
+  <include if="$(arg run_test)" file="$(find evd_ros_core)/launch/_test/test_core_application.launch">
     <arg name="ros_frame_id" value="world"/>
   </include>
 

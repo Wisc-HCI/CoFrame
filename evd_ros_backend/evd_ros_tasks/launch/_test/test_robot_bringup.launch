@@ -19,9 +19,10 @@
   <node if="$(arg run_test_script)" name="test_robot_bringup" pkg="evd_ros_tasks" type="test_robot_bringup.py"/>
 
   <!-- RVIZ -->
-  <group if="$(arg launch_rviz)">
-    <node if="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz" args="-d $(find evd_ros_tasks)/rviz/machine_tending.rviz"/>
-    <node unless="$(arg load_rviz_cfg)" type="rviz" name="rviz" pkg="rviz"/>
-  </group>
+  <include file="$(find evd_ros_tasks/launch/_common/rviz.launch">
+    <arg name="launch_rviz" value="$(arg launch_rviz)"/>
+    <arg name="load_rviz_cfg" value="$(arg load_rviz_cfg)"/>
+    <arg name="task_name" value="test_robot_bringup"/>
+  </include>
 
 </launch>
