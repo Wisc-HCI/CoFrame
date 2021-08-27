@@ -13,7 +13,7 @@ import {MachineInOutRegionDetail} from './MachineInOutRegionDetail'
 
 import useEvdStore from '../../stores/EvdStore';
 
-const EDITOR_TYPES = ['primitive','skill','program','trajectory']
+const EDITOR_TYPES = ['primitive','skill','program','trajectory','scene']
 
 export const Detail = (_) => {
 
@@ -31,7 +31,7 @@ export const Detail = (_) => {
     }))
 
     const {item} = useEvdStore(useCallback(state=>({
-        item:focusItem.type && focusItem.type !== 'program' ? state.data[focusItem.type+'s'][focusItem.uuid] : null
+        item:focusItem.type && focusItem.type !== 'program' && focusItem.type !== 'scene' ? state.data[focusItem.type+'s'][focusItem.uuid] : null
     }),[focusItem]))
 
     let {childItem} = useEvdStore(useCallback(state=>({

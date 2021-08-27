@@ -3,6 +3,7 @@ import { Row, Button } from 'antd';
 import useGuiStore from '../../stores/GuiStore';
 import useReviewStore from '../../stores/ReviewStore';
 import useEvdStore, {typeToKey} from '../../stores/EvdStore';
+import { getSceneInfo } from '../ContextualInfo/Scene';
 import { getLocationInfo } from '../ContextualInfo/Locations';
 import { getWaypointInfo } from '../ContextualInfo/Waypoints';
 import { getMachineInfo } from '../ContextualInfo/Machines';
@@ -29,7 +30,9 @@ export function InfoTile(_) {
     const [focusData, secondaryFocusData] = useEvdStore(useCallback(state=>{
         let focusData = null;
         let secondaryFocusData = null;
-        if (focusItem.type === 'program') {
+        if (focusItem.type === 'scene') {
+            focusData = {uuid:focusItem.uuid,type:focusItem.type}
+        } else if (focusItem.type === 'program') {
             focusData = {uuid:state.uuid,name:state.name,description:state.description}
         } else if (focusItem.type) {
             focusData = state.data[typeToKey(focusItem.type)][focusItem.uuid]
@@ -49,7 +52,9 @@ export function InfoTile(_) {
 
     const issueParams = {editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}
 
-    if (focusItem.type === 'location' || (editorPane === 'setup' && setupTab === 'locations')) {
+    if (focusItem.type === 'scene') {
+        tabs = getSceneInfo(issueParams)
+    } else if (focusItem.type === 'location' || (editorPane === 'setup' && setupTab === 'locations')) {
         tabs = getLocationInfo(issueParams)
     } else if (focusItem.type === 'waypoint' || (editorPane === 'setup' && setupTab === 'waypoints')) {
         tabs = getWaypointInfo(issueParams)
@@ -71,12 +76,33 @@ export function InfoTile(_) {
         <div style={{height:'calc(100vh - 494pt)',backgroundColor:'rgba(100,100,100,0.3)', padding: 10, borderRadius: 3}}>
             <Row style={{margin:6}}>
                 {tabs.map((tab,i)=>
-                    <Button 
-                        key={i}
-                        style={{marginRight:10}}
-                        type={i===currentTab || (i===0 && currentTab >= tabs.length) ? 'primary' : 'ghost'} 
-                        onClick={()=>setCurrentTab(i)}>{tab.title}
-                    </Button>
+                    (i===currentTab || (i===0 && currentTab >= tabs.length) ? (
+                        <div 
+                          key={i}
+                          align='center'
+                          style={{
+                            borderRadius:2,
+                            fontFamily:'inherit',
+                            fontWeight:400,
+                            height:32,
+                            display:'inline-block',
+                            textAlign:'center',
+                            backgroundColor:primaryColor,
+                            fontVariant: 'tabular-nums',
+                            lineHeight: 1.5715,
+                            padding:'6px 15px',
+                            marginRight:10,
+                            fontSize:14}}>
+                            {tab.title}
+                        </div>
+                    ) : (
+                        <Button 
+                            key={i}
+                            style={{marginRight:10}}
+                            type='ghost'
+                            onClick={()=>setCurrentTab(i)}>{tab.title}
+                        </Button>
+                    ))
                 )}
             </Row>
             <div style={{height:'calc(100vh - 546pt)',backgroundColor:'rgba(0,0,0,0.6)', marginTop:10, padding: 10, borderRadius: 3, color:'white'}}>

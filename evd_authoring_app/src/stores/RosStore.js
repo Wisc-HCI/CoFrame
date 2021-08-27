@@ -2,7 +2,7 @@ import create from "zustand";
 import ROSLIB from '@robostack/roslib';
 
 import useEvdStore from './EvdStore';
-import useSimStore from './SimStore';
+import useGuiStore from './GuiStore';
 
 const store = (set) => ({
     url: 'ws://localhost:9090',
@@ -68,9 +68,9 @@ const store = (set) => ({
             messageType: 'tf2_msgs/TFMessage'
         });
 
-        const updateFn = useSimStore.getState().updateFromTfs;
+        const updateFn = useGuiStore.getState().updateFromTfs;
         updateProgramTopic.subscribe(useEvdStore.getState().updateProgram);
-        // updateTfsTopic.subscribe(useSimStore.getState().updateFromTfs)
+        // updateTfsTopic.subscribe(useGuiStore.getState().updateFromTfs)
         updateTfsTopic.subscribe(updateFn);
 
         ros.connect();
@@ -92,7 +92,7 @@ const store = (set) => ({
 const useRosStore = create(store);
 
 useRosStore.getState().setUrl('ws://localhost:9090');
-useSimStore.getState().setup();
+useGuiStore.getState().setup();
 
 
 export default useRosStore;

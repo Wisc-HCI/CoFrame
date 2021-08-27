@@ -65,7 +65,6 @@ export const SetupEditor = () => {
       }
     }
     
-    console.log(setupTab)
     const toggle = () => setDrawerExpanded(!drawerExpanded);
     
     return (
