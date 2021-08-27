@@ -1,8 +1,7 @@
-import React, {useCallback, useState} from 'react';
+import React, {useState} from 'react';
 import { Row, Button } from 'antd';
-import useGuiStore from '../../stores/GuiStore';
-import useReviewStore from '../../stores/ReviewStore';
-import useEvdStore, {typeToKey} from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
+import { typeToKey } from '../../stores/helpers';
 import { getSceneInfo } from '../ContextualInfo/Scene';
 import { getLocationInfo } from '../ContextualInfo/Locations';
 import { getWaypointInfo } from '../ContextualInfo/Waypoints';
@@ -15,33 +14,63 @@ import { getTrajectoryInfo } from '../ContextualInfo/TrajectoryBlock';
 
 export function InfoTile(_) {
 
-    const { editorPane, setupTab, focusItem, secondaryFocusItem, frame, primaryColor } = useGuiStore(state=>({
-        editorPane:state.editorPane,
-        setupTab:state.setupTab,
-        focusItem:state.focusItem,
-        secondaryFocusItem:state.secondaryFocusItem,
-        frame:state.frame,
-        primaryColor:state.primaryColor
-    }))
+    const [
+        focusItem,
+        editorPane,
+        setupTab,
+        frame,
+        primaryColor,
+        focusData,
+        secondaryFocusData,
+        currentIssue
+    ] = useStore(state=>{
+
+        let focusData = null;
+        let secondaryFocusData = null;
+        let currentIssue = null;
+        if (state.focusItem.type === 'scene') {
+            focusData = {uuid:state.focusItem.uuid,type:state.focusItem.type}
+        } else if (state.focusItem.type === 'program') {
+            focusData = {uuid:state.uuid,name:state.name,description:state.description}
+        } else if (state.focusItem.type) {
+            focusData = state.data[typeToKey(state.focusItem.type)][state.focusItem.uuid]
+        } 
+        if (state.secondaryFocusItem.type && state.secondaryFocusItem.type !== "issue") {
+            secondaryFocusData = state.data[typeToKey(state.secondaryFocusItem.type)][state.secondaryFocusItem.uuid]
+        } else if (state.secondaryFocusItem.type === "issue") {
+            currentIssue = state.issues[state.secondaryFocusItem.uuid]
+        }
+
+        return [
+            state.focusItem,
+            state.editorPane,
+            state.setupTab,
+            state.frame,
+            state.primaryColor,
+            focusData,
+            secondaryFocusData,
+            currentIssue
+        ]
+    })
 
     const [currentTab, setCurrentTab] = useState(0);
 
-    const currentIssue = useReviewStore(state=>(secondaryFocusItem.type==='issue'?state.issues[secondaryFocusItem.uuid]:null));
-    const [focusData, secondaryFocusData] = useEvdStore(useCallback(state=>{
-        let focusData = null;
-        let secondaryFocusData = null;
-        if (focusItem.type === 'scene') {
-            focusData = {uuid:focusItem.uuid,type:focusItem.type}
-        } else if (focusItem.type === 'program') {
-            focusData = {uuid:state.uuid,name:state.name,description:state.description}
-        } else if (focusItem.type) {
-            focusData = state.data[typeToKey(focusItem.type)][focusItem.uuid]
-        } 
-        if (secondaryFocusItem.type && secondaryFocusItem.type !== "issue") {
-            secondaryFocusData = state.data[typeToKey(secondaryFocusItem.type)][secondaryFocusItem.uuid]
-        }
-        return [focusData,secondaryFocusData]
-    },[focusItem,secondaryFocusItem]))
+    // const currentIssue = useReviewStore(state=>(secondaryFocusItem.type==='issue'?state.issues[secondaryFocusItem.uuid]:null));
+    // const [focusData, secondaryFocusData] = useEvdStore(useCallback(state=>{
+    //     let focusData = null;
+    //     let secondaryFocusData = null;
+    //     if (focusItem.type === 'scene') {
+    //         focusData = {uuid:focusItem.uuid,type:focusItem.type}
+    //     } else if (focusItem.type === 'program') {
+    //         focusData = {uuid:state.uuid,name:state.name,description:state.description}
+    //     } else if (focusItem.type) {
+    //         focusData = state.data[typeToKey(focusItem.type)][focusItem.uuid]
+    //     } 
+    //     if (secondaryFocusItem.type && secondaryFocusItem.type !== "issue") {
+    //         secondaryFocusData = state.data[typeToKey(secondaryFocusItem.type)][secondaryFocusItem.uuid]
+    //     }
+    //     return [focusData,secondaryFocusData]
+    // },[focusItem,secondaryFocusItem]))
 
     let tabs = [
         {

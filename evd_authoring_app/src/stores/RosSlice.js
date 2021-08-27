@@ -1,10 +1,6 @@
-import create from "zustand";
 import ROSLIB from '@robostack/roslib';
 
-import useEvdStore from './EvdStore';
-import useGuiStore from './GuiStore';
-
-const store = (set) => ({
+export const RosSlice = (set,get) => ({
     url: 'ws://localhost:9090',
     // SetURL resets ROS
     setUrl: (url) => set((_)=>({url:url,connection:'disconnected'})),
@@ -17,14 +13,14 @@ const store = (set) => ({
     setProgramSrv: null,
     updateProgramTopic: null,
     updateTfsTopic: null,
-    onConnection: () => set({connection:'connected'}),
-    onError: () => set({connection:'disconnected'}),
-    onClose: () => set({connection:'disconnected'}),
-    connect: () => set((state)=>{
-        const ros = new ROSLIB.Ros({url:state.url});
-        ros.on('connection', state.onConnection);
-        ros.on('error', state.onError);
-        ros.on('close', state.onClose);
+    onConnection: () => set((_)=>({connection:'connected'})),
+    onError: () => set((_)=>({connection:'disconnected'})),
+    onClose: () => set((_)=>({connection:'disconnected'})),
+    connect: () => {
+        const ros = new ROSLIB.Ros({url:get().url});
+        ros.on('connection', get().onConnection);
+        ros.on('error', get().onError);
+        ros.on('close', get().onClose);
 
         const loadAppSrv = new ROSLIB.Service({
             ros: ros,
@@ -68,14 +64,11 @@ const store = (set) => ({
             messageType: 'tf2_msgs/TFMessage'
         });
 
-        const updateFn = useGuiStore.getState().updateFromTfs;
-        updateProgramTopic.subscribe(useEvdStore.getState().updateProgram);
-        // updateTfsTopic.subscribe(useGuiStore.getState().updateFromTfs)
-        updateTfsTopic.subscribe(updateFn);
+        const updateTfsFn = get().updateFromTfs;
+        updateTfsTopic.subscribe(updateTfsFn);
 
         ros.connect();
-        return {
-            url:state.url,
+        set(()=>({
             connection:'connecting',
             ros:ros,
             loadAppSrv:loadAppSrv, 
@@ -85,14 +78,6 @@ const store = (set) => ({
             setProgramSrv:setProgramSrv,
             updateProgramTopic:updateProgramTopic,
             updateTfsTopic:updateTfsTopic
-        };
-    })
+        }))
+    }
 });
-
-const useRosStore = create(store);
-
-useRosStore.getState().setUrl('ws://localhost:9090');
-useGuiStore.getState().setup();
-
-
-export default useRosStore;

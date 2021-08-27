@@ -2,21 +2,18 @@ import React from 'react';
 
 import { Modal, Input, Alert } from 'antd';
 
-import useGuiStore from '../../stores/GuiStore';
-import useRosStore from '../../stores/RosStore';
+import useStore from '../../stores/Store';
 
 export const SettingsModal = (_) => {
 
-    const {activeModal, closeModal} = useGuiStore(state=>({
+    const {activeModal, closeModal, url, setUrl, connection, connect} = useStore(state=>({
         activeModal:state.activeModal,
-        closeModal:state.closeModal
-    }));
-    const {url, setUrl, connection, connect} = useRosStore(state=>({
+        closeModal:state.closeModal,
         url:state.url,
         setUrl:state.setUrl,
         connection:state.connection,
         connect:state.connect
-    }))
+    }));
     
     let connectButtonText = 'Connect';
     if (connection === 'connecting') {

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 
 import { Space, Divider, Row, Input } from 'antd';
 import OrientationInput from './OrientationInput';
@@ -10,12 +10,12 @@ import { MachineInOutTypeDetail } from './MachineInOutTypeDetail';
 
 export const MachineDetail = ({ uuid }) => {
 
-  const { machine } = useEvdStore(useCallback(state => ({
+  const { machine } = useStore(useCallback(state => ({
     machine: state.data.machines[uuid],
 
   })
     , [uuid]))
-  const { setItemProperty } = useEvdStore(state => ({
+  const { setItemProperty } = useStore(state => ({
     setItemProperty: state.setItemProperty
   }));
 

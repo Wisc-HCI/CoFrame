@@ -3,22 +3,20 @@ import React, { useCallback } from 'react';
 import { List, Space, Button, Popover } from 'antd';
 import { DeleteOutlined, EllipsisOutlined } from '@ant-design/icons';
 
-import useEvdStore from '../../../stores/EvdStore';
-import useGuiStore from '../../../stores/GuiStore';
-// import { typeToKey } from '../../../stores/EvdStore';
+import useStore from '../../../stores/Store';
 
 
 export function Item(props) {
 
   const { type, uuid, title, description } = props;
 
-  const item = useEvdStore(useCallback(state =>
+  const item = useStore(useCallback(state =>
     state.data[type + 's'][uuid]
     , [uuid, type]))
 
-  const deleteItem = useEvdStore(state => state.deleteItem);
+  const deleteItem = useStore(state => state.deleteItem);
 
-  const { focusItem, setFocusItem, primaryColor } = useGuiStore(state => ({
+  const { focusItem, setFocusItem, primaryColor } = useStore(state => ({
     focusItem: state.focusItem,
     setFocusItem: state.setFocusItem,
     primaryColor: state.primaryColor

@@ -3,11 +3,11 @@ import React from 'react';
 import {CaretRightFilled,PauseOutlined,RollbackOutlined,FullscreenExitOutlined,FullscreenOutlined } from '@ant-design/icons';
 import { Button, Space, Tooltip } from 'antd';
 
-import useGuiStore from '../stores/GuiStore';
+import useStore from '../stores/Store';
 
 export function Controls() {
 
-  const [simMode,setSimMode] = useGuiStore(state=>([state.simMode, state.setSimMode]))
+  const [simMode,setSimMode] = useStore(state=>([state.simMode, state.setSimMode]))
 
   return (
 

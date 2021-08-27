@@ -1,17 +1,15 @@
 import React, { useCallback } from 'react';
-import useEvdStore from '../../stores/EvdStore';
-import useGuiStore from '../../stores/GuiStore';
+import useStore from '../../stores/Store';
 import { List, Space, Button, InputNumber, Row } from 'antd';
 
 export const InputOutputComponent = (props) => {
-  const type = useEvdStore(useCallback(state => state.data.thingTypes[props.typeuuid], [props.typeuuid]));
-  console.log(type)
+  const type = useStore(useCallback(state => state.data.thingTypes[props.typeuuid], [props.typeuuid]));
 
-  const setChildrenDrawer = useGuiStore(state => state.setChildrenDrawer)
-
+  const setChildrenDrawer = useStore(state => state.setChildrenDrawer)
 
 
-  const {setSecondaryFocusItem} = useGuiStore(state => ({
+
+  const {setSecondaryFocusItem} = useStore(state => ({
     setSecondaryFocusItem : state.setSecondaryFocusItem
   }));
 

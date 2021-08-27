@@ -1,6 +1,7 @@
 import React, {useCallback, useRef} from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
+import useStore from '../../../stores/Store';
+import { typeToKey } from '../../../stores/helpers';
 import {childLookup} from './childLookup';
 
 const validDrop=(item,ancestors) => ancestors[0].accepts.indexOf(item.type)>=0 && (ancestors.map(ancestor=>ancestor.uuid).indexOf(item.parentData.uuid)>=0 || item.parentData.type === 'drawer');
@@ -9,7 +10,7 @@ export function ItemSortable({id, itemType, ancestors, context, disabled, onMove
 
   const ref = useRef(null);
 
-  const data = useEvdStore(useCallback(state=>state.data[typeToKey(itemType)][id],[id,itemType]));
+  const data = useStore(useCallback(state=>state.data[typeToKey(itemType)][id],[id,itemType]));
 
   const Child = childLookup[itemType];
 

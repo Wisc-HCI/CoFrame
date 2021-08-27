@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 
 
 import { Space,Divider,Input,Switch } from 'antd';
@@ -9,19 +9,19 @@ import PositionInput from './PositionInput';
 
 export const WaypointDetail = ({uuid}) => {
 
-    const {waypoint} = useEvdStore(useCallback(state=>({
+    const {waypoint} = useStore(useCallback(state=>({
         waypoint:state.data.waypoints[uuid],
 
     })
       ,[uuid]))
 
-      const {setItemProperty} = useEvdStore(state=>({
+      const {setItemProperty} = useStore(state=>({
           setItemProperty:state.setItemProperty
       }));
 
     const { TextArea } = Input;
 
-    // const { deleteItem, setItemProperty } = useEvdStore(state=>({
+    // const { deleteItem, setItemProperty } = useStore(state=>({
     //     deleteItem:state.deleteItem,
     //     setItemProperty:state.setItemProperty
     // }));
@@ -49,7 +49,7 @@ export const WaypointDetail = ({uuid}) => {
       <br/>
       <div style={{paddingTop: '5px',display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
        <b>Reachable:</b>
-       <Switch disabled = 'true' checked = {waypoint.joints.reachable} style={{left :'-30px' }}/>
+       <Switch disabled={true} checked = {waypoint.joints.reachable} style={{left :'-30px' }}/>
 
 
       </div>

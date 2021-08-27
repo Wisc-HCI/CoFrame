@@ -7,13 +7,13 @@ import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
 import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 import {ReactComponent as WaypointIcon} from '../CustomIcons/Waypoint.svg';
 import {SearchBox} from './Tabs/SearchBox.jsx';
-import useGuiStore from '../../stores/GuiStore';
+import useStore from '../../stores/Store';
 
 export const SetupEditor = () => {
 
     const [drawerExpanded, setDrawerExpanded] = useState(false);
 
-    const {setupTab, setSetupTab,searchTerm, setSearchTerm, clearSearchTerm} = useGuiStore(state=>({
+    const {setupTab, setSetupTab,searchTerm, setSearchTerm, clearSearchTerm} = useStore(state=>({
       setupTab:state.setupTab,
       setSetupTab:state.setSetupTab,
       searchTerm:state.searchTerm,

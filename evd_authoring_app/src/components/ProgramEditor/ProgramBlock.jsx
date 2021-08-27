@@ -4,8 +4,7 @@ import Icon, { EllipsisOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useDrag } from 'react-dnd';
 import { ItemSortable } from './Wrappers';
 import { NodeZone } from './NodeZone';
-import useGuiStore from '../../stores/GuiStore';
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
@@ -14,16 +13,15 @@ import { acceptLookup } from './acceptLookup';
 
 export const ProgramBlock = (props) => {
 
-    const [uuid, name, type, transform, primitiveIds] = useEvdStore(state=>([
+    const [uuid, name, type, transform, primitiveIds, moveChildPrimitive] = useStore(state=>([
         state.uuid,
         state.name,
         state.type,
         state.transform,
-        state.primitiveIds
+        state.primitiveIds,
+        state.moveChildPrimitive
     ]))
     
-    const moveChildPrimitive = useEvdStore(state=>state.moveChildPrimitive);
-
     const data = {uuid,name,type,primitiveIds,transform};
 
     const fieldData = acceptLookup['node.primitive.hierarchical.program.'].primitiveIds;
@@ -33,7 +31,7 @@ export const ProgramBlock = (props) => {
         ...props.ancestors
     ];
 
-    const [frame,focusItem,setFocusItem] = useGuiStore(state=>([
+    const [frame,focusItem,setFocusItem] = useStore(state=>([
         state.frame,
         state.focusItem,
         state.setFocusItem

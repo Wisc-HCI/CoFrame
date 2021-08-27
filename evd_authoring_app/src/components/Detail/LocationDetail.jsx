@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 
 
 import { Divider,Input,Switch} from 'antd';
@@ -9,15 +9,11 @@ import PositionInput from './PositionInput';
 
 export const LocationDetail = ({uuid}) => {
 
-    const {location} = useEvdStore(useCallback(state=>({
+    const {location,setItemProperty} = useStore(useCallback(state=>({
         location:state.data.locations[uuid],
-
+        setItemProperty:state.setItemProperty
     })
       ,[uuid]))
-
-      const {setItemProperty} = useEvdStore(state=>({
-          setItemProperty:state.setItemProperty
-      }));
 
     const { TextArea } = Input;
 

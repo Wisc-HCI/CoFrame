@@ -1,8 +1,6 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 
 import { Drawer, Input, Empty, Space, Button, Popover } from 'antd';
-
-import useGuiStore from '../../stores/GuiStore';
 
 import { LocationDetail } from './LocationDetail';
 import { MachineDetail } from './MachineDetail';
@@ -11,46 +9,33 @@ import { WaypointDetail } from './WaypointDetail';
 import { DeleteOutlined } from '@ant-design/icons';
 import {MachineInOutRegionDetail} from './MachineInOutRegionDetail'
 
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 
 const EDITOR_TYPES = ['primitive','skill','program','trajectory','scene']
 
 export const Detail = (_) => {
 
-    const {focusItem, clearFocusItem} = useGuiStore(state=>({
+    const {
+      focusItem, 
+      clearFocusItem,
+      childrenDrawer,
+      clearChildrenDrawer,
+      secondaryFocusItem,
+      deleteItem, 
+      setItemProperty,
+      item,
+      childItem
+    } = useStore(state=>({
         focusItem:state.focusItem,
-        clearFocusItem:state.clearFocusItem
-    }));
-    const {childrenDrawer,clearChildrenDrawer} = useGuiStore(state => ({
-      childrenDrawer: state.childrenDrawer,
-      clearChildrenDrawer : state.clearChildrenDrawer
-    }))
-
-    const {secondaryFocusItem} = useGuiStore(state => ({
-      secondaryFocusItem : state.secondaryFocusItem
-    }))
-
-    const {item} = useEvdStore(useCallback(state=>({
-        item:focusItem.type && focusItem.type !== 'program' && focusItem.type !== 'scene' ? state.data[focusItem.type+'s'][focusItem.uuid] : null
-    }),[focusItem]))
-
-    let {childItem} = useEvdStore(useCallback(state=>({
-      // Right now, only support secondaryFocusItems that are machines
-      childItem:['region'].indexOf(secondaryFocusItem.type)>-1 ? state.data[secondaryFocusItem.type+'s'][secondaryFocusItem.uuid] : null
-    }),[secondaryFocusItem]))
-
-    if (!childItem){
-      childItem = {
-        name : 'nothing',
-        editable : false
-      }
-    }// dummy class
-
-    const { deleteItem, setItemProperty } = useEvdStore(state=>({
+        clearFocusItem:state.clearFocusItem,
+        childrenDrawer: state.childrenDrawer,
+        clearChildrenDrawer : state.clearChildrenDrawer,
+        secondaryFocusItem : state.secondaryFocusItem,
         deleteItem:state.deleteItem,
-        setItemProperty:state.setItemProperty
+        setItemProperty:state.setItemProperty,
+        item:state.focusItem.type && state.focusItem.type !== 'program' && state.focusItem.type !== 'scene' ? state.data[state.focusItem.type+'s'][state.focusItem.uuid] : null,
+        childItem:['region'].indexOf(state.secondaryFocusItem.type)>-1 ? state.data[state.secondaryFocusItem.type+'s'][state.secondaryFocusItem.uuid] : {name : 'nothing',editable : false}
     }));
-
 
     const handleOK = () =>{
         clearFocusItem();

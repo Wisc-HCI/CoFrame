@@ -5,13 +5,14 @@ import React, {useCallback} from 'react';
 // } from '@dnd-kit/sortable';
 import { GenericDraggable } from './Wrappers';
 import { acceptLookup } from './acceptLookup';
-import useEvdStore, {typeToKey} from "../../stores/EvdStore";
+import useStore from "../../stores/Store";
+import { typeToKey } from '../../stores/helpers';
 
 export const UUIDDrawer = ({itemType}) => {
     // itemType is the "type" of item from the EvdStore that the uuid corresponds to.
     // e.g. 'thingType', 'machine', 'waypoint', etc.
 
-    const uuids = useEvdStore(useCallback(state=>Object.keys(state.data[typeToKey(itemType)]),[itemType]));
+    const uuids = useStore(useCallback(state=>Object.keys(state.data[typeToKey(itemType)]),[itemType]));
     
     const ancestors = [
         {uuid:'drawer',...acceptLookup.drawer.default}

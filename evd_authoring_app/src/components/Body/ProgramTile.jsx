@@ -5,14 +5,14 @@ import { ProgramEditor } from '../ProgramEditor';
 import { SetupEditor } from '../SetupEditor';
 import { Detail } from '../Detail';
 
-import useGuiStore from '../../stores/GuiStore';
+import useStore from '../../stores/Store';
 
 
 
 
 export const ProgramTile = (props) => {
 
-    const {editorPane, setEditorPane} = useGuiStore(state=>({
+    const {editorPane, setEditorPane} = useStore(state=>({
         editorPane:state.editorPane,
         setEditorPane:state.setEditorPane
     }))

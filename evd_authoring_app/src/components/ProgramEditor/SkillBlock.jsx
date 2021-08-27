@@ -3,8 +3,7 @@ import { Col, Row, Button } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons';
 import { ItemSortable } from './Wrappers';
 import { NodeZone } from './NodeZone';
-import useGuiStore from '../../stores/GuiStore';
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 import { acceptLookup } from './acceptLookup';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
@@ -12,8 +11,7 @@ import './highlight.css';
 
 export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, ref) => {
 
-    const [frame,focusItem,setFocusItem] = useGuiStore(state=>([state.frame,state.focusItem,state.setFocusItem]));
-    const moveChildPrimitive = useEvdStore(state=>state.moveChildPrimitive);
+    const [frame,focusItem,setFocusItem,moveChildPrimitive] = useStore(state=>([state.frame,state.focusItem,state.setFocusItem,state.moveChildPrimitive]));
     const focused = focusItem.uuid === data.uuid;
 
     const fieldData = acceptLookup['node.primitive.hierarchical.skill.'].primitiveIds;

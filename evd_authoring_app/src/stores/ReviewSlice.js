@@ -1,15 +1,9 @@
-import create from "zustand";
-import produce from "immer";
-import useEvdStore from "./EvdStore";
 import { findCollisionIssues, findEndEffectorPoseIssues, findOccupancyIssues, findPinchPointIssues, findThingMovementIssues } from "./issueDetectors/safety";
 import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues } from "./issueDetectors/quality";
 import { findEndEffectorSpeedIssues, findJointSpeedIssues, findPayloadIssues, findReachabilityIssues, findSpaceUsageIssues } from "./issueDetectors/performance";
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
 
-const immer = (config) => (set, get, api) =>
-  config((fn) => set(produce(fn)), get, api);
-
-const store = (set) => ({
+export const ReviewSlice = (set) => ({
     // Issues are stored in a flat lookup
     stats: [],
     issues: {
@@ -142,12 +136,11 @@ const store = (set) => ({
     refresh: () => set(state=>{
         //state.issues = {};
         let newIssues = {};
-        let programState = useEvdStore.getState();
         let unrolledProgram = null;
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
-            let [newSectionIssues, newStats] = section.updater({program:programState,unrolled:unrolledProgram,stats:state.stats});
+            let [newSectionIssues, newStats] = section.updater({program:state,unrolled:unrolledProgram,stats:state.stats});
             // Augment allNewStats with the new incoming stats.
             allNewStats = {...allNewStats,...newStats};
             // Enumerate the existing issues
@@ -174,7 +167,3 @@ const store = (set) => ({
         state.stats.push(allNewStats);
     })
 });
-
-const useReviewStore = create(immer(store));
-
-export default useReviewStore;

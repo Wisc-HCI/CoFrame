@@ -3,8 +3,7 @@ import { ParameterZone } from "./ParameterZone";
 import { NodeZone } from "./NodeZone";
 import { ItemSortable } from "./Wrappers";
 import { InputNumber, Row, Col, Button, Tag } from "antd";
-import useEvdStore from "../../stores/EvdStore";
-import useGuiStore from "../../stores/GuiStore";
+import useStore from "../../stores/Store";
 import blockStyles from "./blockStyles";
 import { ReactComponent as PrimitiveIcon } from '../CustomIcons/Primitive.svg';
 import { ReactComponent as SkillIcon } from '../CustomIcons/Skill.svg';
@@ -14,9 +13,8 @@ import './highlight.css';
 
 export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}, ref) => {
   const { uuid } = data;
-  const focused = useGuiStore(useCallback(state => state.focusItem.uuid === uuid, [uuid]));
-  const focusExists = useGuiStore(state => state.focusItem.type !== null);
-  const [frame, clearFocusItem] = useGuiStore(state => [state.frame, state.clearFocusItem]);
+  const focused = useStore(useCallback(state => state.focusItem.uuid === uuid, [uuid]));
+  const [frame, clearFocusItem, focusExists] = useStore(state => [state.frame, state.clearFocusItem, state.focusItem.type !== null]);
   const unfocused = focusExists && !focused;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
@@ -49,11 +47,11 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
     backgroundColor: "rgba(0,0,0,0.1)"
   }
 
-  const [setPrimitiveParameter,moveTrajectoryBlock] = useEvdStore(
+  const [setPrimitiveParameter,moveTrajectoryBlock] = useStore(
     (state) => [state.setPrimitiveParameter,state.moveTrajectoryBlock]
   );
 
-  const trajectoryUuids = useEvdStore(state=>Object.keys(state.data.trajectories));
+  const trajectoryUuids = useStore(state=>Object.keys(state.data.trajectories));
   const localOnly = Object.keys(context).filter(uuid=>trajectoryUuids.indexOf(uuid) < 0)
 
   let Glyph = null;

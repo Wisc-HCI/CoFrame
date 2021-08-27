@@ -4,11 +4,11 @@ import { List } from 'antd';
 
 import { Item } from './Item';
 
-import useEvdStore from '../../../stores/EvdStore';
+import useStore from '../../../stores/Store';
 
 export function ItemList({ type, title, description, searchTerm }) {
 
-  const uuids = useEvdStore(useCallback(state => Object.keys(state.data[type + 's'])
+  const uuids = useStore(useCallback(state => Object.keys(state.data[type + 's'])
     .filter(uuid => {
       if (searchTerm === '') {
         return true

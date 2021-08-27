@@ -5,20 +5,19 @@ import YAML from 'yaml';
 import { Modal, Button, Row, Col, message } from 'antd';
 import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 
-import useGuiStore from '../../stores/GuiStore';
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 
 
 export const SyncModal = (_) => {
 
-    const { activeModal, closeModal } = useGuiStore(state => ({
+    const { activeModal, closeModal } = useStore(state => ({
         activeModal: state.activeModal,
         closeModal: state.closeModal
     }));
 
     const fileInputRef = useRef();
 
-    const [getProgram, setProgram] = useEvdStore(state => [state.getProgram, state.setProgram]);
+    const [getProgram, setProgram] = useStore(state => [state.getProgram, state.setProgram]);
 
     const download = () => {
         const program = getProgram();

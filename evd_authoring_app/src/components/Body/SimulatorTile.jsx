@@ -3,15 +3,14 @@ import React from 'react';
 import { Card } from 'antd';
 
 import {Scene} from 'robot-scene';
-import useGuiStore from '../../stores/GuiStore';
+import useStore from '../../stores/Store';
 import { Controls } from '../Controls';
 import { InfoTile } from './InfoTile';
-import frameStyles from '../../frameStyles';
 
 
 export const SimulatorTile = (_) => {
 
-    const frame = useGuiStore(state => state.frame);
+    const primaryColor = useStore(state => state.primaryColor);
 
     return (
         <div style={{height:'calc(100vh - 48pt)',padding:10}}>
@@ -20,7 +19,7 @@ export const SimulatorTile = (_) => {
                 bodyStyle={{padding:0,height:500,margin:0}}
                 extra={<Controls/>}
                 title="Simulator">
-                    <div style={{height:'100%',backgroundColor: frameStyles.colors[frame], padding: 5, width:'100%'}}>
+                    <div style={{height:'100%',backgroundColor: primaryColor, padding: 5, width:'100%'}}>
 
                         <Scene
                             displayTfs={false}
@@ -28,7 +27,7 @@ export const SimulatorTile = (_) => {
                             isPolar={false}
                             backgroundColor='#1e1e1e'
                             planeColor='#141414'
-                            highlightColor={frameStyles.colors[frame]}
+                            highlightColor={primaryColor}
                             plane={-0.75}
                         />
 

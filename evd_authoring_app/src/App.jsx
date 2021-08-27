@@ -12,19 +12,16 @@ import { ProgramTile } from "./components/Body/ProgramTile";
 
 import { Modals } from "./components/Modals";
 
-import useGuiStore from "./stores/GuiStore";
-import useRosStore from "./stores/RosStore";
-
-import useEvdStore from "./stores/EvdStore";
+import useStore from "./stores/Store";
 
 
 export function App() {
 
-    const setActiveModal = useGuiStore(state=>state.setActiveModal);
-    const [frame,primaryColor] = useGuiStore(state=>[state.frame,state.primaryColor]);
-    const simMode = useGuiStore(state=>state.simMode);
-    const connection = useRosStore(state=>state.connection);
-    const programName = useEvdStore(state=>state.name);
+    const setActiveModal = useStore(state=>state.setActiveModal);
+    const [frame,primaryColor] = useStore(state=>[state.frame,state.primaryColor]);
+    const simMode = useStore(state=>state.simMode);
+    const connection = useStore(state=>state.connection);
+    const programName = useStore(state=>state.name);
 
     useEffect(() => {
         if (frame === 'safety') {
