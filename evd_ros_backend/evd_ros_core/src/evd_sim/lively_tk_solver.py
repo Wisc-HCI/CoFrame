@@ -72,6 +72,14 @@ class LivelyTKSolver(object):
 
         return (joints, jNames), (frames, fNames)
 
+    @property
+    def joint_names(self):
+        return self.config_data["joint_ordering"]
+
+    @property
+    def frame_names(self):
+        return self.config_data["joint_names"][0] + [self.config_data["ee_fixed_joints"][0]]
+
     @classmethod
     def get_ee_pose(cls, frames):
         pose = Pose()

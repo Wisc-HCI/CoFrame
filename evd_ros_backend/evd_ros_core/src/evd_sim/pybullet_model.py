@@ -111,6 +111,14 @@ class PyBulletModel(object):
 
         return (frames, names)
 
+    @property
+    def joint_names(self):
+        return self.jointIds.keys()
+
+    @property
+    def frame_names(self):
+        return self.linkIds.keys()
+
     @classmethod
     def get_ee_pose(cls, frames, ee_frame='ee_link'):
         #TODO

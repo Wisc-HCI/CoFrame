@@ -10,7 +10,7 @@ import os
 import json
 import rospy
 
-from evd_script import Trace, NodeParser
+from evd_script import Trace, NodeParser, Pose
 from evd_interfaces.job_queue import JobQueue
 from evd_sim.lively_tk_solver import LivelyTKSolver
 from evd_sim.pybullet_model import PyBulletModel
@@ -103,13 +103,21 @@ class TraceProcessor:
 
         # structure the data to be captured (starts with initial state)
         self._trace_data = {
+            "duration": 0,
             "time_data": [0],
-            "lively_joint_data": [locStart.joints.joint_positions],
-            "lively_frame_data": [None],
-            "pybullet_joint_data": [None],
-            "pybullet_frame_data": [None],
-            "pybullet_collisions": [None],
-            "duration": 0
+            "type": self._type,
+            "interpolator_path": {n: [None] for n in self.ltk.joint_names + ['ee_pose']},
+            "lively_joint_names": self.ltk.joint_names,
+            "lively_joint_data": {n:[locStart.joints.joint_positions[i]] for i, n in enumerate(self.ltk.joint_names)},
+            "lively_frame_names": self.ltk.frame_names,
+            "lively_frame_data": {n:[None] for n in self.ltk.frame_names},
+            "pybullet_joint_names": self.pyb.joint_names,
+            "pybullet_joint_data": {n:[None] for n in self.pyb.joint_names},
+            "pybullet_joint_velocities": {n:[None] for n in self.pyb.joint_names},
+            "pybullet_frame_names": self.pyb.frame_names,
+            "pybullet_frame_data": {n:[None] for n in self.pyb.frame_names},
+            "pybullet_collisions": {}, #TODO fill this in later
+            "grades": {} #TODO fill this in later
         }
 
         self.jsf.clear()
@@ -117,15 +125,15 @@ class TraceProcessor:
         self.pyb.set_joints(locStart.joints.joint_positions, locStart.joints.joint_names)
 
     def _end_job(self, status, submit_fnt):
-        trace = Trace.from_dct(self._trace_data)
+        #trace = Trace.from_dct(self._trace_data)
 
         self._path = None
         self._type = None
         self._thresholds = None
         self._trace_data = None
 
-        data = trace.to_dct() if status else None
-        submit_fnt(json.dumps(data))
+        #data = trace.to_dct() if status else None
+        submit_fnt(json.dumps(self._trace_data))
 
     def _update_cb(self):
         # If the job has been started
@@ -144,15 +152,35 @@ class TraceProcessor:
                 interpolator = self._path[self._index]
                 ee_pose_itp = interpolator.step(self._time_step)
 
+                self._trace_data['interpolator_path']['ee_pose'].append(Pose.from_ros(ee_pose_itp).to_simple_dct())
+
                 # run lively-ik
                 (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
                 ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
                 self.jsf.append(jp_ltk[0]) # append to joint filter to know when lively is done
+                
+                for n, p in zip(jn_ltk,jp_ltk):
+                    self._trace_data['lively_joint_data'][n].append(p)
+
+                (fp_ltk, fn_ltk) = frames_ltk
+                for n, p in zip(fn_ltk, fp_ltk):
+                    self._trace_data['lively_frame_data'][n].append(p)
 
                 # run pybullet model
                 pb_joints, pb_frames = self.pyb.step(jp_ltk, jn_ltk)
                 ee_pose_pyb = PyBulletModel.get_ee_pose(pb_frames)
                 pb_collisions = self.pyb.collisionCheck()
+
+                (jp_pby, jv_pby, jn_pby) = pb_joints
+                for n, p, v in zip(jn_pby,jp_pby, jv_pby):
+                    self._trace_data['pybullet_joint_data'][n].append(p)
+                    self._trace_data['pybullet_joint_velocities'][n].append(p)
+
+                (fp_pby, fn_pby) = pb_frames
+                for n, p in zip(fn_pby, fp_pby):
+                    self._trace_data['pybullet_frame_data'][n].append(p)
+
+                #TODO collision packing
                 
                 # check if leg of trajectory is done
                 (posThreshold, ortThreshold) = self._thresholds[self._index]
@@ -171,6 +199,7 @@ class TraceProcessor:
 
             # end condition is when trajectory has been fully traced
             if self._index >= len(self._path):
+                self._trace_data['duration'] = self._time_overall
                 self._job_queue.completed()
 
     def spin(self):
