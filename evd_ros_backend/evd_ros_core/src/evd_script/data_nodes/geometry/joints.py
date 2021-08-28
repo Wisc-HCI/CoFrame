@@ -221,19 +221,21 @@ class Joints(Node):
             for j, name in enumerate(self._joint_names):
                 if name == n:
                     self._joint_names[j] = positions[i]
+                    break
 
     def get_joint_positions_by_names(self, names):
         joints = []
 
         for n in names:
             position = None
-            for j, names in enumerate(self._joint_names):
-                if names = n:
-                    position = self._joint_names[j]
 
-            if position == None:
-                position = None
-            joints.append(position)
+            for j, name in enumerate(self._joint_names):
+                if name == n:
+                    position = self._joint_names[j]
+                    break
+
+            if position != None:
+                joints.append(position)
         
         return joints
 

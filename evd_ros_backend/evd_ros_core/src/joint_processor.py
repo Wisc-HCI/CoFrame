@@ -40,7 +40,7 @@ class JointProcessor:
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
         self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
-        self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
+        #self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _start_job(self, data):
         length = len(self._joint_names)
@@ -61,7 +61,7 @@ class JointProcessor:
         self._joints = None
         submit_fnt(json.dumps(data))
 
-    def _update_cb(self):
+    def _update_cb(self, event=None):
         # If the job has been started
         # step toward target and record the joint positions
         # and when joints are stable (little/no-more optimization) then

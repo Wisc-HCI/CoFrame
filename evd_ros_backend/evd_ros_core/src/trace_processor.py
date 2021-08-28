@@ -61,7 +61,7 @@ class TraceProcessor:
 
         self._timestep = self._config['pybullet']['timestep']
 
-        self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
+        #self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _start_job(self, data):
         dct = json.loads(data)
@@ -135,7 +135,7 @@ class TraceProcessor:
         #data = trace.to_dct() if status else None
         submit_fnt(json.dumps(self._trace_data))
 
-    def _update_cb(self):
+    def _update_cb(self, event=None):
         # If the job has been started
         # step through trajectory and record the joints / frames as they occur
         if self._path != None and self._thresholds != None and self._type != None and self._trace_data != None:

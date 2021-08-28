@@ -3,7 +3,7 @@
   <arg name="robot_description_xacro" default="$(find evd_ros_tasks)/description/ur3e.urdf.xacro"/>
   <arg name="kinematics_config" default="$(find ur_description)/config/ur3_default.yaml"/>
 
-  <arg name="bringup" default="true"/>
+  <arg name="bringup_physical_robot" default="true"/>
   <arg name="simulate_physical_robot" default='true'/>
 
   <arg name="physical_ip_robot" default="10.134.71.9"/>
@@ -12,7 +12,7 @@
   <arg name="physical_reverse_port" default="50001"/>
 
   <!-- Launch physical robot interface from here if local-->
-  <group if="$(arg bringup)" ns="physical">
+  <group if="$(arg bringup_physical_robot)" ns="physical">
     <include file="$(find evd_ros_tasks)/launch/_common/urcontroller.launch">
       <arg name="type" value="physical"/>
       <arg if="$(arg simulate_physical_robot)" name="ip_address" value="$(arg physical_ip_sim)"/>

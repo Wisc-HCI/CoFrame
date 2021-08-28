@@ -12,7 +12,7 @@ from std_msgs.msg import String, Empty
 from geometry_msgs.msg import PoseStamped
 from evd_ros_core.msg import Job, Issue, StringArray
 
-from evd_script import Program, NodeParser, Pose
+from evd_script import Program, NodeParser, Pose, Position, Orientation
 from evd_script.examples import CreateDebugApp
 
 
@@ -107,7 +107,7 @@ class FakeFrontendNode:
 
         # At some point the frontend should define the `app` transform and then two poses from that.
         # `world` (which is the ROS root) will be relative to `app`
-        self._app_frame_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='app').to_ros(stamped=True))
+        self._app_frame_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='world').to_ros(stamped=True))
         self._camera_pose_pub.publish(Pose(Position.from_axis('x'),Orientation.Identity(), link='app').to_ros(stamped=True))
         self._control_target_pose_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='app').to_ros(stamped=True))
 

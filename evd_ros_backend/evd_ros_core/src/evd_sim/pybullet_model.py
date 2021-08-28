@@ -121,7 +121,23 @@ class PyBulletModel(object):
 
     @classmethod
     def get_ee_pose(cls, frames, ee_frame='ee_link'):
-        #TODO
+        pose = Pose()
+
+        for i in range(0,len(frames)):
+            if frames[i][1] == ee_frame:
+                (pos, rot) = frames[i][0]
+
+                pose.position.x = pos.x
+                pose.position.y = pos.y
+                pose.position.z = pos.z
+
+                pose.orientation.x = rot.x
+                pose.orientation.y = rot.y
+                pose.orientation.z = rot.z
+                pose.orientation.w = rot.w
+
+                break
+
         return pose
 
     def collisionCheck(self):
