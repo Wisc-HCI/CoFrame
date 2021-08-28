@@ -1,13 +1,14 @@
 import React, {useCallback, useRef} from 'react';
 import { useDrag } from 'react-dnd';
-import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
+import useStore from '../../../stores/Store';
+import { typeToKey } from '../../../stores/helpers';
 import {childLookup} from './childLookup';
 
 export function ItemDraggable({id, itemType, ancestors, context, disabled}) {
 
   const ref = useRef(null);
 
-  const data = useEvdStore(useCallback(state=>state.data[typeToKey(itemType)][id],[id,itemType]));
+  const data = useStore(useCallback(state=>state.data[typeToKey(itemType)][id],[id,itemType]));
 
   const Child = childLookup[itemType];
 

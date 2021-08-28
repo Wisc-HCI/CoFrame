@@ -4,22 +4,21 @@ import { acceptLookup } from './acceptLookup';
 import {ProgramBlock} from './ProgramBlock';
 import {ItemDraggable} from './Wrappers';
 import {Grid} from './Grid';
-import useEvdStore from '../../stores/EvdStore';
-import useGuiStore from '../../stores/GuiStore';
+import useStore from '../../stores/Store';
 import { objectMap } from '../../stores/helpers';
 
 export const Canvas = () => {
 
     const ref = useRef();
-    const clearFocusItem = useGuiStore(state=>state.clearFocusItem);
+    const clearFocusItem = useStore(state=>state.clearFocusItem);
     const acceptTypes = acceptLookup.grid.primitiveIds.accepts;
 
     const ancestors = [
         {uuid:'grid',...acceptLookup.grid.primitiveIds}
     ];
 
-    const [moveItem,createAndPlaceItem,skills] = useEvdStore(state=>[state.moveItem,state.createAndPlaceItem,state.data.skills]);
-    const nameLookup = useEvdStore(state=>({
+    const [moveItem,createAndPlaceItem,skills] = useStore(state=>[state.moveItem,state.createAndPlaceItem,state.data.skills]);
+    const nameLookup = useStore(state=>({
         ...objectMap(state.data.placeholders,(placeholder)=>placeholder.pending_node.name),
         ...objectMap(state.data.locations,(location)=>location.name),
         ...objectMap(state.data.waypoints,(waypoint)=>waypoint.name),

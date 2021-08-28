@@ -1,7 +1,6 @@
 import React, { forwardRef, useCallback, useState } from "react";
 import { ParameterZone } from "./ParameterZone";
-import useEvdStore from "../../stores/EvdStore";
-import useGuiStore from "../../stores/GuiStore";
+import useStore from "../../stores/Store";
 import blockStyles from "./blockStyles";
 import { StaticSortable } from './Wrappers';
 import { NodeZone } from "./NodeZone";
@@ -12,12 +11,10 @@ import './highlight.css';
 
 export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context}, ref) => {
   const { uuid, start_location_uuid, end_location_uuid } = data;
-  const focused = useGuiStore(useCallback(state => state.focusItem.uuid === uuid, [uuid]));
-  const focusExists = useGuiStore(state => state.focusItem.type !== null);
-  const [frame, clearFocusItem] = useGuiStore(state => [state.frame, state.clearFocusItem]);
+  const focused = useStore(useCallback(state => state.focusItem.uuid === uuid, [uuid]));
+  const focusExists = useStore(state => state.focusItem.type !== null);
+  const [frame, clearFocusItem, setItemProperty,moveTrajectoryWaypoint] = useStore(state => [state.frame, state.clearFocusItem, state.setItemProperty,state.moveTrajectoryWaypoint]);
   const unfocused = focusExists && !focused;
-
-  const [setItemProperty,moveTrajectoryWaypoint] = useEvdStore(state => ([state.setItemProperty,state.moveTrajectoryWaypoint]));
 
   const inDrawer = ancestors[0].uuid === 'drawer';
   const editingEnabled = !inDrawer && data.editable;
@@ -138,7 +135,7 @@ export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context
             enabled={true}
           >
               {data.waypoint_uuids.map((id,idx)=>(
-                <div style={{marginBottom:idx===data.waypoint_uuids.length-1?0:3}}>
+                <div key={id} style={{marginBottom:idx===data.waypoint_uuids.length-1?0:3}}>
                   <StaticSortable 
                       key={id} 
                       id={id} 

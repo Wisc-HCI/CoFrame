@@ -4,8 +4,7 @@ import { List, Switch, Collapse, Row, Space } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 
 import { ReviewIssue } from './ReviewIssue';
-import useGuiStore from '../../stores/GuiStore';
-import useReviewStore from '../../stores/ReviewStore';
+import useStore from '../../stores/Store';
 
 import { FrameButton } from '../FrameButton';
 
@@ -25,8 +24,8 @@ const sectionFrame = (sectionId) => FRAMES.filter(filter=>filter.sections.indexO
 
 export function ReviewSection({sectionId, blocked, initialBlocked}) {
   
-  const [frame, setFrame] = useGuiStore(state=>([state.frame,state.setFrame]));
-  const [name, issueIds, complete, dependencies, depNames, depFrames] = useReviewStore(useCallback(state=>{
+  const [frame, setFrame] = useStore(state=>([state.frame,state.setFrame]));
+  const [name, issueIds, complete, dependencies, depNames, depFrames] = useStore(useCallback(state=>{
     const name = state.sections[sectionId].name;
     const issueIds = state.sections[sectionId].issues;
     const complete = isComplete(state,sectionId);

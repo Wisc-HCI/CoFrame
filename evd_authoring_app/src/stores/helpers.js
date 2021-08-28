@@ -1,5 +1,21 @@
 import lodash from 'lodash';
 
+export const typeToKey = (type) => {
+    let key;
+    switch(type) {
+      case 'trajectory':
+        key = 'trajectories';
+        break;
+      case 'collisionMesh':
+        key = 'collisionMeshes';
+        break;
+      default:
+        key = type + 's'
+    }
+    return key;
+  }
+
+
 export function flattenProgram(primitives,skills,parentData) {
 
     let flattenedPrimitives = [];

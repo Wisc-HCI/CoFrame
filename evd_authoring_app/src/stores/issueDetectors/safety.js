@@ -1,31 +1,31 @@
 // import { generateUuid } from "../generateUuid"
 
-export const findEndEffectorPoseIssues = (program) => { // Requires trace pose information
+export const findEndEffectorPoseIssues = (_) => { // Requires trace pose information
     let issues = {};
 
-    return issues;
+    return [issues, {}];
 }
 
-export const findCollisionIssues = (program) => { // Requires collision graders
+export const findCollisionIssues = (_) => { // Requires collision graders
     let issues = {};
 
-    return issues;
+    return [issues, {}];
 }
 
-export const findOccupancyIssues = (program) => { // Requires occupancy zone graders
+export const findOccupancyIssues = (_) => { // Requires occupancy zone graders
     let issues = {};
 
-    return issues;
+    return [issues, {}];
 }
 
-export const findPinchPointIssues = (program) => { // Requires pinch-point graders
+export const findPinchPointIssues = (_) => { // Requires pinch-point graders
     let issues = {};
 
-    return issues;
+    return [issues, {}];
 }
 
-export const findThingMovementIssues = (program) => { // May require trace pose information
+export const findThingMovementIssues = (_) => { // May require trace pose information
     let issues = {};
 
-    return issues;
+    return [issues, {}];
 }

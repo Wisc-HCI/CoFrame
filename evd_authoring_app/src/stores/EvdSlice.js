@@ -1,28 +1,8 @@
-import create from "zustand";
-import produce from "immer";
-import fakeEvdData from './fakeEvdData';
 import { flattenProgram, unFlattenProgramPrimitives, unFlattenProgramSkills } from './helpers';
 import lodash from 'lodash';
+import { typeToKey } from './helpers';
 
-const immer = (config) => (set, get, api) =>
-  config((fn) => set(produce(fn)), get, api);
-
-export const typeToKey = (type) => {
-  let key;
-  switch(type) {
-    case 'trajectory':
-      key = 'trajectories';
-      break;
-    case 'collisionMesh':
-      key = 'collisionMeshes';
-      break;
-    default:
-      key = type + 's'
-  }
-  return key;
-}
-
-const store = (set,get) => ({
+export const EvdSlice = (set,get) => ({
     name: 'Default Program Name',
     uuid: 'program',
     type: 'node.primitive.hierarchical.program.',
@@ -273,17 +253,17 @@ const store = (set,get) => ({
     })
 });
 
-const useEvdStore = create(immer(store));
+// const useEvdStore = create(immer(store));
 
-console.log(fakeEvdData.arbitrary.program)
-// Remove for ROS-based updates later (useful for frontend dev)
-useEvdStore.getState().setProgram(fakeEvdData.arbitrary.program);
+// console.log(fakeEvdData.arbitrary.program)
+// // Remove for ROS-based updates later (useful for frontend dev)
+// useEvdStore.getState().setProgram(fakeEvdData.arbitrary.program);
 
-console.log('Primitives');
-console.log(useEvdStore.getState().data.primitives);
-console.log('Skills');
-console.log(useEvdStore.getState().data.skills);
-console.log('Top-level primitives');
-console.log(useEvdStore.getState().primitiveIds);
+// console.log('Primitives');
+// console.log(useEvdStore.getState().data.primitives);
+// console.log('Skills');
+// console.log(useEvdStore.getState().data.skills);
+// console.log('Top-level primitives');
+// console.log(useEvdStore.getState().primitiveIds);
 
-export default useEvdStore;
+// export default useEvdStore;

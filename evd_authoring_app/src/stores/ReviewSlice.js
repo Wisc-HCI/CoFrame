@@ -1,16 +1,11 @@
-import create from "zustand";
-import produce from "immer";
-import useEvdStore from "./EvdStore";
 import { findCollisionIssues, findEndEffectorPoseIssues, findOccupancyIssues, findPinchPointIssues, findThingMovementIssues } from "./issueDetectors/safety";
 import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues } from "./issueDetectors/quality";
 import { findEndEffectorSpeedIssues, findJointSpeedIssues, findPayloadIssues, findReachabilityIssues, findSpaceUsageIssues } from "./issueDetectors/performance";
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
 
-const immer = (config) => (set, get, api) =>
-  config((fn) => set(produce(fn)), get, api);
-
-const store = (set) => ({
+export const ReviewSlice = (set) => ({
     // Issues are stored in a flat lookup
+    stats: [],
     issues: {
         /* 
         Each issue has the following structure:
@@ -141,10 +136,13 @@ const store = (set) => ({
     refresh: () => set(state=>{
         //state.issues = {};
         let newIssues = {};
-        let programState = useEvdStore.getState();
+        let unrolledProgram = null;
+        let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
-            let newSectionIssues = section.updater(programState);
+            let [newSectionIssues, newStats] = section.updater({program:state,unrolled:unrolledProgram,stats:state.stats});
+            // Augment allNewStats with the new incoming stats.
+            allNewStats = {...allNewStats,...newStats};
             // Enumerate the existing issues
             // For any issues that are already completed, exist in the new set, 
             // and don't now require changes, set them as complete.
@@ -165,9 +163,7 @@ const store = (set) => ({
         })
         // Update the issues set.
         state.issues = newIssues;
+        // Update the stats set.
+        state.stats.push(allNewStats);
     })
 });
-
-const useReviewStore = create(immer(store));
-
-export default useReviewStore;

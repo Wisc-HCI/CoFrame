@@ -1,8 +1,8 @@
-import React, {useCallback} from 'react';
-import { Card } from 'antd';
-import useGuiStore from '../../stores/GuiStore';
-import useReviewStore from '../../stores/ReviewStore';
-import useEvdStore, {typeToKey} from '../../stores/EvdStore';
+import React, {useState} from 'react';
+import { Row, Button } from 'antd';
+import useStore from '../../stores/Store';
+import { typeToKey } from '../../stores/helpers';
+import { getSceneInfo } from '../ContextualInfo/Scene';
 import { getLocationInfo } from '../ContextualInfo/Locations';
 import { getWaypointInfo } from '../ContextualInfo/Waypoints';
 import { getMachineInfo } from '../ContextualInfo/Machines';
@@ -14,103 +14,129 @@ import { getTrajectoryInfo } from '../ContextualInfo/TrajectoryBlock';
 
 export function InfoTile(_) {
 
-    const { editorPane, setupTab, focusItem, secondaryFocusItem, frame, primaryColor } = useGuiStore(state=>({
-        editorPane:state.editorPane,
-        setupTab:state.setupTab,
-        focusItem:state.focusItem,
-        secondaryFocusItem:state.secondaryFocusItem,
-        frame:state.frame,
-        primaryColor:state.primaryColor
-    }))
+    const [
+        focusItem,
+        editorPane,
+        setupTab,
+        frame,
+        primaryColor,
+        focusData,
+        secondaryFocusData,
+        currentIssue
+    ] = useStore(state=>{
 
-    const currentIssue = useReviewStore(state=>(secondaryFocusItem.type==='issue'?state.issues[secondaryFocusItem.uuid]:null));
-    const [focusData, secondaryFocusData] = useEvdStore(useCallback(state=>{
         let focusData = null;
         let secondaryFocusData = null;
-        if (focusItem.type === 'program') {
+        let currentIssue = null;
+        if (state.focusItem.type === 'scene') {
+            focusData = {uuid:state.focusItem.uuid,type:state.focusItem.type}
+        } else if (state.focusItem.type === 'program') {
             focusData = {uuid:state.uuid,name:state.name,description:state.description}
-        } else if (focusItem.type) {
-            focusData = state.data[typeToKey(focusItem.type)][focusItem.uuid]
+        } else if (state.focusItem.type) {
+            focusData = state.data[typeToKey(state.focusItem.type)][state.focusItem.uuid]
         } 
-        if (secondaryFocusItem.type && secondaryFocusItem.type !== "issue") {
-            secondaryFocusData = state.data[typeToKey(secondaryFocusItem.type)][secondaryFocusItem.uuid]
+        if (state.secondaryFocusItem.type && state.secondaryFocusItem.type !== "issue") {
+            secondaryFocusData = state.data[typeToKey(state.secondaryFocusItem.type)][state.secondaryFocusItem.uuid]
+        } else if (state.secondaryFocusItem.type === "issue") {
+            currentIssue = state.issues[state.secondaryFocusItem.uuid]
         }
-        return [focusData,secondaryFocusData]
-    },[focusItem,secondaryFocusItem]))
 
-    let title = '';
-    let description = <p></p>
+        return [
+            state.focusItem,
+            state.editorPane,
+            state.setupTab,
+            state.frame,
+            state.primaryColor,
+            focusData,
+            secondaryFocusData,
+            currentIssue
+        ]
+    })
+
+    const [currentTab, setCurrentTab] = useState(0);
+
+    // const currentIssue = useReviewStore(state=>(secondaryFocusItem.type==='issue'?state.issues[secondaryFocusItem.uuid]:null));
+    // const [focusData, secondaryFocusData] = useEvdStore(useCallback(state=>{
+    //     let focusData = null;
+    //     let secondaryFocusData = null;
+    //     if (focusItem.type === 'scene') {
+    //         focusData = {uuid:focusItem.uuid,type:focusItem.type}
+    //     } else if (focusItem.type === 'program') {
+    //         focusData = {uuid:state.uuid,name:state.name,description:state.description}
+    //     } else if (focusItem.type) {
+    //         focusData = state.data[typeToKey(focusItem.type)][focusItem.uuid]
+    //     } 
+    //     if (secondaryFocusItem.type && secondaryFocusItem.type !== "issue") {
+    //         secondaryFocusData = state.data[typeToKey(secondaryFocusItem.type)][secondaryFocusItem.uuid]
+    //     }
+    //     return [focusData,secondaryFocusData]
+    // },[focusItem,secondaryFocusItem]))
+
+    let tabs = [
+        {
+            title: 'No Data',
+            contents: <div></div>
+        }
+    ]
 
     const issueParams = {editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}
 
-    if (focusItem.type === 'location' || (editorPane === 'setup' && setupTab === 'locations')) {
-        [title, description] = getLocationInfo(issueParams)
+    if (focusItem.type === 'scene') {
+        tabs = getSceneInfo(issueParams)
+    } else if (focusItem.type === 'location' || (editorPane === 'setup' && setupTab === 'locations')) {
+        tabs = getLocationInfo(issueParams)
     } else if (focusItem.type === 'waypoint' || (editorPane === 'setup' && setupTab === 'waypoints')) {
-        [title, description] = getWaypointInfo(issueParams)
+        tabs = getWaypointInfo(issueParams)
     } else if (focusItem.type === 'machine' || (editorPane === 'setup' && setupTab === 'machines')) {
-        [title, description] = getMachineInfo(issueParams)
+        tabs = getMachineInfo(issueParams)
     } else if (focusItem.type === 'thing' || (editorPane === 'setup' && setupTab === 'thingTypes')) {
-        [title, description] = getThingInfo(issueParams)
-    } else if (focusItem.type === 'program' || editorPane === 'program') {
-        [title, description] = getProgramInfo(issueParams)
+        tabs = getThingInfo(issueParams)
+    } else if (focusItem.type === 'program' || ( editorPane === 'editor' && !focusItem.uuid)) {
+        tabs = getProgramInfo(issueParams)
     } else if (focusItem.type === 'skill') {
-        [title, description] = getSkillInfo(issueParams)
+        tabs = getSkillInfo(issueParams)
     } else if (focusItem.type === 'primitive') {
-        [title, description] = getPrimitiveInfo(issueParams)
+        tabs = getPrimitiveInfo(issueParams)
     } else if (focusItem.type === 'trajectory') {
-        [title, description] = getTrajectoryInfo(issueParams)
+        tabs = getTrajectoryInfo(issueParams)
     } 
 
     return (
-        <Card title={title} style={{flex:1}} bodyStyle={{overflowY:'scroll'}}>
-            {description}
-        </Card>
+        <div style={{height:'calc(100vh - 494pt)',backgroundColor:'rgba(100,100,100,0.3)', padding: 10, borderRadius: 3}}>
+            <Row style={{margin:6}}>
+                {tabs.map((tab,i)=>
+                    (i===currentTab || (i===0 && currentTab >= tabs.length) ? (
+                        <div 
+                          key={i}
+                          align='center'
+                          style={{
+                            borderRadius:2,
+                            fontFamily:'inherit',
+                            fontWeight:400,
+                            height:32,
+                            display:'inline-block',
+                            textAlign:'center',
+                            backgroundColor:primaryColor,
+                            fontVariant: 'tabular-nums',
+                            lineHeight: 1.5715,
+                            padding:'6px 15px',
+                            marginRight:10,
+                            fontSize:14}}>
+                            {tab.title}
+                        </div>
+                    ) : (
+                        <Button 
+                            key={i}
+                            style={{marginRight:10}}
+                            type='ghost'
+                            onClick={()=>setCurrentTab(i)}>{tab.title}
+                        </Button>
+                    ))
+                )}
+            </Row>
+            <div style={{height:'calc(100vh - 546pt)',backgroundColor:'rgba(0,0,0,0.6)', marginTop:10, padding: 10, borderRadius: 3, color:'white'}}>
+                {tabs[currentTab] ? tabs[currentTab].contents : tabs[0].contents}
+            </div>
+        </div>
     )
-
-    // if (secondaryFocusItem.type === 'issue' && currentIssue) {
-    //     title = 'Info: Issue';
-    //     description = currentIssue.description;
-    // } else if (editorPane === 'program') {
-    //     title = 'Info: The Program Editor';
-    //     description = <p>You can adjust the program in the Program Editor by dragging elements from the drawer into the canvas. Elements can be modified by clicking on them from within the canvas.</p>
-    // } else if (editorPane === 'setup' && focusItem.type === null) {
-    //     if (setupTab === 'locations') {
-    //         title = 'Info: Locations';
-    //         description = <p>Locations are meaningful positions in the scene. For example, they can be used to define goals for placing or picking up <i>Things</i>, or specifying starting or ending positions for the robot.</p>
-    //     } else if (setupTab === 'machines') {
-    //         title = 'Info: Machines';
-    //         description = <p>Machines are items in the workspace that perform tasks, such as modifying or combining <i>Things</i> after placement in defined configurations. They also encode the duration for each process.</p>
-    //     } else if (setupTab === 'waypoints') {
-    //         title = 'Info: Waypoints';
-    //         if (frame ===  'safety') {
-    //             description = (
-    //                 <div>
-    //                     Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
-    //                     <Alert showIcon message={'Pay special attention to placing waypoints around the occupancy zone of the human, since this is more likely to result in undesirable conflicts between the human and the robot.'}></Alert>
-    //                 </div>
-    //             )
-                
-    //         } else if (frame === 'performance') {
-    //             description = (
-    //                 <div>
-    //                     Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.<br/>
-    //                     <Alert showIcon message={'Pay special attention to the sequences of waypoints and where they are relative to one another within a trajectory. Longer trajectories take longer to execute and can contribute to greater space usage.'}></Alert>
-    //                 </div>
-    //             )
-    //         } else {
-    //             description = <p>Waypoints are used to construct <i style={{color:primaryColor}}>Trajectories</i> that the robot follows to complete activities.</p>
-    //         }
-            
-    //     } else if (setupTab === 'thingTypes') {
-
-    //     }
-    // } else if (focusItem.type !== null) {
-    //     title = 'Info: Detail';
-    //     description = <p>Specific info for this thing</p>
-    // }
-
-
-    // return (
-        
-    // )
 }

@@ -1,30 +1,26 @@
-import React, {useCallback} from 'react';
-import useEvdStore from '../../stores/EvdStore';
-import { Space, Divider, Input } from 'antd';
+import React, { useCallback } from 'react';
+import useStore from '../../stores/Store';
+import { Space, Input } from 'antd';
 const { TextArea } = Input;
 
-export const ThingDetail = ({uuid}) => {
-    
-    const thing = useEvdStore(useCallback(state=>state.data.thing[uuid],[uuid]));
+export const ThingDetail = ({ uuid }) => {
 
-    return (
-      <>
+  const thing = useStore(useCallback(state => state.data.thingTypes[uuid], [uuid]));
+
+  return (
+    <>
       <p>
-      <b>Description:</b>
+        <b>Description:</b>
       </p>
-      <Space/>
+      <Space />
 
       <TextArea
         defaultValue={thing.description}
-        disabled = {!thing.editable}
+        disabled={!thing.editable}
       />
 
-      <Divider/>
 
-  <Divider/>
-
-
-</>
+    </>
 
   )
 }

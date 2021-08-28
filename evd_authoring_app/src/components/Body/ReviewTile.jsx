@@ -5,8 +5,7 @@ import { SyncOutlined } from '@ant-design/icons';
 import { FrameButton } from '../FrameButton';
 
 import frameStyles from '../../frameStyles';
-import useGuiStore from '../../stores/GuiStore';
-import useReviewStore from '../../stores/ReviewStore';
+import useStore from '../../stores/Store';
 
 import { ReviewSection } from '../Review/ReviewSection';
 
@@ -21,9 +20,13 @@ const FRAMES = [
 ]
 
 export const ReviewTile = (_) => {
-    const { frameId, setFrame } = useGuiStore(state => ({ frameId: state.frame, setFrame: state.setFrame }));
-    const refresh = useReviewStore(state => state.refresh);
-    const blockages = useReviewStore(state => FRAMES.map(frameInfo=>Math.min(...frameInfo.sections.map((sectionId,idx)=>isBlocked(state,sectionId)?idx:100))));
+    const [frameId, setFrame, refresh, blockages ] = useStore(state => ([
+        state.frame, 
+        state.setFrame,
+        state.refresh,
+        FRAMES.map(frameInfo=>Math.min(...frameInfo.sections.map((sectionId,idx)=>isBlocked(state,sectionId)?idx:100)))
+    ]));
+    
     const frameIdx = FRAMES.map(frame=>frame.key).indexOf(frameId);
 
     return (

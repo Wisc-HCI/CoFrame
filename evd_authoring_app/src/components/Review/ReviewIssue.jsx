@@ -1,15 +1,12 @@
 import React, {useCallback} from 'react';
 import { Space, List, Avatar, Switch, Button } from 'antd';
 import { EllipsisOutlined, StopOutlined, ExclamationOutlined } from '@ant-design/icons';
-import useReviewStore from '../../stores/ReviewStore';
-import useGuiStore from '../../stores/GuiStore';
+import useStore from '../../stores/Store';
 
 export const ReviewIssue = ({issueId}) => {
 
-    const issue = useReviewStore(useCallback(state=>state.issues[issueId],[issueId]));
-    const setIssueCompletion = useReviewStore(state=>state.setIssueCompletion);
-    const setFocusItem = useGuiStore(state=>state.setFocusItem);
-    const [primaryColor, secondaryFocusItem,setSecondaryFocusItem] = useGuiStore(state=>[state.primaryColor, state.secondaryFocusItem, state.setSecondaryFocusItem]);
+    const issue = useStore(useCallback(state=>state.issues[issueId],[issueId]));
+    const [setIssueCompletion,setFocusItem,primaryColor,secondaryFocusItem,setSecondaryFocusItem] = useStore(state=>([state.setIssueCompletion,state.setFocusItem,state.primaryColor, state.secondaryFocusItem, state.setSecondaryFocusItem]));
 
     return (
     <List.Item 

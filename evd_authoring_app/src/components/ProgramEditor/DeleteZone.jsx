@@ -3,13 +3,13 @@ import { Row } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
 import { useDrop } from 'react-dnd';
 import { acceptLookup } from './acceptLookup';
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 
 export const DeleteZone = (_) => {
 
     const acceptTypes = acceptLookup.trash.all.accepts;
 
-    const [deleteChildPrimitive,deleteHierarchical] = useEvdStore(state=>[state.deleteChildPrimitive,state.deleteHierarchical]);
+    const [deleteChildPrimitive,deleteHierarchical] = useStore(state=>[state.deleteChildPrimitive,state.deleteHierarchical]);
 
     const [{isOver, canDrop}, drop] = useDrop({
         accept: acceptTypes,

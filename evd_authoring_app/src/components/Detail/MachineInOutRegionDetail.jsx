@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 
-import useEvdStore from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
 
 
 import { Divider, Input, Switch, Space, Card, Button } from 'antd';
@@ -8,14 +8,14 @@ import OrientationInput from './OrientationInput';
 import PositionInput from './PositionInput';
 
 export const MachineInOutRegionDetail = ({ uuid }) => {
-    const { region } = useEvdStore(useCallback(state => ({
+    const { region } = useStore(useCallback(state => ({
         region: state.data.regions[uuid],
 
     })
         , [uuid]))
     const { TextArea } = Input;
 
-    const { setItemProperty } = useEvdStore(state => ({
+    const { setItemProperty } = useStore(state => ({
         setItemProperty: state.setItemProperty
     }));
 
@@ -90,7 +90,7 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
         dimension = (
             <div>
                 <Card size='small'>
-                    <t style={{ color: "rgba(255, 255, 255, 0.85)", paddingRight: '5px' }}>Radius: </t>
+                    <b sbyle={{ color: "rgba(255, 255, 255, 0.85)", paddingRight: '5px' }}>Radius: </b>
                     <Input
                         disabled={!region.editable}
                         style={{ width: '10%' }}

@@ -5,20 +5,20 @@ import { ProgramEditor } from '../ProgramEditor';
 import { SetupEditor } from '../SetupEditor';
 import { Detail } from '../Detail';
 
-import useGuiStore from '../../stores/GuiStore';
+import useStore from '../../stores/Store';
 
 
 
 
 export const ProgramTile = (props) => {
 
-    const {editorPane, setEditorPane} = useGuiStore(state=>({
+    const {editorPane, setEditorPane} = useStore(state=>({
         editorPane:state.editorPane,
         setEditorPane:state.setEditorPane
     }))
 
     return (
-        <div style={{height:'100%',paddingRight:10,paddingTop:10,paddingBottom:10}}>
+        <div style={{height:'calc(100vh - 48pt)',paddingRight:10,paddingTop:10,paddingBottom:10}}>
             <Card 
                 extra={
                     <Button onClick={() => { 
