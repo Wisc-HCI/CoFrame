@@ -12,8 +12,11 @@ from std_msgs.msg import String, Empty
 from geometry_msgs.msg import PoseStamped
 from evd_ros_core.msg import Job, Issue, StringArray
 
-from evd_script import Program, NodeParser, Pose, Position, Orientation
+from evd_script import Program, NodeParser, Pose, Position, Orientation, get_evd_cache_obj
 from evd_script.examples import CreateDebugApp
+
+
+evd_cache = get_evd_cache_obj()
 
 
 class FakeFrontendNode:
@@ -23,11 +26,13 @@ class FakeFrontendNode:
         prefix_fmt = prefix + '/' if prefix != '' else prefix
         self._rate = rate
 
-        self._issues = {}
         if default_program == None:
             self._program = Program()
         else:
             self._program = default_program
+
+        self._active_joints_jobs = []
+        self._active_trace_jobs = []
 
         ## Publish these as PoseStamped, the backend will create TFs from these
         self._app_frame_pub = rospy.Publisher('application/app_to_ros_frame', PoseStamped, queue_size=5)
@@ -83,19 +88,22 @@ class FakeFrontendNode:
             self._program.add_child(node)
 
     def _trace_submit_cb(self, msg):
-        pass
+        if msg.id in self._active_trace_jobs:
+
+            trace = NodeParser(json.loads(msg.data))
+            traj = evd_cache.get(msg.id) # where job ID is the uuid of the parent object (only works for 1-1 relations). Caution if trying to have multiple traces for a single trajectory.
+            traj.trace = trace
+
+            self._active_trace_jobs.remove(msg.id)
 
     def _joints_submit_cb(self, msg):
-        pass
+        if msg.id in self._active_joints_jobs:
 
-    def _issue_submit_cb(self, msg):
-        self._issues[msg.id] = msg
+            joints = NodeParser(json.loads(msg.data))
+            wp = evd_cache.get(msg.id) # where job ID is the uuid of the parent object (only works for 1-1 relations)
+            wp.joints = joints
 
-    def _issue_clear_cb(self, msg):
-        if msg.id in self._issues.keys():
-            del self._issues[msg.id]
-        else:
-            pass # trying to delete non-existent issue (ignore)
+            self._active_joints_jobs.remove(msg.id)
 
     def _update_cb(self, event=None):
         data = json.dumps(self._program.to_dct())
@@ -106,10 +114,10 @@ class FakeFrontendNode:
         rospy.sleep(2.5) #seconds
 
         # At some point the frontend should define the `app` transform and then two poses from that.
-        # `world` (which is the ROS root) will be relative to `app`
-        self._app_frame_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='world').to_ros(stamped=True))
-        self._camera_pose_pub.publish(Pose(Position.from_axis('x'),Orientation.Identity(), link='app').to_ros(stamped=True))
-        self._control_target_pose_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='app').to_ros(stamped=True))
+        # In Unity the `world` (which is the ROS root) would be relative to `app` (so it would have to be reversed first)
+        self._app_frame_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='world').to_ros(stamped=True))            # This defines the App frame
+        self._camera_pose_pub.publish(Pose(Position.from_axis('x'),Orientation.Identity(), link='app').to_ros(stamped=True))    # This defines the visualization_camera frame
+        self._control_target_pose_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='app').to_ros(stamped=True))    # This defines the control_target frame
 
         #request registration from the backend (this gets information known about the setup)
         self._registration_pub.publish(Empty()) 
@@ -126,7 +134,7 @@ class FakeFrontendNode:
         })
         self._configure_processors.publish(msg)
 
-        # now that the backend is fully set up do what ever the hell you want in the frontend
+        # now that the backend is fully set up, do what ever the hell you want in the frontend
         start = time.time()
         rate = rospy.Rate(self._rate)
         while not rospy.is_shutdown():
@@ -135,9 +143,45 @@ class FakeFrontendNode:
             # Note: update the control target if the interactive marker is moved
             # Note: update the camera pose if the user moves it around
             # Note: send out requests to the processors
-            # Note: handle issues
+
+            self.create_joint_jobs()
+            self.create_trace_jobs()
 
             rate.sleep()
+    
+    def create_joint_jobs(self):
+        data = []
+        data.extend(self._program.environment.locations)
+        data.extend(self._program.environment.waypoints)
+
+        for wp in data:
+            if wp.joints == None and wp.uuid not in self._active_joints_jobs:
+                self._active_joints_jobs.append(wp.uuid)
+                
+                job = Job()
+                job.id= wp.uuid
+                job.data = json.dumps({'point': wp.to_dct()})
+                
+                self._joints_request_pub.publish(job)
+
+    def create_trace_jobs(self):
+        data = self._program.environment.trajectories
+
+        for traj in data:
+            if traj.start_location_uuid != None and traj.end_location_uuid != None and traj.trace == None:
+                self._active_trace_jobs.append(traj.uuid)
+
+                job = Job()
+                job.id = traj.uuid
+                job.data = json.dumps({
+                    'points': [ # Either package up just the points needed or if lazy just pass the whole set
+                        self._program.environment.get_location(traj.start_location_uuid),
+                        self._program.environment.get_location(traj.end_location_uuid)
+                    ] + [ self._program.environment.get_waypoint(wp_uuid) for wp_uuid in traj.waypoint_uuids ],
+                    'trajectory': traj.to_dct()
+                })
+
+                self._trace_request_pub.publish(job)
 
 
 if __name__ == "__main__":

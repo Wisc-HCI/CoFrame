@@ -61,7 +61,7 @@ class TraceProcessor:
 
         self._timestep = self._config['pybullet']['timestep']
 
-        #self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
+        self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _start_job(self, data):
         dct = json.loads(data)

@@ -40,11 +40,11 @@ class JointProcessor:
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
         self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
-        #self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
+        self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _start_job(self, data):
         length = len(self._joint_names)
-        waypoint = NodeParser(data)
+        waypoint = NodeParser(data['point'])
         self._target = waypoint.to_ros()
         self._joints = Joints(
             length=length,
@@ -88,7 +88,7 @@ class JointProcessor:
 
 
 if __name__ == "__main__":
-    rospy.init_node('grasp_verifier')
+    rospy.init_node('joint_processor')
 
     config_path = rospy.get_param('~config_path')
     config_file_name = rospy.get_param("~config_file_name")
