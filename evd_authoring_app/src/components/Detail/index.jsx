@@ -12,6 +12,7 @@ import {MachineInOutRegionDetail} from './MachineInOutRegionDetail'
 import useStore from '../../stores/Store';
 
 const EDITOR_TYPES = ['primitive','skill','program','trajectory','scene']
+// const IGNORE_ITEMS = ['program','scene','trajectory']
 
 export const Detail = (_) => {
 
@@ -33,7 +34,7 @@ export const Detail = (_) => {
         secondaryFocusItem : state.secondaryFocusItem,
         deleteItem:state.deleteItem,
         setItemProperty:state.setItemProperty,
-        item:state.focusItem.type && state.focusItem.type !== 'program' && state.focusItem.type !== 'scene' ? state.data[state.focusItem.type+'s'][state.focusItem.uuid] : null,
+        item:state.focusItem.type && EDITOR_TYPES.indexOf(state.focusItem.type) < 0 ? state.data[state.focusItem.type+'s'][state.focusItem.uuid] : null,
         childItem:['region'].indexOf(state.secondaryFocusItem.type)>-1 ? state.data[state.secondaryFocusItem.type+'s'][state.secondaryFocusItem.uuid] : {name : 'nothing',editable : false}
     }));
 

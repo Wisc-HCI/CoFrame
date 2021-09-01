@@ -1,8 +1,17 @@
 import frameStyles from '../frameStyles';
 import { typeToKey } from "./helpers";
-import {useSceneStore} from 'robot-scene';
+import { INITIAL_SIM } from './initialSim';
+import { clearHighlights, // clearTempObjects, createTrajectory, 
+    highlightGripper, highlightRobot, highlightSceneItem } from './helpers';
+import { trajectoryToAnimation } from './animation';
+// import { useSceneStore } from 'robot-scene';
 
 const EDITOR_TYPES = ['primitive','skill','program','trajectory'];
+
+const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v=>v.includes('robot'));
+const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v=>v.includes('gripper'));
+
+
 
 export const GuiSlice = (set,get) => ({
     // EDITOR/SETUP/MAIN
@@ -15,6 +24,22 @@ export const GuiSlice = (set,get) => ({
       if (state.secondaryFocusItem.type === 'issue') {
         state.focusItem = {type:null,uuid:null};
         state.secondaryFocusItem = {type:null,uuid:null};
+      }
+      if (state.focusItem.type === 'trajectory') {
+        let setSecondaryFocusItem = get().setSecondaryFocusItem;
+        let trajectory = state.data.trajectories[state.focusItem.uuid];
+        let locations = state.data.locations;
+        let waypoints = state.data.waypoints;
+        state.animation = trajectoryToAnimation(
+            trajectory,
+            locations,
+            waypoints,
+            state.frame,
+            setSecondaryFocusItem
+        );
+        console.log(state.animation);
+        state.animation.start();
+
       }
     }),
     // The editorPane specifies the section of the ProgramTile that is shown
@@ -35,13 +60,42 @@ export const GuiSlice = (set,get) => ({
         state.editorPane = EDITOR_TYPES.indexOf(type)>=0?'editor':'setup'
         state.setupTab = EDITOR_TYPES.indexOf(type)>=0?'locations':typeToKey(type)
       }
-      if (type === 'scene') {
-        useSceneStore.getState().setItemHighlighted(uuid,true)
+      clearHighlights();
+      // Clear any animations that are running
+      if (state.animation) {
+          state.animation.end();
+      };
+      if (type === 'scene' && ROBOT_PARTS.indexOf(uuid) >= 0) {
+        highlightRobot();
+      } else if (type === 'scene' && GRIPPER_PARTS.indexOf(uuid) >= 0) {
+        highlightGripper();
+      } else if (type === 'scene') {
+        highlightSceneItem(uuid);
+        // useSceneStore.getState().setItemHighlighted(uuid,true)
       } else if (type === 'trajectory') {
-        console.log('show trajectory')
+        let setSecondaryFocusItem = get().setSecondaryFocusItem;
+        let trajectory = state.data.trajectories[uuid];
+        let locations = state.data.locations;
+        let waypoints = state.data.waypoints;
+        state.animation = trajectoryToAnimation(
+            trajectory,
+            locations,
+            waypoints,
+            state.frame,
+            setSecondaryFocusItem
+        );
+        console.log(state.animation)
+        state.animation.start();
       }
     }),
-    clearFocusItem: () => set(_=>({focusItem:{type:null,uuid:null},secondaryFocusItem:{type:null,uuid:null}})),
+    clearFocusItem: () => set(state=>{
+        state.focusItem = {type:null,uuid:null};
+        state.secondaryFocusItem = {type:null,uuid:null};
+        clearHighlights();
+        if (state.animation) {
+            state.animation.end();
+        };
+    }),
     // the search terms they have entered
     searchTerm: '',
     setSearchTerm: (term) => set(_=>({searchTerm:term})),
@@ -61,5 +115,9 @@ export const GuiSlice = (set,get) => ({
     clearSecondaryFocusItem: () => set(_=>({secondaryFocusItem:{type:null,uuid:null}})),
     childrenDrawer: false,
     setChildrenDrawer: (input) => set(_=>({childrenDrawer: input})),
-    clearChildrenDrawer : () => set(_=>({childrenDrawer: false}))
+    clearChildrenDrawer : () => set(_=>({childrenDrawer: false})),
+    animation: null,
+    playAnimation: () => {get().animation?.play()},
+    pauseAnimation: () => {get().animation?.pause()},
+    endAnimation: () => {get().animation?.end()}
 });

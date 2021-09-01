@@ -4,7 +4,7 @@ import useStore from "../../stores/Store";
 import blockStyles from "./blockStyles";
 import { StaticSortable } from './Wrappers';
 import { NodeZone } from "./NodeZone";
-import Icon, { UnlockOutlined, LockOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
+import Icon, { UnlockOutlined, LockOutlined, DownOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { Row, Col, Button, InputNumber } from 'antd';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
@@ -12,8 +12,16 @@ import './highlight.css';
 export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context}, ref) => {
   const { uuid, start_location_uuid, end_location_uuid } = data;
   const focused = useStore(useCallback(state => state.focusItem.uuid === uuid, [uuid]));
-  const focusExists = useStore(state => state.focusItem.type !== null);
-  const [frame, clearFocusItem, setItemProperty,moveTrajectoryWaypoint] = useStore(state => [state.frame, state.clearFocusItem, state.setItemProperty,state.moveTrajectoryWaypoint]);
+  const [
+    frame, clearFocusItem, setItemProperty, setFocusItem,
+    moveTrajectoryWaypoint,focusExists] = useStore(state => [
+      state.frame, 
+      state.clearFocusItem, 
+      state.setItemProperty,
+      state.setFocusItem,
+      state.moveTrajectoryWaypoint,
+      state.focusItem.type !== null
+    ]);
   const unfocused = focusExists && !focused;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
@@ -56,14 +64,23 @@ export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context
 
   return (
     <div ref={preview} style={{ ...style, ...styles }} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
-      <Row ref={ref} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <span>
-          <Icon component={ContainerIcon} />{' '}Trajectory
-        </span>
-        {editingEnabled?<UnlockOutlined/>:<LockOutlined/>}
+      <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
+          <Col ref={ref} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4,textAlign:'start'}}>
+              <Icon style={{marginLeft:4}} component={ContainerIcon} />{' '}{data.name}
+          </Col>
+          <Col span={6} offset={1} style={{textAlign:'end'}}>
+              {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
+              <Button
+                  type='text'
+                  style={{marginLeft:2}}
+                  onClick={(e) => {e.stopPropagation();setFocusItem('trajectory', data.uuid)}}
+                  icon={<EllipsisOutlined />}
+              />
+          </Col>
       </Row>
       <div style={fieldStyle}>
         <Row align="middle" style={{marginBottom:5}}>
+          
           <Col span="20">Settings:</Col>
           <Col span="4">
             <Button 

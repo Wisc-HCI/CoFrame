@@ -21,20 +21,20 @@ const INFO = {
         description: "The box is where finished products are placed."
     },
     pedestal: {
-        name: "Box",
-        description: "The box is where finished products are placed."
+        name: "Pedestal",
+        description: "The movable base that the robot is attached to."
     },
     printer: {
         name: '3D Printer',
         description: "This is a 3D printer capable of producing certain parts for assembly."
     },
-    base: ROBOT_DATA,
-    shoulderLink: ROBOT_DATA,
-    upperArmLink: ROBOT_DATA,
-    forearmLink: ROBOT_DATA,
-    wrist1Link: ROBOT_DATA,
-    wrist2Link: ROBOT_DATA,
-    wrist3Link: ROBOT_DATA,
+    robotBase: ROBOT_DATA,
+    robotShoulderLink: ROBOT_DATA,
+    robotUpperArmLink: ROBOT_DATA,
+    robotForearmLink: ROBOT_DATA,
+    robotWrist1Link: ROBOT_DATA,
+    robotWrist2Link: ROBOT_DATA,
+    robotWrist3Link: ROBOT_DATA,
     gripperBaseLink: GRIPPER_DATA,
     gripperLeftKnuckle: GRIPPER_DATA,
     gripperRightKnuckle: GRIPPER_DATA,

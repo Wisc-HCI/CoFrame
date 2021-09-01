@@ -168,9 +168,9 @@ for (let i = 0; i < NUM_WAYPOINTS; i++) {
             editable: true,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x: 0,
-            y: 0,
-            z: 0
+            x: .5*(Math.random()-0.5),
+            y: .5*(Math.random()-0.5),
+            z: .5*(Math.random()-0.5)+0.25
         },
         orientation: {
             type: 'node.orientation.',
@@ -220,9 +220,9 @@ for (let i = 0; i < NUM_LOCATIONS; i++) {
             editable: true,
             description: 'Some descriptor string (optional)', // could be ''
 
-            x: 0,
-            y: 0,
-            z: 0
+            x: .5*(Math.random()-0.5),
+            y: .5*(Math.random()-0.5),
+            z: .5*(Math.random()-0.5)+0.25
         },
         orientation: {
             type: 'node.orientation.',
