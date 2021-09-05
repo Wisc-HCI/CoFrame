@@ -16,8 +16,7 @@ export function InfoTile(_) {
 
     const [
         focusItem,
-        editorPane,
-        setupTab,
+        activeDrawer,
         frame,
         primaryColor,
         focusData,
@@ -43,8 +42,7 @@ export function InfoTile(_) {
 
         return [
             state.focusItem,
-            state.editorPane,
-            state.setupTab,
+            state.activeDrawer,
             state.frame,
             state.primaryColor,
             focusData,
@@ -55,23 +53,6 @@ export function InfoTile(_) {
 
     const [currentTab, setCurrentTab] = useState(0);
 
-    // const currentIssue = useReviewStore(state=>(secondaryFocusItem.type==='issue'?state.issues[secondaryFocusItem.uuid]:null));
-    // const [focusData, secondaryFocusData] = useEvdStore(useCallback(state=>{
-    //     let focusData = null;
-    //     let secondaryFocusData = null;
-    //     if (focusItem.type === 'scene') {
-    //         focusData = {uuid:focusItem.uuid,type:focusItem.type}
-    //     } else if (focusItem.type === 'program') {
-    //         focusData = {uuid:state.uuid,name:state.name,description:state.description}
-    //     } else if (focusItem.type) {
-    //         focusData = state.data[typeToKey(focusItem.type)][focusItem.uuid]
-    //     } 
-    //     if (secondaryFocusItem.type && secondaryFocusItem.type !== "issue") {
-    //         secondaryFocusData = state.data[typeToKey(secondaryFocusItem.type)][secondaryFocusItem.uuid]
-    //     }
-    //     return [focusData,secondaryFocusData]
-    // },[focusItem,secondaryFocusItem]))
-
     let tabs = [
         {
             title: 'No Data',
@@ -79,19 +60,19 @@ export function InfoTile(_) {
         }
     ]
 
-    const issueParams = {editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}
+    const issueParams = {activeDrawer,frame,primaryColor,focusData,secondaryFocusData,currentIssue}
 
     if (focusItem.type === 'scene') {
         tabs = getSceneInfo(issueParams)
-    } else if (focusItem.type === 'location' || (editorPane === 'setup' && setupTab === 'locations')) {
+    } else if (focusItem.type === 'location' || (activeDrawer === 'locations')) {
         tabs = getLocationInfo(issueParams)
-    } else if (focusItem.type === 'waypoint' || (editorPane === 'setup' && setupTab === 'waypoints')) {
+    } else if (focusItem.type === 'waypoint' || (activeDrawer === 'waypoints')) {
         tabs = getWaypointInfo(issueParams)
-    } else if (focusItem.type === 'machine' || (editorPane === 'setup' && setupTab === 'machines')) {
+    } else if (focusItem.type === 'machine' || (activeDrawer === 'machines')) {
         tabs = getMachineInfo(issueParams)
-    } else if (focusItem.type === 'thing' || (editorPane === 'setup' && setupTab === 'thingTypes')) {
+    } else if (focusItem.type === 'thing' || (activeDrawer === 'things')) {
         tabs = getThingInfo(issueParams)
-    } else if (focusItem.type === 'program' || ( editorPane === 'editor' && !focusItem.uuid)) {
+    } else if (focusItem.type === 'program' || activeDrawer === null) {
         tabs = getProgramInfo(issueParams)
     } else if (focusItem.type === 'skill') {
         tabs = getSkillInfo(issueParams)

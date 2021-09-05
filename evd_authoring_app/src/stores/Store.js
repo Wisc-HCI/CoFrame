@@ -4,7 +4,7 @@ import {GuiSlice} from './GuiSlice';
 import {ReviewSlice} from './ReviewSlice';
 import {EvdSlice} from './EvdSlice';
 import {RosSlice} from './RosSlice';
-import {SimSlice} from './SimSlice';
+// import {SimSlice} from './SimSlice';
 
 import { INITIAL_SIM } from "./initialSim";
 import fakeEvdData from './fakeEvdData';
@@ -17,8 +17,8 @@ const store = (set, get) => ({
     ...GuiSlice(set, get),
     ...ReviewSlice(set, get),
     ...EvdSlice(set, get),
-    ...RosSlice(set, get),
-    ...SimSlice(set, get)
+    ...RosSlice(set, get)
+    // ...SimSlice(set, get)
 })
 
 const useStore = create(immer(store));

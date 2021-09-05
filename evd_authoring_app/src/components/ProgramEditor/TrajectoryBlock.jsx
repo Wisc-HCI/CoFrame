@@ -1,5 +1,4 @@
 import React, { forwardRef, useCallback, useState } from "react";
-import { ParameterZone } from "./ParameterZone";
 import useStore from "../../stores/Store";
 import blockStyles from "./blockStyles";
 import { StaticSortable } from './Wrappers';
@@ -10,8 +9,13 @@ import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
 
 export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context}, ref) => {
-  const { uuid, start_location_uuid, end_location_uuid } = data;
-  const focused = useStore(useCallback(state => state.focusItem.uuid === uuid, [uuid]));
+  const { uuid, start_location_uuid, waypoint_uuids, end_location_uuid } = data;
+  const [focused,start_location,waypoints,end_location] = useStore(useCallback(state => [
+    state.focusItem.uuid === uuid,
+    start_location_uuid ? state.data.locations[start_location_uuid] : null,
+    waypoint_uuids.map(uuid=>state.data.waypoints[uuid]),
+    end_location_uuid ? state.data.locations[end_location_uuid] : null,
+  ], [uuid, start_location_uuid, waypoint_uuids, end_location_uuid]));
   const [
     frame, clearFocusItem, setItemProperty, setFocusItem,
     moveTrajectoryWaypoint,focusExists] = useStore(state => [
@@ -132,14 +136,35 @@ export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context
       <Row align="middle" style={fieldStyle}>
         <Col span="8">Start Location:</Col>
         <Col span="16">
-          <ParameterZone
+          <NodeZone
+            ancestors={ancestors}
+            onDrop={(dropData) => setItemProperty('trajectory',uuid,'start_location_uuid',dropData.uuid)}
+            emptyMessage='No Start Location'
+            enabled={true}
+          >
+              {start_location && (
+                  <StaticSortable 
+                      key={start_location.uuid} 
+                      id={start_location.uuid} 
+                      idx={0} 
+                      ancestors={trajectoryAncestors} 
+                      itemType='uuid' 
+                      context={context} 
+                      data={{...start_location,itemType:'location',type:`uuid-location`}}
+                      // onMove={(dropData)=>moveTrajectoryWaypoint(dropData,uuid,idx)}
+                      disabled={!editingEnabled}
+                  />
+                )
+            }
+          </NodeZone>
+          {/* <ParameterZone
             displayText={context[start_location_uuid]}
             acceptTypes={['uuid-location']}
             itemType="location"
             canRemove={editingEnabled}
             onRemove={() => setItemProperty('trajectory', uuid, 'start_location_uuid', null)}
             onDrop={(data) => setItemProperty('trajectory', uuid, 'start_location_uuid', data.uuid)}
-          />
+          /> */}
         </Col>
       </Row>
       <Row align="middle" style={fieldStyle}>
@@ -151,16 +176,16 @@ export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context
             emptyMessage='No Waypoints'
             enabled={true}
           >
-              {data.waypoint_uuids.map((id,idx)=>(
-                <div key={id} style={{marginBottom:idx===data.waypoint_uuids.length-1?0:3}}>
+              {waypoints.map((waypoint,idx)=>(
+                <div key={waypoint.uuid} style={{marginBottom:idx===data.waypoint_uuids.length-1?0:3}}>
                   <StaticSortable 
-                      key={id} 
-                      id={id} 
+                      key={waypoint.uuid} 
+                      id={waypoint.uuid} 
                       idx={idx} 
                       ancestors={trajectoryAncestors} 
                       itemType='uuid' 
                       context={context} 
-                      data={{itemType:'waypoint',uuid:id,type:`uuid-waypoint`}}
+                      data={{...waypoint,itemType:'waypoint',type:`uuid-waypoint`}}
                       onMove={(dropData)=>moveTrajectoryWaypoint(dropData,uuid,idx)}
                       disabled={!editingEnabled}
                   />
@@ -173,14 +198,27 @@ export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context
       <Row align="middle" style={fieldStyle}>
         <Col span="8">End Location:</Col>
         <Col span="16">
-          <ParameterZone
-            displayText={context[end_location_uuid]}
-            acceptTypes={['uuid-location']}
-            itemType="location"
-            canRemove={editingEnabled}
-            onRemove={() => setItemProperty('trajectory', uuid, 'end_location_uuid', null)}
-            onDrop={(data) => setItemProperty('trajectory', uuid, 'end_location_uuid', data.uuid)}
-          />
+          <NodeZone
+            ancestors={ancestors}
+            onDrop={(dropData) => setItemProperty('trajectory',uuid,'end_location_uuid',dropData.uuid)}
+            emptyMessage='No End Location'
+            enabled={true}
+          >
+              {end_location && (
+                  <StaticSortable 
+                      key={end_location.uuid} 
+                      id={end_location.uuid} 
+                      idx={0} 
+                      ancestors={trajectoryAncestors} 
+                      itemType='uuid' 
+                      context={context} 
+                      data={{...end_location,itemType:'location',type:`uuid-location`}}
+                      // onMove={(dropData)=>moveTrajectoryWaypoint(dropData,uuid,idx)}
+                      disabled={!editingEnabled}
+                  />
+                )
+            }
+          </NodeZone>
         </Col>
       </Row>
     </div>

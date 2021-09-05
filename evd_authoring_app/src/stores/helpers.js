@@ -1,9 +1,41 @@
 import { useSceneStore } from 'robot-scene';
 import lodash from 'lodash';
-// import useStore from './Store';
 
-// const setFocusItem = useStore.getState().setFocusItem;
-// const setSecondaryFocusItem = useStore.getState().setSecondaryFocusItem;
+export const sceneSetItems = useSceneStore.getState().setItems;
+export const sceneSetLines = useSceneStore.getState().setLines;
+export const sceneSetTfs = useSceneStore.getState().setTfs;
+export const sceneSetHulls = useSceneStore.getState().setHulls;
+export const sceneSetItem = useSceneStore.getState().setItem;
+export const sceneRemoveItem = useSceneStore.getState().removeItem;
+export const sceneSetItemName = useSceneStore.getState().setItemShowName;
+export const sceneSetItemPosition = useSceneStore.getState().setItemPosition;
+export const sceneSetItemRotation = useSceneStore.getState().setItemRotation;
+export const sceneSetItemScale = useSceneStore.getState().setItemScale;
+export const sceneSetItemColor = useSceneStore.getState().setItemColor;
+export const sceneSetItemHighlighted = useSceneStore.getState().setItemHighlighted;
+export const sceneSetTF = useSceneStore.getState().setTF;
+export const sceneRemoveTF = useSceneStore.getState().removeTF;
+export const sceneSetTfPosition = useSceneStore.getState().setTfPosition;
+export const sceneSetTfRotation = useSceneStore.getState().setTfRotation;
+export const sceneSetHull = useSceneStore.getState().setHull;
+export const sceneRemoveHull = useSceneStore.getState().removeHull;
+export const sceneSetHullName = useSceneStore.getState().setHullName;
+export const sceneSetHullVertices = useSceneStore.getState().setHullVertices;
+export const sceneSetHullVertex = useSceneStore.getState().setHullVertex;
+export const sceneAddHullVertex = useSceneStore.getState().addHullVertex;
+export const sceneRemoveHullVertex = useSceneStore.getState().removeHullVertex;
+export const sceneSetHullColor = useSceneStore.getState().setHullColor;
+export const sceneSetHullHIghlighted = useSceneStore.getState().setHullHighlighted;
+export const sceneSetHullOnClick = useSceneStore.getState().setHullOnClick;
+export const sceneSetHullOnPointerOver = useSceneStore.getState().setHullOnPointerOver;
+export const sceneSetHullOnPointerOut = useSceneStore.getState().setHullOnPointerOut;
+export const sceneSetLine = useSceneStore.getState().setLine;
+export const sceneRemoveLine = useSceneStore.getState().removeLine;
+export const sceneSetLineName = useSceneStore.getState().setLineName;
+export const sceneSetLineVertices = useSceneStore.getState().setLineVertices;
+export const sceneAddLineVertex = useSceneStore.getState().addLineVertex;
+export const sceneRemoveLineVertex = useSceneStore.getState().removeLineVertex;
+export const sceneSetLineVertex = useSceneStore.getState().setLinevertex;
 
 export const typeToKey = (type) => {
     let key;
@@ -92,7 +124,7 @@ export function unFlattenProgramSkills(skills, primitives) {
 }
 
 export function poseToColor(pose,frame,focused) {
-    let color = {r: 255, g: 255, b: 255, a: focused ? 1 : 0.5};
+    let color = {r: 255, g: 255, b: 255, a: focused ? 1 : 0.25};
     if (frame === 'safety' && inHumanZone(pose.position)) {
         color.r = 255;
         color.g = 50;
@@ -133,6 +165,34 @@ export function poseToShape(pose,frame,focused,setSecondaryFocusItem) {
                 z:pose.position.z
             },
             color
+        }
+    ]
+}
+
+export function poseDataToShapes(pose,frame) {
+    let pose_stored = pose;
+    return [
+        {
+            uuid: `${pose_stored.uuid}-tag`,
+            frame: 'world',
+            shape: pose_stored.type.includes('location') ? 'flag' : 'tag',
+            position: pose_stored.position,
+            rotation: {w:1,x:0,y:0,z:0},
+            scale: {x:-0.25,y:0.25,z:0.25},
+            highlighted: false,
+            showName: false,
+            color: poseToColor(pose_stored,frame,false)
+        },
+        {
+            uuid: `${pose_stored.uuid}-pointer`,
+            frame: 'world',
+            shape: pose_stored.type.includes('location') ? 'package://app/meshes/LocationMarker.stl' : 'package://app/meshes/OpenWaypointMarker.stl',
+            position: pose_stored.position,
+            rotation: pose_stored.orientation,
+            scale: {x:1,y:1,z:1},
+            highlighted: false,
+            showName: false,
+            color: poseToColor(pose_stored,frame,false)
         }
     ]
 }

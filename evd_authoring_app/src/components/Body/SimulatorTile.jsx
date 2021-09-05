@@ -16,11 +16,14 @@ export const SimulatorTile = (_) => {
         <div style={{height:'calc(100vh - 48pt)',padding:10}}>
             <Card
                 style={{height:564,marginBottom:10}}
-                bodyStyle={{padding:0,height:500,margin:0}}
+                headStyle={{height:65}}
+                bodyStyle={{padding:0,height:500,margin:0,}}
                 extra={<Controls/>}
                 title="Simulator">
-                    <div style={{height:'100%',backgroundColor: primaryColor, padding: 5, width:'100%'}}>
-
+                    <div 
+                        style={{height:'100%',backgroundColor: primaryColor, padding: 5, width:'100%'}}
+                        
+                    >
                         <Scene
                             displayTfs={false}
                             displayGrid={true}
@@ -29,6 +32,8 @@ export const SimulatorTile = (_) => {
                             planeColor='#141414'
                             highlightColor={primaryColor}
                             plane={-0.75}
+                            fov={50}
+                            onPointerMissed={(e)=>{e.stopPropagation();useStore.getState().clearFocusItem();}}
                         />
 
                     </div>

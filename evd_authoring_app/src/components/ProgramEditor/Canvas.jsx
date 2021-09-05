@@ -19,10 +19,11 @@ export const Canvas = () => {
 
     const [moveItem,createAndPlaceItem,skills] = useStore(state=>[state.moveItem,state.createAndPlaceItem,state.data.skills]);
     const nameLookup = useStore(state=>({
-        ...objectMap(state.data.placeholders,(placeholder)=>placeholder.pending_node.name),
-        ...objectMap(state.data.locations,(location)=>location.name),
-        ...objectMap(state.data.waypoints,(waypoint)=>waypoint.name),
-        ...objectMap(state.data.machines,(machine)=>machine.name),
+        ...objectMap(state.data.placeholders,placeholder=>({name:placeholder.pending_node.name,real:true})),
+        ...objectMap(state.data.locations,location=>({name:location.name,real:true})),
+        ...objectMap(state.data.waypoints,waypoint=>({name:waypoint.name,real:true})),
+        ...objectMap(state.data.machines,machine=>({name:machine.name,real:true})),
+        ...objectMap(state.data.trajectories,trajectory=>({name:trajectory.name,real:true})),
     }))
 
     // Do your draggable stuff here

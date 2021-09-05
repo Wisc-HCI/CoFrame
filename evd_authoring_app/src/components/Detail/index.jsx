@@ -57,7 +57,7 @@ export const Detail = (_) => {
 
     if (EDITOR_TYPES.indexOf(focusItem.type)<0 && item && childItem) {
         return (
-          <div>
+          <div style={{color:'white'}}>
             <Drawer
                 title={
                     <Space>

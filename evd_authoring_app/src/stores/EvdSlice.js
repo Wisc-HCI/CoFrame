@@ -1,6 +1,7 @@
 import { flattenProgram, unFlattenProgramPrimitives, unFlattenProgramSkills } from './helpers';
 import lodash from 'lodash';
-import { typeToKey } from './helpers';
+import { typeToKey, poseDataToShapes, trajectoryDataToLine, sceneSetItem, sceneSetLine } from './helpers';
+// import { useSceneStore } from 'robot-scene';
 
 export const EvdSlice = (set,get) => ({
     name: 'Default Program Name',
@@ -47,15 +48,15 @@ export const EvdSlice = (set,get) => ({
       program.environment.pinch_points.forEach((pinchPoint)=>{
         get().addItem('pinchPoint',pinchPoint)
       });
-      program.environment.trajectories.forEach((trajectory)=>{
-        get().addItem('trajectory',trajectory)
-      });
       get().addItem('reachSphere',program.environment.reach_sphere);
       program.environment.locations.forEach((location)=>{
         get().addItem('location',location)
       });
       program.environment.waypoints.forEach((waypoint)=>{
         get().addItem('waypoint',waypoint)
+      });
+      program.environment.trajectories.forEach((trajectory)=>{
+        get().addItem('trajectory',trajectory)
       });
       program.environment.machines.forEach((machine)=>{
         get().addItem('machine',machine)
@@ -74,7 +75,7 @@ export const EvdSlice = (set,get) => ({
         get().addItem('primitive',primitive)
       });
       flattenedSkills.forEach((skill,idx)=>{
-        get().addItem('skill',{...skill,transform:{x:460+idx*300,y:10}})
+        get().addItem('skill',{...skill,transform:{x:520+idx*400,y:10}})
       });
       program.primitives.forEach((primitive)=>{
         get().addChildPrimitive(primitive, program.uuid)
@@ -225,16 +226,46 @@ export const EvdSlice = (set,get) => ({
     }),
     // Piecewise update functions for data
     addItem: (type, item) => set((state)=>{
-      state.data[typeToKey(type)][item.uuid] = item
+      state.data[typeToKey(type)][item.uuid] = item;
+      let frame = state.frame;
+      if (['waypoint','location'].indexOf(type)>=0) {
+        poseDataToShapes(item,frame).forEach(shape=>{
+          sceneSetItem(shape.uuid,shape);
+        })
+      } else if (type === 'trajectory') {
+        let locations = state.data.locations;
+        let waypoints = state.data.waypoints;
+        let frame = state.frame;
+        sceneSetLine(...trajectoryDataToLine(item,locations,waypoints,frame))
+      }
     }),
     setItemProperty: (type, uuid, property, value) => set((state)=>{
-      state.data[typeToKey(type)][uuid][property] = value
+      state.data[typeToKey(type)][uuid][property] = value;
+      let item = state.data[typeToKey(type)][uuid];
+      let frame = state.frame;
+      if (['waypoint','location'].indexOf(type)>=0) {
+        poseDataToShapes(item,frame).forEach(shape=>{
+          sceneSetItem(shape.uuid,shape);
+        })
+        // Enumerate the trajectories and update their visuals if they use this location or waypoint
+        Object.keys(state.data.trajectories).forEach(trajectory=>{
+          if (trajectory.start_location_uuid === uuid || trajectory.end_location_uuid === uuid || trajectory.waypoint_uuids.indexOf(uuid) >= 0) {
+            let locations = state.data.locations;
+            let waypoints = state.data.waypoints;
+            let frame = state.frame;
+            sceneSetLine(...trajectoryDataToLine(trajectory,locations,waypoints,frame))
+          }
+        })
+      }
     }),
     setPrimitiveParameter: (type, uuid, property, value) => set((state)=>{
       state.data[typeToKey(type)][uuid].parameters[property] = value
     }),
     deleteItem: (type, uuid) => set((state)=>{
       delete state.data[typeToKey(type)][uuid]
+      if (type === "waypoint") {
+
+      }
     }),
     moveItem: (type,uuid,x,y) => set((state)=>{
       if (type==='program') {

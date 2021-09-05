@@ -1,46 +1,29 @@
 import React from 'react';
 
-import { Card, Button } from 'antd';
+import { Card } from 'antd';
 import { ProgramEditor } from '../ProgramEditor';
-import { SetupEditor } from '../SetupEditor';
 import { Detail } from '../Detail';
-
-import useStore from '../../stores/Store';
 
 
 
 
 export const ProgramTile = (props) => {
 
-    const {editorPane, setEditorPane} = useStore(state=>({
-        editorPane:state.editorPane,
-        setEditorPane:state.setEditorPane
-    }))
+    // const {editorPane, setEditorPane} = useStore(state=>({
+    //     editorPane:state.editorPane,
+    //     setEditorPane:state.setEditorPane
+    // }))
 
     return (
         <div style={{height:'calc(100vh - 48pt)',paddingRight:10,paddingTop:10,paddingBottom:10}}>
             <Card 
-                extra={
-                    <Button onClick={() => { 
-                        if (editorPane === 'setup') {
-                            setEditorPane('editor')
-                        } else {
-                            setEditorPane('setup')
-                        }
-                    }}>
-                        {editorPane === 'setup' ? "Switch to Editor" : "Switch to Setup"}
-                    </Button>
-                }
+                headStyle={{height:65, paddingTop:5}}
                 style={{height:'100%',display:'flex',flex:1,flexDirection:'column',}}
-                bodyStyle={{padding:0,display:'flex',flex:1,flexDirection:'column'}}
-                title={editorPane === 'setup' ? "Program Setup" : "Program Editor"}>
-                    {editorPane === 'setup' ? (
-                        <SetupEditor/>
-                    ) : (
-                        <ProgramEditor/>
-                    )}
-                    <Detail/>   
+                bodyStyle={{padding:0,display:'flex',flex:1,flexDirection:'column',}}
+                title="Program Editor">
+                    <ProgramEditor/>
             </Card>
+            <Detail/>
         </div>
     );
 };

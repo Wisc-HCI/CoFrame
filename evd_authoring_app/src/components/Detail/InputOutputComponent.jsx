@@ -25,11 +25,11 @@ export const InputOutputComponent = (props) => {
             <List.Item style={{padding:0}}>
               <Row justify='space-between' style={{width:'100%', padding:10, marginTop: 4, borderRadius: 4, backgroundColor:'rgba(100,100,100,0.2)'}}>
                 <Space>
-                  <t>Quantity:</t>
-                  <InputNumber min = {1} style={{ maxWidth: 50 }} compact defaultValue={data.quantity} />
+                  <b>Quantity:</b>
+                  <InputNumber min = {1} style={{ maxWidth: 50 }} defaultValue={data.quantity} />
                 </Space>
                 <Space>
-                  <t style={{ paddingRight: '4px' }}>Region:</t>
+                  <b style={{ paddingRight: '4px' }}>Region:</b>
                   <Button onClick={()=>{setChildrenDrawer(true); setSecondaryFocusItem('region',data.region_uuid)}}>
                     Edit
                   </Button>

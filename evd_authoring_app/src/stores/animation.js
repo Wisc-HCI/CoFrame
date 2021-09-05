@@ -49,7 +49,6 @@ const ACTION = {
 const STOREFN = {
     [ACTION.SET_ITEM]: useSceneStore.getState().setItem,
     [ACTION.REMOVE_ITEM]: useSceneStore.getState().removeItem,
-    [ACTION.SET_ITEM]: useSceneStore.getState().setItem,
     [ACTION.SET_ITEM_SHOW_NAME]: useSceneStore.getState().setItemShowName,
     [ACTION.SET_ITEM_POSITION]: useSceneStore.getState().setItemPosition,
     [ACTION.SET_ITEM_ROTATION]: useSceneStore.getState().setItemRotation,
@@ -176,7 +175,7 @@ export class Animation {
         } else if (this.state.phase === PHASE.SEQUENCE && this.cycle) {
             // The sequence is at the end, wrap-around to the first index.
             this.state = {...this.state,index:0};
-            setTimeout(()=>this._advance(),0);
+            setTimeout(()=>this._advance(),this.sequence[0].time);
             return
         } else if (this.state.phase === PHASE.SEQUENCE && !this.cycle) {
             // The sequence is at the end, go to finish.
@@ -223,7 +222,14 @@ export const trajectoryToAnimation = (trajectory,locations,waypoints,frame,setSe
             data:[shapeArgs[0],poseToColor(shapeArgs[1],frame,true)]
         }];
         if (i > 0) {
-            let prevShapeArgs = trajectoryShapes[i-1];changes.push({
+            let prevShapeArgs = trajectoryShapes[i-1];
+            changes.push({
+                action:ACTION.SET_ITEM_COLOR,
+                data:[prevShapeArgs[0],poseToColor(prevShapeArgs[1],frame,false)]
+            })
+        } else {
+            let prevShapeArgs = trajectoryShapes[trajectoryShapes.length-1];
+            changes.push({
                 action:ACTION.SET_ITEM_COLOR,
                 data:[prevShapeArgs[0],poseToColor(prevShapeArgs[1],frame,false)]
             })
@@ -235,7 +241,8 @@ export const trajectoryToAnimation = (trajectory,locations,waypoints,frame,setSe
     })
     let onEnd = [];
     trajectoryShapes.forEach(shapeArgs=>{
-        onEnd.push({action:ACTION.REMOVE_ITEM,data:[shapeArgs[0]]})
+        onEnd.push({action:ACTION.REMOVE_ITEM,data:[shapeArgs[0]]});
+        onEnd.push({action:ACTION.REMOVE_LINE,data:[trajectory.uuid]})
     })
 
     // TODO: Add the tf frames changes associated with the robot.

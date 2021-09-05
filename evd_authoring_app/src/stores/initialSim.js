@@ -3,7 +3,7 @@ export const INITIAL_SIM =
         tfs:{
             'simulated_base_link':{
                 frame:'world',
-                translation: { x: 0, y: 0, z: 0 },
+                translation: { x: 0, y: -0.15, z: 0 },
                 rotation: { w: 0, x: 0, y: 0, z: 1 },
             },
             'simulated_shoulder_link':{
@@ -105,25 +105,58 @@ export const INITIAL_SIM =
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
             },
+            bladeConveyor: {
+                visual: 'conveyor',
+                collision: 'conveyor',
+                name: "Blade Production Conveyor Belt",
+                frame: "world",
+                position: { x: -0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false
+            },
+            conveyorReceiver: {
+                visual: 'conveyor_receiver',
+                collision: 'conveyor_receiver',
+                name: "Blade Receiver",
+                frame: "world",
+                position: { x: -0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false
+            },
+            knifeConveyor: {
+                visual: 'conveyor',
+                collision: 'conveyor',
+                name: "Finished Knife Conveyor Belt",
+                frame: "world",
+                position: { x: 0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false,
+            },
+            conveyorDispatcher: {
+                visual: 'conveyor_dispatcher',
+                collision: 'conveyor_dispatcher',
+                name: "Knife Dispatcher",
+                frame: "world",
+                position: { x: 0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false,
+            },    
             pedestal: {
                 visual: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl",
                 collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl",
                 name: "Pedestal",
                 frame: "world",
-                position: { x: 0, y: 0, z: -0.38 },
+                position: { x: 0, y: -0.15, z: -0.38 },
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
                 color: {r: 50, g: 50, b: 50, a: 1},
-                showCollison: false,
-                highlighted: false,
-                scale: {x:1,y:1,z:1}
-            },
-            box: {
-                visual: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Box/Box.stl",
-                collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl",
-                name: "Box",
-                frame: "world",
-                position: { x: 0.35, y: 0.35, z: 0.07 },
-                rotation: { w: 1, x: 0, y: 0, z: 0 },
                 showCollison: false,
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
@@ -138,6 +171,16 @@ export const INITIAL_SIM =
                 showCollison: false,
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
+            },
+            assemblyJig: {
+                visual: "assembly_jig",
+                collision: "assembly_jig",
+                name: "Assembly Jig",
+                frame: "world",
+                position: { x: 0.2, y: 0.28, z: 0.14 },
+                rotation: { w: -0.5, x: 0.5, y: -0.5, z: -0.5 },
+                scale: { x: 0.2, y: 0.2, z: 0.2 },
+                highlighted: false,
             },
             robotBase: {
                 visual: "package://ur_description/meshes/ur3/visual/base.dae",

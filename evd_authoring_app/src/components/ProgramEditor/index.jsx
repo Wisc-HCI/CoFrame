@@ -7,7 +7,7 @@ import { Editor } from './Editor';
 export const ProgramEditor = (_) => {
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex' }}>
+    <div style={{ width: '100%', height: 'calc(100vh - 113pt)', display: 'flex',borderRadius:3 }}>
       <DndProvider backend={HTML5Backend}>
         <Editor/>
       </DndProvider>

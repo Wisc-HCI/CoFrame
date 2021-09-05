@@ -1,17 +1,25 @@
 import frameStyles from '../frameStyles';
-import { typeToKey } from "./helpers";
+import { sceneSetItem, sceneSetTF } from "./helpers";
 import { INITIAL_SIM } from './initialSim';
 import { clearHighlights, // clearTempObjects, createTrajectory, 
-    highlightGripper, highlightRobot, highlightSceneItem } from './helpers';
+    highlightGripper, highlightRobot, highlightSceneItem, sceneSetTfs } from './helpers';
 import { trajectoryToAnimation } from './animation';
 // import { useSceneStore } from 'robot-scene';
 
-const EDITOR_TYPES = ['primitive','skill','program','trajectory'];
+// const EDITOR_TYPES = ['primitive','skill','program','trajectory'];
 
 const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v=>v.includes('robot'));
 const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v=>v.includes('gripper'));
 
-
+const ACTIVE_TFS = [
+    'simulated_base_link',
+    'simulated_shoulder_link',
+    'simulated_upper_arm_link',
+    'simulated_forearm_link',
+    'simulated_wrist_1_link',
+    'simulated_wrist_2_link',
+    'simulated_wrist_3_link'
+  ]
 
 export const GuiSlice = (set,get) => ({
     // EDITOR/SETUP/MAIN
@@ -42,24 +50,21 @@ export const GuiSlice = (set,get) => ({
 
       }
     }),
-    // The editorPane specifies the section of the ProgramTile that is shown
-    editorPane: 'setup',
-    setEditorPane: (pane) => set(_=>({editorPane:pane})),
     // the activeModal specifies the type of modal shown
     activeModal: null,
     setActiveModal: (modal) => set(_=>({activeModal:modal})),
     closeModal: () => set(_=>({activeModal:null})),
-    // the setupTab specifies the tab in the SetupEditor that is shown
-    setupTab: 'locations',
-    setSetupTab: (tab) => set(_=>({setupTab:tab})),
+    // the activeDrawer specifies the tab in the SetupEditor that is shown
+    activeDrawer: null,
+    setActiveDrawer: (drawer) => set(_=>({activeDrawer:drawer})),
     // the focusItem specifies the type and uuid of data to focus on
     focusItem: {type:null,uuid:null},
     setFocusItem: (type,uuid) => set(state=>{
       state.focusItem = {type:type,uuid:uuid};
-      if (type !== 'scene') {
-        state.editorPane = EDITOR_TYPES.indexOf(type)>=0?'editor':'setup'
-        state.setupTab = EDITOR_TYPES.indexOf(type)>=0?'locations':typeToKey(type)
-      }
+      // if (type !== 'scene') {
+      //   // state.actuve = EDITOR_TYPES.indexOf(type)>=0?'editor':'setup'
+      //   state.activeDrawer = EDITOR_TYPES.indexOf(type)>=0?null:typeToKey(type)
+      // }
       clearHighlights();
       // Clear any animations that are running
       if (state.animation) {
@@ -103,13 +108,6 @@ export const GuiSlice = (set,get) => ({
     // whether the sim window is expanded to the whole width
     simMode: 'default',
     setSimMode: (mode) => set(_=>({simMode:mode})),
-    // for program editor, dragged item uuid and metadata
-    dragItem: null,
-    setDragItem: (item) => set(_=>({dragItem:item})),
-    clearDragItem: () => set(_=>({dragItem:null})),
-    dragHoverItem: null,
-    setDragHoverItem: (item) => set(_=>({dragHoverItem:item})),
-    clearDragHoverItem: () => set(_=>({dragHoverItem:null})),
     secondaryFocusItem: {type:null,uuid:null},
     setSecondaryFocusItem: (type,uuid) => set(_=>({secondaryFocusItem:{type:type,uuid:uuid}})),
     clearSecondaryFocusItem: () => set(_=>({secondaryFocusItem:{type:null,uuid:null}})),
@@ -119,5 +117,48 @@ export const GuiSlice = (set,get) => ({
     animation: null,
     playAnimation: () => {get().animation?.play()},
     pauseAnimation: () => {get().animation?.pause()},
-    endAnimation: () => {get().animation?.end()}
+    endAnimation: () => {get().animation?.end()},
+    updateFromTfs: (msg) => set(state=>{
+        msg.transforms.forEach(transformstamped=>{
+            if (ACTIVE_TFS.indexOf(transformstamped.child_frame_id) >= 0) {
+                sceneSetTF(transformstamped.child_frame_id,state.tfs[transformstamped.child_frame_id])
+            }
+        })
+    }),
+    setup: (initial_data) => {
+        Object.keys(initial_data.staticScene)
+            .forEach((itemKey)=>{
+                let item = initial_data.staticScene[itemKey];
+                sceneSetItem(itemKey,{
+                    shape: item.visual,
+                    name: item.name,
+                    frame: item.frame,
+                    position: item.position,
+                    rotation: item.rotation,
+                    color: item.color,
+                    scale: item.scale,
+                    transformMode: 'inactive',
+                    highlighted: item.highlighted,
+                    onClick: (e) => {
+                        e.stopPropagation();
+                        get().setFocusItem('scene',itemKey);
+                        e.stopPropagation();},
+                    onMove: (transform) => {console.log(transform)}
+                });
+                sceneSetItem(itemKey+'-collision',{
+                        shape: item.collision,
+                        name: item.name+' Collision',
+                        frame: item.frame,
+                        position: item.position,
+                        rotation: item.rotation,
+                        scale: { x: 1, y: 1, z: 1 },
+                        color: {r: 250, g: 50, b: 50, a: 0},
+                        transformMode: 'inactive',
+                        highlighted: false,
+                        onClick: (e)=>{},
+                        onMove: (transform) => {console.log(transform)}
+                });
+            })
+            sceneSetTfs(initial_data.tfs);
+        }
 });

@@ -29,7 +29,7 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
         ...context
     };
     data.arguments.forEach(arg=>{
-        currentContext[arg.uuid] = arg.name
+        currentContext[arg.uuid] = {name:arg.name,real:false}
     })
 
     const dragBlockStyles = {
