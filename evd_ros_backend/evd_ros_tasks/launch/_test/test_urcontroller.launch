@@ -5,7 +5,7 @@
   <arg name="launch_rviz" default="true"/>
   <arg name="load_rviz_cfg" default="true"/>
 
-  <arg name="kinematics_config" default="$(find ur_e_description)/config/ur3_default.yaml"/>
+  <arg name="kinematics_config" default="$(find ur_description)/config/ur3e/default_kinematics.yaml"/>
 
   <!-- Bringup launch -->
   <group ns="$(arg type)">
@@ -19,7 +19,7 @@
   </group>
 
   <!-- Robot State -->
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_e_description)/urdf/ur3e_robot.urdf.xacro' kinematics_config:=$(arg kinematics_config)"/>
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_description)/urdf/ur3e.xacro' kinematics_config:=$(arg kinematics_config)"/>
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="true"/>

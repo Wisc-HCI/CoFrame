@@ -21,7 +21,8 @@ class PyBulletModel(object):
         flags = pybullet.URDF_MERGE_FIXED_LINKS
 
         #self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True, flags=flags)
-        self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True)
+        print('\n\n',config['urdf']['robot'],'\n\n')
+        self.robotId = pybullet.loadURDF(config['urdf']['robot'], [0,0,0], useFixedBase=True)
         self.jointIds = {}
         self.linkIds = {}
         for j in range(pybullet.getNumJoints(self.robotId)):
@@ -33,6 +34,8 @@ class PyBulletModel(object):
             linkName = info[12].decode("utf-8")
             self.jointIds[jointName] = j 
             self.linkIds[linkName] = j   
+
+        self.envId = pybullet.loadURDF(config['urdf']['environment'], [0,0,0], useFixedBase=True)
 
     def set_joints(self, joints, names):
         for name, id in self.jointIds.items():

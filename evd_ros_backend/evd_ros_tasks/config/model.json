@@ -3,10 +3,12 @@
         "urdf": {
             "robot": "robot.urdf",
             "environment": "environment.urdf"
-        }
+        },
+        "timestep": 0.0165
     },
     "lively-tk": {
-        "config": "ur3e_config_v1.json"
+        "config": "ur3e_config_v1.json",
+        "timestep": 0.0165
     },
     "timestep": 0.0165
 }

@@ -7,7 +7,7 @@
     <arg name="application_description_xacro" default="$(find evd_ros_tasks)/description/ur3e.urdf.xacro"/>
     <arg name="kinematics_config" default="$(find ur_description)/config/ur3_default.yaml"/>
     <arg name="config_path" default="$(find evd_ros_tasks)/config/"/>
-    <arg name="config_file_name" default="ur3e_processor_config.json"/>
+    <arg name="config_file_name" default="model.json"/>
 
     <include file="$(find evd_ros_core)/launch/rosbridge.launch"/>
 
