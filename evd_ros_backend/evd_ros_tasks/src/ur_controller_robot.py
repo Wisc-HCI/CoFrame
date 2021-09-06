@@ -18,10 +18,10 @@ from std_msgs.msg import Bool, String
 from sensor_msgs.msg import JointState
 from ur_msgs.msg import RobotModeDataMsg
 from robotiq_85_msgs.msg import GripperCmd, GripperStat
-from geometry_msgs.msg import Pose, Position, Quaternion
+from geometry_msgs.msg import Pose, Point, Quaternion
 from evd_ros_core.msg import RobotMove, RobotStatus, RobotGrip
 
-from evd_interface.robot_template import RobotTemplate
+from evd_interfaces.robot_template import RobotTemplate
 from evd_interfaces.frontend_interface import FrontendInterface
 from evd_script import Position, ReachSphere, PinchPoint, CollisionMesh, OccupancyZone
 
@@ -114,7 +114,7 @@ class URController(RobotTemplate):
             # Update end-effector being tracked by interface
             try:
                 ((tx,ty,tz), (rx,ry,rz,rw)) = self._tf_listener.lookupTransform(self._ee_link,self._base_link,rospy.Time(0))
-                pose = Pose(Position(tx,ty,tz),Quaternion(rx,ry,rz,rw))
+                pose = Pose(Point(tx,ty,tz),Quaternion(rx,ry,rz,rw))
                 self.current_pose = pose
             except:
                 pass

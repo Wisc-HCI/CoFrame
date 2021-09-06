@@ -47,7 +47,4 @@
     <param name="prefix" value="$(arg type)_"/>
   </node>
 
-  <!-- Higher-level controller for communication with evd_ros -->
-  <node name="ur_controller" pkg="evd_ros_tasks" type="ur_controller.py" output="screen"/>
-
 </launch>

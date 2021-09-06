@@ -18,6 +18,9 @@
     </include>
   </group>
 
+  <!-- Higher-level controller for communication with evd_ros -->
+  <node name="ur_controller" pkg="evd_ros_tasks" type="ur_controller_robot.py" output="screen"/>
+
   <!-- Robot State -->
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_description)/urdf/ur3e.xacro' kinematics_config:=$(arg kinematics_config)"/>
 
