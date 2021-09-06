@@ -4,7 +4,7 @@
     <arg name="launch_rviz" default="true"/>
     <arg name="load_rviz_cfg" default="true"/>
 
-    <arg name="application_description_xacro" default="$(find evd_ros_tasks)/description/ur3e.urdf.xacro"/>
+    <arg name="application_description_xacro" default="$(find evd_ros_tasks)/description/full_task.urdf.xacro"/>
     <arg name="kinematics_config" default="$(find ur_description)/config/ur3_default.yaml"/>
     <arg name="config_path" default="$(find evd_ros_tasks)/config/"/>
     <arg name="config_file_name" default="model.json"/>
