@@ -3,7 +3,7 @@ export const INITIAL_SIM =
         tfs:{
             'simulated_base_link':{
                 frame:'world',
-                translation: { x: 0, y: 0, z: 0 },
+                translation: { x: 0, y: -0.15, z: 0 },
                 rotation: { w: 0, x: 0, y: 0, z: 1 },
             },
             'simulated_shoulder_link':{
@@ -94,7 +94,6 @@ export const INITIAL_SIM =
         },
         staticScene: {
             table: {
-                pending: false,
                 visual: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl",
                 collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl",
                 name: "Table",
@@ -106,33 +105,63 @@ export const INITIAL_SIM =
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
             },
+            bladeConveyor: {
+                visual: 'conveyor',
+                collision: 'conveyor',
+                name: "Blade Production Conveyor Belt",
+                frame: "world",
+                position: { x: -0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false
+            },
+            conveyorReceiver: {
+                visual: 'conveyor_receiver',
+                collision: 'conveyor_receiver',
+                name: "Blade Receiver",
+                frame: "world",
+                position: { x: -0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false
+            },
+            knifeConveyor: {
+                visual: 'conveyor',
+                collision: 'conveyor',
+                name: "Finished Knife Conveyor Belt",
+                frame: "world",
+                position: { x: 0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false,
+            },
+            conveyorDispatcher: {
+                visual: 'conveyor_dispatcher',
+                collision: 'conveyor_dispatcher',
+                name: "Knife Dispatcher",
+                frame: "world",
+                position: { x: 0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false,
+            },    
             pedestal: {
-                pending: false,
                 visual: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl",
                 collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Pedestal.stl",
                 name: "Pedestal",
                 frame: "world",
-                position: { x: 0, y: 0, z: -0.38 },
+                position: { x: 0, y: -0.15, z: -0.38 },
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
                 color: {r: 50, g: 50, b: 50, a: 1},
                 showCollison: false,
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
             },
-            box: {
-                pending: false,
-                visual: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Box/Box.stl",
-                collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/Box.stl",
-                name: "Box",
-                frame: "world",
-                position: { x: 0.35, y: 0.35, z: 0.07 },
-                rotation: { w: 1, x: 0, y: 0, z: 0 },
-                showCollison: false,
-                highlighted: false,
-                scale: {x:1,y:1,z:1}
-            },
             printer: {
-                pending: false,
                 visual: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
                 collision: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
                 name: "3D Printer",
@@ -143,11 +172,20 @@ export const INITIAL_SIM =
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
             },
-            base: {
-                pending: false,
+            assemblyJig: {
+                visual: "assembly_jig",
+                collision: "assembly_jig",
+                name: "Assembly Jig",
+                frame: "world",
+                position: { x: 0.2, y: 0.28, z: 0.14 },
+                rotation: { w: -0.5, x: 0.5, y: -0.5, z: -0.5 },
+                scale: { x: 0.2, y: 0.2, z: 0.2 },
+                highlighted: false,
+            },
+            robotBase: {
                 visual: "package://ur_description/meshes/ur3/visual/base.dae",
                 collision: "package://ur_description/meshes/ur3/collision/base.stl",
-                name: 'Base',
+                name: 'Robot Base',
                 frame: "simulated_base_link",
                 position: { x: 0, y: 0, z: 0 },
                 rotation: { w: 0, x: 0, y: 0, z: 1 },
@@ -155,8 +193,7 @@ export const INITIAL_SIM =
                 showCollison: false,
                 highlighted: false
             },
-            shoulderLink: {
-                pending: false,
+            robotShoulderLink: {
                 visual: "package://ur_description/meshes/ur3/visual/shoulder.dae",
                 collision: "package://ur_description/meshes/ur3/collision/shoulder.stl",
                 name: 'Shoulder Link',
@@ -167,8 +204,7 @@ export const INITIAL_SIM =
                 showCollison: false,
                 highlighted: false,
             },
-            upperArmLink: {
-                pending: false,
+            robotUpperArmLink: {
                 visual: "package://ur_description/meshes/ur3/visual/upperarm.dae",
                 collision: "package://ur_description/meshes/ur3/collision/upperarm.stl",
                 name: "Upper Arm Link",
@@ -179,8 +215,7 @@ export const INITIAL_SIM =
                 showCollison: false,
                 highlighted: false,
             },
-            forearmLink: {
-                pending: false,
+            robotForearmLink: {
                 visual: "package://ur_description/meshes/ur3/visual/forearm.dae",
                 collision: "package://ur_description/meshes/ur3/collision/forearm.stl",
                 name: "Forearm Link",
@@ -191,8 +226,7 @@ export const INITIAL_SIM =
                 showCollison: false,
                 highlighted: false,
             },
-            wrist1Link: {
-                pending: false,
+            robotWrist1Link: {
                 visual: "package://ur_description/meshes/ur3/visual/wrist1.dae",
                 collision: "package://ur_description/meshes/ur3/collision/wrist1.stl",
                 name: "Wrist 1 Link",
@@ -203,8 +237,7 @@ export const INITIAL_SIM =
                 showCollison: false,
                 highlighted: false,
             },
-            wrist2Link: {
-                pending: false,
+            robotWrist2Link: {
                 visual: "package://ur_description/meshes/ur3/visual/wrist2.dae",
                 collision: "package://ur_description/meshes/ur3/collision/wrist2.stl",
                 name: "Wrist 2 Link",
@@ -215,8 +248,7 @@ export const INITIAL_SIM =
                 showCollison: false,
                 highlighted: false,
             },
-            wrist3Link: {
-                pending: false,
+            robotWrist3Link: {
                 visual: "package://ur_description/meshes/ur3/visual/wrist3.dae",
                 collision: "package://ur_description/meshes/ur3/collision/wrist3.stl",
                 name: "Wrist 3 Link",
@@ -228,7 +260,6 @@ export const INITIAL_SIM =
                 highlighted: false,
             },
             gripperBaseLink:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_base_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_base_link.stl",
                 name: "Gripper Base",
@@ -240,7 +271,6 @@ export const INITIAL_SIM =
                 highlighted: false
               },
               gripperLeftKnuckle:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_knuckle_link.stl",
                 name: "Gripper Left Knuckle",
@@ -252,7 +282,6 @@ export const INITIAL_SIM =
                 highlighted: false
               },
               gripperRightKnuckle:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_knuckle_link.stl",
                 name: "Gripper Right Knuckle",
@@ -264,7 +293,6 @@ export const INITIAL_SIM =
                 highlighted: false
               },
               gripperLeftFinger:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_finger_link.stl",
                 name: "Gripper Left Finger",
@@ -276,7 +304,6 @@ export const INITIAL_SIM =
                 highlighted: false
               },
               gripperRightFinger:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_finger_link.stl",
                 name: "Gripper Right Finger",
@@ -288,7 +315,6 @@ export const INITIAL_SIM =
                 highlighted: false
               },
               gripperLeftInnerKnuckle:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_inner_knuckle_link.stl",
                 name: "Gripper Left Inner Knuckle",
@@ -300,7 +326,6 @@ export const INITIAL_SIM =
                 highlighted: false
               },
               gripperRightInnerKnuckle:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_inner_knuckle_link.stl",
                 name: "Gripper Right Inner Knuckle",
@@ -312,7 +337,6 @@ export const INITIAL_SIM =
                 highlighted: false
               },
               gripperLeftFingerTip:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_finger_tip_link.stl",
                 name: "Gripper Left Finger Tip",
@@ -324,7 +348,6 @@ export const INITIAL_SIM =
                 highlighted: false
               },
               gripperRightFingerTip:{
-                pending: false,
                 visual: "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
                 collision: "package://robotiq_85_description/meshes/collision/robotiq_85_finger_tip_link.dae",
                 name: "Gripper Right Finger Tip",

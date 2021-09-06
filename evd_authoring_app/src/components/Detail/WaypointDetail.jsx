@@ -49,7 +49,7 @@ export const WaypointDetail = ({uuid}) => {
       <br/>
       <div style={{paddingTop: '5px',display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
        <b>Reachable:</b>
-       <Switch disabled={true} checked = {waypoint.joints.reachable} style={{left :'-30px' }}/>
+       <Switch disabled checked = {waypoint.joints.reachable} style={{left :'-30px' }}/>
 
 
       </div>

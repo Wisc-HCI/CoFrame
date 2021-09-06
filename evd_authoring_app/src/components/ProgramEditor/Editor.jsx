@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { Layout, Button, Popover } from 'antd';
-import Icon, { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Layout, Button, Row, Input } from 'antd';
+import useStore from '../../stores/Store';
+import Icon, {CloseOutlined, PlusOutlined} from '@ant-design/icons';
+import { useSpring, animated } from '@react-spring/web';
+import { config } from 'react-spring';
 import { Canvas } from './Canvas';
 import { PrimitivesDrawer } from './PrimitivesDrawer';
 import { ContainersDrawer } from './ContainersDrawer';
@@ -14,79 +17,104 @@ import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 import {ReactComponent as WaypointIcon} from '../CustomIcons/Waypoint.svg';
 import {ReactComponent as ContainerIcon} from '../CustomIcons/Container.svg';
 
+const SEARCHABLE = ['machines','locations','waypoints','placeholders']
+
 export const Editor = () => {
 
-    const [drawerExpanded, setDrawerExpanded] = useState(false);
-    
-    const toggle = () => setDrawerExpanded(!drawerExpanded);
+    const [
+      activeDrawer, setActiveDrawer, searchTerm, 
+      setSearchTerm, clearSearchTerm] = useStore(store=>[
+      store.activeDrawer,
+      store.setActiveDrawer,
+      store.searchTerm,
+      store.setSearchTerm,
+      store.clearSearchTerm
+    ]);
+
+    const drawerStyle = useSpring({width: activeDrawer ? 270 : 0, padding: activeDrawer ? 5 : 0, config:config.stiff});
+
+    const drawers = {
+      machines: {
+        title: "Machines",
+        icon: <Icon component={MachineIcon}/>,
+        drawer: <UUIDDrawer itemType='machine'/>
+      },
+      locations: {
+        title: "Locations",
+        icon: <Icon component={LocationIcon}/>,
+        drawer: <UUIDDrawer itemType='location'/>
+      },
+      waypoints: {
+        title: "Waypoints",
+        icon: <Icon component={WaypointIcon}/>,
+        drawer: <UUIDDrawer itemType='waypoint'/>
+      },
+      placeholders: {
+        title: "Things",
+        icon: <Icon component={ThingIcon}/>,
+        drawer: <UUIDDrawer itemType='placeholder'/>
+      },
+      containers: {
+        title: "Containers",
+        icon: <Icon component={ContainerIcon}/>,
+        drawer: <ContainersDrawer/>
+      },
+      skills: {
+        title: "Skills",
+        icon: <Icon component={SkillIcon}/>,
+        drawer: null
+      },
+      actions: {
+        title: "Actions",
+        icon: <Icon component={PrimitiveIcon}/>,
+        drawer: <PrimitivesDrawer/>
+      }
+    }
     
     return (
-        <Layout style={{ flex: 1, fontSize: 20 }}>
-          <Layout.Sider collapsible collapsed={!drawerExpanded} trigger={null} style={{ align: 'left', display: 'flex', flexDirection: 'column', padding: 5 }}>
-            <Button type='primary' block icon={drawerExpanded ? <LeftOutlined /> : <RightOutlined />} onClick={toggle} style={{ marginBottom: 5 }} />
-            <Popover 
-                title={<span><Icon style={{marginRight:10}} component={MachineIcon}/>Machines</span>}
-                placement='right'
-                content={<UUIDDrawer itemType='machine'/>}
-              >
-              <Button type='text' block icon={<Icon component={MachineIcon}/>} style={{ marginBottom: 5, alignItems: 'left' }}>
-                {drawerExpanded && 'Machines'}
-              </Button>
-            </Popover>
-            <Popover 
-                title={<span><Icon style={{marginRight:10}} component={LocationIcon}/>Locations</span>}
-                placement='right'
-                content={<UUIDDrawer itemType='location'/>}
-              >
-              <Button type='text' block icon={<Icon component={LocationIcon}/>} style={{ marginBottom: 5, alignItems: 'left' }}>
-                {drawerExpanded && 'Locations'}
-              </Button>
-            </Popover>
-            <Popover 
-                title={<span><Icon style={{marginRight:10}} component={WaypointIcon}/>Waypoints</span>}
-                placement='right'
-                content={<UUIDDrawer itemType='waypoint'/>}
-              >
-              <Button type='text' block icon={<Icon component={WaypointIcon}/>} style={{ marginBottom: 5, alignItems: 'left' }}>
-                {drawerExpanded && 'Waypoints'}
-              </Button>
-            </Popover>
-            <Popover 
-                title={<span><Icon style={{marginRight:10}} component={ContainerIcon}/>Containers</span>}
-                placement='right'
-                content={<ContainersDrawer itemType='waypoint'/>}
-              >
-              <Button type='text' block icon={<Icon component={ContainerIcon}/>} style={{ marginBottom: 5, alignItems: 'left' }}>
-                {drawerExpanded && 'Containers'}
-              </Button>
-            </Popover>
-            <Popover 
-                title={<span><Icon style={{marginRight:10}} component={ThingIcon}/>Things</span>}
-                placement='right'
-                content={<UUIDDrawer itemType='placeholder'/>}
-              >
-              <Button type='text' block icon={<Icon component={ThingIcon}/>} style={{ marginBottom: 5, alignItems: 'left' }}>
-                {drawerExpanded && 'Things'}
-              </Button>
-            </Popover>
-            <Popover 
-                title={<span><Icon style={{marginRight:10}} component={SkillIcon}/>Macros</span>}
-                placement='right'>
-              <Button type='text' block icon={<Icon component={SkillIcon}/>} style={{ marginBottom: 5 }}>
-                {drawerExpanded && 'Macros'}
-              </Button>
-            </Popover>
-            <Popover 
-                title={<span><Icon style={{marginRight:10}} component={PrimitiveIcon}/>Actions</span>}
-                placement='right'
-                content={<PrimitivesDrawer/>}
-              >
-              <Button type='text' block icon={<Icon component={PrimitiveIcon}/>} style={{ marginBottom: 5 }}>
-                {drawerExpanded && 'Actions'}
-              </Button>
-            </Popover>
+        <Layout style={{ fontSize: 20, height: 'calc(100vh - 113pt)' }}>
+          <Layout.Sider collapsed collapsible trigger={null} style={{align: 'left', display: 'flex', flexDirection: 'column', padding: 5, height: 'calc(100vh - 113pt)' }}>
+            {Object.keys(drawers).map(drawerKey=>(
+              <Button 
+                key={drawerKey} 
+                type={activeDrawer === drawerKey ? 'primary' : 'text'} 
+                block 
+                icon={drawers[drawerKey].icon} 
+                onClick={()=>{ clearSearchTerm(); drawerKey===activeDrawer ? setActiveDrawer(null) : setActiveDrawer(drawerKey)}}
+                style={{ marginBottom: 5, alignItems: 'left' }}/>
+            ))}
           </Layout.Sider>
-          <Layout.Content style={{ height: 'calc(100vh - 115pt)', overflow: 'scroll' }}>
+          <animated.div onDrag={()=>setActiveDrawer(null)} style={{...drawerStyle, align: 'left', backgroundColor: '#2f2f2f', fontSize: 14, height: 'calc(100vh - 113pt)'}}>
+             {activeDrawer && (
+               <React.Fragment>
+                <Row align='middle' justify='space-between' style={{padding:5,marginLeft:5}}>
+                  <span style={{color:'white',padding:3}}>{drawers[activeDrawer].title}</span>
+                  {SEARCHABLE.indexOf(activeDrawer) >= 0 && (
+                    <Button
+                      type='outline'
+                      onClick={()=>console.log(activeDrawer)}
+                      icon={<PlusOutlined />}
+                    />
+                  )}
+                </Row>
+                {SEARCHABLE.indexOf(activeDrawer) >= 0 && (
+                  <Row style={{backgroundColor:'#f1f1f110', width:'100%'}}>
+                    <Input
+                      value={searchTerm} 
+                      placeholder="Search..." 
+                      onChange={(e)=>setSearchTerm(e.target.value)} 
+                      addonAfter={<CloseOutlined onClick={clearSearchTerm}/>}
+                      style={{ maxWidth: 300, minWidth: 100, display: "block" }} />
+                  </Row>
+                )}
+                <div style={{width:'100%',marginTop:10, overflowY: 'scroll',height: SEARCHABLE.indexOf(activeDrawer) === -1 ? 'calc(100vh - 155pt)' : 'calc(100vh - 183pt)'}}>
+                  {drawers[activeDrawer].drawer}
+                </div>
+                
+               </React.Fragment>
+             )}
+          </animated.div>
+          <Layout.Content style={{ height: 'calc(100vh - 113pt)', overflow: 'scroll' }}>
             <Canvas/>
             <DeleteZone/>
           </Layout.Content>

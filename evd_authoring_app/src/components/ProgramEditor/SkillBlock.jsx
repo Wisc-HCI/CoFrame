@@ -29,7 +29,7 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
         ...context
     };
     data.arguments.forEach(arg=>{
-        currentContext[arg.uuid] = arg.name
+        currentContext[arg.uuid] = {name:arg.name,real:false}
     })
 
     const dragBlockStyles = {
@@ -53,7 +53,7 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
                 <Col ref={ref} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4}}>
                     <Icon style={{marginLeft:4}} component={ContainerIcon} />{' '}{data.name}
                 </Col>
-                <Col span={6} offset={1}>
+                <Col span={6} offset={1} style={{textAlign:'end'}}>
                     {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
                     <Button
                         type='text'

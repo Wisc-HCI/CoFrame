@@ -16,25 +16,45 @@ const INFO = {
         name: "Table",
         description: "The table is the main workspace of the program."
     },
-    box: {
-        name: "Box",
-        description: "The box is where finished products are placed."
-    },
+    // box: {
+    //     name: "Box",
+    //     description: "The box is where finished products are placed."
+    // },
     pedestal: {
-        name: "Box",
-        description: "The box is where finished products are placed."
+        name: "Pedestal",
+        description: "The movable base that the robot is attached to."
     },
     printer: {
         name: '3D Printer',
         description: "This is a 3D printer capable of producing certain parts for assembly."
     },
-    base: ROBOT_DATA,
-    shoulderLink: ROBOT_DATA,
-    upperArmLink: ROBOT_DATA,
-    forearmLink: ROBOT_DATA,
-    wrist1Link: ROBOT_DATA,
-    wrist2Link: ROBOT_DATA,
-    wrist3Link: ROBOT_DATA,
+    bladeConveyor: {
+        name: 'Blade Production Conveyor Belt',
+        description: 'This device produces the blades, and deposits them into the Conveyor Belt Blade Receiver'
+    },
+    knifeConveyor: {
+        name: 'Knife Output Conveyor Belt',
+        description: 'This device receives the finished blades from the Conveyor Belt Knife Dispatcher'
+    },
+    conveyorDispatcher: {
+        name: 'Conveyor Belt Knife Dispatcher',
+        description: 'This device can receive a finished knife (with or without the Transport Jig, and dispatches the knife to the Knife Output Conveyor Belt.'
+    },
+    conveyorReceiver: {
+        name: 'Conveyor Belt Blade Receiver',
+        description: 'This device can receive a blade from the Blade Production Conveyor Belt, and if a Transport Jig is loaded, can deposit it into the jig on receipt.'
+    },
+    assemblyJig: {
+        name: 'Assembly Jig',
+        description: 'This device takes in a Blade, a Left Handle, a Right Handle, and optionally a Transport Jig, producing a finished Knife (in the transport jig if provided).'
+    },
+    robotBase: ROBOT_DATA,
+    robotShoulderLink: ROBOT_DATA,
+    robotUpperArmLink: ROBOT_DATA,
+    robotForearmLink: ROBOT_DATA,
+    robotWrist1Link: ROBOT_DATA,
+    robotWrist2Link: ROBOT_DATA,
+    robotWrist3Link: ROBOT_DATA,
     gripperBaseLink: GRIPPER_DATA,
     gripperLeftKnuckle: GRIPPER_DATA,
     gripperRightKnuckle: GRIPPER_DATA,
