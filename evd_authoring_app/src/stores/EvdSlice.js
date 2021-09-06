@@ -241,22 +241,23 @@ export const EvdSlice = (set,get) => ({
     }),
     setItemProperty: (type, uuid, property, value) => set((state)=>{
       state.data[typeToKey(type)][uuid][property] = value;
-      let item = state.data[typeToKey(type)][uuid];
-      let frame = state.frame;
-      if (['waypoint','location'].indexOf(type)>=0) {
-        poseDataToShapes(item,frame).forEach(shape=>{
-          sceneSetItem(shape.uuid,shape);
-        })
-        // Enumerate the trajectories and update their visuals if they use this location or waypoint
-        Object.keys(state.data.trajectories).forEach(trajectory=>{
-          if (trajectory.start_location_uuid === uuid || trajectory.end_location_uuid === uuid || trajectory.waypoint_uuids.indexOf(uuid) >= 0) {
-            let locations = state.data.locations;
-            let waypoints = state.data.waypoints;
-            let frame = state.frame;
-            sceneSetLine(...trajectoryDataToLine(trajectory,locations,waypoints,frame))
-          }
-        })
-      }
+      // let item = state.data[typeToKey(type)][uuid];
+      // let frame = state.frame;
+      // if (['waypoint','location'].indexOf(type)>=0) {
+      //   poseDataToShapes(item,frame).forEach(shape=>{
+      //     sceneSetItem(shape.uuid,shape);
+      //   })
+      //   // Enumerate the trajectories and update their visuals if they use this location or waypoint
+      //   Object.keys(state.data.trajectories).forEach(trajectory_uuid=>{
+      //     // let trajectory = state.data.trajectories[trajectory_uuid];
+      //     // if (trajectory.start_location_uuid === uuid || trajectory.end_location_uuid === uuid || trajectory.waypoint_uuids.indexOf(uuid) >= 0) {
+      //     //   let locations = state.data.locations;
+      //     //   let waypoints = state.data.waypoints;
+      //     //   let frame = state.frame;
+      //     //   sceneSetLine(...trajectoryDataToLine(trajectory,locations,waypoints,frame))
+      //     // }
+      //   })
+      // }
     }),
     setPrimitiveParameter: (type, uuid, property, value) => set((state)=>{
       state.data[typeToKey(type)][uuid].parameters[property] = value
@@ -264,7 +265,20 @@ export const EvdSlice = (set,get) => ({
     deleteItem: (type, uuid) => set((state)=>{
       delete state.data[typeToKey(type)][uuid]
       if (type === "waypoint") {
-
+        Object.keys(state.data.trajectories).forEach(trajectory_uuid=>{
+          state.data.trajectories[trajectory_uuid].waypoint_uuids = state.data.trajectories[trajectory_uuid].waypoint_uuids.filter(other_uuid=>other_uuid!==uuid)
+        })
+        // TODO: Remove from other params.
+      } else if (type === 'location') {
+        Object.keys(state.data.trajectories).forEach(trajectory_uuid=>{
+          if (state.data.trajectories[trajectory_uuid].start_location_uuid === uuid) {
+            state.data.trajectories[trajectory_uuid].start_location_uuid = null
+          }
+          if (state.data.trajectories[trajectory_uuid].end_location_uuid === uuid) {
+            state.data.trajectories[trajectory_uuid].end_location_uuid = null
+          }
+        })
+        // TODO: Remove from other params.
       }
     }),
     moveItem: (type,uuid,x,y) => set((state)=>{

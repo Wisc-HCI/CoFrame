@@ -16,6 +16,7 @@ import {ReactComponent as SkillIcon} from '../CustomIcons/Skill.svg';
 import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 import {ReactComponent as WaypointIcon} from '../CustomIcons/Waypoint.svg';
 import {ReactComponent as ContainerIcon} from '../CustomIcons/Container.svg';
+import { createWaypoint, createLocation, createMachine, createPlaceholder } from '../../stores/templates';
 
 const SEARCHABLE = ['machines','locations','waypoints','placeholders']
 
@@ -23,12 +24,14 @@ export const Editor = () => {
 
     const [
       activeDrawer, setActiveDrawer, searchTerm, 
-      setSearchTerm, clearSearchTerm] = useStore(store=>[
+      setSearchTerm, clearSearchTerm, addItem, setFocusItem] = useStore(store=>[
       store.activeDrawer,
       store.setActiveDrawer,
       store.searchTerm,
       store.setSearchTerm,
-      store.clearSearchTerm
+      store.clearSearchTerm,
+      store.addItem,
+      store.setFocusItem
     ]);
 
     const drawerStyle = useSpring({width: activeDrawer ? 270 : 0, padding: activeDrawer ? 5 : 0, config:config.stiff});
@@ -37,22 +40,42 @@ export const Editor = () => {
       machines: {
         title: "Machines",
         icon: <Icon component={MachineIcon}/>,
-        drawer: <UUIDDrawer itemType='machine'/>
+        drawer: <UUIDDrawer itemType='machine'/>,
+        addFn: (mesh)=>{
+          const newMachine = createMachine(mesh);
+          addItem('machine',newMachine);
+          setFocusItem('machine',newMachine.uuid);
+        }
       },
       locations: {
         title: "Locations",
         icon: <Icon component={LocationIcon}/>,
-        drawer: <UUIDDrawer itemType='location'/>
+        drawer: <UUIDDrawer itemType='location'/>,
+        addFn: ()=>{
+          const newLocation = createLocation();
+          addItem('location',newLocation);
+          setFocusItem('location',newLocation.uuid);
+        }
       },
       waypoints: {
         title: "Waypoints",
         icon: <Icon component={WaypointIcon}/>,
-        drawer: <UUIDDrawer itemType='waypoint'/>
+        drawer: <UUIDDrawer itemType='waypoint'/>,
+        addFn: ()=>{
+          const newWaypoint = createWaypoint();
+          addItem('waypoint',newWaypoint);
+          setFocusItem('waypoint',newWaypoint.uuid);
+        }
       },
       placeholders: {
         title: "Things",
         icon: <Icon component={ThingIcon}/>,
-        drawer: <UUIDDrawer itemType='placeholder'/>
+        drawer: <UUIDDrawer itemType='placeholder'/>,
+        addFn: (thingTypeUuid)=>{
+          const newPlaceholder = createPlaceholder(thingTypeUuid);
+          addItem('placeholder',newPlaceholder);
+          setFocusItem('placeholder',newPlaceholder.uuid);
+        }
       },
       containers: {
         title: "Containers",
@@ -92,7 +115,7 @@ export const Editor = () => {
                   {SEARCHABLE.indexOf(activeDrawer) >= 0 && (
                     <Button
                       type='outline'
-                      onClick={()=>console.log(activeDrawer)}
+                      onClick={drawers[activeDrawer].addFn}
                       icon={<PlusOutlined />}
                     />
                   )}

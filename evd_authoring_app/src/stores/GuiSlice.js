@@ -1,6 +1,6 @@
 import frameStyles from '../frameStyles';
 import { sceneSetItem, sceneSetTF } from "./helpers";
-import { INITIAL_SIM } from './initialSim';
+import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
 import { clearHighlights, // clearTempObjects, createTrajectory, 
     highlightGripper, highlightRobot, highlightSceneItem, sceneSetTfs } from './helpers';
 import { trajectoryToAnimation } from './animation';
@@ -130,7 +130,7 @@ export const GuiSlice = (set,get) => ({
             .forEach((itemKey)=>{
                 let item = initial_data.staticScene[itemKey];
                 sceneSetItem(itemKey,{
-                    shape: item.visual,
+                    shape: item.shape,
                     name: item.name,
                     frame: item.frame,
                     position: item.position,
@@ -145,19 +145,23 @@ export const GuiSlice = (set,get) => ({
                         e.stopPropagation();},
                     onMove: (transform) => {console.log(transform)}
                 });
-                sceneSetItem(itemKey+'-collision',{
-                        shape: item.collision,
-                        name: item.name+' Collision',
-                        frame: item.frame,
-                        position: item.position,
-                        rotation: item.rotation,
-                        scale: { x: 1, y: 1, z: 1 },
-                        color: {r: 250, g: 50, b: 50, a: 0},
-                        transformMode: 'inactive',
-                        highlighted: false,
-                        onClick: (e)=>{},
-                        onMove: (transform) => {console.log(transform)}
-                });
+                if (COLLISION_MESHES[item.shape]) {
+                  sceneSetItem(itemKey+'-collision',{
+                    shape: COLLISION_MESHES[item.shape],
+                    name: item.name+' Collision',
+                    frame: item.frame,
+                    position: item.position,
+                    rotation: item.rotation,
+                    scale: item.scale,
+                    color: {r: 250, g: 0, b: 0, a: 0.3},
+                    transformMode: 'inactive',
+                    highlighted: false,
+                    wireframe: true,
+                    onClick: (e)=>{},
+                    onMove: (transform) => {console.log(transform)}
+            });
+                }
+                
             })
             sceneSetTfs(initial_data.tfs);
         }
