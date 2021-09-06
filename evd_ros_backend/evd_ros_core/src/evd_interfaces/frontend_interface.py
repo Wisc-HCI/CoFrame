@@ -15,6 +15,7 @@ from evd_script import NodeParser
 
 from std_msgs.msg import String, Empty
 from evd_ros_core.msg import Job, Issue, StringArray
+from evd_ros_core.srv import QueryJob, QueryJobRequest, QueryJobResponse
 
 
 class FrontendInterface:
@@ -63,12 +64,23 @@ class FrontendInterface:
     def _jobs_clear_cb(self, job_type, msg):
         self._job_providers[job_type]['user_clear_cb'](msg.id)
 
+    def _jobs_query_cb(self, job_type, _):
+        (active_job, pending_jobs) = self._job_providers[job_type]['user_query_cb']()
+        response = QueryJobResponse()
+        response.active_job - active_job
+        response.pending_jobs = pending_jobs
+        return response
+
     def _processor_configure_cb(self, msg):
         if self._user_processor_config_cb != None:
             dct = json.loads(msg.data)
 
-            #TODO convert dct into the node represntation.
-            data = dct
+            data = {}
+            for key in dct.keys():
+                data[key] = []
+
+                for n in dct[key]:
+                    data[key].append(NodeParser(n))
 
             self._user_processor_config_cb(data)
 
@@ -111,7 +123,7 @@ class FrontendInterface:
         msg.level = Issue.LEVEL_CLEAR
         self._issues_clear_pub.publish(msg)
 
-    def create_job_provider(self, job_name, request_cb, clear_cb):
+    def create_job_provider(self, job_name, request_cb, clear_cb, query_cb):
         prefix_fmt = self._prefix + '/' if self._prefix != '' else self._prefix
 
         if job_name in self._job_providers.keys():
@@ -119,13 +131,16 @@ class FrontendInterface:
 
         bound_request_cb = partial(self._jobs_request_cb,job_name)
         bound_clear_cb = partial(self._jobs_clear_cb,job_name)
+        bound_query_cb = partial(self._jobs_query_cb,job_name)
 
         self._job_providers = {
             'user_request_cb': request_cb,
             'user_clear_cb': clear_cb,
+            'user_query_cb': query_cb,
             'request_sub': rospy.Subscriber('{0}program/request/{1}'.format(prefix_fmt,job_name), Job, bound_request_cb),
             'submit_pub': rospy.Publisher('{0}program/submit/{1}'.format(prefix_fmt,job_name), Job, queue_size=5),
-            'clear_sub': rospy.Subscriber('{0}program/clear/{1}'.format(prefix_fmt,job_name), String, bound_clear_cb)
+            'clear_sub': rospy.Subscriber('{0}program/clear/{1}'.format(prefix_fmt,job_name), String, bound_clear_cb),
+            'query_srv': rospy.Service('{0}program/query/{1}'.format(prefix_fmt,job_name), QueryJob, bound_query_cb)
         }
     
     def submit_job(self, job_name, id, data):

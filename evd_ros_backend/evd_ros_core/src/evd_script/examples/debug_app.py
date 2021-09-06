@@ -138,7 +138,7 @@ def generate():
 
 if __name__ == "__main__":
     import rospy
-    rospy.init_node('test_node_placeholder_name')
+    rospy.init_node('test_node_application')
 
     program = generate()
 

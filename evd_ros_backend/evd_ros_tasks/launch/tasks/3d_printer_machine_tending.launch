@@ -17,7 +17,7 @@
   <include file="$(find evd_ros_tasks)/launch/_common/ur3e.launch">
     <arg name="bringup_physical_robot" value="$(arg bringup_physical_robot)"/>
     <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
-    <arg name="robot_description_xacro" value="$(find evd_ros_tasks)/description/3d_printer_machine_tending.urdf.xacro"/>
+    <arg name="robot_description_xacro" value="$(find evd_ros_tasks)/description/full_task.urdf.xacro"/>
   </include>
 
 <!--=========================================================================-->
@@ -38,10 +38,25 @@
     <arg name="task_name" value="3d_printer_machine_tending"/>
   </include>
 
-  <!-- 3D Printer -->
-  <node name="machine_3d_printer" type="3d_printer_machine.py" pkg="evd_ros_tasks" output="screen"/>
-
   <!-- Workcell -->
-  <node name="workcell" type="register_ur3e_workcell.py" pkg="evd_ros_tasks" output="screen"/>
+  <node name="register_static_workcell" type="register_static_workcell.py" pkg="evd_ros_tasks" output="screen"/>
 
+  <!-- Blade Conveyor -->
+  <node name="blade_conveyor_machine" type="blade_conveyor_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  
+  <!-- Blade Feeder -->
+  <node name="blade_feeder_machine" type="blade_feeder_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  
+  <!-- 3D Printer -->
+  <node name="3d_printer_machine" type="3d_printer_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  
+  <!-- Assembly Jig -->
+  <node name="assembly_jig_machine" type="assembly_jig_machine.py" pkg="evd_ros_tasks" output="screen"/>
+
+  <!-- Knife Feeder -->
+  <node name="knife_feeder_machine" type="knife_feeder_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  
+  <!-- Knife Conveyor -->
+  <node name="knife_conveyor_machine" type="knife_conveyor_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  
 </launch>

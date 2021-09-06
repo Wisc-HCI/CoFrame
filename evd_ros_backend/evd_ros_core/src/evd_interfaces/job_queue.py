@@ -3,6 +3,7 @@
 
 from functools import partial
 
+from evd_ros_core.msg import Job
 from evd_interfaces.frontend_interface import FrontendInterface
 
 
@@ -17,13 +18,18 @@ class JobQueue:
         self._end_job = end_callback
 
         self._frontend = frontend if frontend != None else FrontendInterface()
-        self._frontend.create_job_provider(self._job_name, self._handle_request_cb, self._handle_clear_cb)
+        self._frontend.create_job_provider(self._job_name, self._handle_request_cb, self._handle_clear_cb, self._handle_query_cb)
 
     def _handle_request_cb(self, id, data):
         self.add(id, data)
 
     def _handle_clear_cb(self, id):
         self.cancel(id)
+
+    def _handle_query_cb(self):
+        aJob = Job(id=self._active_job['id'], data=json.dumps(self._active_job['data']))
+        pJobs = [Job(id=p['id'], data=json.dumps(p['data'])) for p in self._pending_jobs]
+        return aJob, pJobs
 
     @property
     def active_job(self):
@@ -90,5 +96,3 @@ class JobQueue:
 
     def completed(self):
         self._active_job['status'] = 'done'
-
-
