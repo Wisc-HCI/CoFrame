@@ -216,6 +216,29 @@ class Joints(Node):
             self._reachable = value
             self.updated_attribute('reachable','set')
 
+    def set_joint_positions_by_names(self, positions, names):
+        for i, n in enumerate(names):
+            for j, name in enumerate(self._joint_names):
+                if name == n:
+                    self._joint_names[j] = positions[i]
+                    break
+
+    def get_joint_positions_by_names(self, names):
+        joints = []
+
+        for n in names:
+            position = None
+
+            for j, name in enumerate(self._joint_names):
+                if name == n:
+                    position = self._joint_names[j]
+                    break
+
+            if position != None:
+                joints.append(position)
+        
+        return joints
+
     def set(self, dct):
 
         if 'length' in dct.keys():

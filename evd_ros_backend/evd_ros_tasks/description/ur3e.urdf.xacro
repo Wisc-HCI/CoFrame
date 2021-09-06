@@ -54,4 +54,26 @@
 		<origin xyz="0 0 0" rpy="${pi/2} -${pi/2} 0" />
 	</xacro:robotiq_85_gripper>
 
+	<!-- Robot Pedestal -->
+  <link name="ur3e_pedestal_link" type="fixed" >
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/description/meshes/visual/Pedestal.stl"/>
+      </geometry>
+      <material name="visual_app_mesh"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://evd_ros_tasks/description/meshes/collision/Pedestal.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="robot_common_ur3e_pedestal_joint" type="fixed">
+    <parent link="robot_common" />
+    <child link="ur3e_pedestal_link" />
+    <origin xyz="0.0 0.0 -0.38" rpy="0.0 0.0 0.0" />
+  </joint>
+
 </robot>

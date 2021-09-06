@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<robot name="application" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="kinematics_config" default="$(find ur_e_description)/config/ur3e_default.yaml"/>
+
+  <material name="visual_app_mesh">
+    <color rgba="${128/255} ${128/255} ${128/255} 1.0"/>
+  </material>
+
+  <!-- Common -->
+  <link name="world" />
+
+  <!-- Robot -->
+  <xacro:include filename="$(find evd_ros_tasks)/description/ur3e.urdf.xacro"/>
+  <joint name="world_robot_common_joint" type="fixed">
+    <parent link="world"/>
+    <child link="robot_common"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <!-- Environment -->
+  <xacro:include filename="$(find evd_ros_tasks)/description/environment.urdf.xacro"/>
+  <joint name="world_env_common_joint" type="fixed">
+    <parent link="world"/>
+    <child link="env_base"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+</robot>

@@ -75,6 +75,7 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
+  QueryJob.srv
   SetData.srv
   SetRobotGrip.srv
   SetRobotMove.srv

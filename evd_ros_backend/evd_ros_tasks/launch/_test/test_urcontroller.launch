@@ -29,7 +29,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
   <!-- RVIZ -->
-  <include file="$(find evd_ros_tasks/launch/_common/rviz.launch">
+  <include file="$(find evd_ros_tasks)/launch/_common/rviz.launch">
     <arg name="launch_rviz" value="$(arg launch_rviz)"/>
     <arg name="load_rviz_cfg" value="$(arg load_rviz_cfg)"/>
     <arg name="task_name" value="test_urcontroller"/>

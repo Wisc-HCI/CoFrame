@@ -4,22 +4,20 @@
   <arg name="load_rviz_cfg" default="true"/>
 
   <arg name="run_test_script" default="false"/>
-
-  <arg name="enable_robot_drivers" default="true"/>
+  <arg name="simulate_physical_robot" default="false"/>
 
   <!-- Launch Robot Bringup -->
-  <include file="$(find evd_ros_tasks)/launch/robot_bringup.launch">
-    <arg name="simulate_physical_robot" value="$(arg enable_robot_drivers)"/>
-    <arg name="active_physical" value="$(arg enable_robot_drivers)"/>
-    <arg name="active_simulated" value="$(arg enable_robot_drivers)"/>
-    <arg name="active_planner" value="$(arg enable_robot_drivers)"/>
+  <include file="$(find evd_ros_tasks)/launch/_common/ur3e.launch">
+    <arg name="bringup_physical_robot" value="true"/>
+    <arg name="simulate_physical_robot" value="$(arg simulate_physical_robot)"/>
+    <arg name="robot_description_xacro" value="$(find evd_ros_tasks)/description/ur3e.urdf.xacro"/>
   </include>
 
   <!-- System test code -->
   <node if="$(arg run_test_script)" name="test_robot_bringup" pkg="evd_ros_tasks" type="test_robot_bringup.py"/>
 
   <!-- RVIZ -->
-  <include file="$(find evd_ros_tasks/launch/_common/rviz.launch">
+  <include file="$(find evd_ros_tasks)/launch/_common/rviz.launch">
     <arg name="launch_rviz" value="$(arg launch_rviz)"/>
     <arg name="load_rviz_cfg" value="$(arg load_rviz_cfg)"/>
     <arg name="task_name" value="test_robot_bringup"/>

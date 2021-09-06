@@ -19,7 +19,7 @@ handling this disconnect. Probably something like a variable location?
 '''
 
 from ..environment_nodes.collision_mesh import CollisionMesh
-from ..type_defs import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE
+from ..type_defs import ARBITRARY_OBJ_TYPE, NUMBER_TYPE, STRING_TYPE, BOOLEAN_TYPE
 from ..node import Node
 from .geometry import Pose
 from .placeholder import Placeholder
@@ -89,10 +89,16 @@ class Machine(Node):
             'is_uuid': True,
             'is_list': False
         })
+        template['fields'].append({
+            'type': BOOLEAN_TYPE,
+            'key': 'passive',
+            'is_uuid': False,
+            'is_list': False
+        })
         return template
 
     def __init__(self, inputs=None, outputs=None, process_time=0, link='', mesh_id=None, 
-                 pose_offset=None, collision_mesh_uuid=None, type='', 
+                 passive=False, pose_offset=None, collision_mesh_uuid=None, type='', 
                  name='', uuid=None, parent=None, append_type=True, editable=True, 
                  deleteable=True, description=''):
         self._inputs = None
@@ -103,6 +109,7 @@ class Machine(Node):
         self._pose_offset = None
         self._link = None
         self._collision_mesh_uuid = None
+        self._passive = None
 
         super(Machine,self).__init__(
             type=Machine.type_string() + type if append_type else type,
@@ -121,6 +128,7 @@ class Machine(Node):
         self.pose_offset = pose_offset if pose_offset != None else Pose(link=link, deleteable=False, editable=editable)
         self.link = link
         self.collision_mesh_uuid = collision_mesh_uuid
+        self.passive = passive
 
     def to_dct(self):
         msg = super(Machine,self).to_dct()
@@ -131,7 +139,8 @@ class Machine(Node):
             'mesh_id': self.mesh_id,
             'pose_offset': self.pose_offset.to_dct(),
             'link': self.link,
-            'collision_mesh_uuid': self.collision_mesh_uuid
+            'collision_mesh_uuid': self.collision_mesh_uuid,
+            'passive': self.passive
         })
         return msg
 
@@ -142,6 +151,7 @@ class Machine(Node):
             outputs=dct['outputs'],
             process_time=dct['process_time'],
             mesh_id=dct['mesh_id'],
+            passive=dct['passive'],
             pose_offset=NodeParser(dct['pose_offset'], enforce_types=[Pose.type_string(trailing_delim=False)]),
             link=dct['link'],
             collision_mesh_uuid=dct['collision_mesh_uuid'],
@@ -343,6 +353,16 @@ class Machine(Node):
         if self._mesh_id != value:
             self._mesh_id = value
             self.updated_attribute('mesh_id','set')
+
+    @property
+    def passive(self):
+        return self._passive
+
+    @passive.setter
+    def passive(self, value):
+        if self._passive != value:
+            self._passive = value
+            self.updated_attribute('passive','set')
 
     @property
     def pose_offset(self):

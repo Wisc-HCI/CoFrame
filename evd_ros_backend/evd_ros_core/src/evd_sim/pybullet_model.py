@@ -16,12 +16,12 @@ class PyBulletModel(object):
         pybullet.setRealTimeSimulation(False)
         pybullet.setGravity(0, 0, -9.8)
         pybullet.setTimeStep(self.timeStep)
-        pybullet.setRealTimeSimulation(False)
 
         #flags = pybullet.URDF_USE_SELF_COLLISION|pybullet.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS 
         flags = pybullet.URDF_MERGE_FIXED_LINKS
 
-        self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True, flags=flags)
+        #self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True, flags=flags)
+        self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True)
         self.jointIds = {}
         self.linkIds = {}
         for j in range(pybullet.getNumJoints(self.robotId)):
@@ -110,6 +110,35 @@ class PyBulletModel(object):
             frames.append((pos, rot))
 
         return (frames, names)
+
+    @property
+    def joint_names(self):
+        return self.jointIds.keys()
+
+    @property
+    def frame_names(self):
+        return self.linkIds.keys()
+
+    @classmethod
+    def get_ee_pose(cls, frames, ee_frame='ee_link'):
+        pose = Pose()
+
+        for i in range(0,len(frames)):
+            if frames[i][1] == ee_frame:
+                (pos, rot) = frames[i][0]
+
+                pose.position.x = pos.x
+                pose.position.y = pos.y
+                pose.position.z = pos.z
+
+                pose.orientation.x = rot.x
+                pose.orientation.y = rot.y
+                pose.orientation.z = rot.z
+                pose.orientation.w = rot.w
+
+                break
+
+        return pose
 
     def collisionCheck(self):
         return None #TODO

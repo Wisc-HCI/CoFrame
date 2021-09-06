@@ -173,7 +173,7 @@ class SubSystemTest:
 
 
 if __name__ == "__main__":
-    rospy.init_node('bringup_test')
+    rospy.init_node('test_robot_bringup')
 
     test_start_delay = rospy.get_param('~test_start_delay',DEFAULT_TEST_START_DELAY)
 

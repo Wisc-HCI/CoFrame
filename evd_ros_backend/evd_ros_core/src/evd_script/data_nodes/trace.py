@@ -28,6 +28,8 @@ it opts to just package the raw data. This is for performance and memory reasons
 (consider the additional meta-data needed for each node plus time to construct).
 Conversion methods are available in the underlying data nodes (Pose, Joints) that can
 be used to reconstruct nodes from the trace data.
+
+But I could produce a "nice" generator?
 '''
 
 from ..type_defs import NUMBER_TYPE, STRING_TYPE, ARBITRARY_OBJ_TYPE
@@ -167,13 +169,13 @@ class Trace(Node, VisualizeMarkers):
     @classmethod
     def from_dct(cls, dct):
         return cls(
-            uuid=dct['uuid'],
-            type=dct['type'],
-            name=dct['name'],
-            append_type=False,
-            editable=dct['editable'],
-            deleteable=dct['deleteable'],
-            description=dct['description'],
+            uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
+            type=dct['type'] if 'type' in dct.keys() else '',
+            name=dct['name'] if 'name' in dct.keys() else '',
+            append_type='type' in dct.keys(),
+            editable=dct['editable'] if 'editable' in dct.keys() else True,
+            deleteable=dct['deleteable'] if 'deleteable' in dct.keys() else True,
+            description=dct['description'] if 'description' in dct.keys() else '',
             time_data=dct['time_data'],
             joint_names=dct['joint_names'],
             joint_data=dct['joint_data'],

@@ -22,10 +22,16 @@ class JointInterpolator:
             
             times.append(t)
 
+        self._fullTime = max(times)
+
         # Generate interpolation functions  
         self._interpFnts = []
         for t, j in zip(times, joints):
             self._interpFnts.append(interp1d(t, j, kind='cubic', assume_sorted=True, bounds_error=False, fill_value=(j[0],j[-1])))
+
+    @property
+    def full_time(self):
+        return self._fullTime
 
     def step(self, time):
         js = []

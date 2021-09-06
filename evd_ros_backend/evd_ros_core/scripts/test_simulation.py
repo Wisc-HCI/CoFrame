@@ -26,7 +26,7 @@ class TestSimNode:
             self._config = json.load(f)
 
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
-        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet/'), self._config['pybullet'], gui=True)
+        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=True)
         self.jsf = JointsStabilizedFilter(20,0.001)
 
         self._lively_js_pub = rospy.Publisher('lively_tk/joints',JointState,queue_size=10)
@@ -66,6 +66,8 @@ class TestSimNode:
             pb_joints, pb_frames = self.pyb.step(lv_joints[0], lv_joints[1])
             pb_collisions = self.pyb.collisionCheck()
 
+            print([(f, n) for f, n in zip(pb_frames[0],pb_frames[1])])
+
             # Publish results
             lv_jMsg = JointState()
             lv_jMsg.name = lv_joints[1]
@@ -83,7 +85,7 @@ class TestSimNode:
             # swap targets when reached
             eePose = LivelyTKSolver.get_ee_pose(lv_frames[0])
             #print('EE Pose:',eePose,'\nTarget Pose:', targetPose)
-            print('Is Stable', self.jsf.isStable(),'Pose Reached:',poseReached(targetPose, eePose, 0.05, 0.02))
+            #print('Is Stable', self.jsf.isStable(),'Pose Reached:',poseReached(targetPose, eePose, 0.05, 0.02))
             if self.jsf.isStable() and poseReached(targetPose, eePose, 0.05, 0.02):
                 #print('\n\n\n\nSWAP\n\n\n\n')
                 
