@@ -34,4 +34,7 @@
   </node>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen"/>
 
+  <!-- Higher-level controller for communication with evd_ros -->
+  <node name="ur_controller" pkg="evd_ros_tasks" type="ur_controller_robot.py" output="screen"/>
+
 </launch>
