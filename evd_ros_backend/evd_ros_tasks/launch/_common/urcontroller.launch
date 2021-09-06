@@ -6,9 +6,8 @@
   <arg name="reverse_port" default="50001"/>
   <arg name="fake_gripper" default="true"/>
 
-  <arg name="kinematics_config" default="$(find ur_description)/config/ur3_default.yaml"/>
-
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_e_description)/urdf/ur3e_robot.urdf.xacro' kinematics_config:=$(arg kinematics_config)"/>
+  <arg name="kinematics_config" default="$(find ur_description)/config/ur3e/default_kinematics.yaml"/>
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_description)/urdf/ur3e.xacro' kinematics_config:=$(arg kinematics_config)"/>
 
   <!-- Launch robot driver -->
   <include file="$(find ur_robot_driver)/launch/ur_control.launch">
