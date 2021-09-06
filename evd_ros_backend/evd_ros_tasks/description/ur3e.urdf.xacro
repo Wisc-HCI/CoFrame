@@ -3,6 +3,10 @@
 
 	<xacro:arg name="kinematics_config" default="$(find ur_description)/config/ur3e_default.yaml"/>
 
+	<material name="visual_env_mesh">
+		<color rgba="${128/255} ${128/255} ${128/255} 1.0"/>
+	</material>
+
 	<!-- robot_common -->
 	<link name="robot_common" />
 
@@ -61,7 +65,7 @@
       <geometry>
         <mesh filename="package://evd_ros_tasks/description/meshes/visual/Pedestal.stl"/>
       </geometry>
-      <material name="visual_app_mesh"/>
+      <material name="visual_env_mesh"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
