@@ -42,5 +42,7 @@ def DataNodeParser(exactType, dct):
         node = GradeType.from_dct(dct)
     elif exactType == SkillArgument.type_string(trailing_delim=False):
         node = SkillArgument.from_dct(dct)
+    elif exactType == Placeholder.type_string(trailing_delim=False):
+        node = Placeholder.from_dct(dct)
 
     return node

@@ -9,7 +9,7 @@ from .environment_node import EnvironmentNode
 from ..data_nodes.geometry import Position
 from ..visualizable import VisualizeMarker, ColorTable
 from ..node_parser import NodeParser
-from ..type_defs import NUMBER_TYPE
+from ..type_defs import NUMBER_TYPE, STRING_TYPE
 
 
 from visualization_msgs.msg import Marker
@@ -57,13 +57,20 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
             'is_uuid': False,
             'is_list': False
         })
+        template['fields'].append({
+            'type': STRING_TYPE,
+            'key': 'link',
+            'is_uuid': False,
+            'is_list': False
+        })
         return template
 
-    def __init__(self, radius=1, offset=None, type='', name='', parent=None,
+    def __init__(self, radius=1, link=None, offset=None, type='', name='', parent=None,
                  uuid=None, append_type=True, editable=True, deleteable=True,
                  description=''):
         self._radius = None
         self._offset = None
+        self._link = None
 
         super(ReachSphere,self).__init__(
             type=ReachSphere.type_string() + type if append_type else type,
@@ -77,12 +84,14 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
 
         self.radius = radius
         self.offset = offset if offset != None else Position(0,0,0, editable=editable, deletable=False)
+        self.link = link
 
     def to_dct(self):
         msg = super(ReachSphere,self).to_dct()
         msg.update({
             'radius': self.radius,
-            'offset': self.offset.to_dct()
+            'offset': self.offset.to_dct(),
+            'link': self.link
         })
         return msg
 
@@ -91,6 +100,7 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
         return cls(radius=dct['radius'],
                    offset=NodeParser(dct['offset'], enforce_types=[Position.type_string(trailing_delim=False)]),
                    type=dct['type'] if 'type' in dct.keys() else '',
+                   link=dct['link'],
                    append_type=not 'type' in dct.keys(),
                    editable=dct['editable'],
                    deleteable=dct['deleteable'],
@@ -111,7 +121,7 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
             raise Exception('State {} is not a valid state'.format(state))
 
         marker = Marker()
-        marker.header.frame_id = frame_id
+        marker.header.frame_id = frame_id if self.link == None else self.link
         marker.type = Marker.SPHERE
         marker.ns = 'reach_sphere'
         marker.id = id
@@ -139,6 +149,16 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
             self.updated_attribute('radius','set')
 
     @property
+    def link(self):
+        return self._link
+
+    @link.setter
+    def link(self, value):
+        if self._link != value:
+            self._link = value
+            self.updated_attribute('link','set')
+
+    @property
     def offset(self):
         return self._offset
 
@@ -160,6 +180,9 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
 
         if 'offset' in dct.keys():
             self.offset = NodeParser(dct['offset'], enforce_types=[Position.type_string(trailing_delim=False)])
+
+        if 'link' in dct.keys():
+            self.link = dct['link']
 
         super(ReachSphere,self).set(dct)
 
@@ -195,9 +218,11 @@ class ReachSphere(EnvironmentNode, VisualizeMarker):
 
         self.updated_attribute('radius','update')
         self.updated_attribute('offset','update')
+        self.updated_attribute('link','update')
 
     def shallow_update(self):
         super(ReachSphere,self).shallow_update()
 
         self.updated_attribute('radius','update')
         self.updated_attribute('offset','update')
+        self.updated_attribute('link','update')

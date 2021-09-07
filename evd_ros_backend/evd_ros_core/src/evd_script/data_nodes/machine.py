@@ -423,6 +423,9 @@ class Machine(Node):
         if 'link' in dct.keys():
             self.link = dct['link']
 
+        if 'passive' in dct.keys():
+            self.passive = dct['passive']
+
         super(Machine,self).set(dct)
 
     '''
@@ -459,6 +462,7 @@ class Machine(Node):
         self.updated_attribute('pose_offset','update')
         self.updated_attribute('link','update')
         self.updated_attribute('collision_mesh_uuid','update')
+        self.updated_attribute('passive','update')
 
     def shallow_update(self):
         super(Machine,self).shallow_update()
@@ -471,6 +475,7 @@ class Machine(Node):
         self.updated_attribute('pose_offset','update')
         self.updated_attribute('link','update')
         self.updated_attribute('collision_mesh_uuid','update')
+        self.updated_attribute('passive','update')
 
     '''
     Utility Methods

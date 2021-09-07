@@ -53,7 +53,7 @@ class URController(RobotTemplate):
             move_traj_fnt=self.move_trajectory,
             grip_fnt=self.grip)
 
-        self._reach_sphere = ReachSphere(0.8, offset=Position(0,0,0.15))
+        self._reach_sphere = ReachSphere(0.8, link="simulated_base_link", offset=Position(0,0,0.15))
         self._pinch_points = [
             PinchPoint(link='simulated_shoulder_link', radius=0.075, length=0.2, offset=Position.from_axis('z',-0.05)),
             PinchPoint(link='simulated_upper_arm_link', radius=0.075, length=0.2, offset=Position.from_axis('z',0.075)),
@@ -62,10 +62,10 @@ class URController(RobotTemplate):
             PinchPoint(link='simulated_wrist_3_link', radius=0.1, length=0.16, offset=Position.from_axis('z',0.1))
         ]
         self._collision_meshes = [
-            CollisionMesh(link='pedestal_link', mesh_id='package://evd_ros_tasks/description/meshes/collision/Pedestal.stl'),
+            CollisionMesh(name="Pedestal Collision Mesh", link='ur3e_pedestal_link', mesh_id='package://evd_ros_tasks/description/meshes/collision/Pedestal.stl'),
         ]
         self._occupancy_zones = [
-            OccupancyZone(OccupancyZone.ROBOT_TYPE, sclX=1.6, sclZ=1.2, height=-0.77)
+            OccupancyZone(name="Robot Occupancy Zone", occupancyType=OccupancyZone.ROBOT_TYPE, sclX=1.6, sclZ=1.2, height=-0.8)
         ]
 
         self._program = FrontendInterface(use_registration=True, register_cb=self._call_to_register)

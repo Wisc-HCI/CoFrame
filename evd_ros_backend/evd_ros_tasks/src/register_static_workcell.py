@@ -16,11 +16,11 @@ class URRobotEnvironment:
     def __init__(self):
 
         self._collision_meshes = [
-            CollisionMesh(link='table_link', mesh_id='package://evd_ros_tasks/description/meshes/collision/Table.stl'),
+            CollisionMesh(name="Table Collision Mesh", link='table_link', mesh_id='package://evd_ros_tasks/description/meshes/collision/Table.stl'),
         ]
         self._occupancy_zones = [
-            OccupancyZone(OccupancyZone.HUMAN_TYPE, posZ=1, sclX=2, height=-0.77),
-            OccupancyZone(OccupancyZone.HUMAN_TYPE, posZ=-0.8, sclX=2, height=-0.77),
+            OccupancyZone(name="Human Occupancy Zone", occupancyType=OccupancyZone.HUMAN_TYPE, posZ=1, sclX=2, height=-0.8),
+            OccupancyZone(name="Human Occupancy Zone", occupancyType=OccupancyZone.HUMAN_TYPE, posZ=-1, sclX=2, height=-0.8),
         ]
 
         self._program = FrontendInterface(use_registration=True, register_cb=self._call_to_register)

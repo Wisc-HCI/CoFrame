@@ -19,6 +19,11 @@ class MachineTemplate:
         MachineStatus.STATUS_ERROR
     ]
 
+    @classmethod
+    def generate_uuid(cls):
+        import uuid
+        return uuid.uuid1().hex
+
     def __init__(self, uuid='', prefix=None, init_fnt=None, start_fnt=None, 
                  stop_fnt=None, pause_fnt=None):
         self.uuid = uuid

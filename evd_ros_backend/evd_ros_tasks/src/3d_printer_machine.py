@@ -17,11 +17,11 @@ from evd_interfaces.frontend_interface import FrontendInterface
 
 
 PROCESS_TIME = 5 #seconds (not realistic but ¯\_(ツ)_/¯)
-
+DEFAULT_UUID = '3d-printer-uuid-' + MachineTemplate.generate_uuid() 
 
 class PrinterMachineNode(MachineTemplate):
 
-    def __init__(self, prefix=None, rate=5, simulated=True):
+    def __init__(self, uuid, prefix=None, rate=5, simulated=True):
         self._paused = False
         self._rate = rate
         self._simulated = simulated
@@ -69,14 +69,13 @@ class PrinterMachineNode(MachineTemplate):
                 'orientation'
             ]
         )
-
         self._evd_thing_placeholders = [
             leftHandlePlaceholder,
             rightHandlePlaceholder
         ]
 
-        # Define Environment Objects
-        self._evd_region = CubeRegion(
+        # Define Regions
+        leftHandleRegion = CubeRegion(
             uuid=uuid+'+region',
             link='3d_printer_link', 
             center_position=Position(0,0,0),
@@ -84,7 +83,20 @@ class PrinterMachineNode(MachineTemplate):
             uncertainty_x=0.01,
             uncertainty_y=0.01,
             uncertainty_z=0.01)
+        rightHandleRegion = CubeRegion(
+            uuid=uuid+'+region',
+            link='3d_printer_link', 
+            center_position=Position(0,0,0),
+            center_orientation=Orientation.Identity(),
+            uncertainty_x=0.01,
+            uncertainty_y=0.01,
+            uncertainty_z=0.01)
+        self._evd_regions = [
+            leftHandleRegion,
+            rightHandleRegion
+        ]
 
+        # Define COllison
         self._evd_collision_mesh = CollisionMesh(
             link='3d_printer_link', 
             mesh_id='package://evd_ros_tasks/description/meshes/collision/MK2-Printer.stl')
@@ -95,12 +107,21 @@ class PrinterMachineNode(MachineTemplate):
             uuid=uuid+'+machine',
             inputs={},
             outputs={
-                self._evd_thing_type.uuid: [
+                leftHandleThingType.uuid: [
                     {
-                        'region_uuid': self._evd_region.uuid,
+                        'region_uuid': leftHandleRegion.uuid,
                         'quantity': 1,
                         'placeholder_uuids': [
-                            self._evd_thing_placeholder.uuid
+                            leftHandlePlaceholder.uuid
+                        ]
+                    }
+                ],
+                rightHandleThingType.uuid: [
+                    {
+                        'region_uuid': rightHandleRegion.uuid,
+                        'quantity': 1,
+                        'placeholder_uuids':[
+                            rightHandlePlaceholder.uuid
                         ]
                     }
                 ]
@@ -157,22 +178,23 @@ class PrinterMachineNode(MachineTemplate):
     def _call_to_register(self):
         dct_list = []
         
-        dct_list.append(self._evd_thing_type.to_dct())
-        dct_list.append(self._evd_region.to_dct())
+        dct_list.extend(t.to_dct() for t in self._evd_thing_types)
+        dct_list.extend(p.to_dct() for p in self._evd_thing_placeholders)
+        dct_list.extend(r.to_dct() for r in self._evd_regions)
         dct_list.append(self._evd_collision_mesh.to_dct())
         dct_list.append(self._evd_machine.to_dct())
 
         self._program.register(dct_list)
-
         print('machine-registered')
 
 
 if __name__ == "__main__":
     rospy.init_node('3d_printer_node')
 
+    uuid = rospy.get_param('uuid',DEFAULT_UUID)
     prefix = rospy.get_param('prefix',None)
     rate = rospy.get_param('rate',5)
     simulated = rospy.get_param('simulated',True)
 
-    node = PrinterMachineNode(prefix,rate,simulated)
+    node = PrinterMachineNode(uuid,prefix,rate,simulated)
     node.spin()
