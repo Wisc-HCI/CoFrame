@@ -33,6 +33,7 @@ export const SimulatorTile = (_) => {
                             highlightColor={primaryColor}
                             plane={-0.75}
                             fov={50}
+                            store={useStore}
                             onPointerMissed={(e)=>{e.stopPropagation();useStore.getState().clearFocusItem();}}
                         />
 

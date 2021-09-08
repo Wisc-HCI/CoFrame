@@ -1,13 +1,13 @@
 import React from 'react';
 
-import {CaretRightFilled,PauseOutlined,RollbackOutlined,FullscreenExitOutlined,FullscreenOutlined } from '@ant-design/icons';
-import { Button, Space, Tooltip } from 'antd';
+import {CaretRightFilled,PauseOutlined,RollbackOutlined,FullscreenExitOutlined,FullscreenOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { Button, Space, Tooltip, Popover, Checkbox } from 'antd';
 
 import useStore from '../stores/Store';
 
 export function Controls() {
 
-  const [simMode,setSimMode] = useStore(state=>([state.simMode, state.setSimMode]))
+  const [simMode,setSimMode,collisionsVisible,setCollisionsVisible] = useStore(state=>([state.simMode, state.setSimMode, state.collisionsVisible, state.setCollisionsVisible]))
 
   return (
 
@@ -40,6 +40,26 @@ export function Controls() {
           onClick={() => console.log('REFRESH')}
         />
       </Tooltip>
+      <Popover
+        title="Configure"
+        placement="bottomRight"
+        content={
+        <>
+          <Checkbox
+            checked={collisionsVisible}
+            onChange={()=>setCollisionsVisible(!collisionsVisible)}
+          >
+            Show Collisions
+          </Checkbox>
+        </>
+        }
+      >
+        <Button 
+            type="outline"
+            icon= {<EllipsisOutlined />}
+          />
+      </Popover>
+      
     </Space>
   );
 }
