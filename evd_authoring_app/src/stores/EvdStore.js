@@ -270,7 +270,16 @@ const store = (set,get) => ({
       if (type==='skill') {
         state.data[typeToKey(type)][item.uuid] = lodash.omit({...item,transform:{x,y}},'parentData');
       }
-    })
+    }),
+    createSkillParameter: (skill_uuid, parameter) => set((state)=>{
+      state.data[typeToKey('skill')][skill_uuid].parameters[parameter.uuid] = parameter
+    }),
+    deleteSkillParameter: (skill_uuid, parameter) => set((state)=>{
+      delete state.data[typeToKey('skill')][skill_uuid].parameters[parameter.uuid]
+    }),
+    setParameterProperty: (skill_uuid, parameter_uuid, property, value) => set((state)=>{
+      state.data[typeToKey('skill')][skill_uuid].parameters[parameter_uuid][property] = value
+    }),
 });
 
 const useEvdStore = create(immer(store));
