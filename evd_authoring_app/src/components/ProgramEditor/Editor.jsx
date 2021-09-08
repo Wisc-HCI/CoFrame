@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Button, Row, Input } from 'antd';
+import { Layout, Button, Row, Input ,Tooltip} from 'antd';
 import useStore from '../../stores/Store';
 import Icon, {CloseOutlined, PlusOutlined} from '@ant-design/icons';
 import { useSpring, animated } from '@react-spring/web';
@@ -98,6 +98,7 @@ export const Editor = () => {
         <Layout style={{ fontSize: 20, height: 'calc(100vh - 113pt)' }}>
           <Layout.Sider collapsed collapsible trigger={null} style={{align: 'left', display: 'flex', flexDirection: 'column', padding: 5, height: 'calc(100vh - 113pt)' }}>
             {Object.keys(drawers).map(drawerKey=>(
+              <Tooltip placement="right" title = {drawerKey}>
               <Button 
                 key={drawerKey} 
                 type={activeDrawer === drawerKey ? 'primary' : 'text'} 
@@ -105,6 +106,7 @@ export const Editor = () => {
                 icon={drawers[drawerKey].icon} 
                 onClick={()=>{ clearSearchTerm(); drawerKey===activeDrawer ? setActiveDrawer(null) : setActiveDrawer(drawerKey)}}
                 style={{ marginBottom: 5, alignItems: 'left' }}/>
+               </Tooltip>
             ))}
           </Layout.Sider>
           <animated.div onDrag={()=>setActiveDrawer(null)} style={{...drawerStyle, align: 'left', backgroundColor: '#2f2f2f', fontSize: 14, height: 'calc(100vh - 113pt)'}}>
