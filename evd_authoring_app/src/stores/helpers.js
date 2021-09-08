@@ -1,41 +1,41 @@
-import { useSceneStore } from 'robot-scene';
+import useStore from './Store';
 import lodash from 'lodash';
 
-export const sceneSetItems = useSceneStore.getState().setItems;
-export const sceneSetLines = useSceneStore.getState().setLines;
-export const sceneSetTfs = useSceneStore.getState().setTfs;
-export const sceneSetHulls = useSceneStore.getState().setHulls;
-export const sceneSetItem = useSceneStore.getState().setItem;
-export const sceneRemoveItem = useSceneStore.getState().removeItem;
-export const sceneSetItemName = useSceneStore.getState().setItemShowName;
-export const sceneSetItemPosition = useSceneStore.getState().setItemPosition;
-export const sceneSetItemRotation = useSceneStore.getState().setItemRotation;
-export const sceneSetItemScale = useSceneStore.getState().setItemScale;
-export const sceneSetItemColor = useSceneStore.getState().setItemColor;
-export const sceneSetItemHighlighted = useSceneStore.getState().setItemHighlighted;
-export const sceneSetTF = useSceneStore.getState().setTF;
-export const sceneRemoveTF = useSceneStore.getState().removeTF;
-export const sceneSetTfPosition = useSceneStore.getState().setTfPosition;
-export const sceneSetTfRotation = useSceneStore.getState().setTfRotation;
-export const sceneSetHull = useSceneStore.getState().setHull;
-export const sceneRemoveHull = useSceneStore.getState().removeHull;
-export const sceneSetHullName = useSceneStore.getState().setHullName;
-export const sceneSetHullVertices = useSceneStore.getState().setHullVertices;
-export const sceneSetHullVertex = useSceneStore.getState().setHullVertex;
-export const sceneAddHullVertex = useSceneStore.getState().addHullVertex;
-export const sceneRemoveHullVertex = useSceneStore.getState().removeHullVertex;
-export const sceneSetHullColor = useSceneStore.getState().setHullColor;
-export const sceneSetHullHIghlighted = useSceneStore.getState().setHullHighlighted;
-export const sceneSetHullOnClick = useSceneStore.getState().setHullOnClick;
-export const sceneSetHullOnPointerOver = useSceneStore.getState().setHullOnPointerOver;
-export const sceneSetHullOnPointerOut = useSceneStore.getState().setHullOnPointerOut;
-export const sceneSetLine = useSceneStore.getState().setLine;
-export const sceneRemoveLine = useSceneStore.getState().removeLine;
-export const sceneSetLineName = useSceneStore.getState().setLineName;
-export const sceneSetLineVertices = useSceneStore.getState().setLineVertices;
-export const sceneAddLineVertex = useSceneStore.getState().addLineVertex;
-export const sceneRemoveLineVertex = useSceneStore.getState().removeLineVertex;
-export const sceneSetLineVertex = useSceneStore.getState().setLinevertex;
+// export const sceneSetItems = useStore.getState().setItems;
+// export const sceneSetLines = useStore.getState().setLines;
+// export const sceneSetTfs = useStore.getState().setTfs;
+// export const sceneSetHulls = useStore.getState().setHulls;
+// export const sceneSetItem = useStore.getState().setItem;
+// export const sceneRemoveItem = useStore.getState().removeItem;
+// export const sceneSetItemName = useStore.getState().setItemShowName;
+// export const sceneSetItemPosition = useStore.getState().setItemPosition;
+// export const sceneSetItemRotation = useStore.getState().setItemRotation;
+// export const sceneSetItemScale = useStore.getState().setItemScale;
+// export const sceneSetItemColor = useStore.getState().setItemColor;
+// export const sceneSetItemHighlighted = useStore.getState().setItemHighlighted;
+// export const sceneSetTF = useStore.getState().setTF;
+// export const sceneRemoveTF = useStore.getState().removeTF;
+// export const sceneSetTfPosition = useStore.getState().setTfPosition;
+// export const sceneSetTfRotation = useStore.getState().setTfRotation;
+// export const sceneSetHull = useStore.getState().setHull;
+// export const sceneRemoveHull = useStore.getState().removeHull;
+// export const sceneSetHullName = useStore.getState().setHullName;
+// export const sceneSetHullVertices = useStore.getState().setHullVertices;
+// export const sceneSetHullVertex = useStore.getState().setHullVertex;
+// export const sceneAddHullVertex = useStore.getState().addHullVertex;
+// export const sceneRemoveHullVertex = useStore.getState().removeHullVertex;
+// export const sceneSetHullColor = useStore.getState().setHullColor;
+// export const sceneSetHullHIghlighted = useStore.getState().setHullHighlighted;
+// export const sceneSetHullOnClick = useStore.getState().setHullOnClick;
+// export const sceneSetHullOnPointerOver = useStore.getState().setHullOnPointerOver;
+// export const sceneSetHullOnPointerOut = useStore.getState().setHullOnPointerOut;
+// export const sceneSetLine = useStore.getState().setLine;
+// export const sceneRemoveLine = useStore.getState().removeLine;
+// export const sceneSetLineName = useStore.getState().setLineName;
+// export const sceneSetLineVertices = useStore.getState().setLineVertices;
+// export const sceneAddLineVertex = useStore.getState().addLineVertex;
+// export const sceneRemoveLineVertex = useStore.getState().removeLineVertex;
+// export const sceneSetLineVertex = useStore.getState().setLinevertex;
 
 export const typeToKey = (type) => {
     let key;
@@ -137,37 +137,37 @@ export function poseToColor(pose,frame,focused) {
     return color
 }
 
-export function poseToShape(pose,frame,focused,setSecondaryFocusItem) {
-    let pose_stored = pose;
-    let color = poseToColor(pose_stored,frame,focused);
-    const uuid = pose.uuid;
-    let onClick = ()=>{};
-    if (pose.type.includes('location')) {
-        onClick = () => setSecondaryFocusItem('location',uuid)
-    } else {
-        onClick = () => setSecondaryFocusItem('waypoint',uuid)
-    }
+// export function poseToShape(pose,frame,focused,setSecondaryFocusItem) {
+//     let pose_stored = pose;
+//     let color = poseToColor(pose_stored,frame,focused);
+//     const uuid = pose.uuid;
+//     let onClick = ()=>{};
+//     if (pose.type.includes('location')) {
+//         onClick = () => setSecondaryFocusItem('location',uuid)
+//     } else {
+//         onClick = () => setSecondaryFocusItem('waypoint',uuid)
+//     }
 
-    return [
-        pose.uuid,
-        {
-            shape: "sphere",
-            name: pose.name,
-            frame: "world",
-            rotation: { w: 1, x: 0, y: 0, z: 0 },
-            scale: { x: 0.05, y: 0.05, z: 0.05 },
-            highlighted: false,
-            showName: false,
-            onClick,
-            position:{
-                x:pose.position.x,
-                y:pose.position.y,
-                z:pose.position.z
-            },
-            color
-        }
-    ]
-}
+//     return [
+//         pose.uuid,
+//         {
+//             shape: "sphere",
+//             name: pose.name,
+//             frame: "world",
+//             rotation: { w: 1, x: 0, y: 0, z: 0 },
+//             scale: { x: 0.05, y: 0.05, z: 0.05 },
+//             highlighted: false,
+//             showName: false,
+//             onClick,
+//             position:{
+//                 x:pose.position.x,
+//                 y:pose.position.y,
+//                 z:pose.position.z
+//             },
+//             color
+//         }
+//     ]
+// }
 
 export function poseDataToShapes(pose,frame) {
     let pose_stored = pose;
@@ -233,55 +233,55 @@ export function trajectoryDataToShapes(trajectory,locations,waypoints,frame,setS
     let shapes = [];
     if (trajectory.start_location_uuid) {
         let location = locations[trajectory.start_location_uuid];
-        shapes.push(poseToShape(location,frame,false,setSecondaryFocusItem));
+        shapes.push(poseDataToShapes(location,frame));
     }
     trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
         let waypoint = waypoints[waypoint_uuid];
-        shapes.push(poseToShape(waypoint,frame,false));
+        shapes.push(poseDataToShapes(waypoint,frame));
     })
 
     if (trajectory.end_location_uuid) {
         let location = locations[trajectory.end_location_uuid];
-        shapes.push(poseToShape(location,frame,false));
+        shapes.push(poseDataToShapes(location,frame));
     }
     return shapes
 }
 
-export const clearHighlights = () => useSceneStore.setState(state=>({
+export const clearHighlights = () => useStore.setState(state=>({
     items: objectMap(state.items,item=>({...item,highlighted:false})),
     hulls: objectMap(state.hulls,hull=>({...hull,highlighted:false}))
 }))
 
-export const highlightRobot = () => useSceneStore.setState(state=>({
+export const highlightRobot = () => useStore.setState(state=>({
     items: objectMap(state.items,(item,key)=>(key.includes('robot')?{...item,highlighted:true}:item))
 }))
 
-export const highlightGripper = () => useSceneStore.setState(state=>({
+export const highlightGripper = () => useStore.setState(state=>({
     items: objectMap(state.items,(item,key)=>(key.includes('gripper')?{...item,highlighted:true}:item))
 }))
 
-export const createTrajectory = (trajectory,locations,waypoints,frame,humanZone) => useSceneStore.setState(state=>({
+export const createTrajectory = (trajectory,locations,waypoints,frame,humanZone) => useStore.setState(state=>({
     lines:{...state.lines,[trajectory.uuid]:trajectoryDataToLine(trajectory,locations,waypoints,frame,humanZone)},
     items:{...state.items,...trajectoryDataToShapes(trajectory,locations,waypoints,frame,humanZone)}
 }))
 
-export const clearTempObjects = () => useSceneStore.setState(state=>({
+export const clearTempObjects = () => useStore.setState(state=>({
     // All temp objects have standard UUIDS generated by generateUuid
     items:lodash.pickBy(state.items,(_,key)=>!key.includes('-js-')),
     lines:lodash.pickBy(state.lines,(_,key)=>!key.includes('-js-')),
     hulls:lodash.pickBy(state.hulls,(_,key)=>!key.includes('-js-'))
 }))
 
-export const clearItem = (uuid) => useSceneStore.setState(state=>({
+export const clearItem = (uuid) => useStore.setState(state=>({
     items:lodash.omit(state.items,uuid)
 }))
 
-export const highlightSceneItem = (uuid) => useSceneStore.setState(state=>{
+export const highlightSceneItem = (uuid) => useStore.setState(state=>{
     let item = {...state.items[uuid],highlighted:true};
     return {items: {...state.items,[uuid]:item}}
 })
 
-export const highlightSceneHull = (uuid) => useSceneStore.setState(state=>{
+export const highlightSceneHull = (uuid) => useStore.setState(state=>{
     let hull = {...state.hulls[uuid],highlighted:true};
     return {hulls: {...state.hulls,[uuid]:hull}}
 })
