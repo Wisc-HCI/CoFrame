@@ -15,7 +15,7 @@ export const ThingDetail = ({ uuid }) => {
       <Space />
 
       <TextArea
-        defaultValue={thing.description}
+        value={thing.description}
         disabled={!thing.editable}
       />
 

@@ -34,7 +34,7 @@ export const WaypointDetail = ({uuid}) => {
       <Space/>
 
       <TextArea
-        defaultValue={waypoint.description}
+        value={waypoint.description}
         disabled = {!waypoint.editable}
       />
 

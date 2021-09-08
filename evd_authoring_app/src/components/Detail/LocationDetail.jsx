@@ -26,7 +26,7 @@ export const LocationDetail = ({ uuid }) => {
     <>
 
       <TextArea
-        defaultValue={location.description}
+        value={location.description}
         disabled={!location.editable}
       />
 

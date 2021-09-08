@@ -27,7 +27,7 @@ export const MachineDetail = ({ uuid }) => {
       <Space />
 
       <TextArea
-        defaultValue={machine.description}
+        value={machine.description}
         disabled={!machine.editable}
       />
 

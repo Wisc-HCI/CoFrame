@@ -63,7 +63,7 @@ export const Detail = (_) => {
             <Space>
               <span style={{ textTransform: 'capitalize' }}>{focusItem.type} </span>
               <Input
-                defaultValue={item.name}
+                value={item.name}
                 disabled={!item.editable}
                 onChange={e => setItemProperty(focusItem.type, focusItem.uuid, 'name', e.target.value)} />
             </Space>}
