@@ -61,7 +61,9 @@ export const ProgramBlock = (props) => {
         borderRadius: 3,
         margin: 4,
         padding: 5,
-        zIndex: focused ? 100 : 1
+        zIndex: focused ? 100 : 1,
+        cursor: "-webkit-grab", 
+        cursor : "grab"
     };
 
     return (
