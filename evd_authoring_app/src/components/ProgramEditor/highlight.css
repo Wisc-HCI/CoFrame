@@ -84,3 +84,4 @@
 	-moz-animation: shadow-business 2s ease-in-out infinite;
 	animation: shadow-business 2s ease-in-out infinite;
 }
+.grab{cursor: -webkit-grab; cursor : grab;}
