@@ -1,6 +1,7 @@
 import React, {forwardRef} from 'react';
 import { Col, Row, Button } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons';
+
 import { ItemSortable } from './Wrappers';
 import { NodeZone } from './NodeZone';
 import useStore from '../../stores/Store';
@@ -8,6 +9,9 @@ import { acceptLookup } from './acceptLookup';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
+
+import { EditableTagGroup } from './Tags/EditableTagGroup';
+// import { EditableTag } from './Tags/EditableTag';
 
 export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, ref) => {
 
@@ -63,6 +67,9 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
                     />
                 </Col>
             </Row>
+            <div>
+                {!inDrawer && <EditableTagGroup skill={data}/>}
+            </div>
             <NodeZone
               ancestors={skillAncestors}
               onDrop={(dropData) => moveChildPrimitive(dropData,data.uuid,'skill',0)}

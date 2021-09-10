@@ -8,6 +8,7 @@ import { Canvas } from './Canvas';
 import { PrimitivesDrawer } from './PrimitivesDrawer';
 import { ContainersDrawer } from './ContainersDrawer';
 import { UUIDDrawer } from './UUIDDrawer';
+import { ExecuteMacrosDrawer } from './ExecuteMacrosDrawer';
 import { DeleteZone } from './DeleteZone';
 import {ReactComponent as LocationIcon} from '../CustomIcons/Location.svg';
 import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
