@@ -52,9 +52,9 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
     };
 
     return (
-        <div ref={preview} style={{...style,...dragBlockStyles,cursor: "-webkit-grab", cursor : "grab"}} className={focused?`focus-${frame}`:null}>
+        <div ref={preview} style={{...style,...dragBlockStyles}} className={focused?`focus-${frame}`:null}>
             <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-                <Col ref={ref} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4}}>
+                <Col ref={ref} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4,cursor: "grab"}}>
                     <Icon style={{marginLeft:4}} component={ContainerIcon} />{' '}{data.name}
                 </Col>
                 <Col span={6} offset={1} style={{textAlign:'end'}}>

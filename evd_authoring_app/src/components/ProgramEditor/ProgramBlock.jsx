@@ -61,15 +61,13 @@ export const ProgramBlock = (props) => {
         borderRadius: 3,
         margin: 4,
         padding: 5,
-        zIndex: focused ? 100 : 1,
-        cursor: "-webkit-grab", 
-        cursor : "grab"
+        zIndex: focused ? 100 : 1
     };
 
     return (
         <div ref={preview} {...props} style={dragBlockStyles} className={focused?`focus-${frame}`:null}>
             <Row style={{ fontSize: 16, marginBottom: 7}} align='middle' justify='space-between'>
-                <Col ref={drag} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4}}>
+                <Col ref={drag} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4,cursor:'grab'}}>
                     <Icon style={{marginLeft:4}} component={ContainerIcon} />{' '}{name}
                 </Col>
                 <Col span={6} offset={1} style={{textAlign:'end'}}>

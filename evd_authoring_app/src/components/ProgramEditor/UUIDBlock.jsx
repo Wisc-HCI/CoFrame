@@ -45,9 +45,9 @@ export const UUIDBlock = forwardRef(({data,preview,style,ancestors}, ref) => {
   // const name = useStore(useCallback(state=>itemType==='placeholder'?state.data.placeholders[uuid].pending_node.name:state.data[typeToKey(itemType)][uuid].name,[itemType,uuid]));
 
   return (
-    <div ref={preview} style={{...style,...blockStyle,cursor: "-webkit-grab", cursor : "grab"}} className={focused ? `focus-${frame}` : null} >
+    <div ref={preview} style={{...style,...blockStyle}} className={focused ? `focus-${frame}` : null} >
       <span style={{ fontSize: 16, display:'flex',flexDirection:'row'}} align='middle' justify='space-between'>
-          <span ref={ref} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4,textAlign:'start',flex:1,minWidth:130}}>
+          <span ref={ref} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4,textAlign:'start',flex:1,minWidth:130,cursor:"grab"}}>
               <Icon style={{marginLeft:4}} component={ICONS[itemType]} />{' '}{itemType==='placeholder'?data.pending_node.name:data.name}
           </span>
           <span style={{textAlign:'end',width:60}}>

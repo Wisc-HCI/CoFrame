@@ -1,5 +1,5 @@
 // import { useSceneStore } from "robot-scene";
-import { trajectoryDataToLine, trajectoryDataToShapes, poseToColor, poseDataToShapes } from "./helpers";
+import { trajectoryDataToLine, poseToColor, poseDataToShapes } from "./helpers";
 
 // const setFocusItem = useStore.getState().setFocusItem;
 // const setSecondaryFocusItem = useStore.getState().setSecondaryFocusItem;

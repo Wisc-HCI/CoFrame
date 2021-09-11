@@ -107,7 +107,7 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
   }
 
   return (
-    <div ref={preview} style={{ ...style, ...styles,cursor: "-webkit-grab", cursor : "grab" }} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
+    <div ref={preview} style={{ ...style, ...styles}} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
       <Row ref={ref} style={{ fontSize: 16, marginBottom: 5 }} align='middle' justify='space-between'>
         <span>
           <Icon component={Glyph} />{' '}{data.name}

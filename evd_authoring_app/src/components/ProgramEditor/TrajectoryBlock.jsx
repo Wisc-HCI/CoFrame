@@ -77,7 +77,7 @@ export const TrajectoryBlock = forwardRef(({data,ancestors,preview,style,context
               <Button
                   type='text'
                   style={{marginLeft:2}}
-                  onClick={(e) => {e.stopPropagation();setFocusItem('trajectory', data.uuid)}}
+                  onClick={(e) => {e.stopPropagation();clearFocusItem();setFocusItem('trajectory', data.uuid)}}
                   icon={<EllipsisOutlined />}
               />
           </Col>

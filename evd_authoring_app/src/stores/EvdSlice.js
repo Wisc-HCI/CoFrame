@@ -236,14 +236,14 @@ export const EvdSlice = (set, get) => ({
       let locations = state.data.locations;
       let waypoints = state.data.waypoints;
       let frame = state.frame;
-      state.setLine(...trajectoryDataToLine(item, locations, waypoints, frame))
+      state.lines[item.uuid] = trajectoryDataToLine(item, locations, waypoints, frame);
     }
   }),
   setItemProperty: (type, uuid, property, value) => set((state) => {
     state.data[typeToKey(type)][uuid][property] = value;
-    let item = state.data[typeToKey(type)][uuid];
-    let frame = state.frame;
-    if (['waypoint','location'].indexOf(type)>=0) {
+    // let item = state.data[typeToKey(type)][uuid];
+    // let frame = state.frame;
+    // if (['waypoint','location'].indexOf(type)>=0) {
       // poseDataToShapes(item,frame).forEach(shape=>{
       //   state.item[shape.uuid].position = shape.position;
       //   state.item[shape.uuid].rotation = shape.rotation;
@@ -258,7 +258,7 @@ export const EvdSlice = (set, get) => ({
       //     state.lines[trajectory_uuid] = trajectoryDataToLine(trajectory,locations,waypoints,frame);
       //   }
       // })
-    }
+    // }
   }),
   setPrimitiveParameter: (type, uuid, property, value) => set((state) => {
     state.data[typeToKey(type)][uuid].parameters[property] = value

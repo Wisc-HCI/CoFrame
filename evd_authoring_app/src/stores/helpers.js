@@ -216,16 +216,12 @@ export function trajectoryDataToLine(trajectory,locations,waypoints,frame) {
         let position = {x:location.position.x,y:location.position.y,z:location.position.z};
         points.push({position,color:poseToColor(location,frame,true)})
     }
-    return [
-        trajectory.uuid,
-        {
+    return {
             name: trajectory.name,
             frame: "world",
-            width: 2,
-            vertices: points,
-            highlighted: false
+            width: 0,
+            vertices: points
         }
-    ]
 }
 
 export function trajectoryDataToShapes(trajectory,locations,waypoints,frame,setSecondaryFocusItem) {
