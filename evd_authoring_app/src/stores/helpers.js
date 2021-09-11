@@ -175,6 +175,7 @@ export function poseDataToShapes(pose,frame) {
         {
             uuid: `${pose_stored.uuid}-tag`,
             frame: 'world',
+            name: pose.name,
             shape: pose_stored.type.includes('location') ? 'flag' : 'tag',
             position: pose_stored.position,
             rotation: {w:1,x:0,y:0,z:0},

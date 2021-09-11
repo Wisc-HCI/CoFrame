@@ -38,6 +38,7 @@ export const GuiSlice = (set, get) => ({
   // the focusItem specifies the type and uuid of data to focus on
   focusItem: { type: null, uuid: null },
   setFocusItem: (type, uuid) => set(state => {
+    // TODO Clear current items.
     state.focusItem = { type: type, uuid: uuid };
     // Clear Highlights
     Object.keys(state.items).forEach(itemKey => state.items[itemKey].highlighted = false);
@@ -56,6 +57,7 @@ export const GuiSlice = (set, get) => ({
         poses.push(state.data.trajectories[uuid].end_location_uuid); 
       }
       poses.forEach((pose_uuid,i)=>{
+        // state.items[pose_uuid+'-tag'].showName = true;
         state.items[pose_uuid+'-tag'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/250+i*0.4));
         state.items[pose_uuid+'-pointer'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/250+i*0.4));
       })

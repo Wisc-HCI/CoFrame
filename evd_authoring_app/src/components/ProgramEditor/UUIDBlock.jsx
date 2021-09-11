@@ -23,7 +23,7 @@ export const UUIDBlock = forwardRef(({data,preview,style,ancestors}, ref) => {
   // console.log(data)
   const {itemType, uuid} = data;
 
-  const [frame,focusItem,setFocusItem] = useStore(state=>([state.frame,state.focusItem,state.setFocusItem]));
+  const [frame,focusItem,setFocusItem,clearFocusItem] = useStore(state=>([state.frame,state.focusItem,state.setFocusItem,state.clearFocusItem]));
   const focused = focusItem.uuid === uuid;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
@@ -55,7 +55,7 @@ export const UUIDBlock = forwardRef(({data,preview,style,ancestors}, ref) => {
               <Button
                   type='text'
                   style={{marginLeft:2}}
-                  onClick={(e) => {e.stopPropagation();setFocusItem(itemType, data.uuid)}}
+                  onClick={(e) => {e.stopPropagation();clearFocusItem();setFocusItem(itemType, data.uuid)}}
                   icon={<EllipsisOutlined />}
               />
           </span>
