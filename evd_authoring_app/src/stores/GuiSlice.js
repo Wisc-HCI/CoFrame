@@ -58,8 +58,8 @@ export const GuiSlice = (set, get) => ({
       }
       poses.forEach((pose_uuid,i)=>{
         // state.items[pose_uuid+'-tag'].showName = true;
-        state.items[pose_uuid+'-tag'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/250+i*0.4));
-        state.items[pose_uuid+'-pointer'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/250+i*0.4));
+        state.items[pose_uuid+'-tag'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
+        state.items[pose_uuid+'-pointer'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
       })
     } else if (type === 'location' || type === 'waypoint') {
       state.items[uuid+'-tag'].color.a = 1;

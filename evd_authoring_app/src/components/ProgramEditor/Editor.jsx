@@ -99,7 +99,7 @@ export const Editor = () => {
         <Layout style={{ fontSize: 20, height: 'calc(100vh - 113pt)' }}>
           <Layout.Sider collapsed collapsible trigger={null} style={{align: 'left', display: 'flex', flexDirection: 'column', padding: 5, height: 'calc(100vh - 113pt)' }}>
             {Object.keys(drawers).map(drawerKey=>(
-              <Tooltip placement="right" title = {drawerKey}>
+              <Tooltip placement="right" title = {drawers[drawerKey].title}>
               <Button 
                 key={drawerKey} 
                 type={activeDrawer === drawerKey ? 'primary' : 'text'} 
