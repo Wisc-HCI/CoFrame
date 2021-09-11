@@ -121,7 +121,7 @@ export const INITIAL_SIM =
                 frame: "world",
                 position: { x: 0, y: 0.36, z: -0.37 },
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
-                color: {r: 40, g: 40, b: 40, a: 1},
+                color: {r: 10, g: 10, b: 10, a: 1},
                 showCollision: false,
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
@@ -172,7 +172,7 @@ export const INITIAL_SIM =
                 frame: "world",
                 position: { x: 0, y: -0.15, z: -0.38 },
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
-                color: {r: 50, g: 50, b: 50, a: 1},
+                color: {r: 15, g: 15, b: 15, a: 1},
                 showCollison: false,
                 highlighted: false,
                 scale: {x:1,y:1,z:1}

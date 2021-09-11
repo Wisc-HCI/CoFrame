@@ -1,7 +1,8 @@
 import React, {useCallback, useRef} from 'react';
 import { Tag, Input} from 'antd';
 import { useDrag } from 'react-dnd';
-import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
+import useStore from '../../../stores/Store';
+import { typeToKey } from '../../../stores/helpers';
 
 import Icon from '@ant-design/icons';
 import {ReactComponent as LocationIcon} from '../../CustomIcons/Location.svg';
@@ -16,9 +17,9 @@ export const EditableTag = (props) => {
     let saveEditInputRef;
     let editInputValue;
 
-    const data = useEvdStore(useCallback(state=>state.data[typeToKey('skill')][props.parent].parameters[props.id],[props.id,'parameter']));
-    // const data = useEvdStore(useCallback(state=>state.data[typeToKey('parameter')][props.id],[props.id,'parameter']));
-    const setParameterProperty = useEvdStore(state=>state.setParameterProperty);
+    const data = useStore(useCallback(state=>state.data[typeToKey('skill')][props.parent].parameters[props.id],[props.id,'parameter']));
+    // const data = useStore(useCallback(state=>state.data[typeToKey('parameter')][props.id],[props.id,'parameter']));
+    const setParameterProperty = useStore(state=>state.setParameterProperty);
   
     const [{opacity}, drag, preview] = useDrag(()=>({
       type: props.type,

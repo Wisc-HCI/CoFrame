@@ -1,21 +1,22 @@
 import React, { forwardRef, useCallback } from "react";
 import { Tag } from "antd";
-import useEvdStore, {typeToKey} from "../../stores/EvdStore";
+import useStore from "../../stores/Store";
+// import { typeToKey } from "../../stores/helpers";
 import blockStyles from "./blockStyles";
-import { ParameterZone } from "./ParameterZone";
+// import { ParameterZone } from "./ParameterZone";
 
 export const ExecuteMacrosBlock = forwardRef(({data,style,preview,ancestors,context}, ref) => {
   
   // props constains data,
   // which contains fields 'itemType' and 'uuid'
-  const inDrawer = ancestors[0].uuid === 'drawer';
-  const editingEnabled = !inDrawer && data.editable;
+  // const inDrawer = ancestors[0].uuid === 'drawer';
+  // const editingEnabled = !inDrawer && data.editable;
 
   // const params = useEvdStore(useCallback(state=>state.data[typeToKey('parameter')][data.uuid],[data.uuid,'parameter']));
 
-  const [setPrimitiveParameter] = useEvdStore(
-    (state) => [state.setPrimitiveParameter]
-  );
+  // const [setPrimitiveParameter] = useStore(
+  //   (state) => [state.setPrimitiveParameter]
+  // );
 
   return (
     <div ref={preview} style={style}>
@@ -23,14 +24,14 @@ export const ExecuteMacrosBlock = forwardRef(({data,style,preview,ancestors,cont
             {data.uuid}
             {Object.entries(data.parameters).map(obj => {
                 (obj.type === 'machine' && (<div>
-                    <ParameterZone
+                    {/* <ParameterZone
                         displayText={context[data.parameters.machine_uuid]}
                         acceptTypes={['uuid-machine']}
                         itemType="machine"
                         canRemove={editingEnabled}
                         onRemove={() => setPrimitiveParameter('primitive',data.uuid,'machine_uuid',null)}
                         onDrop={(dropData) => setPrimitiveParameter('primitive',data.uuid,'machine_uuid',dropData.uuid)}
-                    /> 
+                    />  */}
                 </div>))
             })}
         </Tag>

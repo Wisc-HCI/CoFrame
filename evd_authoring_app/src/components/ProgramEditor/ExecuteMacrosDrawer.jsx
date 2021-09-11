@@ -6,7 +6,8 @@ import React, {useCallback, useRef} from 'react';
 import { GenericSortable } from './Wrappers';
 
 import { acceptLookup } from './acceptLookup';
-import useEvdStore, {typeToKey} from '../../stores/EvdStore';
+import useStore from '../../stores/Store';
+import {typeToKey} from '../../stores/helpers';
 
 export const ExecuteMacrosDrawer = (_) => {
 
@@ -14,7 +15,7 @@ export const ExecuteMacrosDrawer = (_) => {
         {uuid:'drawer',...acceptLookup.drawer.default}
     ];
 
-    const data = useEvdStore(useCallback(state=>state.data[typeToKey('skill')]));
+    const data = useStore(useCallback(state=>state.data[typeToKey('skill')]));
     console.log(data);
 
     return (

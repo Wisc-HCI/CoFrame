@@ -1,9 +1,10 @@
 // import { Button } from 'antd';
-import React, {useCallback, useRef} from 'react';
-import useEvdStore, {typeToKey} from '../../../stores/EvdStore';
+import React, {useCallback} from 'react';
+import useStore from '../../../stores/Store';
+import { typeToKey } from '../../../stores/helpers';
 
 import { Menu, Button, Dropdown} from 'antd';
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 
 import { EditableTag } from './EditableTag';
 import { generateUuid } from '../../../stores/generateUuid';
@@ -17,9 +18,9 @@ import {ReactComponent as ThingIcon} from '../../CustomIcons/Thing.svg';
 export const EditableTagGroup = (props) => {
 
   // const data = useEvdStore(useCallback(state=>state.data[typeToKey('parameter')]));
-  const data = useEvdStore(useCallback(state=>state.data[typeToKey('skill')][props.skill.uuid].parameters));
+  const data = useStore(useCallback(state=>state.data[typeToKey('skill')][props.skill.uuid].parameters));
 
-  const [createSkillParameter, deleteSkillParameter] = useEvdStore(state=>[state.createSkillParameter, state.deleteSkillParameter]);
+  const [createSkillParameter, deleteSkillParameter] = useStore(state=>[state.createSkillParameter, state.deleteSkillParameter]);
 
   const closeTag = tag => {
     deleteSkillParameter(props.skill.uuid, tag);
