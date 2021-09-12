@@ -1,6 +1,6 @@
 import { flattenProgram, unFlattenProgramPrimitives, unFlattenProgramSkills } from './helpers';
 import lodash from 'lodash';
-import { typeToKey, poseDataToShapes, trajectoryDataToLine } from './helpers';
+import { typeToKey } from './helpers';
 // import { useSceneStore } from 'robot-scene';
 
 export const EvdSlice = (set, get) => ({
@@ -227,17 +227,6 @@ export const EvdSlice = (set, get) => ({
   // Piecewise update functions for data
   addItem: (type, item) => set((state) => {
     state.data[typeToKey(type)][item.uuid] = item;
-    let frame = state.frame;
-    if (['waypoint', 'location'].indexOf(type) >= 0) {
-      poseDataToShapes(item, frame).forEach(shape => {
-        state.items[shape.uuid] = shape;
-      })
-    } else if (type === 'trajectory') {
-      let locations = state.data.locations;
-      let waypoints = state.data.waypoints;
-      let frame = state.frame;
-      state.lines[item.uuid] = trajectoryDataToLine(item, locations, waypoints, frame);
-    }
   }),
   setItemProperty: (type, uuid, property, value) => set((state) => {
     state.data[typeToKey(type)][uuid][property] = value;

@@ -1,8 +1,4 @@
 import frameStyles from '../frameStyles';
-import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
-
-const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
-const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('gripper'));
 
 const ACTIVE_TFS = [
   'simulated_base_link',
@@ -40,74 +36,10 @@ export const GuiSlice = (set, get) => ({
   setFocusItem: (type, uuid) => set(state => {
     // TODO Clear current items.
     state.focusItem = { type: type, uuid: uuid };
-    // Clear Highlights
-    Object.keys(state.items).forEach(itemKey => state.items[itemKey].highlighted = false);
-    Object.keys(state.hulls).forEach(hullKey => state.hulls[hullKey].highlighted = false);
-    // Clear any animations that are running
-    if (type === 'trajectory') {
-      state.lines[state.focusItem.uuid].width = 2;
-      const poses = [];
-      if (state.data.trajectories[uuid].start_location_uuid) {
-        poses.push(state.data.trajectories[uuid].start_location_uuid);
-      }
-      state.data.trajectories[uuid].waypoint_uuids.forEach((waypoint_uuid,i)=> {
-        poses.push(waypoint_uuid);
-      })
-      if (state.data.trajectories[uuid].end_location_uuid) {
-        poses.push(state.data.trajectories[uuid].end_location_uuid); 
-      }
-      poses.forEach((pose_uuid,i)=>{
-        // state.items[pose_uuid+'-tag'].showName = true;
-        state.items[pose_uuid+'-tag'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
-        state.items[pose_uuid+'-pointer'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
-      })
-    } else if (type === 'location' || type === 'waypoint') {
-      // state.items[uuid+'-tag'].color.a = 1;
-      state.items[uuid+'-tag'].color = {r:255,g:0,b:0,a:1};
-      state.items[uuid+'-pointer'].color.a = 1;
-      state.items[uuid+'-tag'].highlighted = true;
-      state.items[uuid+'-pointer'].highlighted = true;
-    }
-    if (type === 'scene' && ROBOT_PARTS.indexOf(uuid)>=0) {
-      ROBOT_PARTS.forEach(part=>{state.items[part].highlighted = true})
-    } else if (type === 'scene' && GRIPPER_PARTS.indexOf(uuid)>=0) {
-      GRIPPER_PARTS.forEach(part=>{state.items[part].highlighted = true})
-    } else if (type === 'scene') {
-      state.items[uuid].highlighted = true
-    }
-
   }),
   clearFocusItem: () => set(state => {
-    if (state.focusItem.type === 'trajectory') {
-      // set the line width of the previously selected line to 0
-      state.lines[state.focusItem.uuid].width = 0;
-      const poses = [];
-      if (state.data.trajectories[state.focusItem.uuid].start_location_uuid) {
-        poses.push(state.data.trajectories[state.focusItem.uuid].start_location_uuid);
-      }
-      state.data.trajectories[state.focusItem.uuid].waypoint_uuids.forEach((waypoint_uuid,i)=> {
-        poses.push(waypoint_uuid);
-      })
-      if (state.data.trajectories[state.focusItem.uuid].end_location_uuid) {
-        poses.push(state.data.trajectories[state.focusItem.uuid].end_location_uuid); 
-      }
-      poses.forEach(pose_uuid=>{
-        state.items[pose_uuid+'-tag'].color.a = 0;
-        state.items[pose_uuid+'-pointer'].color.a = 0;
-      })
-    } else if (state.focusItem.type === 'waypoint' || state.focusItem.type === 'location') {
-      // change the opacity of the previously selected waypoint/pose to 0
-      state.items[state.focusItem.uuid+'-tag'].color.a = 0;
-      state.items[state.focusItem.uuid+'-pointer'].color.a = 0;
-      // Just in case it was being transformed, remove that.
-      state.items[state.focusItem.uuid+'-tag'].transformMode = null;
-      state.items[state.focusItem.uuid+'-pointer'].transformMode = null;
-    }
     state.focusItem = { type: null, uuid: null };
     state.secondaryFocusItem = { type: null, uuid: null };
-    // Clear Highlights
-    Object.keys(state.items).forEach(itemKey => state.items[itemKey].highlighted = false);
-    Object.keys(state.hulls).forEach(hullKey => state.hulls[hullKey].highlighted = false);
   }),
   // the search terms they have entered
   searchTerm: '',
@@ -131,50 +63,6 @@ export const GuiSlice = (set, get) => ({
   }),
   collisionsVisible: false,
   setCollisionsVisible: (visible) => set(state => {
-    Object.keys(state.items).filter(key => key.includes('-collision')).forEach(key => state.items[key].color.a = visible ? 1 : 0);
     state.collisionsVisible = visible;
-  }),
-  setup: (initial_data) => set(state => {
-    let setFocusItem = get().setFocusItem;
-    Object.keys(initial_data.staticScene)
-      .forEach((itemKey) => {
-        let item = initial_data.staticScene[itemKey];
-        // console.log(item)
-        state.items[itemKey] = {
-          shape: item.shape,
-          name: item.name,
-          frame: item.frame,
-          position: item.position,
-          rotation: item.rotation,
-          color: item.color,
-          scale: item.scale,
-          transformMode: 'inactive',
-          highlighted: item.highlighted,
-          onClick: (e) => {
-            e.stopPropagation();
-            setFocusItem('scene', itemKey);
-            e.stopPropagation();
-          },
-          onMove: (transform) => { console.log(transform) }
-        };
-        if (COLLISION_MESHES[item.shape]) {
-          state.items[itemKey + '-collision'] = {
-            shape: COLLISION_MESHES[item.shape],
-            name: item.name + ' Collision',
-            frame: item.frame,
-            position: item.position,
-            rotation: item.rotation,
-            scale: item.scale,
-            color: { r: 250, g: 0, b: 0, a: 0 },
-            transformMode: 'inactive',
-            highlighted: false,
-            wireframe: true,
-            onClick: (e) => { },
-            onMove: (transform) => { console.log(transform) }
-          };
-        }
-
-      })
-    state.tfs = initial_data.tfs;
   })
 });

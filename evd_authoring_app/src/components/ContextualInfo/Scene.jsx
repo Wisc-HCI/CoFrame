@@ -67,7 +67,7 @@ const INFO = {
 }
 
 export function getSceneInfo({editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}) {
-    console.log(focusData)
+    // console.log(focusData)
     let tabs = [];
     if (currentIssue) {
         tabs.push(

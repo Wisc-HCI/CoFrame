@@ -4,7 +4,7 @@ import {childLookup} from './childLookup';
 
 const validDrop=(item,ancestors) => ancestors[0].accepts.indexOf(item.type)>=0 && (ancestors.map(ancestor=>ancestor.uuid).indexOf(item.parentData.uuid)>=0 || item.parentData.type === 'drawer');
 
-export function StaticSortable({id, itemType, ancestors, context, disabled, onMove, data}) {
+export function StaticSortable({id, itemType, ancestors, context, disabled, onMove, data, onDelete}) {
 
   const ref = useRef(null);
 
@@ -40,6 +40,13 @@ export function StaticSortable({id, itemType, ancestors, context, disabled, onMo
   // In case there is some lag in updating the store, only render the component if there is actually data.
 
   return (
-    data ? <Child ref={disabled ? null : ref} preview={disabled ? null : preview} style={{opacity}} data={data} ancestors={ancestors} context={context}/> : null
+    data ? <Child 
+              ref={disabled ? null : ref} 
+              preview={disabled ? null : preview} 
+              style={{opacity}} 
+              data={data} 
+              onDelete={onDelete}
+              ancestors={ancestors} 
+              context={context}/> : null
   )
 }

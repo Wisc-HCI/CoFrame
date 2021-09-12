@@ -108,11 +108,19 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
 
   return (
     <div ref={preview} style={{ ...style, ...styles}} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
-      <Row ref={ref} style={{ fontSize: 16, marginBottom: 5 }} align='middle' justify='space-between'>
-        <span>
-          <Icon component={Glyph} />{' '}{data.name}
-        </span>
-        {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
+      <Row style={{ fontSize: 16, marginBottom: 7}} align='middle' justify='space-between'>
+          <Col ref={ref} span={17} style={{textAlign:'left',backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4,cursor:'grab'}}>
+              <Icon style={{marginLeft:4}} component={Glyph} />{' '}{data.name}
+          </Col>
+          <Col span={6} offset={1} style={{textAlign:'end'}}>
+              {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
+              {/* <Button
+                  type='text'
+                  style={{marginLeft:2}}
+                  onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}
+                  icon={<EllipsisOutlined />}
+              /> */}
+          </Col>
       </Row>
       <div style={fieldStyle} hidden={primitivesWithSettings.indexOf(data.type) < 0}>
         <Row align="middle" style={{ marginBottom: 5 }}>
@@ -220,6 +228,7 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
                         data={{...machine,itemType:'machine',type:`uuid-machine`}}
                         // onMove={(dropData)=>moveTrajectoryWaypoint(dropData,uuid,idx)}
                         disabled={!editingEnabled}
+                        onDelete={(_) => setPrimitiveParameter('primitive',data.uuid,'machine_uuid',null)}
                     />
                   )
               }
@@ -268,6 +277,7 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
                         itemType='uuid' 
                         context={context} 
                         data={{...trajectory,itemType:'trajectory',type:`uuid-trajectory`}}
+                        onDelete={(_) => setPrimitiveParameter('primitive',data.uuid,'trajectory_uuid',null)}
                         // onMove={(dropData)=>moveTrajectoryWaypoint(dropData,uuid,idx)}
                         disabled={!editingEnabled}
                     />
@@ -296,6 +306,8 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
                         itemType='uuid' 
                         context={context} 
                         data={{...location,itemType:'location',type:`uuid-location`}}
+                        onDelete={(_) => setPrimitiveParameter('primitive',data.uuid,'location_uuid',null)}
+                    
                         // onMove={(dropData)=>moveTrajectoryWaypoint(dropData,uuid,idx)}
                         disabled={!editingEnabled}
                     />
@@ -324,6 +336,8 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
                         itemType='uuid' 
                         context={context} 
                         data={{...thing,itemType:'placeholder',type:`uuid-thing`}}
+                        onDelete={(_) => setPrimitiveParameter('primitive',data.uuid,'thing_uuid',null)}
+                    
                         // onMove={(dropData)=>moveTrajectoryWaypoint(dropData,uuid,idx)}
                         disabled={!editingEnabled}
                     />
