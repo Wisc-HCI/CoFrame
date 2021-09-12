@@ -2,7 +2,7 @@ import React, {useRef} from 'react';
 import { useDrag } from 'react-dnd';
 import {childLookup} from './childLookup';
 
-export function GenericDraggable({itemType, data, ancestors}) {
+export function GenericDraggable({itemType, data, ancestors, context}) {
 
   const ref = useRef(null);
 
@@ -18,5 +18,5 @@ export function GenericDraggable({itemType, data, ancestors}) {
 
   drag(ref);
 
-  return <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors} context={{}}/>
+  return <Child ref={ref} preview={preview} style={{opacity}} data={data} ancestors={ancestors} context={context}/>
 }

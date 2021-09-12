@@ -230,7 +230,7 @@ export const EvdSlice = (set, get) => ({
     let frame = state.frame;
     if (['waypoint', 'location'].indexOf(type) >= 0) {
       poseDataToShapes(item, frame).forEach(shape => {
-        state.items[shape.uuid] = {...shape,color:{...shape.color,a:0}};
+        state.items[shape.uuid] = shape;
       })
     } else if (type === 'trajectory') {
       let locations = state.data.locations;

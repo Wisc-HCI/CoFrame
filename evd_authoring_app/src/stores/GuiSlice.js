@@ -62,7 +62,8 @@ export const GuiSlice = (set, get) => ({
         state.items[pose_uuid+'-pointer'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
       })
     } else if (type === 'location' || type === 'waypoint') {
-      state.items[uuid+'-tag'].color.a = 1;
+      // state.items[uuid+'-tag'].color.a = 1;
+      state.items[uuid+'-tag'].color = {r:255,g:0,b:0,a:1};
       state.items[uuid+'-pointer'].color.a = 1;
       state.items[uuid+'-tag'].highlighted = true;
       state.items[uuid+'-pointer'].highlighted = true;
