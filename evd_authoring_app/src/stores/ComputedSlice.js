@@ -64,7 +64,7 @@ export const ComputedSlice = {
             Object.keys(this.data.locations).forEach(location_uuid => {
                 const item = this.data.locations[location_uuid]
                 const focused = this.focusItem.uuid === location_uuid || this.secondaryFocusItem.uuid === location_uuid;
-                const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => trajectory.start_location_uuid === location_uuid || trajectory.end_location_uuid === location_uuid);
+                const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) && (trajectory.start_location_uuid === location_uuid || trajectory.end_location_uuid === location_uuid));
                 // Handle in the case where the trajectory is focused
                 const color = poseToColor(item, this.frame, focused || trajectoryFocused);
                 poseDataToShapes(item, this.frame).forEach(shape => {
@@ -75,7 +75,7 @@ export const ComputedSlice = {
             Object.keys(this.data.waypoints).forEach(waypoint_uuid => {
                 const item = this.data.waypoints[waypoint_uuid];
                 const focused = this.focusItem.uuid === waypoint_uuid || this.secondaryFocusItem.uuid === waypoint_uuid;
-                const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => trajectory.waypoint_uuids.some(trajectory_waypoint => trajectory_waypoint === waypoint_uuid));
+                const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => trajectory.waypoint_uuids.some(trajectory_waypoint => (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) && trajectory_waypoint === waypoint_uuid));
                 // Handle in the case where the trajectory is focused
                 const color = poseToColor(item, this.frame, focused || trajectoryFocused);
                 poseDataToShapes(item, this.frame).forEach(shape => {
