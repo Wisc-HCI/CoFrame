@@ -126,16 +126,17 @@ export function unFlattenProgramSkills(skills, primitives) {
 export function poseToColor(pose,frame,focused) {
     let color = {r: 255, g: 255, b: 255, a: focused ? 1 : 0};
     if (frame === 'safety' && inHumanZone(pose.position)) {
-        color.r = 255;
-        color.g = 50;
-        color.b = 50;
+        color.r = 233;
+        color.g = 53;
+        color.b = 152;
     } else if (frame === 'performance' && !pose.reachable) {
-        color.r = 255;
-        color.g = 50;
-        color.b = 50;
+        color.r = 204;
+        color.g = 75;
+        color.b = 10;
     }
     return color
 }
+
 
 // export function poseToShape(pose,frame,focused,setSecondaryFocusItem) {
 //     let pose_stored = pose;

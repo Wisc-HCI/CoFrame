@@ -61,14 +61,28 @@ export const ComputedSlice = {
             })
 
             // TODO: Handle whether 
+            const poses = [];
             Object.keys(this.data.locations).forEach(location_uuid => {
                 const item = this.data.locations[location_uuid]
                 const focused = this.focusItem.uuid === location_uuid || this.secondaryFocusItem.uuid === location_uuid;
-                const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) && (trajectory.start_location_uuid === location_uuid || trajectory.end_location_uuid === location_uuid));
+                const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => 
+                    (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) 
+                    && (trajectory.start_location_uuid === location_uuid || trajectory.end_location_uuid === location_uuid));
                 // Handle in the case where the trajectory is focused
                 const color = poseToColor(item, this.frame, focused || trajectoryFocused);
-                poseDataToShapes(item, this.frame).forEach(shape => {
-                    items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color };
+                console.log(this.data.trajectories);
+                if (trajectoryFocused){       
+                    poses.push(this.data.trajectories.start_location_uuid);
+                    this.data.trajectories[this.focusItem.uuid].waypoint_uuids.forEach((waypoint_uuid)=>{poses.push(waypoint_uuid);})
+                    poses.push(this.data.trajectories.end_location_uuid); 
+                    poses.forEach((pose_uuid,i)=>{
+                        color.a = (time)=>0.5*Math.pow(Math.E,-Math.sin(time/800+i*0.98));  
+                    })
+                    
+                    
+                }
+                poseDataToShapes(item, this.frame).forEach((shape,i) => {
+                    items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color };                  
                 })
             })
 
@@ -78,10 +92,31 @@ export const ComputedSlice = {
                 const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => trajectory.waypoint_uuids.some(trajectory_waypoint => (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) && trajectory_waypoint === waypoint_uuid));
                 // Handle in the case where the trajectory is focused
                 const color = poseToColor(item, this.frame, focused || trajectoryFocused);
-                poseDataToShapes(item, this.frame).forEach(shape => {
+                if (trajectoryFocused){       
+                    poses.push(this.data.trajectories.start_location_uuid);
+                    this.data.trajectories[this.focusItem.uuid].waypoint_uuids.forEach((waypoint_uuid)=>{poses.push(waypoint_uuid);})
+                    poses.push(this.data.trajectories.end_location_uuid); 
+                    poses.forEach((pose_uuid,i)=>{
+                        color.a = (time)=>0.5*Math.pow(Math.E,-Math.sin(time/800+i*0.98));  
+                    })
+                    
+                    
+                }
+                poseDataToShapes(item, this.frame).forEach((shape,i) => {
+                   // color.a = (time) => 0.5*Math.pow(Math.E,-Math.sin(time/800+i*0.3));
                     items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color };
+                    
+                    
                 })
             })
+            poses.forEach((pose_uuid,i)=>{
+                console.log(pose_uuid);
+                //state.items[pose_uuid+'-tag'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
+                //state.items[pose_uuid+'-pointer'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
+              })
+
+
+            
             console.log(items)
             return items
         },
