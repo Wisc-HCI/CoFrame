@@ -163,7 +163,15 @@ export const EvdSlice = (set, get) => ({
 
   },
   moveTrajectoryWaypoint: (waypoint, newParentId, index) => set((state) => {
-
+    if (waypoint.parentData.uuid !== newParentId) {
+      state.data.trajectories[newParentId].waypoint_uuids.splice(index,0,waypoint.uuid)
+    } else {
+      console.log(waypoint)
+    }
+    
+  }),
+  deleteTrajectoryWaypoint: (parentId, index) => set((state)=> {
+    state.data.trajectories[parentId].waypoint_uuids.splice(index,1)
   }),
   moveTrajectoryBlock: (trajectory, newParentId, argKey) => set((state) => {
     const onFile = state.data.trajectories[trajectory.uuid];

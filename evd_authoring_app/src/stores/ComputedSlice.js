@@ -109,15 +109,6 @@ export const ComputedSlice = {
                     
                 })
             })
-            poses.forEach((pose_uuid,i)=>{
-                console.log(pose_uuid);
-                //state.items[pose_uuid+'-tag'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
-                //state.items[pose_uuid+'-pointer'].color.a = (time)=>0.3*Math.pow(Math.E,-Math.sin(time/800+i*0.1));
-              })
-
-
-            
-            console.log(items)
             return items
         },
         lines: function () {

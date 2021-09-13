@@ -1,15 +1,15 @@
 import React, {useCallback} from 'react';
-import { GenericDraggable } from './Wrappers';
+// import { StaticSortable } from './Wrappers';
 import { acceptLookup } from './acceptLookup';
 import useStore from "../../stores/Store";
 import { typeToKey, objectMap } from '../../stores/helpers';
+import { UUIDBlock } from './UUIDBlock';
 
 export const UUIDDrawer = ({itemType}) => {
     // itemType is the "type" of item from the EvdStore that the uuid corresponds to.
     // e.g. 'thingType', 'machine', 'waypoint', etc.
     const data = useStore(useCallback(state=>
-        Object.keys(state.data[typeToKey(itemType)])
-        .map(uuid=>(state.data[typeToKey(itemType)][uuid]))
+        Object.values(state.data[typeToKey(itemType)])
         .filter(data=>data.name.includes(state.searchTerm)),[itemType]));
 
     const nameLookup = useStore(state=>({
@@ -26,9 +26,15 @@ export const UUIDDrawer = ({itemType}) => {
 
     return (
         <React.Fragment>
-            {data.map((datum)=>(
+            {data.map((datum,i)=>(
                 <div key={datum.uuid} style={{paddingTop:5}} >
-                    <GenericDraggable ancestors={ancestors} itemType='uuid' data={{...datum,itemType,type:`uuid-${itemType}`}} context={nameLookup}/>
+                    <UUIDBlock 
+                        ancestors={ancestors} 
+                        idx={i} 
+                        parentData={{type:'drawer',uuid:'drawer'}}
+                        data={{...datum,itemType,type:`uuid-${itemType}`}} 
+                        dropDisabled
+                        context={nameLookup}/>
                 </div>
             ))}
         </React.Fragment>

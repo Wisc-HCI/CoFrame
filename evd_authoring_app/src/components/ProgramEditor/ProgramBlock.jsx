@@ -81,6 +81,7 @@ export const ProgramBlock = (props) => {
                 </Col>
             </Row>
             <NodeZone
+              style={{paddingTop:4,paddingBottom:4}}
               ancestors={ancestors}
               onDrop={(data) => moveChildPrimitive(data,uuid,'program',0)}
               emptyMessage='No Actions'

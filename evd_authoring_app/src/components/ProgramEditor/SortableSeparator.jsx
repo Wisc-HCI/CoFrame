@@ -2,19 +2,13 @@ import React from "react";
 import { useDrop } from 'react-dnd';
 import { UUIDBlock } from "./UUIDBlock";
 
-export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDisabled,style}) => {
-
-    const empty = !children || children.length === 0;
+export const SortableSeparator = ({ancestors,context,onDrop,dropDisabled}) => {
 
     const [{isOver,dragItem}, drop] = useDrop({
         accept: ancestors[0].accepts,
         drop: (item, _) => onDrop(item),
         canDrop: (item, _) => {
-            if (!item) {
-                return false
-            } else if (!empty) {
-                return false
-            } else if (!ancestors[0].accepts.some(type=>type===item.type)) {
+            if (!ancestors[0].accepts.some(type=>type===item.type)) {
                 return false
             } else if (!ancestors.some(ancestor=>ancestor.uuid===item.parentData.uuid) && item.parentData.type !== 'drawer') {
                 return false
@@ -29,15 +23,12 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
 
     
 
-    let contents = empty ? (
-        <div style={{padding:10}}>
-            {emptyMessage}
-        </div>
-    ) : children;
+    let contents = null;
     if (isOver && dragItem && !dropDisabled) {
         if (dragItem.type.includes('uuid')) {
             contents = 
-            <UUIDBlock 
+            <div style={{opacity:0.5}} ref={dropDisabled?null:drop} >
+                <UUIDBlock
                 ancestors={ancestors} 
                 idx={0}
                 data={dragItem} 
@@ -45,25 +36,16 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
                 dragDisabled 
                 dropDisabled
                 dragBehavior='move' />
+            </div>
+            
         }
     }
 
-    const containerStyle = {
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        borderRadius: 5,
-        minWidth: 40,
-        minHeight:50,
-        paddingLeft:4,
-        paddingRight:4,
-        paddingTop:0,
-        paddingBottom:0,
-        textAlign:'center',
-        fontSize:14
-    }
-
     return (
-        <div ref={dropDisabled||!empty?null:drop} style={{...containerStyle,...style,}}>
-            {contents}
+        <div style={{height:!contents?4:null,width:'100%',paddingTop:contents?4:0,paddingBottom:contents?4:0}}>
+            {contents ? contents : (
+                <div ref={dropDisabled?null:drop} style={{position:'relative',zIndex:100,top:-10,height:30}}></div>
+            )}
         </div>
         
     )
