@@ -72,6 +72,7 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
             </div>
             <NodeZone
               ancestors={skillAncestors}
+              style={{paddingTop:4,paddingBottom:4}}
               onDrop={(dropData) => moveChildPrimitive(dropData,data.uuid,'skill',0)}
               emptyMessage='No Actions'
               enabled={true}

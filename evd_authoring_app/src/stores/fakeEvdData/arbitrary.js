@@ -610,7 +610,7 @@ for (let i = 0; i < NUM_TRAJECTORIES; i++) {
         uuid: `trajectory-js-${i}`,
         name: `Trajectory-${i}`,
         deleteable: false,
-        editable: false,
+        editable: true,
         description: 'Some descriptor string (optional)', // could be ''
 
         start_location_uuid: locations[0].uuid,

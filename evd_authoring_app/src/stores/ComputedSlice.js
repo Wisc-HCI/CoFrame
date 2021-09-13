@@ -82,7 +82,6 @@ export const ComputedSlice = {
                     items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color };
                 })
             })
-            console.log(items)
             return items
         },
         lines: function () {

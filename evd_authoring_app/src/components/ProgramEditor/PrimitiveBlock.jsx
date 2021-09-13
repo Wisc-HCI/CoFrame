@@ -1,5 +1,4 @@
 import React, { forwardRef, useCallback, useState } from "react";
-import { StaticSortable } from './Wrappers';
 import { NodeZone } from "./NodeZone";
 import { ItemSortable } from "./Wrappers";
 import { InputNumber, Row, Col, Button } from "antd";
@@ -10,6 +9,7 @@ import { ReactComponent as SkillIcon } from '../CustomIcons/Skill.svg';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg';
 import Icon, { UnlockOutlined, LockOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
 import './highlight.css';
+import { UUIDBlock } from "./UUIDBlock";
 
 export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}, ref) => {
   const { uuid, parameters } = data;
@@ -212,18 +212,18 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
           <Col flex={2} style={{paddingRight:5}}>Machine:</Col>
           <Col flex={3}>
             <NodeZone
+              style={{paddingTop:4,paddingBottom:4}}
               ancestors={ancestors}
               onDrop={(dropData) => setPrimitiveParameter('primitive',data.uuid,'machine_uuid',dropData.uuid)}
               emptyMessage='No Machine'
               enabled={true}
             >
                 {machine && (
-                    <StaticSortable 
+                    <UUIDBlock 
                         key={machine.uuid} 
                         id={machine.uuid} 
                         idx={0} 
                         ancestors={primitiveAncestors} 
-                        itemType='uuid' 
                         context={context} 
                         data={{...machine,itemType:'machine',type:`uuid-machine`}}
                         // onMove={(dropData)=>moveTrajectoryWaypoint(dropData,uuid,idx)}
@@ -241,6 +241,7 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
           <Col flex={2} style={{paddingRight:5}}>Trajectory:</Col>
           <Col flex={3}>
             <NodeZone
+              style={{paddingTop:4,paddingBottom:4}}
               ancestors={[{uuid,accepts:['uuid-trajectory','node.trajectory.']},...ancestors]}
               onMove={(dropData) => {
                 if (context[dropData.uuid].real) {
@@ -269,12 +270,11 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
                     }}
                     disabled={!editingEnabled}/>
                 ) : (
-                  <StaticSortable 
+                  <UUIDBlock
                         key={trajectory.uuid} 
                         id={trajectory.uuid} 
                         idx={0} 
                         ancestors={primitiveAncestors} 
-                        itemType='uuid' 
                         context={context} 
                         data={{...trajectory,itemType:'trajectory',type:`uuid-trajectory`}}
                         onDelete={(_) => setPrimitiveParameter('primitive',data.uuid,'trajectory_uuid',null)}
@@ -292,13 +292,14 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
           <Col flex={2} style={{paddingRight:5}}>To Location:</Col>
           <Col flex={3}>
             <NodeZone
+              style={{paddingTop:4,paddingBottom:4}}
               ancestors={ancestors}
               onDrop={(dropData) => setPrimitiveParameter('primitive',data.uuid,'location_uuid',dropData.uuid)}
               emptyMessage='No Location'
               enabled={true}
             >
                 {location && (
-                    <StaticSortable 
+                    <UUIDBlock 
                         key={location.uuid} 
                         id={location.uuid} 
                         idx={0} 
@@ -322,13 +323,14 @@ export const PrimitiveBlock = forwardRef(({data,style,preview,ancestors,context}
           <Col flex={2} style={{paddingRight:5}}>Thing:</Col>
           <Col flex={3}>
             <NodeZone
+              style={{paddingTop:4,paddingBottom:4}}
               ancestors={ancestors}
               onDrop={(dropData) => setPrimitiveParameter('primitive',data.uuid,'thing_uuid',dropData.uuid)}
               emptyMessage='No Thing'
               enabled={true}
             >
                 {thing && (
-                    <StaticSortable 
+                    <UUIDBlock 
                         key={thing.uuid} 
                         id={thing.uuid} 
                         idx={0} 
