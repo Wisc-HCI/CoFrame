@@ -6,19 +6,16 @@ Presents a virtual assembly jig machin to EvD.
 
 import rospy
 
-from evd_script import Machine, CubeRegion, Position, Orientation, ThingType, \
-    CollisionMesh, Placeholder, Thing
-
 from evd_interfaces.machine_template import MachineTemplate
-from evd_interfaces.frontend_interface import FrontendInterface
 
 
-PROCESS_TIME = 0 # This machine is just to serve as a passive real-world device
+PROCESS_TIME_ASSEMBLY_JIG = 0
+MACHINE_UUID_ASSEMBLY_JIG = 'assembly-jig-machine-uuid'
 
 
 class AssemblyJigMachine(MachineTemplate):
 
-    def __init__(self, prefix=None, rate=5, simulated=True):
+    def __init__(self, uuid, prefix=None, rate=5, simulated=True):
         self._paused = False
         self._rate = rate
         self._simulated = simulated

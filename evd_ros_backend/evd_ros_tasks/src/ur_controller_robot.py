@@ -22,9 +22,9 @@ from geometry_msgs.msg import Pose, Point, Quaternion
 from evd_ros_core.msg import RobotMove, RobotStatus, RobotGrip
 
 from evd_interfaces.robot_template import RobotTemplate
-from evd_interfaces.frontend_interface import FrontendInterface
-from evd_script import Position, ReachSphere, PinchPoint, CollisionMesh, OccupancyZone
 
+
+ROBOT_UUID_UR3E = 'ur3e-robot-uuid'
 
 # Time Scaling Servoing Constants 
 MIN_M = -30.0
@@ -43,33 +43,17 @@ DEFAULT_LINEAR_ACCELERATION = 1.2
 
 class URController(RobotTemplate):
 
-    def __init__(self, prefix=None, real_robot=False, rate=5, end_effector_link='ee_link', base_link='base_link'):
+    def __init__(self, uuid=None, prefix=None, real_robot=False, rate=5, 
+                 end_effector_link='ee_link', base_link='base_link'):
         super(URController,self).__init__(
-            prefix, real_robot,
+            uuid, prefix, real_robot,
             init_fnt=self.initialize,
             estop_fnt=self.estop,
             pause_fnt=self.pause,
             move_fnt=self.move,
             move_traj_fnt=self.move_trajectory,
             grip_fnt=self.grip)
-
-        self._reach_sphere = ReachSphere(0.8, link="simulated_base_link", offset=Position(0,0,0.15))
-        self._pinch_points = [
-            PinchPoint(link='simulated_shoulder_link', radius=0.075, length=0.2, offset=Position.from_axis('z',-0.05)),
-            PinchPoint(link='simulated_upper_arm_link', radius=0.075, length=0.2, offset=Position.from_axis('z',0.075)),
-            PinchPoint(link='simulated_forearm_link', radius=0.075, length=0.2, offset=Position.from_axis('z',0.075)),
-            PinchPoint(link='simulated_wrist_1_link', radius=0.06, length=0.17, offset=Position.from_axis('z',-0.05)),
-            PinchPoint(link='simulated_wrist_3_link', radius=0.1, length=0.16, offset=Position.from_axis('z',0.1))
-        ]
-        self._collision_meshes = [
-            CollisionMesh(name="Pedestal Collision Mesh", link='ur3e_pedestal_link', mesh_id='package://evd_ros_tasks/description/meshes/collision/Pedestal.stl'),
-        ]
-        self._occupancy_zones = [
-            OccupancyZone(name="Robot Occupancy Zone", occupancyType=OccupancyZone.ROBOT_TYPE, sclX=1.6, sclZ=1.2, height=-0.8)
-        ]
-
-        self._program = FrontendInterface(use_registration=True, register_cb=self._call_to_register)
-
+        
         self._last_js_msg = JointState()
         self._last_js_msg_time = 0
         self._last_rms_msg = RobotModeDataMsg()
@@ -93,18 +77,6 @@ class URController(RobotTemplate):
         
         self._freedrive_sub = rospy.Subscriber('ur_controller/freedrive',Bool,self._freedrive_cb)
         self._servoing_sub = rospy.Subscriber('ur_controller/servoing',RobotMove,self._servoing_cb)
-
-    def _call_to_register(self):
-        dct_list = []
-
-        dct_list.append(self._reach_sphere.to_dct())
-        dct_list.extend([p.to_dct() for p in self._pinch_points])
-        dct_list.extend([c.to_dct() for c in self._collision_meshes])
-        dct_list.extend([o.to_dct() for o in self._occupancy_zones])
-
-        self._program.register(dct_list)
-
-        print('robot-registered')
 
     def spin(self):
         rate = rospy.Rate(self._rate)
@@ -464,8 +436,9 @@ class URController(RobotTemplate):
 if __name__ == "__main__":
     rospy.init_node('ur_controller_robot')
 
+    uuid = rospy.get_param('uuid',ROBOT_UUID_UR3E)
     prefix = rospy.get_param('prefix',None)
     rate = rospy.get_param('rate',5)
 
-    node = URController(prefix,rate)
+    node = URController(uuid,prefix,rate)
     node.spin()

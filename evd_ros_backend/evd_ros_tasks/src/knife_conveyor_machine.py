@@ -6,14 +6,11 @@ Presents a virtual assembly jig machin to EvD.
 
 import rospy
 
-from evd_script import Machine, CubeRegion, Position, Orientation, ThingType, \
-    CollisionMesh, Placeholder, Thing
-
 from evd_interfaces.machine_template import MachineTemplate
-from evd_interfaces.frontend_interface import FrontendInterface
 
 
-PROCESS_TIME = 0 # This machine is just to serve as a passive real-world device
+MACHINE_UUID_KNIFE_CONVEYOR = 'knife-conveyor-machine-uuid'
+PROCESS_TIME_KNIFE_CONVEYOR = 5
 
 
 class KnifeConveyorMachine(MachineTemplate):

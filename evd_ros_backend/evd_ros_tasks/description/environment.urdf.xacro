@@ -13,14 +13,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/visual/Table.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/visual/table.stl"/>
       </geometry>
       <material name="visual_env_mesh"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/collision/Table.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/collision/table.stl"/>
       </geometry>
     </collision>
   </link>
@@ -35,14 +35,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/visual/MK2-Printer.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/visual/3d_printer.stl"/>
       </geometry>
       <material name="visual_env_mesh"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/collision/MK2-Printer.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/collision/3d_printer.stl"/>
       </geometry>
     </collision>
   </link>

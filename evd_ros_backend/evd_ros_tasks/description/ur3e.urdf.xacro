@@ -63,14 +63,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/visual/Pedestal.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/visual/pedestal.stl"/>
       </geometry>
       <material name="visual_robot_mesh"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/collision/Pedestal.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/collision/pedestal.stl"/>
       </geometry>
     </collision>
   </link>

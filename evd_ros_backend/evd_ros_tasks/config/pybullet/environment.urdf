@@ -14,7 +14,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="./environment/visual/Table.stl"/>
+        <mesh filename="./environment/visual/table.stl"/>
       </geometry>
       <material name="visual_env_mesh"/>
     </visual>
@@ -29,7 +29,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="./environment/visual/MK2-Printer.stl"/>
+        <mesh filename="./environment/visual/3d_printer.stl"/>
       </geometry>
       <material name="visual_env_mesh"/>
     </visual>
