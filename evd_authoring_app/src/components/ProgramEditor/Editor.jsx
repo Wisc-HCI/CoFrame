@@ -140,7 +140,7 @@ export const Editor = () => {
              )}
           </animated.div>
           <Layout.Content style={{ height: 'calc(100vh - 113pt)'}}>
-            <Canvas scale={0.5}/>
+            <Canvas/>
             <DeleteZone/>
           </Layout.Content>
         </Layout>

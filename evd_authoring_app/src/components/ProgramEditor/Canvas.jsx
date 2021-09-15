@@ -12,7 +12,7 @@ import { SkillBlock } from './SkillBlock';
 export const Canvas = () => {
 
     const ref = useRef();
-    const [clearFocusItem,scale] = useStore(state => [state.clearFocusItem,state.editorScale]);
+    const [clearFocusItem] = useStore(state => [state.clearFocusItem]);
     const acceptTypes = acceptLookup.grid.primitiveIds.accepts;
 
     const ancestors = [
@@ -35,13 +35,13 @@ export const Canvas = () => {
         drop: (item, monitor) => {
             const delta = monitor.getDifferenceFromInitialOffset();
             if (item.type === 'node.primitive.hierarchical.program.') {
-                moveItem('program', item.uuid, delta.x/scale, delta.y/scale)
+                moveItem('program', item.uuid, delta.x, delta.y)
             } else if (item.type === 'node.primitive.hierarchical.skill.' && skills[item.uuid]) {
-                moveItem('skill', item.uuid, delta.x/scale, delta.y/scale)
+                moveItem('skill', item.uuid, delta.x, delta.y)
             } else if (item.type === 'node.primitive.hierarchical.skill.') {
                 const offset = monitor.getClientOffset();
                 const rect = ref.current.getBoundingClientRect();
-                createAndPlaceItem('skill', item, (offset.x - rect.x)/scale, (offset.y - rect.y)/scale)
+                createAndPlaceItem('skill', item, (offset.x - rect.x), (offset.y - rect.y))
             } else {
                 console.log(item)
             }

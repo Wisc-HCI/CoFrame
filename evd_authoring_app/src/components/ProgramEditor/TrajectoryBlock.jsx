@@ -256,6 +256,8 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   parentData={{type:'trajectory',uuid,field:'waypoint_uuids'}}
                   data={{ ...waypoint, itemType: 'waypoint', type: `uuid-waypoint` }}
                   onDelete={() => deleteTrajectoryWaypoint(uuid, idx)}
+                  // nameEditable={}
+                  // onNameChange={(newName)=>{}}
                   dragDisabled={!editingEnabled}
                   dropDisabled={true}
                   after={
