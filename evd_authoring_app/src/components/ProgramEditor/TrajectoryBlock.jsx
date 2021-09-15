@@ -9,6 +9,9 @@ import './highlight.css';
 import { UUIDBlock } from "./UUIDBlock";
 import { SortableSeparator } from "./SortableSeparator";
 import { useDrag } from "react-dnd";
+import { useSpring, animated } from '@react-spring/web';
+import { config } from 'react-spring';
+import useMeasure from "react-use-measure";
 
 export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentData, dragBehavior, dragDisabled }) => {
   const [focused, data, start_location, waypoints, end_location] = useStore(useCallback(state => {
@@ -49,6 +52,9 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
   }))
 
   const [settingsExpanded, setSettingsExpanded] = useState(false);
+
+  const [settingsRef, { height }] = useMeasure();
+  const settingsStyle = useSpring({ height: height, config: config.stiff});
 
   const styles = {
     backgroundColor:
@@ -151,8 +157,9 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
             />
           </Col>
         </Row>
-        {settingsExpanded && (
-          <>
+        <animated.div style={{ overflow: 'hidden', ...settingsStyle }}>
+          <div ref={settingsRef}>
+            {settingsExpanded && (
             <Row align="middle" style={fieldStyle}>
               <Col span="8">Motion Type:</Col>
               <Col span="16" style={{ textAlign: 'right' }}>
@@ -167,7 +174,8 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'joint')}>IK</Button>
                 )}
               </Col>
-            </Row>
+            </Row>)}
+            {settingsExpanded && (
             <Row align="middle" style={fieldStyle}>
               <Col span="8">Speed:</Col>
               <Col span="16" style={{ textAlign: 'right' }}>
@@ -181,9 +189,9 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   bordered={false}
                   style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
               </Col>
-            </Row>
-          </>
-        )}
+            </Row>)}
+            </div>
+          </animated.div>
       </div>
       <Row align="middle" style={fieldStyle}>
         <Col span="8">Start Location:</Col>

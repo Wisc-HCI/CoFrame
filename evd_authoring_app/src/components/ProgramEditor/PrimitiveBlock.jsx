@@ -58,7 +58,7 @@ export const PrimitiveBlock = ({
     ]
   }, [staticData, uuid, context]));
 
-  const [frame, clearFocusItem, focusExists, editorScale] = useStore(state => [state.frame, state.clearFocusItem, state.focusItem.type !== null, state.editorScale]);
+  const [frame, clearFocusItem, focusExists] = useStore(state => [state.frame, state.clearFocusItem, state.focusItem.type !== null]);
   const unfocused = focusExists && !focused;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
@@ -96,7 +96,7 @@ export const PrimitiveBlock = ({
 
   const [settingsRef, { height }] = useMeasure();
   const [settingsExpanded, setSettingsExpanded] = useState(false);
-  const settingsStyle = useSpring({ height: height/editorScale, config: config.stiff});
+  const settingsStyle = useSpring({ height: height, config: config.stiff});
   // const settingTransition = useTransition(settingsExpanded, {
   //   from: {height:0,overflow:'hidden'},
   //   enter: {height},
