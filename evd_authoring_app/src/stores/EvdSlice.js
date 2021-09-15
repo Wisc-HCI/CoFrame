@@ -208,7 +208,7 @@ export const EvdSlice = (set, get) => ({
     if (newParentId === state.uuid) {
       state.primitiveIds.splice(newIndex, 0, primitive.uuid);
     } else if (state.data.skills[newParentId]) {
-      state.data.primitives[newParentId].primitiveIds.splice(newIndex, 0, primitive.uuid);
+      state.data.skills[newParentId].primitiveIds.splice(newIndex, 0, primitive.uuid);
     } else {
       state.data.primitives[newParentId].primitiveIds.splice(newIndex, 0, primitive.uuid);
     }
