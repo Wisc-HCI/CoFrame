@@ -1,4 +1,4 @@
-import { flattenProgram, unFlattenProgramPrimitives, unFlattenProgramSkills } from './helpers';
+import { arrayMove, flattenProgram, unFlattenProgramPrimitives, unFlattenProgramSkills } from './helpers';
 import lodash from 'lodash';
 import { typeToKey } from './helpers';
 // import { useSceneStore } from 'robot-scene';
@@ -162,16 +162,56 @@ export const EvdSlice = (set, get) => ({
     }
 
   },
-  moveTrajectoryWaypoint: (waypoint, newParentId, index) => set((state) => {
-    if (waypoint.parentData.uuid !== newParentId) {
-      state.data.trajectories[newParentId].waypoint_uuids.splice(index,0,waypoint.uuid)
+  moveTrajectoryWaypoint: (waypointId, oldParentId, newParentId, oldIndex, newIndex) => set((state) => {
+    if (oldParentId === newParentId) {
+      arrayMove(state.data.trajectories[newParentId].waypoint_uuids,oldIndex,newIndex)
     } else {
-      console.log(waypoint)
+      state.data.trajectories[oldParentId].waypoint_uuids.splice(oldIndex, 1);
+      state.data.trajectories[newParentId].waypoint_uuids.splice(newIndex, 0, waypointId)
     }
-    
   }),
-  deleteTrajectoryWaypoint: (parentId, index) => set((state)=> {
-    state.data.trajectories[parentId].waypoint_uuids.splice(index,1)
+  insertTrajectoryWaypoint: (waypointId, newParentId, newIndex) => set((state) => {
+    state.data.trajectories[newParentId].waypoint_uuids.splice(newIndex, 0, waypointId)
+  }),
+  deleteTrajectoryWaypoint: (parentId, index) => set((state) => {
+    state.data.trajectories[parentId].waypoint_uuids.splice(index, 1)
+  }),
+  moveChildPrimitive: (primitiveId, oldParentId, newParentId, oldIndex, newIndex) => set((state)=>{
+    if (oldParentId === newParentId && state.uuid === oldParentId) {
+      // Moving within the program
+      arrayMove(state.primitiveIds,oldIndex,newIndex)
+    } else if (oldParentId === newParentId) {
+      // Moving within a single skill or primitive
+      const parentType = state.data.skills[newParentId] ? 'skills' : 'primitives';
+      arrayMove(state.data[parentType][newParentId].primitiveIds,oldIndex,newIndex)
+    } else if (state.uuid === oldParentId) {
+      // Move from 
+      const newParentType = state.data.skills[newParentId] ? 'skills' : 'primitives';
+      state.primitiveIds.splice(oldIndex, 1);
+      state.data[newParentType][newParentId].primitiveIds.splice(newIndex, 0, primitiveId)
+    } else if (state.uuid === newParentId) {
+      const oldParentType = state.data.skills[oldParentId] ? 'skills' : 'primitives';
+      state.data[oldParentType][oldParentId].primitiveIds.splice(oldIndex, 1);
+      state.primitiveIds.splice(newIndex, 0, primitiveId)
+    } else {
+      const newParentType = state.data.skills[newParentId] ? 'skills' : 'primitives';
+      const oldParentType = state.data.skills[oldParentId] ? 'skills' : 'primitives';
+      state.data[oldParentType][oldParentId].primitiveIds.splice(oldIndex, 1);
+      state.data[newParentType][newParentId].primitiveIds.splice(newIndex, 0, primitiveId)
+    }
+  }),
+  insertChildPrimitive: (primitive, newParentId, newIndex) => set(state=>{
+    if (!state.data.primitives[primitive.uuid]) {
+      // Add if it isn't here yet.
+      state.data.primitives[primitive.uuid] = lodash.omit(primitive,'idx','parentData','dragBehavior')
+    }
+    if (newParentId === state.uuid) {
+      state.primitiveIds.splice(newIndex, 0, primitive.uuid);
+    } else if (state.data.skills[newParentId]) {
+      state.data.primitives[newParentId].primitiveIds.splice(newIndex, 0, primitive.uuid);
+    } else {
+      state.data.primitives[newParentId].primitiveIds.splice(newIndex, 0, primitive.uuid);
+    }
   }),
   moveTrajectoryBlock: (trajectory, newParentId, argKey) => set((state) => {
     const onFile = state.data.trajectories[trajectory.uuid];
@@ -199,38 +239,9 @@ export const EvdSlice = (set, get) => ({
     // Update the new parent data for this trajectory
     state.data.trajectories[trajectory.uuid].parentData = { type: 'primitive', uuid: newParentId };
   }),
-  moveChildPrimitive: (primitive, newParentId, newParentType, index) => set((state) => {
-    const onFile = state.data.primitives[primitive.uuid];
-    if (onFile) {
-      const oldParentData = state.data.primitives[primitive.uuid].parentData;
-      // Short-circuit if no move needs to be done.
-      if (oldParentData.type === 'program' && oldParentData.uuid === newParentId && state.primitiveIds.indexOf(primitive.uuid) === index) {
-        // console.log('program/index match')
-        return;
-      } else if (oldParentData.type === 'drawer') {
-        // Don't bother moving
-      } else if (oldParentData.type === 'primitive' && oldParentData.uuid === newParentId && state.data.primitives[oldParentData.uuid].primitiveIds.indexOf(primitive.uuid) === index) {
-        // console.log('primitive/index match')
-        return;
-      } else if (oldParentData.type === 'skill' && oldParentData.uuid === newParentId && state.data.skills[oldParentData.uuid].primitiveIds.indexOf(primitive.uuid) === index) {
-        // console.log('skill/index match')
-        return;
-      }
-      // Remove from previous location
-      if (oldParentData.type === 'program') {
-        state.primitiveIds = state.primitiveIds.filter(id => id !== primitive.uuid)
-      } else if (oldParentData.type === 'drawer') { } else {
-        state.data[typeToKey(oldParentData.type)][oldParentData.uuid].primitiveIds = state.data[typeToKey(oldParentData.type)][oldParentData.uuid].primitiveIds.filter(id => id !== primitive.uuid)
-      }
-    }
-    state.data.primitives[primitive.uuid] = { ...primitive, parentData: { type: newParentType, uuid: newParentId } };
-    if (newParentType === 'program') {
-      state.primitiveIds.splice(index, 0, primitive.uuid)
-    } else if (newParentType === 'skill') {
-      state.data.skills[newParentId].primitiveIds.splice(index, 0, primitive.uuid)
-    } else if (newParentType === 'primitive') {
-      state.data.primitives[newParentId].primitiveIds.splice(index, 0, primitive.uuid)
-    }
+  deletePrimitiveTrajectory: (parentId, field, trajectoryId) => set(state=>{
+    state.data.primitives[parentId].parameters[field] = null;
+    delete state.data.trajectories[trajectoryId];
   }),
   // Piecewise update functions for data
   addItem: (type, item) => set((state) => {
@@ -238,24 +249,6 @@ export const EvdSlice = (set, get) => ({
   }),
   setItemProperty: (type, uuid, property, value) => set((state) => {
     state.data[typeToKey(type)][uuid][property] = value;
-    // let item = state.data[typeToKey(type)][uuid];
-    // let frame = state.frame;
-    // if (['waypoint','location'].indexOf(type)>=0) {
-      // poseDataToShapes(item,frame).forEach(shape=>{
-      //   state.item[shape.uuid].position = shape.position;
-      //   state.item[shape.uuid].rotation = shape.rotation;
-      // });
-      // // Enumerate the trajectories and update their visuals if they use this location or waypoint
-      // Object.keys(state.data.trajectories).forEach(trajectory_uuid=>{
-      //   let trajectory = state.data.trajectories[trajectory_uuid];
-      //   if (trajectory.start_location_uuid === uuid || trajectory.end_location_uuid === uuid || trajectory.waypoint_uuids.indexOf(uuid) >= 0) {
-      //     let locations = state.data.locations;
-      //     let waypoints = state.data.waypoints;
-      //     let frame = state.frame;
-      //     state.lines[trajectory_uuid] = trajectoryDataToLine(trajectory,locations,waypoints,frame);
-      //   }
-      // })
-    // }
   }),
   setPrimitiveParameter: (type, uuid, property, value) => set((state) => {
     state.data[typeToKey(type)][uuid].parameters[property] = value
@@ -283,7 +276,6 @@ export const EvdSlice = (set, get) => ({
     if (type === 'program') {
       state.transform.x += x;
       state.transform.y += y;
-      console.log(state.transform)
     } else if (type === 'skill') {
       state.data[typeToKey(type)][uuid].transform.x += x;
       state.data[typeToKey(type)][uuid].transform.y += y;
@@ -295,18 +287,3 @@ export const EvdSlice = (set, get) => ({
     }
   })
 });
-
-// const useEvdStore = create(immer(store));
-
-// console.log(fakeEvdData.arbitrary.program)
-// // Remove for ROS-based updates later (useful for frontend dev)
-// useEvdStore.getState().setProgram(fakeEvdData.arbitrary.program);
-
-// console.log('Primitives');
-// console.log(useEvdStore.getState().data.primitives);
-// console.log('Skills');
-// console.log(useEvdStore.getState().data.skills);
-// console.log('Top-level primitives');
-// console.log(useEvdStore.getState().primitiveIds);
-
-// export default useEvdStore;

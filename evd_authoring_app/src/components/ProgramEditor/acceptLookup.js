@@ -31,7 +31,11 @@ export const acceptLookup = {
                 'node.primitive.move-trajectory.',
                 'node.primitive.move-unplanned.',
                 'node.primitive.skill-call.',
-                'node.primitive.hierarchical.'
+                'node.primitive.hierarchical.',
+                'uuid-location',
+                'uuid-waypoint',
+                'uuid-thing',
+                'uuid-trajectory'
             ],
             placement:'single'
         }

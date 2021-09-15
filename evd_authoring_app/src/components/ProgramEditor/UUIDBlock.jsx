@@ -19,6 +19,7 @@ const ICONS = {
 
 export const UUIDBlock = ({ 
   data, 
+  idx,
   ancestors, 
   context, 
   onDelete, 
@@ -27,7 +28,9 @@ export const UUIDBlock = ({
   dropDisabled, 
   hoverBehavior, 
   dragBehavior, 
-  parentData }) => {
+  parentData,
+  after
+ }) => {
 
   // props constains data,
   // which contains fields 'itemType' and 'uuid'
@@ -35,15 +38,12 @@ export const UUIDBlock = ({
   // hoverBehavior is either 'replace' or 'insert'
   const { itemType, uuid } = data;
 
-  // const ref = useRef();
-
-  const [{ opacity }, drag, preview] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
-    item: { ...data, parentData },
+    item: { ...data, parentData, dragBehavior, idx },
     options: { dragEffect: dragBehavior },
-    // dragEffect: 'copy',
     collect: monitor => ({
-      opacity: monitor.isDragging() ? 0.4 : 1
+      isDragging: monitor.isDragging()
     })
   }))
 
@@ -84,7 +84,7 @@ export const UUIDBlock = ({
   const blockStyle = {
     backgroundColor:
       blockStyles[itemType === 'placeholder' ? 'thing' : itemType],
-    minHeight: 30,
+    height: 42,
     width: 'calc(100% - 5pt)',
     borderRadius: 3,
     marginLeft: 4,
@@ -109,10 +109,10 @@ export const UUIDBlock = ({
           dropDisabled
           dragBehavior='move' />
       )}
-      <div ref={dropDisabled ? null : drop}>
-        <div ref={preview} style={{ opacity, ...blockStyle }} className={focused ? `focus-${frame}` : null} >
+      <div ref={dropDisabled ? null : drop} style={{}}>
+        <div ref={preview} hidden={isDragging&&dragBehavior==='move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
           <span style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
-            <span ref={dragDisabled ? null : drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab" }}>
+            <span ref={dragDisabled ? null : drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab",zIndex:101 }}>
               <Icon style={{ marginLeft: 4 }} component={ICONS[itemType]} />{' '}{itemType === 'placeholder' ? displayData.pending_node.name : displayData.name}
             </span>
             <span style={{ textAlign: 'end', width: 60, textTransform: 'capitalize' }}>
@@ -148,6 +148,7 @@ export const UUIDBlock = ({
           </span>
         </div>
       </div>
+      {!(isDragging && dragBehavior==='move') && after}
     </React.Fragment>
   );
 };

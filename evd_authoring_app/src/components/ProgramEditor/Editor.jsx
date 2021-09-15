@@ -8,7 +8,7 @@ import { Canvas } from './Canvas';
 import { PrimitivesDrawer } from './PrimitivesDrawer';
 import { ContainersDrawer } from './ContainersDrawer';
 import { UUIDDrawer } from './UUIDDrawer';
-import { ExecuteMacrosDrawer } from './ExecuteMacrosDrawer';
+// import { ExecuteMacrosDrawer } from './ExecuteMacrosDrawer';
 import { DeleteZone } from './DeleteZone';
 import {ReactComponent as LocationIcon} from '../CustomIcons/Location.svg';
 import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
@@ -139,8 +139,8 @@ export const Editor = () => {
                </React.Fragment>
              )}
           </animated.div>
-          <Layout.Content style={{ height: 'calc(100vh - 113pt)', overflow: 'scroll' }}>
-            <Canvas/>
+          <Layout.Content style={{ height: 'calc(100vh - 113pt)'}}>
+            <Canvas scale={0.5}/>
             <DeleteZone/>
           </Layout.Content>
         </Layout>

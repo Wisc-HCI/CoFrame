@@ -1,5 +1,6 @@
 import React from "react";
 import { useDrop } from 'react-dnd';
+import { PrimitiveBlock } from "./PrimitiveBlock";
 import { UUIDBlock } from "./UUIDBlock";
 
 export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDisabled,style}) => {
@@ -45,6 +46,16 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
                 dragDisabled 
                 dropDisabled
                 dragBehavior='move' />
+        } else if (dragItem.type.includes('primitive')) {
+            contents = 
+            <PrimitiveBlock
+                ancestors={ancestors} 
+                idx={0}
+                data={dragItem} 
+                context={context} 
+                dragDisabled 
+                dropDisabled
+                dragBehavior='move' />
         }
     }
 
@@ -52,7 +63,7 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 5,
         minWidth: 40,
-        minHeight:50,
+        minHeight:58,
         paddingLeft:4,
         paddingRight:4,
         paddingTop:0,

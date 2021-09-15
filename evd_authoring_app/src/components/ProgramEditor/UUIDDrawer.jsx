@@ -33,6 +33,7 @@ export const UUIDDrawer = ({itemType}) => {
                         idx={i} 
                         parentData={{type:'drawer',uuid:'drawer'}}
                         data={{...datum,itemType,type:`uuid-${itemType}`}} 
+                        dragBehavior='copy'
                         dropDisabled
                         context={nameLookup}/>
                 </div>

@@ -313,9 +313,9 @@ export const primitiveTypes = Object.keys(primitiveTemplates).filter(type => (!t
 export const containerTypes = Object.keys(containerTemplates);
 
 export const fromPrimitiveTemplate = (type) => {
-    return { uuid: generateUuid(type), type: type, parentData: { type: 'drawer', uuid: null }, ...primitiveTemplates[type] }
+    return { uuid: generateUuid(type), type, ...primitiveTemplates[type] }
 }
 
 export const fromContainerTemplate = (type) => {
-    return { uuid: generateUuid(type), type: type, parentData: { type: 'drawer', uuid: null }, ...containerTemplates[type] }
+    return { uuid: generateUuid(type), type, ...containerTemplates[type] }
 }
