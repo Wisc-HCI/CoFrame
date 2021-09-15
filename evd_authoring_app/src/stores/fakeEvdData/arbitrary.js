@@ -138,6 +138,7 @@ for (let i = 0; i < NUM_THINGS; i++) {
 //onChange={e=>setItemProperty(focusItem.type,focusItem.uuid,'name',e.target.value)}/>
 let waypoints = [];
 for (let i = 0; i < NUM_WAYPOINTS; i++) {
+    const num = Math.random();
     waypoints.push({
         type: 'node.pose.waypoint.',
         uuid: `waypoint-js-${i}`,
@@ -157,7 +158,7 @@ for (let i = 0; i < NUM_WAYPOINTS; i++) {
 
             joint_positions: [0, 0, 0], // or null
             joint_names: ['j1', 'j2', 'j3'], // or null
-            reachable: false, // better than having to check the array to generate the flag
+            reachable: (num > 0.5 ? true : false), // better than having to check the array to generate the flag
             length: 3 // this is enforced on the backend for positions and names
         },
         position: {
@@ -190,6 +191,7 @@ for (let i = 0; i < NUM_WAYPOINTS; i++) {
 
 let locations = [];
 for (let i = 0; i < NUM_LOCATIONS; i++) {
+    const num = Math.random();
     locations.push({
         type: 'node.pose.waypoint.location.',
         uuid: `location-js-${i}`,
@@ -209,7 +211,7 @@ for (let i = 0; i < NUM_LOCATIONS; i++) {
 
             joint_positions: [0, 0, 0], // or null
             joint_names: ['j1', 'j2', 'j3'], // or null
-            reachable: false, // better than having to check the array to generate the flag
+            reachable:(num > 0.5 ? true : false), // better than having to check the array to generate the flag
             length: 3 // this is enforced on the backend for positions and names
         },
         position: {

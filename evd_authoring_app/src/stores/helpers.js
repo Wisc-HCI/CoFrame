@@ -124,6 +124,7 @@ export function unFlattenProgramSkills(skills, primitives) {
 }
 
 export function poseToColor(pose,frame,focused) {
+    //console.log(pose.reachable);
     let color = {r: 255, g: 255, b: 255, a: focused ? 1 : 0};
     if (frame === 'safety' && inHumanZone(pose.position)) {
         color.r = 233;
@@ -136,6 +137,23 @@ export function poseToColor(pose,frame,focused) {
     }
     return color
 }
+
+export function reachabilityColor(focused, locationOrWaypoint){
+    let color = {r: 255, g: 255, b: 255, a: focused ? 1 : 0};
+
+        if (locationOrWaypoint === 'location') {//134, 36, 224
+            color.r = 62; 
+            color.g = 16; 
+            color.b = 102;
+        }else{//173, 31, 222
+            color.r = 100;
+            color.g = 18;
+            color.b = 128;
+        }
+        return color;
+    }
+   
+
 
 
 // export function poseToShape(pose,frame,focused,setSecondaryFocusItem) {
@@ -199,24 +217,42 @@ export function poseDataToShapes(pose,frame) {
     ]
 }
 
-export function trajectoryDataToLine(trajectory,locations,waypoints,frame) {
-    // For the time being, enumerate the location and waypoints
+export function trajectoryDataToLine(trajectory,locations,waypoints,frame,reachableAndPerformance) {
+    // For the time being, enumerate the location and waypoints //197, 50, 154
     let points = [];
     if (trajectory.start_location_uuid) {
         let location = locations[trajectory.start_location_uuid];
         let position = {x:location.position.x,y:location.position.y,z:location.position.z};
-        points.push({position,color:poseToColor(location,frame,true)})
+        
+        if (frame === 'performance' && location.joints.reachable){
+            
+            points.push({position,color:{r:197,g:50,b:154,a:1}});
+            console.log("123123WSS");
+        }else{
+            points.push({position,color:poseToColor(location,frame,true)});
+        }
+
+        
     }
     trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
         let waypoint = waypoints[waypoint_uuid];
         let position = {x:waypoint.position.x,y:waypoint.position.y,z:waypoint.position.z};
-        points.push({position,color:poseToColor(waypoint,frame,true)})
+        if (frame === 'performance' && waypoint.joints.reachable){
+            points.push({position,color:{r:197,g:50,b:154,a:1}})
+        }else{
+            points.push({position,color:poseToColor(waypoint,frame,true)}) 
+        }
+        
     })
 
     if (trajectory.end_location_uuid) {
         let location = locations[trajectory.end_location_uuid];
         let position = {x:location.position.x,y:location.position.y,z:location.position.z};
-        points.push({position,color:poseToColor(location,frame,true)})
+        if (frame === 'performance' && location.joints.reachable){
+            points.push({position,color:{r:197,g:50,b:154,a:1}});
+        }else{
+            points.push({position,color:poseToColor(location,frame,true)});
+        }
     }
     return {
             name: trajectory.name,
@@ -226,7 +262,7 @@ export function trajectoryDataToLine(trajectory,locations,waypoints,frame) {
         }
 }
 
-export function trajectoryDataToShapes(trajectory,locations,waypoints,frame,setSecondaryFocusItem) {
+export function trajectoryDataToShapes(trajectory,locations,waypoints,frame) {
     // For the time being, enumerate the location and waypoints
     let shapes = [];
     if (trajectory.start_location_uuid) {

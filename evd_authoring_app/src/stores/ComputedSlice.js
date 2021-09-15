@@ -1,8 +1,10 @@
 // import { objectMap } from "./helpers";
+import { identity } from 'lodash';
 import { 
     poseToColor, 
     poseDataToShapes, 
-    trajectoryDataToLine 
+    trajectoryDataToLine, 
+    reachabilityColor
 } from './helpers';
 import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
 
@@ -69,8 +71,15 @@ export const ComputedSlice = {
                     (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) 
                     && (trajectory.start_location_uuid === location_uuid || trajectory.end_location_uuid === location_uuid));
                 // Handle in the case where the trajectory is focused
-                const color = poseToColor(item, this.frame, focused || trajectoryFocused);
-                console.log(this.data.trajectories);
+                let color = null;
+                //console.log(item.joints.reachable);
+                if (item.joints.reachable && this.frame === 'performance'){//pose, frame, focused, locationOrWaypoint
+                    //console.log("entered");
+                    color = reachabilityColor(focused||trajectoryFocused,'location');
+                    
+                }else{
+                    color = poseToColor(item, this.frame, focused || trajectoryFocused);
+                }
                 if (trajectoryFocused){       
                     poses.push(this.data.trajectories.start_location_uuid);
                     this.data.trajectories[this.focusItem.uuid].waypoint_uuids.forEach((waypoint_uuid)=>{poses.push(waypoint_uuid);})
@@ -91,7 +100,16 @@ export const ComputedSlice = {
                 const focused = this.focusItem.uuid === waypoint_uuid || this.secondaryFocusItem.uuid === waypoint_uuid;
                 const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => trajectory.waypoint_uuids.some(trajectory_waypoint => (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) && trajectory_waypoint === waypoint_uuid));
                 // Handle in the case where the trajectory is focused
-                const color = poseToColor(item, this.frame, focused || trajectoryFocused);
+                
+                let color = null;
+                //console.log(item.joints.reachable);
+                if (item.joints.reachable && this.frame === 'performance'){//pose, frame, focused, locationOrWaypoint
+                    color = reachabilityColor(item,this.frame,focused||trajectoryFocused,'waypoint');
+                    
+                }else{
+                    color = poseToColor(item, this.frame, focused || trajectoryFocused);
+                }
+                //console.log(color);
                 if (trajectoryFocused){       
                     poses.push(this.data.trajectories.start_location_uuid);
                     this.data.trajectories[this.focusItem.uuid].waypoint_uuids.forEach((waypoint_uuid)=>{poses.push(waypoint_uuid);})
@@ -112,6 +130,7 @@ export const ComputedSlice = {
             return items
         },
         lines: function () {
+            
             const lines = {};
             Object.values(this.data.trajectories).forEach(trajectory=>{
                 const hidden = this.focusItem.uuid !== trajectory.uuid && this.secondaryFocusItem.uuid !== trajectory.uuid
