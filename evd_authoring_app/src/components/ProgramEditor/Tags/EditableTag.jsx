@@ -1,15 +1,8 @@
 import React, {useCallback, useRef} from 'react';
-import { Tag, Input} from 'antd';
-import { useDrag } from 'react-dnd';
+import { Input} from 'antd';
 import useStore from '../../../stores/Store';
 import { typeToKey } from '../../../stores/helpers';
-
-import Icon from '@ant-design/icons';
-import {ReactComponent as LocationIcon} from '../../CustomIcons/Location.svg';
-import {ReactComponent as MachineIcon} from '../../CustomIcons/Gear.svg';
-import {ReactComponent as ContainerIcon} from '../../CustomIcons/Container.svg';
-import {ReactComponent as ThingIcon} from '../../CustomIcons/Thing.svg';
-import { EditOutlined } from '@ant-design/icons';
+import { UUIDBlock } from '../UUIDBlock';
 
 export const EditableTag = (props) => {
     const ref = useRef(null);
@@ -18,18 +11,8 @@ export const EditableTag = (props) => {
     let editInputValue;
 
     const data = useStore(useCallback(state=>state.data[typeToKey('skill')][props.parent].parameters[props.id],[props.id,'parameter']));
-    // const data = useStore(useCallback(state=>state.data[typeToKey('parameter')][props.id],[props.id,'parameter']));
+    const context = [{name:data.uuid, real:true}];
     const setParameterProperty = useStore(state=>state.setParameterProperty);
-  
-    const [{opacity}, drag, preview] = useDrag(()=>({
-      type: props.type,
-      item: {itemType: props.itemType, uuid: props.id, type: props.type},
-      collect: monitor => ({
-        opacity: monitor.isDragging() ? 0.4 : 1
-      })
-    }))
-  
-    drag(ref);
 
     const handleEditInputChange = e => {
       editInputValue = e.target.value;
@@ -46,19 +29,12 @@ export const EditableTag = (props) => {
       e.preventDefault();
     };
 
-    const tagIcon = () => {
-      if (data['type'] === 'uuid-machine') {
-        return <Icon component={MachineIcon}/>
-      } else if (data['type'] === 'node.pose.waypoint.location.') {
-        return <Icon component={LocationIcon}/>
-      } else if (data['type'] === 'node.primitive.move-trajectory.') {
-        return <Icon component={ContainerIcon}/>
-      } else if (data['type'] === 'thing') {
-        return <Icon component={ThingIcon}/>
-      }
+    const handleDeleteClick = e => {
+      props.closefunc(props.id);
+      e.preventDefault();
     }
 
-    const isLongTag = data['name'] > 20;
+    const itemType = data.itemType;
 
     return (
       <div>
@@ -73,7 +49,16 @@ export const EditableTag = (props) => {
               onPressEnter={handleEditInputConfirm}
             />
         }
-        {!data['editting'] && <Tag
+        {!data['editting'] && 
+          <UUIDBlock 
+              ancestors={props.ancestors}
+              parentData={{type:'skill',uuid:props.parent}}
+              data={{...data, itemType, type:data.type}} 
+              context={context}
+              onDelete={handleDeleteClick}>
+          </UUIDBlock>}
+        {/* {!data['editting'] && 
+        <Tag
               icon={tagIcon()}
               ref={ref}
               style={{opacity}}
@@ -83,7 +68,7 @@ export const EditableTag = (props) => {
               onClose={() => props.closefunc(props.id)}
             >
               {isLongTag ? `${data['name'].slice(0, 20)}...` : data['name']} <Icon onClick={handleEditClick} component={EditOutlined}/>
-            </Tag>}
+            </Tag>} */}
       </div>
     );
 }

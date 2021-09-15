@@ -293,6 +293,18 @@ export const EvdSlice = (set, get) => ({
     if (type === 'skill') {
       state.data[typeToKey(type)][item.uuid] = lodash.omit({ ...item, transform: { x, y } }, 'parentData');
     }
+  }),
+  createSkillParameter: (skill_uuid, parameter) => set((state)=>{
+    state.data[typeToKey('skill')][skill_uuid].parameters[parameter.uuid] = parameter
+  }),
+  deleteSkillParameter: (skill_uuid, parameter_uuid) => set((state)=>{
+    delete state.data[typeToKey('skill')][skill_uuid].parameters[parameter_uuid]
+  }),
+  setParameterProperty: (skill_uuid, parameter_uuid, property, value) => set((state)=>{
+    state.data[typeToKey('skill')][skill_uuid].parameters[parameter_uuid][property] = value
+  }),
+  toggleSkillEditable: (skill_uuid) => set((state) => {
+    state.data[typeToKey('skill')][skill_uuid].editable = !state.data[typeToKey('skill')][skill_uuid].editable
   })
 });
 

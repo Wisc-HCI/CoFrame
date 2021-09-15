@@ -27,24 +27,27 @@ export const EditableTagGroup = (props) => {
   };
 
   const handleMenuClick = e => {
-    if (e.key === 'uuid-machine') {
-      const item = {uuid: generateUuid('parameter'), name: '', itemType: 'machine', type: e.key, editting: true, closable: true}
+    if (e.key === 'uuid-thing') {
+      // TODO: Possibly: node.pose.thing. or placeholder
+      const item = {uuid: generateUuid('parameter'), name: '', itemType: 'thing', type: e.key, editting: true, closable: true};
+      createSkillParameter(props.skill.uuid, item);
+    } else {
+      const item = {uuid: generateUuid('parameter'), name: '', itemType: e.key.replace('uuid-', ''), type: e.key, editting: true, closable: true};
       createSkillParameter(props.skill.uuid, item);
     }
-    
   };
 
   const menu = (<Menu onClick={handleMenuClick}>
     <Menu.Item key="uuid-machine" icon={<Icon style={{marginRight:10}} component={MachineIcon}/>}>
       Machine
     </Menu.Item>
-    <Menu.Item key="node.primitive.move-trajectory." icon={<Icon style={{marginRight:10}} component={ContainerIcon}/>}>
+    {/* <Menu.Item key="node.primitive.move-trajectory." icon={<Icon style={{marginRight:10}} component={ContainerIcon}/>}>
       Tracjectory
-    </Menu.Item>
-    <Menu.Item key="node.pose.waypoint.location." icon={<Icon style={{marginRight:10}} component={LocationIcon}/>}>
+    </Menu.Item> */}
+    <Menu.Item key="uuid-location" icon={<Icon style={{marginRight:10}} component={LocationIcon}/>}>
       Location
     </Menu.Item>
-    <Menu.Item key="thing" icon={<Icon style={{marginRight:10}} component={ThingIcon}/>}>
+    <Menu.Item key="uuid-thing" icon={<Icon style={{marginRight:10}} component={ThingIcon}/>}>
       Thing
     </Menu.Item>
   </Menu>);
@@ -52,7 +55,14 @@ export const EditableTagGroup = (props) => {
   return (
     <div>
       {Object.entries(data).map((obj) => {
-        return <EditableTag key={obj[1].uuid} id={obj[0]} type={obj[1].type} parent={props.skill.uuid} itemType={obj[1].itemType} closefunc={closeTag}/>
+        return <EditableTag 
+        key={obj[1].uuid} 
+        id={obj[0]} 
+        type={obj[1].type} 
+        parent={props.skill.uuid} 
+        itemType={obj[1].itemType}
+        ancestors={props.ancestors} 
+        closefunc={closeTag}/>
       })}
       <Dropdown overlay={menu}>
         <Button>

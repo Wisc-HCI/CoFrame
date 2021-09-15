@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react';
-import { Col, Row, Button } from 'antd';
+import { Col, Row, Button, Dropdown, Menu } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons';
 
 import { ItemSortable } from './Wrappers';
@@ -17,6 +17,7 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
 
     const [frame,focusItem,setFocusItem,moveChildPrimitive] = useStore(state=>([state.frame,state.focusItem,state.setFocusItem,state.moveChildPrimitive]));
     const focused = focusItem.uuid === data.uuid;
+    const toggleSkillEditable = useStore(state=>state.toggleSkillEditable);
 
     const fieldData = acceptLookup['node.primitive.hierarchical.skill.'].primitiveIds;
 
@@ -59,17 +60,27 @@ export const SkillBlock = forwardRef(({style,data,ancestors,preview,context}, re
                 </Col>
                 <Col span={6} offset={1} style={{textAlign:'end'}}>
                     {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
-                    <Button
-                        type='text'
-                        style={{marginLeft:2}}
-                        onClick={(e) => {e.stopPropagation();setFocusItem('skill', data.uuid)}}
-                        icon={<EllipsisOutlined />}
-                    />
+                    <Dropdown overlay={
+                        <Menu>
+                            {!editingEnabled && <Menu.Item key='show' onClick={() => toggleSkillEditable(data.uuid)}>
+                                Enable Editing
+                            </Menu.Item>}
+                            {editingEnabled && <Menu.Item key='show' onClick={() => toggleSkillEditable(data.uuid)}>
+                                Disable Editing
+                            </Menu.Item>}
+                        </Menu>
+                        }>
+                        <Button
+                            type='text'
+                            style={{ marginLeft: 2 }}
+                            icon={<EllipsisOutlined />}
+                        />
+                    </Dropdown>
                 </Col>
             </Row>
-            <div>
-                {!inDrawer && <EditableTagGroup skill={data}/>}
-            </div>
+            <Row>
+                {!inDrawer && <EditableTagGroup skill={data} ancestors={skillAncestors}/>}
+            </Row>
             <NodeZone
               ancestors={skillAncestors}
               style={{paddingTop:4,paddingBottom:4}}
