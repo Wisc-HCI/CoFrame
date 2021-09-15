@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import { Col, Row, Button } from 'antd';
+import { Col, Row, Button, Dropdown, Menu } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons';
 import { SortableSeparator } from './SortableSeparator';
 // import { ItemSortable } from './Wrappers';
@@ -27,6 +27,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     },[staticData,uuid]))
     
     const focused = focusItem.uuid === data.uuid;
+    const toggleSkillEditable = useStore(state=>state.toggleSkillEditable);
 
     const fieldData = acceptLookup['node.primitive.hierarchical.skill.'].primitiveIds;
 
@@ -39,15 +40,6 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     ];
 
     // Code for handling the draggability of the skill node itself
-    // const [{ isDragging }, drag, preview] = useDrag({
-    //     type: data.type,
-    //     item: { ...data, parentData, dragBehavior},
-    //     options: { dragEffect: dragBehavior },
-    //     collect: monitor => ({
-    //         isDragging: monitor.isDragging()
-    //     })
-    // })
-
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: data.type,
         item: { ...data, parentData, dragBehavior},
@@ -104,17 +96,27 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                 </Col>
                 <Col span={6} offset={1} style={{textAlign:'end'}}>
                     {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
-                    <Button
-                        type='text'
-                        style={{marginLeft:2}}
-                        onClick={(e) => {e.stopPropagation();setFocusItem('skill', data.uuid)}}
-                        icon={<EllipsisOutlined />}
-                    />
+                    <Dropdown overlay={
+                        <Menu>
+                            {!editingEnabled && <Menu.Item key='show' onClick={() => toggleSkillEditable(data.uuid)}>
+                                Enable Editing
+                            </Menu.Item>}
+                            {editingEnabled && <Menu.Item key='show' onClick={() => toggleSkillEditable(data.uuid)}>
+                                Disable Editing
+                            </Menu.Item>}
+                        </Menu>
+                        }>
+                        <Button
+                            type='text'
+                            style={{ marginLeft: 2 }}
+                            icon={<EllipsisOutlined />}
+                        />
+                    </Dropdown>
                 </Col>
             </Row>
-            <div>
-                {!inDrawer && <EditableTagGroup skill={data}/>}
-            </div>
+            <Row>
+                {!inDrawer && <EditableTagGroup skill={data} ancestors={skillAncestors}/>}
+            </Row>
             <NodeZone
                 style={{ paddingTop: 4, paddingBottom: 4 }}
                 ancestors={skillAncestors}

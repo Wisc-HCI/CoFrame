@@ -141,18 +141,68 @@ export function unFlattenProgramSkills(skills, primitives) {
 export function poseToColor(pose, frame, focused) {
     let color = { r: 255, g: 255, b: 255, a: focused ? 1 : 0 };
     if (frame === 'safety' && inHumanZone(pose.position)) {
-        color.r = 255;
-        color.g = 50;
-        color.b = 50;
+        color.r = 233;
+        color.g = 53;
+        color.b = 152;
     } else if (frame === 'performance' && !pose.reachable) {
-        color.r = 255;
-        color.g = 50;
-        color.b = 50;
+        color.r = 204;
+        color.g = 75;
+        color.b = 10;
     }
     return color
 }
 
-export function poseDataToShapes(pose, frame) {
+export function reachabilityColor(focused, locationOrWaypoint){
+    let color = {r: 255, g: 255, b: 255, a: focused ? 1 : 0};
+
+        if (locationOrWaypoint === 'location') {//134, 36, 224
+            color.r = 62; 
+            color.g = 16; 
+            color.b = 102;
+        }else{//173, 31, 222
+            color.r = 100;
+            color.g = 18;
+            color.b = 128;
+        }
+        return color;
+    }
+   
+
+
+
+// export function poseToShape(pose,frame,focused,setSecondaryFocusItem) {
+//     let pose_stored = pose;
+//     let color = poseToColor(pose_stored,frame,focused);
+//     const uuid = pose.uuid;
+//     let onClick = ()=>{};
+//     if (pose.type.includes('location')) {
+//         onClick = () => setSecondaryFocusItem('location',uuid)
+//     } else {
+//         onClick = () => setSecondaryFocusItem('waypoint',uuid)
+//     }
+
+//     return [
+//         pose.uuid,
+//         {
+//             shape: "sphere",
+//             name: pose.name,
+//             frame: "world",
+//             rotation: { w: 1, x: 0, y: 0, z: 0 },
+//             scale: { x: 0.05, y: 0.05, z: 0.05 },
+//             highlighted: false,
+//             showName: false,
+//             onClick,
+//             position:{
+//                 x:pose.position.x,
+//                 y:pose.position.y,
+//                 z:pose.position.z
+//             },
+//             color
+//         }
+//     ]
+// }
+
+export function poseDataToShapes(pose,frame) {
     let pose_stored = pose;
     return [
         {
@@ -181,24 +231,42 @@ export function poseDataToShapes(pose, frame) {
     ]
 }
 
-export function trajectoryDataToLine(trajectory, locations, waypoints, frame) {
-    // For the time being, enumerate the location and waypoints
+export function trajectoryDataToLine(trajectory,locations,waypoints,frame,reachableAndPerformance) {
+    // For the time being, enumerate the location and waypoints //197, 50, 154
     let points = [];
     if (trajectory.start_location_uuid) {
         let location = locations[trajectory.start_location_uuid];
-        let position = { x: location.position.x, y: location.position.y, z: location.position.z };
-        points.push({ position, color: poseToColor(location, frame, true) })
+        let position = {x:location.position.x,y:location.position.y,z:location.position.z};
+        
+        if (frame === 'performance' && location.joints.reachable){
+            
+            points.push({position,color:{r:197,g:50,b:154,a:1}});
+            console.log("123123WSS");
+        }else{
+            points.push({position,color:poseToColor(location,frame,true)});
+        }
+
+        
     }
     trajectory.waypoint_uuids.forEach(waypoint_uuid => {
         let waypoint = waypoints[waypoint_uuid];
-        let position = { x: waypoint.position.x, y: waypoint.position.y, z: waypoint.position.z };
-        points.push({ position, color: poseToColor(waypoint, frame, true) })
+        let position = {x:waypoint.position.x,y:waypoint.position.y,z:waypoint.position.z};
+        if (frame === 'performance' && waypoint.joints.reachable){
+            points.push({position,color:{r:197,g:50,b:154,a:1}})
+        }else{
+            points.push({position,color:poseToColor(waypoint,frame,true)}) 
+        }
+        
     })
 
     if (trajectory.end_location_uuid) {
         let location = locations[trajectory.end_location_uuid];
-        let position = { x: location.position.x, y: location.position.y, z: location.position.z };
-        points.push({ position, color: poseToColor(location, frame, true) })
+        let position = {x:location.position.x,y:location.position.y,z:location.position.z};
+        if (frame === 'performance' && location.joints.reachable){
+            points.push({position,color:{r:197,g:50,b:154,a:1}});
+        }else{
+            points.push({position,color:poseToColor(location,frame,true)});
+        }
     }
     return {
         name: trajectory.name,
@@ -208,7 +276,7 @@ export function trajectoryDataToLine(trajectory, locations, waypoints, frame) {
     }
 }
 
-export function trajectoryDataToShapes(trajectory, locations, waypoints, frame, setSecondaryFocusItem) {
+export function trajectoryDataToShapes(trajectory,locations,waypoints,frame) {
     // For the time being, enumerate the location and waypoints
     let shapes = [];
     if (trajectory.start_location_uuid) {
