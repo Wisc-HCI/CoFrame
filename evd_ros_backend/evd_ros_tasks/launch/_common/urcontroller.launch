@@ -33,8 +33,8 @@
   </include>
 
   <!-- Launch gripper driver -->
-  <node if="$(arg fake_gripper)" pkg="robotiq_85_driver" type="fake_robotiq_85_driver.py" name="fake_robotiq_85_driver" respawn="true" output="screen"/>
-  <node unless="$(arg fake_gripper)" pkg="robotiq_85_driver" type="robotiq_85_driver_remote_serial" name="robotiq_85_driver" respawn="true" output="screen">
+  <node if="$(arg fake_gripper)" pkg="robotiq_85_driver" type="fake_robotiq_85_driver.py" name="fake_robotiq_85_driver" respawn="true"/>
+  <node unless="$(arg fake_gripper)" pkg="robotiq_85_driver" type="robotiq_85_driver_remote_serial" name="robotiq_85_driver" respawn="true">
       <param name="num_grippers" value="1" />
       <param name="comport" value="/tmp/ttyUR" />
       <param name="baud" value="115200" />

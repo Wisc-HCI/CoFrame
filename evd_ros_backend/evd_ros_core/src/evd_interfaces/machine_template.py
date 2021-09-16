@@ -54,7 +54,7 @@ class MachineTemplate:
         self.pause_sub = rospy.Subscriber('{0}machine/pause'.format(prefix_fmt), MachinePause, self._pause_cb)
 
     def _update_cb(self, msg):
-        machines = json.loads(msg.data)
+        machines = json.loads(msg.data['machines'])
 
         for m in machines:
             if m['uuid'] == self.uuid:

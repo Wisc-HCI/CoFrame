@@ -11,12 +11,12 @@
 
     <include file="$(find evd_ros_core)/launch/rosbridge.launch"/>
 
-    <!-- <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/> -->
-    <!-- <node name="tf_world_publisher" pkg="evd_ros_core" type="tf_world_publisher.py" output="screen">
+    <!-- <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher"/> -->
+    <!-- <node name="tf_world_publisher" pkg="evd_ros_core" type="tf_world_publisher.py">
         <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
     </node> -->
 
-    <node name="test_simulation" pkg="evd_ros_core" type="test_simulation.py" output="screen">
+    <node name="test_simulation" pkg="evd_ros_core" type="test_simulation.py">
         <param name="config_path" value="$(arg config_path)" />
         <param name="config_file_name" value="$(arg config_file_name)"/>
     </node>
@@ -39,7 +39,7 @@
         <param name="rate" value="25"/>
         <rosparam param="/source_list">[lively_mapped_joints,pybullet_mapped_joints]</rosparam>
     </node>
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true"/>
 
     <include file="$(find evd_ros_tasks)/launch/_common/rviz.launch">
         <arg name="launch_rviz" value="$(arg launch_rviz)"/>

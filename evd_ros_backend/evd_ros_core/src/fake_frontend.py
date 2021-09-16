@@ -26,9 +26,14 @@ class FakeFrontendNode:
         prefix_fmt = prefix + '/' if prefix != '' else prefix
         self._rate = rate
 
+        print('\n\n\n')
+        print('STARTING FAKE FRONTEND')
+
         if default_program == None:
+            print('empty program')
             self._program = Program()
         else:
+            print('default program')
             self._program = default_program
 
         self._active_joints_jobs = []
@@ -85,9 +90,12 @@ class FakeFrontendNode:
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
 
     def _program_register_cb(self, msg):
+        print('In register callback, we got')
         for entry in msg.data:
+            print(entry)
             node = NodeParser(json.loads(entry))
             self._program.add_child(node)
+        print('/n/n')
 
     def _trace_submit_cb(self, msg):
         if msg.id in self._active_trace_jobs:
@@ -108,22 +116,30 @@ class FakeFrontendNode:
             self._active_joints_jobs.remove(msg.id)
 
     def _update_cb(self, event=None):
+        #print('\n\n\tIn periodic update push!\n\n')
         data = json.dumps(self._program.to_dct())
         self._update_pub.publish(String(data))
 
     def spin(self):
 
+        print('Going to wait for 2.5 seconds')
         rospy.sleep(2.5) #seconds
 
+        print('publishing our app frame linkages')
         # At some point the frontend should define the `app` transform and then two poses from that.
         # In Unity the `world` (which is the ROS root) would be relative to `app` (so it would have to be reversed first)
         self._app_frame_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='world').to_ros(stamped=True))            # This defines the App frame
         self._camera_pose_pub.publish(Pose(Position.from_axis('x'),Orientation.Identity(), link='app').to_ros(stamped=True))    # This defines the visualization_camera frame
         self._control_target_pose_pub.publish(Pose(Position.Zero(),Orientation.Identity(), link='app').to_ros(stamped=True))    # This defines the control_target frame
 
+        print('Calling nodes to register')
         #request registration from the backend (this gets information known about the setup)
         self._registration_pub.publish(Empty()) 
 
+        print('Going to wait for 5 seconds to register everythng')
+        rospy.sleep(5)
+
+        print('Push registered env objs to processors')
         # Push out the current aggregated state of the environment ot the processors
         # (This should happen whenever there is a change to these)
         # (Note that pushing these will invalidate any pending jobs plus you should clear out any
@@ -136,6 +152,18 @@ class FakeFrontendNode:
         })
         self._configure_processors.publish(msg)
 
+        print('Push registered machines to machine implementations')
+        # Push out the current aggregated state of registered machines to their respective implementation
+        msg = String()
+        msg.data = json.dumps({
+            'machines': [x.to_dct() for x in self._program.environment.machines]
+        })
+        self._configure_machines.publish(msg)
+
+        print('Going to wait for 5 seconds for our configuration changes to percolate')
+        rospy.sleep(5)
+
+        print('Starting fake frontend main loop')
         # now that the backend is fully set up, do what ever the hell you want in the frontend
         start = time.time()
         rate = rospy.Rate(self._rate)
