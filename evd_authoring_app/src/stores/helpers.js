@@ -148,7 +148,7 @@ export function poseToColor(pose, frame, focused) {
         color.r = 204;
         color.g = 75;
         color.b = 10;
-    }
+    } 
     return color
 }
 
@@ -238,10 +238,10 @@ export function trajectoryDataToLine(trajectory,locations,waypoints,frame,reacha
         let location = locations[trajectory.start_location_uuid];
         let position = {x:location.position.x,y:location.position.y,z:location.position.z};
         
-        if (frame === 'performance' && location.joints.reachable){
+        if ((frame === 'performance' && location.joints.reachable)|| frame === 'quality' || frame === 'business'){
             
-            points.push({position,color:{r:197,g:50,b:154,a:1}});
-            console.log("123123WSS");
+            points.push({position,color:{r:209,g:0,b:146,a:1}});
+            
         }else{
             points.push({position,color:poseToColor(location,frame,true)});
         }
@@ -251,8 +251,8 @@ export function trajectoryDataToLine(trajectory,locations,waypoints,frame,reacha
     trajectory.waypoint_uuids.forEach(waypoint_uuid => {
         let waypoint = waypoints[waypoint_uuid];
         let position = {x:waypoint.position.x,y:waypoint.position.y,z:waypoint.position.z};
-        if (frame === 'performance' && waypoint.joints.reachable){
-            points.push({position,color:{r:197,g:50,b:154,a:1}})
+        if ((frame === 'performance' && waypoint.joints.reachable)|| frame === 'quality' || frame === 'business'){
+            points.push({position,color:{r:209,g:0,b:146,a:1}})
         }else{
             points.push({position,color:poseToColor(waypoint,frame,true)}) 
         }
@@ -262,8 +262,8 @@ export function trajectoryDataToLine(trajectory,locations,waypoints,frame,reacha
     if (trajectory.end_location_uuid) {
         let location = locations[trajectory.end_location_uuid];
         let position = {x:location.position.x,y:location.position.y,z:location.position.z};
-        if (frame === 'performance' && location.joints.reachable){
-            points.push({position,color:{r:197,g:50,b:154,a:1}});
+        if ((frame === 'performance' && location.joints.reachable)|| frame === 'quality' || frame === 'business'){
+            points.push({position,color:{r:209,g:0,b:146,a:1}});
         }else{
             points.push({position,color:poseToColor(location,frame,true)});
         }
