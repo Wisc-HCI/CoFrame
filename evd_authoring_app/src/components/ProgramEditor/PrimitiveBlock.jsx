@@ -69,6 +69,7 @@ export const PrimitiveBlock = ({
     type: data.type,
     item: { ...data, parentData, dragBehavior, idx },
     options: { dragEffect: dragBehavior },
+    canDrag: (_)=> !dragDisabled,
     collect: monitor => ({
       isDragging: monitor.isDragging()
     })
@@ -97,14 +98,7 @@ export const PrimitiveBlock = ({
   const [settingsRef, { height }] = useMeasure();
   const [settingsExpanded, setSettingsExpanded] = useState(false);
   const settingsStyle = useSpring({ height: height, config: config.stiff});
-  // const settingTransition = useTransition(settingsExpanded, {
-  //   from: {height:0,overflow:'hidden'},
-  //   enter: {height},
-  //   leave: {height:0,overflow:'hidden'},
-  //   reverse: settingsExpanded,
-  //   config:config.stiff
-  // })
-
+  
   const primitivesWithSettings = [
     'node.primitive.gripper.',
     'node.primitive.delay.'
@@ -158,6 +152,7 @@ export const PrimitiveBlock = ({
     if (dropData.type.includes('uuid')) {
       setPrimitiveParameter('primitive', uuid, 'trajectory_uuid', dropData.uuid);
     } else {
+      console.log(dropData)
       moveTrajectoryBlock(dropData, uuid, null)
     }
   }
@@ -304,7 +299,7 @@ export const PrimitiveBlock = ({
             <Col flex={3}>
               <NodeZone
                 ancestors={parameterAncestors.trajectory}
-                onMove={trajectoryDrop}
+                onDrop={trajectoryDrop}
                 emptyMessage='No Trajectory'
                 enabled={editingEnabled}
               >

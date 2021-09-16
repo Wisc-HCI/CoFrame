@@ -3,27 +3,30 @@ import { Row } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
 import { useDrop } from 'react-dnd';
 import { acceptLookup } from './acceptLookup';
-import useStore from '../../stores/Store';
+// import useStore from '../../stores/Store';
 
 export const DeleteZone = (_) => {
 
     const acceptTypes = acceptLookup.trash.all.accepts;
 
-    const [deleteChildPrimitive,deleteHierarchical] = useStore(state=>[state.deleteChildPrimitive,state.deleteHierarchical]);
+    // const [deleteChildPrimitive,deleteHierarchical] = useStore(state=>[state.deleteChildPrimitive,state.deleteHierarchical]);
 
     const [{isOver, canDrop}, drop] = useDrop({
         accept: acceptTypes,
         drop: (item, _) => {
             console.log(item)
-            if (item.type.includes('hierarchical')) {
-                console.log('deleting hierarchical')
-                deleteHierarchical(item)
-            } else if (item.type.includes('primitive')) {
-                console.log('deleting primitive')
-                deleteChildPrimitive(item.uuid)
-            } else {
-                console.log(`item type ${item.type} not recognized`)
+            if (item.onDelete) {
+                item.onDelete()
             }
+            // if (item.type.includes('hierarchical')) {
+            //     console.log('deleting hierarchical')
+            //     deleteHierarchical(item)
+            // } else if (item.type.includes('primitive')) {
+            //     console.log('deleting primitive')
+            //     deleteChildPrimitive(item.uuid)
+            // } else {
+            //     console.log(`item type ${item.type} not recognized`)
+            // }
         },
         canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0 && item.deleteable),
         collect: (monitor) => ({
@@ -31,6 +34,10 @@ export const DeleteZone = (_) => {
             canDrop: monitor.canDrop()
         })
     })
+
+    if (!canDrop) {
+        console.log()
+    }
 
     let opacity = 0.7;
     let width = 70;

@@ -843,8 +843,8 @@ let program = {
                     // If the uuid is found in any fields for the children primitives' parameters, replace it with the corresponding value. 
                     // This also serves as the key for any corresponding skill-call's parameters.
                     uuid: 'skill-arg-uuid-0', 
-                    editable: false,
-                    deleteable: false,
+                    editable: true,
+                    deleteable: true,
                     description: '',
                     // The type of the argument
                     parameter_type: 'node.machine.',
@@ -972,7 +972,7 @@ let program = {
                     uuid: 'gripper-grasp-uuid-3',
                     name: 'Release',
                     editable: true,
-                    deleteable: false,
+                    deleteable: true,
                     description: '',
                     parameters: {
                         position: 0,
@@ -1186,7 +1186,7 @@ let program = {
             uuid: 'gripper-grasp-uuid-0',
             name: 'Grasp',
             editable: true,
-            deleteable: false,
+            deleteable: true,
             description: '',
             parameters: {
                 position: 0,

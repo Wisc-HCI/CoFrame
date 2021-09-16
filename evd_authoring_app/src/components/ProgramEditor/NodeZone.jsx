@@ -1,7 +1,17 @@
 import React from "react";
 import { useDrop } from 'react-dnd';
 import { PrimitiveBlock } from "./PrimitiveBlock";
+import { TrajectoryBlock } from "./TrajectoryBlock";
 import { UUIDBlock } from "./UUIDBlock";
+
+const validDrop = (item, ancestors) => {
+    if (!ancestors[0].accepts.some(type=>type===item.type)) {
+        return false
+    } else if (!ancestors.some(ancestor=>ancestor.uuid===item.parentData.uuid) && item.parentData.type !== 'drawer') {
+        return false
+    }
+    return true;
+}
 
 export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDisabled,style}) => {
 
@@ -17,27 +27,23 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
             //     return false
             } else if (!empty) {
                 return false
-            } else if (!ancestors[0].accepts.some(type=>type===item.type)) {
-                return false
-            } else if (!ancestors.some(ancestor=>ancestor.uuid===item.parentData.uuid) && item.parentData.type !== 'drawer') {
-                return false
+            } else {
+                return validDrop(item,ancestors)
             }
-            return true;
         },
         collect: monitor => ({
             isOver: monitor.isOver(),
-            dragItem: monitor.getItem()
+            dragItem: monitor.getItem(),
+            // canDrop: monitor.canDrop()
         })
       })
-
-    
 
     let contents = empty ? (
         <div style={{padding:10}}>
             {emptyMessage}
         </div>
     ) : children;
-    if (isOver && dragItem && !dropDisabled) {
+    if (isOver && dragItem && !dropDisabled && validDrop(dragItem,ancestors)) {
         if (dragItem.type.includes('uuid')) {
             contents = 
             <UUIDBlock 
@@ -51,13 +57,21 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
         } else if (dragItem.type.includes('primitive')) {
             contents = 
             <PrimitiveBlock
-                ancestors={ancestors} 
+                ancestors={ancestors}
                 idx={0}
-                data={dragItem} 
-                context={context} 
-                dragDisabled 
+                staticData={dragItem}
+                context={context}
+                dragDisabled
                 dropDisabled
                 dragBehavior='move' />
+        } else if (dragItem.type.includes('trajectory')) {
+            contents = 
+            <TrajectoryBlock
+                staticData={dragItem}
+                ancestors={ancestors}
+                dragDisabled
+                context={context}
+            />
         }
     }
 

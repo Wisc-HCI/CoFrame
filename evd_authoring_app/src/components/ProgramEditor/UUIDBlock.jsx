@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Dropdown, Menu } from "antd";
+import { Button, Dropdown, Menu, Row } from "antd";
 import { useDrag, useDrop } from 'react-dnd';
 import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import useStore from "../../stores/Store";
@@ -40,7 +40,7 @@ export const UUIDBlock = ({
 
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
-    item: { ...data, parentData, dragBehavior, idx },
+    item: { ...data, parentData, dragBehavior, idx, onDelete },
     options: { dragEffect: dragBehavior },
     canDrag: _ => !dragDisabled,
     collect: monitor => ({
@@ -55,7 +55,7 @@ export const UUIDBlock = ({
       onDrop(otherItem)
     },
     canDrop: (otherItem, _) => {
-      if (dropDisabled) {
+      if (dropDisabled || !data.editable) {
         return false
       } else if (!ancestors[0].accepts.some(type => type === otherItem.type)) {
         return false
@@ -85,7 +85,7 @@ export const UUIDBlock = ({
   const blockStyle = {
     backgroundColor:
       blockStyles[itemType === 'placeholder' ? 'thing' : itemType],
-    height: 42,
+    height: 43,
     width: '100%',
     borderRadius: 3,
     padding: 5,
@@ -110,19 +110,19 @@ export const UUIDBlock = ({
       )}
       <div ref={dropDisabled ? null : drop}>
         <div ref={preview} hidden={isDragging&&dragBehavior==='move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
-          <span style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
-            <span ref={drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab",zIndex:101 }}>
-              <Icon style={{ marginLeft: 4 }} component={ICONS[itemType]} />{' '}{itemType === 'placeholder' ? displayData.pending_node.name : displayData.name}
+          <Row wrap={false} style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
+            <span ref={drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab",zIndex:101, marginRight:5 }}>
+              <Icon component={ICONS[itemType]} />{' '}{itemType === 'placeholder' ? displayData.pending_node.name : displayData.name}
             </span>
-            <span style={{ textAlign: 'end', width: 60, textTransform: 'capitalize' }}>
-              {displayData.editable ? <UnlockOutlined /> : <LockOutlined />}
-              {showMore ? (
+            <span style={{ textAlign: 'end', width: 70, textTransform: 'capitalize' }}>
+              {displayData.editable ? <UnlockOutlined style={{marginRight: showMore? 0 : 5}}/> : <LockOutlined style={{marginRight: showMore? 0 : 5}}/>}
+              {showMore && (
                 <Dropdown overlay={
                   <Menu>
                     <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem(itemType, data.uuid) }}>
                       <EyeOutlined />{' '}Show {itemType === 'placeholder' ? 'thing' : itemType}
                     </Menu.Item>
-                    {!inDrawer &&
+                    {!inDrawer && data.deleteable &&
                       <Menu.Item key='clear' onClick={onDelete}>
                         <DeleteOutlined />{' '}Clear
                       </Menu.Item>}
@@ -130,21 +130,22 @@ export const UUIDBlock = ({
                 }>
                   <Button
                     type='text'
-                    style={{ marginLeft: 2 }}
+                    style={{ marginLeft: 5 }}
                     icon={<EllipsisOutlined />}
                   />
                 </Dropdown>
 
-              ) : (
-                <Button
+              )}
+              {!showMore && data.deleteable &&
+                  <Button
                   type='text'
-                  style={{ marginLeft: 2 }}
+                  style={{ marginLeft: 0 }}
                   onClick={onDelete}
                   icon={<DeleteOutlined />}
                 />
-              )}
+              }
             </span>
-          </span>
+          </Row>
         </div>
       </div>
       {!(isDragging && dragBehavior==='move') && after}

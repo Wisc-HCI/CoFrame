@@ -15,7 +15,7 @@ import { EditableTagGroup } from './Tags/EditableTagGroup';
 import { useDrag } from 'react-dnd';
 // import { EditableTag } from './Tags/EditableTag';
 
-export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context}) => {
+export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context, onDelete}) => {
 
     const [frame,focusItem,
         moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
@@ -42,7 +42,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     // Code for handling the draggability of the skill node itself
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: data.type,
-        item: { ...data, parentData, dragBehavior},
+        item: { ...data, parentData, dragBehavior, onDelete},
         options: { dragEffect: dragBehavior },
         collect: monitor => ({
           isDragging: monitor.isDragging()
@@ -118,9 +118,10 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
             </Row>
             <NodeZone
                 ancestors={skillAncestors}
-                onDrop={(dropData) => moveChildPrimitive(dropData, uuid, 'program', 0)}
+                onDrop={(dropData) => primitiveDrop(dropData, 0)}
                 emptyMessage='No Actions'
                 enabled={true}
+                context={currentContext}
             >
                 {data.primitiveIds.map((id, idx) => (
                     <React.Fragment key={idx}>

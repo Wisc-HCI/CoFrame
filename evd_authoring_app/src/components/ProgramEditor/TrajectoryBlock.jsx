@@ -13,7 +13,7 @@ import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 import useMeasure from "react-use-measure";
 
-export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentData, dragBehavior, dragDisabled }) => {
+export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentData, dragBehavior, dragDisabled, onDelete }) => {
   const [focused, data, start_location, waypoints, end_location] = useStore(useCallback(state => {
     const data = staticData ? staticData : state.data.trajectories[uuid];
     return [
@@ -44,7 +44,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
 
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
-    item: { ...data, parentData, dragBehavior },
+    item: { ...data, parentData, dragBehavior, onDelete },
     options: { dragEffect: dragBehavior },
     canDrag: _ => !dragDisabled,
     collect: monitor => ({
@@ -128,7 +128,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
   return (
     <div hidden={isDragging && dragBehavior==='move'} ref={preview} style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
       <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Col ref={drag} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start' }}>
+        <Col ref={drag} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', cursor:'grab' }}>
           <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />{' '}{data.name}
         </Col>
         <Col span={6} offset={1} style={{ textAlign: 'end' }}>
