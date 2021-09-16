@@ -77,7 +77,9 @@ export const ComputedSlice = {
                     //console.log("entered");
                     color = reachabilityColor(focused||trajectoryFocused,'location');
                     
-                }else{
+                }else if(this.frame === 'quality' || this.frame === 'business'){
+                    color = reachabilityColor(focused||trajectoryFocused,'location');
+                } else{
                     color = poseToColor(item, this.frame, focused || trajectoryFocused);
                 }
                 if (trajectoryFocused){       
@@ -106,6 +108,8 @@ export const ComputedSlice = {
                 if (item.joints.reachable && this.frame === 'performance'){//pose, frame, focused, locationOrWaypoint
                     color = reachabilityColor(item,this.frame,focused||trajectoryFocused,'waypoint');
                     
+                }else if(this.frame === 'quality' || this.frame === 'business'){
+                    color = reachabilityColor(focused||trajectoryFocused,'waypoint');
                 }else{
                     color = poseToColor(item, this.frame, focused || trajectoryFocused);
                 }
