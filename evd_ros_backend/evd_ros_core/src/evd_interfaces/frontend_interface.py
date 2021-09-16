@@ -21,7 +21,9 @@ from evd_ros_core.srv import QueryJob, QueryJobRequest, QueryJobResponse
 class FrontendInterface:
 
     def __init__(self, prefix='', use_update=False, use_registration=False,
-                 update_cb=None, register_cb=None, use_processor_configure=False, processor_configure_cb=None):
+                 update_cb=None, register_cb=None, use_processor_configure=False, 
+                 processor_configure_cb=None, use_machine_configure=False,
+                 machine_configure_cb=None):
         self._prefix = prefix
         prefix_fmt = prefix + '/' if prefix != '' else prefix
         self._should_register = False
@@ -30,6 +32,7 @@ class FrontendInterface:
         self._user_update_cb = update_cb
         self._user_register_cb = register_cb
         self._user_processor_config_cb = processor_configure_cb
+        self._user_machine_config_cb = machine_configure_cb
 
         if use_registration:
             self._registration_sub = rospy.Subscriber('{0}program/call_to_register'.format(prefix_fmt), Empty, self._register_cb)
@@ -46,9 +49,11 @@ class FrontendInterface:
         if use_processor_configure:
             self._configure_processors = rospy.Subscriber('{0}program/configure/processors'.format(prefix_fmt), String, self._processor_configure_cb)
 
+        if use_machine_configure:
+            self._configure_machines = rospy.Subscriber('{0}program/configure/machines'.format(prefix_fmt), String, self._machine_configure_cb)
+
     def _update_cb(self, msg):
         if self._user_update_cb != None:
-
             program = NodeParser(json.loads(msg.data))
             self._user_update_cb(program)
 
@@ -83,6 +88,19 @@ class FrontendInterface:
                     data[key].append(NodeParser(n))
 
             self._user_processor_config_cb(data)
+
+    def _machine_configure_cb(self, msg):
+        if self._user_machine_config_cb != None:
+            dct = json.loads(msg.data)
+
+            data = {}
+            for key in dct.keys():
+                data[key] = []
+
+                for n in dct[key]:
+                    data[key].append(NodeParser(n))
+
+            self._user_machine_config_cb(data)
 
     @property
     def should_register(self):

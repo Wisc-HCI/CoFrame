@@ -49,10 +49,12 @@ class FakeFrontendNode:
         #           - collision_meshes : []
         #           - pinch_points : []
         #           - occupancy_zones : []
+        # 5) Publish all machine Evdscript data to machine templates
         self._registration_pub = rospy.Publisher('{0}program/call_to_register'.format(prefix_fmt), Empty, queue_size=5)
         self._registration_sub = rospy.Subscriber('{0}program/register'.format(prefix_fmt), StringArray, self._program_register_cb)
         self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5) #this is optional (I use it for visualization)
         self._configure_processors = rospy.Publisher('{0}program/configure/processors'.format(prefix_fmt), String, queue_size=5) # This is a json obj of all nodes needed for trace processing
+        self._configure_machines = rospy.Publisher('{0}program/configure/machines'.format(prefix_fmt), String, queue_size=5)
 
         ## Communication with trace processor
         # This processor produces graded traces from trajectories.
