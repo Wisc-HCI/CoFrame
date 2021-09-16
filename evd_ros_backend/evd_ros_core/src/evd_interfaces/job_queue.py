@@ -53,7 +53,7 @@ class JobQueue:
         else: 
             existing = None
             for j in self._pending_jobs:
-                if j.uuid == id:
+                if j['id'] == id:
                     existing = j
                     break
 
@@ -68,7 +68,7 @@ class JobQueue:
         else:
             existing = None
             for j in self._pending_jobs:
-                if j.uuid == id:
+                if j['id'] == id:
                     existing = j
                     break
 

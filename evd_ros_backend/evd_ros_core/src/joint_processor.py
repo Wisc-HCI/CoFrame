@@ -90,7 +90,7 @@ class JointProcessor:
         if self._target != None and self._joints != None:
 
             # run lively-ik, run pybullet model
-            (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
+            (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(self._target)
             ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
             self.jsf.append(jp_ltk[0]) # append to joint filter to know when lively is done
             pb_joints, pb_frames = self.pyb.step(jp_ltk, jn_ltk)

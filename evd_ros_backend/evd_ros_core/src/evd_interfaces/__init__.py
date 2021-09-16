@@ -1,5 +1,4 @@
 from .frontend_interface import FrontendInterface
-from .grader_template import GraderTemplate
 from .machine_interface import MachineInterface
 from .machine_template import MachineTemplate
 from .program_runner import ProgramRunner

@@ -8,7 +8,7 @@ import rospy
 
 from evd_script import Position, ReachSphere, PinchPoint, CollisionMesh,    \
     OccupancyZone, Machine, CubeRegion, Orientation, Pose, ThingType,       \
-    Placeholder, Thing
+    Placeholder, Thing, Location, Joints
 
 from evd_interfaces.frontend_interface import FrontendInterface
 
@@ -32,7 +32,8 @@ PROCESS_TIME_ASSEMBLY_JIG = 0
 
 class URRobotEnvironment:
 
-    def __init__(self):
+    def __init__(self, debug=False):
+        self._debug = debug
 
         # Define Reach Sphere
         self._reach_sphere = ReachSphere(
@@ -482,6 +483,30 @@ class URRobotEnvironment:
             knifeFeederMachine
         ]
 
+        # Define some debug locations
+        homeLoc = Location(
+            position=Position(0,0,0),
+            orientation=Orientation.Identity(),
+            link='app')
+        unitLoc = Location(
+            position=Position(1,1,1),
+            orientation=Orientation.Identity(),
+            link='app')
+        reachableLoc = Location(
+            position=Position(0.2,-0.1,0.1),
+            orientation=Orientation.Identity(),
+            link='app',
+            joints=Joints(
+                length=6,
+                joint_positions=[0,0,0,0,0,0],
+                reachable=True,
+                joint_names=['','','','','','']))
+        self._locations = [
+            homeLoc,
+            unitLoc,
+            reachableLoc
+        ]
+
         # ROS Interface
         self._program = FrontendInterface(use_registration=True, register_cb=self._call_to_register)
 
@@ -497,6 +522,9 @@ class URRobotEnvironment:
         dct_list.extend([o.to_dct() for o in self._occupancy_zones])
         dct_list.extend([m.to_dct() for m in self._machines])
 
+        if self._debug:
+            dct_list.extend([l.to_dct() for l in self._locations])
+
         self._program.register(dct_list)
 
         print('workcell-registered')
@@ -504,5 +532,8 @@ class URRobotEnvironment:
 
 if __name__ == "__main__":
     rospy.init_node('register_static_workcell')
-    node = URRobotEnvironment()
+
+    debug = rospy.get_param('debug',True)
+
+    node = URRobotEnvironment(debug)
     rospy.spin()

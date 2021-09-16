@@ -64,7 +64,7 @@ class FrontendInterface:
             self._should_register = False
 
     def _jobs_request_cb(self, job_type, msg):
-        self._job_providers[job_type]['user_request_cb'](msg.id, msg.data)
+        self._job_providers[job_type]['user_request_cb'](msg.id, json.loads(msg.data))
 
     def _jobs_clear_cb(self, job_type, msg):
         self._job_providers[job_type]['user_clear_cb'](msg.id)
@@ -151,7 +151,7 @@ class FrontendInterface:
         bound_clear_cb = partial(self._jobs_clear_cb,job_name)
         bound_query_cb = partial(self._jobs_query_cb,job_name)
 
-        self._job_providers = {
+        self._job_providers[job_name] = {
             'user_request_cb': request_cb,
             'user_clear_cb': clear_cb,
             'user_query_cb': query_cb,
