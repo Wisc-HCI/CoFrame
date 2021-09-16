@@ -109,7 +109,11 @@ class FakeFrontendNode:
     def _joints_submit_cb(self, msg):
         if msg.id in self._active_joints_jobs:
 
-            joints = NodeParser(json.loads(msg.data))
+            raw = json.loads(msg.data)
+            print(raw['joint'])
+            joints = NodeParser(raw['joint'])
+            joint_trace = raw['trace']
+
             wp = evd_cache.get(msg.id) # where job ID is the uuid of the parent object (only works for 1-1 relations)
             wp.joints = joints
 
