@@ -52,13 +52,13 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
           isDragging: monitor.isDragging()
         })
     }))
-    
+
     const primitiveDrop = (dropData, idx) => {
         if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
             const newIdx = dropData.idx <= idx ? idx - 1 : idx;
-            if (newIdx === dropData.idx) {
-                return
-            }
+            // if (newIdx === dropData.idx) {
+            //     return
+            // }
             moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, newIdx);
         } else {
             insertChildPrimitive(dropData, uuid, idx);
@@ -98,7 +98,6 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                 </Col>
             </Row>
             <NodeZone
-                style={{ paddingTop: 4, paddingBottom: 4 }}
                 ancestors={programAncestors}
                 onDrop={(dropData) => moveChildPrimitive(dropData, uuid, 'program', 0)}
                 emptyMessage='No Actions'
@@ -109,7 +108,8 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                         {idx === 0 && (
                             <SortableSeparator
                                 key={0}
-                                height={60}
+                                spacing={idx===0 ? 0 : 5}
+                                height={40}
                                 ancestors={programAncestors}
                                 context={context}
                                 onDrop={(dropData) => primitiveDrop(dropData, 0)}
@@ -129,7 +129,9 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                             after={
                                 <SortableSeparator
                                     ancestors={programAncestors}
-                                    height={60}
+                                    height={40}
+                                    end={idx === primitiveIds.length-1}
+                                    spacing={idx ===primitiveIds.length-1 ? 0 : 5}
                                     context={context}
                                     onDrop={(dropData) => primitiveDrop(dropData, idx + 1)}
                                     dropDisabled={false}

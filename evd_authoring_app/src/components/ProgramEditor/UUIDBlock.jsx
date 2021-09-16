@@ -42,6 +42,7 @@ export const UUIDBlock = ({
     type: data.type,
     item: { ...data, parentData, dragBehavior, idx },
     options: { dragEffect: dragBehavior },
+    canDrag: _ => !dragDisabled,
     collect: monitor => ({
       isDragging: monitor.isDragging()
     })
@@ -54,7 +55,7 @@ export const UUIDBlock = ({
       onDrop(otherItem)
     },
     canDrop: (otherItem, _) => {
-      if (!otherItem) {
+      if (dropDisabled) {
         return false
       } else if (!ancestors[0].accepts.some(type => type === otherItem.type)) {
         return false
@@ -85,10 +86,8 @@ export const UUIDBlock = ({
     backgroundColor:
       blockStyles[itemType === 'placeholder' ? 'thing' : itemType],
     height: 42,
-    width: 'calc(100% - 5pt)',
+    width: '100%',
     borderRadius: 3,
-    marginLeft: 4,
-    marginRight: 4,
     padding: 5,
     position: 'relative',
     zIndex: focused ? 100 : 1,
@@ -109,10 +108,10 @@ export const UUIDBlock = ({
           dropDisabled
           dragBehavior='move' />
       )}
-      <div ref={dropDisabled ? null : drop} style={{}}>
+      <div ref={dropDisabled ? null : drop}>
         <div ref={preview} hidden={isDragging&&dragBehavior==='move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
           <span style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
-            <span ref={dragDisabled ? null : drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab",zIndex:101 }}>
+            <span ref={drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab",zIndex:101 }}>
               <Icon style={{ marginLeft: 4 }} component={ICONS[itemType]} />{' '}{itemType === 'placeholder' ? displayData.pending_node.name : displayData.name}
             </span>
             <span style={{ textAlign: 'end', width: 60, textTransform: 'capitalize' }}>

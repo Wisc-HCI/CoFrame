@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import { acceptLookup } from './acceptLookup';
 import { ProgramBlock } from './ProgramBlock';
@@ -50,28 +50,26 @@ export const Canvas = () => {
     })[1]
 
     return (
-        <div style={{width:'100%',height:'100%',zIndex:100,position:'relative',overflow:'scroll',textAlign:'left'}}>
-                <Grid ref={drop(ref)} onClick={clearFocusItem} >
-                    <ProgramBlock
-                            ancestors={ancestors}
-                            context={nameLookup}
-                            dragBehavior='move'
-                            parentData={{ type: 'grid', uuid: 'grid' }}
-                        />
-                        {Object.keys(skills).map(uuid => (
-                            <SkillBlock
-                                key={uuid}
-                                uuid={uuid}
-                                parentData={{ type: 'grid', uuid: 'grid' }}
-                                dragBehavior='move'
-                                ancestors={ancestors}
-                                context={nameLookup} />
-                        ))}
-                </Grid>
-            
-            
+        <div style={{ width: '100%', height: '100%', zIndex: 100, position: 'relative', overflow: 'scroll', textAlign: 'left' }}>
+            <Grid ref={drop(ref)} onClick={clearFocusItem} >
+                <ProgramBlock
+                    ancestors={ancestors}
+                    context={nameLookup}
+                    dragBehavior='move'
+                    parentData={{ type: 'grid', uuid: 'grid' }}
+                />
+                {Object.keys(skills).map(uuid => (
+                    <SkillBlock
+                        key={uuid}
+                        uuid={uuid}
+                        parentData={{ type: 'grid', uuid: 'grid' }}
+                        dragBehavior='move'
+                        ancestors={ancestors}
+                        context={nameLookup} />
+                ))}
+            </Grid>
         </div>
-        
+
 
     )
 }

@@ -46,6 +46,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
     type: data.type,
     item: { ...data, parentData, dragBehavior },
     options: { dragEffect: dragBehavior },
+    canDrag: _ => !dragDisabled,
     collect: monitor => ({
       isDragging: monitor.isDragging()
     })
@@ -62,7 +63,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
     minHeight: 30,
     minWidth: 250,
     borderRadius: 3,
-    margin: 4,
+    margin: 0,
     padding: 5,
     position: 'relative',
     zIndex: focused ? 100 : 1
@@ -127,7 +128,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
   return (
     <div hidden={isDragging && dragBehavior==='move'} ref={preview} style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
       <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Col ref={dragDisabled ? null : drag} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start' }}>
+        <Col ref={drag} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start' }}>
           <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />{' '}{data.name}
         </Col>
         <Col span={6} offset={1} style={{ textAlign: 'end' }}>
@@ -197,7 +198,6 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
         <Col span="8">Start Location:</Col>
         <Col span="16">
           <NodeZone
-            style={{paddingTop:8,paddingBottom:8}}
             ancestors={trajectoryLocationAncestors}
             context={context}
             onDrop={startDrop}
@@ -241,6 +241,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   <SortableSeparator
                     ancestors={trajectoryWaypointAncestors}
                     height={30}
+                    spacing={idx===0 ? 0 : 5}
                     context={context}
                     onDrop={(dropData)=>waypointDrop(dropData,0)}
                     dropDisabled={!editingEnabled}
@@ -265,6 +266,8 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                     ancestors={trajectoryWaypointAncestors}
                     context={context}
                     height={30}
+                    end={idx === waypoints.length-1}
+                    spacing={idx === waypoints.length-1 ? 0 : 5}
                     onDrop={(dropData)=>waypointDrop(dropData,idx+1)}
                     dropDisabled={!editingEnabled}
                   />
@@ -282,7 +285,6 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
         <Col span="16">
           <NodeZone
             context={context}
-            style={{paddingTop:8,paddingBottom:8}}
             ancestors={trajectoryLocationAncestors}
             onDrop={endDrop}
             emptyMessage='No End Location'

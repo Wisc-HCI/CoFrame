@@ -13,6 +13,8 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
         canDrop: (item, _) => {
             if (!item) {
                 return false
+            // } else if (dropDisabled||!empty) {
+            //     return false
             } else if (!empty) {
                 return false
             } else if (!ancestors[0].accepts.some(type=>type===item.type)) {
@@ -62,18 +64,15 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
     const containerStyle = {
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 5,
-        minWidth: 40,
-        minHeight:58,
-        paddingLeft:4,
-        paddingRight:4,
-        paddingTop:0,
-        paddingBottom:0,
+        minWidth: 38,
+        minHeight:54,
+        padding:5,
         textAlign:'center',
         fontSize:14
     }
 
     return (
-        <div ref={dropDisabled||!empty?null:drop} style={{...containerStyle,...style,}}>
+        <div ref={!dropDisabled && empty ? drop : null} style={{...containerStyle,...style,}}>
             {contents}
         </div>
         

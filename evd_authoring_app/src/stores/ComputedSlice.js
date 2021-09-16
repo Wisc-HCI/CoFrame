@@ -1,5 +1,4 @@
 // import { objectMap } from "./helpers";
-import { identity } from 'lodash';
 import { 
     poseToColor, 
     poseDataToShapes, 

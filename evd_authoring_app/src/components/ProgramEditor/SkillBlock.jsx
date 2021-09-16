@@ -17,9 +17,9 @@ import { useDrag } from 'react-dnd';
 
 export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context}) => {
 
-    const [frame,focusItem,setFocusItem,
+    const [frame,focusItem,
         moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
-        [state.frame,state.focusItem,state.setFocusItem,
+        [state.frame,state.focusItem,
         state.moveChildPrimitive,state.insertChildPrimitive]));
     
     const data = useStore(useCallback((state)=>{
@@ -80,9 +80,8 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
         backgroundColor:
           blockStyles['node.primitive.hierarchical.skill.'],
         minHeight: 30,
-        minWidth: 250,
+        minWidth: 260,
         borderRadius: 3,
-        margin: 4,
         padding: 5,
         zIndex: focused ? 100 : 1,
         opacity: isDragging ? 0.4 : 1
@@ -118,7 +117,6 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                 {!inDrawer && <EditableTagGroup skill={data} ancestors={skillAncestors}/>}
             </Row>
             <NodeZone
-                style={{ paddingTop: 4, paddingBottom: 4 }}
                 ancestors={skillAncestors}
                 onDrop={(dropData) => moveChildPrimitive(dropData, uuid, 'program', 0)}
                 emptyMessage='No Actions'
@@ -129,7 +127,8 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                         {idx === 0 && (
                             <SortableSeparator
                                 key={0}
-                                height={60}
+                                spacing={idx===0 ? 0 : 5}
+                                height={40}
                                 ancestors={skillAncestors}
                                 context={currentContext}
                                 onDrop={(dropData) => primitiveDrop(dropData, 0)}
@@ -149,7 +148,9 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             after={
                                 <SortableSeparator
                                     ancestors={skillAncestors}
-                                    height={60}
+                                    height={40}
+                                    end={idx === data.primitiveIds.length-1}
+                                    spacing={idx === data.primitiveIds.length-1 ? 0 : 5}
                                     context={currentContext}
                                     onDrop={(dropData) => primitiveDrop(dropData, idx + 1)}
                                     dropDisabled={false}

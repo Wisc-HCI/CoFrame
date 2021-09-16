@@ -8,35 +8,41 @@ import { acceptLookup } from './acceptLookup';
 export const ContainersDrawer = (_) => {
 
     const ancestors = [
-        {uuid:'drawer',...acceptLookup.drawer.default}
+        { uuid: 'drawer', ...acceptLookup.drawer.default }
     ];
 
     return (
         <React.Fragment>
-            <TrajectoryBlock
-                key='trajectory'
-                staticData={fromContainerTemplate('node.trajectory.')}
-                ancestors={ancestors} 
-                idx={0} 
-                parentData={{type:'drawer',uuid:'drawer'}}
-                dragBehavior='copy'
-                context={{}}/>
-            <SkillBlock
-                key='skill'
-                staticData={fromContainerTemplate('node.primitive.hierarchical.skill.')}
-                ancestors={ancestors} 
-                idx={1} 
-                parentData={{type:'drawer',uuid:'drawer'}}
-                dragBehavior='copy'
-                context={{}}/>
-            <PrimitiveBlock
-                key='hierarchical'
-                staticData={fromContainerTemplate('node.primitive.hierarchical.')}
-                ancestors={ancestors} 
-                idx={2} 
-                parentData={{type:'drawer',uuid:'drawer'}}
-                dragBehavior='copy'
-                context={{}}/>
+            <div key='trajectory' style={{ paddingTop: 5 }} >
+                <TrajectoryBlock
+                    key='trajectory'
+                    staticData={fromContainerTemplate('node.trajectory.')}
+                    ancestors={ancestors}
+                    idx={0}
+                    parentData={{ type: 'drawer', uuid: 'drawer' }}
+                    dragBehavior='copy'
+                    context={{}} />
+            </div>
+            <div key='skill' style={{ paddingTop: 5 }} >
+                <SkillBlock
+                    key='skill'
+                    staticData={fromContainerTemplate('node.primitive.hierarchical.skill.')}
+                    ancestors={ancestors}
+                    idx={1}
+                    parentData={{type: 'drawer',uuid: 'drawer'}}
+                    dragBehavior='copy'
+                    context={{ }}/>
+            </div>
+            <div key='hierarchical' style={{paddingTop: 5}} >
+                <PrimitiveBlock
+                    key='hierarchical'
+                    staticData={fromContainerTemplate('node.primitive.hierarchical.')}
+                    ancestors={ancestors}
+                    idx={2}
+                    parentData={{type: 'drawer',uuid: 'drawer'}}
+                    dragBehavior='copy'
+                    context={{ }}/>
+            </div>
         </React.Fragment>
     );
 };

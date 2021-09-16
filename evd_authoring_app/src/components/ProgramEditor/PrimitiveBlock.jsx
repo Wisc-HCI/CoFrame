@@ -117,10 +117,9 @@ export const PrimitiveBlock = ({
     minWidth: 250,
     borderRadius: 3,
     fontSize: 14,
-    marginLeft: 4,
-    marginRight: 4,
     padding: 5,
     position: 'relative',
+    margin:0,
     zIndex: focused ? 100 : 1
   };
 
@@ -271,7 +270,6 @@ export const PrimitiveBlock = ({
             <Col flex={2} style={{ paddingRight: 5 }}>Machine:</Col>
             <Col flex={3}>
               <NodeZone
-                style={{ paddingTop: 8, paddingBottom: 8 }}
                 ancestors={parameterAncestors.machine}
                 context={context}
                 onDrop={(dropData) => parameterDrop(dropData, 'machine_uuid')}
@@ -305,7 +303,6 @@ export const PrimitiveBlock = ({
             <Col flex={2} style={{ paddingRight: 5 }}>Trajectory:</Col>
             <Col flex={3}>
               <NodeZone
-                style={{ paddingTop: 8, paddingBottom: 8 }}
                 ancestors={parameterAncestors.trajectory}
                 onMove={trajectoryDrop}
                 emptyMessage='No Trajectory'
@@ -350,7 +347,6 @@ export const PrimitiveBlock = ({
             <Col flex={2} style={{ paddingRight: 5 }}>To Location:</Col>
             <Col flex={3}>
               <NodeZone
-                style={{ paddingTop: 8, paddingBottom: 8 }}
                 ancestors={parameterAncestors.location}
                 context={context}
                 onDrop={(dropData) => parameterDrop(dropData, 'location_uuid')}
@@ -384,7 +380,6 @@ export const PrimitiveBlock = ({
             <Col flex={2} style={{ paddingRight: 5 }}>Thing:</Col>
             <Col flex={3}>
               <NodeZone
-                style={{ paddingTop: 8, paddingBottom: 8 }}
                 ancestors={parameterAncestors.thing}
                 context={context}
                 onDrop={(dropData) => parameterDrop(dropData, 'thing_uuid')}
