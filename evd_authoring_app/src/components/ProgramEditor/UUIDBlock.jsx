@@ -1,7 +1,7 @@
-import React from "react";
-import { Button, Dropdown, Menu, Row } from "antd";
+import React, {useState} from "react";
+import { Button, Dropdown, Input, Menu, Row, Tooltip } from "antd";
 import { useDrag, useDrop } from 'react-dnd';
-import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import useStore from "../../stores/Store";
 import blockStyles from "./blockStyles";
 import { ReactComponent as LocationIcon } from '../CustomIcons/Location.svg';
@@ -23,7 +23,8 @@ export const UUIDBlock = ({
   ancestors, 
   context, 
   onDelete, 
-  onDrop, 
+  onDrop,
+  onNameChange,
   dragDisabled, 
   dropDisabled, 
   hoverBehavior, 
@@ -37,6 +38,11 @@ export const UUIDBlock = ({
   // console.log(data)
   // hoverBehavior is either 'replace' or 'insert'
   const { itemType, uuid } = data;
+
+  // Variables for Input field
+  const [editing, setEditing] = useState(data.name === '');
+  let editInputValue;
+  let saveEditInputRef;
 
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
@@ -70,7 +76,6 @@ export const UUIDBlock = ({
     })
   })
 
-
   const [
     frame, focusItem,
     setFocusItem, clearFocusItem] = useStore(state => ([
@@ -94,7 +99,31 @@ export const UUIDBlock = ({
     opacity: isOver && hoverBehavior === 'replace' && dragItem ? 0.5 : 1
   };
 
-  const displayData = isOver && hoverBehavior === 'replace' && dragItem ? dragItem : data
+  // Unformatted display name information
+  const displayData = isOver && hoverBehavior === 'replace' && dragItem ? dragItem : data;
+  const tempDisplayName = (typeof displayData.name !== 'undefined') ? (itemType === 'placeholder' ? displayData.pending_node.name : displayData.name) : "";
+
+  // Length of a long tag and boolean for if the name meets the criteria
+  const longLength = inDrawer ? 16 : 24;
+  const isLongTag = tempDisplayName.length > longLength;
+
+  // Formatted display name
+  const displayName = isLongTag ? `${tempDisplayName.slice(0, longLength-3)}...` : tempDisplayName;
+
+  // Icon adjustment and argument detection
+  const isArgument = data.uuid.includes('skill-arg');
+  const iconTrayWidth = isArgument ? 90 : 70;
+
+  // Ends edit mode and calls function for onNameChange
+  const onConfirmName = () => {
+    setEditing(false);
+    onNameChange(editInputValue);
+  }
+
+  // Updates local variable as the Input field changes
+  const handleEditChange = e => {
+    editInputValue = e.target.value;
+  }
 
   return (
     <React.Fragment>
@@ -112,10 +141,20 @@ export const UUIDBlock = ({
         <div ref={preview} hidden={isDragging&&dragBehavior==='move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
           <Row wrap={false} style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
             <span ref={drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab",zIndex:101, marginRight:5 }}>
-              <Icon component={ICONS[itemType]} />{' '}{itemType === 'placeholder' ? displayData.pending_node.name : displayData.name}
+            <Icon component={ICONS[itemType]} />{' '}{!isArgument ? 
+              (isLongTag ? <Tooltip title={tempDisplayName}>{displayName}</Tooltip> : displayName) : (
+                editing ? <Input ref={saveEditInputRef}
+                                      style={{ padding: 4, flex: 1, width: "auto" }}
+                                      value={editInputValue} 
+                                      onChange={handleEditChange} 
+                                      onBlur={onConfirmName} 
+                                      onPressEnter={onConfirmName}/> : (
+                                        isLongTag ? <Tooltip title={tempDisplayName}>{displayName}</Tooltip> : displayName
+                                        ))}
             </span>
-            <span style={{ textAlign: 'end', width: 70, textTransform: 'capitalize' }}>
+            <span style={{ textAlign: 'end', width: iconTrayWidth, textTransform: 'capitalize' }}>
               {displayData.editable ? <UnlockOutlined style={{marginRight: showMore? 0 : 5}}/> : <LockOutlined style={{marginRight: showMore? 0 : 5}}/>}
+              {isArgument && displayData.editable && !editing && <EditOutlined onClick={() => setEditing(true)}/>}
               {showMore && (
                 <Dropdown overlay={
                   <Menu>

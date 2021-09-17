@@ -10,18 +10,22 @@ import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
 import { PrimitiveBlock } from './PrimitiveBlock';
-
+import { generateUuid } from '../../stores/generateUuid';
 import { EditableTagGroup } from './Tags/EditableTagGroup';
 import { useDrag } from 'react-dnd';
-// import { EditableTag } from './Tags/EditableTag';
+import {ReactComponent as LocationIcon} from '../CustomIcons/Location.svg';
+import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
+import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 
 export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context, onDelete}) => {
 
-    const [frame,focusItem,
+    const [frame,focusItem, 
         moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
         [state.frame,state.focusItem,
         state.moveChildPrimitive,state.insertChildPrimitive]));
     
+    const createSkillArgument = useStore(state=>state.createSkillArgument);
+
     const data = useStore(useCallback((state)=>{
         return staticData ? staticData : state.data.skills[uuid];
     },[staticData,uuid]))
@@ -62,6 +66,12 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
         }
     }
 
+    // Code for creating skill arguments
+    const menuClickCreateArgument = e => {
+        const item = {uuid: generateUuid('skill-arg'), name: '', description: "", is_list: false, parameter_type: e.key, type: 'node.skill-argument.', editable: data.editable, deletable: true};
+        createSkillArgument(data.uuid, item);
+    }
+
     // Extend the current context with any arg-based values
     let currentContext = {
         ...context
@@ -69,8 +79,6 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     data.arguments.forEach(arg=>{
         currentContext[arg.uuid] = {name:arg.name,real:false}
     })
-
-    
 
     const dragBlockStyles = {
         display:'inline-block',
@@ -102,6 +110,18 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             </Menu.Item>}
                             {editingEnabled && <Menu.Item key='show' onClick={() => toggleSkillEditable(data.uuid)}>
                                 Disable Editing
+                            </Menu.Item>}
+                            {editingEnabled && <Menu.Item key="node.machine." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={MachineIcon}/>}>
+                                New Machine Parameter
+                            </Menu.Item>}
+                            {editingEnabled && <Menu.Item key="node.pose.waypoint.location." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={LocationIcon}/>}>
+                                New Location Parameter
+                            </Menu.Item>}
+                            {editingEnabled && <Menu.Item key="node.pose.thing." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={ThingIcon}/>}>
+                                New Thing Parameter
+                            </Menu.Item>}
+                            {editingEnabled && <Menu.Item key="node.trajectory." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={ContainerIcon}/>}>
+                                New Tracjectory Parameter
                             </Menu.Item>}
                         </Menu>
                         }>
