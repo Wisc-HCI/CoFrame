@@ -140,6 +140,10 @@ export const EvdSlice = (set, get) => ({
     }
     delete state.data.primitives[primitiveId];
   }),
+  deleteSkill: (skillId) => {
+    const skill = get().data.skills[skillId];
+    get().deleteHierarchical(skill)
+  },
   deleteHierarchical: (hierarchical) => {
     // First, clean out all the contents recursively
     hierarchical.primitiveIds.forEach(id => {

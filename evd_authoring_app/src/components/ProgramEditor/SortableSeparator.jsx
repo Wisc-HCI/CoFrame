@@ -1,6 +1,6 @@
 import { config, useSpring } from "@react-spring/core";
 import { animated } from "@react-spring/web";
-import React, { useState } from "react";
+import React from "react";
 import { useDrop } from 'react-dnd';
 import useMeasure from "react-use-measure";
 import { PrimitiveBlock } from "./PrimitiveBlock";

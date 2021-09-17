@@ -15,7 +15,7 @@ import { EditableTagGroup } from './Tags/EditableTagGroup';
 import { useDrag } from 'react-dnd';
 // import { EditableTag } from './Tags/EditableTag';
 
-export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context, onDelete}) => {
+export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context,onDelete}) => {
 
     const [frame,focusItem,
         moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
@@ -120,7 +120,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                 ancestors={skillAncestors}
                 onDrop={(dropData) => primitiveDrop(dropData, 0)}
                 emptyMessage='No Actions'
-                enabled={true}
+                dropDisabled={!editingEnabled}
                 context={currentContext}
             >
                 {data.primitiveIds.map((id, idx) => (
@@ -133,7 +133,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                                 ancestors={skillAncestors}
                                 context={currentContext}
                                 onDrop={(dropData) => primitiveDrop(dropData, 0)}
-                                dropDisabled={false}
+                                dropDisabled={!editingEnabled}
                             />
                         )}
                         <PrimitiveBlock
@@ -144,8 +144,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             ancestors={skillAncestors}
                             context={currentContext}
                             idx={idx}
-                            dropDisabled={true}
-                            dragDisabled={false}
+                            dragDisabled={!editingEnabled}
                             after={
                                 <SortableSeparator
                                     ancestors={skillAncestors}
@@ -154,7 +153,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                                     spacing={idx === data.primitiveIds.length-1 ? 0 : 5}
                                     context={currentContext}
                                     onDrop={(dropData) => primitiveDrop(dropData, idx + 1)}
-                                    dropDisabled={false}
+                                    dropDisabled={!editingEnabled}
                                 />
                             }
                         />

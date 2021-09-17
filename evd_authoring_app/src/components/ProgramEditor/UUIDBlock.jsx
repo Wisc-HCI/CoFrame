@@ -8,13 +8,24 @@ import { ReactComponent as LocationIcon } from '../CustomIcons/Location.svg';
 import { ReactComponent as MachineIcon } from '../CustomIcons/Gear.svg';
 import { ReactComponent as ThingIcon } from '../CustomIcons/Thing.svg';
 import { ReactComponent as WaypointIcon } from '../CustomIcons/Waypoint.svg';
+import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg';
 import './highlight.css';
 
 const ICONS = {
   'machine': MachineIcon,
   'location': LocationIcon,
   'placeholder': ThingIcon,
-  'waypoint': WaypointIcon
+  'waypoint': WaypointIcon,
+  'trajectory': ContainerIcon
+}
+
+const validDrop = (item, ancestors) => {
+  if (!ancestors[0].accepts.some(type => type === item.type)) {
+    return false
+  } else if (!ancestors.some(ancestor => ancestor.uuid === item.parentData.uuid) && item.parentData.type !== 'drawer') {
+    return false
+  }
+  return true
 }
 
 export const UUIDBlock = ({ 
@@ -55,14 +66,9 @@ export const UUIDBlock = ({
       onDrop(otherItem)
     },
     canDrop: (otherItem, _) => {
-      if (dropDisabled || !data.editable) {
+      if (dropDisabled) {
         return false
-      } else if (!ancestors[0].accepts.some(type => type === otherItem.type)) {
-        return false
-      } else if (!ancestors.some(ancestor => ancestor.uuid === otherItem.parentData.uuid) && otherItem.parentData.type !== 'drawer') {
-        return false
-      }
-      return true;
+      } else return validDrop(otherItem, ancestors);
     },
     collect: monitor => ({
       isOver: monitor.isOver(),
@@ -94,7 +100,7 @@ export const UUIDBlock = ({
     opacity: isOver && hoverBehavior === 'replace' && dragItem ? 0.5 : 1
   };
 
-  const displayData = isOver && hoverBehavior === 'replace' && dragItem ? dragItem : data
+  const displayData = !dropDisabled && isOver && hoverBehavior === 'replace' && dragItem && validDrop(dragItem,ancestors) ? dragItem : data
 
   return (
     <React.Fragment>
@@ -111,10 +117,10 @@ export const UUIDBlock = ({
       <div ref={dropDisabled ? null : drop}>
         <div ref={preview} hidden={isDragging&&dragBehavior==='move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
           <Row wrap={false} style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
-            <span ref={drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab",zIndex:101, marginRight:5 }}>
+            <span ref={drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: dragDisabled ? "not-allowed" : "grab",zIndex:101, marginRight:5 }}>
               <Icon component={ICONS[itemType]} />{' '}{itemType === 'placeholder' ? displayData.pending_node.name : displayData.name}
             </span>
-            <span style={{ textAlign: 'end', width: 70, textTransform: 'capitalize' }}>
+            <Row wrap={false} style={{ width: 60, textTransform: 'capitalize', textAlign:'right' }} align='middle' justify='end'>
               {displayData.editable ? <UnlockOutlined style={{marginRight: showMore? 0 : 5}}/> : <LockOutlined style={{marginRight: showMore? 0 : 5}}/>}
               {showMore && (
                 <Dropdown overlay={
@@ -144,7 +150,7 @@ export const UUIDBlock = ({
                   icon={<DeleteOutlined />}
                 />
               }
-            </span>
+            </Row>
           </Row>
         </div>
       </div>

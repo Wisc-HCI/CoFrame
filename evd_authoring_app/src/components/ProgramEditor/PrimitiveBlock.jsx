@@ -17,8 +17,8 @@ import { TrajectoryBlock } from "./TrajectoryBlock";
 import useMeasure from "react-use-measure";
 
 export const PrimitiveBlock = ({
-  staticData, uuid, parentData, dragBehavior,
-  dragDisabled, ancestors, context, idx, after
+  staticData, uuid, parentData, onDelete, dragBehavior,
+  dragDisabled, ancestors, context, idx, after,
 }) => {
 
   const [focused, data, parameters] = useStore(useCallback(state => {
@@ -40,7 +40,7 @@ export const PrimitiveBlock = ({
     }
 
     if (data.parameters.trajectory_uuid && state.data.trajectories[data.parameters.trajectory_uuid]) {
-      parameterValues.trajectory = state.data.trajectories[data.parameters.trajectory_uuid]
+      parameterValues.trajectory = {...state.data.trajectories[data.parameters.trajectory_uuid],real:true}
     } else if (data.parameters.trajectory_uuid && context[data.parameters.trajectory_uuid]) {
       parameterValues.trajectory = { uuid: data.parameters.trajectory_uuid, ...context[data.parameters.trajectory_uuid] }
     }
@@ -58,7 +58,12 @@ export const PrimitiveBlock = ({
     ]
   }, [staticData, uuid, context]));
 
-  const [frame, clearFocusItem, focusExists] = useStore(state => [state.frame, state.clearFocusItem, state.focusItem.type !== null]);
+  const [frame, clearFocusItem, focusExists, 
+    setPrimitiveParameter, moveTrajectoryBlock, 
+    deletePrimitiveTrajectory] = useStore(
+    (state) => [state.frame, state.clearFocusItem, state.focusItem.type !== null, 
+      state.setPrimitiveParameter, state.moveTrajectoryBlock, state.deletePrimitiveTrajectory])
+
   const unfocused = focusExists && !focused;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
@@ -67,7 +72,7 @@ export const PrimitiveBlock = ({
 
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
-    item: { ...data, parentData, dragBehavior, idx },
+    item: { ...data, parentData, dragBehavior, onDelete, idx },
     options: { dragEffect: dragBehavior },
     canDrag: (_)=> !dragDisabled,
     collect: monitor => ({
@@ -124,10 +129,6 @@ export const PrimitiveBlock = ({
     backgroundColor: "rgba(0,0,0,0.1)"
   }
 
-  const [setPrimitiveParameter, moveTrajectoryBlock, deletePrimitiveTrajectory] = useStore(
-    (state) => [state.setPrimitiveParameter, state.moveTrajectoryBlock, state.deletePrimitiveTrajectory]
-  );
-
   let Glyph = null;
   if (data.type === 'node.primitive.skill-call.') {
     Glyph = SkillIcon;
@@ -161,7 +162,7 @@ export const PrimitiveBlock = ({
     <div hidden={isDragging && dragBehavior==='move'}>
       <div ref={preview} style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
         <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-          <Col ref={dragDisabled ? null : drag} span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, cursor: 'grab', zIndex:101 }}>
+          <Col ref={dragDisabled ? null : drag} span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, cursor: dragDisabled ? 'not-allowed':'grab', zIndex:101 }}>
             <Icon style={{ marginLeft: 4 }} component={Glyph} />{' '}{data.name}
           </Col>
           <Col span={6} offset={1} style={{ textAlign: 'end' }}>
@@ -299,19 +300,21 @@ export const PrimitiveBlock = ({
             <Col flex={3}>
               <NodeZone
                 ancestors={parameterAncestors.trajectory}
+                parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
+                onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory_uuid', parameters.trajectory.uuid)}
                 onDrop={trajectoryDrop}
                 emptyMessage='No Trajectory'
-                enabled={editingEnabled}
+                dropDisabled={!editingEnabled}
               >
                 {parameters.trajectory && (
-                  context[parameters.trajectory.uuid].real ? (
+                  parameters.trajectory.real ? (
                     <TrajectoryBlock
                       uuid={parameters.trajectory.uuid}
                       idx={0}
                       parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
                       ancestors={parameterAncestors.trajectory}
                       dragBehavior='move'
-                      dragDisabled={false}
+                      dragDisabled={!editingEnabled}
                       onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory_uuid', parameters.trajectory.uuid)}
                       context={context}
                     />

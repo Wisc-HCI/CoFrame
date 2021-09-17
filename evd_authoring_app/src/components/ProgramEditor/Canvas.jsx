@@ -19,7 +19,7 @@ export const Canvas = () => {
         { uuid: 'grid', ...acceptLookup.grid.primitiveIds }
     ];
 
-    const [moveItem, createAndPlaceItem, skills] = useStore(state => [state.moveItem, state.createAndPlaceItem, state.data.skills]);
+    const [moveItem, createAndPlaceItem, deleteSkill, skills] = useStore(state => [state.moveItem, state.createAndPlaceItem, state.deleteSkill, state.data.skills]);
     const nameLookup = useStore(state => ({
         ...objectMap(state.data.placeholders, placeholder => ({ name: placeholder.pending_node.name, real: true })),
         ...objectMap(state.data.locations, location => ({ name: location.name, real: true })),
@@ -62,6 +62,7 @@ export const Canvas = () => {
                     <SkillBlock
                         key={uuid}
                         uuid={uuid}
+                        onDelete={deleteSkill}
                         parentData={{ type: 'grid', uuid: 'grid' }}
                         dragBehavior='move'
                         ancestors={ancestors}

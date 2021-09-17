@@ -124,7 +124,6 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                             ancestors={programAncestors}
                             context={context}
                             idx={idx}
-                            dropDisabled={true}
                             dragDisabled={false}
                             after={
                                 <SortableSeparator
