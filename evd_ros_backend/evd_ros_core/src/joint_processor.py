@@ -16,7 +16,7 @@ from evd_sim.pybullet_model import PyBulletModel
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
 
-TIMEOUT_COUNT = 1
+TIMEOUT_COUNT = 500
 SPIN_RATE = 5
 UPDATE_RATE = 1000
 JSF_NUM_STEPS = 20
@@ -56,6 +56,7 @@ class JointProcessor:
         length = len(self._joint_names)
         waypoint = NodeParser(data['point'])
         self._target = waypoint.to_ros()
+        print(self._target)
         self._joints = Joints(
             length=length,
             joint_names=self._joint_names,

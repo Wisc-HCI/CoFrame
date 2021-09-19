@@ -502,9 +502,9 @@ class URRobotEnvironment:
                 reachable=True,
                 joint_names=['','','','','','']))
         self._locations = [
-            homeLoc,
             unitLoc,
-            reachableLoc
+            reachableLoc,
+            homeLoc
         ]
 
         # ROS Interface
