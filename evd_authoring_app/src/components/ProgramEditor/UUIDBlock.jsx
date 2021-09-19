@@ -1,7 +1,7 @@
-import React from "react";
-import { Button, Dropdown, Menu, Row } from "antd";
+import React, {useState} from "react";
+import { Button, Dropdown, Input, Menu, Row, Tooltip } from "antd";
 import { useDrag, useDrop } from 'react-dnd';
-import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import useStore from "../../stores/Store";
 import blockStyles from "./blockStyles";
 import { ReactComponent as LocationIcon } from '../CustomIcons/Location.svg';
@@ -15,6 +15,7 @@ const ICONS = {
   'machine': MachineIcon,
   'location': LocationIcon,
   'placeholder': ThingIcon,
+  'thing': ThingIcon,
   'waypoint': WaypointIcon,
   'trajectory': ContainerIcon
 }
@@ -34,7 +35,8 @@ export const UUIDBlock = ({
   ancestors, 
   context, 
   onDelete, 
-  onDrop, 
+  onDrop,
+  onNameChange,
   dragDisabled, 
   dropDisabled, 
   hoverBehavior, 
@@ -49,6 +51,11 @@ export const UUIDBlock = ({
   // hoverBehavior is either 'replace' or 'insert'
   const { itemType, uuid } = data;
 
+  // Variables for Input field
+  // const [editing, setEditing] = useState(data.name === '');
+  // let editInputValue;
+  // let saveEditInputRef;
+
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
     item: { ...data, parentData, dragBehavior, idx, onDelete },
@@ -58,6 +65,8 @@ export const UUIDBlock = ({
       isDragging: monitor.isDragging()
     })
   }))
+
+  const [editing, setEditing] = useState(false);
 
   // We only care about the second value returned from useDrop (hence the [1] at the end)
   const [{ isOver, dragItem }, drop] = useDrop({
@@ -76,7 +85,6 @@ export const UUIDBlock = ({
     })
   })
 
-
   const [
     frame, focusItem,
     setFocusItem, clearFocusItem] = useStore(state => ([
@@ -86,7 +94,8 @@ export const UUIDBlock = ({
   const focused = focusItem.uuid === uuid;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
-  const showMore = context[uuid]?.real;
+  const isReal = context[uuid]?.real;
+  const showMore = isReal || onNameChange;
 
   const blockStyle = {
     backgroundColor:
@@ -117,17 +126,26 @@ export const UUIDBlock = ({
       <div ref={dropDisabled ? null : drop}>
         <div ref={preview} hidden={isDragging&&dragBehavior==='move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
           <Row wrap={false} style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
-            <span ref={drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: dragDisabled ? "not-allowed" : "grab",zIndex:101, marginRight:5 }}>
-              <Icon component={ICONS[itemType]} />{' '}{itemType === 'placeholder' ? displayData.pending_node.name : displayData.name}
-            </span>
+            <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing?'inset 0px 0px 2px 1px #ffffff':null, borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab",zIndex:101, marginRight:5, height: 32 }}>
+              <Icon style={{marginLeft:5}} component={ICONS[itemType]} />
+              <Input style={{maxWidth: 200, color:'white',cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab"}} bordered={false} disabled={!editing} value={itemType === 'placeholder' ? displayData.pending_node.name : displayData.name} onChange={(e)=>onNameChange(e.target.value)}/> 
+            </Row>
             <Row wrap={false} style={{ width: 60, textTransform: 'capitalize', textAlign:'right' }} align='middle' justify='end'>
-              {displayData.editable ? <UnlockOutlined style={{marginRight: showMore? 0 : 5}}/> : <LockOutlined style={{marginRight: showMore? 0 : 5}}/>}
+              {displayData.editable ? <UnlockOutlined style={{marginRight: isReal? 0 : 5}}/> : <LockOutlined style={{marginRight: isReal? 0 : 5}}/>}
+              {/* {isArgument && displayData.editable && !editing && <EditOutlined onClick={() => setEditing(true)}/>} */}
               {showMore && (
                 <Dropdown overlay={
                   <Menu>
-                    <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem(itemType, data.uuid) }}>
-                      <EyeOutlined />{' '}Show {itemType === 'placeholder' ? 'thing' : itemType}
-                    </Menu.Item>
+                    {isReal && (
+                      <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem(itemType, data.uuid) }}>
+                        <EyeOutlined />{' '}Show {itemType === 'placeholder' ? 'thing' : itemType}
+                      </Menu.Item>
+                    )}
+                    {onNameChange && (
+                      <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); setEditing(!editing) }}>
+                        <EditOutlined />{editing ? " Done Editing" : ' Edit Name'}
+                      </Menu.Item>
+                    )}
                     {!inDrawer && data.deleteable &&
                       <Menu.Item key='clear' onClick={onDelete}>
                         <DeleteOutlined />{' '}Clear
@@ -142,7 +160,7 @@ export const UUIDBlock = ({
                 </Dropdown>
 
               )}
-              {!showMore && data.deleteable &&
+              {!isReal && data.deleteable &&
                   <Button
                   type='text'
                   style={{ marginLeft: 0 }}

@@ -290,14 +290,41 @@ export const EvdSlice = (set, get) => ({
       state.data[typeToKey(type)][item.uuid] = lodash.omit({ ...item, transform: { x, y } }, 'parentData');
     }
   }),
-  createSkillParameter: (skill_uuid, parameter) => set((state)=>{
-    state.data[typeToKey('skill')][skill_uuid].parameters[parameter.uuid] = parameter
+  createSkillArgument: (skill_uuid, argument) => set((state)=>{
+    state.data[typeToKey('skill')][skill_uuid].arguments.push(argument);
   }),
-  deleteSkillParameter: (skill_uuid, parameter_uuid) => set((state)=>{
-    delete state.data[typeToKey('skill')][skill_uuid].parameters[parameter_uuid]
+  deleteSkillArgument: (skill_uuid, argument) => set((state)=>{
+    // Clear the children's parameters of deleted argument
+    state.data[typeToKey('skill')][skill_uuid].primitiveIds.forEach(uuid => {
+      if (argument.parameter_type === 'node.machine.' && state.data.primitives[uuid].parameters.machine_uuid === argument.uuid) {
+        state.data.primitives[uuid].parameters.machine_uuid = null;
+      } else if (argument.parameter_type === 'node.pose.thing.' && state.data.primitives[uuid].parameters.thing_uuid === argument.uuid) {
+        state.data.primitives[uuid].parameters.thing_uuid = null;
+      } else if (argument.parameter_type === 'node.trajectory.' && state.data.primitives[uuid].parameters.trajectory_uuid === argument.uuid) {
+        state.data.primitives[uuid].parameters.trajectory_uuid = null;
+      } else if (argument.parameter_type === 'node.pose.waypoint.location.' && state.data.primitives[uuid].parameters.location_uuid === argument.uuid) {
+        state.data.primitives[uuid].parameters.location_uuid = null;
+      }
+    });
+    // Delete Argument
+    state.data[typeToKey('skill')][skill_uuid].arguments = state.data[typeToKey('skill')][skill_uuid].arguments.filter(arg => arg.uuid !== argument.uuid)
+
   }),
-  setParameterProperty: (skill_uuid, parameter_uuid, property, value) => set((state)=>{
-    state.data[typeToKey('skill')][skill_uuid].parameters[parameter_uuid][property] = value
+  getSkillArugment: (skill_uuid, argument_uuid) => get((state)=>{
+    for (let i = 0; i < state.data[typeToKey('skill')][skill_uuid].arguments.length; i++) {
+      if (state.data[typeToKey('skill')][skill_uuid].arguments[i].uuid === argument_uuid) {
+        return state.data[typeToKey('skill')][skill_uuid].arguments[i];
+      }
+    }
+    return undefined
+  }),
+  setArgumentProperty: (skill_uuid, argument_uuid, property, value) => set((state)=>{
+    for (let i = 0; i < state.data[typeToKey('skill')][skill_uuid].arguments.length; i++) {
+      if (state.data[typeToKey('skill')][skill_uuid].arguments[i].uuid === argument_uuid) {
+        state.data[typeToKey('skill')][skill_uuid].arguments[i][property] = value;
+      }
+    }
+    
   }),
   toggleSkillEditable: (skill_uuid) => set((state) => {
     state.data[typeToKey('skill')][skill_uuid].editable = !state.data[typeToKey('skill')][skill_uuid].editable
