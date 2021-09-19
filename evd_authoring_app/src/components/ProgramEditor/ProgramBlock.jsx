@@ -76,7 +76,6 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
         minHeight: 30,
         minWidth: 250,
         borderRadius: 3,
-        margin: 4,
         padding: 5,
         zIndex: focused ? 100 : 1
     };

@@ -75,7 +75,7 @@ export const EvdSlice = (set, get) => ({
       get().addItem('primitive', primitive)
     });
     flattenedSkills.forEach((skill, idx) => {
-      get().addItem('skill', { ...skill, transform: { x: 520 + idx * 400, y: 10 } })
+      get().addItem('skill', { ...skill, transform: { x: 580 + idx * 430, y: 10 } })
     });
     program.primitives.forEach((primitive) => {
       get().addChildPrimitive(primitive, program.uuid)
