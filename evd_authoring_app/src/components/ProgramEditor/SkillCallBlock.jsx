@@ -1,67 +1,94 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { NodeZone } from "./NodeZone";
 // import { ItemSortable } from "./Wrappers";
-import { InputNumber, Row, Col, Button } from "antd";
+import { Row, Col } from "antd";
 import useStore from "../../stores/Store";
 import blockStyles from "./blockStyles";
-import { ReactComponent as PrimitiveIcon } from '../CustomIcons/Primitive.svg';
 import { ReactComponent as SkillIcon } from '../CustomIcons/Skill.svg';
-import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg';
-import Icon, { UnlockOutlined, LockOutlined, DownOutlined, RightOutlined } from '@ant-design/icons';
+import Icon, { UnlockOutlined, LockOutlined } from '@ant-design/icons';
+import { TrajectoryBlock } from "./TrajectoryBlock";
 import './highlight.css';
 import { UUIDBlock } from "./UUIDBlock";
-import { useSpring, animated } from '@react-spring/web';
-import { config } from 'react-spring';
 import { useDrag } from "react-dnd";
-import { TrajectoryBlock } from "./TrajectoryBlock";
-import useMeasure from "react-use-measure";
+
+const TYPE_LOOKUP = {
+  'node.machine.': {store:'machines',type:'machine'},
+  'node.pose.thing.': {store:'placeholders',type:'thing'},
+  'node.pose.waypoint.': {store:'waypoints',type:'waypoint'},
+  'node.pose.waypoint.location.': {store:'locations',type:'location'},
+  'node.trajectory.': {store:'trajectories',type:'trajectory'}
+}
+
+const PRETTY_LOOKUP = {
+  'node.machine.': 'Machine',
+  'node.pose.thing.': 'Thing',
+  'node.pose.waypoint.': 'Waypoint',
+  'node.pose.waypoint.location.': 'Location',
+  'node.trajectory.': 'Trajectory'
+}
 
 export const SkillCallBlock = ({
   staticData, uuid, parentData, onDelete, dragBehavior,
   dragDisabled, ancestors, context, idx, after,
 }) => {
 
-  const [focused, data, parameters] = useStore(useCallback(state => {
-    const parameterValues = {};
+  const [focused, data, skill, parameters] = useStore(useCallback(state => {
+    let parameterValues = [];
 
+    /*
+    {
+        type: 'node.skill-argument.',
+        // The human-readable name of this argument
+        name: 'This Machine',
+        // If the uuid is found in any fields for the children primitives' parameters, replace it with the corresponding value. 
+        // This also serves as the key for any corresponding skill-call's parameters.
+        uuid: 'skill-arg-uuid-0', 
+        editable: true,
+        deleteable: true,
+        description: '',
+        // The type of the argument
+        parameter_type: 'node.machine.',
+        is_list: false
+    }
+    */
     const data = staticData ? staticData : state.data.primitives[uuid];
+    const skill = state.data.skills[data.parameters.skill_uuid];
 
-    // If there is a param and it exists in the context, create a fake data object, otherwise use the value in the store, if it exists there.
-    if (data.parameters.machine_uuid && state.data.machines[data.parameters.machine_uuid]) {
-      parameterValues.machine = state.data.machines[data.parameters.machine_uuid]
-    } else if (data.parameters.machine_uuid && context[data.parameters.machine_uuid]) {
-      parameterValues.machine = { uuid: data.parameters.machine_uuid, ...context[data.parameters.machine_uuid] }
-    }
-
-    if (data.parameters.thing_uuid && state.data.placeholders[data.parameters.thing_uuid]) {
-      parameterValues.thing = state.data.placeholders[data.parameters.thing_uuid]
-    } else if (data.parameters.thing_uuid && context[data.parameters.thing_uuid]) {
-      parameterValues.thing = { uuid: data.parameters.thing_uuid, pending_node: context[data.parameters.thing_uuid] }
-    }
-
-    if (data.parameters.trajectory_uuid && state.data.trajectories[data.parameters.trajectory_uuid]) {
-      parameterValues.trajectory = {...state.data.trajectories[data.parameters.trajectory_uuid],real:true}
-    } else if (data.parameters.trajectory_uuid && context[data.parameters.trajectory_uuid]) {
-      parameterValues.trajectory = { uuid: data.parameters.trajectory_uuid, ...context[data.parameters.trajectory_uuid] }
-    }
-
-    if (!data.parameters.location_uuid && !context[data.parameters.location_uuid]) {
-      parameterValues.location = state.data.locations[data.parameters.location_uuid]
-    } else if (data.parameters.location_uuid && context[data.parameters.location_uuid]) {
-      parameterValues.location = { uuid: data.parameters.location_uuid, ...context[data.parameters.location_uuid] }
-    }
+    skill.arguments.forEach(argument => {
+      const callVal = data.parameters[argument.uuid];
+      if (argument.parameter_type !== 'node.pose.thing.') {
+        if (callVal && state.data[TYPE_LOOKUP[argument.parameter_type].store][callVal]) {
+          parameterValues.push({ contents: state.data[TYPE_LOOKUP[argument.parameter_type].store][callVal], argument, real:true })
+        } else if (callVal && context[callVal]) {
+          parameterValues.push({ contents: { uuid: callVal, ...context[callVal] }, argument })
+        } else {
+          parameterValues.push({ contents: null, argument })
+        }
+      } else if (argument.parameter_type === 'node.pose.thing.') {
+        if (callVal && state.data.placeholders[callVal]) {
+          parameterValues.push({ contents: state.data.placeholders[callVal], argument })
+        } else if (callVal && context[callVal]) {
+          parameterValues.push({ contents: { uuid: callVal, pending_node: context[callVal] }, argument })
+        } else {
+          parameterValues.push({ contents: null, argument })
+        }
+      }
+    })
 
     return [
       state.focusItem.uuid === uuid,
       data,
+      skill,
       parameterValues
     ]
   }, [staticData, uuid, context]));
 
-  const [frame, clearFocusItem, focusExists, 
-    setPrimitiveParameter, moveTrajectoryBlock, 
+  console.log(parameters)
+
+  const [frame, clearFocusItem, focusExists,
+    setPrimitiveParameter, moveTrajectoryBlock,
     deletePrimitiveTrajectory] = useStore(
-    (state) => [state.frame, state.clearFocusItem, state.focusItem.type !== null, 
+      (state) => [state.frame, state.clearFocusItem, state.focusItem.type !== null,
       state.setPrimitiveParameter, state.moveTrajectoryBlock, state.deletePrimitiveTrajectory])
 
   const unfocused = focusExists && !focused;
@@ -69,12 +96,11 @@ export const SkillCallBlock = ({
   const inDrawer = ancestors[0].uuid === 'drawer';
   const editingEnabled = !inDrawer && data.editable;
 
-
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
     item: { ...data, parentData, dragBehavior, onDelete, idx },
     options: { dragEffect: dragBehavior },
-    canDrag: (_)=> !dragDisabled,
+    canDrag: (_) => !dragDisabled,
     collect: monitor => ({
       isDragging: monitor.isDragging()
     })
@@ -82,32 +108,27 @@ export const SkillCallBlock = ({
 
 
   const parameterAncestors = {
-    machine: [
+    'node.machine.': [
       { uuid: data.uuid, accepts: ['uuid-machine'] },
       ...ancestors
     ],
-    location: [
+    'node.pose.waypoint.location.': [
       { uuid: data.uuid, accepts: ['uuid-location'] },
       ...ancestors
     ],
-    trajectory: [
+    'node.pose.waypoint.': [
+      { uuid: data.uuid, accepts: ['uuid-waypoint'] },
+      ...ancestors
+    ],
+    'node.trajectory.': [
       { uuid: data.uuid, accepts: ['uuid-trajectory', 'node.trajectory.'] },
       ...ancestors
     ],
-    thing: [
+    'node.pose.thing.': [
       { uuid: data.uuid, accepts: ['uuid-thing'] },
       ...ancestors
     ]
   }
-
-  const [settingsRef, { height }] = useMeasure();
-  const [settingsExpanded, setSettingsExpanded] = useState(false);
-  const settingsStyle = useSpring({ height: height, config: config.stiff});
-  
-  const primitivesWithSettings = [
-    'node.primitive.gripper.',
-    'node.primitive.delay.'
-  ]
 
   const styles = {
     backgroundColor:
@@ -118,7 +139,7 @@ export const SkillCallBlock = ({
     fontSize: 14,
     padding: 5,
     position: 'relative',
-    margin:0,
+    margin: 0,
     zIndex: focused ? 100 : 1
   };
 
@@ -129,17 +150,13 @@ export const SkillCallBlock = ({
     backgroundColor: "rgba(0,0,0,0.1)"
   }
 
-  let Glyph = null;
-  if (data.type === 'node.primitive.skill-call.') {
-    Glyph = SkillIcon;
-  } else if (data.type === 'node.primitive.hierarchical.') {
-    Glyph = ContainerIcon;
-  } else {
-    Glyph = PrimitiveIcon;
-  }
-
   const parameterDrop = (dropData, parameter) => {
-    if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
+    if (dropData.type === 'node.trajectory.') {
+      console.log('moving trajectory')
+      console.log(dropData)
+      console.log(parameter)
+      moveTrajectoryBlock(dropData, uuid, parameter)
+    } else if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
       console.log('move')
       setPrimitiveParameter('primitive', uuid, dropData.parentData.field, null);
       setPrimitiveParameter('primitive', uuid, parameter, dropData.uuid);
@@ -149,24 +166,15 @@ export const SkillCallBlock = ({
     }
   }
 
-  const trajectoryDrop = (dropData) => {
-    if (dropData.type.includes('uuid')) {
-      setPrimitiveParameter('primitive', uuid, 'trajectory_uuid', dropData.uuid);
-    } else {
-      console.log(dropData)
-      moveTrajectoryBlock(dropData, uuid, null)
-    }
-  }
-
   return (
-    <div hidden={isDragging && dragBehavior==='move'}>
+    <div hidden={isDragging && dragBehavior === 'move'}>
       <div ref={preview} style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
         <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-          <Col ref={dragDisabled ? null : drag} span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, cursor: dragDisabled ? 'not-allowed':'grab', zIndex:101 }}>
-            <Icon style={{ marginLeft: 4 }} component={Glyph} />{' '}{data.name}
+          <Col ref={dragDisabled ? null : drag} span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
+            <Icon style={{ marginLeft: 4 }} component={SkillIcon} />{' Execute: '}{skill.name}
           </Col>
           <Col span={6} offset={1} style={{ textAlign: 'end' }}>
-            {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
+          {editingEnabled ? <UnlockOutlined style={{marginRight:5}}/> : <LockOutlined style={{marginRight:5}}/>}
             {/* <Button
                   type='text'
                   style={{marginLeft:2}}
@@ -175,237 +183,48 @@ export const SkillCallBlock = ({
               /> */}
           </Col>
         </Row>
-        {primitivesWithSettings.some(primitive => primitive === data.type) &&
-          <div style={fieldStyle}>
-            <Row align="middle" style={{ marginBottom: 5 }}>
-              <Col span="20">Settings:</Col>
-              <Col span="4">
-                <Button
-                  disabled={inDrawer}
-                  onClick={() => setSettingsExpanded(!settingsExpanded)}
-                  type='text'
-                  icon={settingsExpanded ? (
-                    <DownOutlined />
-                  ) : (
-                    <RightOutlined />
-                  )}
-                />
-              </Col>
-            </Row>
-            <animated.div style={{ overflow: 'hidden', ...settingsStyle }}>
-              <div ref={settingsRef}>
-                {settingsExpanded && data.type === 'node.primitive.gripper.' && (
-                  <>
-                    <Row align="middle" style={fieldStyle}>
-                      <Col flex={2}>Position:</Col>
-                      <Col flex={3} style={{ textAlign: 'right' }}>
-                        <InputNumber
-                          min={0}
-                          max={5}
-                          size='small'
-                          defaultValue={data.parameters.position}
-                          disabled={!editingEnabled}
-                          onChange={(v) => setPrimitiveParameter('primitive', data.uuid, 'position', v)}
-                          bordered={false}
-                          style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
-                      </Col>
-                    </Row>
-                    <Row align="middle" style={fieldStyle}>
-                      <Col flex={2}>Effort:</Col>
-                      <Col flex={3} style={{ textAlign: 'right' }}>
-                        <InputNumber
-                          min={0}
-                          max={5}
-                          size='small'
-                          defaultValue={data.parameters.effort}
-                          disabled={!editingEnabled}
-                          onChange={(v) => setPrimitiveParameter('primitive', data.uuid, 'effort', v)}
-                          bordered={false}
-                          style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
-                      </Col>
-                    </Row>
-                    <Row align="middle" style={fieldStyle}>
-                      <Col flex={2}>Speed:</Col>
-                      <Col flex={3} style={{ textAlign: 'right' }}>
-                        <InputNumber
-                          min={0}
-                          max={5}
-                          size='small'
-                          defaultValue={data.parameters.speed}
-                          disabled={!editingEnabled}
-                          onChange={(v) => setPrimitiveParameter('primitive', data.uuid, 'speed', v)}
-                          bordered={false}
-                          style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
-                      </Col>
-                    </Row>
-                  </>
-                )}
-                {settingsExpanded && data.type === 'node.primitive.delay.' && (
-                  <>
-                    <Row align="middle" style={fieldStyle}>
-                      <Col flex={2}>Duration:</Col>
-                      <Col flex={3} style={{ textAlign: 'right' }}>
-                        <InputNumber
-                          min={0}
-                          max={5}
-                          formatter={(v) => (`${v} sec`)}
-                          defaultValue={data.parameters.duration}
-                          disabled={!editingEnabled}
-                          onChange={(v) => setPrimitiveParameter('primitive', data.uuid, 'duration', v)}
-                          bordered={false}
-                          style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
-                      </Col>
-                    </Row>
-                  </>
-                )}
-              </div>
-            </animated.div>
-          </div>}
-        {data.type.includes("node.primitive.machine-primitive") && (
-          <Row align="middle" style={fieldStyle}>
-            <Col flex={2} style={{ paddingRight: 5 }}>Machine:</Col>
+        {parameters.map((argInfo,i) => (
+          <Row key={i} align="middle" style={fieldStyle}>
+            <Col flex={2} style={{ paddingRight: 5 }}>{argInfo.argument.name}:</Col>
             <Col flex={3}>
               <NodeZone
-                ancestors={parameterAncestors.machine}
+                ancestors={parameterAncestors[argInfo.argument.parameter_type]}
                 context={context}
-                onDrop={(dropData) => parameterDrop(dropData, 'machine_uuid')}
-                emptyMessage='No Machine'
+                onDrop={(dropData) => parameterDrop(dropData, argInfo.argument.uuid)}
+                emptyMessage={`No ${PRETTY_LOOKUP[argInfo.argument.parameter_type]}`}
                 dropDisabled={!editingEnabled}
               >
-                {parameters.machine && (
+                {argInfo.contents && (argInfo.argument.parameter_type !== 'node.trajectory.' || !argInfo.real) ? (
                   <UUIDBlock
-                    key={parameters.machine.uuid}
-                    id={parameters.machine.uuid}
+                    id={argInfo.contents.uuid}
                     idx={0}
                     dragBehavior='move'
                     hoverBehavior='replace'
-                    ancestors={parameterAncestors.machine}
+                    ancestors={parameterAncestors[argInfo.argument.parameter_type]}
                     context={context}
-                    parentData={{ type: 'primitive', uuid, field: 'machine_uuid' }}
-                    data={{ ...parameters.machine, itemType: 'machine', type: `uuid-machine` }}
-                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'machine_uuid', null)}
-                    onDrop={(dropData) => parameterDrop(dropData, 'machine_uuid')}
+                    parentData={{ type: 'primitive', uuid, field: argInfo.argument.uuid }}
+                    data={{ ...argInfo.contents, itemType: TYPE_LOOKUP[argInfo.argument.parameter_type].type, type: `uuid-${TYPE_LOOKUP[argInfo.argument.parameter_type].type}` }}
+                    onDelete={editingEnabled ? (_) => setPrimitiveParameter('primitive', uuid, argInfo.argument.uuid, null) : null}
+                    onDrop={(dropData) => parameterDrop(dropData, argInfo.argument.uuid)}
                     dragDisabled={!editingEnabled}
                     dropDisabled={!editingEnabled}
                   />
-                )
-                }
-              </NodeZone>
-            </Col>
-          </Row>
-        )}
-        {data.type.includes("node.primitive.move-trajectory") && (
-          <Row align="middle" style={fieldStyle}>
-            <Col flex={2} style={{ paddingRight: 5 }}>Trajectory:</Col>
-            <Col flex={3}>
-              <NodeZone
-                ancestors={parameterAncestors.trajectory}
-                parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
-                onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory_uuid', parameters.trajectory.uuid)}
-                onDrop={trajectoryDrop}
-                emptyMessage='No Trajectory'
-                dropDisabled={!editingEnabled}
-              >
-                {parameters.trajectory && (
-                  parameters.trajectory.real ? (
-                    <TrajectoryBlock
-                      uuid={parameters.trajectory.uuid}
-                      idx={0}
-                      parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
-                      ancestors={parameterAncestors.trajectory}
-                      dragBehavior='move'
-                      dragDisabled={!editingEnabled}
-                      onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory_uuid', parameters.trajectory.uuid)}
-                      context={context}
-                    />
-                  ) : (
-                    <UUIDBlock
-                      key={parameters.trajectory.uuid}
-                      id={parameters.trajectory.uuid}
-                      idx={0}
-                      dragBehavior='move'
-                      hoverBehavior='replace'
-                      ancestors={parameterAncestors.trajectory}
-                      context={context}
-                      parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
-                      data={{ ...parameters.trajectory, itemType: 'trajectory', type: `uuid-trajectory` }}
-                      onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'trajectory_uuid', null)}
-                      onDrop={trajectoryDrop}
-                      dragDisabled={!editingEnabled}
-                      dropDisabled={!editingEnabled}
-                    />
-                  )
-                )}
-              </NodeZone>
-            </Col>
-          </Row>
-        )}
-        {data.type.includes("node.primitive.move-unplanned") && (
-          <Row align="middle" style={fieldStyle}>
-            <Col flex={2} style={{ paddingRight: 5 }}>To Location:</Col>
-            <Col flex={3}>
-              <NodeZone
-                ancestors={parameterAncestors.location}
-                context={context}
-                onDrop={(dropData) => parameterDrop(dropData, 'location_uuid')}
-                emptyMessage='No Location'
-                dropDisabled={!editingEnabled}
-              >
-                {parameters.location && (
-                  <UUIDBlock
-                    key={parameters.location.uuid}
-                    id={parameters.location.uuid}
+                ) : argInfo.contents && argInfo.argument.parameter_type === 'node.trajectory.' && argInfo.real ? (
+                  <TrajectoryBlock
+                    uuid={argInfo.contents.uuid}
                     idx={0}
+                    parentData={{ type: 'primitive', uuid, field: argInfo.argument.uuid }}
+                    ancestors={parameterAncestors[argInfo.argument.parameter_type]}
                     dragBehavior='move'
-                    hoverBehavior='replace'
-                    ancestors={parameterAncestors.location}
-                    context={context}
-                    parentData={{ type: 'primitive', uuid, field: 'location_uuid' }}
-                    data={{ ...parameters.location, itemType: 'location', type: `uuid-location` }}
-                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'location_uuid', null)}
-                    onDrop={(dropData) => parameterDrop(dropData, 'location_uuid')}
                     dragDisabled={!editingEnabled}
-                    dropDisabled={!editingEnabled}
+                    onDelete={(_) => deletePrimitiveTrajectory(uuid, argInfo.argument.uuid, argInfo.contents.uuid)}
+                    context={context}
                   />
-                )
-                }
+                ) : null}
               </NodeZone>
             </Col>
           </Row>
-        )}
-        {data.type.includes("node.primitive.gripper") && (
-          <Row align="middle" style={fieldStyle}>
-            <Col flex={2} style={{ paddingRight: 5 }}>Thing:</Col>
-            <Col flex={3}>
-              <NodeZone
-                ancestors={parameterAncestors.thing}
-                context={context}
-                onDrop={(dropData) => parameterDrop(dropData, 'thing_uuid')}
-                emptyMessage='No Thing'
-                dropDisabled={!editingEnabled}
-              >
-                {parameters.thing && (
-                  <UUIDBlock
-                    key={parameters.thing.uuid}
-                    id={parameters.thing.uuid}
-                    idx={0}
-                    dragBehavior='move'
-                    hoverBehavior='replace'
-                    ancestors={parameterAncestors.thing}
-                    context={context}
-                    parentData={{ type: 'primitive', uuid, field: 'thing_uuid' }}
-                    data={{ ...parameters.thing, itemType: 'placeholder', type: `uuid-thing` }}
-                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'thing_uuid', null)}
-                    onDrop={(dropData) => parameterDrop(dropData, 'thing_uuid')}
-                    dragDisabled={!editingEnabled}
-                    dropDisabled={!editingEnabled}
-                  />
-                )
-                }
-              </NodeZone>
-            </Col>
-          </Row>
-        )}
+        ))}
       </div>
       {!(isDragging && dragBehavior === 'move') && after}
     </div>

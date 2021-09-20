@@ -219,29 +219,17 @@ export const EvdSlice = (set, get) => ({
   }),
   moveTrajectoryBlock: (trajectory, newParentId, argKey) => set((state) => {
     const onFile = state.data.trajectories[trajectory.uuid];
-    if (onFile) {
-      // It is either a parameter for a skill-call or move-trajectory primitive
-      const oldParentNode = state.data.primitives[onFile.parentData.uuid];
-      if (oldParentNode.type === 'node.primitive.skill-call.') {
-        Object.entries(oldParentNode.parameters).some((keyValuePair) => {
-          if (keyValuePair[1] === trajectory.uuid) {
-            ///state.data.primitives[onFile.parentData.uuid].parameters[keyValuePair[0]] = null
-            // Short-circuits the iteration
-            return true
-          } else { return false }
-        })
-      } else if (oldParentNode.type === 'node.primitive.move-trajectory.') {
-        state.data.primitives[onFile.parentData.uuid].parameters.trajectory_uuid = null
-      }
-    } else {
+    if (!onFile) {
+      console.log('Adding because it doesnt exist in store')
       state.data.trajectories[trajectory.uuid] = lodash.omit(trajectory,'parentData','dragBehavior','onDelete')
     }
-    const newParentNode = state.data.primitives[newParentId];
-    if (newParentNode.type === 'node.primitive.skill-call') {
-      state.data.primitives[newParentId].parameters[argKey] = trajectory.uuid
-    } else if (newParentNode.type === 'node.primitive.move-trajectory.') {
-      state.data.primitives[newParentId].parameters.trajectory_uuid = trajectory.uuid
+    const field = argKey ? argKey : 'trajectory_uuid';
+    if (trajectory.parentData.type !== 'drawer') {
+      console.log('from drawer, not removing')
+      state.data.primitives[trajectory.parentData.uuid].parameters[trajectory.parentData.field] = null
     }
+    console.log(`Setting field ${field} of ${newParentId} to ${trajectory.uuid}`)
+    state.data.primitives[newParentId].parameters[field] = trajectory.uuid;
   }),
   deletePrimitiveTrajectory: (parentId, field, trajectoryId) => set(state=>{
     state.data.primitives[parentId].parameters[field] = null;

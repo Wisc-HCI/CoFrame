@@ -22,7 +22,7 @@ export const PrimitiveBlock = ({
 }) => {
 
   const [focused, data, parameters] = useStore(useCallback(state => {
-    const parameterValues = {};
+    let parameterValues = {};
 
     const data = staticData ? staticData : state.data.primitives[uuid];
 
@@ -154,7 +154,7 @@ export const PrimitiveBlock = ({
       setPrimitiveParameter('primitive', uuid, 'trajectory_uuid', dropData.uuid);
     } else {
       console.log(dropData)
-      moveTrajectoryBlock(dropData, uuid, null)
+      moveTrajectoryBlock(dropData, uuid, 'trajectory_uuid')
     }
   }
 

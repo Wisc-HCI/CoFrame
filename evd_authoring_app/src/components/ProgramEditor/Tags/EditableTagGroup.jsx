@@ -28,8 +28,16 @@ export const EditableTagGroup = (props) => {
     return '';
   }
 
+  const fieldStyle = {
+    borderRadius: 4,
+    width: '100%',
+    marginBottom: 4,
+    padding: 5,
+    backgroundColor: "rgba(0,0,0,0.2)"
+  }
+
   return (
-    <div>
+    <div style={fieldStyle} >
       {data.map((obj) => {
           return (
             <div key={obj.uuid} style={{paddingTop:5}} >
