@@ -16,7 +16,7 @@ import { useDrag } from "react-dnd";
 import { TrajectoryBlock } from "./TrajectoryBlock";
 import useMeasure from "react-use-measure";
 
-export const PrimitiveBlock = ({
+export const SkillCallBlock = ({
   staticData, uuid, parentData, onDelete, dragBehavior,
   dragDisabled, ancestors, context, idx, after,
 }) => {
@@ -166,7 +166,7 @@ export const PrimitiveBlock = ({
             <Icon style={{ marginLeft: 4 }} component={Glyph} />{' '}{data.name}
           </Col>
           <Col span={6} offset={1} style={{ textAlign: 'end' }}>
-          {editingEnabled ? <UnlockOutlined style={{marginRight:5}}/> : <LockOutlined style={{marginRight:5}}/>}
+            {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
             {/* <Button
                   type='text'
                   style={{marginLeft:2}}

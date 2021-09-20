@@ -6,11 +6,6 @@ export const RosSlice = (set,get) => ({
     setUrl: (url) => set((_)=>({url:url,connection:'disconnected'})),
     ros: null,
     connection: 'disconnected',
-    loadAppSrv: null,
-    saveAppSrv: null,
-    getApOptionsSrv: null,
-    getProgramSrv: null,
-    setProgramSrv: null,
     updateProgramTopic: null,
     updateTfsTopic: null,
     onConnection: () => set((_)=>({connection:'connected'})),
@@ -22,40 +17,40 @@ export const RosSlice = (set,get) => ({
         ros.on('error', get().onError);
         ros.on('close', get().onClose);
 
-        const loadAppSrv = new ROSLIB.Service({
-            ros: ros,
-            name: 'data_server/load_application_data',
-            serviceType: 'evd_ros_core/LoadData'
-        });
+        // const loadAppSrv = new ROSLIB.Service({
+        //     ros: ros,
+        //     name: 'data_server/load_application_data',
+        //     serviceType: 'evd_ros_core/LoadData'
+        // });
     
-        const saveAppSrv = new ROSLIB.Service({
-            ros: ros,
-            name: 'data_server/save_application_data',
-            serviceType: 'evd_ros_core/SaveData'
-        });
+        // const saveAppSrv = new ROSLIB.Service({
+        //     ros: ros,
+        //     name: 'data_server/save_application_data',
+        //     serviceType: 'evd_ros_core/SaveData'
+        // });
     
-        const getAppOptionsSrv = new ROSLIB.Service({
-            ros: ros,
-            name: 'data_server/get_application_options',
-            serviceType: 'evd_ros_core/GetOptions'
-        });
+        // const getAppOptionsSrv = new ROSLIB.Service({
+        //     ros: ros,
+        //     name: 'data_server/get_application_options',
+        //     serviceType: 'evd_ros_core/GetOptions'
+        // });
 
-        const getProgramSrv = new ROSLIB.Service({
-            ros: ros,
-            name: 'data_server/get_data',
-            serviceType: 'evd_ros_core/GetData'
-        });
+        // const getProgramSrv = new ROSLIB.Service({
+        //     ros: ros,
+        //     name: 'data_server/get_data',
+        //     serviceType: 'evd_ros_core/GetData'
+        // });
     
-        const setProgramSrv = new ROSLIB.Service({
-            ros: ros,
-            name: 'data_server/set_data',
-            serviceType: 'evd_ros_core/SetData'
-        });
+        // const setProgramSrv = new ROSLIB.Service({
+        //     ros: ros,
+        //     name: 'data_server/set_data',
+        //     serviceType: 'evd_ros_core/SetData'
+        // });
 
         const updateProgramTopic = new ROSLIB.Topic({
             ros: ros,
-            name: 'data_server/update',
-            messageType: 'evd_ros_core/UpdateData'
+            name: 'program/update',
+            messageType: 'std_msgs/String'
         });
 
         const updateTfsTopic = new ROSLIB.Topic({
@@ -64,6 +59,8 @@ export const RosSlice = (set,get) => ({
             messageType: 'tf2_msgs/TFMessage'
         });
 
+
+
         const updateTfsFn = get().updateFromTfs;
         updateTfsTopic.subscribe(updateTfsFn);
 
@@ -71,11 +68,11 @@ export const RosSlice = (set,get) => ({
         set(()=>({
             connection:'connecting',
             ros:ros,
-            loadAppSrv:loadAppSrv, 
-            saveAppSrv:saveAppSrv, 
-            getAppOptionsSrv:getAppOptionsSrv,
-            getProgramSrv:getProgramSrv,
-            setProgramSrv:setProgramSrv,
+            // loadAppSrv:loadAppSrv, 
+            // saveAppSrv:saveAppSrv, 
+            // getAppOptionsSrv:getAppOptionsSrv,
+            // getProgramSrv:getProgramSrv,
+            // setProgramSrv:setProgramSrv,
             updateProgramTopic:updateProgramTopic,
             updateTfsTopic:updateTfsTopic
         }))

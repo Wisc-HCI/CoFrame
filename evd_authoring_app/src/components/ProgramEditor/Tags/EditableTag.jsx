@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import useStore from '../../../stores/Store';
 import { UUIDBlock } from '../UUIDBlock';
 

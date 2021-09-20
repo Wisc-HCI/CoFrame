@@ -7,7 +7,7 @@ import React from 'react';
 
 import { primitiveTypes, fromPrimitiveTemplate } from '../../stores/templates';
 import { acceptLookup } from './acceptLookup';
-import { PrimitiveBlock } from './PrimitiveBlock';
+import { ActionBlock } from './ActionBlock';
 
 export const PrimitivesDrawer = (_) => {
 
@@ -19,7 +19,7 @@ export const PrimitivesDrawer = (_) => {
         <React.Fragment>
             {primitiveTypes.map((type,i)=>(
                 <div key={type} style={{paddingTop:5}} >
-                    <PrimitiveBlock
+                    <ActionBlock
                         ancestors={ancestors} 
                         idx={i}
                         parentData={{type:'drawer',uuid:'drawer'}}

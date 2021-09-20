@@ -3,7 +3,7 @@ import { animated } from "@react-spring/web";
 import React from "react";
 import { useDrop } from 'react-dnd';
 import useMeasure from "react-use-measure";
-import { PrimitiveBlock } from "./PrimitiveBlock";
+import { ActionBlock } from "./ActionBlock";
 import { UUIDBlock } from "./UUIDBlock";
 
 const validDrop = (dragItem, ancestors) => {
@@ -92,13 +92,13 @@ export const SortableSeparator = ({ ancestors, context, onDrop, dropDisabled, he
                     )}
                     {showPreview && dragItem.type.includes('primitive') && (
                         <div style={{ opacity: 0.5, top: offset, position:'relative'}}>
-                            <PrimitiveBlock
+                            <ActionBlock
                                 ancestors={ancestors}
                                 idx={0}
+                                locked
                                 staticData={dragItem}
                                 context={context}
                                 dragDisabled
-                                dropDisabled
                                 dragBehavior='move' />
                         </div>
                     )}

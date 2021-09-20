@@ -1,7 +1,7 @@
 import React from 'react';
 import { TrajectoryBlock } from './TrajectoryBlock';
 import { SkillBlock } from './SkillBlock';
-import { PrimitiveBlock } from './PrimitiveBlock';
+import { ActionBlock } from './ActionBlock';
 import { fromContainerTemplate } from '../../stores/templates';
 import { acceptLookup } from './acceptLookup';
 
@@ -34,7 +34,7 @@ export const ContainersDrawer = (_) => {
                     context={{ }}/>
             </div>
             <div key='hierarchical' style={{paddingTop: 5}} >
-                <PrimitiveBlock
+                <ActionBlock
                     key='hierarchical'
                     staticData={fromContainerTemplate('node.primitive.hierarchical.')}
                     ancestors={ancestors}

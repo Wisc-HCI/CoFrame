@@ -6,7 +6,8 @@ import { EditableTag } from './EditableTag';
 
 
 export const EditableTagGroup = (props) => {
-  const data = useStore(useCallback(state=>state.data[typeToKey('skill')][props.skill.uuid].arguments));
+  const uuid = props.skill.uuid;
+  const data = useStore(useCallback(state=>state.data[typeToKey('skill')][uuid].arguments,[uuid]));
 
   const deleteSkillArgument = useStore(state=>state.deleteSkillArgument);
 

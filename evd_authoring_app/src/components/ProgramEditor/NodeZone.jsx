@@ -1,6 +1,6 @@
 import React from "react";
 import { useDrop } from 'react-dnd';
-import { PrimitiveBlock } from "./PrimitiveBlock";
+import { ActionBlock } from "./ActionBlock";
 import { TrajectoryBlock } from "./TrajectoryBlock";
 import { UUIDBlock } from "./UUIDBlock";
 
@@ -70,13 +70,14 @@ export const NodeZone = ({ ancestors, children, context, onDrop, emptyMessage, d
                     dragBehavior='move' />
             )}
             {!showChildren && showPreview && dragItem.type.includes('primitive') && (
-                <PrimitiveBlock
+                <ActionBlock
                     ancestors={ancestors}
                     idx={0}
                     staticData={dragItem}
                     context={context}
                     dragDisabled
                     dropDisabled
+                    locked
                     dragBehavior='move' />
             )}
             {!showChildren && showPreview && dragItem.type.includes('trajectory') && (

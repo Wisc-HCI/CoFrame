@@ -9,7 +9,7 @@ import { acceptLookup } from './acceptLookup';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
-import { PrimitiveBlock } from './PrimitiveBlock';
+import { ActionBlock } from './ActionBlock';
 import { generateUuid } from '../../stores/generateUuid';
 import { EditableTagGroup } from './Tags/EditableTagGroup';
 import { useDrag } from 'react-dnd';
@@ -61,6 +61,8 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                 return
             }
             moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, newIdx);
+        } else if (dropData.dragBehavior === 'move') {
+            moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, idx)
         } else {
             insertChildPrimitive(dropData, uuid, idx);
         }
@@ -149,14 +151,14 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             <SortableSeparator
                                 key={0}
                                 spacing={idx===0 ? 0 : 5}
-                                height={40}
+                                height={30}
                                 ancestors={skillAncestors}
                                 context={currentContext}
                                 onDrop={(dropData) => primitiveDrop(dropData, 0)}
                                 dropDisabled={!editingEnabled}
                             />
                         )}
-                        <PrimitiveBlock
+                        <ActionBlock
                             key={id}
                             uuid={id}
                             parentData={{ type: 'program', uuid, field: 'primitive_uuids' }}
@@ -168,7 +170,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             after={
                                 <SortableSeparator
                                     ancestors={skillAncestors}
-                                    height={40}
+                                    height={30}
                                     end={idx === data.primitiveIds.length-1}
                                     spacing={idx === data.primitiveIds.length-1 ? 0 : 5}
                                     context={currentContext}
