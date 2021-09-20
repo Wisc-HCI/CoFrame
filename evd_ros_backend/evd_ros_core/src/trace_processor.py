@@ -117,7 +117,7 @@ class TraceProcessor:
             "pybullet_frame_names": self.pyb.frame_names,
             "pybullet_frame_data": {n:[None] for n in self.pyb.frame_names},
             "pybullet_collisions": {}, #TODO fill this in later
-            "grades": {} #TODO fill this in later
+            "pybullet_pinchpoints": {} #TODO fill this in later
         }
 
         self.jsf.clear()
@@ -126,6 +126,7 @@ class TraceProcessor:
 
     def _end_job(self, status, submit_fnt):
         #trace = Trace.from_dct(self._trace_data)
+        trace = self._trace_data
 
         self._path = None
         self._type = None
@@ -133,7 +134,7 @@ class TraceProcessor:
         self._trace_data = None
 
         #data = trace.to_dct() if status else None
-        submit_fnt(json.dumps(self._trace_data))
+        submit_fnt(json.dumps(trace))
 
     def _update_cb(self, event=None):
         # If the job has been started
@@ -180,7 +181,7 @@ class TraceProcessor:
                 for n, p in zip(fn_pby, fp_pby):
                     self._trace_data['pybullet_frame_data'][n].append(p)
 
-                #TODO collision packing
+                #TODO collision packing & pinch point packing
                 
                 # check if leg of trajectory is done
                 (posThreshold, ortThreshold) = self._thresholds[self._index]
@@ -191,7 +192,7 @@ class TraceProcessor:
                     self._time_step += self._timestep
 
             else: # self._type == 'joint'
-                pass
+                pass #TODO implement this
 
             # record timing info
             self._time_overall += self._timestep

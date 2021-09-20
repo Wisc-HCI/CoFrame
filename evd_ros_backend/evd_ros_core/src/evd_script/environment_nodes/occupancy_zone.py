@@ -86,7 +86,7 @@ class OccupancyZone(EnvironmentNode, VisualizeMarker):
         })
         return template
 
-    def __init__(self, occupancyType, posX = 0, posZ = 0, sclX = 1, sclZ = 1,
+    def __init__(self, occupancyType = None, posX = 0, posZ = 0, sclX = 1, sclZ = 1,
                  height = 0, type='', name='', parent=None, uuid=None,
                  append_type=True, editable=True, deleteable=True, description=''):
         self._occupancy_type = None
@@ -106,7 +106,7 @@ class OccupancyZone(EnvironmentNode, VisualizeMarker):
             deleteable=deleteable,
             description=description)
 
-        self.occupancy_type = occupancyType
+        self.occupancy_type = occupancyType if occupancyType != None else self.HUMAN_TYPE
         self.position_x = posX
         self.position_z = posZ
         self.scale_x = sclX

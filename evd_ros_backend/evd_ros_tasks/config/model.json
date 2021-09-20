@@ -10,5 +10,17 @@
         "config": "ur3e_config_v1.json",
         "timestep": 0.0165
     },
-    "timestep": 0.0165
+    "timestep": 0.0165,
+    "fixed_frame": "base_link",
+    "link_groups": {
+        "end_effector_path": "tool0"
+    },
+    "joint_names": [
+        "shoulder_pan_joint", 
+        "shoulder_lift_joint", 
+        "elbow_joint", 
+        "wrist_1_joint", 
+        "wrist_2_joint", 
+        "wrist_3_joint"
+    ]
 }

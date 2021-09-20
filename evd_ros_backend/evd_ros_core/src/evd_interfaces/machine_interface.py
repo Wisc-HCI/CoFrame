@@ -17,7 +17,7 @@ class MachineInterface:
         prefix_fmt = prefix+'/' if prefix != None else ''
         self._status_table = {}
         self._ack_table = {}
-
+        
         self.initialize_pub = rospy.Publisher('{0}machine/initialize'.format(prefix_fmt), MachineInitialize, queue_size=10)
         self.start_pub = rospy.Publisher('{0}machine/start'.format(prefix_fmt), MachineStart, queue_size=10)
         self.stop_pub = rospy.Publisher('{0}machine/stop'.format(prefix_fmt), MachineStop, queue_size=10)
