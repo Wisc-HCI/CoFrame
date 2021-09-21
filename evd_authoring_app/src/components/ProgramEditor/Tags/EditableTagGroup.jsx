@@ -12,7 +12,7 @@ export const EditableTagGroup = (props) => {
   const deleteSkillArgument = useStore(state=>state.deleteSkillArgument);
 
   const closeTag = argument => {
-    deleteSkillArgument(props.skill.uuid, argument);
+    deleteSkillArgument(props.skill, argument);
   };
 
   const determineItemType = param_type => {

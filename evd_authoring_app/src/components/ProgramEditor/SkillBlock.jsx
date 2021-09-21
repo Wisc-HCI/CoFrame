@@ -71,7 +71,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
 
     // Code for creating skill arguments
     const menuClickCreateArgument = e => {
-        const item = {uuid: generateUuid('skill-arg'), name: '', description: "", is_list: false, parameter_type: e.key, type: 'node.skill-argument.', editable: data.editable, deletable: true};
+        const item = {uuid: generateUuid('skill-arg'), name: '', description: "", is_list: false, parameter_type: e.key, type: 'node.skill-argument.', editable: data.editable, deleteable: true};
         createSkillArgument(data.uuid, item);
     }
 
