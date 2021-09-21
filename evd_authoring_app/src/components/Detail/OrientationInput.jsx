@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-
+import useStore from '../../stores/Store';
 import { Space, Button, Popover,InputNumber } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
@@ -8,6 +8,8 @@ import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
 
 const RAD_2_DEG = 180 / Math.PI;
 const DEG_2_RAD = Math.PI / 180;
+
+
 
 const eulerVecToDegrees = (vec) => {
   return vec.map(v=>RAD_2_DEG*v)
@@ -25,11 +27,19 @@ function OrientationInput (props)  {
    limits[0] = 0
  }
 
+ 
+const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
+ state.setFocusItem]
+ 
+));
+
   return(
     <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
     <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Orientation:</b>
     <Popover
     placement="left"
+    visible =  {(focusItem.transformMode === "rotate") ? true : false}
+    //onVisibleChange = {()=> changeTransformMode()}
     content={
       <Space>
         <h4 style={{ color: "red" }}>R</h4>
@@ -74,18 +84,23 @@ function OrientationInput (props)  {
            props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
          }}}
         />
+        <Button type="primary" onClick = {() =>setFocusItem(props.type,props.uuid,"inactive")}>Close</Button>
       </Space>
     }
     title="Set Orientation"
     trigger="click"
-
+    
   >
+    
+    
     <Button
       block
       icon={<EditOutlined />}
       style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
+      onClick = {() => setFocusItem(props.type,props.uuid,"rotate")   }
     >
     </Button>
+    
   </Popover>
 
 

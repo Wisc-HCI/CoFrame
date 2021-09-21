@@ -1,17 +1,25 @@
 import React, {useState} from 'react';
 import { Space, Button, Popover,InputNumber } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
+import useStore from '../../stores/Store';
 
 function PositionInput (props)  {
    const [inputVec, setInputVec] = useState(props.value);
    let minMax = [-10,10];
    let steps = 0.01;
+   const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
+    state.setFocusItem]
+    
+));
+
 
    return(
+     
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
      <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Position:</b>
      <Popover
      placement="left"
+     visible =  {(focusItem.transformMode === "translate") ? true : false}
      content={
        <Space>
          <h4 style={{ color: "red" }}>X</h4>
@@ -56,19 +64,26 @@ function PositionInput (props)  {
             props.onChange(updatedVec)
           }}}
          />
+          <Button type="primary" onClick = {() =>setFocusItem(props.type,props.uuid,"inactive")}>Close</Button>
        </Space>
      }
      title="Set Position"
      trigger="click"
+
 
    >
      <Button
        block
        icon={<EditOutlined />}
        style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
+       onClick = {() => setFocusItem(props.type,props.uuid,"translate")   }
+      
+
      >
      </Button>
+     
    </Popover>
+   
    </div>
    )
 

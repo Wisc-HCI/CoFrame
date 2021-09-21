@@ -32,15 +32,18 @@ export const GuiSlice = (set, get) => ({
   activeDrawer: null,
   setActiveDrawer: (drawer) => set(_ => ({ activeDrawer: drawer })),
   // the focusItem specifies the type and uuid of data to focus on
-  focusItem: { type: null, uuid: null },
-  setFocusItem: (type, uuid) => set(state => {
+  focusItem: { type: null, uuid: null,transformMode : null },
+  setFocusItem: (type, uuid,transformMode) => set(state => {
     // TODO Clear current items.
-    state.focusItem = { type: type, uuid: uuid };
+    state.focusItem = { type: type, uuid: uuid, transformMode : transformMode };
   }),
   clearFocusItem: () => set(state => {
-    state.focusItem = { type: null, uuid: null };
-    state.secondaryFocusItem = { type: null, uuid: null };
+    state.focusItem = { type: null, uuid: null, transformMode : null };
+    state.secondaryFocusItem = { type: null, uuid: null, transformMode : null};
   }),
+  
+  
+
   // the search terms they have entered
   searchTerm: '',
   setSearchTerm: (term) => set(_ => ({ searchTerm: term })),
