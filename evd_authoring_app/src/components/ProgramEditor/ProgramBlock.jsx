@@ -3,9 +3,10 @@ import { Col, Row, Button } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useDrag } from 'react-dnd';
 // import { ItemSortable } from './Wrappers';
-import { PrimitiveBlock } from './PrimitiveBlock';
+import { ActionBlock } from './ActionBlock';
 import { NodeZone } from './NodeZone';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
@@ -25,7 +26,7 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
             state.primitiveIds,
             state.moveChildPrimitive,
             state.insertChildPrimitive
-        ]))
+        ]),shallow)
 
     const data = { uuid, name, type, primitiveIds, transform };
 
@@ -40,7 +41,7 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
         state.frame,
         state.focusItem,
         state.setFocusItem
-    ]));
+    ]),shallow);
 
     const focused = focusItem.uuid === uuid;
 
@@ -56,10 +57,12 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
     const primitiveDrop = (dropData, idx) => {
         if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
             const newIdx = dropData.idx <= idx ? idx - 1 : idx;
-            // if (newIdx === dropData.idx) {
-            //     return
-            // }
+            if (newIdx === dropData.idx) {
+                return
+            }
             moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, newIdx);
+        } else if (dropData.dragBehavior === 'move') {
+            moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, idx)
         } else {
             insertChildPrimitive(dropData, uuid, idx);
         }
@@ -76,7 +79,6 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
         minHeight: 30,
         minWidth: 250,
         borderRadius: 3,
-        margin: 4,
         padding: 5,
         zIndex: focused ? 100 : 1
     };
@@ -109,14 +111,14 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                             <SortableSeparator
                                 key={0}
                                 spacing={idx===0 ? 0 : 5}
-                                height={40}
+                                height={30}
                                 ancestors={programAncestors}
                                 context={context}
                                 onDrop={(dropData) => primitiveDrop(dropData, 0)}
                                 dropDisabled={false}
                             />
                         )}
-                        <PrimitiveBlock
+                        <ActionBlock
                             key={id}
                             uuid={id}
                             parentData={{ type: 'program', uuid, field: 'primitive_uuids' }}
@@ -124,12 +126,11 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                             ancestors={programAncestors}
                             context={context}
                             idx={idx}
-                            dropDisabled={true}
                             dragDisabled={false}
                             after={
                                 <SortableSeparator
                                     ancestors={programAncestors}
-                                    height={40}
+                                    height={30}
                                     end={idx === primitiveIds.length-1}
                                     spacing={idx ===primitiveIds.length-1 ? 0 : 5}
                                     context={context}

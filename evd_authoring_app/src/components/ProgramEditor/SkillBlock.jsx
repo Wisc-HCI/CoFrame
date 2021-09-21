@@ -5,11 +5,12 @@ import { SortableSeparator } from './SortableSeparator';
 // import { ItemSortable } from './Wrappers';
 import { NodeZone } from './NodeZone';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import { acceptLookup } from './acceptLookup';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
-import { PrimitiveBlock } from './PrimitiveBlock';
+import { ActionBlock } from './ActionBlock';
 import { generateUuid } from '../../stores/generateUuid';
 import { EditableTagGroup } from './Tags/EditableTagGroup';
 import { useDrag } from 'react-dnd';
@@ -17,18 +18,18 @@ import {ReactComponent as LocationIcon} from '../CustomIcons/Location.svg';
 import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
 import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 
-export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context, onDelete}) => {
+export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context,onDelete}) => {
 
     const [frame,focusItem, 
         moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
         [state.frame,state.focusItem,
-        state.moveChildPrimitive,state.insertChildPrimitive]));
+        state.moveChildPrimitive,state.insertChildPrimitive]),shallow);
     
     const createSkillArgument = useStore(state=>state.createSkillArgument);
 
     const data = useStore(useCallback((state)=>{
         return staticData ? staticData : state.data.skills[uuid];
-    },[staticData,uuid]))
+    },[staticData,uuid]),shallow)
     
     const focused = focusItem.uuid === data.uuid;
     const toggleSkillEditable = useStore(state=>state.toggleSkillEditable);
@@ -61,6 +62,8 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                 return
             }
             moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, newIdx);
+        } else if (dropData.dragBehavior === 'move') {
+            moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, idx)
         } else {
             insertChildPrimitive(dropData, uuid, idx);
         }
@@ -140,7 +143,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                 ancestors={skillAncestors}
                 onDrop={(dropData) => primitiveDrop(dropData, 0)}
                 emptyMessage='No Actions'
-                enabled={true}
+                dropDisabled={!editingEnabled}
                 context={currentContext}
             >
                 {data.primitiveIds.map((id, idx) => (
@@ -149,14 +152,14 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             <SortableSeparator
                                 key={0}
                                 spacing={idx===0 ? 0 : 5}
-                                height={40}
+                                height={30}
                                 ancestors={skillAncestors}
                                 context={currentContext}
                                 onDrop={(dropData) => primitiveDrop(dropData, 0)}
-                                dropDisabled={false}
+                                dropDisabled={!editingEnabled}
                             />
                         )}
-                        <PrimitiveBlock
+                        <ActionBlock
                             key={id}
                             uuid={id}
                             parentData={{ type: 'program', uuid, field: 'primitive_uuids' }}
@@ -164,17 +167,16 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             ancestors={skillAncestors}
                             context={currentContext}
                             idx={idx}
-                            dropDisabled={true}
-                            dragDisabled={false}
+                            dragDisabled={!editingEnabled}
                             after={
                                 <SortableSeparator
                                     ancestors={skillAncestors}
-                                    height={40}
+                                    height={30}
                                     end={idx === data.primitiveIds.length-1}
                                     spacing={idx === data.primitiveIds.length-1 ? 0 : 5}
                                     context={currentContext}
                                     onDrop={(dropData) => primitiveDrop(dropData, idx + 1)}
-                                    dropDisabled={false}
+                                    dropDisabled={!editingEnabled}
                                 />
                             }
                         />

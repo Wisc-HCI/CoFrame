@@ -1,23 +1,14 @@
 import React, { useCallback, useState } from 'react';
-
 import useStore from '../../stores/Store';
-
-
 import { Divider, Input, Switch, Space, Card, Button } from 'antd';
 import OrientationInput from './OrientationInput';
 import PositionInput from './PositionInput';
+const { TextArea } = Input;
 
 export const MachineInOutRegionDetail = ({ uuid }) => {
-    const { region } = useStore(useCallback(state => ({
-        region: state.data.regions[uuid],
+    const region = useStore(useCallback(state => state.data.regions[uuid], [uuid]));
 
-    })
-        , [uuid]))
-    const { TextArea } = Input;
-
-    const { setItemProperty } = useStore(state => ({
-        setItemProperty: state.setItemProperty
-    }));
+    const setItemProperty = useStore(state => state.setItemProperty);
 
 
     let defaultShape = "Sphere"

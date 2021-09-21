@@ -19,7 +19,7 @@
   </group>
 
   <!-- Higher-level controller for communication with evd_ros -->
-  <node name="ur_controller" pkg="evd_ros_tasks" type="ur_controller_robot.py" output="screen"/>
+  <node name="ur_controller" pkg="evd_ros_tasks" type="ur_controller_robot.py"/>
 
   <!-- Robot State -->
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_description)/urdf/ur3e.xacro' kinematics_config:=$(arg kinematics_config)"/>
@@ -29,7 +29,7 @@
     <param name="rate" value="25"/>
     <rosparam param="/source_list">[physical/joint_states,simulated/joint_states,planner/joint_states]</rosparam>
   </node>
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" />
 
   <!-- RVIZ -->
   <include file="$(find evd_ros_tasks)/launch/_common/rviz.launch">

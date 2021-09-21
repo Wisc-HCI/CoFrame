@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout, Button, Row, Input ,Tooltip} from 'antd';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import Icon, {CloseOutlined, PlusOutlined} from '@ant-design/icons';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
@@ -18,6 +19,7 @@ import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 import {ReactComponent as WaypointIcon} from '../CustomIcons/Waypoint.svg';
 import {ReactComponent as ContainerIcon} from '../CustomIcons/Container.svg';
 import { createWaypoint, createLocation, createMachine, createPlaceholder } from '../../stores/templates';
+import { SkillCallDrawer } from './SkillCallDrawer';
 
 const SEARCHABLE = ['machines','locations','waypoints','placeholders']
 
@@ -33,7 +35,7 @@ export const Editor = () => {
       store.clearSearchTerm,
       store.addItem,
       store.setFocusItem
-    ]);
+    ],shallow);
 
     const drawerStyle = useSpring({width: activeDrawer ? 270 : 0, padding: activeDrawer ? 5 : 0, config:config.stiff});
 
@@ -86,7 +88,7 @@ export const Editor = () => {
       skills: {
         title: "Skills",
         icon: <Icon component={SkillIcon}/>,
-        drawer: null
+        drawer: <SkillCallDrawer/>
       },
       actions: {
         title: "Actions",

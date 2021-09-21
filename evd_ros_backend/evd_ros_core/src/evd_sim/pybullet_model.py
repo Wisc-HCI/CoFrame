@@ -2,6 +2,7 @@
 import time
 import pybullet
 
+from geometry_msgs.msg import Pose
 from sensor_msgs.msg import JointState
 
  
@@ -143,7 +144,22 @@ class PyBulletModel(object):
 
         return pose
 
+    def registerCollisionMeshes(self, collisionMeshes):
+        pass #TODO
+
     def collisionCheck(self):
+        return None #TODO
+
+    def registerOccupancyZones(self, occupancyZones):
+        pass #TODO
+
+    def occupancyCheck(self):
+        return None #TODO
+
+    def registerPinchPoints(self, pinchPoints):
+        pass #TODO
+
+    def pinchPointCheck(self):
         return None #TODO
 
     def cleanup(self):

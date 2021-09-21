@@ -15,12 +15,13 @@ import { ProgramTile } from "./components/Body/ProgramTile";
 import { Modals } from "./components/Modals";
 
 import useStore from "./stores/Store";
+import shallow from 'zustand/shallow';
 
 
 export function App() {
 
     const setActiveModal = useStore(state=>state.setActiveModal);
-    const [frame,primaryColor] = useStore(state=>[state.frame,state.primaryColor]);
+    const [frame,primaryColor] = useStore(state=>[state.frame,state.primaryColor],shallow);
     const simMode = useStore(state=>state.simMode);
     const simStyle = useSpring({width: simMode==='default' ? '45%' : '100%', config:config.stiff});
     const editStyle = useSpring({width: simMode==='default' ? '55%' : '0%', config:config.stiff});

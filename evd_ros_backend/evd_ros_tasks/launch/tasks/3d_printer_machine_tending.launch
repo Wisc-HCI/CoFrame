@@ -39,24 +39,24 @@
   </include>
 
   <!-- Workcell -->
-  <node name="register_static_workcell" type="register_static_workcell.py" pkg="evd_ros_tasks" output="screen"/>
+  <node name="register_static_workcell" type="register_static_workcell.py" pkg="evd_ros_tasks"/>
 
   <!-- Blade Conveyor -->
-  <node name="blade_conveyor_machine" type="blade_conveyor_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  <node name="blade_conveyor_machine" type="blade_conveyor_machine.py" pkg="evd_ros_tasks"/>
   
   <!-- Blade Feeder -->
-  <node name="blade_feeder_machine" type="blade_feeder_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  <node name="blade_feeder_machine" type="blade_feeder_machine.py" pkg="evd_ros_tasks"/>
   
   <!-- 3D Printer -->
-  <node name="3d_printer_machine" type="3d_printer_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  <node name="three_d_printer_machine" type="3d_printer_machine.py" pkg="evd_ros_tasks"/>
   
   <!-- Assembly Jig -->
-  <node name="assembly_jig_machine" type="assembly_jig_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  <node name="assembly_jig_machine" type="assembly_jig_machine.py" pkg="evd_ros_tasks"/>
 
   <!-- Knife Feeder -->
-  <node name="knife_feeder_machine" type="knife_feeder_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  <node name="knife_feeder_machine" type="knife_feeder_machine.py" pkg="evd_ros_tasks"/>
   
   <!-- Knife Conveyor -->
-  <node name="knife_conveyor_machine" type="knife_conveyor_machine.py" pkg="evd_ros_tasks" output="screen"/>
+  <node name="knife_conveyor_machine" type="knife_conveyor_machine.py" pkg="evd_ros_tasks"/>
   
 </launch>

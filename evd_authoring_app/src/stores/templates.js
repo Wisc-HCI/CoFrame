@@ -124,7 +124,7 @@ export const containerTemplates = {
         primitiveIds: []
     },
     'node.primitive.hierarchical.': {
-        name: 'New Hierarchical',
+        name: 'New Group',
         editable: true,
         deleteable: true,
         description: 'A simple grouping structure for related actions.',

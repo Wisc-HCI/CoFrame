@@ -7,7 +7,7 @@ import { Grid } from './Grid';
 import useStore from '../../stores/Store';
 import { objectMap } from '../../stores/helpers';
 import { SkillBlock } from './SkillBlock';
-
+import shallow from 'zustand/shallow';
 
 export const Canvas = () => {
 
@@ -19,14 +19,14 @@ export const Canvas = () => {
         { uuid: 'grid', ...acceptLookup.grid.primitiveIds }
     ];
 
-    const [moveItem, createAndPlaceItem, skills] = useStore(state => [state.moveItem, state.createAndPlaceItem, state.data.skills]);
+    const [moveItem, createAndPlaceItem, deleteSkill, skills] = useStore(state => [state.moveItem, state.createAndPlaceItem, state.deleteSkill, state.data.skills],shallow);
     const nameLookup = useStore(state => ({
         ...objectMap(state.data.placeholders, placeholder => ({ name: placeholder.pending_node.name, real: true })),
         ...objectMap(state.data.locations, location => ({ name: location.name, real: true })),
         ...objectMap(state.data.waypoints, waypoint => ({ name: waypoint.name, real: true })),
         ...objectMap(state.data.machines, machine => ({ name: machine.name, real: true })),
         ...objectMap(state.data.trajectories, trajectory => ({ name: trajectory.name, real: true })),
-    }))
+    }),shallow)
 
     // Do your draggable stuff here
     // We only care about the second value returned from useDrop (hence the [1] at the end)
@@ -62,6 +62,7 @@ export const Canvas = () => {
                     <SkillBlock
                         key={uuid}
                         uuid={uuid}
+                        onDelete={deleteSkill}
                         parentData={{ type: 'grid', uuid: 'grid' }}
                         dragBehavior='move'
                         ancestors={ancestors}

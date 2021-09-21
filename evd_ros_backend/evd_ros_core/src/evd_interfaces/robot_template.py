@@ -31,8 +31,8 @@ class RobotTemplate:
         RobotStatus.STATUS_ERROR
     ]
 
-    def __init__(self, prefix=None, real_robot=False, init_fnt=None, estop_fnt=None, pause_fnt=None, 
-                 move_fnt=None, move_traj_fnt=None, grip_fnt=None):
+    def __init__(self, uuid=None, prefix=None, real_robot=False, init_fnt=None, estop_fnt=None, 
+                 pause_fnt=None, move_fnt=None, move_traj_fnt=None, grip_fnt=None):
         self._prefix = prefix
         prefix_fmt = prefix+'/' if prefix != None else ''
 

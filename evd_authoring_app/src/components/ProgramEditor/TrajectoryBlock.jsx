@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from "react";
 import useStore from "../../stores/Store";
+import shallow from 'zustand/shallow';
 import blockStyles from "./blockStyles";
 import { NodeZone } from "./NodeZone";
-import Icon, { UnlockOutlined, LockOutlined, DownOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
-import { Row, Col, Button, InputNumber } from 'antd';
+import Icon, { UnlockOutlined, LockOutlined, DownOutlined, RightOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { Row, Col, Button, InputNumber, Dropdown, Menu } from 'antd';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
 import { UUIDBlock } from "./UUIDBlock";
@@ -14,19 +15,21 @@ import { config } from 'react-spring';
 import useMeasure from "react-use-measure";
 
 export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentData, dragBehavior, dragDisabled, onDelete }) => {
+  
   const [focused, data, start_location, waypoints, end_location] = useStore(useCallback(state => {
     const data = staticData ? staticData : state.data.trajectories[uuid];
     return [
-    state.focusItem.uuid === data.uuid,
-    data,
-    data.start_location_uuid ? state.data.locations[data.start_location_uuid] : null,
-    data.waypoint_uuids.map(uuid => state.data.waypoints[uuid]),
-    data.end_location_uuid ? state.data.locations[data.end_location_uuid] : null,
-  ]}, [staticData, uuid]));
+      state.focusItem.uuid === data.uuid,
+      data,
+      data.start_location_uuid ? state.data.locations[data.start_location_uuid] : null,
+      data.waypoint_uuids.map(uuid => state.data.waypoints[uuid]),
+      data.end_location_uuid ? state.data.locations[data.end_location_uuid] : null,
+    ]
+  }, [staticData, uuid]), shallow);
 
   const [
     frame, clearFocusItem, setItemProperty, setFocusItem,
-    moveTrajectoryWaypoint, insertTrajectoryWaypoint, 
+    moveTrajectoryWaypoint, insertTrajectoryWaypoint,
     deleteTrajectoryWaypoint, focusExists] = useStore(state => [
       state.frame,
       state.clearFocusItem,
@@ -36,17 +39,18 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
       state.insertTrajectoryWaypoint,
       state.deleteTrajectoryWaypoint,
       state.focusItem.type !== null
-    ]);
+    ],shallow);
   const unfocused = focusExists && !focused;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
   const editingEnabled = !inDrawer && data.editable;
 
+  // console.log(data)
+
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
-    item: { ...data, parentData, dragBehavior, onDelete },
+    item: ()=>({ ...data, parentData, dragBehavior, onDelete }),
     options: { dragEffect: dragBehavior },
-    canDrag: _ => !dragDisabled,
     collect: monitor => ({
       isDragging: monitor.isDragging()
     })
@@ -55,7 +59,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
   const [settingsExpanded, setSettingsExpanded] = useState(false);
 
   const [settingsRef, { height }] = useMeasure();
-  const settingsStyle = useSpring({ height: height, config: config.stiff});
+  const settingsStyle = useSpring({ height: height, config: config.stiff });
 
   const styles = {
     backgroundColor:
@@ -104,9 +108,9 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
     }
   }
 
-  const waypointDrop = (dropData,idx) => {
+  const waypointDrop = (dropData, idx) => {
     if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
-      const newIdx = dropData.idx <= idx ? idx-1 : idx;
+      const newIdx = dropData.idx <= idx ? idx - 1 : idx;
       if (newIdx === dropData.idx) {
         return
       }
@@ -126,19 +130,30 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
   }
 
   return (
-    <div hidden={isDragging && dragBehavior==='move'} ref={preview} style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
+    <div hidden={isDragging && dragBehavior === 'move'} ref={preview} style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
       <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Col ref={drag} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', cursor:'grab' }}>
+        <Col ref={dragDisabled ? null : drag} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', cursor: dragDisabled ? 'not-allowed' : 'grab' }}>
           <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />{' '}{data.name}
         </Col>
         <Col span={6} offset={1} style={{ textAlign: 'end' }}>
           {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
-          <Button
-            type='text'
-            style={{ marginLeft: 2 }}
-            onClick={(e) => { e.stopPropagation(); clearFocusItem(); setFocusItem('trajectory', data.uuid) }}
-            icon={<EllipsisOutlined />}
-          />
+          <Dropdown overlay={
+            <Menu>
+              <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem('trajectory', data.uuid) }}>
+                <EyeOutlined />{' '}Show Trajectory
+              </Menu.Item>
+              {!inDrawer && data.deleteable &&
+                <Menu.Item key='clear' onClick={onDelete}>
+                  <DeleteOutlined />{' '}Clear
+                </Menu.Item>}
+            </Menu>
+          }>
+            <Button
+              type='text'
+              style={{ marginLeft: 5 }}
+              icon={<EllipsisOutlined />}
+            />
+          </Dropdown>
         </Col>
       </Row>
       <div style={fieldStyle}>
@@ -161,45 +176,45 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
         <animated.div style={{ overflow: 'hidden', ...settingsStyle }}>
           <div ref={settingsRef}>
             {settingsExpanded && (
-            <Row align="middle" style={fieldStyle}>
-              <Col span="8">Motion Type:</Col>
-              <Col span="16" style={{ textAlign: 'right' }}>
-                {data.move_type === 'ee_ik' ? (
-                  <span style={selectionStyle}>IK</span>
-                ) : (
-                  <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'ee_ik')}>IK</Button>
-                )}
-                {data.move_type === 'joint' ? (
-                  <span style={selectionStyle}>Joint</span>
-                ) : (
-                  <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'joint')}>IK</Button>
-                )}
-              </Col>
-            </Row>)}
+              <Row align="middle" style={fieldStyle}>
+                <Col span="8">Motion Type:</Col>
+                <Col span="16" style={{ textAlign: 'right' }}>
+                  {data.move_type === 'ee_ik' ? (
+                    <span style={selectionStyle}>IK</span>
+                  ) : (
+                    <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'ee_ik')}>IK</Button>
+                  )}
+                  {data.move_type === 'joint' ? (
+                    <span style={selectionStyle}>Joint</span>
+                  ) : (
+                    <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'joint')}>IK</Button>
+                  )}
+                </Col>
+              </Row>)}
             {settingsExpanded && (
-            <Row align="middle" style={fieldStyle}>
-              <Col span="8">Speed:</Col>
-              <Col span="16" style={{ textAlign: 'right' }}>
-                <InputNumber
-                  min={0.01}
-                  max={5}
-                  size='small'
-                  defaultValue={data.velocity}
-                  disabled={!editingEnabled}
-                  onChange={(v) => setItemProperty('trajectory', uuid, 'move_type', v)}
-                  bordered={false}
-                  style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
-              </Col>
-            </Row>)}
-            </div>
-          </animated.div>
+              <Row align="middle" style={fieldStyle}>
+                <Col span="8">Speed:</Col>
+                <Col span="16" style={{ textAlign: 'right' }}>
+                  <InputNumber
+                    min={0.01}
+                    max={5}
+                    size='small'
+                    defaultValue={data.velocity}
+                    disabled={!editingEnabled}
+                    onChange={(v) => setItemProperty('trajectory', uuid, 'move_type', v)}
+                    bordered={false}
+                    style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
+                </Col>
+              </Row>)}
+          </div>
+        </animated.div>
       </div>
       <Row align="middle" style={fieldStyle}>
         <Col span="8">Start Location:</Col>
         <Col span="16">
           <NodeZone
-            ancestors={trajectoryLocationAncestors}
             context={context}
+            ancestors={trajectoryLocationAncestors}
             onDrop={startDrop}
             emptyMessage='No Start Location'
             dropDisabled={!editingEnabled}
@@ -209,11 +224,11 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                 key={start_location.uuid}
                 id={start_location.uuid}
                 idx={0}
-                dragBehavior='move'
                 hoverBehavior='replace'
+                dragBehavior='move'
+                parentData={{ type: 'trajectory', uuid, field: 'start_location_uuid' }}
                 ancestors={trajectoryLocationAncestors}
                 context={context}
-                parentData={{type:'trajectory',uuid,field:'start_location_uuid'}}
                 data={{ ...start_location, itemType: 'location', type: `uuid-location` }}
                 onDelete={(_) => setItemProperty('trajectory', uuid, 'start_location_uuid', null)}
                 onDrop={startDrop}
@@ -231,7 +246,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
           <NodeZone
             ancestors={trajectoryWaypointAncestors}
             context={context}
-            onDrop={(dropData)=>waypointDrop(dropData,0)}
+            onDrop={(dropData) => waypointDrop(dropData, 0)}
             emptyMessage='No Waypoints'
             dropDisabled={!editingEnabled}
           >
@@ -241,9 +256,9 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   <SortableSeparator
                     ancestors={trajectoryWaypointAncestors}
                     height={30}
-                    spacing={idx===0 ? 0 : 5}
+                    spacing={idx === 0 ? 0 : 5}
                     context={context}
-                    onDrop={(dropData)=>waypointDrop(dropData,0)}
+                    onDrop={(dropData) => waypointDrop(dropData, 0)}
                     dropDisabled={!editingEnabled}
                   />
                 )}
@@ -254,7 +269,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   dragBehavior='move'
                   ancestors={trajectoryWaypointAncestors}
                   context={context}
-                  parentData={{type:'trajectory',uuid,field:'waypoint_uuids'}}
+                  parentData={{ type: 'trajectory', uuid, field: 'waypoint_uuids' }}
                   data={{ ...waypoint, itemType: 'waypoint', type: `uuid-waypoint` }}
                   onDelete={() => deleteTrajectoryWaypoint(uuid, idx)}
                   // nameEditable={}
@@ -263,17 +278,17 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   dropDisabled={true}
                   after={
                     <SortableSeparator
-                    ancestors={trajectoryWaypointAncestors}
-                    context={context}
-                    height={30}
-                    end={idx === waypoints.length-1}
-                    spacing={idx === waypoints.length-1 ? 0 : 5}
-                    onDrop={(dropData)=>waypointDrop(dropData,idx+1)}
-                    dropDisabled={!editingEnabled}
-                  />
+                      ancestors={trajectoryWaypointAncestors}
+                      context={context}
+                      height={30}
+                      end={idx === waypoints.length - 1}
+                      spacing={idx === waypoints.length - 1 ? 0 : 5}
+                      onDrop={(dropData) => waypointDrop(dropData, idx + 1)}
+                      dropDisabled={!editingEnabled}
+                    />
                   }
                 />
-                
+
               </div>
 
             ))}
@@ -297,7 +312,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                 idx={0}
                 hoverBehavior='replace'
                 dragBehavior='move'
-                parentData={{type:'trajectory',uuid,field:'end_location_uuid'}}
+                parentData={{ type: 'trajectory', uuid, field: 'end_location_uuid' }}
                 ancestors={trajectoryLocationAncestors}
                 context={context}
                 data={{ ...end_location, itemType: 'location', type: `uuid-location` }}

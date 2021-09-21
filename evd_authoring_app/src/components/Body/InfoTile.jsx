@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { Row, Button } from 'antd';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import { typeToKey } from '../../stores/helpers';
 import { getSceneInfo } from '../ContextualInfo/Scene';
 import { getLocationInfo } from '../ContextualInfo/Locations';
@@ -49,7 +50,7 @@ export function InfoTile(_) {
             secondaryFocusData,
             currentIssue
         ]
-    })
+    }, shallow)
 
     const [currentTab, setCurrentTab] = useState(0);
 

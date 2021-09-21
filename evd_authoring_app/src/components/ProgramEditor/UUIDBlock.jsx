@@ -1,37 +1,50 @@
-import React, {useState} from "react";
-import { Button, Dropdown, Input, Menu, Row, Tooltip } from "antd";
+import React, { useState } from "react";
+import { Button, Dropdown, Input, Menu, Row } from "antd";
 import { useDrag, useDrop } from 'react-dnd';
 import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import useStore from "../../stores/Store";
+import shallow from 'zustand/shallow';
 import blockStyles from "./blockStyles";
 import { ReactComponent as LocationIcon } from '../CustomIcons/Location.svg';
 import { ReactComponent as MachineIcon } from '../CustomIcons/Gear.svg';
 import { ReactComponent as ThingIcon } from '../CustomIcons/Thing.svg';
 import { ReactComponent as WaypointIcon } from '../CustomIcons/Waypoint.svg';
+import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg';
 import './highlight.css';
 
 const ICONS = {
   'machine': MachineIcon,
   'location': LocationIcon,
   'placeholder': ThingIcon,
-  'waypoint': WaypointIcon
+  'thing': ThingIcon,
+  'waypoint': WaypointIcon,
+  'trajectory': ContainerIcon
 }
 
-export const UUIDBlock = ({ 
-  data, 
+const validDrop = (item, ancestors) => {
+  if (!ancestors[0].accepts.some(type => type === item.type)) {
+    return false
+  } else if (!ancestors.some(ancestor => ancestor.uuid === item.parentData.uuid) && item.parentData.type !== 'drawer') {
+    return false
+  }
+  return true
+}
+
+export const UUIDBlock = ({
+  data,
   idx,
-  ancestors, 
-  context, 
-  onDelete, 
+  ancestors,
+  context,
+  onDelete,
   onDrop,
   onNameChange,
-  dragDisabled, 
-  dropDisabled, 
-  hoverBehavior, 
-  dragBehavior, 
+  dragDisabled,
+  dropDisabled,
+  hoverBehavior,
+  dragBehavior,
   parentData,
   after
- }) => {
+}) => {
 
   // props constains data,
   // which contains fields 'itemType' and 'uuid'
@@ -40,9 +53,9 @@ export const UUIDBlock = ({
   const { itemType, uuid } = data;
 
   // Variables for Input field
-  const [editing, setEditing] = useState(data.name === '');
-  let editInputValue;
-  let saveEditInputRef;
+  // const [editing, setEditing] = useState(data.name === '');
+  // let editInputValue;
+  // let saveEditInputRef;
 
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
@@ -54,6 +67,8 @@ export const UUIDBlock = ({
     })
   }))
 
+  const [editing, setEditing] = useState(false);
+
   // We only care about the second value returned from useDrop (hence the [1] at the end)
   const [{ isOver, dragItem }, drop] = useDrop({
     accept: ancestors[0].accepts,
@@ -61,14 +76,9 @@ export const UUIDBlock = ({
       onDrop(otherItem)
     },
     canDrop: (otherItem, _) => {
-      if (dropDisabled || !data.editable) {
+      if (dropDisabled) {
         return false
-      } else if (!ancestors[0].accepts.some(type => type === otherItem.type)) {
-        return false
-      } else if (!ancestors.some(ancestor => ancestor.uuid === otherItem.parentData.uuid) && otherItem.parentData.type !== 'drawer') {
-        return false
-      }
-      return true;
+      } else return validDrop(otherItem, ancestors);
     },
     collect: monitor => ({
       isOver: monitor.isOver(),
@@ -81,11 +91,12 @@ export const UUIDBlock = ({
     setFocusItem, clearFocusItem] = useStore(state => ([
       state.frame, state.focusItem,
       state.setFocusItem, state.clearFocusItem]
-    ));
+    ),shallow);
   const focused = focusItem.uuid === uuid;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
-  const showMore = context[uuid]?.real;
+  const isReal = context[uuid]?.real;
+  const showMore = isReal || onNameChange;
 
   const blockStyle = {
     backgroundColor:
@@ -99,31 +110,7 @@ export const UUIDBlock = ({
     opacity: isOver && hoverBehavior === 'replace' && dragItem ? 0.5 : 1
   };
 
-  // Unformatted display name information
-  const displayData = isOver && hoverBehavior === 'replace' && dragItem ? dragItem : data;
-  const tempDisplayName = (typeof displayData.name !== 'undefined') ? (itemType === 'placeholder' ? displayData.pending_node.name : displayData.name) : "";
-
-  // Length of a long tag and boolean for if the name meets the criteria
-  const longLength = inDrawer ? 16 : 24;
-  const isLongTag = tempDisplayName.length > longLength;
-
-  // Formatted display name
-  const displayName = isLongTag ? `${tempDisplayName.slice(0, longLength-3)}...` : tempDisplayName;
-
-  // Icon adjustment and argument detection
-  const isArgument = data.uuid.includes('skill-arg');
-  const iconTrayWidth = isArgument ? 90 : 70;
-
-  // Ends edit mode and calls function for onNameChange
-  const onConfirmName = () => {
-    setEditing(false);
-    onNameChange(editInputValue);
-  }
-
-  // Updates local variable as the Input field changes
-  const handleEditChange = e => {
-    editInputValue = e.target.value;
-  }
+  const displayData = !dropDisabled && isOver && hoverBehavior === 'replace' && dragItem && validDrop(dragItem, ancestors) ? dragItem : data
 
   return (
     <React.Fragment>
@@ -138,29 +125,28 @@ export const UUIDBlock = ({
           dragBehavior='move' />
       )}
       <div ref={dropDisabled ? null : drop}>
-        <div ref={preview} hidden={isDragging&&dragBehavior==='move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
+        <div ref={preview} hidden={isDragging && dragBehavior === 'move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
           <Row wrap={false} style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
-            <span ref={drag} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, cursor: "grab",zIndex:101, marginRight:5 }}>
-            <Icon component={ICONS[itemType]} />{' '}{!isArgument ? 
-              (isLongTag ? <Tooltip title={tempDisplayName}>{displayName}</Tooltip> : displayName) : (
-                editing ? <Input ref={saveEditInputRef}
-                                      style={{ padding: 4, flex: 1, width: "auto" }}
-                                      value={editInputValue} 
-                                      onChange={handleEditChange} 
-                                      onBlur={onConfirmName} 
-                                      onPressEnter={onConfirmName}/> : (
-                                        isLongTag ? <Tooltip title={tempDisplayName}>{displayName}</Tooltip> : displayName
-                                        ))}
-            </span>
-            <span style={{ textAlign: 'end', width: iconTrayWidth, textTransform: 'capitalize' }}>
-              {displayData.editable ? <UnlockOutlined style={{marginRight: showMore? 0 : 5}}/> : <LockOutlined style={{marginRight: showMore? 0 : 5}}/>}
-              {isArgument && displayData.editable && !editing && <EditOutlined onClick={() => setEditing(true)}/>}
+            <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
+              <Icon style={{ marginLeft: 5 }} component={ICONS[itemType]} />
+              <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab" }} bordered={false} disabled={!editing} value={itemType === 'placeholder' ? displayData.pending_node.name : displayData.name} onChange={(e) => onNameChange(e.target.value)} />
+            </Row>
+            <Row wrap={false} style={{ width: 60, textTransform: 'capitalize', textAlign: 'right' }} align='middle' justify='end'>
+              {displayData.editable ? <UnlockOutlined style={{ marginRight: isReal ? 0 : 5 }} /> : <LockOutlined style={{ marginRight: isReal ? 0 : 5 }} />}
+              {/* {isArgument && displayData.editable && !editing && <EditOutlined onClick={() => setEditing(true)}/>} */}
               {showMore && (
                 <Dropdown overlay={
                   <Menu>
-                    <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem(itemType, data.uuid) }}>
-                      <EyeOutlined />{' '}Show {itemType === 'placeholder' ? 'thing' : itemType}
-                    </Menu.Item>
+                    {isReal && (
+                      <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem(itemType, data.uuid) }}>
+                        <EyeOutlined />{' '}Show {itemType === 'placeholder' ? 'thing' : itemType}
+                      </Menu.Item>
+                    )}
+                    {onNameChange && (
+                      <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); setEditing(!editing) }}>
+                        <EditOutlined />{editing ? " Done Editing" : ' Edit Name'}
+                      </Menu.Item>
+                    )}
                     {!inDrawer && data.deleteable &&
                       <Menu.Item key='clear' onClick={onDelete}>
                         <DeleteOutlined />{' '}Clear
@@ -175,19 +161,19 @@ export const UUIDBlock = ({
                 </Dropdown>
 
               )}
-              {!showMore && data.deleteable &&
-                  <Button
+              {!isReal && data.deleteable &&
+                <Button
                   type='text'
                   style={{ marginLeft: 0 }}
                   onClick={onDelete}
                   icon={<DeleteOutlined />}
                 />
               }
-            </span>
+            </Row>
           </Row>
         </div>
       </div>
-      {!(isDragging && dragBehavior==='move') && after}
+      {!(isDragging && dragBehavior === 'move') && after}
     </React.Fragment>
   );
 };

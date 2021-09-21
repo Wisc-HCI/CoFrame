@@ -13,14 +13,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/visual/Table.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/visual/table.stl"/>
       </geometry>
       <material name="visual_env_mesh"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/collision/Table.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/collision/table.stl"/>
       </geometry>
     </collision>
   </link>
@@ -35,14 +35,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/visual/MK2-Printer.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/visual/3d_printer.stl"/>
       </geometry>
       <material name="visual_env_mesh"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/collision/MK2-Printer.stl"/>
+        <mesh filename="package://evd_ros_tasks/description/meshes/collision/3d_printer.stl"/>
       </geometry>
     </collision>
   </link>
@@ -71,7 +71,7 @@
   <joint name="env_blade_conveyor_joint" type="fixed">
     <parent link="env_base" />
     <child link="blade_conveyor_link" />
-    <origin xyz="-0.28 0.32 0.3" rpy="0.0 0.0 0.0" />
+    <origin xyz="-0.85 -0.25 -0.75" rpy="0.0 0.0 1.5707963" />
   </joint>
 
   <!-- Blade Feeder -->
@@ -93,7 +93,7 @@
   <joint name="env_blade_feeder_joint" type="fixed">
     <parent link="env_base" />
     <child link="blade_feeder_link" />
-    <origin xyz="-0.28 0.32 0.3" rpy="0.0 0.0 0.0" />
+    <origin xyz="-0.85 -0.25 -0.75" rpy="0.0 0.0 1.5707963" />
   </joint>
 
   <!-- Assembly Jig -->
@@ -115,7 +115,7 @@
   <joint name="env_assembly_jig_joint" type="fixed">
     <parent link="env_base" />
     <child link="assembly_jig_link" />
-    <origin xyz="-0.28 0.32 0.3" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.2 0.28 0.14" rpy="0.0 1.5707963 1.5707963" />
   </joint>
 
   <!-- Knife Feeder -->
@@ -137,7 +137,7 @@
   <joint name="env_knife_feeder_joint" type="fixed">
     <parent link="env_base" />
     <child link="knife_feeder_link" />
-    <origin xyz="-0.28 0.32 0.3" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.85 -0.25 -0.75" rpy="0.0 0.0 -1.5707963" />
   </joint>
 
   <!-- Knife Conveyor -->
@@ -159,7 +159,7 @@
   <joint name="env_knife_conveyor_joint" type="fixed">
     <parent link="env_base" />
     <child link="knife_conveyor_link" />
-    <origin xyz="-0.28 0.32 0.3" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.85 -0.25 -0.75" rpy="0.0 0.0 -1.5707963" />
   </joint>
 
 

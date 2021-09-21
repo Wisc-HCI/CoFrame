@@ -93,7 +93,7 @@ class Placeholder(Node):
             type=dct['type'],
             append_type=False,
             editable=dct['editable'],
-            deleteble=dct['deleteable'],
+            deleteable=dct['deleteable'],
             description=dct['description'],
             uuid=dct['uuid'],
             pending_node_dct=dct['pending_node_dct'],

@@ -1,34 +1,34 @@
 import React from "react";
 import { useDrop } from 'react-dnd';
-import { PrimitiveBlock } from "./PrimitiveBlock";
+import { ActionBlock } from "./ActionBlock";
 import { TrajectoryBlock } from "./TrajectoryBlock";
 import { UUIDBlock } from "./UUIDBlock";
 
 const validDrop = (item, ancestors) => {
-    if (!ancestors[0].accepts.some(type=>type===item.type)) {
+    if (!ancestors[0].accepts.some(type => type === item.type)) {
         return false
-    } else if (!ancestors.some(ancestor=>ancestor.uuid===item.parentData.uuid) && item.parentData.type !== 'drawer') {
+    } else if (!ancestors.some(ancestor => ancestor.uuid === item.parentData.uuid) && item.parentData.type !== 'drawer') {
         return false
     }
     return true;
 }
 
-export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDisabled,style}) => {
+export const NodeZone = ({ ancestors, children, context, onDrop, emptyMessage, dropDisabled, style }) => {
 
     const empty = !children || children.length === 0;
 
-    const [{isOver,dragItem}, drop] = useDrop({
+    const [{ isOver, dragItem }, drop] = useDrop({
         accept: ancestors[0].accepts,
         drop: (item, _) => onDrop(item),
         canDrop: (item, _) => {
             if (!item) {
                 return false
-            // } else if (dropDisabled||!empty) {
-            //     return false
+                // } else if (dropDisabled||!empty) {
+                //     return false
             } else if (!empty) {
                 return false
             } else {
-                return validDrop(item,ancestors)
+                return validDrop(item, ancestors)
             }
         },
         collect: monitor => ({
@@ -36,59 +36,60 @@ export const NodeZone = ({ancestors,children,context,onDrop,emptyMessage,dropDis
             dragItem: monitor.getItem(),
             // canDrop: monitor.canDrop()
         })
-      })
-
-    let contents = empty ? (
-        <div style={{padding:10}}>
-            {emptyMessage}
-        </div>
-    ) : children;
-    if (isOver && dragItem && !dropDisabled && validDrop(dragItem,ancestors)) {
-        if (dragItem.type.includes('uuid')) {
-            contents = 
-            <UUIDBlock 
-                ancestors={ancestors} 
-                idx={0}
-                data={dragItem} 
-                context={context} 
-                dragDisabled 
-                dropDisabled
-                dragBehavior='move' />
-        } else if (dragItem.type.includes('primitive')) {
-            contents = 
-            <PrimitiveBlock
-                ancestors={ancestors}
-                idx={0}
-                staticData={dragItem}
-                context={context}
-                dragDisabled
-                dropDisabled
-                dragBehavior='move' />
-        } else if (dragItem.type.includes('trajectory')) {
-            contents = 
-            <TrajectoryBlock
-                staticData={dragItem}
-                ancestors={ancestors}
-                dragDisabled
-                context={context}
-            />
-        }
-    }
+    })
 
     const containerStyle = {
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 5,
-        minWidth: 38,
-        minHeight:54,
-        padding:5,
-        textAlign:'center',
-        fontSize:14
+        minWidth: 110,
+        minHeight: 54,
+        padding: 5,
+        textAlign: 'center',
+        fontSize: 14
     }
 
+    const showPreview = isOver && dragItem && !dropDisabled && validDrop(dragItem, ancestors);
+    const showChildren = !empty && !showPreview;
+
     return (
-        <div ref={!dropDisabled && empty ? drop : null} style={{...containerStyle,...style,}}>
-            {contents}
+        <div ref={dropDisabled || !empty ? null : drop} style={{ ...containerStyle, ...style, }}>
+            {!showChildren && !showPreview && (
+                <div style={{ padding: 10 }}>
+                    {emptyMessage}
+                </div>
+            )}
+            {!showPreview && showChildren && children}
+            {!showChildren && showPreview && dragItem.type.includes('uuid') && (
+                <UUIDBlock
+                    ancestors={ancestors}
+                    idx={0}
+                    data={dragItem}
+                    context={context}
+                    dragDisabled
+                    dropDisabled
+                    dragBehavior='move' />
+            )}
+            {!showChildren && showPreview && dragItem.type.includes('primitive') && (
+                <ActionBlock
+                    ancestors={ancestors}
+                    idx={0}
+                    staticData={dragItem}
+                    context={context}
+                    dragDisabled
+                    dropDisabled
+                    locked
+                    dragBehavior='move' />
+            )}
+            {!showChildren && showPreview && dragItem.type.includes('trajectory') && (
+                <TrajectoryBlock
+                    staticData={dragItem}
+                    ancestors={ancestors}
+                    dragDisabled
+                    context={context}
+                />
+            )}
+
         </div>
-        
+
     )
 };

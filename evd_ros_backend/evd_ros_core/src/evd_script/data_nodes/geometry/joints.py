@@ -85,6 +85,7 @@ class Joints(Node):
             'reachable': self.reachable,
             'length': self.length
         })
+        return msg
 
     def to_lists(self):
         return self.joint_positions, self.joint_names
@@ -220,7 +221,7 @@ class Joints(Node):
         for i, n in enumerate(names):
             for j, name in enumerate(self._joint_names):
                 if name == n:
-                    self._joint_names[j] = positions[i]
+                    self._joint_positions[j] = positions[i]
                     break
 
     def get_joint_positions_by_names(self, names):
@@ -231,11 +232,10 @@ class Joints(Node):
 
             for j, name in enumerate(self._joint_names):
                 if name == n:
-                    position = self._joint_names[j]
+                    position = self._joint_positions[j]
                     break
 
-            if position != None:
-                joints.append(position)
+            joints.append(position)
         
         return joints
 

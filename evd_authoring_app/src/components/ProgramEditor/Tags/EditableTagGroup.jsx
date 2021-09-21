@@ -6,7 +6,8 @@ import { EditableTag } from './EditableTag';
 
 
 export const EditableTagGroup = (props) => {
-  const data = useStore(useCallback(state=>state.data[typeToKey('skill')][props.skill.uuid].arguments));
+  const uuid = props.skill.uuid;
+  const data = useStore(useCallback(state=>state.data[typeToKey('skill')][uuid].arguments,[uuid]));
 
   const deleteSkillArgument = useStore(state=>state.deleteSkillArgument);
 
@@ -27,8 +28,16 @@ export const EditableTagGroup = (props) => {
     return '';
   }
 
+  const fieldStyle = {
+    borderRadius: 4,
+    width: '100%',
+    marginBottom: 4,
+    padding: 5,
+    backgroundColor: "rgba(0,0,0,0.2)"
+  }
+
   return (
-    <div>
+    <div style={fieldStyle} >
       {data.map((obj) => {
           return (
             <div key={obj.uuid} style={{paddingTop:5}} >

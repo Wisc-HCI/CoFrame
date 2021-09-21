@@ -994,7 +994,7 @@ let program = {
             arguments: [ 
                 {
                     type: 'node.skill-argument.',
-                    name: 'This Machine', // Human-readable name for this variable
+                    name: 'Machine to Start', // Human-readable name for this variable
                     uuid: 'skill-arg-uuid-4', // Use this value as the parameter key in the skill-call that calls this skill.
                     editable: false,
                     deleteable: false,
@@ -1155,17 +1155,13 @@ let program = {
             type: 'node.primitive.skill-call.',
             uuid: 'some-skill-call-uuid',
             name: 'Execute Skill',
-            editable: false,
+            editable: true,
             deleteable: true,
             description: '',
             parameters: {
                 skill_uuid: 'initialize-skill-uuid',
-                machine_uuids: [
-                    'machine-1-uuid',
-                    'machine-2-uuid',
-                    /*etc.*/
-                ],
-                home_location_uuid: 'location-js-5'
+                'skill-arg-uuid-4': 'machine-js-transformer',
+                'skill-arg-uuid-5': 'location-js-5'
             }
         },
 
