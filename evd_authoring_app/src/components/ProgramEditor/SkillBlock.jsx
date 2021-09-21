@@ -5,6 +5,7 @@ import { SortableSeparator } from './SortableSeparator';
 // import { ItemSortable } from './Wrappers';
 import { NodeZone } from './NodeZone';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import { acceptLookup } from './acceptLookup';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
@@ -22,13 +23,13 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     const [frame,focusItem, 
         moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
         [state.frame,state.focusItem,
-        state.moveChildPrimitive,state.insertChildPrimitive]));
+        state.moveChildPrimitive,state.insertChildPrimitive]),shallow);
     
     const createSkillArgument = useStore(state=>state.createSkillArgument);
 
     const data = useStore(useCallback((state)=>{
         return staticData ? staticData : state.data.skills[uuid];
-    },[staticData,uuid]))
+    },[staticData,uuid]),shallow)
     
     const focused = focusItem.uuid === data.uuid;
     const toggleSkillEditable = useStore(state=>state.toggleSkillEditable);

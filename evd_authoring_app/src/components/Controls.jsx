@@ -4,10 +4,11 @@ import {CaretRightFilled,PauseOutlined,RollbackOutlined,FullscreenExitOutlined,F
 import { Button, Space, Tooltip, Popover, Checkbox } from 'antd';
 
 import useStore from '../stores/Store';
+import shallow from 'zustand/shallow';
 
 export function Controls() {
 
-  const [simMode,setSimMode,collisionsVisible,setCollisionsVisible] = useStore(state=>([state.simMode, state.setSimMode, state.collisionsVisible, state.setCollisionsVisible]))
+  const [simMode,setSimMode,collisionsVisible,setCollisionsVisible] = useStore(state=>([state.simMode, state.setSimMode, state.collisionsVisible, state.setCollisionsVisible]),shallow)
 
   return (
 

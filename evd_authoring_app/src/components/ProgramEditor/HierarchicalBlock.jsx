@@ -5,6 +5,7 @@ import { useDrag } from 'react-dnd';
 import { SortableSeparator } from './SortableSeparator';
 import { NodeZone } from './NodeZone';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg';
 import { acceptLookup } from './acceptLookup';
@@ -19,7 +20,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
   const [frame, focusItem, setItemProperty,
     moveChildPrimitive, insertChildPrimitive] = useStore(state => (
       [state.frame, state.focusItem, state.setItemProperty,
-      state.moveChildPrimitive, state.insertChildPrimitive]));
+      state.moveChildPrimitive, state.insertChildPrimitive]),shallow);
 
   const data = useStore(useCallback((state) => {
     return staticData ? staticData : state.data.primitives[uuid];

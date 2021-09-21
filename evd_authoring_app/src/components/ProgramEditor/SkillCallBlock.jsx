@@ -3,6 +3,7 @@ import { NodeZone } from "./NodeZone";
 // import { ItemSortable } from "./Wrappers";
 import { Row, Col } from "antd";
 import useStore from "../../stores/Store";
+import shallow from 'zustand/shallow';
 import blockStyles from "./blockStyles";
 import { ReactComponent as SkillIcon } from '../CustomIcons/Skill.svg';
 import Icon, { UnlockOutlined, LockOutlined } from '@ant-design/icons';
@@ -81,15 +82,13 @@ export const SkillCallBlock = ({
       skill,
       parameterValues
     ]
-  }, [staticData, uuid, context]));
-
-  console.log(parameters)
+  }, [staticData, uuid, context]),shallow);
 
   const [frame, clearFocusItem, focusExists,
     setPrimitiveParameter, moveTrajectoryBlock,
     deletePrimitiveTrajectory] = useStore(
       (state) => [state.frame, state.clearFocusItem, state.focusItem.type !== null,
-      state.setPrimitiveParameter, state.moveTrajectoryBlock, state.deletePrimitiveTrajectory])
+      state.setPrimitiveParameter, state.moveTrajectoryBlock, state.deletePrimitiveTrajectory],shallow)
 
   const unfocused = focusExists && !focused;
 
@@ -152,16 +151,11 @@ export const SkillCallBlock = ({
 
   const parameterDrop = (dropData, parameter) => {
     if (dropData.type === 'node.trajectory.') {
-      console.log('moving trajectory')
-      console.log(dropData)
-      console.log(parameter)
       moveTrajectoryBlock(dropData, uuid, parameter)
     } else if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
-      console.log('move')
       setPrimitiveParameter('primitive', uuid, dropData.parentData.field, null);
       setPrimitiveParameter('primitive', uuid, parameter, dropData.uuid);
     } else {
-      console.log('copy')
       setPrimitiveParameter('primitive', uuid, parameter, dropData.uuid);
     }
   }

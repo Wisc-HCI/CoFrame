@@ -6,6 +6,7 @@ import { useDrag } from 'react-dnd';
 import { ActionBlock } from './ActionBlock';
 import { NodeZone } from './NodeZone';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import blockStyles from './blockStyles';
 import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
 import './highlight.css';
@@ -25,7 +26,7 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
             state.primitiveIds,
             state.moveChildPrimitive,
             state.insertChildPrimitive
-        ]))
+        ]),shallow)
 
     const data = { uuid, name, type, primitiveIds, transform };
 
@@ -40,7 +41,7 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
         state.frame,
         state.focusItem,
         state.setFocusItem
-    ]));
+    ]),shallow);
 
     const focused = focusItem.uuid === uuid;
 

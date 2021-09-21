@@ -6,18 +6,18 @@ import { Modal, Button, Row, Col, message } from 'antd';
 import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 
 import useStore from '../../stores/Store';
-
+import shallow from 'zustand/shallow';
 
 export const SyncModal = (_) => {
 
     const { activeModal, closeModal } = useStore(state => ({
         activeModal: state.activeModal,
         closeModal: state.closeModal
-    }));
+    }),shallow);
 
     const fileInputRef = useRef();
 
-    const [getProgram, setProgram] = useStore(state => [state.getProgram, state.setProgram]);
+    const [getProgram, setProgram] = useStore(state => [state.getProgram, state.setProgram],shallow);
 
     const download = () => {
         const program = getProgram();

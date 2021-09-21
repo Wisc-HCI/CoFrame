@@ -3,6 +3,7 @@ import { NodeZone } from "./NodeZone";
 // import { ItemSortable } from "./Wrappers";
 import { InputNumber, Row, Col, Button } from "antd";
 import useStore from "../../stores/Store";
+import shallow from 'zustand/shallow';
 import blockStyles from "./blockStyles";
 import { ReactComponent as PrimitiveIcon } from '../CustomIcons/Primitive.svg';
 import { ReactComponent as SkillIcon } from '../CustomIcons/Skill.svg';
@@ -56,13 +57,13 @@ export const PrimitiveBlock = ({
       data,
       parameterValues
     ]
-  }, [staticData, uuid, context]));
+  }, [staticData, uuid, context]),shallow);
 
   const [frame, clearFocusItem, focusExists, 
     setPrimitiveParameter, moveTrajectoryBlock, 
     deletePrimitiveTrajectory] = useStore(
     (state) => [state.frame, state.clearFocusItem, state.focusItem.type !== null, 
-      state.setPrimitiveParameter, state.moveTrajectoryBlock, state.deletePrimitiveTrajectory])
+      state.setPrimitiveParameter, state.moveTrajectoryBlock, state.deletePrimitiveTrajectory],shallow)
 
   const unfocused = focusExists && !focused;
 

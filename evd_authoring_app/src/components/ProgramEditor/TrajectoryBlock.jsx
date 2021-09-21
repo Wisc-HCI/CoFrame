@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import useStore from "../../stores/Store";
+import shallow from 'zustand/shallow';
 import blockStyles from "./blockStyles";
 import { NodeZone } from "./NodeZone";
 import Icon, { UnlockOutlined, LockOutlined, DownOutlined, RightOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
@@ -24,7 +25,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
       data.waypoint_uuids.map(uuid => state.data.waypoints[uuid]),
       data.end_location_uuid ? state.data.locations[data.end_location_uuid] : null,
     ]
-  }, [staticData, uuid]));
+  }, [staticData, uuid]), shallow);
 
   const [
     frame, clearFocusItem, setItemProperty, setFocusItem,
@@ -38,7 +39,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
       state.insertTrajectoryWaypoint,
       state.deleteTrajectoryWaypoint,
       state.focusItem.type !== null
-    ]);
+    ],shallow);
   const unfocused = focusExists && !focused;
 
   const inDrawer = ancestors[0].uuid === 'drawer';

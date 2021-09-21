@@ -6,7 +6,7 @@ import { FrameButton } from '../FrameButton';
 
 import frameStyles from '../../frameStyles';
 import useStore from '../../stores/Store';
-
+import shallow from 'zustand/shallow';
 import { ReviewSection } from '../Review/ReviewSection';
 
 const isComplete = (state, sectionId) => (state.sections[sectionId].issues.map(issueId=>state.issues[issueId]).filter(issue=>!issue.complete).length === 0);
@@ -25,7 +25,7 @@ export const ReviewTile = (_) => {
         state.setFrame,
         state.refresh,
         FRAMES.map(frameInfo=>Math.min(...frameInfo.sections.map((sectionId,idx)=>isBlocked(state,sectionId)?idx:100)))
-    ]));
+    ]), shallow);
     
     const frameIdx = FRAMES.map(frame=>frame.key).indexOf(frameId);
 

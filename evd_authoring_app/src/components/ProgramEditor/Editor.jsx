@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout, Button, Row, Input ,Tooltip} from 'antd';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import Icon, {CloseOutlined, PlusOutlined} from '@ant-design/icons';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
@@ -34,7 +35,7 @@ export const Editor = () => {
       store.clearSearchTerm,
       store.addItem,
       store.setFocusItem
-    ]);
+    ],shallow);
 
     const drawerStyle = useSpring({width: activeDrawer ? 270 : 0, padding: activeDrawer ? 5 : 0, config:config.stiff});
 

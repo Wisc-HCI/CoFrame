@@ -1,8 +1,9 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Button, Dropdown, Input, Menu, Row } from "antd";
 import { useDrag, useDrop } from 'react-dnd';
 import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import useStore from "../../stores/Store";
+import shallow from 'zustand/shallow';
 import blockStyles from "./blockStyles";
 import { ReactComponent as LocationIcon } from '../CustomIcons/Location.svg';
 import { ReactComponent as MachineIcon } from '../CustomIcons/Gear.svg';
@@ -29,21 +30,21 @@ const validDrop = (item, ancestors) => {
   return true
 }
 
-export const UUIDBlock = ({ 
-  data, 
+export const UUIDBlock = ({
+  data,
   idx,
-  ancestors, 
-  context, 
-  onDelete, 
+  ancestors,
+  context,
+  onDelete,
   onDrop,
   onNameChange,
-  dragDisabled, 
-  dropDisabled, 
-  hoverBehavior, 
-  dragBehavior, 
+  dragDisabled,
+  dropDisabled,
+  hoverBehavior,
+  dragBehavior,
   parentData,
   after
- }) => {
+}) => {
 
   // props constains data,
   // which contains fields 'itemType' and 'uuid'
@@ -90,7 +91,7 @@ export const UUIDBlock = ({
     setFocusItem, clearFocusItem] = useStore(state => ([
       state.frame, state.focusItem,
       state.setFocusItem, state.clearFocusItem]
-    ));
+    ),shallow);
   const focused = focusItem.uuid === uuid;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
@@ -109,7 +110,7 @@ export const UUIDBlock = ({
     opacity: isOver && hoverBehavior === 'replace' && dragItem ? 0.5 : 1
   };
 
-  const displayData = !dropDisabled && isOver && hoverBehavior === 'replace' && dragItem && validDrop(dragItem,ancestors) ? dragItem : data
+  const displayData = !dropDisabled && isOver && hoverBehavior === 'replace' && dragItem && validDrop(dragItem, ancestors) ? dragItem : data
 
   return (
     <React.Fragment>
@@ -124,14 +125,14 @@ export const UUIDBlock = ({
           dragBehavior='move' />
       )}
       <div ref={dropDisabled ? null : drop}>
-        <div ref={preview} hidden={isDragging&&dragBehavior==='move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
+        <div ref={preview} hidden={isDragging && dragBehavior === 'move'} style={blockStyle} className={focused ? `focus-${frame}` : null} >
           <Row wrap={false} style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
-            <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing?'inset 0px 0px 2px 1px #ffffff':null, borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab",zIndex:101, marginRight:5, height: 32 }}>
-              <Icon style={{marginLeft:5}} component={ICONS[itemType]} />
-              <Input style={{maxWidth: 200, color:'white',cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab"}} bordered={false} disabled={!editing} value={itemType === 'placeholder' ? displayData.pending_node.name : displayData.name} onChange={(e)=>onNameChange(e.target.value)}/> 
+            <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
+              <Icon style={{ marginLeft: 5 }} component={ICONS[itemType]} />
+              <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab" }} bordered={false} disabled={!editing} value={itemType === 'placeholder' ? displayData.pending_node.name : displayData.name} onChange={(e) => onNameChange(e.target.value)} />
             </Row>
-            <Row wrap={false} style={{ width: 60, textTransform: 'capitalize', textAlign:'right' }} align='middle' justify='end'>
-              {displayData.editable ? <UnlockOutlined style={{marginRight: isReal? 0 : 5}}/> : <LockOutlined style={{marginRight: isReal? 0 : 5}}/>}
+            <Row wrap={false} style={{ width: 60, textTransform: 'capitalize', textAlign: 'right' }} align='middle' justify='end'>
+              {displayData.editable ? <UnlockOutlined style={{ marginRight: isReal ? 0 : 5 }} /> : <LockOutlined style={{ marginRight: isReal ? 0 : 5 }} />}
               {/* {isArgument && displayData.editable && !editing && <EditOutlined onClick={() => setEditing(true)}/>} */}
               {showMore && (
                 <Dropdown overlay={
@@ -161,7 +162,7 @@ export const UUIDBlock = ({
 
               )}
               {!isReal && data.deleteable &&
-                  <Button
+                <Button
                   type='text'
                   style={{ marginLeft: 0 }}
                   onClick={onDelete}
@@ -172,7 +173,7 @@ export const UUIDBlock = ({
           </Row>
         </div>
       </div>
-      {!(isDragging && dragBehavior==='move') && after}
+      {!(isDragging && dragBehavior === 'move') && after}
     </React.Fragment>
   );
 };
