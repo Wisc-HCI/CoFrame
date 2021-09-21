@@ -23,7 +23,6 @@ export const SimulatorTile = (_) => {
                 title="Simulator">
                     <div 
                         style={{height:'100%',backgroundColor: primaryColor, padding: 5, width:'100%'}}
-                        
                     >
                         <Scene
                             displayTfs={false}

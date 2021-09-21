@@ -103,6 +103,7 @@ class TraceProcessor:
 
         # structure the data to be captured (starts with initial state)
         self._trace_data = {
+            "trajectory":dct[['trajectory']],
             "duration": 0,
             "time_data": [0],
             "type": self._type,

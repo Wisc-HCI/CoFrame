@@ -1,6 +1,7 @@
 // import create from 'zustand'
 import create from 'zustand-store-addons';
 import produce from "immer";
+import { persist } from "zustand/middleware"
 import {GuiSlice} from './GuiSlice';
 import {ReviewSlice} from './ReviewSlice';
 import {EvdSlice} from './EvdSlice';
@@ -32,7 +33,7 @@ const store = (set, get) => ({
     ...RosSlice(set,get)
 })
 
-const useStore = create(store,{...ComputedSlice,middleware:[immer]});
+const useStore = create(store,{...ComputedSlice,middleware:[immer,persist]});
 
 useStore.getState().setProgram(fakeEvdData.arbitrary.program);
 useStore.getState().setUrl('ws://localhost:9090');

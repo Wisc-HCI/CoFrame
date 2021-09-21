@@ -1,4 +1,6 @@
 import ROSLIB from '@robostack/roslib';
+import { generateUuid } from './generateUuid';
+import { typeToKey } from './helpers';
 
 export const RosSlice = (set,get) => ({
     url: 'ws://localhost:9090',
@@ -77,9 +79,35 @@ export const RosSlice = (set,get) => ({
         }))
     },
     updateJointFromProcessor: (msg) => set((state) => {
-        
+        const {trace} = JSON.parse(msg.data);
+        const {pose,pybullet_frame_data} = trace;
+        if (pose.type === 'node.pose.waypoint.location.' && state.data.locations[pose.uuid]) {
+            state.data.locations[pose.uuid].frames = pybullet_frame_data
+        } else if (pose.type === 'node.pose.waypoint.' && state.data.waypoints[pose.uuid]) {
+            state.data.waypoints[pose.uuid].frames = pybullet_frame_data
+        }
     }),
     updateTraceFromProcessor: (msg) => set((state) => {
-  
-    })
+        const {trace} = JSON.parse(msg.data);
+        const {trajectory,duration,pybullet_joint_velocities,pybullet_collisions,pybullet_pinchpoints,pybullet_frame_data} = trace;
+        if (state.data.trajectories[trajectory.uuid]) {
+            state.data.trajectories[trajectory.uuid].trace = {
+                duration,
+                joint_velocities:pybullet_joint_velocities,
+                collisions:pybullet_collisions,
+                pinchpoints:pybullet_pinchpoints,
+                frames:pybullet_frame_data
+            }
+        }
+    }),
+    requestJointProcessorUpdate: (type, uuid) => {
+        const poseInfo = get().data[typeToKey(type)][uuid];
+        const msg = {id:generateUuid('jointRequest'),data:JSON.stringify({point:poseInfo})};
+        get().jointProcessorRequestTopic.publish(msg);
+    },
+    requestJointProcessorUpdate: (type, uuid) => {
+        const poseInfo = get().data[typeToKey(type)][uuid];
+        const msg = {id:generateUuid('jointRequest'),data:JSON.stringify({point:poseInfo})};
+        get().jointProcessorRequestTopic.publish(msg);
+    }
 });
