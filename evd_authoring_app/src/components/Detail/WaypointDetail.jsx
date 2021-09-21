@@ -42,9 +42,9 @@ export const WaypointDetail = ({uuid}) => {
       Processing:
       </Divider>
       <div style={{display:'flex',flexDirection:'column'}}>
-      <PositionInput value={[waypoint.position.x, waypoint.position.y,waypoint.position.z]}
+      <PositionInput value={[waypoint.position.x, waypoint.position.y,waypoint.position.z]} type = {"waypoint"} uuid = {waypoint.uuid}
       onChange={e=>setItemProperty('waypoint',waypoint.uuid,'waypoint',{...waypoint.position, x :e[0],y : e[1],z: e[2]})}/>
-      <OrientationInput value={[waypoint.orientation.w, waypoint.orientation.x, waypoint.orientation.y,waypoint.orientation.z]}
+      <OrientationInput value={[waypoint.orientation.w, waypoint.orientation.x, waypoint.orientation.y,waypoint.orientation.z]}  type = {"waypoint"} uuid = {waypoint.uuid}
       onChange={e=>setItemProperty('waypoint',waypoint.uuid,'orientation',{...waypoint.orientation, w:e[0],x :e[1],y : e[2],z: e[3]})}/>
       <br/>
       <div style={{paddingTop: '5px',display:'flex',justifyContent: 'space-between',alignItems:'center'}}>

@@ -16,7 +16,7 @@ export const LocationDetail = ({ uuid }) => {
     , [uuid]))
 
   const { TextArea } = Input;
-
+  
   // const { deleteItem, setItemProperty } = useEvdStore(state=>({
   //     deleteItem:state.deleteItem,
   //     setItemProperty:state.setItemProperty
@@ -35,9 +35,9 @@ export const LocationDetail = ({ uuid }) => {
       </Divider>
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <PositionInput value={[location.position.x, location.position.y, location.position.z]}
+        <PositionInput value={[location.position.x, location.position.y, location.position.z]} type = {"location"} uuid = {location.uuid}
           onChange={e => setItemProperty('location', location.uuid, 'position', { ...location.position, x: e[0], y: e[1], z: e[2] })} />
-        <OrientationInput value={[location.orientation.w, location.orientation.x, location.orientation.y, location.orientation.z]}
+        <OrientationInput value={[location.orientation.w, location.orientation.x, location.orientation.y, location.orientation.z]}  type = {"location"} uuid = {location.uuid}
           onChange={e => setItemProperty('location', location.uuid, 'orientation', { ...location.orientation, w: e[0], x: e[1], y: e[2], z: e[3] })} />
         <br />
         <div style={{ paddingTop: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

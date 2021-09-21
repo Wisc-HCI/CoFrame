@@ -33,12 +33,17 @@ export const ComputedSlice = {
                     rotation: item.rotation,
                     color: item.color,
                     scale: item.scale,
-                    transformMode: 'inactive',
+                    transformMode: "inactive",
                     highlighted,
                     onClick: (e) => {
-                        console.log('clicked '+item.name)
-                        e.stopPropagation();
-                        this.setFocusItem('scene', itemKey);
+                        if (this.focusItem.transformMode === "translate" ||this.focusItem.transformMode ===  "rotate"){
+                            
+                        }else{
+                            console.log('clicked '+item.name)
+                            e.stopPropagation();
+                            this.setFocusItem('scene', itemKey);
+                        }
+                        
                     },
                     onMove: (transform) => { console.log(transform) }
                 }
@@ -51,7 +56,7 @@ export const ComputedSlice = {
                         rotation: item.rotation,
                         scale: item.scale,
                         color: { r: 250, g: 0, b: 0, a: 0.6 },
-                        transformMode: 'inactive',
+                        transformMode: "inactive",
                         highlighted: false,
                         wireframe: true,
                         hidden: !this.collisionsVisible,
@@ -66,6 +71,12 @@ export const ComputedSlice = {
             Object.keys(this.data.locations).forEach(location_uuid => {
                 const item = this.data.locations[location_uuid]
                 const focused = this.focusItem.uuid === location_uuid || this.secondaryFocusItem.uuid === location_uuid;
+                //console.log(focused);
+                //if (focused){
+                // items[location_uuid].transformMode = this.focusItem.transformMode;   
+               // }
+                
+                
                 const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => 
                     (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) 
                     && (trajectory.start_location_uuid === location_uuid || trajectory.end_location_uuid === location_uuid));
@@ -92,7 +103,8 @@ export const ComputedSlice = {
                     
                 }
                 poseDataToShapes(item, this.frame).forEach((shape,i) => {
-                    items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color };                  
+                    items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color ,transformMode: (focused) ? this.focusItem.transformMode : "inactive"};     
+
                 })
             })
 
@@ -101,6 +113,8 @@ export const ComputedSlice = {
                 const focused = this.focusItem.uuid === waypoint_uuid || this.secondaryFocusItem.uuid === waypoint_uuid;
                 const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => trajectory.waypoint_uuids.some(trajectory_waypoint => (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) && trajectory_waypoint === waypoint_uuid));
                 // Handle in the case where the trajectory is focused
+                //console.log(focused);
+               
                 
                 let color = null;
                 //console.log(item.joints.reachable);
@@ -125,7 +139,7 @@ export const ComputedSlice = {
                 }
                 poseDataToShapes(item, this.frame).forEach((shape,i) => {
                    // color.a = (time) => 0.5*Math.pow(Math.E,-Math.sin(time/800+i*0.3));
-                    items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color };
+                    items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color,transformMode: (focused) ? this.focusItem.transformMode : "inactive"};
                     
                     
                 })
