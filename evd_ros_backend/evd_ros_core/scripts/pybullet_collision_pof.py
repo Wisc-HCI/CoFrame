@@ -77,7 +77,7 @@ cubeID_1 = pybullet.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtent
 
 print('SphereID', sphereID_1, 'CubeID', cubeID_1)
 
-sphere = pybullet.createMultiBody(baseMass=0, baseInertialFramePosition=[0,0,0], baseCollisionShapeIndex=sphereID_1, basePosition=[0,0,0], useMaximalCoordinates=True)
+sphere = pybullet.createMultiBody(baseMass=0, baseInertialFramePosition=[0,0,0], baseCollisionShapeIndex=sphereID_1, basePosition=[0.9,0.3,0], useMaximalCoordinates=True)
 cube = pybullet.createMultiBody(baseMass=0, baseInertialFramePosition=[0,0,0], baseCollisionShapeIndex=cubeID_1, basePosition=[0,0,1.25], useMaximalCoordinates=True)
 
 print('sphere',sphere,'cube',cube)
@@ -131,6 +131,8 @@ for p in points:
     print('Link A', linkAID, 'Link B', linkBID)
     print('Pos A', posA, 'Pos B', posB)
     print('contactDistance', contactDistance)
+
+    pybullet.addUserDebugLine(posA, posB, [0.5, 0, 1])
 
 while True:
     time.sleep(1./240.)
