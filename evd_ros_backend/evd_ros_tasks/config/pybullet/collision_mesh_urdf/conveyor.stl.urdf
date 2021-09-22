@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<robot name="conveyor">
+
+    <link name="conveyor">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="./environment/conveyor.stl"/>
+            </geometry>
+        </visual>
+        <inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="./environment/conveyor.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+</robot>
