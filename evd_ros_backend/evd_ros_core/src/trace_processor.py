@@ -75,6 +75,13 @@ class TraceProcessor:
         transform = self._tf_buffer.lookup_transform(self._fixed_frame, point.link, rospy.Time(0), rospy.Duration(1.0))
         return tf2_geometry_msgs.do_transform_pose(point.to_ros(stamped=True), transform).pose
 
+    def _handle_joint_packing(self, start, end):
+        # Need to pivot
+        joints = []
+        for i in range(0,len(start)):
+            joints.append([start[i], end[i]])
+        return joints
+
     def _start_job(self, data):
         trajectory = NodeParser(data['trajectory'])
         points = {p['uuid']: NodeParser(p) for p in data['points']}
@@ -91,13 +98,15 @@ class TraceProcessor:
             lastJoints = locStart.joints.joint_positions
 
             for way in [points[id] for id in trajectory.waypoint_uuids]:
-                self._path.append(JointInterpolator([lastJoints, way.joints.joint_positions], trajectory.velocity))
-                lastJoints = way.joints.joint_positions
-                self._thresholds.append([JOINTS_INTERMEDIATE_DISTANCE_THRESHOLD]*len(way.joints.joint_positions))
+                nextJoints = way.joints.joint_positions
+                self._path.append(JointInterpolator(self._handle_joint_packing(lastJoints, nextJoints), trajectory.velocity))
+                lastJoints = nextJoints
+                self._thresholds.append([JOINTS_INTERMEDIATE_DISTANCE_THRESHOLD]*len(nextJoints))
                 
             locEnd = points[trajectory.end_location_uuid]
-            self._path.append(JointInterpolator([lastJoints, locEnd.joints.joint_positions], trajectory.velocity))
-            self._thresholds.append([JOINTS_DISTANCE_THRESHOLD]*len(locEnd.joints.joint_positions))
+            nextJoints = locEnd.joints.joint_positions
+            self._path.append(JointInterpolator(self._handle_joint_packing(lastJoints, nextJoints), trajectory.velocity))
+            self._thresholds.append([JOINTS_DISTANCE_THRESHOLD]*len(nextJoints))
 
         else: # ee_ik
             locStart = points[trajectory.start_location_uuid]
@@ -119,14 +128,14 @@ class TraceProcessor:
             "time_data": [0],
             "type": self._type,
             "interpolator_path": {n: [None] for n in (self.ltk.joint_names + ['ee_pose'])},
-            "lively_joint_names": self.ltk.joint_names,
+            "lively_joint_names": list(self.ltk.joint_names),
             "lively_joint_data": {n:[locStart.joints.joint_positions[i]] for i, n in enumerate(self.ltk.joint_names)},
-            "lively_frame_names": self.ltk.frame_names,
+            "lively_frame_names": list(self.ltk.frame_names),
             "lively_frame_data": {n:[None] for n in self.ltk.frame_names},
-            "pybullet_joint_names": self.pyb.joint_names,
-            "pybullet_joint_data": {n:[None] for n in self.pyb.joint_names},
-            "pybullet_joint_velocities": {n:[None] for n in self.pyb.joint_names},
-            "pybullet_frame_names": self.pyb.frame_names,
+            "pybullet_joint_names": list(self.ltk.joint_names),
+            "pybullet_joint_data": {n:[None] for n in self.ltk.joint_names},
+            "pybullet_joint_velocities": {n:[None] for n in self.ltk.joint_names},
+            "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n:[None] for n in self.pyb.frame_names},
             "pybullet_collisions": {}, #TODO fill this in later
             "pybullet_occupancy": {},
@@ -145,7 +154,13 @@ class TraceProcessor:
     def _end_job(self, status, submit_fnt):
         self._state = 'idle'
 
-        #trace = Trace.from_dct(self._trace_data)
+        print('\n\n\nTrace Processor In End Job')
+        # TODO need to find the error in json dump for ndim arrays
+        self._trace_data['interpolator_path'] = {}
+
+        # List of problematic keys
+        # - interpolator_path
+
         trace = self._trace_data
         inp = self._input
 
@@ -175,7 +190,7 @@ class TraceProcessor:
                 (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
                 ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
                 self.jsf.append(jp_ltk) # append to joint filter to know when lively is done
-                
+
                 for n, p in zip(jn_ltk,jp_ltk):
                     if self._trace_data == None:
                         return # leave update if stop has been called
@@ -211,18 +226,18 @@ class TraceProcessor:
                 
                 # check if leg of trajectory is done
                 (posThreshold, ortThreshold) = self._thresholds[self._index]
-                poseWasReached = poseReached(ee_pose_pyb, interpolator.end_pose, posThreshold, ortThreshold)
-                inTimeout = False #TIMEOUT_COUNT < self._updateCount
-                if self.jsf.isStable() and (poseWasReached or inTimeout):
-                    '''
+                poseWasReached = poseReached(ee_pose_ltk, interpolator.end_pose, posThreshold, ortThreshold)
+                inTimeout = TIMEOUT_COUNT < self._updateCount
+                jointsAreStable = self.jsf.isStable()
+
+                if jointsAreStable and (poseWasReached or inTimeout):
                     if inTimeout:
                         print('\n\n\nIN Timeout\n\n\n')
                         self._trace_data = None
                         self._job_queue.completed()
                         self._state = 'idle'
                         return # Failed to run trajectory
-                    '''
-                    
+
                     self._index += 1
                     self._time_step = 0
                     self._updateCount = 0
@@ -232,6 +247,9 @@ class TraceProcessor:
 
             else: # self._type == 'joint'
                 self._index += 1
+                for n in self._trace_data['pybullet_joint_names']:
+                    self._trace_data['pybullet_joint_data'][n].append(0)
+
                 pass #TODO implement this
 
             # record timing info

@@ -78,7 +78,10 @@ class PyBulletModel(object):
         # (jointPositions, jointVelocities, names), (frames, names)
         return self.readJointState(names), self.readFrames()
 
-    def readJointState(self, names):
+    def readJointState(self, names=None):
+        if names == None:
+            names = self.jointIds.keys() # gets all
+
         jointPositions = [0] * len(names)
         jointVelocities = [0] * len(names)
         for name, id in self.jointIds.items():

@@ -10,7 +10,7 @@
   <arg name="launch_rviz" default="true"/>
   <arg name="load_rviz_cfg" default="true"/>
 
-  <arg name="run_test" default="true"/>
+  <arg name="run_test" default="false"/>
 
 <!--=========================================================================-->
 <!--  Robot                                                                  -->
@@ -42,7 +42,9 @@
   </include>
 
   <!-- Workcell -->
-  <node name="register_static_workcell" type="register_static_workcell.py" pkg="evd_ros_tasks"/>
+  <node name="register_static_workcell" type="register_static_workcell.py" pkg="evd_ros_tasks">
+    <param name="debug" value="$(arg run_test)"/>
+  </node>
 
   <!-- Blade Conveyor -->
   <node name="blade_conveyor_machine" type="blade_conveyor_machine.py" pkg="evd_ros_tasks"/>

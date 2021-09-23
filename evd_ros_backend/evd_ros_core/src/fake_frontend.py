@@ -116,7 +116,7 @@ class FakeFrontendNode:
         self._trace_index = 0
         self._current_trace_is_done = True
         self._current_trace_uuid = None
-        self._trace_path_index = 0
+        self._trace_path_index = 1 # 0th index is the initial state before simulation
         self._js_trace_pub = rospy.Publisher('planner/joint_states_labeled',JointState,queue_size=10)
         self._trace_toggle_timer = rospy.Timer(rospy.Duration(2), self._trace_toggle_cb)
         self._trace_pathing_timer = rospy.Timer(rospy.Duration(0.1), self._trace_pathing_cb)
@@ -133,7 +133,6 @@ class FakeFrontendNode:
         if msg.id in self._active_trace_jobs:
 
             raw = json.loads(msg.data)
-            print(raw)
 
             traj = evd_cache.get(msg.id)
             if raw['trace'] != None:
@@ -149,7 +148,7 @@ class FakeFrontendNode:
         if msg.id in self._active_joints_jobs:
 
             raw = json.loads(msg.data)
-            print(raw)
+
             joints = NodeParser(raw['joint'])
             joint_trace = raw['trace']
 
@@ -247,7 +246,7 @@ class FakeFrontendNode:
                 startLoc = self._program.environment.get_location(traj.start_location_uuid)
                 endLoc = self._program.environment.get_location(traj.end_location_uuid)
 
-                if startLoc.joints != None and endLoc.joints != None:
+                if startLoc.joints != None and startLoc.joints.reachable and endLoc.joints != None and endLoc.joints.reachable:
                     self._active_trace_jobs.append(traj.uuid)
 
                     job = Job()
@@ -291,7 +290,7 @@ class FakeFrontendNode:
                 self._trace_index = 0
 
             if len(data) > 0:
-                self._trace_path_index = 0
+                self._trace_path_index = 1
                 self._current_trace_uuid = data[self._trace_index]
                 self._current_trace_is_done = False
                 self._trace_index += 1
@@ -305,7 +304,7 @@ class FakeFrontendNode:
                 jMsg.name = ['planner_'+n for n in trace['pybullet_joint_data'].keys()]
                 jMsg.position = [trace['pybullet_joint_data'][n][self._trace_path_index] for n in trace['pybullet_joint_data'].keys()]
                 
-                self._js_trace_pub.publsih(jMsg)
+                self._js_trace_pub.publish(jMsg)
                 self._trace_path_index += 1
 
             else: # end case

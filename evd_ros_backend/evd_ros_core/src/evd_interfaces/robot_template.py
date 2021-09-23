@@ -62,9 +62,9 @@ class RobotTemplate:
         self.move_trajectory_sub = rospy.Subscriber('{0}robot/move_trajectory'.format(prefix_fmt), RobotMoveTrajectory, self._move_trajectory_async_cb)
         self.grip_sub = rospy.Subscriber('{0}robot/grip'.format(prefix_fmt), RobotGrip, self._grip_async_cb)
 
-        self.move_srv = rospy.Service('{0}robot/set_move',SetRobotMove, self._move_sync_cb)
-        self.move_trajectory_srv = rospy.Service('{0}robot/set_move_trajectory',SetRobotMoveTrajectory, self._move_trajectory_sync_cb)
-        self.grip_srv = rospy.Service('{0}robot/set_grip',SetRobotGrip, self._grip_sync_cb)
+        self.move_srv = rospy.Service('{0}robot/set_move'.format(prefix_fmt),SetRobotMove, self._move_sync_cb)
+        self.move_trajectory_srv = rospy.Service('{0}robot/set_move_trajectory'.format(prefix_fmt),SetRobotMoveTrajectory, self._move_trajectory_sync_cb)
+        self.grip_srv = rospy.Service('{0}robot/set_grip'.format(prefix_fmt),SetRobotGrip, self._grip_sync_cb)
 
     def _init_cb(self, msg):
         ack = False
