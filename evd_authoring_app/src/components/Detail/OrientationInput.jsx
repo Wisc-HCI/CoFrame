@@ -33,6 +33,12 @@ const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
  
 ));
 
+const [preVec, setPrevVec] = useState(null);
+if (props.value !== preVec){
+  setPrevVec(props.value);
+  setEulerValues(props.value);
+}
+
   return(
     <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
     <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Orientation:</b>
