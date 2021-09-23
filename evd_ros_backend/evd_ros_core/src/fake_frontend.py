@@ -40,6 +40,7 @@ class FakeFrontendNode:
         self._active_trace_jobs = []
 
         ## Publish these as PoseStamped, the backend will create TFs from these
+        #NOTE Ignore these
         self._app_frame_pub = rospy.Publisher('application/app_to_ros_frame', PoseStamped, queue_size=5)
         self._camera_pose_pub = rospy.Publisher('application/camera_pose', PoseStamped, queue_size=5)
         self._control_target_pose_pub = rospy.Publisher('application/control_target_pose', PoseStamped, queue_size=5)
@@ -80,7 +81,24 @@ class FakeFrontendNode:
         ## Communication with joint processor
         # This processor produces joints EvD objects from waypoints or locations
         # 1) Publish Job with data JSON string of waypoint or location
+        #       {'point': evd-waypoint or evd-location}
         # 2) Receive joints data JSON string or null if processor unable to compute
+        #       {'joint': <evd_joint>, 'trace': {//defined sep}}
+        '''
+        {
+            "lively_joint_names": list(self.ltk.joint_names),
+            "lively_joint_data": {n:[] for n in self.ltk.joint_names},
+            "lively_frame_names": list(self.ltk.frame_names),
+            "lively_frame_data": {n:[] for n in self.ltk.frame_names},
+            "pybullet_joint_names": list(self.pyb.joint_names),
+            "pybullet_joint_data": {n:[] for n in self.pyb.joint_names},
+            "pybullet_joint_velocities": {n:[] for n in self.pyb.joint_names},
+            "pybullet_frame_names": list(self.pyb.frame_names),
+            "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
+            "pybullet_collisions": {}, #TODO fill this in later
+            "pybullet_pinchpoints": {} #TODO fill this in later
+        }
+        '''
         # 3) (Optionally) cancel the job with its ID
         self._joints_request_pub = rospy.Publisher('{0}program/request/joints'.format(prefix_fmt), Job, queue_size=5)
         self._joints_submit_sub = rospy.Subscriber('{0}program/submit/joints'.format(prefix_fmt), Job, self._joints_submit_cb)
