@@ -35,9 +35,9 @@ class RobotInterface:
         self.move_trajectory_pub = rospy.Publisher('{0}robot/move_trajectory'.format(prefix_fmt), RobotMoveTrajectory, queue_size=10)
         self.grip_pub = rospy.Publisher('{0}robot/grip'.format(prefix_fmt), RobotGrip, queue_size=10)
 
-        self.move_srv = rospy.ServiceProxy('{0}robot/set_move',SetRobotMove)
-        self.move_trajectory_srv = rospy.ServiceProxy('{0}robot/set_move_trajectory',SetRobotMoveTrajectory)
-        self.grip_srv = rospy.ServiceProxy('{0}robot/set_grip',SetRobotGrip)
+        self.move_srv = rospy.ServiceProxy('{0}robot/set_move'.format(prefix_fmt),SetRobotMove)
+        self.move_trajectory_srv = rospy.ServiceProxy('{0}robot/set_move_trajectory'.format(prefix_fmt),SetRobotMoveTrajectory)
+        self.grip_srv = rospy.ServiceProxy('{0}robot/set_grip'.format(prefix_fmt),SetRobotGrip)
 
         self.ack_sub = rospy.Subscriber('{0}robot/ack'.format(prefix_fmt), RobotAck, self._ack_cb)
         self.status_sub = rospy.Subscriber('{0}robot/wait'.format(prefix_fmt), RobotStatus, self._status_cb)

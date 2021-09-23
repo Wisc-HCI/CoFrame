@@ -4,14 +4,23 @@
             "robot": "robot.urdf",
             "environment": "environment.urdf"
         },
-        "timestep": 0.0165
+        "timestep": 0.0165,
+        "collision_mesh_urdf_table": {
+            "package://evd_ros_tasks/description/meshes/collision/3d_printer.stl": "3d_printer.stl.urdf",
+            "package://evd_ros_tasks/description/meshes/collision/pedestal.stl": "pedestal.stl.urdf",
+            "package://evd_ros_tasks/description/meshes/collision/table.stl": "table.stl.urdf",
+            "package://evd_ros_tasks/description/meshes/collision/assembly_jig.stl": "assembly_jig.stl.urdf",
+            "package://evd_ros_tasks/description/meshes/collision/conveyor.stl": "conveyor.stl.urdf",
+            "package://evd_ros_tasks/description/meshes/collision/blade_feeder.stl": "blade_feeder.stl.urdf",
+            "ackage://evd_ros_tasks/description/meshes/collision/knife_feeder.stl": "knife_feeder.stl.urdf"
+        }
     },
     "lively-tk": {
         "config": "ur3e_config_v1.json",
         "timestep": 0.0165
     },
     "timestep": 0.0165,
-    "fixed_frame": "base_link",
+    "fixed_frame": "planner_base_link",
     "link_groups": {
         "end_effector_path": "tool0"
     },

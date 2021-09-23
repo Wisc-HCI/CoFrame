@@ -8,7 +8,7 @@ import rospy
 
 from evd_script import Position, ReachSphere, PinchPoint, CollisionMesh,    \
     OccupancyZone, Machine, CubeRegion, Orientation, Pose, ThingType,       \
-    Placeholder, Thing, Location, Joints
+    Placeholder, Thing, Location, Joints, Trajectory
 
 from evd_interfaces.frontend_interface import FrontendInterface
 
@@ -495,16 +495,21 @@ class URRobotEnvironment:
         reachableLoc = Location(
             position=Position(0.2,-0.1,0.1),
             orientation=Orientation.Identity(),
-            link='app',
-            joints=Joints(
-                length=6,
-                joint_positions=[0,0,0,0,0,0],
-                reachable=True,
-                joint_names=['','','','','','']))
+            link='app')
         self._locations = [
             unitLoc,
             reachableLoc,
             homeLoc
+        ]
+
+        # Define some debug trajectories
+        traj1 = Trajectory(unitLoc.uuid, homeLoc.uuid, move_type="ee_ik", velocity=1)
+        traj2 = Trajectory(homeLoc.uuid, reachableLoc.uuid, move_type="joint",velocity=1)
+        traj3 = Trajectory(homeLoc.uuid, reachableLoc.uuid, move_type="ee_ik",velocity=1)
+        self._trajectories = [
+            traj1,
+            traj2,
+            traj3
         ]
 
         # ROS Interface
@@ -521,9 +526,10 @@ class URRobotEnvironment:
         dct_list.extend([c.to_dct() for c in self._collision_meshes])
         dct_list.extend([o.to_dct() for o in self._occupancy_zones])
         dct_list.extend([m.to_dct() for m in self._machines])
-
+        
         if self._debug:
             dct_list.extend([l.to_dct() for l in self._locations])
+            dct_list.extend([t.to_dct() for t in self._trajectories])
 
         self._program.register(dct_list)
 

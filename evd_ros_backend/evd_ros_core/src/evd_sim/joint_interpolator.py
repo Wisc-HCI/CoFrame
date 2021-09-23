@@ -11,6 +11,9 @@ class JointInterpolator:
         param: velocity is a list of scalars in units ja / sec
         '''
 
+        if type(velocity) == int or type(velocity) == float:
+            velocity = [velocity]*len(joints)
+
         # Compute raw times needed to hit joint states
         times = []
         for v, j in zip(velocity, joints):
@@ -27,7 +30,7 @@ class JointInterpolator:
         # Generate interpolation functions  
         self._interpFnts = []
         for t, j in zip(times, joints):
-            self._interpFnts.append(interp1d(t, j, kind='cubic', assume_sorted=True, bounds_error=False, fill_value=(j[0],j[-1])))
+            self._interpFnts.append(interp1d(t, j, kind='linear', assume_sorted=True, bounds_error=False, fill_value=(j[0],j[-1])))
 
     @property
     def full_time(self):

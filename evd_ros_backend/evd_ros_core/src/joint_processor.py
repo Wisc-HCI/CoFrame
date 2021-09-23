@@ -4,6 +4,8 @@
 Confirms reachability of waypoint or location. Generates a joint datastructure.
 '''
 
+import tf2_ros
+import tf2_geometry_msgs
 import os
 import json
 import rospy
@@ -15,6 +17,7 @@ from evd_sim.lively_tk_solver import LivelyTKSolver
 from evd_sim.pybullet_model import PyBulletModel
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
+
 
 TIMEOUT_COUNT = 500
 SPIN_RATE = 5
@@ -28,6 +31,7 @@ ORIENTATION_DISTANCE_THRESHOLD = 0.02
 class JointProcessor:
     
     def __init__(self, config_path, config_file_name):
+        self._input = None
         self._target = None
         self._joints = None
         self._trace_data = None
@@ -41,6 +45,8 @@ class JointProcessor:
         self._ee_frame = self._config['link_groups']['end_effector_path']
         self._joint_names = self._config['joint_names']
         
+        self._tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0)) #tf buffer length
+        self._tf_listener = tf2_ros.TransformListener(self._tf_buffer)
         frontend = FrontendInterface(use_processor_configure=True)
         self._job_queue = JobQueue('joints', self._start_job, self._end_job, frontend=frontend)
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
@@ -55,15 +61,16 @@ class JointProcessor:
         #print('\n\nSTARTING JOB')
         length = len(self._joint_names)
         waypoint = NodeParser(data['point'])
-        self._target = waypoint.to_ros()
-        print(self._target)
+        transform = self._tf_buffer.lookup_transform(self._fixed_frame, waypoint.link, rospy.Time(0), rospy.Duration(1.0))
+        self._target = tf2_geometry_msgs.do_transform_pose(waypoint.to_ros(stamped=True), transform).pose
+        
         self._joints = Joints(
             length=length,
             joint_names=self._joint_names,
             joint_positions=[0]*length,
             reachable=False)
+
         self._trace_data = {
-            "pose":data['point'],
             "lively_joint_names": list(self.ltk.joint_names),
             "lively_joint_data": {n:[] for n in self.ltk.joint_names},
             "lively_frame_names": list(self.ltk.frame_names),
@@ -74,31 +81,33 @@ class JointProcessor:
             "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
             "pybullet_collisions": {}, #TODO fill this in later
+            "pybullet_occupancy": {},
             "pybullet_pinchpoints": {} #TODO fill this in later
         }
 
+        self._input = data
+
         self.jsf.clear()
-        self.ltk.reset()
+        defaultJs, names = self.ltk.reset()
+        self.pyb.set_joints(defaultJs, names)
 
         self._updateCount = 0
         self._state = 'running'
         
     def _end_job(self, status, submit_fnt):
-        #print('\n\nENDING JOB')
-
         self._state = 'idle'
 
         data = self._joints.to_dct() if status else None
         trace = self._trace_data
+        inp = self._input
 
         self._target = None
         self._joints = None
+        self._input = None
         self._trace_data = None
         self._updateCount = 0
 
-        #print(trace)
-
-        submit_fnt(json.dumps({'joint': data, 'trace': trace}))
+        submit_fnt(json.dumps({'input': inp, 'joint': data, 'trace': trace}))
 
     def _update_cb(self, event=None):
         
@@ -106,7 +115,7 @@ class JointProcessor:
         # step toward target and record the joint positions
         # and when joints are stable (little/no-more optimization) then
         # check whether the target pose was reached within a margin of error
-        if self._target != None and self._joints != None and self._trace_data != None and self._state == 'running':
+        if self._state == 'running':
             #print('\n\nUPDATE JOB')
 
             # run lively-ik, run pybullet model
@@ -123,10 +132,8 @@ class JointProcessor:
             self._joints.set_joint_positions_by_names(jp_ltk,jn_ltk)
 
             poseWasReached = poseReached(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)
-            timeout = TIMEOUT_COUNT < self._updateCount
-            if self.jsf.isStable() and (poseWasReached or timeout):
-
-                #print('packing trace')
+            inTimeout = TIMEOUT_COUNT < self._updateCount
+            if self.jsf.isStable() and (poseWasReached or inTimeout):
 
                 # pack trace
                 for n, p in zip(jn_ltk,jp_ltk):
@@ -141,7 +148,6 @@ class JointProcessor:
                     self._trace_data['lively_frame_data'][n].append(p)
 
                 ee_pose_pyb = PyBulletModel.get_ee_pose(pb_frames)
-                pb_collisions = self.pyb.collisionCheck()
 
                 (jp_pby, jv_pby, jn_pby) = pb_joints
                 for n, p, v in zip(jn_pby,jp_pby, jv_pby):
@@ -157,8 +163,11 @@ class JointProcessor:
                     self._trace_data['pybullet_frame_data'][n].append(p)
 
                 #TODO collision packing & pinch point packing
+                pb_collisions = self.pyb.collisionCheck()
+                pb_occupancy = self.pyb.occupancyCheck()
+                pb_pinchs = self.pyb.pinchPointCheck()
 
-                self._joints.reachability = poseReached(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)
+                self._joints.reachable = poseWasReached
                 self._job_queue.completed()
                 self._state = 'idle'
             else:

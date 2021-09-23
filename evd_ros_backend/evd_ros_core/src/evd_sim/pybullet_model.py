@@ -22,14 +22,14 @@ class PyBulletModel(object):
         flags = pybullet.URDF_MERGE_FIXED_LINKS
 
         #self.robotId = pybullet.loadURDF(config['urdf'], [0,0,0], useFixedBase=True, flags=flags)
-        print('\n\n',config['urdf']['robot'],'\n\n')
+        #print('\n\n',config['urdf']['robot'],'\n\n')
         self.robotId = pybullet.loadURDF(config['urdf']['robot'], [0,0,0], useFixedBase=True)
         self.jointIds = {}
         self.linkIds = {}
         for j in range(pybullet.getNumJoints(self.robotId)):
             info = pybullet.getJointInfo(self.robotId, j)
             
-            print(info)
+            #print(info)
             
             jointName = info[1].decode("utf-8") 
             linkName = info[12].decode("utf-8")
@@ -78,7 +78,10 @@ class PyBulletModel(object):
         # (jointPositions, jointVelocities, names), (frames, names)
         return self.readJointState(names), self.readFrames()
 
-    def readJointState(self, names):
+    def readJointState(self, names=None):
+        if names == None:
+            names = self.jointIds.keys() # gets all
+
         jointPositions = [0] * len(names)
         jointVelocities = [0] * len(names)
         for name, id in self.jointIds.items():

@@ -1,5 +1,5 @@
 import ROSLIB from '@robostack/roslib';
-import { generateUuid } from './generateUuid';
+// import { generateUuid } from './generateUuid';
 import { typeToKey } from './helpers';
 
 export const RosSlice = (set,get) => ({
@@ -79,12 +79,14 @@ export const RosSlice = (set,get) => ({
         }))
     },
     updateJointFromProcessor: (msg) => set((state) => {
-        const {trace} = JSON.parse(msg.data);
-        const {pose,pybullet_frame_data} = trace;
-        if (pose.type === 'node.pose.waypoint.location.' && state.data.locations[pose.uuid]) {
-            state.data.locations[pose.uuid].frames = pybullet_frame_data
-        } else if (pose.type === 'node.pose.waypoint.' && state.data.waypoints[pose.uuid]) {
-            state.data.waypoints[pose.uuid].frames = pybullet_frame_data
+        const {joint, trace} = JSON.parse(msg.data);
+        const {pybullet_frame_data} = trace;
+        if (state.data.locations[msg.id]) {
+            state.data.locations[msg.id].frames = pybullet_frame_data;
+            state.data.locations[msg.id].joints = joint;
+        } else if (state.data.waypoints[msg.id]) {
+            state.data.waypoints[msg.id].frames = pybullet_frame_data;
+            state.data.waypoints[msg.id].joints = joint;
         }
     }),
     updateTraceFromProcessor: (msg) => set((state) => {
@@ -102,7 +104,7 @@ export const RosSlice = (set,get) => ({
     }),
     requestJointProcessorUpdate: (type, uuid) => {
         const poseInfo = get().data[typeToKey(type)][uuid];
-        const msg = {id:generateUuid('jointRequest'),data:JSON.stringify({point:poseInfo})};
+        const msg = {id:uuid,data:JSON.stringify({point:poseInfo})};
         if (get().connection === 'connected') {
             get().jointProcessorRequestTopic.publish(msg);
         } else {
@@ -110,9 +112,26 @@ export const RosSlice = (set,get) => ({
         }
         
     },
-    requestJTraceProcessorUpdate: (type, uuid) => {
-        const poseInfo = get().data[typeToKey(type)][uuid];
-        const msg = {id:generateUuid('jointRequest'),data:JSON.stringify({point:poseInfo})};
-        get().jointProcessorRequestTopic.publish(msg);
+    requestJTraceProcessorUpdate: (uuid) => {
+        const trajectoryInfo = get().data.trajectories[uuid];
+        let points = [];
+        if (trajectoryInfo.start_location_uuid) {
+            points.push(get().data.locations[trajectoryInfo.start_location_uuid])
+        }
+        trajectoryInfo.waypoint_uuids.forEach(waypoint_uuid=>{
+            points.push(get().data.waypoints[waypoint_uuid])
+        })
+        if (trajectoryInfo.end_location_uuid) {
+            points.push(get().data.locations[trajectoryInfo.end_location_uuid])
+        }
+        const msg = {id:uuid,data:JSON.stringify({
+            trajectory:trajectoryInfo,
+            points
+        })};
+        if (get().connection === 'connected') {
+            get().traceProcessorRequestTopic.publish(msg);
+        } else {
+            console.log('Disregarding processor request due to null ROS connection')
+        }
     }
 });

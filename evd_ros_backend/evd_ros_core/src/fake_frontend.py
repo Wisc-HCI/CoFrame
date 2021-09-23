@@ -8,11 +8,12 @@ import time
 import json
 import rospy
 
+from sensor_msgs.msg import JointState
 from std_msgs.msg import String, Empty
 from geometry_msgs.msg import PoseStamped
 from evd_ros_core.msg import Job, Issue, StringArray
 
-from evd_script import Program, NodeParser, Pose, Position, Orientation, get_evd_cache_obj
+from evd_script import Program, NodeParser, Pose, Position, Orientation, get_evd_cache_obj, Trace
 from evd_script.examples import CreateDebugApp
 
 
@@ -38,8 +39,10 @@ class FakeFrontendNode:
 
         self._active_joints_jobs = []
         self._active_trace_jobs = []
+        self._temp_trace_store = {} # NOTE: We need this since EvD Traces are incompatible with the traces produced by trace processor
 
         ## Publish these as PoseStamped, the backend will create TFs from these
+        #NOTE Ignore these
         self._app_frame_pub = rospy.Publisher('application/app_to_ros_frame', PoseStamped, queue_size=5)
         self._camera_pose_pub = rospy.Publisher('application/camera_pose', PoseStamped, queue_size=5)
         self._control_target_pose_pub = rospy.Publisher('application/control_target_pose', PoseStamped, queue_size=5)
@@ -80,7 +83,22 @@ class FakeFrontendNode:
         ## Communication with joint processor
         # This processor produces joints EvD objects from waypoints or locations
         # 1) Publish Job with data JSON string of waypoint or location
+        #       {'point': evd-waypoint or evd-location}
         # 2) Receive joints data JSON string or null if processor unable to compute
+        #       {'joint': <evd_joint>, 'trace': {//defined sep}}
+        # {
+        #     "lively_joint_names": list(self.ltk.joint_names),
+        #     "lively_joint_data": {n:[] for n in self.ltk.joint_names},
+        #     "lively_frame_names": list(self.ltk.frame_names),
+        #     "lively_frame_data": {n:[] for n in self.ltk.frame_names},
+        #     "pybullet_joint_names": list(self.pyb.joint_names),
+        #     "pybullet_joint_data": {n:[] for n in self.pyb.joint_names},
+        #     "pybullet_joint_velocities": {n:[] for n in self.pyb.joint_names},
+        #     "pybullet_frame_names": list(self.pyb.frame_names),
+        #     "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
+        #     "pybullet_collisions": {}, #TODO fill this in later
+        #     "pybullet_pinchpoints": {} #TODO fill this in later
+        # }
         # 3) (Optionally) cancel the job with its ID
         self._joints_request_pub = rospy.Publisher('{0}program/request/joints'.format(prefix_fmt), Job, queue_size=5)
         self._joints_submit_sub = rospy.Subscriber('{0}program/submit/joints'.format(prefix_fmt), Job, self._joints_submit_cb)
@@ -88,6 +106,20 @@ class FakeFrontendNode:
 
         # NOTE: this is just for the fake frontend to publish periodic updates
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
+
+        # NOTE: this is just for the fake frontend to publish some joint data
+        self._joint_index = 0
+        self._js_joint_pub = rospy.Publisher('simulated/joint_states_labeled',JointState,queue_size=10)
+        self._joint_toggle_timer = rospy.Timer(rospy.Duration(2), self._joint_toggle_cb)
+
+        # NOTE: this is just for the fake frontend to publish some trace joint data
+        self._trace_index = 0
+        self._current_trace_is_done = True
+        self._current_trace_uuid = None
+        self._trace_path_index = 1 # 0th index is the initial state before simulation
+        self._js_trace_pub = rospy.Publisher('planner/joint_states_labeled',JointState,queue_size=10)
+        self._trace_toggle_timer = rospy.Timer(rospy.Duration(2), self._trace_toggle_cb)
+        self._trace_pathing_timer = rospy.Timer(rospy.Duration(0.1), self._trace_pathing_cb)
 
     def _program_register_cb(self, msg):
         print('In register callback, we got')
@@ -100,9 +132,15 @@ class FakeFrontendNode:
     def _trace_submit_cb(self, msg):
         if msg.id in self._active_trace_jobs:
 
-            trace = NodeParser(json.loads(msg.data))
-            traj = evd_cache.get(msg.id) # where job ID is the uuid of the parent object (only works for 1-1 relations). Caution if trying to have multiple traces for a single trajectory.
-            traj.trace = trace
+            raw = json.loads(msg.data)
+
+            traj = evd_cache.get(msg.id)
+            if raw['trace'] != None:
+                traj.trace = Trace() # We can't store new trace types here only the old structs
+                self._temp_trace_store[msg.id] = raw['trace'] # Instead we are going to store them here
+            else:
+                print('Trace returned was None')
+                traj.trace = None
 
             self._active_trace_jobs.remove(msg.id)
 
@@ -110,7 +148,7 @@ class FakeFrontendNode:
         if msg.id in self._active_joints_jobs:
 
             raw = json.loads(msg.data)
-            print(raw['joint'])
+
             joints = NodeParser(raw['joint'])
             joint_trace = raw['trace']
 
@@ -164,8 +202,8 @@ class FakeFrontendNode:
         })
         self._configure_machines.publish(msg)
 
-        print('Going to wait for 5 seconds for our configuration changes to percolate')
-        rospy.sleep(5)
+        print('Going to wait for 10 seconds for our configuration changes to percolate')
+        rospy.sleep(10)
 
         print('Starting fake frontend main loop')
         # now that the backend is fully set up, do what ever the hell you want in the frontend
@@ -196,26 +234,81 @@ class FakeFrontendNode:
                 job.id= wp.uuid
                 job.data = json.dumps({'point': wp.to_dct()})
                 
+                print('Publishing Joint Job', job.id)
                 self._joints_request_pub.publish(job)
 
     def create_trace_jobs(self):
         data = self._program.environment.trajectories
 
         for traj in data:
-            if traj.start_location_uuid != None and traj.end_location_uuid != None and traj.trace == None:
-                self._active_trace_jobs.append(traj.uuid)
+            if traj.start_location_uuid != None and traj.end_location_uuid != None and traj.trace == None and traj.uuid not in self._active_trace_jobs:
 
-                job = Job()
-                job.id = traj.uuid
-                job.data = json.dumps({
-                    'points': [ # Either package up just the points needed or if lazy just pass the whole set
-                        self._program.environment.get_location(traj.start_location_uuid),
-                        self._program.environment.get_location(traj.end_location_uuid)
-                    ] + [ self._program.environment.get_waypoint(wp_uuid) for wp_uuid in traj.waypoint_uuids ],
-                    'trajectory': traj.to_dct()
-                })
+                startLoc = self._program.environment.get_location(traj.start_location_uuid)
+                endLoc = self._program.environment.get_location(traj.end_location_uuid)
 
-                self._trace_request_pub.publish(job)
+                if startLoc.joints != None and startLoc.joints.reachable and endLoc.joints != None and endLoc.joints.reachable:
+                    self._active_trace_jobs.append(traj.uuid)
+
+                    job = Job()
+                    job.id = traj.uuid
+                    job.data = json.dumps({
+                        'points': [ # Either package up just the points needed or if lazy just pass the whole set
+                            startLoc.to_dct(),
+                            endLoc.to_dct()
+                        ] + [ self._program.environment.get_waypoint(wp_uuid).to_dct() for wp_uuid in traj.waypoint_uuids ],
+                        'trajectory': traj.to_dct()
+                    })
+
+                    print('Publishing Trace Job', job.id)
+                    self._trace_request_pub.publish(job)
+
+    def _joint_toggle_cb(self, event=None):
+        data = []
+        data.extend(self._program.environment.locations)
+        data.extend(self._program.environment.waypoints)
+
+        data = list(filter(lambda x: x.joints != None, data))
+
+        if self._joint_index >= len(data):
+            self._joint_index = 0
+
+        if len(data) > 0:
+            jointObj = data[self._joint_index].joints
+
+            jMsg = JointState()
+            jMsg.name = ['simulated_'+n for n in jointObj.joint_names]
+            jMsg.position = jointObj.joint_positions
+
+            self._js_joint_pub.publish(jMsg)
+            self._joint_index += 1
+
+    def _trace_toggle_cb(self, event=None):
+        if self._current_trace_is_done:
+            data = list(self._temp_trace_store.keys())
+
+            if self._trace_index >= len(data):
+                self._trace_index = 0
+
+            if len(data) > 0:
+                self._trace_path_index = 1
+                self._current_trace_uuid = data[self._trace_index]
+                self._current_trace_is_done = False
+                self._trace_index += 1
+
+    def _trace_pathing_cb(self, event=None):
+        if not self._current_trace_is_done:
+            trace = self._temp_trace_store[self._current_trace_uuid]
+
+            if trace != None and self._trace_path_index < len(trace["time_data"]):
+                jMsg = JointState()
+                jMsg.name = ['planner_'+n for n in trace['pybullet_joint_data'].keys()]
+                jMsg.position = [trace['pybullet_joint_data'][n][self._trace_path_index] for n in trace['pybullet_joint_data'].keys()]
+                
+                self._js_trace_pub.publish(jMsg)
+                self._trace_path_index += 1
+
+            else: # end case
+                self._current_trace_is_done = True
 
 
 if __name__ == "__main__":

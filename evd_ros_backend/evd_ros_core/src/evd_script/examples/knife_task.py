@@ -336,7 +336,7 @@ def generate():
         collision_mesh_uuid=printerCollisionMesh.uuid)
     assemblyJigUnsafeMachine = Machine(
         name="Assembly Jig Machine",
-        uuid=MACHINE_UUID_ASSEMBLY_JIG,
+        uuid=MACHINE_UUID_ASSEMBLY_JIG+'_unsafe',
         inputs={
             bladeThingType.uuid: {
                 'region_uuid': bladeAssemblyRegion.uuid,
@@ -367,7 +367,7 @@ def generate():
         collision_mesh_uuid=assemblyJigCollisionMesh.uuid)
     assemblyJigSafeMachine = Machine(
         name="Assembly Jig Machine",
-        uuid=MACHINE_UUID_ASSEMBLY_JIG,
+        uuid=MACHINE_UUID_ASSEMBLY_JIG+'_safe',
         inputs={
             bladeWithTransportJigThingType.uuid: {
                 'region_uuid': bladeAssemblyRegion.uuid,
