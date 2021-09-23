@@ -1,35 +1,95 @@
 import React from "react";
 import { useDrop } from 'react-dnd';
+import { ActionBlock } from "./ActionBlock";
+import { TrajectoryBlock } from "./TrajectoryBlock";
+import { UUIDBlock } from "./UUIDBlock";
 
-const validDrop=(item,ancestors,count) => count === 0 && ancestors[0].accepts.indexOf(item.type)>=0 && (ancestors.map(ancestor=>ancestor.uuid).indexOf(item.parentData.uuid)>=0 || item.parentData.type === 'drawer');
+const validDrop = (item, ancestors) => {
+    if (!ancestors[0].accepts.some(type => type === item.type)) {
+        return false
+    } else if (!ancestors.some(ancestor => ancestor.uuid === item.parentData.uuid) && item.parentData.type !== 'drawer') {
+        return false
+    }
+    return true;
+}
 
-export const NodeZone = ({ancestors,children,onMove,emptyMessage,enabled}) => {
+export const NodeZone = ({ ancestors, children, context, onDrop, emptyMessage, dropDisabled, style }) => {
 
     const empty = !children || children.length === 0;
 
-    const drop = useDrop({
+    const [{ isOver, dragItem }, drop] = useDrop({
         accept: ancestors[0].accepts,
-        drop: (item, _) => onMove(item),
-        hover: (item, _) => {
-          if (enabled && item.editable && validDrop(item,ancestors,empty?0:children.length)) {onMove(item)}
+        drop: (item, _) => onDrop(item),
+        canDrop: (item, _) => {
+            if (!item) {
+                return false
+                // } else if (dropDisabled||!empty) {
+                //     return false
+            } else if (!empty) {
+                return false
+            } else {
+                return validDrop(item, ancestors)
+            }
         },
-        canDrop: (item, _) => enabled && validDrop(item,ancestors,empty?0:children.length)
-      })[1]
+        collect: monitor => ({
+            isOver: monitor.isOver(),
+            dragItem: monitor.getItem(),
+            // canDrop: monitor.canDrop()
+        })
+    })
 
     const containerStyle = {
         backgroundColor: 'rgba(0,0,0,0.5)',
         borderRadius: 5,
-        minWidth: 40,
-        minHeight:56,
-        padding:empty?16:3,
-        textAlign:'center',
-        fontSize:14
+        minWidth: 110,
+        minHeight: 54,
+        padding: 5,
+        textAlign: 'center',
+        fontSize: 14
     }
 
+    const showPreview = isOver && dragItem && !dropDisabled && validDrop(dragItem, ancestors);
+    const showChildren = !empty && !showPreview;
+
     return (
-        <div ref={drop} style={containerStyle}>
-            {empty ? emptyMessage : children}
+        <div ref={dropDisabled || !empty ? null : drop} style={{ ...containerStyle, ...style, }}>
+            {!showChildren && !showPreview && (
+                <div style={{ padding: 10 }}>
+                    {emptyMessage}
+                </div>
+            )}
+            {!showPreview && showChildren && children}
+            {!showChildren && showPreview && dragItem.type.includes('uuid') && (
+                <UUIDBlock
+                    ancestors={ancestors}
+                    idx={0}
+                    data={dragItem}
+                    context={context}
+                    dragDisabled
+                    dropDisabled
+                    dragBehavior='move' />
+            )}
+            {!showChildren && showPreview && dragItem.type.includes('primitive') && (
+                <ActionBlock
+                    ancestors={ancestors}
+                    idx={0}
+                    staticData={dragItem}
+                    context={context}
+                    dragDisabled
+                    dropDisabled
+                    locked
+                    dragBehavior='move' />
+            )}
+            {!showChildren && showPreview && dragItem.type.includes('trajectory') && (
+                <TrajectoryBlock
+                    staticData={dragItem}
+                    ancestors={ancestors}
+                    dragDisabled
+                    context={context}
+                />
+            )}
+
         </div>
-        
+
     )
 };

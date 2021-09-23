@@ -11,6 +11,7 @@ import { InfoTile } from './InfoTile';
 export const SimulatorTile = (_) => {
 
     const primaryColor = useStore(state => state.primaryColor);
+    const clearFocusItem = useStore(state=> state.clearFocusItem);
 
     return (
         <div style={{height:'calc(100vh - 48pt)',padding:10}}>
@@ -22,7 +23,6 @@ export const SimulatorTile = (_) => {
                 title="Simulator">
                     <div 
                         style={{height:'100%',backgroundColor: primaryColor, padding: 5, width:'100%'}}
-                        
                     >
                         <Scene
                             displayTfs={false}
@@ -33,7 +33,8 @@ export const SimulatorTile = (_) => {
                             highlightColor={primaryColor}
                             plane={-0.75}
                             fov={50}
-                            onPointerMissed={(e)=>{e.stopPropagation();useStore.getState().clearFocusItem();}}
+                            store={useStore}
+                            onPointerMissed={clearFocusItem}
                         />
 
                     </div>

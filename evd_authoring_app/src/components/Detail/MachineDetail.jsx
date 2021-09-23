@@ -10,14 +10,8 @@ import { MachineInOutTypeDetail } from './MachineInOutTypeDetail';
 
 export const MachineDetail = ({ uuid }) => {
 
-  const { machine } = useStore(useCallback(state => ({
-    machine: state.data.machines[uuid],
-
-  })
-    , [uuid]))
-  const { setItemProperty } = useStore(state => ({
-    setItemProperty: state.setItemProperty
-  }));
+  const machine = useStore(useCallback(state => state.data.machines[uuid], [uuid]));
+  const setItemProperty = useStore(state => state.setItemProperty);
 
   const { TextArea } = Input;
 
@@ -27,7 +21,7 @@ export const MachineDetail = ({ uuid }) => {
       <Space />
 
       <TextArea
-        defaultValue={machine.description}
+        value={machine.description}
         disabled={!machine.editable}
       />
 

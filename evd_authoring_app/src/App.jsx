@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
-import useMeasure from 'react-use-measure'
 import { Layout, Row, Button, Badge, Space } from 'antd';
 import Icon, { SyncOutlined, SettingOutlined } from '@ant-design/icons';
 import {ReactComponent as EvdIcon} from './components/CustomIcons/EVD.svg';
@@ -16,16 +15,16 @@ import { ProgramTile } from "./components/Body/ProgramTile";
 import { Modals } from "./components/Modals";
 
 import useStore from "./stores/Store";
+import shallow from 'zustand/shallow';
 
 
 export function App() {
 
     const setActiveModal = useStore(state=>state.setActiveModal);
-    const [frame,primaryColor] = useStore(state=>[state.frame,state.primaryColor]);
+    const [frame,primaryColor] = useStore(state=>[state.frame,state.primaryColor],shallow);
     const simMode = useStore(state=>state.simMode);
-    const [devRef, {width}] = useMeasure();
-    const simStyle = useSpring({width: simMode==='default' ? width * 0.45 : width, config:config.stiff});
-    const editStyle = useSpring({width: simMode==='default' ? width * 0.55 : 0, config:config.stiff});
+    const simStyle = useSpring({width: simMode==='default' ? '45%' : '100%', config:config.stiff});
+    const editStyle = useSpring({width: simMode==='default' ? '55%' : '0%', config:config.stiff});
     const connection = useStore(state=>state.connection);
     const programName = useStore(state=>state.name);
 
@@ -74,7 +73,7 @@ export function App() {
                     <Row align='middle' justify='space-between'>
                         <Space style={{float:'left'}} >
                             <Icon style={{color:primaryColor,fontSize:30}} component={EvdIcon}/>
-                            <h2 style={{paddingLeft:20}}><b>Expert View Dashboard<i> - {programName}</i></b></h2>
+                            <h2 style={{paddingLeft:20}}><b>CoFrame<i> - {programName}</i></b></h2>
                         </Space>
                         <span style={{float:'right'}} >
                             {menuItems.map(entry => (
@@ -100,7 +99,7 @@ export function App() {
                     </Layout.Sider>
                     <Layout width='75vw'>
                         <Layout.Content>
-                            <div ref={devRef} style={{height:'100%',width:'100%'}}>
+                            <div style={{height:'100%',width:'100%'}}>
                                 <animated.div style={{...simStyle,float:'left'}}>
                                     <SimulatorTile/>
                                 </animated.div>

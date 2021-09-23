@@ -138,6 +138,7 @@ for (let i = 0; i < NUM_THINGS; i++) {
 //onChange={e=>setItemProperty(focusItem.type,focusItem.uuid,'name',e.target.value)}/>
 let waypoints = [];
 for (let i = 0; i < NUM_WAYPOINTS; i++) {
+    const num = Math.random();
     waypoints.push({
         type: 'node.pose.waypoint.',
         uuid: `waypoint-js-${i}`,
@@ -157,7 +158,7 @@ for (let i = 0; i < NUM_WAYPOINTS; i++) {
 
             joint_positions: [0, 0, 0], // or null
             joint_names: ['j1', 'j2', 'j3'], // or null
-            reachable: false, // better than having to check the array to generate the flag
+            reachable: (num > 0.5 ? true : false), // better than having to check the array to generate the flag
             length: 3 // this is enforced on the backend for positions and names
         },
         position: {
@@ -190,6 +191,7 @@ for (let i = 0; i < NUM_WAYPOINTS; i++) {
 
 let locations = [];
 for (let i = 0; i < NUM_LOCATIONS; i++) {
+    const num = Math.random();
     locations.push({
         type: 'node.pose.waypoint.location.',
         uuid: `location-js-${i}`,
@@ -209,7 +211,7 @@ for (let i = 0; i < NUM_LOCATIONS; i++) {
 
             joint_positions: [0, 0, 0], // or null
             joint_names: ['j1', 'j2', 'j3'], // or null
-            reachable: false, // better than having to check the array to generate the flag
+            reachable:(num > 0.5 ? true : false), // better than having to check the array to generate the flag
             length: 3 // this is enforced on the backend for positions and names
         },
         position: {
@@ -610,7 +612,7 @@ for (let i = 0; i < NUM_TRAJECTORIES; i++) {
         uuid: `trajectory-js-${i}`,
         name: `Trajectory-${i}`,
         deleteable: false,
-        editable: false,
+        editable: true,
         description: 'Some descriptor string (optional)', // could be ''
 
         start_location_uuid: locations[0].uuid,
@@ -755,7 +757,7 @@ let occupancyZones = [ // assume frame is app / world
         position_x: 0, // 'center'
         position_z: 0, // 'center'
         scale_x: 1,    // 'radius' (e.g. total width is 2x this)
-        scale_y: 0.5,  // 'radius' (e.g. total width is 2x this)
+        scale_z: 0.5,  // 'radius' (e.g. total width is 2x this)
         height: 0 // typically a negative value (wherever ground is)
     },
     {
@@ -770,7 +772,7 @@ let occupancyZones = [ // assume frame is app / world
         position_x: 0, // 'center'
         position_z: 0, // 'center'
         scale_x: 0.5,  // 'radius' (e.g. total width is 2x this)
-        scale_y: 0.5,  // 'radius' (e.g. total width is 2x this)
+        scale_z: 0.5,  // 'radius' (e.g. total width is 2x this)
         height: 0 // typically a negative value (wherever ground is)
     }
 ];
@@ -841,8 +843,8 @@ let program = {
                     // If the uuid is found in any fields for the children primitives' parameters, replace it with the corresponding value. 
                     // This also serves as the key for any corresponding skill-call's parameters.
                     uuid: 'skill-arg-uuid-0', 
-                    editable: false,
-                    deleteable: false,
+                    editable: true,
+                    deleteable: true,
                     description: '',
                     // The type of the argument
                     parameter_type: 'node.machine.',
@@ -970,7 +972,7 @@ let program = {
                     uuid: 'gripper-grasp-uuid-3',
                     name: 'Release',
                     editable: true,
-                    deleteable: false,
+                    deleteable: true,
                     description: '',
                     parameters: {
                         position: 0,
@@ -992,7 +994,7 @@ let program = {
             arguments: [ 
                 {
                     type: 'node.skill-argument.',
-                    name: 'This Machine', // Human-readable name for this variable
+                    name: 'Machine to Start', // Human-readable name for this variable
                     uuid: 'skill-arg-uuid-4', // Use this value as the parameter key in the skill-call that calls this skill.
                     editable: false,
                     deleteable: false,
@@ -1153,17 +1155,13 @@ let program = {
             type: 'node.primitive.skill-call.',
             uuid: 'some-skill-call-uuid',
             name: 'Execute Skill',
-            editable: false,
+            editable: true,
             deleteable: true,
             description: '',
             parameters: {
                 skill_uuid: 'initialize-skill-uuid',
-                machine_uuids: [
-                    'machine-1-uuid',
-                    'machine-2-uuid',
-                    /*etc.*/
-                ],
-                home_location_uuid: 'location-js-5'
+                'skill-arg-uuid-4': 'machine-js-transformer',
+                'skill-arg-uuid-5': 'location-js-5'
             }
         },
 
@@ -1184,7 +1182,7 @@ let program = {
             uuid: 'gripper-grasp-uuid-0',
             name: 'Grasp',
             editable: true,
-            deleteable: false,
+            deleteable: true,
             description: '',
             parameters: {
                 position: 0,

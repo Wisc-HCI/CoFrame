@@ -65,6 +65,7 @@ class JointProcessor:
             joint_positions=[0]*length,
             reachable=False)
         self._trace_data = {
+            "pose":data['point'],
             "lively_joint_names": list(self.ltk.joint_names),
             "lively_joint_data": {n:[] for n in self.ltk.joint_names},
             "lively_frame_names": list(self.ltk.frame_names),

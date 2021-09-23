@@ -1,18 +1,12 @@
 import React from 'react';
-
 import { Card } from 'antd';
 import { ProgramEditor } from '../ProgramEditor';
 import { Detail } from '../Detail';
 
 
 
-
 export const ProgramTile = (props) => {
 
-    // const {editorPane, setEditorPane} = useStore(state=>({
-    //     editorPane:state.editorPane,
-    //     setEditorPane:state.setEditorPane
-    // }))
 
     return (
         <div style={{height:'calc(100vh - 48pt)',paddingRight:10,paddingTop:10,paddingBottom:10}}>

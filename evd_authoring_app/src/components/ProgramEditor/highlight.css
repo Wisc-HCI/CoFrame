@@ -1,17 +1,17 @@
 @-webkit-keyframes shadow-safety {
-	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 5pt 5pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 5pt 5pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
 }
 @-moz-keyframes shadow-safety {
-	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 5pt 5pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 5pt 5pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
 }
 @keyframes shadow-safety {
-	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 5pt 5pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 5pt 5pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 3pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
 }
 
 @-webkit-keyframes shadow-quality {
@@ -47,19 +47,19 @@
 }
 
 @-webkit-keyframes shadow-business {
-	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 5pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 5pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
 }
 @-moz-keyframes shadow-business {
-	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 5pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 5pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
 }
 @keyframes shadow-business {
-	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 5pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
-	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #CC79A7, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	0% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	50% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 5pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
+	100% {box-shadow: 0pt 0pt 3pt 1pt rgba(255,255,255,0.5), 0pt 0pt 2pt 2pt #009E73, inset 0pt 0pt 1pt 1pt rgba(0,0,0,0.7), 0pt 0pt 20pt 20pt rgba(0,0,0,0.4)}
 }
 
 .focus-safety {
@@ -84,3 +84,4 @@
 	-moz-animation: shadow-business 2s ease-in-out infinite;
 	animation: shadow-business 2s ease-in-out infinite;
 }
+.grab{cursor: -webkit-grab; cursor : grab;}

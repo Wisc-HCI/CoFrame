@@ -1,6 +1,7 @@
 import React from 'react';
-import { Layout, Button, Row, Input } from 'antd';
+import { Layout, Button, Row, Input ,Tooltip} from 'antd';
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 import Icon, {CloseOutlined, PlusOutlined} from '@ant-design/icons';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
@@ -8,6 +9,7 @@ import { Canvas } from './Canvas';
 import { PrimitivesDrawer } from './PrimitivesDrawer';
 import { ContainersDrawer } from './ContainersDrawer';
 import { UUIDDrawer } from './UUIDDrawer';
+// import { ExecuteMacrosDrawer } from './ExecuteMacrosDrawer';
 import { DeleteZone } from './DeleteZone';
 import {ReactComponent as LocationIcon} from '../CustomIcons/Location.svg';
 import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
@@ -16,6 +18,8 @@ import {ReactComponent as SkillIcon} from '../CustomIcons/Skill.svg';
 import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 import {ReactComponent as WaypointIcon} from '../CustomIcons/Waypoint.svg';
 import {ReactComponent as ContainerIcon} from '../CustomIcons/Container.svg';
+import { createWaypoint, createLocation, createMachine, createPlaceholder } from '../../stores/templates';
+import { SkillCallDrawer } from './SkillCallDrawer';
 
 const SEARCHABLE = ['machines','locations','waypoints','placeholders']
 
@@ -23,13 +27,15 @@ export const Editor = () => {
 
     const [
       activeDrawer, setActiveDrawer, searchTerm, 
-      setSearchTerm, clearSearchTerm] = useStore(store=>[
+      setSearchTerm, clearSearchTerm, addItem, setFocusItem] = useStore(store=>[
       store.activeDrawer,
       store.setActiveDrawer,
       store.searchTerm,
       store.setSearchTerm,
-      store.clearSearchTerm
-    ]);
+      store.clearSearchTerm,
+      store.addItem,
+      store.setFocusItem
+    ],shallow);
 
     const drawerStyle = useSpring({width: activeDrawer ? 270 : 0, padding: activeDrawer ? 5 : 0, config:config.stiff});
 
@@ -37,22 +43,42 @@ export const Editor = () => {
       machines: {
         title: "Machines",
         icon: <Icon component={MachineIcon}/>,
-        drawer: <UUIDDrawer itemType='machine'/>
+        drawer: <UUIDDrawer itemType='machine'/>,
+        addFn: (mesh)=>{
+          const newMachine = createMachine(mesh);
+          addItem('machine',newMachine);
+          setFocusItem('machine',newMachine.uuid);
+        }
       },
       locations: {
         title: "Locations",
         icon: <Icon component={LocationIcon}/>,
-        drawer: <UUIDDrawer itemType='location'/>
+        drawer: <UUIDDrawer itemType='location'/>,
+        addFn: ()=>{
+          const newLocation = createLocation();
+          addItem('location',newLocation);
+          setFocusItem('location',newLocation.uuid);
+        }
       },
       waypoints: {
         title: "Waypoints",
         icon: <Icon component={WaypointIcon}/>,
-        drawer: <UUIDDrawer itemType='waypoint'/>
+        drawer: <UUIDDrawer itemType='waypoint'/>,
+        addFn: ()=>{
+          const newWaypoint = createWaypoint();
+          addItem('waypoint',newWaypoint);
+          setFocusItem('waypoint',newWaypoint.uuid);
+        }
       },
       placeholders: {
         title: "Things",
         icon: <Icon component={ThingIcon}/>,
-        drawer: <UUIDDrawer itemType='placeholder'/>
+        drawer: <UUIDDrawer itemType='placeholder'/>,
+        addFn: (thingTypeUuid)=>{
+          const newPlaceholder = createPlaceholder(thingTypeUuid);
+          addItem('placeholder',newPlaceholder);
+          setFocusItem('placeholder',newPlaceholder.uuid);
+        }
       },
       containers: {
         title: "Containers",
@@ -62,7 +88,7 @@ export const Editor = () => {
       skills: {
         title: "Skills",
         icon: <Icon component={SkillIcon}/>,
-        drawer: null
+        drawer: <SkillCallDrawer/>
       },
       actions: {
         title: "Actions",
@@ -75,13 +101,14 @@ export const Editor = () => {
         <Layout style={{ fontSize: 20, height: 'calc(100vh - 113pt)' }}>
           <Layout.Sider collapsed collapsible trigger={null} style={{align: 'left', display: 'flex', flexDirection: 'column', padding: 5, height: 'calc(100vh - 113pt)' }}>
             {Object.keys(drawers).map(drawerKey=>(
+              <Tooltip key={drawerKey} placement="right" title = {drawers[drawerKey].title}>
               <Button 
-                key={drawerKey} 
                 type={activeDrawer === drawerKey ? 'primary' : 'text'} 
                 block 
                 icon={drawers[drawerKey].icon} 
                 onClick={()=>{ clearSearchTerm(); drawerKey===activeDrawer ? setActiveDrawer(null) : setActiveDrawer(drawerKey)}}
                 style={{ marginBottom: 5, alignItems: 'left' }}/>
+               </Tooltip>
             ))}
           </Layout.Sider>
           <animated.div onDrag={()=>setActiveDrawer(null)} style={{...drawerStyle, align: 'left', backgroundColor: '#2f2f2f', fontSize: 14, height: 'calc(100vh - 113pt)'}}>
@@ -92,7 +119,7 @@ export const Editor = () => {
                   {SEARCHABLE.indexOf(activeDrawer) >= 0 && (
                     <Button
                       type='outline'
-                      onClick={()=>console.log(activeDrawer)}
+                      onClick={drawers[activeDrawer].addFn}
                       icon={<PlusOutlined />}
                     />
                   )}
@@ -114,7 +141,7 @@ export const Editor = () => {
                </React.Fragment>
              )}
           </animated.div>
-          <Layout.Content style={{ height: 'calc(100vh - 113pt)', overflow: 'scroll' }}>
+          <Layout.Content style={{ height: 'calc(100vh - 113pt)'}}>
             <Canvas/>
             <DeleteZone/>
           </Layout.Content>

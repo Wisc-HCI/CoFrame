@@ -1,10 +1,16 @@
-import { useSceneStore } from "robot-scene";
-import { trajectoryDataToLine, trajectoryDataToShapes, poseToColor } from "./helpers";
+// import { useSceneStore } from "robot-scene";
+import { trajectoryDataToLine, poseToColor, poseDataToShapes } from "./helpers";
 
 // const setFocusItem = useStore.getState().setFocusItem;
 // const setSecondaryFocusItem = useStore.getState().setSecondaryFocusItem;
 
-const ACTION = {
+export const ANIMATION = {
+    INACTIVE: "inactive",
+    PLAYING: "playing",
+    PAUSED: "paused"
+}
+
+export const ACTION = {
     SET_ITEM: "set_item",
     REMOVE_ITEM: "remove_item",
     SET_ITEM_SHOW_NAME: "set_item_show_name",
@@ -12,6 +18,7 @@ const ACTION = {
     SET_ITEM_ROTATION: "set_item_rotation",
     SET_ITEM_SCALE: "set_item_scale",
     SET_ITEM_COLOR: "set_item_color",
+    SET_ITEM_WIREFRAME: "set_item_wireframe",
     SET_ITEM_HIGHLIGHTED: "set_item_highlighted",
     SET_ITEM_ONCLICK: "set_item_onclick",
     SET_ITEM_ONPOINTEROVER: "set_item_onpointerover",
@@ -27,6 +34,7 @@ const ACTION = {
     SET_HULL: "set_hull",
     REMOVE_HULL: "remove_hull",
     SET_HULL_NAME: "set_tf_name",
+    SET_HULL_WIREFRAME: "set_hull_wireframe",
     SET_HULL_VERTICES: "set_hull_vertices",
     SET_HULL_VERTEX: "set_hull_vertex",
     ADD_HULL_VERTEX: "add_hull_vertex",
@@ -40,213 +48,176 @@ const ACTION = {
     SET_LINE: "set_line",
     REMOVE_LINE: "remove_line",
     SET_LINE_NAME: "set_line_name",
+    SET_LINE_WIDTH: "set_line_width",
     SET_LINE_VERTICES: "set_line_vertices",
     ADD_LINE_VERTEX: "add_line_vertex",
     REMOVE_LINE_VERTEX: "remove_line_vertex",
     SET_LINE_VERTEX: "set_line_vertex",
 }
 
-const STOREFN = {
-    [ACTION.SET_ITEM]: useSceneStore.getState().setItem,
-    [ACTION.REMOVE_ITEM]: useSceneStore.getState().removeItem,
-    [ACTION.SET_ITEM_SHOW_NAME]: useSceneStore.getState().setItemShowName,
-    [ACTION.SET_ITEM_POSITION]: useSceneStore.getState().setItemPosition,
-    [ACTION.SET_ITEM_ROTATION]: useSceneStore.getState().setItemRotation,
-    [ACTION.SET_ITEM_SCALE]: useSceneStore.getState().setItemScale,
-    [ACTION.SET_ITEM_COLOR]: useSceneStore.getState().setItemColor,
-    [ACTION.SET_ITEM_HIGHLIGHTED]: useSceneStore.getState().setItemHighlighted,
-    [ACTION.SET_ITEM_ONCLICK]: useSceneStore.getState().setItemOnClick,
-    [ACTION.SET_ITEM_ONPOINTEROVER]: useSceneStore.getState().setItemOnPointerOver,
-    [ACTION.SET_ITEM_ONPOINTEROUT]: useSceneStore.getState().setItemOnPointerOut,
-    [ACTION.SET_ITEM_TRANSFORM_MODE]: useSceneStore.getState().setItemTransformMode,
-    [ACTION.SET_ITEM_ONMOVE]: useSceneStore.getState().setItemOnMove,
+export const ANIMATIONFN = {
+    [ACTION.SET_ITEM]: (store)=>store.setItem,
+    [ACTION.REMOVE_ITEM]: (store)=>store.removeItem,
+    [ACTION.SET_ITEM_SHOW_NAME]: (store)=>store.setItemShowName,
+    [ACTION.SET_ITEM_POSITION]: (store)=>store.setItemPosition,
+    [ACTION.SET_ITEM_ROTATION]: (store)=>store.setItemRotation,
+    [ACTION.SET_ITEM_SCALE]: (store)=>store.setItemScale,
+    [ACTION.SET_ITEM_COLOR]: (store)=>store.setItemColor,
+    [ACTION.SET_ITEM_HIGHLIGHTED]: (store)=>store.setItemHighlighted,
+    [ACTION.SET_ITEM_ONCLICK]: (store)=>store.setItemOnClick,
+    [ACTION.SET_ITEM_ONPOINTEROVER]: (store)=>store.setItemOnPointerOver,
+    [ACTION.SET_ITEM_ONPOINTEROUT]: (store)=>store.setItemOnPointerOut,
+    [ACTION.SET_ITEM_TRANSFORM_MODE]: (store)=>store.setItemTransformMode,
+    [ACTION.SET_ITEM_ONMOVE]: (store)=>store.setItemOnMove,
 
-    [ACTION.SET_TF]: useSceneStore.getState().setTF,
-    [ACTION.REMOVE_TF]: useSceneStore.getState().removeTF,
-    [ACTION.SET_TF_POSITION]: useSceneStore.getState().setTfPosition,
-    [ACTION.SET_TF_ROTATION]: useSceneStore.getState().setTfRotation,
+    [ACTION.SET_TF]: (store)=>store.setTF,
+    [ACTION.REMOVE_TF]: (store)=>store.removeTF,
+    [ACTION.SET_TF_POSITION]: (store)=>store.setTfPosition,
+    [ACTION.SET_TF_ROTATION]: (store)=>store.setTfRotation,
 
-    [ACTION.SET_HULL]: useSceneStore.getState().setHull,
-    [ACTION.REMOVE_HULL]: useSceneStore.getState().removeHull,
-    [ACTION.SET_HULL_NAME]: useSceneStore.getState().setHullName,
-    [ACTION.SET_HULL_VERTICES]: useSceneStore.getState().setHullVertices,
-    [ACTION.SET_HULL_VERTEX]: useSceneStore.getState().setHullVertex,
-    [ACTION.ADD_HULL_VERTEX]: useSceneStore.getState().addHullVertex,
-    [ACTION.REMOVE_HULL_VERTEX]: useSceneStore.getState().removeHullVertex,
-    [ACTION.SET_HULL_COLOR]: useSceneStore.getState().setHullColor,
-    [ACTION.SET_HULL_HIGHLIGHTED]: useSceneStore.getState().setHullHighlighted,
-    [ACTION.SET_HOVER_ONCLICK]: useSceneStore.getState().setHullOnClick,
-    [ACTION.SET_HOVER_ONPOINTEROVER]: useSceneStore.getState().setHullOnPointerOver,
-    [ACTION.SET_HOVER_ONPOINTEROUT]: useSceneStore.getState().setHullOnPointerOut,
+    [ACTION.SET_HULL]: (store)=>store.setHull,
+    [ACTION.REMOVE_HULL]: (store)=>store.removeHull,
+    [ACTION.SET_HULL_NAME]: (store)=>store.setHullName,
+    [ACTION.SET_HULL_VERTICES]: (store)=>store.setHullVertices,
+    [ACTION.SET_HULL_VERTEX]: (store)=>store.setHullVertex,
+    [ACTION.ADD_HULL_VERTEX]: (store)=>store.addHullVertex,
+    [ACTION.REMOVE_HULL_VERTEX]: (store)=>store.removeHullVertex,
+    [ACTION.SET_HULL_COLOR]: (store)=>store.setHullColor,
+    [ACTION.SET_HULL_HIGHLIGHTED]: (store)=>store.setHullHighlighted,
+    [ACTION.SET_HOVER_ONCLICK]: (store)=>store.setHullOnClick,
+    [ACTION.SET_HOVER_ONPOINTEROVER]: (store)=>store.setHullOnPointerOver,
+    [ACTION.SET_HOVER_ONPOINTEROUT]: (store)=>store.setHullOnPointerOut,
 
-    [ACTION.SET_LINE]: useSceneStore.getState().setLine,
-    [ACTION.REMOVE_LINE]: useSceneStore.getState().removeLine,
-    [ACTION.SET_LINE_NAME]: useSceneStore.getState().setLineName,
-    [ACTION.SET_LINE_VERTICES]: useSceneStore.getState().setLineVertices,
-    [ACTION.ADD_LINE_VERTEX]: useSceneStore.getState().addLineVertex,
-    [ACTION.REMOVE_LINE_VERTEX]: useSceneStore.getState().removeLineVertex,
-    [ACTION.SET_LINE_VERTEX]: useSceneStore.getState().setLinevertex,
-}
-
-const ANIMATION = {
-    QUEUED: "queued",
-    PLAYING: "playing",
-    PAUSED: "paused",
-    FINISHED: "finished"
-}
-
-const PHASE = {
-    START: "start",
-    SEQUENCE: "sequence",
-    END: "end"
+    [ACTION.SET_LINE]: (store)=>store.setLine,
+    [ACTION.REMOVE_LINE]: (store)=>store.removeLine,
+    [ACTION.SET_LINE_NAME]: (store)=>store.setLineName,
+    [ACTION.SET_LINE_VERTICES]: (store)=>store.setLineVertices,
+    [ACTION.ADD_LINE_VERTEX]: (store)=>store.addLineVertex,
+    [ACTION.REMOVE_LINE_VERTEX]: (store)=>store.removeLineVertex,
+    [ACTION.SET_LINE_VERTEX]: (store)=>store.setLinevertex,
 }
 
 /* 
 
 All animations have the following attributes:
  - onStart: []changes
- - sequence: []updates
+ - sequence: []{delay:number,changes:[]changes,next:string|sequence}
  - onEnd: []changes
-
-All updates have the following attributes:
- - time: number (delay in milliseconds)
- - changes: []change
 
 All changes have the following attributes:
  - action: ACTION
  - data: If REMOVE, the uuid, otherwise the data to add.
 */ 
 
-export class Animation {
-    constructor(onStart, sequence, onEnd, cycle) {
-        this.onStart = onStart;
-        this.sequence = sequence;
-        this.onEnd = onEnd;
-        this.state = {
-            animation:ANIMATION.QUEUED,
-            phase:PHASE.START,
-            index:null
-        };
-        this.cycle = cycle;
-    }
-
-    _advance() {
-        // This function is used internally and should not be called from anywhere else. 
-        // Use the start, pause, and end functions
-
-        // If the animation is queued, finished, or paused, this is a no-op
-        if (this.state.animation === ANIMATION.QUEUED || this.state.animation === ANIMATION.FINISHED || this.state.animation === ANIMATION.PAUSED) {
-            return
-        }
-        
-        // Make changes (for now we are console logging)
-        if (this.state.phase === PHASE.START) {
-            // Enumerate the changes and push them off to the store.
-            this.onStart.forEach(change=>{
-                STOREFN[change.action](...change.data)
-                console.log(change)
-            })
-        } else if (this.state.phase === PHASE.END) {
-            this.onEnd.forEach(change=>{
-                STOREFN[change.action](...change.data)
-                console.log(change)
-            })
-        } else {
-            this.sequence[this.state.index].changes.forEach(change=>{
-                STOREFN[change.action](...change.data)
-                console.log(change)
-            })
-        }
-        
-        // Update the state for the next round and dispatch if necessary.
-        if (this.state.phase === PHASE.START) {
-            this.state = {...this.state,phase:PHASE.SEQUENCE,index:0};
-            setTimeout(()=>this._advance(),0);
-            return
-        } else if (this.state.phase === PHASE.END) {
-        	this.state = {...this.state,animation:ANIMATION.FINISHED,index:null};
-            return
-        } else if (this.state.phase === PHASE.SEQUENCE && this.sequence[this.state.index+1]) {
-            // Sequence isn't over. Go to next step.
-            const next = this.state.index+1;
-            this.state = {...this.state,index:next};
-            setTimeout(()=>this._advance(),this.sequence[next].time);
-            return
-        } else if (this.state.phase === PHASE.SEQUENCE && this.cycle) {
-            // The sequence is at the end, wrap-around to the first index.
-            this.state = {...this.state,index:0};
-            setTimeout(()=>this._advance(),this.sequence[0].time);
-            return
-        } else if (this.state.phase === PHASE.SEQUENCE && !this.cycle) {
-            // The sequence is at the end, go to finish.
-            this.state = {animation:ANIMATION.PLAYING,phase:PHASE.END,index:null};
-            setTimeout(()=>this._advance(),0);
-            return
-        } 
-        
-        
-    }
-
-    start() {
-        if (this.state.animation === ANIMATION.PAUSED) {
-            this.state = {...this.state,animation:ANIMATION.PLAYING};
-            this._advance();
-        } else if (this.state.animation === ANIMATION.QUEUED || this.state.animation === ANIMATION.FINISHED) {
-            this.state = {animation:ANIMATION.PLAYING,phase:PHASE.START,index:0};
-            this._advance();
-        }
-        // Ignore if already playing
-    }
-
-    pause() {
-        this.state = {...this.state,animation:ANIMATION.PAUSED};
-    }
-
-    end() {
-        this.state = {animation:ANIMATION.PLAYING,phase:PHASE.END,index:0};
+const createSequence = (arrayOfUpdates,terminal) => {
+    if (arrayOfUpdates.length === 0) {
+        return terminal
+    } else {
+        return {...arrayOfUpdates[0],next:createSequence(arrayOfUpdates.slice(1))}
     }
 }
 
-export const trajectoryToAnimation = (trajectory,locations,waypoints,frame,setSecondaryFocusItem) => {
-    let trajectoryShapes = trajectoryDataToShapes(trajectory,locations,waypoints,frame,setSecondaryFocusItem);
+export const trajectoryToAnimation = (trajectory,locations,waypoints,frame,get) => {
+    // const setItem = state.setItem;
+    // const setLine = state.setLine;
+    // const setItemColor = state.setItemColor;
+    // const setLineWidth = state.setLineWidth;
+    const setSecondaryFocusItem = get().setSecondaryFocusItem;
+    // let trajectoryShapes = trajectoryDataToShapes(trajectory,locations,waypoints,frame,setSecondaryFocusItem);
     let trajectoryLine = trajectoryDataToLine(trajectory,locations,waypoints,frame);
-    let onStart = [];
-    trajectoryShapes.forEach(shapeArgs=>{
-        onStart.push({action:ACTION.SET_ITEM,data:shapeArgs})
-    })
-    onStart.push({action:ACTION.SET_LINE,data:trajectoryLine});
+    let onStart = []; // Array of changes
+    let onEnd = []; // Array of changes
     let sequence = [];
-    trajectoryShapes.forEach((shapeArgs,i)=>{
-        let changes = [{
-            action:ACTION.SET_ITEM_COLOR,
-            data:[shapeArgs[0],poseToColor(shapeArgs[1],frame,true)]
-        }];
-        if (i > 0) {
-            let prevShapeArgs = trajectoryShapes[i-1];
-            changes.push({
-                action:ACTION.SET_ITEM_COLOR,
-                data:[prevShapeArgs[0],poseToColor(prevShapeArgs[1],frame,false)]
-            })
-        } else {
-            let prevShapeArgs = trajectoryShapes[trajectoryShapes.length-1];
-            changes.push({
-                action:ACTION.SET_ITEM_COLOR,
-                data:[prevShapeArgs[0],poseToColor(prevShapeArgs[1],frame,false)]
-            })
-        }
+
+    let poses = [];
+    if (trajectory.start_location_uuid) {
+        poses.push(locations[trajectory.start_location_uuid])
+    }
+    trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
+        poses.push(waypoints[waypoint_uuid])
+    })
+    if (trajectory.end_location_uuid) {
+        poses.push(locations[trajectory.end_location_uuid])
+    }
+
+    const active_colors = poses.map(pose=>poseToColor(pose,frame,true));
+    const inactive_colors = poses.map(pose=>poseToColor(pose,frame,false));
+
+    // Setup the onStart
+    poses.forEach((pose,i)=>{
+        // Update the shapes and such for each waypoint
+        const type = pose.type.includes("location") ? 'location' : 'waypoint';
+        const onClick = (e)=>{e.stopPropagation();setSecondaryFocusItem(type,pose.uuid)};
+        const shapePair = poseDataToShapes(pose,frame);
+        const pairOne = {...shapePair[0],onClick,color:inactive_colors[i]};
+        const pairTwo = {...shapePair[1],onClick,color:{...shapePair[1].color,a:0.3}};
+        onStart.push({action:ACTION.SET_ITEM,data:[pose.type+'-tag',pairOne]})
+        onStart.push({action:ACTION.SET_ITEM,data:[pose.type+'-pointer',pairTwo]})
+    })
+    // Update the line to be visible and have the correct shape/properties
+    onStart.push({action:ACTION.SET_LINE,data:trajectoryLine});
+
+    // Setup the onEnd
+    poses.forEach((pose,i)=>{
+        const color = {...inactive_colors[i],a:0};
+        onEnd.push({action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-tag',color]});
+        onEnd.push({action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-pointer',color]});
+    })
+    onEnd.push({action:ACTION.SET_LINE_WIDTH,data:[trajectory.uuid,0]})
+
+    poses.forEach((pose,i)=>{
+        let changes = [
+            {action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-tag',active_colors[i]]},
+            {action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-pointer',active_colors[i]]}
+        ]
+        
+        let otherIndex = i>0 ? i-1 : poses.length-1;
+        let otherColor = inactive_colors[otherIndex];
+        changes = [
+            ...changes,
+            {action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-tag',otherColor]},
+            {action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-pointer',otherColor]}
+        ]
+            
         sequence.push({
-            time: i*2000,
+            delay: 2000+i*2000,
             changes
         })
     })
-    let onEnd = [];
-    trajectoryShapes.forEach(shapeArgs=>{
-        onEnd.push({action:ACTION.REMOVE_ITEM,data:[shapeArgs[0]]});
-        onEnd.push({action:ACTION.REMOVE_LINE,data:[trajectory.uuid]})
-    })
+    return {onStart, sequence:createSequence(sequence,'restart'), onEnd}
+}
 
-    // TODO: Add the tf frames changes associated with the robot.
-    return new Animation(onStart,sequence,onEnd,true)
+export const poseToAnimation = (pose,frame,get) => {
+    const setSecondaryFocusItem = get().setSecondaryFocusItem;
+    const type = pose.type.includes('location')?'location':'waypoint';
+    const onClick = (e)=>{
+        e.stopPropagation();
+        setSecondaryFocusItem(type,pose.uuid)
+    };
+    // Works for waypoints and locations.
+    // const setItemColor = store.setItemColor;
+    // const setItemHighlighted = store.setItemHighlighted;
+    const color = poseToColor(pose,frame,true);
+    // console.log(setItemColor)
+    let onStart = [
+        {action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-tag',color]},
+        {action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-pointer',color]},
+        {action:ACTION.SET_ITEM_HIGHLIGHTED,data:[pose.uuid+'-tag',true]},
+        {action:ACTION.SET_ITEM_HIGHLIGHTED,data:[pose.uuid+'-pointer',true]},
+        {action:ACTION.SET_ITEM_ONCLICK,data:[pose.uuid+'-tag',onClick]},
+        {action:ACTION.SET_ITEM_ONCLICK,data:[pose.uuid+'-pointer',onClick]}
+    ];
+    let sequence = {delay:5000,changes:[],next:'restart'};
+    let onEnd = [
+        {action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-tag',{...color,a:0}]},
+        {action:ACTION.SET_ITEM_COLOR,data:[pose.uuid+'-pointer',{...color,a:0}]},
+        {action:ACTION.SET_ITEM_HIGHLIGHTED,data:[pose.uuid+'-tag',false]},
+        {action:ACTION.SET_ITEM_HIGHLIGHTED,data:[pose.uuid+'-pointer',false]},
+        {action:ACTION.SET_ITEM_ONCLICK,data:[pose.uuid+'-tag',()=>{}]},
+        {action:ACTION.SET_ITEM_ONCLICK,data:[pose.uuid+'-pointer',()=>{}]}
+    ];
+    return {onStart,sequence,onEnd}
+    
 }
 
 export const traceToAnimation = (trajectory,frame) => {

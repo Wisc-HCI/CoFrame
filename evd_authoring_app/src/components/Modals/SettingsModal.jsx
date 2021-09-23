@@ -3,6 +3,7 @@ import React from 'react';
 import { Modal, Input, Alert } from 'antd';
 
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 
 export const SettingsModal = (_) => {
 
@@ -13,7 +14,7 @@ export const SettingsModal = (_) => {
         setUrl:state.setUrl,
         connection:state.connection,
         connect:state.connect
-    }));
+    }),shallow);
     
     let connectButtonText = 'Connect';
     if (connection === 'connecting') {
