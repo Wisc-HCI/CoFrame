@@ -324,23 +324,45 @@ export const EvdSlice = (set, get) => ({
   createSkillArgument: (skill_uuid, argument) => set((state)=>{
     state.data[typeToKey('skill')][skill_uuid].arguments.push(argument);
   }),
-  deleteSkillArgument: (skill_uuid, argument) => set((state)=>{
-    // Clear the children's parameters of deleted argument
-    state.data[typeToKey('skill')][skill_uuid].primitiveIds.forEach(uuid => {
-      if (argument.parameter_type === 'node.machine.' && state.data.primitives[uuid].parameters.machine_uuid === argument.uuid) {
-        state.data.primitives[uuid].parameters.machine_uuid = null;
-      } else if (argument.parameter_type === 'node.pose.thing.' && state.data.primitives[uuid].parameters.thing_uuid === argument.uuid) {
-        state.data.primitives[uuid].parameters.thing_uuid = null;
-      } else if (argument.parameter_type === 'node.trajectory.' && state.data.primitives[uuid].parameters.trajectory_uuid === argument.uuid) {
-        state.data.primitives[uuid].parameters.trajectory_uuid = null;
-      } else if (argument.parameter_type === 'node.pose.waypoint.location.' && state.data.primitives[uuid].parameters.location_uuid === argument.uuid) {
-        state.data.primitives[uuid].parameters.location_uuid = null;
-      }
-    });
-    // Delete Argument
-    state.data[typeToKey('skill')][skill_uuid].arguments = state.data[typeToKey('skill')][skill_uuid].arguments.filter(arg => arg.uuid !== argument.uuid)
-
+  deleteArgumentFromChild: (uuid, argument) => set((state) => {
+    if (argument.parameter_type === 'node.machine.' && state.data.primitives[uuid].parameters.machine_uuid === argument.uuid) {
+      state.data.primitives[uuid].parameters.machine_uuid = null;
+    } else if (argument.parameter_type === 'node.pose.thing.' && state.data.primitives[uuid].parameters.thing_uuid === argument.uuid) {
+      state.data.primitives[uuid].parameters.thing_uuid = null;
+    } else if (argument.parameter_type === 'node.trajectory.' && state.data.primitives[uuid].parameters.trajectory_uuid === argument.uuid) {
+      state.data.primitives[uuid].parameters.trajectory_uuid = null;
+    } else if (argument.parameter_type === 'node.pose.waypoint.location.' && state.data.primitives[uuid].parameters.location_uuid === argument.uuid) {
+      state.data.primitives[uuid].parameters.location_uuid = null;
+    }
   }),
+  deleteArgumentsFromHierarchical: (hier_uuid, argument) => {
+    get().data.primitives[hier_uuid].primitiveIds.forEach(uuid => {
+      // Clear argument from hierarchicals
+      if (uuid.includes("hierarchical")) {
+        get().deleteArgumentsFromHierarchical(uuid, argument);
+      }
+
+      // Clear argument from children
+      get().deleteArgumentFromChild(uuid, argument);
+    });
+  },
+  deleteArgumentFromSkill: (skill_uuid, argument) => set((state) => {
+    state.data[typeToKey('skill')][skill_uuid].arguments = state.data[typeToKey('skill')][skill_uuid].arguments.filter(arg => arg.uuid !== argument.uuid)
+  }),
+  deleteSkillArgument: (skill, argument) => {
+    skill.primitiveIds.forEach(uuid => {
+      // Clear argument from hierarchicals
+      if (uuid.includes("hierarchical")) {
+        get().deleteArgumentsFromHierarchical(uuid, argument);
+      }
+
+      // Clear argument from children
+      get().deleteArgumentFromChild(uuid, argument);
+    });
+
+    // Delete Argument
+    get().deleteArgumentFromSkill(skill.uuid, argument);
+  },
   getSkillArugment: (skill_uuid, argument_uuid) => get((state)=>{
     for (let i = 0; i < state.data[typeToKey('skill')][skill_uuid].arguments.length; i++) {
       if (state.data[typeToKey('skill')][skill_uuid].arguments[i].uuid === argument_uuid) {
