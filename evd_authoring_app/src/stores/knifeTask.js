@@ -1,7 +1,7 @@
 const KNIFE_TASK = {
     "type": "node.primitive.hierarchical.program.",
-    "name": "Knife Assembly",
-    "uuid": "primitive.hierarchical.program.-py-ec3c025a16a311ec82af00155d967c6c",
+    "name": "",
+    "uuid": "primitive.hierarchical.program.-py-98888c021c1911ecbe2600155d1a70a2",
     "editable": true,
     "deleteable": true,
     "description": "",
@@ -10,7 +10,7 @@ const KNIFE_TASK = {
     "environment": {
         "type": "node.context.environment.",
         "name": "",
-        "uuid": "context.environment.-py-ec3c000216a311ec82af00155d967c6c",
+        "uuid": "context.environment.-py-988889aa1c1911ecbe2600155d1a70a2",
         "editable": true,
         "deleteable": true,
         "description": "",
@@ -25,21 +25,21 @@ const KNIFE_TASK = {
                 "description": "",
                 "inputs": {},
                 "outputs": {
-                    "thing-type.-py-ec3cb38016a311ec82af00155d967c6c": [
+                    "thing-type.-py-98892a7c1c1911ecbe2600155d1a70a2": [
                         {
-                            "region_uuid": "pose.region.cube-region.-py-ec3cdd2416a311ec82af00155d967c6c",
+                            "region_uuid": "pose.region.cube-region.-py-98896bcc1c1911ecbe2600155d1a70a2",
                             "quantity": 1,
                             "placeholder_uuids": [
-                                "placeholder.-py-ec3cc0be16a311ec82af00155d967c6c"
+                                "placeholder.-py-9889377e1c1911ecbe2600155d1a70a2"
                             ]
                         }
                     ],
-                    "thing-type.-py-ec3cb43e16a311ec82af00155d967c6c": [
+                    "thing-type.-py-98892b3a1c1911ecbe2600155d1a70a2": [
                         {
-                            "region_uuid": "pose.region.cube-region.-py-ec3ce1de16a311ec82af00155d967c6c",
+                            "region_uuid": "pose.region.cube-region.-py-988976441c1911ecbe2600155d1a70a2",
                             "quantity": 1,
                             "placeholder_uuids": [
-                                "placeholder.-py-ec3cc4d816a311ec82af00155d967c6c"
+                                "placeholder.-py-98893ba21c1911ecbe2600155d1a70a2"
                             ]
                         }
                     ]
@@ -49,7 +49,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3cf79616a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-98899fd41c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -57,7 +57,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3cf86816a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9889a0f61c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -68,7 +68,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3cf9c616a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9889a2861c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -79,36 +79,36 @@ const KNIFE_TASK = {
                     }
                 },
                 "link": "3d_printer_link",
-                "collision_mesh_uuid": "environment-node.collision-mesh.-py-ec3c6fc416a311ec82af00155d967c6c",
+                "collision_mesh_uuid": "environment-node.collision-mesh.-py-9888ecd81c1911ecbe2600155d1a70a2",
                 "passive": false
             },
             {
                 "type": "node.machine.",
                 "name": "Assembly Jig Machine",
-                "uuid": "assembly-jig-machine-uuid",
+                "uuid": "assembly-jig-machine-uuid_unsafe",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
                 "inputs": {
-                    "thing-type.-py-ec3cb60016a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ceb0c16a311ec82af00155d967c6c",
+                    "thing-type.-py-98892bd01c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
                         "quantity": 1
                     },
-                    "thing-type.-py-ec3cb38016a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ceb0c16a311ec82af00155d967c6c",
+                    "thing-type.-py-98892a7c1c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
                         "quantity": 1
                     },
-                    "thing-type.-py-ec3cb43e16a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ceb0c16a311ec82af00155d967c6c",
+                    "thing-type.-py-98892b3a1c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
                         "quantity": 1
                     }
                 },
                 "outputs": {
-                    "thing-type.-py-ec3cb70416a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ceb0c16a311ec82af00155d967c6c",
+                    "thing-type.-py-98892d7e1c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
                         "quantity": 1,
                         "placeholder_uuids": [
-                            "placeholder.-py-ec3cdaa416a311ec82af00155d967c6c"
+                            "placeholder.-py-9889539e1c1911ecbe2600155d1a70a2"
                         ]
                     }
                 },
@@ -117,7 +117,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3d019616a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9889aa921c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -125,7 +125,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3d022c16a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9889ab781c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -136,7 +136,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3d033a16a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9889af4c1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -147,7 +147,75 @@ const KNIFE_TASK = {
                     }
                 },
                 "link": "assembly_jig_link",
-                "collision_mesh_uuid": "environment-node.collision-mesh.-py-ec3c869416a311ec82af00155d967c6c",
+                "collision_mesh_uuid": "environment-node.collision-mesh.-py-9888ff521c1911ecbe2600155d1a70a2",
+                "passive": true
+            },
+            {
+                "type": "node.machine.",
+                "name": "Assembly Jig Machine",
+                "uuid": "assembly-jig-machine-uuid_safe",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "inputs": {
+                    "thing-type.-py-98892ce81c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
+                        "quantity": 1
+                    },
+                    "thing-type.-py-98892a7c1c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
+                        "quantity": 1
+                    },
+                    "thing-type.-py-98892b3a1c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
+                        "quantity": 1
+                    }
+                },
+                "outputs": {
+                    "thing-type.-py-98892e001c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
+                        "quantity": 1,
+                        "placeholder_uuids": [
+                            "placeholder.-py-988965641c1911ecbe2600155d1a70a2"
+                        ]
+                    }
+                },
+                "process_time": 0,
+                "mesh_id": "package://evd_ros_tasks/description/meshes/visual/assembly_jig.stl",
+                "pose_offset": {
+                    "type": "node.pose.",
+                    "name": "",
+                    "uuid": "pose.-py-9889b3b61c1911ecbe2600155d1a70a2",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "link": "assembly_jig_link",
+                    "position": {
+                        "type": "node.position.",
+                        "name": "",
+                        "uuid": "position.-py-9889b4421c1911ecbe2600155d1a70a2",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "orientation": {
+                        "type": "node.orientation.",
+                        "name": "",
+                        "uuid": "orientation.-py-9889b5641c1911ecbe2600155d1a70a2",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                    }
+                },
+                "link": "assembly_jig_link",
+                "collision_mesh_uuid": "environment-node.collision-mesh.-py-9888ff521c1911ecbe2600155d1a70a2",
                 "passive": true
             },
             {
@@ -159,11 +227,11 @@ const KNIFE_TASK = {
                 "description": "",
                 "inputs": {},
                 "outputs": {
-                    "thing-type.-py-ec3cb4d416a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ce4f416a311ec82af00155d967c6c",
+                    "thing-type.-py-98892bd01c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98897e321c1911ecbe2600155d1a70a2",
                         "quantity": 1,
                         "placeholder_uuids": [
-                            "placeholder.-py-ec3ccf6416a311ec82af00155d967c6c"
+                            "placeholder.-py-9889435e1c1911ecbe2600155d1a70a2"
                         ]
                     }
                 },
@@ -172,7 +240,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3d05f616a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9889b8201c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -180,7 +248,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3d068c16a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9889b8ac1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -191,7 +259,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3d07a416a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9889b9c41c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -202,7 +270,7 @@ const KNIFE_TASK = {
                     }
                 },
                 "link": "blade_conveyor_link",
-                "collision_mesh_uuid": "environment-node.collision-mesh.-py-ec3c8b3016a311ec82af00155d967c6c",
+                "collision_mesh_uuid": "environment-node.collision-mesh.-py-988903ee1c1911ecbe2600155d1a70a2",
                 "passive": false
             },
             {
@@ -213,17 +281,17 @@ const KNIFE_TASK = {
                 "deleteable": true,
                 "description": "",
                 "inputs": {
-                    "thing-type.-py-ec3cb4d416a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ce4f416a311ec82af00155d967c6c",
+                    "thing-type.-py-98892bd01c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98897e321c1911ecbe2600155d1a70a2",
                         "quantity": 1
                     }
                 },
                 "outputs": {
-                    "thing-type.-py-ec3cb60016a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ce4f416a311ec82af00155d967c6c",
+                    "thing-type.-py-98892ce81c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-98897e321c1911ecbe2600155d1a70a2",
                         "quantity": 1,
                         "placeholder_uuids": [
-                            "placeholder.-py-ec3cdaa416a311ec82af00155d967c6c"
+                            "placeholder.-py-988965641c1911ecbe2600155d1a70a2"
                         ]
                     }
                 },
@@ -232,7 +300,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3d0a6016a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9889bc9e1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -240,7 +308,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3d0aec16a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9889bd201c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -251,7 +319,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3d0c0e16a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9889be381c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -262,7 +330,7 @@ const KNIFE_TASK = {
                     }
                 },
                 "link": "blade_feeder_link",
-                "collision_mesh_uuid": "environment-node.collision-mesh.-py-ec3c8fc216a311ec82af00155d967c6c",
+                "collision_mesh_uuid": "environment-node.collision-mesh.-py-988908621c1911ecbe2600155d1a70a2",
                 "passive": false
             },
             {
@@ -273,8 +341,8 @@ const KNIFE_TASK = {
                 "deleteable": true,
                 "description": "",
                 "inputs": {
-                    "thing-type.-py-ec3cb68216a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ce7f616a311ec82af00155d967c6c",
+                    "thing-type.-py-98892d7e1c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-988982ec1c1911ecbe2600155d1a70a2",
                         "quantity": 1
                     }
                 },
@@ -284,7 +352,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3d132a16a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9889c5541c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -292,7 +360,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3d13b616a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9889c6bc1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -303,7 +371,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3d14ce16a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9889c84c1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -314,7 +382,7 @@ const KNIFE_TASK = {
                     }
                 },
                 "link": "knife_conveyor_link",
-                "collision_mesh_uuid": "environment-node.collision-mesh.-py-ec3c94ea16a311ec82af00155d967c6c",
+                "collision_mesh_uuid": "environment-node.collision-mesh.-py-98890ccc1c1911ecbe2600155d1a70a2",
                 "passive": false
             },
             {
@@ -325,17 +393,17 @@ const KNIFE_TASK = {
                 "deleteable": true,
                 "description": "",
                 "inputs": {
-                    "thing-type.-py-ec3cb70416a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ce7f616a311ec82af00155d967c6c",
+                    "thing-type.-py-98892e001c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-988982ec1c1911ecbe2600155d1a70a2",
                         "quality": 1
                     }
                 },
                 "outputs": {
-                    "thing-type.-py-ec3cb68216a311ec82af00155d967c6c": {
-                        "region_uuid": "pose.region.cube-region.-py-ec3ce7f616a311ec82af00155d967c6c",
+                    "thing-type.-py-98892d7e1c1911ecbe2600155d1a70a2": {
+                        "region_uuid": "pose.region.cube-region.-py-988982ec1c1911ecbe2600155d1a70a2",
                         "quality": 1,
                         "placeholder_uuids": [
-                            "placeholder.-py-ec3cd6ee16a311ec82af00155d967c6c"
+                            "placeholder.-py-9889539e1c1911ecbe2600155d1a70a2"
                         ]
                     }
                 },
@@ -344,7 +412,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3d0ec016a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9889c0ea1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -352,7 +420,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3d0f4216a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9889c1761c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -363,7 +431,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3d107816a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9889c2a21c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -374,7 +442,7 @@ const KNIFE_TASK = {
                     }
                 },
                 "link": "knife_feeder_link",
-                "collision_mesh_uuid": "environment-node.collision-mesh.-py-ec3c998616a311ec82af00155d967c6c",
+                "collision_mesh_uuid": "environment-node.collision-mesh.-py-9889112c1c1911ecbe2600155d1a70a2",
                 "passive": true
             }
         ],
@@ -385,7 +453,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.thing-type.",
                 "name": "Left Handle",
-                "uuid": "thing-type.-py-ec3cb38016a311ec82af00155d967c6c",
+                "uuid": "thing-type.-py-98892a7c1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -396,7 +464,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.thing-type.",
                 "name": "Right Handle",
-                "uuid": "thing-type.-py-ec3cb43e16a311ec82af00155d967c6c",
+                "uuid": "thing-type.-py-98892b3a1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -407,7 +475,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.thing-type.",
                 "name": "Blade",
-                "uuid": "thing-type.-py-ec3cb4d416a311ec82af00155d967c6c",
+                "uuid": "thing-type.-py-98892bd01c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -418,7 +486,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.thing-type.",
                 "name": "Transport Jig",
-                "uuid": "thing-type.-py-ec3cb56016a311ec82af00155d967c6c",
+                "uuid": "thing-type.-py-98892c5c1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -429,7 +497,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.thing-type.",
                 "name": "Blade With Transport Jig",
-                "uuid": "thing-type.-py-ec3cb60016a311ec82af00155d967c6c",
+                "uuid": "thing-type.-py-98892ce81c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -440,7 +508,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.thing-type.",
                 "name": "Knife",
-                "uuid": "thing-type.-py-ec3cb68216a311ec82af00155d967c6c",
+                "uuid": "thing-type.-py-98892d7e1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -451,7 +519,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.thing-type.",
                 "name": "Knife With Transport Jig",
-                "uuid": "thing-type.-py-ec3cb70416a311ec82af00155d967c6c",
+                "uuid": "thing-type.-py-98892e001c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -464,7 +532,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.pose.region.cube-region.",
                 "name": "",
-                "uuid": "pose.region.cube-region.-py-ec3cdd2416a311ec82af00155d967c6c",
+                "uuid": "pose.region.cube-region.-py-98896bcc1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -472,7 +540,7 @@ const KNIFE_TASK = {
                 "center_position": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3cdb8a16a311ec82af00155d967c6c",
+                    "uuid": "position.-py-988968521c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -483,7 +551,7 @@ const KNIFE_TASK = {
                 "center_orientation": {
                     "type": "node.orientation.",
                     "name": "",
-                    "uuid": "orientation.-py-ec3cdc2016a311ec82af00155d967c6c",
+                    "uuid": "orientation.-py-988969b01c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -502,7 +570,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.pose.region.cube-region.",
                 "name": "",
-                "uuid": "pose.region.cube-region.-py-ec3ce1de16a311ec82af00155d967c6c",
+                "uuid": "pose.region.cube-region.-py-988976441c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -510,7 +578,7 @@ const KNIFE_TASK = {
                 "center_position": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3cdf4a16a311ec82af00155d967c6c",
+                    "uuid": "position.-py-98896f0a1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -521,7 +589,7 @@ const KNIFE_TASK = {
                 "center_orientation": {
                     "type": "node.orientation.",
                     "name": "",
-                    "uuid": "orientation.-py-ec3ce11616a311ec82af00155d967c6c",
+                    "uuid": "orientation.-py-988973ec1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -540,7 +608,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.pose.region.cube-region.",
                 "name": "",
-                "uuid": "pose.region.cube-region.-py-ec3ce4f416a311ec82af00155d967c6c",
+                "uuid": "pose.region.cube-region.-py-98897e321c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -548,7 +616,7 @@ const KNIFE_TASK = {
                 "center_position": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3ce3aa16a311ec82af00155d967c6c",
+                    "uuid": "position.-py-988979f01c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -559,7 +627,7 @@ const KNIFE_TASK = {
                 "center_orientation": {
                     "type": "node.orientation.",
                     "name": "",
-                    "uuid": "orientation.-py-ec3ce44a16a311ec82af00155d967c6c",
+                    "uuid": "orientation.-py-98897b941c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -578,7 +646,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.pose.region.cube-region.",
                 "name": "",
-                "uuid": "pose.region.cube-region.-py-ec3ce7f616a311ec82af00155d967c6c",
+                "uuid": "pose.region.cube-region.-py-988982ec1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -586,7 +654,7 @@ const KNIFE_TASK = {
                 "center_position": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3ce69816a311ec82af00155d967c6c",
+                    "uuid": "position.-py-988980ee1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -597,7 +665,7 @@ const KNIFE_TASK = {
                 "center_orientation": {
                     "type": "node.orientation.",
                     "name": "",
-                    "uuid": "orientation.-py-ec3ce73816a311ec82af00155d967c6c",
+                    "uuid": "orientation.-py-9889818e1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -616,7 +684,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.pose.region.cube-region.",
                 "name": "",
-                "uuid": "pose.region.cube-region.-py-ec3ceb0c16a311ec82af00155d967c6c",
+                "uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -624,7 +692,7 @@ const KNIFE_TASK = {
                 "center_position": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3ce9ae16a311ec82af00155d967c6c",
+                    "uuid": "position.-py-988986d41c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -635,7 +703,7 @@ const KNIFE_TASK = {
                 "center_orientation": {
                     "type": "node.orientation.",
                     "name": "",
-                    "uuid": "orientation.-py-ec3cea5816a311ec82af00155d967c6c",
+                    "uuid": "orientation.-py-988988be1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -657,21 +725,21 @@ const KNIFE_TASK = {
             {
                 "type": "node.placeholder.",
                 "name": "",
-                "uuid": "placeholder.-py-ec3cc0be16a311ec82af00155d967c6c",
+                "uuid": "placeholder.-py-9889377e1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
-                "pending_node": {
+                "pending_node_dct": {
                     "type": "node.pose.thing.",
                     "name": "Left Handle Thing",
-                    "uuid": "pose.thing.-py-ec3cbc6816a311ec82af00155d967c6c",
+                    "uuid": "pose.thing.-py-988933781c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
                     "link": "app",
                     "position": "<pending>",
                     "orientation": "<pending>",
-                    "thing_type_uuid": "thing-type.-py-ec3cb38016a311ec82af00155d967c6c"
+                    "thing_type_uuid": "thing-type.-py-98892a7c1c1911ecbe2600155d1a70a2"
                 },
                 "pending_fields": [
                     "position",
@@ -681,21 +749,21 @@ const KNIFE_TASK = {
             {
                 "type": "node.placeholder.",
                 "name": "",
-                "uuid": "placeholder.-py-ec3cc4d816a311ec82af00155d967c6c",
+                "uuid": "placeholder.-py-98893ba21c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
-                "pending_node": {
+                "pending_node_dct": {
                     "type": "node.pose.thing.",
                     "name": "Right Handle Thing",
-                    "uuid": "pose.thing.-py-ec3cc19a16a311ec82af00155d967c6c",
+                    "uuid": "pose.thing.-py-988938501c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
                     "link": "app",
                     "position": "<pending>",
                     "orientation": "<pending>",
-                    "thing_type_uuid": "thing-type.-py-ec3cb43e16a311ec82af00155d967c6c"
+                    "thing_type_uuid": "thing-type.-py-98892b3a1c1911ecbe2600155d1a70a2"
                 },
                 "pending_fields": [
                     "position",
@@ -705,14 +773,14 @@ const KNIFE_TASK = {
             {
                 "type": "node.placeholder.",
                 "name": "",
-                "uuid": "placeholder.-py-ec3ccafa16a311ec82af00155d967c6c",
+                "uuid": "placeholder.-py-98893f761c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
-                "pending_node": {
+                "pending_node_dct": {
                     "type": "node.pose.thing.",
                     "name": "Transport Jig Placeholder",
-                    "uuid": "pose.thing.-py-ec3cc6c216a311ec82af00155d967c6c",
+                    "uuid": "pose.thing.-py-98893d821c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -720,7 +788,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3cc57816a311ec82af00155d967c6c",
+                        "uuid": "position.-py-98893c381c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": true,
                         "description": "",
@@ -731,7 +799,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3cc60e16a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-98893cce1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": true,
                         "description": "",
@@ -740,28 +808,28 @@ const KNIFE_TASK = {
                         "z": 0,
                         "w": 1
                     },
-                    "thing_type_uuid": "thing-type.-py-ec3cb56016a311ec82af00155d967c6c"
+                    "thing_type_uuid": "thing-type.-py-98892c5c1c1911ecbe2600155d1a70a2"
                 },
                 "pending_fields": []
             },
             {
                 "type": "node.placeholder.",
                 "name": "",
-                "uuid": "placeholder.-py-ec3ccf6416a311ec82af00155d967c6c",
+                "uuid": "placeholder.-py-9889435e1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
-                "pending_node": {
+                "pending_node_dct": {
                     "type": "node.pose.thing.",
                     "name": "Blade Thing",
-                    "uuid": "pose.thing.-py-ec3ccbf416a311ec82af00155d967c6c",
+                    "uuid": "pose.thing.-py-988940161c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
                     "link": "app",
                     "position": "<pending>",
                     "orientation": "<pending>",
-                    "thing_type_uuid": "thing-type.-py-ec3cb4d416a311ec82af00155d967c6c"
+                    "thing_type_uuid": "thing-type.-py-98892bd01c1911ecbe2600155d1a70a2"
                 },
                 "pending_fields": [
                     "position",
@@ -771,21 +839,21 @@ const KNIFE_TASK = {
             {
                 "type": "node.placeholder.",
                 "name": "",
-                "uuid": "placeholder.-py-ec3cd33816a311ec82af00155d967c6c",
+                "uuid": "placeholder.-py-988947001c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
-                "pending_node": {
+                "pending_node_dct": {
                     "type": "node.pose.thing.",
                     "name": "Blade with Transport Jig Thing",
-                    "uuid": "pose.thing.-py-ec3cd01816a311ec82af00155d967c6c",
+                    "uuid": "pose.thing.-py-988943fe1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
                     "link": "app",
                     "position": "<pending>",
                     "orientation": "<pending>",
-                    "thing_type_uuid": "thing-type.-py-ec3cb60016a311ec82af00155d967c6c"
+                    "thing_type_uuid": "thing-type.-py-98892ce81c1911ecbe2600155d1a70a2"
                 },
                 "pending_fields": [
                     "position",
@@ -795,21 +863,21 @@ const KNIFE_TASK = {
             {
                 "type": "node.placeholder.",
                 "name": "",
-                "uuid": "placeholder.-py-ec3cd6ee16a311ec82af00155d967c6c",
+                "uuid": "placeholder.-py-9889539e1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
-                "pending_node": {
+                "pending_node_dct": {
                     "type": "node.pose.thing.",
                     "name": "Knife Thing",
-                    "uuid": "pose.thing.-py-ec3cd3d816a311ec82af00155d967c6c",
+                    "uuid": "pose.thing.-py-988947be1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
                     "link": "app",
                     "position": "<pending>",
                     "orientation": "<pending>",
-                    "thing_type_uuid": "thing-type.-py-ec3cb68216a311ec82af00155d967c6c"
+                    "thing_type_uuid": "thing-type.-py-98892d7e1c1911ecbe2600155d1a70a2"
                 },
                 "pending_fields": [
                     "position",
@@ -819,21 +887,21 @@ const KNIFE_TASK = {
             {
                 "type": "node.placeholder.",
                 "name": "",
-                "uuid": "placeholder.-py-ec3cdaa416a311ec82af00155d967c6c",
+                "uuid": "placeholder.-py-988965641c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
-                "pending_node": {
+                "pending_node_dct": {
                     "type": "node.pose.thing.",
                     "name": "Knife with Transport Jig Thing",
-                    "uuid": "pose.thing.-py-ec3cd79816a311ec82af00155d967c6c",
+                    "uuid": "pose.thing.-py-988957721c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
                     "link": "app",
                     "position": "<pending>",
                     "orientation": "<pending>",
-                    "thing_type_uuid": "thing-type.-py-ec3cb70416a311ec82af00155d967c6c"
+                    "thing_type_uuid": "thing-type.-py-98892e001c1911ecbe2600155d1a70a2"
                 },
                 "pending_fields": [
                     "position",
@@ -844,7 +912,7 @@ const KNIFE_TASK = {
         "reach_sphere": {
             "type": "node.environment-node.reach-sphere.",
             "name": "",
-            "uuid": "environment-node.reach-sphere.-py-ec3c34dc16a311ec82af00155d967c6c",
+            "uuid": "environment-node.reach-sphere.-py-9888bb821c1911ecbe2600155d1a70a2",
             "editable": true,
             "deleteable": true,
             "description": "",
@@ -852,7 +920,7 @@ const KNIFE_TASK = {
             "offset": {
                 "type": "node.position.",
                 "name": "",
-                "uuid": "position.-py-ec3c337e16a311ec82af00155d967c6c",
+                "uuid": "position.-py-9888ba061c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -866,7 +934,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.pinch-point.",
                 "name": "",
-                "uuid": "environment-node.pinch-point.-py-ec3c607e16a311ec82af00155d967c6c",
+                "uuid": "environment-node.pinch-point.-py-9888ddc41c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -874,7 +942,7 @@ const KNIFE_TASK = {
                 "offset": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3c5f0c16a311ec82af00155d967c6c",
+                    "uuid": "position.-py-9888dc7a1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -889,7 +957,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.pinch-point.",
                 "name": "",
-                "uuid": "environment-node.pinch-point.-py-ec3c62f416a311ec82af00155d967c6c",
+                "uuid": "environment-node.pinch-point.-py-9888e01c1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -897,7 +965,7 @@ const KNIFE_TASK = {
                 "offset": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3c623616a311ec82af00155d967c6c",
+                    "uuid": "position.-py-9888df5e1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -912,7 +980,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.pinch-point.",
                 "name": "",
-                "uuid": "environment-node.pinch-point.-py-ec3c64fc16a311ec82af00155d967c6c",
+                "uuid": "environment-node.pinch-point.-py-9888e21a1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -920,7 +988,7 @@ const KNIFE_TASK = {
                 "offset": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3c644816a311ec82af00155d967c6c",
+                    "uuid": "position.-py-9888e1701c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -935,7 +1003,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.pinch-point.",
                 "name": "",
-                "uuid": "environment-node.pinch-point.-py-ec3c66fa16a311ec82af00155d967c6c",
+                "uuid": "environment-node.pinch-point.-py-9888e40e1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -943,7 +1011,7 @@ const KNIFE_TASK = {
                 "offset": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3c665a16a311ec82af00155d967c6c",
+                    "uuid": "position.-py-9888e36e1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -958,7 +1026,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.pinch-point.",
                 "name": "",
-                "uuid": "environment-node.pinch-point.-py-ec3c68d016a311ec82af00155d967c6c",
+                "uuid": "environment-node.pinch-point.-py-9888e5e41c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -966,7 +1034,7 @@ const KNIFE_TASK = {
                 "offset": {
                     "type": "node.position.",
                     "name": "",
-                    "uuid": "position.-py-ec3c682616a311ec82af00155d967c6c",
+                    "uuid": "position.-py-9888e53a1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": true,
                     "description": "",
@@ -983,7 +1051,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.collision-mesh.",
                 "name": "3D Printer Collision Mesh",
-                "uuid": "environment-node.collision-mesh.-py-ec3c6fc416a311ec82af00155d967c6c",
+                "uuid": "environment-node.collision-mesh.-py-9888ecd81c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -991,7 +1059,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3c70aa16a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9888edb41c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -999,7 +1067,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3c715e16a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9888ee5e1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1010,7 +1078,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3c72bc16a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9888efb21c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1025,7 +1093,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.collision-mesh.",
                 "name": "Pedestal Collision Mesh",
-                "uuid": "environment-node.collision-mesh.-py-ec3c7c9e16a311ec82af00155d967c6c",
+                "uuid": "environment-node.collision-mesh.-py-9888f49e1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1033,7 +1101,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3c7d7016a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9888f53e1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -1041,7 +1109,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3c7e1016a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9888f5ca1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1052,7 +1120,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3c7f5016a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9888f6ec1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1067,7 +1135,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.collision-mesh.",
                 "name": "Table Collision Mesh",
-                "uuid": "environment-node.collision-mesh.-py-ec3c81da16a311ec82af00155d967c6c",
+                "uuid": "environment-node.collision-mesh.-py-9888f9621c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1075,7 +1143,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3c827016a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9888fae81c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -1083,7 +1151,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3c82fc16a311ec82af00155d967c6c",
+                        "uuid": "position.-py-9888fb9c1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1094,7 +1162,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3c842816a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9888fce61c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1109,7 +1177,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.collision-mesh.",
                 "name": "Assembly Jig Collision Mesh",
-                "uuid": "environment-node.collision-mesh.-py-ec3c869416a311ec82af00155d967c6c",
+                "uuid": "environment-node.collision-mesh.-py-9888ff521c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1117,7 +1185,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3c872016a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9888ffde1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -1125,7 +1193,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3c87ac16a311ec82af00155d967c6c",
+                        "uuid": "position.-py-988900601c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1136,7 +1204,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3c88c416a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-988901781c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1151,7 +1219,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.collision-mesh.",
                 "name": "Blade Conveyor Collision Mesh",
-                "uuid": "environment-node.collision-mesh.-py-ec3c8b3016a311ec82af00155d967c6c",
+                "uuid": "environment-node.collision-mesh.-py-988903ee1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1159,7 +1227,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3c8bbc16a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-9889047a1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -1167,7 +1235,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3c8c3416a311ec82af00155d967c6c",
+                        "uuid": "position.-py-988904fc1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1178,7 +1246,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3c8d4c16a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-988906141c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1193,7 +1261,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.collision-mesh.",
                 "name": "Blade Feeder Collision Mesh",
-                "uuid": "environment-node.collision-mesh.-py-ec3c8fc216a311ec82af00155d967c6c",
+                "uuid": "environment-node.collision-mesh.-py-988908621c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1201,7 +1269,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3c904e16a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-988908f81c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -1209,7 +1277,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3c90d016a311ec82af00155d967c6c",
+                        "uuid": "position.-py-988909701c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1220,7 +1288,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3c91e816a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-98890a7e1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1235,7 +1303,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.collision-mesh.",
                 "name": "Knife Conveyor Collision Mesh",
-                "uuid": "environment-node.collision-mesh.-py-ec3c94ea16a311ec82af00155d967c6c",
+                "uuid": "environment-node.collision-mesh.-py-98890ccc1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1243,7 +1311,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3c958016a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-98890d581c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -1251,7 +1319,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3c960c16a311ec82af00155d967c6c",
+                        "uuid": "position.-py-98890dd01c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1262,7 +1330,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3c972416a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-98890ee81c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1277,7 +1345,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.collision-mesh.",
                 "name": "Knife Feeder Collision Mesh",
-                "uuid": "environment-node.collision-mesh.-py-ec3c998616a311ec82af00155d967c6c",
+                "uuid": "environment-node.collision-mesh.-py-9889112c1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1285,7 +1353,7 @@ const KNIFE_TASK = {
                 "pose_offset": {
                     "type": "node.pose.",
                     "name": "",
-                    "uuid": "pose.-py-ec3c9a1216a311ec82af00155d967c6c",
+                    "uuid": "pose.-py-988911b81c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -1293,7 +1361,7 @@ const KNIFE_TASK = {
                     "position": {
                         "type": "node.position.",
                         "name": "",
-                        "uuid": "position.-py-ec3c9a9416a311ec82af00155d967c6c",
+                        "uuid": "position.-py-988912301c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1304,7 +1372,7 @@ const KNIFE_TASK = {
                     "orientation": {
                         "type": "node.orientation.",
                         "name": "",
-                        "uuid": "orientation.-py-ec3c9bc016a311ec82af00155d967c6c",
+                        "uuid": "orientation.-py-9889133e1c1911ecbe2600155d1a70a2",
                         "editable": true,
                         "deleteable": false,
                         "description": "",
@@ -1321,7 +1389,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.occupancy-zone.",
                 "name": "Robot Occupancy Zone",
-                "uuid": "environment-node.occupancy-zone.-py-ec3cadf416a311ec82af00155d967c6c",
+                "uuid": "environment-node.occupancy-zone.-py-988924c81c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1335,7 +1403,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.occupancy-zone.",
                 "name": "Human Workspace Occupancy Zone",
-                "uuid": "environment-node.occupancy-zone.-py-ec3caf2a16a311ec82af00155d967c6c",
+                "uuid": "environment-node.occupancy-zone.-py-988926121c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1349,7 +1417,7 @@ const KNIFE_TASK = {
             {
                 "type": "node.environment-node.occupancy-zone.",
                 "name": "Human Corridor Occupancy Zone",
-                "uuid": "environment-node.occupancy-zone.-py-ec3caff216a311ec82af00155d967c6c",
+                "uuid": "environment-node.occupancy-zone.-py-988926d01c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
                 "description": "",
@@ -1366,7 +1434,7 @@ const KNIFE_TASK = {
         {
             "type": "node.primitive.hierarchical.skill.",
             "name": "Machine Blocking Process",
-            "uuid": "primitive.hierarchical.skill.-py-ec3c0d7c16a311ec82af00155d967c6c",
+            "uuid": "primitive.hierarchical.skill.-py-988896fc1c1911ecbe2600155d1a70a2",
             "editable": true,
             "deleteable": false,
             "description": "",
@@ -1375,34 +1443,34 @@ const KNIFE_TASK = {
                 {
                     "type": "node.primitive.machine-primitive.machine-start.",
                     "name": "",
-                    "uuid": "primitive.machine-primitive.machine-start.-py-ec3c0ad416a311ec82af00155d967c6c",
+                    "uuid": "primitive.machine-primitive.machine-start.-py-9888945e1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
-                        "machine_uuid": "skill-argument-variable-py-ec3c09ee16a311ec82af00155d967c6c"
+                        "machine_uuid": "skill-argument-variable-py-988893821c1911ecbe2600155d1a70a2"
                     }
                 },
                 {
                     "type": "node.primitive.machine-primitive.machine-wait.",
                     "name": "",
-                    "uuid": "primitive.machine-primitive.machine-wait.-py-ec3c0bc416a311ec82af00155d967c6c",
+                    "uuid": "primitive.machine-primitive.machine-wait.-py-9888954e1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
-                        "machine_uuid": "skill-argument-variable-py-ec3c09ee16a311ec82af00155d967c6c"
+                        "machine_uuid": "skill-argument-variable-py-988893821c1911ecbe2600155d1a70a2"
                     }
                 },
                 {
                     "type": "node.primitive.machine-primitive.machine-stop.",
                     "name": "",
-                    "uuid": "primitive.machine-primitive.machine-stop.-py-ec3c0c8c16a311ec82af00155d967c6c",
+                    "uuid": "primitive.machine-primitive.machine-stop.-py-988896161c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
-                        "machine_uuid": "skill-argument-variable-py-ec3c09ee16a311ec82af00155d967c6c"
+                        "machine_uuid": "skill-argument-variable-py-988893821c1911ecbe2600155d1a70a2"
                     }
                 }
             ],
@@ -1411,7 +1479,7 @@ const KNIFE_TASK = {
         {
             "type": "node.primitive.hierarchical.skill.",
             "name": "Simple Pick And Place",
-            "uuid": "primitive.hierarchical.skill.-py-ec3c183a16a311ec82af00155d967c6c",
+            "uuid": "primitive.hierarchical.skill.-py-9888a1d81c1911ecbe2600155d1a70a2",
             "editable": true,
             "deleteable": false,
             "description": "",
@@ -1420,24 +1488,24 @@ const KNIFE_TASK = {
                 {
                     "type": "node.primitive.move-trajectory.",
                     "name": "",
-                    "uuid": "primitive.move-trajectory.-py-ec3c152e16a311ec82af00155d967c6c",
+                    "uuid": "primitive.move-trajectory.-py-98889e901c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
                         "manual_safety": false,
-                        "trajectory_uuid": "skill-argument-variable-py-ec3c127c16a311ec82af00155d967c6c"
+                        "trajectory_uuid": "skill-argument-variable-py-98889c101c1911ecbe2600155d1a70a2"
                     }
                 },
                 {
                     "type": "node.primitive.gripper.",
                     "name": "",
-                    "uuid": "primitive.gripper.-py-ec3c161416a311ec82af00155d967c6c",
+                    "uuid": "primitive.gripper.-py-98889f941c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
-                        "thing_uuid": "skill-argument-variable-py-ec3c147016a311ec82af00155d967c6c",
+                        "thing_uuid": "skill-argument-variable-py-98889df01c1911ecbe2600155d1a70a2",
                         "position": 100,
                         "effort": 0,
                         "speed": 0,
@@ -1447,24 +1515,24 @@ const KNIFE_TASK = {
                 {
                     "type": "node.primitive.move-trajectory.",
                     "name": "",
-                    "uuid": "primitive.move-trajectory.-py-ec3c16e616a311ec82af00155d967c6c",
+                    "uuid": "primitive.move-trajectory.-py-9888a0661c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
                         "manual_safety": false,
-                        "trajectory_uuid": "skill-argument-variable-py-ec3c138a16a311ec82af00155d967c6c"
+                        "trajectory_uuid": "skill-argument-variable-py-98889cf61c1911ecbe2600155d1a70a2"
                     }
                 },
                 {
                     "type": "node.primitive.gripper.",
                     "name": "",
-                    "uuid": "primitive.gripper.-py-ec3c178616a311ec82af00155d967c6c",
+                    "uuid": "primitive.gripper.-py-9888a1061c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
-                        "thing_uuid": "skill-argument-variable-py-ec3c147016a311ec82af00155d967c6c",
+                        "thing_uuid": "skill-argument-variable-py-98889df01c1911ecbe2600155d1a70a2",
                         "position": 0,
                         "effort": 0,
                         "speed": 0,
@@ -1477,7 +1545,7 @@ const KNIFE_TASK = {
         {
             "type": "node.primitive.hierarchical.skill.",
             "name": "Open Gripper",
-            "uuid": "primitive.hierarchical.skill.-py-ec3c218616a311ec82af00155d967c6c",
+            "uuid": "primitive.hierarchical.skill.-py-9888a7be1c1911ecbe2600155d1a70a2",
             "editable": true,
             "deleteable": false,
             "description": "",
@@ -1486,12 +1554,12 @@ const KNIFE_TASK = {
                 {
                     "type": "node.primitive.gripper.",
                     "name": "",
-                    "uuid": "primitive.gripper.-py-ec3c20b416a311ec82af00155d967c6c",
+                    "uuid": "primitive.gripper.-py-9888a7001c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
-                        "thing_uuid": "skill-argument-variable-py-ec3c201416a311ec82af00155d967c6c",
+                        "thing_uuid": "skill-argument-variable-py-9888a6741c1911ecbe2600155d1a70a2",
                         "position": 0,
                         "effort": 0,
                         "speed": 0,
@@ -1504,7 +1572,7 @@ const KNIFE_TASK = {
         {
             "type": "node.primitive.hierarchical.skill.",
             "name": "Close Gripper",
-            "uuid": "primitive.hierarchical.skill.-py-ec3c24b016a311ec82af00155d967c6c",
+            "uuid": "primitive.hierarchical.skill.-py-9888aaca1c1911ecbe2600155d1a70a2",
             "editable": true,
             "deleteable": false,
             "description": "",
@@ -1513,12 +1581,12 @@ const KNIFE_TASK = {
                 {
                     "type": "node.primitive.gripper.",
                     "name": "",
-                    "uuid": "primitive.gripper.-py-ec3c23fc16a311ec82af00155d967c6c",
+                    "uuid": "primitive.gripper.-py-9888aa161c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
-                        "thing_uuid": "skill-argument-variable-py-ec3c237016a311ec82af00155d967c6c",
+                        "thing_uuid": "skill-argument-variable-py-9888a9941c1911ecbe2600155d1a70a2",
                         "position": 100,
                         "effort": 0,
                         "speed": 0,
@@ -1531,7 +1599,7 @@ const KNIFE_TASK = {
         {
             "type": "node.primitive.hierarchical.skill.",
             "name": "Initialize",
-            "uuid": "primitive.hierarchical.skill.-py-ec3c28ca16a311ec82af00155d967c6c",
+            "uuid": "primitive.hierarchical.skill.-py-9888b04c1c1911ecbe2600155d1a70a2",
             "editable": true,
             "deleteable": false,
             "description": "",
@@ -1540,7 +1608,7 @@ const KNIFE_TASK = {
                 {
                     "type": "node.primitive.gripper.",
                     "name": "",
-                    "uuid": "primitive.gripper.-py-ec3c272616a311ec82af00155d967c6c",
+                    "uuid": "primitive.gripper.-py-9888ae9e1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
@@ -1555,14 +1623,14 @@ const KNIFE_TASK = {
                 {
                     "type": "node.primitive.move-unplanned.",
                     "name": "",
-                    "uuid": "primitive.move-unplanned.-py-ec3c280216a311ec82af00155d967c6c",
+                    "uuid": "primitive.move-unplanned.-py-9888af7a1c1911ecbe2600155d1a70a2",
                     "editable": true,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
                         "velocity": 0,
                         "move_type": "joint",
-                        "location_uuid": "skill-argument-variable-py-ec3c268616a311ec82af00155d967c6c",
+                        "location_uuid": "skill-argument-variable-py-9888ade01c1911ecbe2600155d1a70a2",
                         "manual_safety": true
                     }
                 }
