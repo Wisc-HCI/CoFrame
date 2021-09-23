@@ -132,7 +132,7 @@ class FakeFrontendNode:
         if msg.id in self._active_joints_jobs:
 
             raw = json.loads(msg.data)
-            print(raw['joint'])
+            print(raw)
             joints = NodeParser(raw['joint'])
             joint_trace = raw['trace']
 
@@ -186,8 +186,8 @@ class FakeFrontendNode:
         })
         self._configure_machines.publish(msg)
 
-        print('Going to wait for 5 seconds for our configuration changes to percolate')
-        rospy.sleep(5)
+        print('Going to wait for 10 seconds for our configuration changes to percolate')
+        rospy.sleep(10)
 
         print('Starting fake frontend main loop')
         # now that the backend is fully set up, do what ever the hell you want in the frontend
@@ -218,6 +218,7 @@ class FakeFrontendNode:
                 job.id= wp.uuid
                 job.data = json.dumps({'point': wp.to_dct()})
                 
+                print('Publishing Joint Job', job.id)
                 self._joints_request_pub.publish(job)
 
     def create_trace_jobs(self):
@@ -237,6 +238,7 @@ class FakeFrontendNode:
                     'trajectory': traj.to_dct()
                 })
 
+                print('Publishing Trace Job', job.id)
                 self._trace_request_pub.publish(job)
 
     def _joint_toggle_cb(self, event=None):
