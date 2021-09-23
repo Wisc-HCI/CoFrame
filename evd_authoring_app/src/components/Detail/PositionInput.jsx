@@ -5,18 +5,22 @@ import useStore from '../../stores/Store';
 
 function PositionInput (props)  {
    const [inputVec, setInputVec] = useState(props.value);
+   const [preVec, setPrevVec] = useState(null);
    let minMax = [-10,10];
    let steps = 0.01;
    const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
-    state.setFocusItem]
-    
-));
-
+    state.setFocusItem]));
+    if (props.value !== preVec){
+      setPrevVec(props.value);
+      setInputVec(props.value);
+    }
+   
 
    return(
      
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
      <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Position:</b>
+     
      <Popover
      placement="left"
      visible =  {(focusItem.transformMode === "translate") ? true : false}

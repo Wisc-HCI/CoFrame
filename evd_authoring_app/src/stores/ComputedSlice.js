@@ -15,6 +15,7 @@ import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
 const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
 const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('gripper'));
 
+
 export const ComputedSlice = {
 
     computed: {
@@ -127,7 +128,9 @@ export const ComputedSlice = {
                         color,
                         transformMode: shape.uuid.includes('pointer') && focused ? this.focusItem.transformMode : "inactive",
                         onMove: shape.uuid.includes('pointer') && focused && this.focusItem.transformMode !== 'inactive' ? debouncedOnMove : (_)=>{} 
-                    };    
+                    }; 
+                   // e => setItemProperty('location', location_uuid, 'position', { ...this.data.locations[location_uuid].position, x: e[0], y: e[1], z: e[2] }); 
+
 
                 })
             })
