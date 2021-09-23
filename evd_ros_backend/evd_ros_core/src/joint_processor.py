@@ -4,6 +4,8 @@
 Confirms reachability of waypoint or location. Generates a joint datastructure.
 '''
 
+import tf2_ros
+import tf2_geometry_msgs
 import os
 import json
 import rospy
@@ -15,6 +17,7 @@ from evd_sim.lively_tk_solver import LivelyTKSolver
 from evd_sim.pybullet_model import PyBulletModel
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
+
 
 TIMEOUT_COUNT = 500
 SPIN_RATE = 5
@@ -42,6 +45,8 @@ class JointProcessor:
         self._ee_frame = self._config['link_groups']['end_effector_path']
         self._joint_names = self._config['joint_names']
         
+        self._tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0)) #tf buffer length
+        self._tf_listener = tf2_ros.TransformListener(self._tf_buffer)
         frontend = FrontendInterface(use_processor_configure=True)
         self._job_queue = JobQueue('joints', self._start_job, self._end_job, frontend=frontend)
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
@@ -56,9 +61,9 @@ class JointProcessor:
         #print('\n\nSTARTING JOB')
         length = len(self._joint_names)
         waypoint = NodeParser(data['point'])
-        self._target = waypoint.to_ros()
-        print(self._target)
-
+        transform = self._tf_buffer.lookup_transform(self._fixed_frame, waypoint.link, rospy.Time(0), rospy.Duration(1.0))
+        self._target = tf2_geometry_msgs.do_transform_pose(waypoint.to_ros(stamped=True), transform).pose
+        
         self._joints = Joints(
             length=length,
             joint_names=self._joint_names,

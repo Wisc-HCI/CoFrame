@@ -8,6 +8,7 @@ import time
 import json
 import rospy
 
+from sensor_msgs.msg import JointState
 from std_msgs.msg import String, Empty
 from geometry_msgs.msg import PoseStamped
 from evd_ros_core.msg import Job, Issue, StringArray
@@ -84,21 +85,19 @@ class FakeFrontendNode:
         #       {'point': evd-waypoint or evd-location}
         # 2) Receive joints data JSON string or null if processor unable to compute
         #       {'joint': <evd_joint>, 'trace': {//defined sep}}
-        '''
-        {
-            "lively_joint_names": list(self.ltk.joint_names),
-            "lively_joint_data": {n:[] for n in self.ltk.joint_names},
-            "lively_frame_names": list(self.ltk.frame_names),
-            "lively_frame_data": {n:[] for n in self.ltk.frame_names},
-            "pybullet_joint_names": list(self.pyb.joint_names),
-            "pybullet_joint_data": {n:[] for n in self.pyb.joint_names},
-            "pybullet_joint_velocities": {n:[] for n in self.pyb.joint_names},
-            "pybullet_frame_names": list(self.pyb.frame_names),
-            "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
-            "pybullet_collisions": {}, #TODO fill this in later
-            "pybullet_pinchpoints": {} #TODO fill this in later
-        }
-        '''
+        # {
+        #     "lively_joint_names": list(self.ltk.joint_names),
+        #     "lively_joint_data": {n:[] for n in self.ltk.joint_names},
+        #     "lively_frame_names": list(self.ltk.frame_names),
+        #     "lively_frame_data": {n:[] for n in self.ltk.frame_names},
+        #     "pybullet_joint_names": list(self.pyb.joint_names),
+        #     "pybullet_joint_data": {n:[] for n in self.pyb.joint_names},
+        #     "pybullet_joint_velocities": {n:[] for n in self.pyb.joint_names},
+        #     "pybullet_frame_names": list(self.pyb.frame_names),
+        #     "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
+        #     "pybullet_collisions": {}, #TODO fill this in later
+        #     "pybullet_pinchpoints": {} #TODO fill this in later
+        # }
         # 3) (Optionally) cancel the job with its ID
         self._joints_request_pub = rospy.Publisher('{0}program/request/joints'.format(prefix_fmt), Job, queue_size=5)
         self._joints_submit_sub = rospy.Subscriber('{0}program/submit/joints'.format(prefix_fmt), Job, self._joints_submit_cb)
@@ -106,6 +105,11 @@ class FakeFrontendNode:
 
         # NOTE: this is just for the fake frontend to publish periodic updates
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
+
+        # NOTE: this is just for the fake frontend to publish some joint data
+        self._joint_index = 0
+        self._js_pub = rospy.Publisher('simulated/joint_states_labeled',JointState,queue_size=10)
+        self._joint_toggle_timer = rospy.Timer(rospy.Duration(2), self._joint_toggle_cb)
 
     def _program_register_cb(self, msg):
         print('In register callback, we got')
@@ -235,6 +239,27 @@ class FakeFrontendNode:
 
                 self._trace_request_pub.publish(job)
 
+    def _joint_toggle_cb(self, event=None):
+        data = []
+        data.extend(self._program.environment.locations)
+        data.extend(self._program.environment.waypoints)
+
+        data = list(filter(lambda x: x.joints != None, data))
+
+        if self._joint_index >= len(data):
+            self._joint_index = 0
+
+        if len(data) > 0:
+            jointObj = data[self._joint_index].joints
+
+            jMsg = JointState()
+            jMsg.name = ['simulated_'+n for n in jointObj.joint_names]
+            jMsg.position = jointObj.joint_positions
+
+            print('Toggling joints')
+
+            self._js_pub.publish(jMsg)
+            self._joint_index += 1
 
 if __name__ == "__main__":
     rospy.init_node('fake_frontend')

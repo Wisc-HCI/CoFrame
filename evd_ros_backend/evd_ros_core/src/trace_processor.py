@@ -119,6 +119,7 @@ class TraceProcessor:
             "pybullet_frame_names": self.pyb.frame_names,
             "pybullet_frame_data": {n:[None] for n in self.pyb.frame_names},
             "pybullet_collisions": {}, #TODO fill this in later
+            "pybullet_occupancy": {},
             "pybullet_pinchpoints": {} #TODO fill this in later
         }
 

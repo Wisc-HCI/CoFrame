@@ -20,7 +20,7 @@
         "timestep": 0.0165
     },
     "timestep": 0.0165,
-    "fixed_frame": "base_link",
+    "fixed_frame": "planner_base_link",
     "link_groups": {
         "end_effector_path": "tool0"
     },

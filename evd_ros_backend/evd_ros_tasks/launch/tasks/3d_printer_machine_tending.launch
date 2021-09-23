@@ -10,6 +10,8 @@
   <arg name="launch_rviz" default="true"/>
   <arg name="load_rviz_cfg" default="true"/>
 
+  <arg name="run_test" default="true"/>
+
 <!--=========================================================================-->
 <!--  Robot                                                                  -->
 <!--=========================================================================-->
@@ -29,6 +31,7 @@
     <arg name="config_path" value="$(find evd_ros_tasks)/config/"/>
     <arg name="config_file_name" value="model.json"/>
     <arg name="ros_frame_id" value="world"/>
+    <arg name="run_test" value="$(arg run_test)"/>
   </include>
 
   <!-- RVIZ -->

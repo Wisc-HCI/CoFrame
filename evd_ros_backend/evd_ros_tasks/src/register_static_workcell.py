@@ -495,12 +495,7 @@ class URRobotEnvironment:
         reachableLoc = Location(
             position=Position(0.2,-0.1,0.1),
             orientation=Orientation.Identity(),
-            link='app',
-            joints=Joints(
-                length=6,
-                joint_positions=[0,0,0,0,0,0],
-                reachable=True,
-                joint_names=['','','','','','']))
+            link='app')
         self._locations = [
             unitLoc,
             reachableLoc,
