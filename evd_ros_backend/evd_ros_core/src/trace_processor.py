@@ -45,6 +45,7 @@ class TraceProcessor:
         self._time_overall = 0
         self._time_step = 0
         self._index = 0
+        self._input = None
 
         with open(os.path.join(config_path, config_file_name),'r') as f:
             self._config = json.load(f)
@@ -69,6 +70,7 @@ class TraceProcessor:
         points = {p['uuid']: NodeParser(p) for p in dct['points']}
 
         # produce path from trajectory and points
+        self._input = dct
         self._time_overall = 0
         self._time_step = 0
         self._path = []
@@ -127,14 +129,16 @@ class TraceProcessor:
     def _end_job(self, status, submit_fnt):
         #trace = Trace.from_dct(self._trace_data)
         trace = self._trace_data
+        inp = self._input
 
         self._path = None
         self._type = None
         self._thresholds = None
         self._trace_data = None
+        self._input = None
 
         #data = trace.to_dct() if status else None
-        submit_fnt(json.dumps(trace))
+        submit_fnt(json.dumps({'input': inp, 'trace': json.dumps(trace)}))
 
     def _update_cb(self, event=None):
         # If the job has been started

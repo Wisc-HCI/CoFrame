@@ -28,6 +28,7 @@ ORIENTATION_DISTANCE_THRESHOLD = 0.02
 class JointProcessor:
     
     def __init__(self, config_path, config_file_name):
+        self._input = None
         self._target = None
         self._joints = None
         self._trace_data = None
@@ -57,6 +58,7 @@ class JointProcessor:
         waypoint = NodeParser(data['point'])
         self._target = waypoint.to_ros()
         print(self._target)
+
         self._joints = Joints(
             length=length,
             joint_names=self._joint_names,
@@ -75,6 +77,7 @@ class JointProcessor:
             "pybullet_collisions": {}, #TODO fill this in later
             "pybullet_pinchpoints": {} #TODO fill this in later
         }
+        self._input = data['point']
 
         self.jsf.clear()
         self.ltk.reset()
@@ -89,15 +92,15 @@ class JointProcessor:
 
         data = self._joints.to_dct() if status else None
         trace = self._trace_data
+        inp = self._input
 
         self._target = None
         self._joints = None
+        self._input = None
         self._trace_data = None
         self._updateCount = 0
 
-        #print(trace)
-
-        submit_fnt(json.dumps({'joint': data, 'trace': trace}))
+        submit_fnt(json.dumps({'input': inp, 'joint': data, 'trace': trace}))
 
     def _update_cb(self, event=None):
         
