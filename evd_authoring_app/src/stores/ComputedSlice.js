@@ -6,7 +6,9 @@ import {
     DEFAULT_LOCATION_COLOR,
     UNREACHABLE_COLOR,
     OCCUPANCY_ERROR_COLOR,
-    occupancyOverlap
+    occupancyOverlap,
+    DEFAULT_TRAJECTORY_COLOR,
+    executablePrimitive
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
@@ -85,7 +87,7 @@ export const ComputedSlice = {
                         frame: 'world',
                         position: {x:zone.position_x,y:zone.position_z,z:0.25},
                         rotation: {w:1,x:0,y:0,z:0},
-                        color: {...OCCUPANCY_ERROR_COLOR,a:0.3},
+                        color: {...OCCUPANCY_ERROR_COLOR,a:0.2},
                         scale: {x:zone.scale_x,y:zone.scale_z,z:2},
                         transformMode: "inactive",
                         highlighted: false,
@@ -175,8 +177,32 @@ export const ComputedSlice = {
             
             const lines = {};
             Object.values(this.data.trajectories).forEach(trajectory=>{
-                const hidden = this.focusItem.uuid !== trajectory.uuid && this.secondaryFocusItem.uuid !== trajectory.uuid
-                lines[trajectory.uuid] = {...trajectoryDataToLine(trajectory,this.data.locations,this.data.waypoints,this.frame),hidden,width:2}
+                const hidden = this.focusItem.uuid !== trajectory.uuid && this.secondaryFocusItem.uuid !== trajectory.uuid;
+                let poses = []
+                if (trajectory.start_location_uuid) {
+                    poses.push(this.data.locations[trajectory.start_location_uuid])
+                }
+                trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
+                    poses.push(this.data.waypoints[waypoint_uuid])
+                })
+                if (trajectory.end_location_uuid) {
+                    poses.push(this.data.locations[trajectory.end_location_uuid])
+                }
+                const vertices = poses.map(pose=>{
+                    let color = {...DEFAULT_TRAJECTORY_COLOR};
+                    //console.log(item.joints.reachable);
+                    if (this.frame === 'performance' && !pose.joints.reachable){//pose, frame, focused, locationOrWaypoint
+                        //console.log("entered");
+                        color = {...UNREACHABLE_COLOR};
+                    } else if (this.frame === 'safety' && occupancyOverlap(pose.position,this.data.occupancyZones)) {
+                        color = {...OCCUPANCY_ERROR_COLOR};
+                    }
+                    return {
+                        position:pose.position,
+                        color
+                    }
+                })
+                lines[trajectory.uuid] = {name:trajectory.name,vertices,frame:'world',hidden,width:2}
             })
             return lines
         },
@@ -185,6 +211,14 @@ export const ComputedSlice = {
         },
         tfs: function() {
             return INITIAL_SIM.tfs
+        },
+        executablePrimitives: function() {
+            let executableLookup = {};
+            executableLookup[this.uuid] = executablePrimitive(this.uuid,this);
+            this.primitiveIds.forEach(primitiveId=>{
+                executableLookup[primitiveId] = executablePrimitive(primitiveId,this)
+            })
+            return executableLookup
         }
     },
 }

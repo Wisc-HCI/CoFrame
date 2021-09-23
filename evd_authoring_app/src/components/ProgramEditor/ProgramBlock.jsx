@@ -18,6 +18,7 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
 
     const [uuid, name, type, transform,
         primitiveIds, moveChildPrimitive,
+        deleteHierarchical,deleteChildPrimitive,
         insertChildPrimitive] = useStore(state => ([
             state.uuid,
             state.name,
@@ -25,6 +26,8 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
             state.transform,
             state.primitiveIds,
             state.moveChildPrimitive,
+            state.deleteHierarchical,
+            state.deleteChildPrimitive,
             state.insertChildPrimitive
         ]),shallow)
 
@@ -67,6 +70,14 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
             insertChildPrimitive(dropData, uuid, idx);
         }
     }
+
+    const onChildDelete = (dropData) => {
+        if (dropData.type.includes('hierarchical')) {
+          deleteHierarchical(dropData,data.uuid)
+        } else {
+          deleteChildPrimitive(data.uuid,dropData.uuid)
+        }
+      }
 
     const dragBlockStyles = {
         display: 'inline-block',
@@ -126,6 +137,7 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                             ancestors={programAncestors}
                             context={context}
                             idx={idx}
+                            onDelete={(dropData=>onChildDelete(dropData))}
                             dragDisabled={false}
                             after={
                                 <SortableSeparator

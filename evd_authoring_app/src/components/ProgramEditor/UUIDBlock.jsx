@@ -59,7 +59,7 @@ export const UUIDBlock = ({
 
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
-    item: { ...data, parentData, dragBehavior, idx, onDelete },
+    item: ()=>{ console.log(data);return { ...data, parentData, dragBehavior, idx, onDelete }},
     options: { dragEffect: dragBehavior },
     canDrag: _ => !dragDisabled,
     collect: monitor => ({

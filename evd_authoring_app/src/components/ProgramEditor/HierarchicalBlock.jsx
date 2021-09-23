@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Badge, Button, Row, Input } from 'antd';
-import Icon, { RightOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+import Icon, { RightOutlined, EditOutlined, SaveOutlined, EyeOutlined } from '@ant-design/icons';
 import { useDrag } from 'react-dnd';
 import { SortableSeparator } from './SortableSeparator';
 import { NodeZone } from './NodeZone';
@@ -18,13 +18,17 @@ import useMeasure from 'react-use-measure';
 export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, dragDisabled, ancestors, context, onDelete, idx, after, locked }) => {
 
   const [frame, focusItem, setItemProperty, deleteHierarchical,
-    moveChildPrimitive, insertChildPrimitive] = useStore(state => (
+    moveChildPrimitive, insertChildPrimitive, deleteChildPrimitive] = useStore(state => (
       [state.frame, state.focusItem, state.setItemProperty, state.deleteHierarchical,
-      state.moveChildPrimitive, state.insertChildPrimitive]),shallow);
+      state.moveChildPrimitive, state.insertChildPrimitive, state.deleteChildPrimitive]),shallow);
 
-  const data = useStore(useCallback((state) => {
-    return staticData ? staticData : state.data.primitives[uuid];
-  }, [staticData, uuid]))
+  const [data, executable] = useStore(useCallback((state) => {
+    const data = staticData ? staticData : state.data.primitives[uuid]
+    return [
+      data,
+      state.executablePrimitives[data.uuid] ? true : false
+    ];
+  }, [staticData, uuid]),shallow)
 
   const [editing, setEditing] = useState(false);
   const [expanded, setExpanded] = useState(true);
@@ -39,7 +43,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
   // Code for handling the draggability of the skill node itself
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
-    item: { ...data, parentData, dragBehavior, onDelete: onDelete ? onDelete : ()=>deleteHierarchical(data,ancestors[0].uuid), idx },
+    item: { ...data, parentData, dragBehavior, onDelete, idx },
     options: { dragEffect: dragBehavior },
     collect: monitor => ({
       isDragging: monitor.isDragging()
@@ -82,17 +86,26 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
     zIndex: focused ? 100 : 1
   };
 
+  const onChildDelete = (dropData) => {
+    if (dropData.type.includes('hierarchical')) {
+      deleteHierarchical(dropData,data.uuid)
+    } else {
+      deleteChildPrimitive(data.uuid,dropData.uuid)
+    }
+  }
+
   return (
     <div hidden={isDragging && dragBehavior === 'move'}>
       <div ref={preview} style={dragBlockStyles} className={focused ? `focus-${frame}` : null}>
         <Row wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-          <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing?'inset 0px 0px 2px 1px #ffffff':null, borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab",zIndex:101, marginRight:5, height: 32 }}>
+          <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing?'inset 0px 0px 2px 1px #ffffff':null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab",zIndex:101, marginRight:5, height: 32 }}>
             <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
             <Input style={{maxWidth: 200, color:'white',cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab"}} bordered={false} disabled={!editing} value={data.name} onChange={(e)=>setItemProperty('primitive', data.uuid, 'name', e.target.value)}/> 
           </Row>
           <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
             {!inDrawer && <Button type='text' onClick={() => setExpanded(!expanded)} icon={<RightOutlined rotate={expanded ? 90 : 0} />} style={{zIndex:200}}/>}
             {editingEnabled && <Button type='text' onClick={() => setEditing(!editing)} icon={editing ? <SaveOutlined/> : <EditOutlined/>}/>}
+            {executable && <Button type='text' icon={<EyeOutlined/>}/>}
             <Badge count={data.primitiveIds.length} showZero={true} style={{backgroundColor:'rgba(0,0,0,0.3)',marginRight:5, marginLeft:5}}/>
           </Row>
         </Row>
@@ -127,6 +140,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
                     ancestors={primitiveAncestors}
                     context={context}
                     idx={idx}
+                    onDelete={(dropData)=>onChildDelete(dropData)}
                     dragDisabled={!editingEnabled || isDragging || locked}
                     after={
                       <SortableSeparator

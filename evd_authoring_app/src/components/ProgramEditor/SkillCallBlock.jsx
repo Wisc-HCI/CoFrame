@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 import { NodeZone } from "./NodeZone";
 // import { ItemSortable } from "./Wrappers";
-import { Row, Col } from "antd";
+import { Row, Col, Button } from "antd";
 import useStore from "../../stores/Store";
 import shallow from 'zustand/shallow';
 import blockStyles from "./blockStyles";
 import { ReactComponent as SkillIcon } from '../CustomIcons/Skill.svg';
-import Icon, { UnlockOutlined, LockOutlined } from '@ant-design/icons';
+import Icon, { UnlockOutlined, LockOutlined, EyeOutlined } from '@ant-design/icons';
 import { TrajectoryBlock } from "./TrajectoryBlock";
 import './highlight.css';
 import { UUIDBlock } from "./UUIDBlock";
@@ -14,7 +14,7 @@ import { useDrag } from "react-dnd";
 
 const TYPE_LOOKUP = {
   'node.machine.': {store:'machines',type:'machine'},
-  'node.pose.thing.': {store:'placeholders',type:'thing'},
+  'node.pose.thing.': {store:'placeholders',type:'placeholder'},
   'node.pose.waypoint.': {store:'waypoints',type:'waypoint'},
   'node.pose.waypoint.location.': {store:'locations',type:'location'},
   'node.trajectory.': {store:'trajectories',type:'trajectory'}
@@ -33,7 +33,7 @@ export const SkillCallBlock = ({
   dragDisabled, ancestors, context, idx, after,
 }) => {
 
-  const [focused, data, skill, parameters] = useStore(useCallback(state => {
+  const [focused, data, skill, parameters, executable] = useStore(useCallback(state => {
     let parameterValues = [];
 
     /*
@@ -53,6 +53,7 @@ export const SkillCallBlock = ({
     }
     */
     const data = staticData ? staticData : state.data.primitives[uuid];
+    const executable = state.executablePrimitives[data.uuid] ? true : false;
     const skill = state.data.skills[data.parameters.skill_uuid];
 
     skill.arguments.forEach(argument => {
@@ -80,7 +81,8 @@ export const SkillCallBlock = ({
       state.focusItem.uuid === uuid,
       data,
       skill,
-      parameterValues
+      parameterValues,
+      executable
     ]
   }, [staticData, uuid, context]),shallow);
 
@@ -124,7 +126,7 @@ export const SkillCallBlock = ({
       ...ancestors
     ],
     'node.pose.thing.': [
-      { uuid: data.uuid, accepts: ['uuid-thing'] },
+      { uuid: data.uuid, accepts: ['uuid-placeholder'] },
       ...ancestors
     ]
   }
@@ -168,7 +170,8 @@ export const SkillCallBlock = ({
             <Icon style={{ marginLeft: 4 }} component={SkillIcon} />{' Execute: '}{skill.name}
           </Col>
           <Col span={6} offset={1} style={{ textAlign: 'end' }}>
-          {editingEnabled ? <UnlockOutlined style={{marginRight:5}}/> : <LockOutlined style={{marginRight:5}}/>}
+            {executable && <Button type='text' icon={<EyeOutlined/>}/>}
+            {editingEnabled ? <UnlockOutlined style={{marginRight:5}}/> : <LockOutlined style={{marginRight:5}}/>}
             {/* <Button
                   type='text'
                   style={{marginLeft:2}}

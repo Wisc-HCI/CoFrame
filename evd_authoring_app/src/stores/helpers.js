@@ -1,42 +1,6 @@
 import useStore from './Store';
 import lodash from 'lodash';
 
-// export const sceneSetItems = useStore.getState().setItems;
-// export const sceneSetLines = useStore.getState().setLines;
-// export const sceneSetTfs = useStore.getState().setTfs;
-// export const sceneSetHulls = useStore.getState().setHulls;
-// export const sceneSetItem = useStore.getState().setItem;
-// export const sceneRemoveItem = useStore.getState().removeItem;
-// export const sceneSetItemName = useStore.getState().setItemShowName;
-// export const sceneSetItemPosition = useStore.getState().setItemPosition;
-// export const sceneSetItemRotation = useStore.getState().setItemRotation;
-// export const sceneSetItemScale = useStore.getState().setItemScale;
-// export const sceneSetItemColor = useStore.getState().setItemColor;
-// export const sceneSetItemHighlighted = useStore.getState().setItemHighlighted;
-// export const sceneSetTF = useStore.getState().setTF;
-// export const sceneRemoveTF = useStore.getState().removeTF;
-// export const sceneSetTfPosition = useStore.getState().setTfPosition;
-// export const sceneSetTfRotation = useStore.getState().setTfRotation;
-// export const sceneSetHull = useStore.getState().setHull;
-// export const sceneRemoveHull = useStore.getState().removeHull;
-// export const sceneSetHullName = useStore.getState().setHullName;
-// export const sceneSetHullVertices = useStore.getState().setHullVertices;
-// export const sceneSetHullVertex = useStore.getState().setHullVertex;
-// export const sceneAddHullVertex = useStore.getState().addHullVertex;
-// export const sceneRemoveHullVertex = useStore.getState().removeHullVertex;
-// export const sceneSetHullColor = useStore.getState().setHullColor;
-// export const sceneSetHullHIghlighted = useStore.getState().setHullHighlighted;
-// export const sceneSetHullOnClick = useStore.getState().setHullOnClick;
-// export const sceneSetHullOnPointerOver = useStore.getState().setHullOnPointerOver;
-// export const sceneSetHullOnPointerOut = useStore.getState().setHullOnPointerOut;
-// export const sceneSetLine = useStore.getState().setLine;
-// export const sceneRemoveLine = useStore.getState().removeLine;
-// export const sceneSetLineName = useStore.getState().setLineName;
-// export const sceneSetLineVertices = useStore.getState().setLineVertices;
-// export const sceneAddLineVertex = useStore.getState().addLineVertex;
-// export const sceneRemoveLineVertex = useStore.getState().removeLineVertex;
-// export const sceneSetLineVertex = useStore.getState().setLinevertex;
-
 export const typeToKey = (type) => {
     let key;
     switch (type) {
@@ -76,8 +40,8 @@ export const occupancyOverlap = (position,occupancyZones) => {
     Object.values(occupancyZones).forEach(zone=>{
         if (position.x < zone.position_x + zone.scale_x && 
             position.x > zone.position_x - zone.scale_x && 
-            position.y < zone.position_y + zone.scale_y && 
-            position.y > zone.position_y - zone.scale_y ) {
+            position.y < zone.position_z + zone.scale_z && 
+            position.y > zone.position_z - zone.scale_z ) {
             noOverlap = false
         }
     })
@@ -112,6 +76,113 @@ export function flattenProgram(primitives, skills, parentData) {
     })
 
     return [flattenedPrimitives, flattenedSkills]
+}
+
+function executablePrimitiveInner(primitiveId,state,context) {
+    let executable = [];
+    if (primitiveId === state.uuid) {
+        // Program is the primitive;
+        if (state.primitiveIds.some(childId=>{
+            const children = executablePrimitiveInner(childId,state,context);
+            if (children === null || children.includes(null)) {
+                return true
+            } else {
+                executable = [...executable,...children]
+                return false
+            }
+        })) {
+            // There was a null response
+            return null
+        } else {
+            return executable
+        }
+    } else {
+        const primitive = state.data.primitives[primitiveId];
+        if (primitive.type.includes('hierarchical')) {
+            if (primitive.primitiveIds.some(childId=>{
+                const children = executablePrimitiveInner(childId,state,context);
+                if (children === null || children.includes(null)) {
+                    return true
+                } else {
+                    executable = [...executable,...children]
+                    return false
+                }
+            })) {
+                // There was a null response
+                return null
+            } else {
+                return executable
+            }
+        } else if (primitive.type.includes('skill-call')) {
+            let innerContext = {...context};
+            if (Object.keys(primitive.parameters).some(parameterKey=>{
+                const value = primitive.parameters[parameterKey];
+                if (parameterKey !== 'skill_uuid' && context[value]) {
+                    innerContext[parameterKey] = context[value]
+                    return false
+                } else if (parameterKey !== 'skill_uuid') {
+                    return true
+                }
+                return false
+            })) {
+                // There was a null param
+                return null
+            }
+            const calledSkill = state.data.skills[primitive.parameters.skill_uuid];
+            if (calledSkill.primitiveIds.some(childId => {
+                const children = executablePrimitiveInner(childId,state,innerContext);
+                if (children === null || children.includes(null)) {
+                    return true
+                } else {
+                    executable = [...executable,...children]
+                    return false
+                }
+            })) {
+                // There was a null response
+                return null
+            } else {
+                return executable
+            }
+        } else if (primitive.type === 'node.primitive.breakpoint.' || primitive.type === 'node.primitive.delay.') {
+            return [...executable,primitive]
+        } else if (primitive.type === 'node.primitive.gripper.') {
+            if (context[primitive.parameters.thing_uuid]) {
+                return [...executable,{...primitive,parameters:{...primitive.parameters,thing_uuid:context[primitive.parameters.thing_uuid]}}]
+            } else {
+                return null
+            }
+        } else if (primitive.type.includes('machine-primitive')) {
+            if (context[primitive.parameters.machine_uuid]) {
+                return [...executable,{...primitive,parameters:{...primitive.parameters,machine_uuid:context[primitive.parameters.machine_uuid]}}]
+            } else {
+                return null
+            }
+        } else if (primitive.type === 'node.primitive.move-trajectory.') {
+            if (context[primitive.parameters.trajectory_uuid]) {
+                return [...executable,{...primitive,parameters:{...primitive.parameters,trajectory_uuid:context[primitive.parameters.trajectory_uuid]}}]
+            } else {
+                return null
+            }
+        } else if (primitive.type === 'node.primitive.move-unplanned.') {
+            if (context[primitive.parameters.location_uuid]) {
+                return [...executable,{...primitive,parameters:{...primitive.parameters,location_uuid:context[primitive.parameters.location_uuid]}}]
+            } else {
+                return null
+            }
+        }
+    }
+    return null
+}
+
+export function executablePrimitive(primitiveId,state) {
+    let context = {
+        ...state.data.placeholders, 
+        ...state.data.locations, 
+        ...state.data.waypoints,
+        ...state.data.trajectories,
+        ...state.data.machines
+    }
+    return executablePrimitiveInner(primitiveId,state,context)
 }
 
 export function objectMap(object, mapFn) {
@@ -190,40 +261,6 @@ export function reachabilityColor(focused, locationOrWaypoint){
         return color;
     }
    
-
-
-
-// export function poseToShape(pose,frame,focused,setSecondaryFocusItem) {
-//     let pose_stored = pose;
-//     let color = poseToColor(pose_stored,frame,focused);
-//     const uuid = pose.uuid;
-//     let onClick = ()=>{};
-//     if (pose.type.includes('location')) {
-//         onClick = () => setSecondaryFocusItem('location',uuid)
-//     } else {
-//         onClick = () => setSecondaryFocusItem('waypoint',uuid)
-//     }
-
-//     return [
-//         pose.uuid,
-//         {
-//             shape: "sphere",
-//             name: pose.name,
-//             frame: "world",
-//             rotation: { w: 1, x: 0, y: 0, z: 0 },
-//             scale: { x: 0.05, y: 0.05, z: 0.05 },
-//             highlighted: false,
-//             showName: false,
-//             onClick,
-//             position:{
-//                 x:pose.position.x,
-//                 y:pose.position.y,
-//                 z:pose.position.z
-//             },
-//             color
-//         }
-//     ]
-// }
 
 export function poseDataToShapes(pose,frame) {
     let pose_stored = pose;
@@ -318,41 +355,8 @@ export function trajectoryDataToShapes(trajectory,locations,waypoints,frame) {
     return shapes
 }
 
-export const clearHighlights = () => useStore.setState(state => ({
-    items: objectMap(state.items, item => ({ ...item, highlighted: false })),
-    hulls: objectMap(state.hulls, hull => ({ ...hull, highlighted: false }))
-}))
-
-export const highlightRobot = () => useStore.setState(state => ({
-    items: objectMap(state.items, (item, key) => (key.includes('robot') ? { ...item, highlighted: true } : item))
-}))
-
-export const highlightGripper = () => useStore.setState(state => ({
-    items: objectMap(state.items, (item, key) => (key.includes('gripper') ? { ...item, highlighted: true } : item))
-}))
-
 export const createTrajectory = (trajectory, locations, waypoints, frame, humanZone) => useStore.setState(state => ({
     lines: { ...state.lines, [trajectory.uuid]: trajectoryDataToLine(trajectory, locations, waypoints, frame, humanZone) },
     items: { ...state.items, ...trajectoryDataToShapes(trajectory, locations, waypoints, frame, humanZone) }
 }))
 
-export const clearTempObjects = () => useStore.setState(state => ({
-    // All temp objects have standard UUIDS generated by generateUuid
-    items: lodash.pickBy(state.items, (_, key) => !key.includes('-js-')),
-    lines: lodash.pickBy(state.lines, (_, key) => !key.includes('-js-')),
-    hulls: lodash.pickBy(state.hulls, (_, key) => !key.includes('-js-'))
-}))
-
-export const clearItem = (uuid) => useStore.setState(state => ({
-    items: lodash.omit(state.items, uuid)
-}))
-
-export const highlightSceneItem = (uuid) => useStore.setState(state => {
-    let item = { ...state.items[uuid], highlighted: true };
-    return { items: { ...state.items, [uuid]: item } }
-})
-
-export const highlightSceneHull = (uuid) => useStore.setState(state => {
-    let hull = { ...state.hulls[uuid], highlighted: true };
-    return { hulls: { ...state.hulls, [uuid]: hull } }
-})

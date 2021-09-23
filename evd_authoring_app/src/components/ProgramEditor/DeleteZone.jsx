@@ -15,8 +15,8 @@ export const DeleteZone = (_) => {
         accept: acceptTypes,
         drop: (item, _) => {
             console.log(item)
-            if (item.onDelete) {
-                item.onDelete()
+            if (item.onDelete && item.deleteable) {
+                item.onDelete(item)
             }
             // if (item.type.includes('hierarchical')) {
             //     console.log('deleting hierarchical')

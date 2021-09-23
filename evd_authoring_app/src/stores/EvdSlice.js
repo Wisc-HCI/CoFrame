@@ -129,7 +129,7 @@ export const EvdSlice = (set, get) => ({
   }),
   deleteChildPrimitive: (parentId, primitiveId) => set((state) => {
     if (parentId === state.uuid) {
-      // console.log('removing primitive from program')
+      console.log('removing primitive from program')
       state.primitiveIds = state.primitiveIds.filter(id => id !== primitiveId)
     } else if (state.data.skills[parentId]) {
       state.data.skills[parentId].primitiveIds = state.data.skills[parentId].primitiveIds.filter(id => id !== primitiveId)

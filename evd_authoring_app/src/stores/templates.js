@@ -114,7 +114,7 @@ export const containerTemplates = {
         move_type: 'ee_ik' // or 'ee_ik'
     },
     'node.primitive.hierarchical.skill.': {
-        name: 'New Macro',
+        name: 'New Skill',
         transform: { x: 0, y: 0 },
         editable: true,
         deleteable: true,
