@@ -69,6 +69,7 @@ class JointProcessor:
             joint_names=self._joint_names,
             joint_positions=[0]*length,
             reachable=False)
+
         self._trace_data = {
             "lively_joint_names": list(self.ltk.joint_names),
             "lively_joint_data": {n:[] for n in self.ltk.joint_names},
@@ -82,10 +83,12 @@ class JointProcessor:
             "pybullet_collisions": {}, #TODO fill this in later
             "pybullet_pinchpoints": {} #TODO fill this in later
         }
+
         self._input = data['point']
 
         self.jsf.clear()
-        self.ltk.reset()
+        defaultJs, names = self.ltk.reset()
+        self.pyb.set_joints(defaultJs, names)
 
         self._updateCount = 0
         self._state = 'running'
@@ -130,10 +133,8 @@ class JointProcessor:
             self._joints.set_joint_positions_by_names(jp_ltk,jn_ltk)
 
             poseWasReached = poseReached(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)
-            timeout = TIMEOUT_COUNT < self._updateCount
-            if self.jsf.isStable() and (poseWasReached or timeout):
-
-                #print('packing trace')
+            inTimeout = TIMEOUT_COUNT < self._updateCount
+            if self.jsf.isStable() and (poseWasReached or inTimeout):
 
                 # pack trace
                 for n, p in zip(jn_ltk,jp_ltk):
@@ -165,7 +166,7 @@ class JointProcessor:
 
                 #TODO collision packing & pinch point packing
 
-                self._joints.reachability = poseReached(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)
+                self._joints.reachable = poseWasReached
                 self._job_queue.completed()
                 self._state = 'idle'
             else:
