@@ -81,10 +81,11 @@ class JointProcessor:
             "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
             "pybullet_collisions": {}, #TODO fill this in later
+            "pybullet_occupancy": {},
             "pybullet_pinchpoints": {} #TODO fill this in later
         }
 
-        self._input = data['point']
+        self._input = data
 
         self.jsf.clear()
         defaultJs, names = self.ltk.reset()
@@ -94,8 +95,6 @@ class JointProcessor:
         self._state = 'running'
         
     def _end_job(self, status, submit_fnt):
-        #print('\n\nENDING JOB')
-
         self._state = 'idle'
 
         data = self._joints.to_dct() if status else None
@@ -116,7 +115,7 @@ class JointProcessor:
         # step toward target and record the joint positions
         # and when joints are stable (little/no-more optimization) then
         # check whether the target pose was reached within a margin of error
-        if self._target != None and self._joints != None and self._trace_data != None and self._state == 'running':
+        if self._state == 'running':
             #print('\n\nUPDATE JOB')
 
             # run lively-ik, run pybullet model
@@ -149,7 +148,6 @@ class JointProcessor:
                     self._trace_data['lively_frame_data'][n].append(p)
 
                 ee_pose_pyb = PyBulletModel.get_ee_pose(pb_frames)
-                pb_collisions = self.pyb.collisionCheck()
 
                 (jp_pby, jv_pby, jn_pby) = pb_joints
                 for n, p, v in zip(jn_pby,jp_pby, jv_pby):
@@ -165,6 +163,9 @@ class JointProcessor:
                     self._trace_data['pybullet_frame_data'][n].append(p)
 
                 #TODO collision packing & pinch point packing
+                pb_collisions = self.pyb.collisionCheck()
+                pb_occupancy = self.pyb.occupancyCheck()
+                pb_pinchs = self.pyb.pinchPointCheck()
 
                 self._joints.reachable = poseWasReached
                 self._job_queue.completed()

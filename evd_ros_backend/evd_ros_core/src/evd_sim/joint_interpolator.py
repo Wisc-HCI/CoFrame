@@ -11,6 +11,9 @@ class JointInterpolator:
         param: velocity is a list of scalars in units ja / sec
         '''
 
+        if type(velocity) == int or type(velocity) == float:
+            velocity = [velocity]*len(joints)
+
         # Compute raw times needed to hit joint states
         times = []
         for v, j in zip(velocity, joints):
