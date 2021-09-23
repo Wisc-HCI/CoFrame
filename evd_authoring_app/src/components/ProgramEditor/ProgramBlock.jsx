@@ -101,9 +101,9 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
             </Row>
             <NodeZone
                 ancestors={programAncestors}
-                onDrop={(dropData) => moveChildPrimitive(dropData, uuid, 'program', 0)}
+                onDrop={(dropData) => primitiveDrop(dropData, 0)}
                 emptyMessage='No Actions'
-                enabled={true}
+                context={context}
             >
                 {primitiveIds.map((id, idx) => (
                     <React.Fragment key={idx}>

@@ -1,14 +1,18 @@
 import React from 'react';
 
 import {CaretRightFilled,PauseOutlined,RollbackOutlined,FullscreenExitOutlined,FullscreenOutlined, EllipsisOutlined } from '@ant-design/icons';
-import { Button, Space, Tooltip, Popover, Checkbox } from 'antd';
+import { Button, Space, Tooltip, Popover, Checkbox, Col } from 'antd';
 
 import useStore from '../stores/Store';
 import shallow from 'zustand/shallow';
 
 export function Controls() {
 
-  const [simMode,setSimMode,collisionsVisible,setCollisionsVisible] = useStore(state=>([state.simMode, state.setSimMode, state.collisionsVisible, state.setCollisionsVisible]),shallow)
+  const [
+    simMode,setSimMode,
+    collisionsVisible,setCollisionsVisible,
+    occupancyVisible,setOccupancyVisible
+  ] = useStore(state=>([state.simMode, state.setSimMode, state.collisionsVisible, state.setCollisionsVisible, state.occupancyVisible, state.setOccupancyVisible]),shallow)
 
   return (
 
@@ -45,14 +49,20 @@ export function Controls() {
         title="Configure"
         placement="bottomRight"
         content={
-        <>
+        <Col>
           <Checkbox
             checked={collisionsVisible}
             onChange={()=>setCollisionsVisible(!collisionsVisible)}
           >
             Show Collisions
           </Checkbox>
-        </>
+          <Checkbox
+            checked={occupancyVisible}
+            onChange={()=>setOccupancyVisible(!occupancyVisible)}
+          >
+            Show Human Occupancy
+          </Checkbox>
+        </Col>
         }
       >
         <Button 

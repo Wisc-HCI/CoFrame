@@ -755,7 +755,7 @@ let occupancyZones = [ // assume frame is app / world
 
         occupancy_type: 'human', // human is conceptualized as a box
         position_x: 0, // 'center'
-        position_z: 0, // 'center'
+        position_y: 0, // 'center'
         scale_x: 1,    // 'radius' (e.g. total width is 2x this)
         scale_y: 0.5,  // 'radius' (e.g. total width is 2x this)
         height: 0 // typically a negative value (wherever ground is)
@@ -770,7 +770,7 @@ let occupancyZones = [ // assume frame is app / world
 
         occupancy_type: 'robot', // robot is ellipse "cast as shadow of reach-sphere"
         position_x: 0, // 'center'
-        position_z: 0, // 'center'
+        position_y: 0, // 'center'
         scale_x: 0.5,  // 'radius' (e.g. total width is 2x this)
         scale_y: 0.5,  // 'radius' (e.g. total width is 2x this)
         height: 0 // typically a negative value (wherever ground is)

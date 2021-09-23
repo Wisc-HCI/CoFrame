@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Badge, Button, Col, Row, Input } from 'antd';
+import { Badge, Button, Row, Input } from 'antd';
 import Icon, { RightOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { useDrag } from 'react-dnd';
 import { SortableSeparator } from './SortableSeparator';
@@ -17,9 +17,9 @@ import useMeasure from 'react-use-measure';
 
 export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, dragDisabled, ancestors, context, onDelete, idx, after, locked }) => {
 
-  const [frame, focusItem, setItemProperty,
+  const [frame, focusItem, setItemProperty, deleteHierarchical,
     moveChildPrimitive, insertChildPrimitive] = useStore(state => (
-      [state.frame, state.focusItem, state.setItemProperty,
+      [state.frame, state.focusItem, state.setItemProperty, state.deleteHierarchical,
       state.moveChildPrimitive, state.insertChildPrimitive]),shallow);
 
   const data = useStore(useCallback((state) => {
@@ -39,7 +39,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
   // Code for handling the draggability of the skill node itself
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: data.type,
-    item: { ...data, parentData, dragBehavior, onDelete, idx },
+    item: { ...data, parentData, dragBehavior, onDelete: onDelete ? onDelete : ()=>deleteHierarchical(data,ancestors[0].uuid), idx },
     options: { dragEffect: dragBehavior },
     collect: monitor => ({
       isDragging: monitor.isDragging()
@@ -90,11 +90,11 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
             <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
             <Input style={{maxWidth: 200, color:'white',cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab"}} bordered={false} disabled={!editing} value={data.name} onChange={(e)=>setItemProperty('primitive', data.uuid, 'name', e.target.value)}/> 
           </Row>
-          <Col span={6} offset={1} style={{ textAlign: 'end' }}>
+          <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
             {!inDrawer && <Button type='text' onClick={() => setExpanded(!expanded)} icon={<RightOutlined rotate={expanded ? 90 : 0} />} style={{zIndex:200}}/>}
             {editingEnabled && <Button type='text' onClick={() => setEditing(!editing)} icon={editing ? <SaveOutlined/> : <EditOutlined/>}/>}
             <Badge count={data.primitiveIds.length} showZero={true} style={{backgroundColor:'rgba(0,0,0,0.3)',marginRight:5, marginLeft:5}}/>
-          </Col>
+          </Row>
         </Row>
         <animated.div style={nodeListStyle}>
           <div ref={nodeListRef}>

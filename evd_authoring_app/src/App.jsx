@@ -73,7 +73,7 @@ export function App() {
                     <Row align='middle' justify='space-between'>
                         <Space style={{float:'left'}} >
                             <Icon style={{color:primaryColor,fontSize:30}} component={EvdIcon}/>
-                            <h2 style={{paddingLeft:20}}><b>Expert View Dashboard<i> - {programName}</i></b></h2>
+                            <h2 style={{paddingLeft:20}}><b>CoFrame<i> - {programName}</i></b></h2>
                         </Space>
                         <span style={{float:'right'}} >
                             {menuItems.map(entry => (

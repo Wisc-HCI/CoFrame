@@ -103,9 +103,14 @@ export const RosSlice = (set,get) => ({
     requestJointProcessorUpdate: (type, uuid) => {
         const poseInfo = get().data[typeToKey(type)][uuid];
         const msg = {id:generateUuid('jointRequest'),data:JSON.stringify({point:poseInfo})};
-        get().jointProcessorRequestTopic.publish(msg);
+        if (get().connection === 'connected') {
+            get().jointProcessorRequestTopic.publish(msg);
+        } else {
+            console.log('Disregarding processor request due to null ROS connection')
+        }
+        
     },
-    requestJointProcessorUpdate: (type, uuid) => {
+    requestJTraceProcessorUpdate: (type, uuid) => {
         const poseInfo = get().data[typeToKey(type)][uuid];
         const msg = {id:generateUuid('jointRequest'),data:JSON.stringify({point:poseInfo})};
         get().jointProcessorRequestTopic.publish(msg);

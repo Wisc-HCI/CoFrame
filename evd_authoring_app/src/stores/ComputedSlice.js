@@ -1,10 +1,15 @@
 // import { objectMap } from "./helpers";
 import { 
-    poseToColor, 
     poseDataToShapes, 
-    trajectoryDataToLine, 
-    reachabilityColor
+    trajectoryDataToLine,
+    DEFAULT_WAYPOINT_COLOR,
+    DEFAULT_LOCATION_COLOR,
+    UNREACHABLE_COLOR,
+    OCCUPANCY_ERROR_COLOR,
+    occupancyOverlap
 } from './helpers';
+import debounce from 'lodash.debounce';
+// import throttle from 'lodash.throttle';
 import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
 
 const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
@@ -15,6 +20,12 @@ export const ComputedSlice = {
     computed: {
         items: function () {
             let items = {};
+            const focusedTrajectoryChildren = this.focusItem.type === 'trajectory' ? [
+                this.data.trajectories[this.focusItem.uuid].start_location_uuid,
+                ...this.data.trajectories[this.focusItem.uuid].waypoint_uuids,
+                this.data.trajectories[this.focusItem.uuid].end_location_uuid,
+            ] : []
+
             Object.keys(INITIAL_SIM.staticScene).forEach(itemKey => {
                 const item = INITIAL_SIM.staticScene[itemKey];
                 let highlighted = false;
@@ -36,7 +47,7 @@ export const ComputedSlice = {
                     transformMode: "inactive",
                     highlighted,
                     onClick: (e) => {
-                        if (this.focusItem.transformMode === "translate" ||this.focusItem.transformMode ===  "rotate"){
+                        if (this.focusItem.transformMode === "translate" || this.focusItem.transformMode ===  "rotate"){
                             
                         }else{
                             console.log('clicked '+item.name)
@@ -60,50 +71,63 @@ export const ComputedSlice = {
                         highlighted: false,
                         wireframe: true,
                         hidden: !this.collisionsVisible,
-                        onClick: (e) => { },
+                        onClick: (_) => { },
                         onMove: (transform) => { console.log(transform) }
                     };
                 }
             })
 
-            // TODO: Handle whether 
-            const poses = [];
+            Object.values(this.data.occupancyZones).forEach(zone=>{
+                if (zone.occupancy_type === 'human') {
+                    items[zone.uuid] = {
+                        shape: 'cube',
+                        name: zone.name,
+                        frame: 'world',
+                        position: {x:zone.position_x,y:zone.position_y,z:0.5},
+                        rotation: {w:1,x:0,y:0,z:0},
+                        color: {...OCCUPANCY_ERROR_COLOR,a:0.3},
+                        scale: {x:zone.scale_x*2,y:zone.scale_y*2,z:0.5},
+                        transformMode: "inactive",
+                        highlighted: false,
+                        onClick: (_) => {},
+                        hidden: !this.occupancyVisible
+                    }
+                }
+                
+            })
+
             Object.keys(this.data.locations).forEach(location_uuid => {
                 const item = this.data.locations[location_uuid]
                 const focused = this.focusItem.uuid === location_uuid || this.secondaryFocusItem.uuid === location_uuid;
-                //console.log(focused);
-                //if (focused){
-                // items[location_uuid].transformMode = this.focusItem.transformMode;   
-               // }
+                const trajectoryFocused = focusedTrajectoryChildren.includes(location_uuid);
                 
-                
-                const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => 
-                    (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) 
-                    && (trajectory.start_location_uuid === location_uuid || trajectory.end_location_uuid === location_uuid));
                 // Handle in the case where the trajectory is focused
-                let color = null;
+                let color = {...DEFAULT_LOCATION_COLOR};
                 //console.log(item.joints.reachable);
-                if (item.joints.reachable && this.frame === 'performance'){//pose, frame, focused, locationOrWaypoint
+                if (this.frame === 'performance' && !item.joints.reachable){//pose, frame, focused, locationOrWaypoint
                     //console.log("entered");
-                    color = reachabilityColor(focused||trajectoryFocused,'location');
-                    
-                }else if(this.frame === 'quality' || this.frame === 'business'){
-                    color = reachabilityColor(focused||trajectoryFocused,'location');
-                } else{
-                    color = poseToColor(item, this.frame, focused || trajectoryFocused);
+                    color = {...UNREACHABLE_COLOR};
+                } else if (this.frame === 'safety' && occupancyOverlap(item.position,this.data.occupancyZones)) {
+                    color = {...OCCUPANCY_ERROR_COLOR};
                 }
-                if (trajectoryFocused){       
-                    poses.push(this.data.trajectories.start_location_uuid);
-                    this.data.trajectories[this.focusItem.uuid].waypoint_uuids.forEach((waypoint_uuid)=>{poses.push(waypoint_uuid);})
-                    poses.push(this.data.trajectories.end_location_uuid); 
-                    poses.forEach((pose_uuid,i)=>{
-                        color.a = (time)=>0.5*Math.pow(Math.E,-Math.sin(time/800+i*0.98));  
-                    })
-                    
-                    
+                if (trajectoryFocused) {
+                    const idx = focusedTrajectoryChildren.indexOf(location_uuid);
+                    color.a = (time)=>0.5*Math.pow(Math.E,-Math.sin(time/800+idx*0.98)); 
                 }
+
+                const debouncedOnMove = debounce(transform=>{
+                    this.setPoseTransform(location_uuid,transform);
+                },1000)
+
                 poseDataToShapes(item, this.frame).forEach((shape,i) => {
-                    items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color ,transformMode: (focused) ? this.focusItem.transformMode : "inactive"};     
+                    items[shape.uuid] = { 
+                        ...shape, 
+                        highlighted: focused, 
+                        hidden: !focused && !trajectoryFocused, 
+                        color,
+                        transformMode: shape.uuid.includes('pointer') && focused ? this.focusItem.transformMode : "inactive",
+                        onMove: shape.uuid.includes('pointer') && focused && this.focusItem.transformMode !== 'inactive' ? debouncedOnMove : (_)=>{} 
+                    };    
 
                 })
             })
@@ -111,35 +135,36 @@ export const ComputedSlice = {
             Object.keys(this.data.waypoints).forEach(waypoint_uuid => {
                 const item = this.data.waypoints[waypoint_uuid];
                 const focused = this.focusItem.uuid === waypoint_uuid || this.secondaryFocusItem.uuid === waypoint_uuid;
-                const trajectoryFocused = Object.values(this.data.trajectories).some(trajectory => trajectory.waypoint_uuids.some(trajectory_waypoint => (trajectory.uuid === this.focusItem.uuid || trajectory.uuid === this.secondaryFocusItem.uuud) && trajectory_waypoint === waypoint_uuid));
-                // Handle in the case where the trajectory is focused
-                //console.log(focused);
-               
+                const trajectoryFocused = focusedTrajectoryChildren.includes(waypoint_uuid);
                 
-                let color = null;
+                // Handle in the case where the trajectory is focused
+                let color = {...DEFAULT_WAYPOINT_COLOR};
                 //console.log(item.joints.reachable);
-                if (item.joints.reachable && this.frame === 'performance'){//pose, frame, focused, locationOrWaypoint
-                    color = reachabilityColor(item,this.frame,focused||trajectoryFocused,'waypoint');
-                    
-                }else if(this.frame === 'quality' || this.frame === 'business'){
-                    color = reachabilityColor(focused||trajectoryFocused,'waypoint');
-                }else{
-                    color = poseToColor(item, this.frame, focused || trajectoryFocused);
+                if (this.frame === 'performance' && !item.joints.reachable){//pose, frame, focused, locationOrWaypoint
+                    //console.log("entered");
+                    color = {...UNREACHABLE_COLOR};
+                } else if (this.frame === 'safety' && occupancyOverlap(item.position,this.data.occupancyZones)) {
+                    color = {...OCCUPANCY_ERROR_COLOR};
                 }
-                //console.log(color);
-                if (trajectoryFocused){       
-                    poses.push(this.data.trajectories.start_location_uuid);
-                    this.data.trajectories[this.focusItem.uuid].waypoint_uuids.forEach((waypoint_uuid)=>{poses.push(waypoint_uuid);})
-                    poses.push(this.data.trajectories.end_location_uuid); 
-                    poses.forEach((pose_uuid,i)=>{
-                        color.a = (time)=>0.5*Math.pow(Math.E,-Math.sin(time/800+i*0.98));  
-                    })
-                    
-                    
+                if (trajectoryFocused) {
+                    const idx = focusedTrajectoryChildren.indexOf(waypoint_uuid);
+                    color.a = (time)=>0.5*Math.pow(Math.E,-Math.sin(time/800+idx*0.98)); 
                 }
-                poseDataToShapes(item, this.frame).forEach((shape,i) => {
+
+                const debouncedOnMove = debounce(transform=>{
+                    this.setPoseTransform(waypoint_uuid,transform);
+                },1000)
+
+                poseDataToShapes(item, this.frame).forEach(shape => {
                    // color.a = (time) => 0.5*Math.pow(Math.E,-Math.sin(time/800+i*0.3));
-                    items[shape.uuid] = { ...shape, highlighted: focused, hidden: !focused && !trajectoryFocused, color,transformMode: (focused) ? this.focusItem.transformMode : "inactive"};
+                    items[shape.uuid] = { 
+                        ...shape, 
+                        highlighted: focused, 
+                        hidden: !focused && !trajectoryFocused, 
+                        color,
+                        transformMode: shape.uuid.includes('pointer') && focused ? this.focusItem.transformMode : "inactive",
+                        onMove: shape.uuid.includes('pointer') && focused && this.focusItem.transformMode !== 'inactive' ? debouncedOnMove : (_)=>{}
+                    };
                     
                     
                 })
@@ -156,7 +181,6 @@ export const ComputedSlice = {
             return lines
         },
         hulls: function() {
-
             return {}
         },
         tfs: function() {

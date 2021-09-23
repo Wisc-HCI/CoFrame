@@ -8,12 +8,13 @@ import {EvdSlice} from './EvdSlice';
 import {RosSlice} from './RosSlice';
 // import {SceneSlice} from 'robot-scene';
 import {ComputedSlice} from './ComputedSlice';
+// import {WatchedSlice} from './WatchedSlice';
 // import { computed } from 'zustand-middleware-computed-state';
 // import {SimSlice} from './SimSlice';
 
 // import { INITIAL_SIM } from "./initialSim";
 import fakeEvdData from './fakeEvdData';
-
+// import KNIFE_TASK from './knifeTask';
 
 const immer = (config) => (set, get, api) =>
   config(
@@ -30,12 +31,14 @@ const store = (set, get) => ({
     ...GuiSlice(set,get),
     ...ReviewSlice(set,get),
     ...EvdSlice(set,get),
-    ...RosSlice(set,get)
+    ...RosSlice(set,get),
 })
 
 const useStore = create(store,{...ComputedSlice,middleware:[immer,persist]});
+// const useStore = create(store,{...ComputedSlice,middleware:[immer]});
 
 useStore.getState().setProgram(fakeEvdData.arbitrary.program);
+// useStore.getState().setProgram(KNIFE_TASK)
 useStore.getState().setUrl('ws://localhost:9090');
 
 export default useStore;

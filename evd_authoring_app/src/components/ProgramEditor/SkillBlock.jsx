@@ -20,9 +20,9 @@ import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 
 export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context,onDelete}) => {
 
-    const [frame,focusItem, 
+    const [frame,focusItem,deleteHierarchical,
         moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
-        [state.frame,state.focusItem,
+        [state.frame,state.focusItem,state.deleteHierarchical,
         state.moveChildPrimitive,state.insertChildPrimitive]),shallow);
     
     const createSkillArgument = useStore(state=>state.createSkillArgument);
@@ -47,7 +47,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     // Code for handling the draggability of the skill node itself
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: data.type,
-        item: { ...data, parentData, dragBehavior, onDelete},
+        item: { ...data, parentData, dragBehavior, onDelete: onDelete ? onDelete : ()=>deleteHierarchical(data.uuid,null)},
         options: { dragEffect: dragBehavior },
         collect: monitor => ({
           isDragging: monitor.isDragging()

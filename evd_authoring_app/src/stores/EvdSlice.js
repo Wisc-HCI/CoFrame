@@ -1,7 +1,6 @@
 import { arrayMove, flattenProgram, unFlattenProgramPrimitives, unFlattenProgramSkills } from './helpers';
 import lodash from 'lodash';
 import { typeToKey } from './helpers';
-// import { useSceneStore } from 'robot-scene';
 
 export const EvdSlice = (set, get) => ({
   name: 'Default Program Name',
@@ -80,6 +79,7 @@ export const EvdSlice = (set, get) => ({
     program.primitives.forEach((primitive) => {
       get().addChildPrimitive(primitive, program.uuid)
     });
+    // get().setFromInitial();
   },
   getProgram: () => ({
     name: get().name,
@@ -127,42 +127,49 @@ export const EvdSlice = (set, get) => ({
       state.data.skills[parentId].primitiveIds.push(primitive.uuid)
     }
   }),
-  deleteChildPrimitive: (primitiveId) => set((state) => {
-    const { type, uuid } = state.data.primitives[primitiveId].parentData;
-    if (type === 'program') {
+  deleteChildPrimitive: (parentId, primitiveId) => set((state) => {
+    if (parentId === state.uuid) {
       // console.log('removing primitive from program')
       state.primitiveIds = state.primitiveIds.filter(id => id !== primitiveId)
-    } else {
-      state.data[typeToKey(type)][uuid].primitiveIds = state.data[typeToKey(type)][uuid].primitiveIds.filter(id => id !== primitiveId)
+    } else if (state.data.skills[parentId]) {
+      state.data.skills[parentId].primitiveIds = state.data.skills[parentId].primitiveIds.filter(id => id !== primitiveId)
+    } else if (state.data.primitives[parentId]) {
+      state.data.primitives[parentId].primitiveIds = state.data.primitives[parentId].primitiveIds.filter(id => id !== primitiveId)
     }
     if (state.data.primitives[primitiveId].type === 'node.primitive.move-trajectory.' && state.data.primitives[primitiveId].parameters.trajectory_uuid) {
       delete state.data.trajectories[state.data.primitives[primitiveId].parameters.trajectory_uuid]
+    } else if (state.data.primitives[primitiveId].type === 'node.primitive.skill-call') {
+      const primitiveData = state.data.primitives[primitiveId];
+      const skill = state.data.skills[primitiveData.parameters.skill_uuid];
+      skill.arguments.forEach(argument=>{
+        if (argument.parameter_type === 'node.trajectory.') {
+          if (primitiveData.parameters[argument.uuid] && state.data.trajectories[primitiveData.parameters[argument.uuid]]) {
+            delete state.data.trajectories[primitiveData.parameters[argument.uuid]]
+          }
+        }
+      })
     }
     delete state.data.primitives[primitiveId];
   }),
-  deleteSkill: (skillId) => {
-    const skill = get().data.skills[skillId];
-    get().deleteHierarchical(skill)
-  },
-  deleteHierarchical: (hierarchical) => {
+  deleteHierarchical: (hierarchical, parentId) => {
     // First, clean out all the contents recursively
     hierarchical.primitiveIds.forEach(id => {
       if (get().data.primitives[id].type.includes('hierarchical')) {
         get().deleteHierarchical(get().data.primitives[id])
       } else {
-        get().deleteChildPrimitive(id)
+        get().deleteChildPrimitive(hierarchical.uuid, id)
       }
     })
     // If a skill, go through and delete all calls using this skill.
     if (hierarchical.type === 'node.primitive.hierarchical.skill.') {
       Object.values(get().data.primitives).forEach(primitive => {
         if (primitive.type === 'node.primitive.skill-call' && primitive.parameters.skill_uuid) {
-          get().deleteChildPrimitive(primitive.uuid)
+          get().deleteChildPrimitive(hierarchical.uuid, primitive.uuid)
         }
       })
       get().deleteItem('skill', hierarchical.uuid)
     } else {
-      get().deleteItem('primitive', hierarchical.uuid)
+      get().deleteChildPrimitive(parentId, hierarchical.uuid)
     }
 
   },
@@ -171,25 +178,31 @@ export const EvdSlice = (set, get) => ({
       arrayMove(state.data.trajectories[newParentId].waypoint_uuids,oldIndex,newIndex)
     } else {
       state.data.trajectories[oldParentId].waypoint_uuids.splice(oldIndex, 1);
-      state.data.trajectories[newParentId].waypoint_uuids.splice(newIndex, 0, waypointId)
+      state.data.trajectories[newParentId].waypoint_uuids.splice(newIndex, 0, waypointId);
+      // state.renderData.trajectories[oldParentId] = state.data.trajectories[oldParentId];
+      // state.renderData.trajectories[newParentId] = state.data.trajectories[newParentId];
     }
   }),
   insertTrajectoryWaypoint: (waypointId, newParentId, newIndex) => set((state) => {
-    state.data.trajectories[newParentId].waypoint_uuids.splice(newIndex, 0, waypointId)
+    state.data.trajectories[newParentId].waypoint_uuids.splice(newIndex, 0, waypointId);
+    // state.renderData.trajectories[newParentId] = state.data.trajectories[newParentId];
   }),
   deleteTrajectoryWaypoint: (parentId, index) => set((state) => {
     state.data.trajectories[parentId].waypoint_uuids.splice(index, 1)
   }),
   moveChildPrimitive: (primitiveId, oldParentId, newParentId, oldIndex, newIndex) => set((state)=>{
     if (oldParentId === newParentId && state.uuid === oldParentId) {
+      // console.log('moving within program')
       // Moving within the program
       arrayMove(state.primitiveIds,oldIndex,newIndex)
     } else if (oldParentId === newParentId) {
+      // console.log('moving within skill or primitive')
       // Moving within a single skill or primitive
       const parentType = state.data.skills[newParentId] ? 'skills' : 'primitives';
       arrayMove(state.data[parentType][newParentId].primitiveIds,oldIndex,newIndex)
     } else if (state.uuid === oldParentId) {
-      // Move from 
+      // Move from program
+      // console.log('moving from program to someplace else')
       const newParentType = state.data.skills[newParentId] ? 'skills' : 'primitives';
       state.primitiveIds.splice(oldIndex, 1);
       state.data[newParentType][newParentId].primitiveIds.splice(newIndex, 0, primitiveId)
@@ -238,9 +251,36 @@ export const EvdSlice = (set, get) => ({
   // Piecewise update functions for data
   addItem: (type, item) => set((state) => {
     state.data[typeToKey(type)][item.uuid] = item;
+    // if (['waypoint','location','trajectory'].includes(type)) {
+    //   state.renderData[typeToKey(type)][item.uuid] = item;
+    // }
   }),
   setItemProperty: (type, uuid, property, value) => set((state) => {
     state.data[typeToKey(type)][uuid][property] = value;
+    // if (['waypoint','location','trajectory'].includes(type)) {
+    //   state.renderData[typeToKey(type)][uuid] = state.data[typeToKey(type)][uuid];
+    // }
+  }),
+  setPoseTransform: (uuid, transform) => set(state=>{
+    if (state.data.locations[uuid]) {
+      state.data.locations[uuid].position.x = transform.local.position.x;
+      state.data.locations[uuid].position.y = transform.local.position.y;
+      state.data.locations[uuid].position.z = transform.local.position.z;
+      state.data.locations[uuid].orientation.x = transform.local.quaternion.x;
+      state.data.locations[uuid].orientation.y = transform.local.quaternion.y;
+      state.data.locations[uuid].orientation.z = transform.local.quaternion.z;
+      state.data.locations[uuid].orientation.w = transform.local.quaternion.w;
+      //.locations[uuid] = state.data.locations[uuid];
+    } else if (state.data.waypoints[uuid]) {
+      state.data.waypoints[uuid].position.x = transform.local.position.x;
+      state.data.waypoints[uuid].position.y = transform.local.position.y;
+      state.data.waypoints[uuid].position.z = transform.local.position.z;
+      state.data.waypoints[uuid].orientation.x = transform.local.quaternion.x;
+      state.data.waypoints[uuid].orientation.y = transform.local.quaternion.y;
+      state.data.waypoints[uuid].orientation.z = transform.local.quaternion.z;
+      state.data.waypoints[uuid].orientation.w = transform.local.quaternion.w;
+      //state.renderData.waypoints[uuid] = state.data.waypoints[uuid];
+    }
   }),
   setPrimitiveParameter: (type, uuid, property, value) => set((state) => {
     state.data[typeToKey(type)][uuid].parameters[property] = value
@@ -248,8 +288,10 @@ export const EvdSlice = (set, get) => ({
   deleteItem: (type, uuid) => set((state) => {
     delete state.data[typeToKey(type)][uuid]
     if (type === "waypoint") {
+      //delete state.renderData.waypoints[uuid];
       Object.keys(state.data.trajectories).forEach(trajectory_uuid => {
         state.data.trajectories[trajectory_uuid].waypoint_uuids = state.data.trajectories[trajectory_uuid].waypoint_uuids.filter(other_uuid => other_uuid !== uuid)
+        //state.renderData.trajectories[trajectory_uuid] = state.data.trajectories[trajectory_uuid]
       })
       // TODO: Remove from other params.
     } else if (type === 'location') {
@@ -260,6 +302,7 @@ export const EvdSlice = (set, get) => ({
         if (state.data.trajectories[trajectory_uuid].end_location_uuid === uuid) {
           state.data.trajectories[trajectory_uuid].end_location_uuid = null
         }
+        //state.renderData.trajectories[trajectory_uuid] = state.data.trajectories[trajectory_uuid]
       })
       // TODO: Remove from other params.
     }

@@ -43,25 +43,25 @@ export const SortableSeparator = ({ ancestors, context, onDrop, dropDisabled, he
     // console.log(isOverDefault)
     // // console.log(isOver)
     // const dragItem = dragItemDefault ? dragItemDefault : dragItemPreview;
-   
+
     const showPreview = isOver && dragItem && !dropDisabled && validDrop(dragItem, ancestors);
     // if (showPreview) { console.log('preview') }
 
     const [previewRef, shape] = useMeasure();
-    const usedHeight = shape.height-height+spacing+5;
-    const offset = end ? height/-2+spacing + 5 : height/-2+spacing;
-    
+    const usedHeight = shape.height - height + spacing + 5;
+    const offset = end ? height / -2 + spacing + 5 : height / -2 + spacing;
+
     const previewStyle = useSpring({ height: usedHeight, config: config.stiff });
 
     return (
-        <div 
-            ref={dropRef} 
+        <div
+            ref={dropRef}
             style={{
                 //...previewStyle,
-                width: '100%', 
-                position:'relative',
+                width: '100%',
+                position: 'relative',
                 // paddingTop: 0, 
-                padding:0,
+                padding: 0,
                 height: showPreview ? null : spacing,
                 // paddingBottom: showPreview ? 8 : 0, 
                 // backgroundColor: 'blue' 
@@ -73,13 +73,13 @@ export const SortableSeparator = ({ ancestors, context, onDrop, dropDisabled, he
                     top: -1 * height / 2,
                     opacity: 0.6,
                     // backgroundColor: 'red',
-                    height: height/2
+                    height: height / 2
                 }}>
             </div>
             <animated.div style={previewStyle}>
                 <div ref={previewRef}>
                     {showPreview && dragItem.type.includes('uuid') && (
-                        <div style={{ opacity: 0.5, top: offset, position:'relative'}}>
+                        <div style={{ opacity: 0.5, top: offset, position: 'relative' }}>
                             <UUIDBlock
                                 ancestors={ancestors}
                                 idx={0}
@@ -91,14 +91,15 @@ export const SortableSeparator = ({ ancestors, context, onDrop, dropDisabled, he
                         </div>
                     )}
                     {showPreview && dragItem.type.includes('primitive') && (
-                        <div style={{ opacity: 0.5, top: offset, position:'relative'}}>
+                        <div style={{ opacity: 0.5, top: offset, position: 'relative' }}>
                             <ActionBlock
                                 ancestors={ancestors}
                                 idx={0}
-                                locked
                                 staticData={dragItem}
                                 context={context}
                                 dragDisabled
+                                dropDisabled
+                                locked
                                 dragBehavior='move' />
                         </div>
                     )}
@@ -108,10 +109,10 @@ export const SortableSeparator = ({ ancestors, context, onDrop, dropDisabled, he
                 style={{
                     position: 'relative',
                     zIndex: 80,
-                    bottom: height/2,
+                    bottom: height / 2,
                     opacity: 0.6,
                     // backgroundColor: 'yellow',
-                    height: height/2
+                    height: height / 2
                 }}>
             </div>
         </div>

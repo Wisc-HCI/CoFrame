@@ -54,11 +54,34 @@ export const typeToKey = (type) => {
 
 export const HUMAN_ZONE = { radius: 2, height: 3, position: { x: 0, y: -1, z: 1 } }
 
+export const DEFAULT_LOCATION_COLOR = {r: 62, g: 16, b: 102, a: 1};
+
+export const DEFAULT_WAYPOINT_COLOR = {r: 100, g: 18, b: 128, a: 1};
+
+export const DEFAULT_TRAJECTORY_COLOR = {r: 209, g: 0, b: 146, a:1};
+
+export const UNREACHABLE_COLOR = {r: 204, g: 75, b: 10, a: 1};
+
+export const OCCUPANCY_ERROR_COLOR = {r: 233, g: 53, b: 152, a: 1};
+
 export const inHumanZone = ({ x, y, z }) => {
     if (HUMAN_ZONE.position.z + HUMAN_ZONE.height * 0.5 > z && HUMAN_ZONE.position.z - HUMAN_ZONE.height * 0.5 < z) {
         return Math.pow(x - HUMAN_ZONE.position.x, 2) + Math.pow(y - HUMAN_ZONE.position.y, 2) < Math.pow(HUMAN_ZONE.radius, 2)
     }
     return false
+}
+
+export const occupancyOverlap = (position,occupancyZones) => {
+    let noOverlap = true
+    Object.values(occupancyZones).forEach(zone=>{
+        if (position.x < zone.position_x + zone.scale_x && 
+            position.x > zone.position_x - zone.scale_x && 
+            position.y < zone.position_y + zone.scale_y && 
+            position.y > zone.position_y - zone.scale_y ) {
+            noOverlap = false
+        }
+    })
+    return !noOverlap
 }
 
 export function flattenProgram(primitives, skills, parentData) {

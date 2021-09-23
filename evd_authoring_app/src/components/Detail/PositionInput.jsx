@@ -29,7 +29,7 @@ function PositionInput (props)  {
          step= {steps}
          precision={2}
          style={{ margin: '0 16px' }}
-         defaultValue={inputVec[0]}
+         value={inputVec[0]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedVec = [v,inputVec[1],inputVec[2]];
            setInputVec(updatedVec)
@@ -43,7 +43,7 @@ function PositionInput (props)  {
          step= {steps}
          precision={2}
          style={{ margin: '0 16px' }}
-         defaultValue={inputVec[1]}
+         value={inputVec[1]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedVec = [inputVec[0],v,inputVec[2]]
            setInputVec(updatedVec)
@@ -57,7 +57,7 @@ function PositionInput (props)  {
           step={steps}
           precision={2}
           style={{ margin: '0 16px' }}
-          defaultValue={inputVec[2]}
+          value={inputVec[2]}
           onChange={(v)=>{if (typeof v === 'number') {
             let updatedVec = [inputVec[0],inputVec[1],v];
             setInputVec(updatedVec)

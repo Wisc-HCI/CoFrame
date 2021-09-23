@@ -49,7 +49,7 @@ const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
          step={steps}
          precision={2}
          style={{ margin: '0 16px' }}
-         defaultValue={eulerValues[0]}
+         value={eulerValues[0]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedEulerValues = [v,eulerValues[1],eulerValues[2]];
            setEulerValues(updatedEulerValues);
@@ -63,7 +63,7 @@ const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
          step={steps}
          precision={2}
          style={{ margin: '0 16px' }}
-         defaultValue={eulerValues[1]}
+         value={eulerValues[1]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedEulerValues = [eulerValues[0],v,eulerValues[2]];
            setEulerValues(updatedEulerValues);
@@ -77,7 +77,7 @@ const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
          step={steps}
          precision={2}
          style={{ margin: '0 16px' }}
-         defaultValue={eulerValues[2]}
+         value={eulerValues[2]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedEulerValues = [eulerValues[0],eulerValues[1],v];
            setEulerValues(updatedEulerValues);
