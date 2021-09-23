@@ -17,9 +17,9 @@ import useMeasure from 'react-use-measure';
 
 export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, dragDisabled, ancestors, context, onDelete, idx, after, locked }) => {
 
-  const [frame, focusItem, setItemProperty, deleteHierarchical,
+  const [frame, focusItem, setFocusItem, setItemProperty, deleteHierarchical,
     moveChildPrimitive, insertChildPrimitive, deleteChildPrimitive] = useStore(state => (
-      [state.frame, state.focusItem, state.setItemProperty, state.deleteHierarchical,
+      [state.frame, state.focusItem, state.setFocusItem, state.setItemProperty, state.deleteHierarchical,
       state.moveChildPrimitive, state.insertChildPrimitive, state.deleteChildPrimitive]),shallow);
 
   const [data, executable] = useStore(useCallback((state) => {
@@ -105,7 +105,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
           <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
             {!inDrawer && <Button type='text' onClick={() => setExpanded(!expanded)} icon={<RightOutlined rotate={expanded ? 90 : 0} />} style={{zIndex:200}}/>}
             {editingEnabled && <Button type='text' onClick={() => setEditing(!editing)} icon={editing ? <SaveOutlined/> : <EditOutlined/>}/>}
-            {executable && <Button type='text' icon={<EyeOutlined/>}/>}
+            {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('primitive', uuid)}}/>}
             <Badge count={data.primitiveIds.length} showZero={true} style={{backgroundColor:'rgba(0,0,0,0.3)',marginRight:5, marginLeft:5}}/>
           </Row>
         </Row>
@@ -140,7 +140,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
                     ancestors={primitiveAncestors}
                     context={context}
                     idx={idx}
-                    onDelete={(dropData)=>onChildDelete(dropData)}
+                    onDelete={onChildDelete}
                     dragDisabled={!editingEnabled || isDragging || locked}
                     after={
                       <SortableSeparator

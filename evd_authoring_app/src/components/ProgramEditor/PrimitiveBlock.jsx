@@ -61,11 +61,11 @@ export const PrimitiveBlock = ({
     ]
   }, [staticData, uuid, context]),shallow);
 
-  const [frame, clearFocusItem, focusExists, 
+  const [frame, setFocusItem, clearFocusItem, focusExists, 
     setPrimitiveParameter, moveTrajectoryBlock,
     deletePrimitiveTrajectory] = useStore(
     (state) => [
-      state.frame, state.clearFocusItem, state.focusItem.type !== null, 
+      state.frame, state.setFocusItem, state.clearFocusItem, state.focusItem.type !== null, 
       state.setPrimitiveParameter, state.moveTrajectoryBlock, 
       state.deletePrimitiveTrajectory], shallow)
 
@@ -172,8 +172,8 @@ export const PrimitiveBlock = ({
             {data.name}
           </Row>
           <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
-            {executable && <Button type='text' icon={<EyeOutlined/>}/>}
-            {editingEnabled ? <UnlockOutlined style={{marginRight:5}}/> : <LockOutlined style={{marginRight:5}}/>}
+            {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}/>}
+            {editingEnabled ? <UnlockOutlined style={{marginRight:5,marginLeft:5}}/> : <LockOutlined style={{marginRight:5,marginLeft:5}}/>}
             {/* <Button
                   type='text'
                   style={{marginLeft:2}}

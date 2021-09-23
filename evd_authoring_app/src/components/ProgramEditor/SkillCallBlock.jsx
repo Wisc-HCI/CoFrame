@@ -52,9 +52,9 @@ export const SkillCallBlock = ({
         is_list: false
     }
     */
-    const data = staticData ? staticData : state.data.primitives[uuid];
+    const data = staticData ? staticData : state.data.primitives[uuid] ? state.data.primitives[uuid] : {uuid:null,parameters:{skill_uuid:null}};
     const executable = state.executablePrimitives[data.uuid] ? true : false;
-    const skill = state.data.skills[data.parameters.skill_uuid];
+    const skill = state.data.skills[data.parameters.skill_uuid] ? state.data.skills[data.parameters.skill_uuid] : {arguments:[]};
 
     skill.arguments.forEach(argument => {
       const callVal = data.parameters[argument.uuid];
@@ -86,10 +86,10 @@ export const SkillCallBlock = ({
     ]
   }, [staticData, uuid, context]),shallow);
 
-  const [frame, clearFocusItem, focusExists,
+  const [frame, clearFocusItem, setFocusItem, focusExists,
     setPrimitiveParameter, moveTrajectoryBlock,
     deletePrimitiveTrajectory] = useStore(
-      (state) => [state.frame, state.clearFocusItem, state.focusItem.type !== null,
+      (state) => [state.frame, state.clearFocusItem, state.setFocusItem, state.focusItem.type !== null,
       state.setPrimitiveParameter, state.moveTrajectoryBlock, state.deletePrimitiveTrajectory],shallow)
 
   const unfocused = focusExists && !focused;
@@ -170,14 +170,8 @@ export const SkillCallBlock = ({
             <Icon style={{ marginLeft: 4 }} component={SkillIcon} />{' Execute: '}{skill.name}
           </Col>
           <Col span={6} offset={1} style={{ textAlign: 'end' }}>
-            {executable && <Button type='text' icon={<EyeOutlined/>}/>}
+            {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('primitive', uuid)}}/>}
             {editingEnabled ? <UnlockOutlined style={{marginRight:5}}/> : <LockOutlined style={{marginRight:5}}/>}
-            {/* <Button
-                  type='text'
-                  style={{marginLeft:2}}
-                  onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}
-                  icon={<EllipsisOutlined />}
-              /> */}
           </Col>
         </Row>
         {parameters.map((argInfo,i) => (

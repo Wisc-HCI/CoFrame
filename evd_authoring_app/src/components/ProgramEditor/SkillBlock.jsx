@@ -20,9 +20,9 @@ import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 
 export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context,onDelete}) => {
 
-    const [frame,focusItem,deleteHierarchical,
+    const [frame,focusItem,deleteHierarchical,deleteChildPrimitive,
         moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
-        [state.frame,state.focusItem,state.deleteHierarchical,
+        [state.frame,state.focusItem,state.deleteHierarchical,state.deleteChildPrimitive,
         state.moveChildPrimitive,state.insertChildPrimitive]),shallow);
     
     const createSkillArgument = useStore(state=>state.createSkillArgument);
@@ -47,7 +47,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     // Code for handling the draggability of the skill node itself
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: data.type,
-        item: { ...data, parentData, dragBehavior, onDelete: onDelete ? onDelete : ()=>deleteHierarchical(data.uuid,null)},
+        item: { ...data, parentData, dragBehavior, onDelete},
         options: { dragEffect: dragBehavior },
         collect: monitor => ({
           isDragging: monitor.isDragging()
@@ -83,6 +83,14 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
         currentContext[arg.uuid] = {name:arg.name,real:false}
     })
 
+    const onChildDelete = (dropData) => {
+        if (dropData.type.includes('hierarchical')) {
+          deleteHierarchical(dropData,data.uuid)
+        } else {
+          deleteChildPrimitive(data.uuid,dropData.uuid)
+        }
+      }
+
     const dragBlockStyles = {
         display:'inline-block',
         position: ancestors[0].uuid === 'drawer' ? 'relative' : 'absolute',
@@ -105,7 +113,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                     <Icon style={{marginLeft:4}} component={ContainerIcon} />{' '}{data.name}
                 </Col>
                 <Col span={6} offset={1} style={{textAlign:'end'}}>
-                    {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
+                    {editingEnabled ? <UnlockOutlined style={{marginRight:5,marginLeft:5}}/> : <LockOutlined style={{marginRight:5,marginLeft:5}}/>}
                     <Dropdown overlay={
                         <Menu>
                             {!editingEnabled && <Menu.Item key='show' onClick={() => toggleSkillEditable(data.uuid)}>
@@ -164,6 +172,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             uuid={id}
                             parentData={{ type: 'program', uuid, field: 'primitive_uuids' }}
                             dragBehavior='move'
+                            onChildDelete={onChildDelete}
                             ancestors={skillAncestors}
                             context={currentContext}
                             idx={idx}

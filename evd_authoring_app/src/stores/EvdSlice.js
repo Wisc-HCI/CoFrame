@@ -129,8 +129,12 @@ export const EvdSlice = (set, get) => ({
   }),
   deleteChildPrimitive: (parentId, primitiveId) => set((state) => {
     if (parentId === state.uuid) {
-      console.log('removing primitive from program')
-      state.primitiveIds = state.primitiveIds.filter(id => id !== primitiveId)
+      console.log('removing primitive '+primitiveId+' from program '+parentId)
+      const oldPrimitiveIds = state.primitiveIds;
+      const newPrimitiveIds = state.primitiveIds.filter(id => id !== primitiveId);
+      console.log(oldPrimitiveIds);
+      console.log(newPrimitiveIds);
+      state.primitiveIds = newPrimitiveIds;
     } else if (state.data.skills[parentId]) {
       state.data.skills[parentId].primitiveIds = state.data.skills[parentId].primitiveIds.filter(id => id !== primitiveId)
     } else if (state.data.primitives[parentId]) {
@@ -155,7 +159,7 @@ export const EvdSlice = (set, get) => ({
     // First, clean out all the contents recursively
     hierarchical.primitiveIds.forEach(id => {
       if (get().data.primitives[id].type.includes('hierarchical')) {
-        get().deleteHierarchical(get().data.primitives[id])
+        get().deleteHierarchical(get().data.primitives[id],hierarchical.uuid)
       } else {
         get().deleteChildPrimitive(hierarchical.uuid, id)
       }

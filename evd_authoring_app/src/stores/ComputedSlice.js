@@ -1,7 +1,6 @@
 // import { objectMap } from "./helpers";
 import { 
     poseDataToShapes, 
-    trajectoryDataToLine,
     DEFAULT_WAYPOINT_COLOR,
     DEFAULT_LOCATION_COLOR,
     UNREACHABLE_COLOR,

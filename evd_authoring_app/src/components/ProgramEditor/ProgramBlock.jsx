@@ -1,6 +1,6 @@
-import React from 'react';
-import { Col, Row, Button } from 'antd';
-import Icon, { EllipsisOutlined, UnlockOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Col, Row, Button, Input } from 'antd';
+import Icon, { UnlockOutlined, EyeOutlined, SaveOutlined, EditOutlined } from '@ant-design/icons';
 import { useDrag } from 'react-dnd';
 // import { ItemSortable } from './Wrappers';
 import { ActionBlock } from './ActionBlock';
@@ -14,22 +14,26 @@ import './highlight.css';
 import { acceptLookup } from './acceptLookup';
 import { SortableSeparator } from './SortableSeparator';
 
-export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
+export const ProgramBlock = ({ parentData, dragBehavior, context, ancestors }) => {
 
     const [uuid, name, type, transform,
-        primitiveIds, moveChildPrimitive,
-        deleteHierarchical,deleteChildPrimitive,
-        insertChildPrimitive] = useStore(state => ([
+        primitiveIds, executable, moveChildPrimitive,
+        deleteHierarchical, deleteChildPrimitive,
+        insertChildPrimitive, setName] = useStore(state => ([
             state.uuid,
             state.name,
             state.type,
             state.transform,
             state.primitiveIds,
+            state.executablePrimitives[state.uuid] ? true : false,
             state.moveChildPrimitive,
             state.deleteHierarchical,
             state.deleteChildPrimitive,
-            state.insertChildPrimitive
-        ]),shallow)
+            state.insertChildPrimitive,
+            state.setName
+        ]), shallow)
+    
+    const [editing, setEditing] = useState(false);
 
     const data = { uuid, name, type, primitiveIds, transform };
 
@@ -44,16 +48,16 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
         state.frame,
         state.focusItem,
         state.setFocusItem
-    ]),shallow);
+    ]), shallow);
 
     const focused = focusItem.uuid === uuid;
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: data.type,
-        item: { ...data, parentData, dragBehavior},
+        item: { ...data, parentData, dragBehavior },
         options: { dragEffect: dragBehavior },
         collect: monitor => ({
-          isDragging: monitor.isDragging()
+            isDragging: monitor.isDragging()
         })
     }))
 
@@ -95,19 +99,22 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
     };
 
     return (
-        <div onDrag={e=>e.stopPropagation()} ref={preview} style={dragBlockStyles} className={focused ? `focus-${frame}` : null}>
+        <div onDrag={e => e.stopPropagation()} ref={preview} style={dragBlockStyles} className={focused ? `focus-${frame}` : null}>
             <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-                <Col ref={drag} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, cursor: 'grab' ,zIndex:1000}}>
-                    <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />{' '}{name}
-                </Col>
+                <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: editing ? null : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
+                    <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
+                    <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : "grab" }} bordered={false} disabled={!editing} value={name} onChange={(e) => setName(e.target.value)} />
+                </Row>
                 <Col span={6} offset={1} style={{ textAlign: 'end' }}>
-                    <UnlockOutlined />
-                    <Button
+                    <Button type='text' onClick={() => setEditing(!editing)} icon={editing ? <SaveOutlined/> : <EditOutlined/>}/>
+                    {executable && <Button type='text' icon={<EyeOutlined/>}/>}
+                    <UnlockOutlined style={{marginRight:5,marginLeft:5}}/>
+                    {/* <Button
                         type='text'
                         style={{ marginLeft: 2 }}
                         onClick={(e) => { e.stopPropagation(); setFocusItem('program', uuid) }}
                         icon={<EllipsisOutlined />}
-                    />
+                    /> */}
                 </Col>
             </Row>
             <NodeZone
@@ -121,7 +128,7 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                         {idx === 0 && (
                             <SortableSeparator
                                 key={0}
-                                spacing={idx===0 ? 0 : 5}
+                                spacing={idx === 0 ? 0 : 5}
                                 height={30}
                                 ancestors={programAncestors}
                                 context={context}
@@ -137,14 +144,14 @@ export const ProgramBlock = ({parentData,dragBehavior,context,ancestors}) => {
                             ancestors={programAncestors}
                             context={context}
                             idx={idx}
-                            onDelete={(dropData=>onChildDelete(dropData))}
+                            onDelete={onChildDelete}
                             dragDisabled={false}
                             after={
                                 <SortableSeparator
                                     ancestors={programAncestors}
                                     height={30}
-                                    end={idx === primitiveIds.length-1}
-                                    spacing={idx ===primitiveIds.length-1 ? 0 : 5}
+                                    end={idx === primitiveIds.length - 1}
+                                    spacing={idx === primitiveIds.length - 1 ? 0 : 5}
                                     context={context}
                                     onDrop={(dropData) => primitiveDrop(dropData, idx + 1)}
                                     dropDisabled={false}
