@@ -20,9 +20,47 @@ export const COLLISION_MESHES = {
     'package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae':'package://robotiq_85_description/meshes/collision/robotiq_85_finger_tip_link.stl'
 }
 
+export const EVD_MESH_LOOKUP = {
+    "package://evd_ros_tasks/description/meshes/visual/3d_printer.stl":"package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
+    "package://evd_ros_tasks/description/meshes/visual/assembly_jig.stl":"assembly_jig",
+    "package://evd_ros_tasks/description/meshes/visual/conveyor.stl":"conveyor",
+    "package://evd_ros_tasks/description/meshes/visual/blade_feeder.stl":"conveyor_receiver",
+    "package://evd_ros_tasks/description/meshes/visual/knife_feeder.stl":"conveyor_dispatcher",
+}
+
 export const INITIAL_SIM =
     {
         tfs:{
+            '3d_printer_link':{
+                frame:'world',
+                translation: { x: -0.28, y: 0.32, z: 0.3 },
+                rotation: { w: 1, x: 0, y: 0, z: 0 },
+            },
+            'assembly_jig_link':{
+                frame:'world',
+                translation: { x: 0.2, y: 0.28, z: 0.14 },
+                rotation: { w: -0.5, x: 0.5, y: -0.5, z: -0.5 },
+            },
+            'blade_conveyor_link':{
+                frame:'world',
+                translation: { x: -0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
+            },
+            'blade_feeder_link':{
+                frame:'world',
+                translation: { x: -0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
+            },
+            'knife_conveyor_link':{
+                frame:'world',
+                translation: { x: 0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
+            },
+            'knife_feeder_link':{
+                frame:'world',
+                translation: { x: 0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
+            },
             'simulated_base_link':{
                 frame:'world',
                 translation: { x: 0, y: -0.15, z: 0 },
@@ -126,46 +164,46 @@ export const INITIAL_SIM =
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
             },
-            bladeConveyor: {
-                shape: 'conveyor',
-                name: "Blade Production Conveyor Belt",
-                frame: "world",
-                position: { x: -0.85, y: -0.25, z: -0.75 },
-                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
-                scale: { x: 1, y: 1, z: 1 },
-                highlighted: false,
-                showName: false
-            },
-            conveyorReceiver: {
-                shape: 'conveyor_receiver',
-                name: "Blade Receiver",
-                frame: "world",
-                position: { x: -0.85, y: -0.25, z: -0.75 },
-                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
-                scale: { x: 1, y: 1, z: 1 },
-                highlighted: false,
-                showName: false
-            },
-            knifeConveyor: {
-                shape: 'conveyor',
-                name: "Finished Knife Conveyor Belt",
-                frame: "world",
-                position: { x: 0.85, y: -0.25, z: -0.75 },
-                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
-                scale: { x: 1, y: 1, z: 1 },
-                highlighted: false,
-                showName: false,
-            },
-            conveyorDispatcher: {
-                shape: 'conveyor_dispatcher',
-                name: "Knife Dispatcher",
-                frame: "world",
-                position: { x: 0.85, y: -0.25, z: -0.75 },
-                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
-                scale: { x: 1, y: 1, z: 1 },
-                highlighted: false,
-                showName: false,
-            },    
+            // bladeConveyor: {
+            //     shape: 'conveyor',
+            //     name: "Blade Production Conveyor Belt",
+            //     frame: "blade_conveyor_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 1, y: 1, z: 1 },
+            //     highlighted: false,
+            //     showName: false
+            // },
+            // conveyorReceiver: {
+            //     shape: 'conveyor_receiver',
+            //     name: "Blade Receiver",
+            //     frame: "blade_feeder_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 1, y: 1, z: 1 },
+            //     highlighted: false,
+            //     showName: false
+            // },
+            // knifeConveyor: {
+            //     shape: 'conveyor',
+            //     name: "Finished Knife Conveyor Belt",
+            //     frame: "knife_conveyor_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 1, y: 1, z: 1 },
+            //     highlighted: false,
+            //     showName: false,
+            // },
+            // conveyorDispatcher: {
+            //     shape: 'conveyor_dispatcher',
+            //     name: "Knife Dispatcher",
+            //     frame: "knife_feeder_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 1, y: 1, z: 1 },
+            //     highlighted: false,
+            //     showName: false,
+            // },    
             pedestal: {
                 shape: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl",
                 name: "Pedestal",
@@ -177,25 +215,25 @@ export const INITIAL_SIM =
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
             },
-            printer: {
-                shape: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
-                name: "3D Printer",
-                frame: "world",
-                position: { x: -0.28, y: 0.32, z: 0.3 },
-                rotation: { w: 1, x: 0, y: 0, z: 0 },
-                showCollison: false,
-                highlighted: false,
-                scale: {x:1,y:1,z:1}
-            },
-            assemblyJig: {
-                shape: "assembly_jig",
-                name: "Assembly Jig",
-                frame: "world",
-                position: { x: 0.2, y: 0.28, z: 0.14 },
-                rotation: { w: -0.5, x: 0.5, y: -0.5, z: -0.5 },
-                scale: { x: 0.2, y: 0.2, z: 0.2 },
-                highlighted: false,
-            },
+            // printer: {
+            //     shape: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
+            //     name: "3D Printer",
+            //     frame: "3d_printer_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     showCollison: false,
+            //     highlighted: false,
+            //     scale: {x:1,y:1,z:1}
+            // },
+            // assemblyJig: {
+            //     shape: "assembly_jig",
+            //     name: "Assembly Jig",
+            //     frame: "assembly_jig_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 0.2, y: 0.2, z: 0.2 },
+            //     highlighted: false,
+            // },
             robotBase: {
                 shape: "package://ur_description/meshes/ur3/visual/base.dae",
                 name: 'Robot Base',
