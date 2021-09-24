@@ -108,9 +108,9 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
             </Divider>
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <PositionInput value={[region.center_position.x, region.center_position.y, region.center_position.z]}
+                <PositionInput value={[region.center_position.x, region.center_position.y, region.center_position.z]} type = {"region"} uuid = {region.uuid}
                     onChange={e => setItemProperty('region', region.uuid, 'center_position', { ...region.center_position, x: e[0], y: e[1], z: e[2] })} />
-                <OrientationInput value={[region.center_orientation.w, region.center_orientation.x, region.center_orientation.y, region.center_orientation.z]}
+                <OrientationInput value={[region.center_orientation.w, region.center_orientation.x, region.center_orientation.y, region.center_orientation.z]} type = {"region"} uuid = {region.uuid}
                     onChange={e => setItemProperty('region', region.uuid, 'center_orientation', { ...region.center_orientation, w: e[0], x: e[1], y: e[2], z: e[3] })} />
                 <br />
                 <div style={{ paddingTop: '0px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
