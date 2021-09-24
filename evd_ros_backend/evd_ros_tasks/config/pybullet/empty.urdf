@@ -2,16 +2,6 @@
 
   <link name="link_name">
 
-    <visual>
-
-      <geometry>
-
-        <box size="3.0 3.0 1.0"/>
-
-      </geometry>
-
-    </visual>
-
   </link>
 
 </robot>

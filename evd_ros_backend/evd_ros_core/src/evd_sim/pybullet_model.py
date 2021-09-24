@@ -1,4 +1,3 @@
-
 import time
 import pybullet
 
@@ -53,7 +52,7 @@ class PyBulletModel(object):
                     targetValue=joints[index],
                     targetVelocity=0)
 
-    def step(self, joints, names):
+    def step(self, joints, names, physics=False):
 
         # Set each joints in pybullet
         for name, id in self.jointIds.items():
@@ -64,13 +63,20 @@ class PyBulletModel(object):
                     break
 
             if index != -1:
-                pybullet.setJointMotorControl2(
-                    self.robotId,
-                    jointIndex=id,
-                    controlMode=pybullet.POSITION_CONTROL, 
-                    targetPosition=joints[index],
-                    maxVelocity=1000,
-                    force=5 * 240.)
+                if physics:
+                    pybullet.setJointMotorControl2(
+                        self.robotId,
+                        jointIndex=id,
+                        controlMode=pybullet.POSITION_CONTROL, 
+                        targetPosition=joints[index],
+                        maxVelocity=1000,
+                        force=5 * 240.)
+                else:
+                    pybullet.resetJointState(
+                        self.robotId,
+                        jointIndex=id,
+                        targetValue=joints[index],
+                        targetVelocity=0)
 
         # Run simulation
         pybullet.stepSimulation()

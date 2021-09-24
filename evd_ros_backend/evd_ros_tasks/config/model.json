@@ -1,7 +1,7 @@
 {
     "pybullet": {
         "urdf": {
-            "robot": "robot.urdf",
+            "robot": "robot_n_mass.urdf",
             "environment": "environment.urdf"
         },
         "timestep": 0.0165,
