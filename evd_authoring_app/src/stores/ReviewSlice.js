@@ -9,6 +9,7 @@ const SECTION_INFO = {
         name:'End Effector Poses',
         updater:findEndEffectorPoseIssues,
         dependencies:['reachability']
+        // dependencies:[]
     },
     pinchPoints:{
         name:'Pinch Points',
@@ -29,6 +30,7 @@ const SECTION_INFO = {
         name:'Thing Movement',
         updater:findThingMovementIssues,
         dependencies:['endEffectorPoses']
+        // dependencies:[]
     },
     missingBlocks:{
         name:'Missing Blocks',

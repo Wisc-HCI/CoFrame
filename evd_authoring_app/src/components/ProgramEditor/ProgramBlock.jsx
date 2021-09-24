@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Col, Row, Button, Input } from 'antd';
+import { Row, Button, Input } from 'antd';
 import Icon, { UnlockOutlined, EyeOutlined, SaveOutlined, EditOutlined } from '@ant-design/icons';
 import { useDrag } from 'react-dnd';
 // import { ItemSortable } from './Wrappers';
@@ -105,7 +105,7 @@ export const ProgramBlock = ({ parentData, dragBehavior, context, ancestors }) =
                     <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
                     <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : "grab" }} bordered={false} disabled={!editing} value={name} onChange={(e) => setName(e.target.value)} />
                 </Row>
-                <Col span={6} offset={1} style={{ textAlign: 'end' }}>
+                <Row wrap={false} align="middle" style={{ textAlign: 'end' }}>
                     <Button type='text' onClick={() => setEditing(!editing)} icon={editing ? <SaveOutlined/> : <EditOutlined/>}/>
                     {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}/>}
                     <UnlockOutlined style={{marginRight:5,marginLeft:5}}/>
@@ -115,7 +115,7 @@ export const ProgramBlock = ({ parentData, dragBehavior, context, ancestors }) =
                         onClick={(e) => { e.stopPropagation(); setFocusItem('program', uuid) }}
                         icon={<EllipsisOutlined />}
                     /> */}
-                </Col>
+                </Row>
             </Row>
             <NodeZone
                 ancestors={programAncestors}
