@@ -25,21 +25,22 @@ export const findPinchPointIssues = (_) => { // Requires pinch-point graders
 
 export const findThingMovementIssues = ({program,unrolled}) => { // May require trace pose information
     let issues = {};
-    //console.log(unrolled);
-    Object.values(program.data.primitives).forEach(primitive=>{
+    
+    Object.values(unrolled).forEach(primitive=>{
         
-        
+        //console.log(primitive.type);
         if (primitive.type === 'node.primitive.gripper.' && primitive.parameters.semantic === 'grasping'){
-            const thingUUID = primitive.parameters.thing_uuid;
-            //console.log(thingUUID + "  123" );
+            const thingUUID = primitive.parameters.thing_uuid.uuid;
+           // console.log(thingUUID + "  123" );
             Object.values(program.data.placeholders).forEach(placeholder => {
                 //console.log(placeholder.uuid );
                 if (placeholder.uuid === thingUUID){
                   const thingTypeUUID = placeholder.pending_node.thing_type_uuid;
                   //console.log("true");
                   Object.values(program.data.thingTypes).forEach(thingType => {
+                    console.log(thingType.uuid + "   " + thingTypeUUID);
                       if(thingType.uuid === thingTypeUUID && thingType.is_safe === false){
-                        console.log("true");
+                        
                         const uuid = generateUuid('issue');
                         issues[uuid] = {
                         uuid: uuid,
