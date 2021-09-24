@@ -264,6 +264,15 @@ export const EvdSlice = (set, get) => ({
     // if (['waypoint','location','trajectory'].includes(type)) {
     //   state.renderData[typeToKey(type)][uuid] = state.data[typeToKey(type)][uuid];
     // }
+    if (type === 'primitive' && state.data.primitives[uuid].type === 'node.primitive.gripper.' && property === 'position') {
+      if (value < 45) {
+        state.data.primitives[uuid].name = 'Grasp'
+      } else if (value > 55) {
+        state.data.primitives[uuid].name = 'Release'
+      } else {
+        state.data.primitives[uuid].name = 'Gripper Move'
+      }
+    }
   }),
   setPoseTransform: (uuid, transform) => set(state=>{
     if (state.data.locations[uuid]) {

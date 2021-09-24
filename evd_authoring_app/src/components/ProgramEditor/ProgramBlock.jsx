@@ -107,7 +107,7 @@ export const ProgramBlock = ({ parentData, dragBehavior, context, ancestors }) =
                 </Row>
                 <Col span={6} offset={1} style={{ textAlign: 'end' }}>
                     <Button type='text' onClick={() => setEditing(!editing)} icon={editing ? <SaveOutlined/> : <EditOutlined/>}/>
-                    {executable && <Button type='text' icon={<EyeOutlined/>}/>}
+                    {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}/>}
                     <UnlockOutlined style={{marginRight:5,marginLeft:5}}/>
                     {/* <Button
                         type='text'
