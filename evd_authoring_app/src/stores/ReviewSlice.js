@@ -121,7 +121,7 @@ export const ReviewSlice = (set) => ({
     refresh: () => set(state=>{
         //state.issues = {};
         let newIssues = {};
-        let unrolledProgram = null;
+        let unrolledProgram = state.executablePrimitives[state.uuid];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
@@ -150,5 +150,6 @@ export const ReviewSlice = (set) => ({
         state.issues = newIssues;
         // Update the stats set.
         state.stats.push(allNewStats);
+        console.log(newIssues)
     })
 });

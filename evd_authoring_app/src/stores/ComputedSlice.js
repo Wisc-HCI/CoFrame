@@ -220,10 +220,14 @@ export const ComputedSlice = {
             return {}
         },
         tfs: function() {
+            let tfs = {...INITIAL_SIM.tfs};
             if (this.focusItem.uuid) {
-                console.log(this.executablePrimitives[this.focusItem.uuid])
+                const executable = this.executablePrimitives[this.focusItem.uuid];
+                if (executable) {
+                    console.log(executable)
+                }
             }
-            return INITIAL_SIM.tfs
+            return tfs
         },
     },
 }
