@@ -20,6 +20,14 @@ const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.include
 export const ComputedSlice = {
 
     computed: {
+        executablePrimitives: function() {
+            let executableLookup = {};
+            executableLookup[this.uuid] = executablePrimitive(this.uuid,this);
+            this.primitiveIds.forEach(primitiveId=>{
+                executableLookup[primitiveId] = executablePrimitive(primitiveId,this)
+            })
+            return executableLookup
+        },
         items: function () {
             let items = {};
             const focusedTrajectoryChildren = this.focusItem.type === 'trajectory' ? [
@@ -212,15 +220,10 @@ export const ComputedSlice = {
             return {}
         },
         tfs: function() {
+            if (this.focusItem.uuid) {
+                console.log(this.executablePrimitives[this.focusItem.uuid])
+            }
             return INITIAL_SIM.tfs
         },
-        executablePrimitives: function() {
-            let executableLookup = {};
-            executableLookup[this.uuid] = executablePrimitive(this.uuid,this);
-            this.primitiveIds.forEach(primitiveId=>{
-                executableLookup[primitiveId] = executablePrimitive(primitiveId,this)
-            })
-            return executableLookup
-        }
     },
 }

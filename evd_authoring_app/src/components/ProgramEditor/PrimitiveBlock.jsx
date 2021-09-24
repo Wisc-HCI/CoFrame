@@ -172,7 +172,7 @@ export const PrimitiveBlock = ({
             {data.name}
           </Row>
           <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
-            {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}/>}
+            {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('primitive', uuid)}}/>}
             {editingEnabled ? <UnlockOutlined style={{marginRight:5,marginLeft:5}}/> : <LockOutlined style={{marginRight:5,marginLeft:5}}/>}
             {/* <Button
                   type='text'

@@ -1,5 +1,6 @@
 import useStore from './Store';
 import lodash from 'lodash';
+import { GRIPPER_CONFIGURATIONS } from './gripper';
 
 export const typeToKey = (type) => {
     let key;
@@ -76,6 +77,21 @@ export function flattenProgram(primitives, skills, parentData) {
     })
 
     return [flattenedPrimitives, flattenedSkills]
+}
+
+function executableTrajectory(trajectory,context) {
+    let executable = {uuid: trajectory.uuid, sequence: []}
+    
+    if (!trajectory.start_location_uuid || !trajectory.end_location_uuid) {
+        console.log('no start or end')
+        return null
+    }
+    executable.sequence.push(context[trajectory.start_location_uuid])
+    trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
+        executable.sequence.push(context[waypoint_uuid])
+    })
+    executable.sequence.push(context[trajectory.end_location_uuid])
+    return executable
 }
 
 function executablePrimitiveInner(primitiveId,state,context) {
@@ -158,7 +174,7 @@ function executablePrimitiveInner(primitiveId,state,context) {
                 return null
             }
         } else if (primitive.type === 'node.primitive.move-trajectory.') {
-            if (context[primitive.parameters.trajectory_uuid]) {
+            if (primitive.parameters.trajectory_uuid && context[primitive.parameters.trajectory_uuid]) {
                 return [...executable,{...primitive,parameters:{...primitive.parameters,trajectory_uuid:context[primitive.parameters.trajectory_uuid]}}]
             } else {
                 return null
@@ -179,10 +195,46 @@ export function executablePrimitive(primitiveId,state) {
         ...state.data.placeholders, 
         ...state.data.locations, 
         ...state.data.waypoints,
-        ...state.data.trajectories,
         ...state.data.machines
     }
+    Object.values(state.data.trajectories).forEach(trajectory=>{
+        context[trajectory.uuid] = executableTrajectory(trajectory,context)
+    })
     return executablePrimitiveInner(primitiveId,state,context)
+}
+
+export function tfAnimationFromExecutable(executable,tfs) {
+    let changes = objectMap(tfs,tf=>({...tf,translation:{x:[],y:[],z:[]},rotation:{w:[],x:[],y:[],z:[]}}));
+    let times = [0];
+    executable.forEach(chunk=>{
+        if (chunk.type === 'node.primitive.gripper.') {
+            
+        } else if (chunk.type === 'node.primitive.delay.') {
+
+        }
+    })
+}
+
+
+
+function interpolateScalar(x, y) {
+    //const defaultFn = (v) => 0;
+    if (x.length <= 0) {
+        return null
+    }
+    const interp = (v) => {
+        const val = v > x[x.length - 1] ? v % x : v;
+        let lastIdx = 0;
+        for (let i = 0; i < x.length; i++) {
+            if (x[i] <= v) {
+                lastIdx = i
+            } else {
+                break
+            }
+        }
+        return y[lastIdx]
+    }
+    return interp
 }
 
 export function objectMap(object, mapFn) {
