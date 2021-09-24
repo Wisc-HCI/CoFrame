@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="3d_printer">
 
-    <link name="3d_printer">
+    <link name="collision_mesh_3d_printer">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>

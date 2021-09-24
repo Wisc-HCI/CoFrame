@@ -30,7 +30,7 @@ ORIENTATION_DISTANCE_THRESHOLD = 0.02
 
 class JointProcessor:
     
-    def __init__(self, config_path, config_file_name):
+    def __init__(self, config_path, config_file_name, use_gui):
         self._input = None
         self._target = None
         self._joints = None
@@ -50,7 +50,7 @@ class JointProcessor:
         frontend = FrontendInterface(use_processor_configure=True)
         self._job_queue = JobQueue('joints', self._start_job, self._end_job, frontend=frontend)
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
-        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=True)
+        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
         self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
         self._timestep = self._config['pybullet']['timestep']
@@ -185,6 +185,7 @@ if __name__ == "__main__":
 
     config_path = rospy.get_param('~config_path')
     config_file_name = rospy.get_param("~config_file_name")
+    use_gui = rospy.get_param('~use_gui',False)
 
-    node = JointProcessor(config_path, config_file_name)
+    node = JointProcessor(config_path, config_file_name, use_gui)
     node.spin()

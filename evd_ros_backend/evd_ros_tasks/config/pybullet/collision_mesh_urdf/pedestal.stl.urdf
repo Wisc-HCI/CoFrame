@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="pedestal">
 
-    <link name="pedestal">
+    <link name="collision_mesh_pedestal">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>

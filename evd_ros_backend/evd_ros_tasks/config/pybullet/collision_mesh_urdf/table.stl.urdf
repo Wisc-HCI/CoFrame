@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="table">
 
-    <link name="table">
+    <link name="collision_mesh_table">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>

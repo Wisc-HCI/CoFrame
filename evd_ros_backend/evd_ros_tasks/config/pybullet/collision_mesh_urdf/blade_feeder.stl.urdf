@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="blade_feeder">
 
-    <link name="blade_feeder">
+    <link name="collision_mesh_blade_feeder">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>

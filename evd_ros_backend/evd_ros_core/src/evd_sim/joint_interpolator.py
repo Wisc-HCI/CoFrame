@@ -32,9 +32,24 @@ class JointInterpolator:
         for t, j in zip(times, joints):
             self._interpFnts.append(interp1d(t, j, kind='linear', assume_sorted=True, bounds_error=False, fill_value=(j[0],j[-1])))
 
+        # Define start
+        self._start_joints = []
+        self._end_joints = []
+        for j in joints:
+            self._start_joints.append(j[0])
+            self._end_joints.append(j[len(j)-1])
+        
     @property
     def full_time(self):
         return self._fullTime
+
+    @property
+    def start_joints(self):
+        return self._start_joints
+
+    @property
+    def end_joints(self):
+        return self._end_joints
 
     def step(self, time):
         js = []

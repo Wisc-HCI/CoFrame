@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="box">
 
-    <link name="box">
+    <link name="collision_mesh_box">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="assembly_jig">
 
-    <link name="assembly_jig">
+    <link name="collision_mesh_assembly_jig">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>

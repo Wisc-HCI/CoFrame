@@ -505,7 +505,7 @@ class URRobotEnvironment:
         # Define some debug trajectories
         traj1 = Trajectory(unitLoc.uuid, homeLoc.uuid, move_type="ee_ik", velocity=1)
         traj2 = Trajectory(homeLoc.uuid, reachableLoc.uuid, move_type="joint",velocity=1)
-        traj3 = Trajectory(homeLoc.uuid, reachableLoc.uuid, move_type="ee_ik",velocity=1)
+        traj3 = Trajectory(reachableLoc.uuid, homeLoc.uuid, move_type="ee_ik",velocity=1)
         self._trajectories = [
             traj1,
             traj2,
