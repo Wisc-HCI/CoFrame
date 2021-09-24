@@ -57,6 +57,9 @@ export const EvdSlice = (set, get) => ({
     program.environment.trajectories.forEach((trajectory) => {
       get().addItem('trajectory', trajectory)
     });
+    program.environment.regions.forEach((region) => {
+      get().addItem('region', region)
+    });
     program.environment.machines.forEach((machine) => {
       get().addItem('machine', machine)
     });
@@ -65,9 +68,6 @@ export const EvdSlice = (set, get) => ({
     });
     program.environment.placeholders.forEach((placeholder) => {
       get().addItem('placeholder', placeholder)
-    });
-    program.environment.regions.forEach((region) => {
-      get().addItem('region', region)
     });
     const [flattenedPrimitives, flattenedSkills] = flattenProgram(program.primitives, program.skills, { type: 'program', uuid: program.uuid });
     flattenedPrimitives.forEach((primitive) => {
