@@ -13,7 +13,6 @@ export const EditableTag = (props) => {
 
     const handleDeleteClick = e => {
       props.closefunc(props.data);
-      e.preventDefault();
     }
 
     const itemType = props.itemType;

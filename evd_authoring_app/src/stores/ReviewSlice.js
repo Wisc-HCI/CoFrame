@@ -8,7 +8,7 @@ const SECTION_INFO = {
     endEffectorPoses:{
         name:'End Effector Poses',
         updater:findEndEffectorPoseIssues,
-        //dependencies:['reachability']
+        //dependencies:['reachabilitssssy']
         dependencies:[]
     },
     pinchPoints:{

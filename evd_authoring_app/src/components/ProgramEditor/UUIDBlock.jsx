@@ -129,10 +129,10 @@ export const UUIDBlock = ({
           <Row wrap={false} style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
             <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
               <Icon style={{ marginLeft: 5 }} component={ICONS[itemType]} />
-              <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab" }} bordered={false} disabled={!editing} value={itemType === 'placeholder' ? displayData.pending_node.name : displayData.name} onChange={(e) => onNameChange(e.target.value)} />
+              <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab" }} bordered={false} disabled={!editing} value={displayData.itemType === 'placeholder' ? displayData.pending_node.name : displayData.name} onChange={(e) => onNameChange(e.target.value)} />
             </Row>
             <Row wrap={false} style={{ width: 60, textTransform: 'capitalize', textAlign: 'right' }} align='middle' justify='end'>
-              {displayData.editable ? <UnlockOutlined style={{ marginRight: isReal ? 0 : 5 }} /> : <LockOutlined style={{ marginRight: isReal ? 0 : 5 }} />}
+              {displayData.editable ? <UnlockOutlined style={{ marginRight: isReal ? 0 : 5 }} /> : <LockOutlined style={{ marginRight: 5 }} />}
               {/* {isArgument && displayData.editable && !editing && <EditOutlined onClick={() => setEditing(true)}/>} */}
               {showMore && (
                 <Dropdown overlay={
@@ -155,16 +155,15 @@ export const UUIDBlock = ({
                 }>
                   <Button
                     type='text'
-                    style={{ marginLeft: 5 }}
                     icon={<EllipsisOutlined />}
                   />
                 </Dropdown>
 
               )}
-              {!isReal && data.deleteable &&
+              {false && !isReal && data.deleteable &&
                 <Button
                   type='text'
-                  style={{ marginLeft: 0 }}
+                  style={{ marginLeft: 5 }}
                   onClick={onDelete}
                   icon={<DeleteOutlined />}
                 />

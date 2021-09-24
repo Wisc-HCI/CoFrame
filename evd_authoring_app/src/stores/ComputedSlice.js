@@ -11,7 +11,7 @@ import {
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
-import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
+import { INITIAL_SIM, COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 
 const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
 const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('gripper'));
@@ -104,6 +104,45 @@ export const ComputedSlice = {
                     }
                 }
                 
+            })
+
+            Object.values(this.data.machines).forEach(machine=>{
+                const mesh = EVD_MESH_LOOKUP[machine.mesh_id]
+                items[machine.uuid] = {
+                    shape:mesh,
+                    name:machine.name,
+                    frame: machine.pose_offset.link,
+                    position: machine.pose_offset.position,
+                    rotation: machine.pose_offset.orientation,
+                    scale: machine.pose_offset.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : {x: 1, y: 1, z: 1},
+                    transformMode: 'inactive',
+                    highlighted: this.focusItem.uuid === machine.uuid,
+                    onClick: (e) => {
+                        if (this.focusItem.transformMode === "translate" || this.focusItem.transformMode ===  "rotate"){
+                            
+                        }else{
+                            console.log('clicked '+machine.name)
+                            e.stopPropagation();
+                            this.setFocusItem('machine', machine.uuid);
+                        }
+                        
+                    },
+                }
+                // Now add collisions
+                items[machine.uuid+'-collision'] = {
+                    shape:COLLISION_MESHES[mesh],
+                    name: machine.name + ' Collision',
+                    frame: machine.pose_offset.link,
+                    position: machine.pose_offset.position,
+                    rotation: machine.pose_offset.orientation,
+                    scale: machine.pose_offset.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : {x: 1, y: 1, z: 1},
+                    transformMode: 'inactive',
+                    highlighted: false,
+                    color: { r: 250, g: 0, b: 0, a: 0.6 },
+                    wireframe: true,
+                    hidden: !this.collisionsVisible,
+                    onClick: (_) => {},
+                }
             })
 
             Object.keys(this.data.locations).forEach(location_uuid => {
