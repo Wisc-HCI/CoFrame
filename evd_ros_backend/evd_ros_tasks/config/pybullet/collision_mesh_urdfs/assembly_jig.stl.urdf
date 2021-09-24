@@ -1,13 +1,7 @@
 <?xml version="1.0" ?>
-<robot name="table">
+<robot name="assembly_jig">
 
-    <link name="collision_mesh_table">
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0"/>
-            <geometry>
-                <mesh filename="./environment/table.stl"/>
-            </geometry>
-        </visual>
+    <link name="collision_mesh_assembly_jig">
         <inertial>
             <mass value="0"/>
             <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -16,7 +10,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="./environment/table.stl"/>
+                <mesh filename="../environment/collision/assembly_jig.stl"/>
             </geometry>
         </collision>
     </link>

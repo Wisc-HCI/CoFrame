@@ -1,13 +1,7 @@
 <?xml version="1.0" ?>
-<robot name="blade_feeder">
+<robot name="table">
 
-    <link name="collision_mesh_blade_feeder">
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0"/>
-            <geometry>
-                <mesh filename="./environment/blade_feeder.stl"/>
-            </geometry>
-        </visual>
+    <link name="collision_mesh_table">
         <inertial>
             <mass value="0"/>
             <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -16,7 +10,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="./environment/blade_feeder.stl"/>
+                <mesh filename="../environment/collision/table.stl"/>
             </geometry>
         </collision>
     </link>

@@ -1,13 +1,7 @@
 <?xml version="1.0" ?>
-<robot name="3d_printer">
+<robot name="pedestal">
 
-    <link name="collision_mesh_3d_printer">
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0"/>
-            <geometry>
-                <mesh filename="./environment/3d_printer.stl"/>
-            </geometry>
-        </visual>
+    <link name="collision_mesh_pedestal">
         <inertial>
             <mass value="0"/>
             <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -16,7 +10,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="./environment/3d_printer.stl"/>
+                <mesh filename="../environment/collision/pedestal.stl"/>
             </geometry>
         </collision>
     </link>

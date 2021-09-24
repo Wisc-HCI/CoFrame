@@ -542,7 +542,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/visual/pedestal.stl"/>
+        <mesh filename="./environment/visual/pedestal.stl"/>
       </geometry>
       <material name="visual_env_mesh"/>
     </visual>
