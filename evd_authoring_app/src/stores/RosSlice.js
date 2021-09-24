@@ -112,7 +112,7 @@ export const RosSlice = (set,get) => ({
         }
         
     },
-    requestJTraceProcessorUpdate: (uuid) => {
+    requestTraceProcessorUpdate: (uuid) => {
         const trajectoryInfo = get().data.trajectories[uuid];
         let points = [];
         if (trajectoryInfo.start_location_uuid) {
