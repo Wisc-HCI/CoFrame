@@ -307,6 +307,7 @@ export const PrimitiveBlock = ({
             <Col flex={3}>
               <NodeZone
                 ancestors={parameterAncestors.trajectory}
+                context={context}
                 parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
                 onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory_uuid', parameters.trajectory.uuid)}
                 onDrop={trajectoryDrop}
