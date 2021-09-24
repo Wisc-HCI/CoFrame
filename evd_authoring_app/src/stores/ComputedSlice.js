@@ -28,6 +28,25 @@ export const ComputedSlice = {
             })
             return executableLookup
         },
+        tfs: function() {
+            let tfs = {...INITIAL_SIM.tfs};
+            Object.values(this.data.placeholders).forEach(placeholder=>{
+                // for now, place the placeholders at origin. 
+                console.log(placeholder)
+                tfs[placeholder.uuid] = {
+                    frame:'world',
+                    translation:{x:0,y:0,z:0},
+                    rotation:{w:1,x:0,y:0,z:0}
+                }
+            })
+            if (this.focusItem.uuid) {
+                const executable = this.executablePrimitives[this.focusItem.uuid];
+                if (executable) {
+                    console.log(executable)
+                }
+            }
+            return tfs
+        },
         items: function () {
             let items = {};
             const focusedTrajectoryChildren = this.focusItem.type === 'trajectory' ? [
@@ -143,6 +162,49 @@ export const ComputedSlice = {
                     hidden: !this.collisionsVisible,
                     onClick: (_) => {},
                 }
+
+                // Now enumerate the inputs and render the zones and items.
+                Object.keys(machine.inputs).forEach(thingType=>{
+                    machine.inputs[thingType].forEach(zoneInfo=>{
+                        const region = this.data.regions[zoneInfo.region_uuid];
+                        items[zoneInfo.region_uuid] = {
+                            shape: region.uncertainty_x ? 'cube' : 'sphere',
+                            frame: region.link,
+                            position: region.center_position,
+                            rotation: {w:1,x:0,y:0,z:0},
+                            scale: {x:region.uncertainty_x*10,y:region.uncertainty_y*10,z:region.uncertainty_z*10},
+                            transformMode: 'inactive',
+                            color: {r:100,g:200,b:200,a:0.4},
+                            highlighted: this.secondaryFocusItem.uuid === region.uuid,
+                            hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
+                            onClick: (_)=>{}
+                        }
+                    })
+                })
+
+                // Now enumerate the outputs and render the zones and items.
+                Object.keys(machine.outputs).forEach(thingType=>{
+                    machine.outputs[thingType].forEach(zoneInfo=>{
+                        const region = this.data.regions[zoneInfo.region_uuid];
+                        items[zoneInfo.region_uuid] = {
+                            shape: region.uncertainty_x ? 'cube' : 'sphere',
+                            frame: region.link,
+                            position: region.center_position,
+                            rotation: {w:1,x:0,y:0,z:0},
+                            scale: {x:region.uncertainty_x,y:region.uncertainty_y,z:region.uncertainty_z},
+                            transformMode: 'inactive',
+                            color: {r:200,g:100,b:100,a:0.4},
+                            highlighted: this.secondaryFocusItem.uuid === region.uuid,
+                            hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
+                            onClick: (_)=>{}
+                        }
+                        const placeholder = this.data.placeholders[zoneInfo.placeholder_uuids[0]];
+                        // items[placeholder.uuid] = {
+
+                        // }
+                        console.log(placeholder)
+                    })
+                })
             })
 
             Object.keys(this.data.locations).forEach(location_uuid => {
@@ -257,16 +319,6 @@ export const ComputedSlice = {
         },
         hulls: function() {
             return {}
-        },
-        tfs: function() {
-            let tfs = {...INITIAL_SIM.tfs};
-            if (this.focusItem.uuid) {
-                const executable = this.executablePrimitives[this.focusItem.uuid];
-                if (executable) {
-                    console.log(executable)
-                }
-            }
-            return tfs
         },
     },
 }
