@@ -1,5 +1,5 @@
-import React, {useCallback} from 'react';
-import { Col, Row, Button, Dropdown, Menu } from 'antd';
+import React, {useCallback, useState} from 'react';
+import { Input, Row, Button, Dropdown, Menu } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons';
 import { SortableSeparator } from './SortableSeparator';
 // import { ItemSortable } from './Wrappers';
@@ -18,12 +18,20 @@ import {ReactComponent as LocationIcon} from '../CustomIcons/Location.svg';
 import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
 import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 
+const DEFAULT_ARG_NAMES = {
+    "node.machine.": 'Machine Parameter',
+    "node.trajectory.": 'Trajectory Parameter',
+    "node.pose.thing.": 'Thing Parameter',
+    "node.pose.waypoint.": 'Waypoint Parameter',
+    "node.pose.waypoint.location.": 'Location Parameter'
+}
+
 export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context,onDelete}) => {
 
     const [frame,focusItem,deleteHierarchical,deleteChildPrimitive,
-        moveChildPrimitive,insertChildPrimitive] = useStore(state=>(
+        moveChildPrimitive,insertChildPrimitive, setItemProperty] = useStore(state=>(
         [state.frame,state.focusItem,state.deleteHierarchical,state.deleteChildPrimitive,
-        state.moveChildPrimitive,state.insertChildPrimitive]),shallow);
+        state.moveChildPrimitive,state.insertChildPrimitive,state.setItemProperty]),shallow);
     
     const createSkillArgument = useStore(state=>state.createSkillArgument);
 
@@ -32,7 +40,8 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     },[staticData,uuid]),shallow)
     
     const focused = focusItem.uuid === data.uuid;
-    const toggleSkillEditable = useStore(state=>state.toggleSkillEditable);
+    const [editing, setEditing] = useState(false);
+    // const toggleSkillEditable = useStore(state=>state.toggleSkillEditable);
 
     const fieldData = acceptLookup['node.primitive.hierarchical.skill.'].primitiveIds;
 
@@ -71,7 +80,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
 
     // Code for creating skill arguments
     const menuClickCreateArgument = e => {
-        const item = {uuid: generateUuid('skill-arg'), name: '', description: "", is_list: false, parameter_type: e.key, type: 'node.skill-argument.', editable: data.editable, deleteable: true};
+        const item = {uuid: generateUuid('skill-arg'), name: DEFAULT_ARG_NAMES[e.key], description: "", is_list: false, parameter_type: e.key, type: 'node.skill-argument.', editable: data.editable, deleteable: true};
         createSkillArgument(data.uuid, item);
     }
 
@@ -109,29 +118,31 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     return (
         <div ref={preview} style={dragBlockStyles} className={focused?`focus-${frame}`:null}>
             <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-                <Col ref={drag} span={17} style={{backgroundColor:'rgba(255,255,255,0.1)',borderRadius:3,padding:4,cursor: "grab",zIndex:100}}>
-                    <Icon style={{marginLeft:4}} component={ContainerIcon} />{' '}{data.name}
-                </Col>
-                <Col span={6} offset={1} style={{textAlign:'end'}}>
+                <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: editing ? null : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
+                    <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
+                    <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : "grab" }} bordered={false} disabled={!editing} value={data.name} onChange={(e)=>setItemProperty('skill', data.uuid, 'name', e.target.value)} />
+                </Row>
+                <Row wrap={false} align='middle' style={{textAlign:'end'}}>
                     {editingEnabled ? <UnlockOutlined style={{marginRight:5,marginLeft:5}}/> : <LockOutlined style={{marginRight:5,marginLeft:5}}/>}
+                    {editingEnabled && 
                     <Dropdown overlay={
                         <Menu>
-                            {!editingEnabled && <Menu.Item key='show' onClick={() => toggleSkillEditable(data.uuid)}>
+                            {editingEnabled && !editing && <Menu.Item key='show' onClick={() => setEditing(true)}>
                                 Enable Editing
                             </Menu.Item>}
-                            {editingEnabled && <Menu.Item key='show' onClick={() => toggleSkillEditable(data.uuid)}>
+                            {editing && <Menu.Item key='show' onClick={() => setEditing(false)}>
                                 Disable Editing
                             </Menu.Item>}
-                            {editingEnabled && <Menu.Item key="node.machine." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={MachineIcon}/>}>
+                            {editing && <Menu.Item key="node.machine." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={MachineIcon}/>}>
                                 New Machine Parameter
                             </Menu.Item>}
-                            {editingEnabled && <Menu.Item key="node.pose.waypoint.location." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={LocationIcon}/>}>
+                            {editing && <Menu.Item key="node.pose.waypoint.location." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={LocationIcon}/>}>
                                 New Location Parameter
                             </Menu.Item>}
-                            {editingEnabled && <Menu.Item key="node.pose.thing." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={ThingIcon}/>}>
+                            {editing && <Menu.Item key="node.pose.thing." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={ThingIcon}/>}>
                                 New Thing Parameter
                             </Menu.Item>}
-                            {editingEnabled && <Menu.Item key="node.trajectory." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={ContainerIcon}/>}>
+                            {editing && <Menu.Item key="node.trajectory." onClick={menuClickCreateArgument} icon={<Icon style={{marginRight:10}} component={ContainerIcon}/>}>
                                 New Tracjectory Parameter
                             </Menu.Item>}
                         </Menu>
@@ -141,8 +152,8 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                             style={{ marginLeft: 2 }}
                             icon={<EllipsisOutlined />}
                         />
-                    </Dropdown>
-                </Col>
+                    </Dropdown>}
+                </Row>
             </Row>
             <Row>
                 {!inDrawer && <EditableTagGroup skill={data} ancestors={skillAncestors}/>}

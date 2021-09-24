@@ -132,7 +132,7 @@ export const UUIDBlock = ({
               <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab" }} bordered={false} disabled={!editing} value={displayData.itemType === 'placeholder' ? displayData.pending_node.name : displayData.name} onChange={(e) => onNameChange(e.target.value)} />
             </Row>
             <Row wrap={false} style={{ width: 60, textTransform: 'capitalize', textAlign: 'right' }} align='middle' justify='end'>
-              {displayData.editable ? <UnlockOutlined style={{ marginRight: isReal ? 0 : 5 }} /> : <LockOutlined style={{ marginRight: isReal ? 0 : 5 }} />}
+              {displayData.editable ? <UnlockOutlined style={{ marginRight: isReal ? 0 : 5 }} /> : <LockOutlined style={{ marginRight: 5 }} />}
               {/* {isArgument && displayData.editable && !editing && <EditOutlined onClick={() => setEditing(true)}/>} */}
               {showMore && (
                 <Dropdown overlay={
@@ -155,16 +155,15 @@ export const UUIDBlock = ({
                 }>
                   <Button
                     type='text'
-                    style={{ marginLeft: 5 }}
                     icon={<EllipsisOutlined />}
                   />
                 </Dropdown>
 
               )}
-              {!isReal && data.deleteable &&
+              {false && !isReal && data.deleteable &&
                 <Button
                   type='text'
-                  style={{ marginLeft: 0 }}
+                  style={{ marginLeft: 5 }}
                   onClick={onDelete}
                   icon={<DeleteOutlined />}
                 />
