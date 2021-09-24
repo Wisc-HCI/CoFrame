@@ -310,24 +310,20 @@ def generate():
         uuid=MACHINE_UUID_3D_PRINTER,
         inputs={},
         outputs={
-            leftHandleThingType.uuid: [
-                {
+            leftHandleThingType.uuid: [{
                     'region_uuid': leftHandleRegion.uuid,
                     'quantity': 1,
                     'placeholder_uuids': [
                         leftHandlePlaceholder.uuid
                     ]
-                }
-            ],
-            rightHandleThingType.uuid: [
-                {
+            }],
+            rightHandleThingType.uuid: [{
                     'region_uuid': rightHandleRegion.uuid,
                     'quantity': 1,
                     'placeholder_uuids':[
                         rightHandlePlaceholder.uuid
                     ]
-                }
-            ]
+            }]
         },   
         passive=False,
         process_time=PROCESS_TIME_3D_PRINTER,
@@ -338,27 +334,27 @@ def generate():
         name="Assembly Jig Machine",
         uuid=MACHINE_UUID_ASSEMBLY_JIG+'_unsafe',
         inputs={
-            bladeThingType.uuid: {
+            bladeThingType.uuid: [{
                 'region_uuid': bladeAssemblyRegion.uuid,
                 'quantity': 1
-            },
-            leftHandleThingType.uuid: {
+            }],
+            leftHandleThingType.uuid: [{
                 'region_uuid': bladeAssemblyRegion.uuid,
                 'quantity': 1
-            },
-            rightHandleThingType.uuid: {
+            }],
+            rightHandleThingType.uuid: [{
                 'region_uuid': bladeAssemblyRegion.uuid,
                 'quantity': 1
-            }
+            }]
         },
         outputs={
-            knifeThingType.uuid: {
+            knifeThingType.uuid: [{
                 'region_uuid': bladeAssemblyRegion.uuid,
                 'quantity': 1,
                 'placeholder_uuids': [
                     knifePlaceholder.uuid
                 ]
-            }
+            }]
         },
         passive=True,
         process_time=PROCESS_TIME_ASSEMBLY_JIG,
@@ -369,27 +365,27 @@ def generate():
         name="Assembly Jig Machine",
         uuid=MACHINE_UUID_ASSEMBLY_JIG+'_safe',
         inputs={
-            bladeWithTransportJigThingType.uuid: {
+            bladeWithTransportJigThingType.uuid: [{
                 'region_uuid': bladeAssemblyRegion.uuid,
                 'quantity': 1
-            },
-            leftHandleThingType.uuid: {
+            }],
+            leftHandleThingType.uuid: [{
                 'region_uuid': bladeAssemblyRegion.uuid,
                 'quantity': 1
-            },
-            rightHandleThingType.uuid: {
+            }],
+            rightHandleThingType.uuid: [{
                 'region_uuid': bladeAssemblyRegion.uuid,
                 'quantity': 1
-            }
+            }]
         },
         outputs={
-            knifeWithTransportJigThingType.uuid: {
+            knifeWithTransportJigThingType.uuid: [{
                 'region_uuid': bladeAssemblyRegion.uuid,
                 'quantity': 1,
                 'placeholder_uuids': [
                     knifeWithTransportJigPlaceholder.uuid
                 ]
-            }
+            }]
         },
         passive=True,
         process_time=PROCESS_TIME_ASSEMBLY_JIG,
@@ -401,13 +397,13 @@ def generate():
         uuid=MACHINE_UUID_BLADE_CONVEYOR,
         inputs={},
         outputs={
-            bladeThingType.uuid: {
+            bladeThingType.uuid: [{
                 'region_uuid': bladeFeederRegion.uuid,
                 'quantity': 1,
                 'placeholder_uuids': [
                     bladePlaceholder.uuid
                 ]
-            }
+            }]
         },
         passive=False,
         process_time=PROCESS_TIME_BLADE_CONVEYOR,
@@ -418,19 +414,19 @@ def generate():
         name="Blade Feeder Machine",
         uuid=MACHINE_UUID_BLADE_FEEDER,
         inputs={
-            bladeThingType.uuid: {
+            bladeThingType.uuid: [{
                 'region_uuid': bladeFeederRegion.uuid,
                 'quantity': 1
-            }
+            }]
         },
         outputs={
-            bladeWithTransportJigThingType.uuid: {
+            bladeWithTransportJigThingType.uuid: [{
                 'region_uuid': bladeFeederRegion.uuid,
                 'quantity': 1,
                 'placeholder_uuids': [
                     knifeWithTransportJigPlaceholder.uuid
                 ]
-            }
+            }]
         },
         passive=False,
         process_time=PROCESS_TIME_BLADE_FEEDER,
@@ -441,19 +437,19 @@ def generate():
         name="Knife Feeder Machine",
         uuid=MACHINE_UUID_KNIFE_FEEDER,
         inputs={
-            knifeWithTransportJigThingType.uuid: {
+            knifeWithTransportJigThingType.uuid: [{
                 'region_uuid': knifeFeederRegion.uuid,
                 'quality': 1
-            }
+            }]
         },
         outputs={
-            knifeThingType.uuid: {
+            knifeThingType.uuid: [{
                 'region_uuid': knifeFeederRegion.uuid,
                 'quality': 1,
                 'placeholder_uuids': [
                     knifePlaceholder.uuid
                 ]
-            }
+            }]
         },
         passive=True,
         process_time=PROCESS_TIME_KNIFE_FEEDER,
@@ -464,10 +460,10 @@ def generate():
         name="Blade Conveyor Machine",
         uuid=MACHINE_UUID_KNIFE_CONVEYOR,
         inputs={
-            knifeThingType.uuid: {
+            knifeThingType.uuid: [{
                 'region_uuid': knifeFeederRegion.uuid,
                 'quantity': 1
-            }
+            }]
         },
         passive=False,
         outputs={},
