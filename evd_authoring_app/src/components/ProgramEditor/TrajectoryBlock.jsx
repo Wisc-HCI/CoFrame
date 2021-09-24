@@ -17,7 +17,7 @@ import useMeasure from "react-use-measure";
 export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentData, dragBehavior, dragDisabled, onDelete }) => {
   
   const [focused, data, start_location, waypoints, end_location] = useStore(useCallback(state => {
-    const data = staticData ? staticData : state.data.trajectories[uuid];
+    const data = staticData ? staticData : state.data.trajectories[uuid] ? state.data.trajectories[uuid] : {uuid:'zombie',waypoint_uuids:[]};
     return [
       state.focusItem.uuid === data.uuid,
       data,
