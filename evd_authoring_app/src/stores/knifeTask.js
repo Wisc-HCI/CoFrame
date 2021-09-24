@@ -1674,8 +1674,8 @@ const KNIFE_TASK = {
                     "is_list": false,
                     "parameter_type": "node.pose.thing.",
                     "type": "node.skill-argument.",
-                    "editable": true,
-                    "deleteable": true
+                    "editable": false,
+                    "deleteable": false
                 },
                 {
                     "uuid": "skill-arg-js-70cb74c7-e959-47de-a099-be264eccc8c9",
@@ -1684,8 +1684,8 @@ const KNIFE_TASK = {
                     "is_list": false,
                     "parameter_type": "node.trajectory.",
                     "type": "node.skill-argument.",
-                    "editable": true,
-                    "deleteable": true
+                    "editable": false,
+                    "deleteable": false
                 },
                 {
                     "uuid": "skill-arg-js-7ba7b50c-76ae-497e-a47a-4ca4b44c7024",
@@ -1694,8 +1694,8 @@ const KNIFE_TASK = {
                     "is_list": false,
                     "parameter_type": "node.trajectory.",
                     "type": "node.skill-argument.",
-                    "editable": true,
-                    "deleteable": true
+                    "editable": false,
+                    "deleteable": false
                 }
             ],
             "transform": {
@@ -1707,7 +1707,7 @@ const KNIFE_TASK = {
                     "type": "node.primitive.move-trajectory.",
                     "name": "Move Trajectory",
                     "uuid": "primitive.move-trajectory.-py-98889e901c1911ecbe2600155d1a70a2",
-                    "editable": true,
+                    "editable": false,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
@@ -1723,7 +1723,7 @@ const KNIFE_TASK = {
                     "type": "node.primitive.gripper.",
                     "name": "Grasp",
                     "uuid": "primitive.gripper.-py-98889f941c1911ecbe2600155d1a70a2",
-                    "editable": true,
+                    "editable": false,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
@@ -1742,7 +1742,7 @@ const KNIFE_TASK = {
                     "type": "node.primitive.move-trajectory.",
                     "name": "Move Trajectory",
                     "uuid": "primitive.move-trajectory.-py-9888a0661c1911ecbe2600155d1a70a2",
-                    "editable": true,
+                    "editable": false,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
@@ -1758,7 +1758,7 @@ const KNIFE_TASK = {
                     "type": "node.primitive.gripper.",
                     "name": "Release",
                     "uuid": "primitive.gripper.-py-9888a1061c1911ecbe2600155d1a70a2",
-                    "editable": true,
+                    "editable": false,
                     "deleteable": false,
                     "description": "",
                     "parameters": {
