@@ -76,17 +76,17 @@ class Position(Node):
     def to_dct(self):
         msg = super(Position,self).to_dct()
         msg.update({
-            'x': self.x,
-            'y': self.y,
-            'z': self.z
+            'x': float(self.x),
+            'y': float(self.y),
+            'z': float(self.z)
         })
         return msg
 
     def to_simple_dct(self):
         return {
-            'x': self.x,
-            'y': self.y,
-            'z': self.z
+            'x': float(self.x),
+            'y': float(self.y),
+            'z': float(self.z)
         }
 
     def to_list(self):

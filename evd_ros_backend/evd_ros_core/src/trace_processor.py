@@ -129,7 +129,7 @@ class TraceProcessor:
             "duration": 0,
             "time_data": [0],
             "type": self._type,
-            "interpolator_path": {n: [None] for n in (self.ltk.joint_names + ['ee_pose'])},
+            "interpolator_path": {n: [None] for n in self.ltk.joint_names} if self._type == 'joint' else {'ee_pose': [None]},
             "lively_joint_names": list(self.ltk.joint_names),
             "lively_joint_data": {n:[locStart.joints.joint_positions[i]] for i, n in enumerate(self.ltk.joint_names)},
             "lively_frame_names": list(self.ltk.frame_names),
@@ -155,15 +155,6 @@ class TraceProcessor:
 
     def _end_job(self, status, submit_fnt):
         self._state = 'idle'
-
-        print('\n\n\nTrace Processor In End Job')
-        # TODO need to find the error in json dump for ndim arrays
-        print(self._trace_data['interpolator_path'])
-        self._trace_data['interpolator_path'] = {}
-
-        # List of problematic keys
-        # - interpolator_path
-
         trace = self._trace_data
         inp = self._input
 
@@ -254,7 +245,7 @@ class TraceProcessor:
                 jp_itp = interpolator.step(self._time_step)
 
                 for n, j in zip(jn_itp, jp_itp):
-                    self._trace_data['interpolator_path'][n].append(j)
+                    self._trace_data['interpolator_path'][n].append(float(j))
 
                 # run pybullet model
                 pb_joints, pb_frames = self.pyb.step(jp_itp, jn_itp)

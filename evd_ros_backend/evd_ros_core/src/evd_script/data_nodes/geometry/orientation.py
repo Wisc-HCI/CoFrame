@@ -89,26 +89,26 @@ class Orientation(Node):
     def to_dct(self):
         msg = super(Orientation,self).to_dct()
         msg.update({
-            'x': self.x,
-            'y': self.y,
-            'z': self.z,
-            'w': self.w
+            'x': float(self.x),
+            'y': float(self.y),
+            'z': float(self.z),
+            'w': float(self.w)
         })
         return msg
 
     def to_simple_dct(self):
         return {
-            'x': self.x,
-            'y': self.y,
-            'z': self.z,
-            'w': self.w
+            'x': float(self.x),
+            'y': float(self.y),
+            'z': float(self.z),
+            'w': float(self.w)
         }
 
     def to_list(self, order='xyzw'):
         if order == 'xyzw':
-            return [self.x,self.y,self.z,self.w]
+            return [float(self.x), float(self.y), float(self.z), float(self.w)]
         elif order == 'wxyz':
-            return [self.w,self.x,self.y,self.z]
+            return [float(self.w), float(self.x), float(self.y), float(self.z)]
 
     def to_ros(self):
         return ros_msgs.Quaternion(x=self.x,y=self.y,z=self.z,w=self.w)
