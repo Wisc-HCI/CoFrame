@@ -312,7 +312,7 @@ export const PrimitiveBlock = ({
                 onDrop={trajectoryDrop}
                 emptyMessage='No Trajectory'
                 dropDisabled={!editingEnabled}
-              >
+              > 
                 {parameters.trajectory && (
                   parameters.trajectory.real ? (
                     <TrajectoryBlock

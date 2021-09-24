@@ -80,7 +80,7 @@ export const NodeZone = ({ ancestors, children, context, onDrop, emptyMessage, d
                     locked
                     dragBehavior='move' />
             )}
-            {!showChildren && showPreview && dragItem.type.includes('trajectory') && (
+            {!showChildren && showPreview && !dragItem.type.includes('primitive') && dragItem.type.includes('trajectory') && (
                 <TrajectoryBlock
                     staticData={dragItem}
                     ancestors={ancestors}
