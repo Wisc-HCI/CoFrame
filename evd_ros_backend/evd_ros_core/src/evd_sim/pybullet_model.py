@@ -186,7 +186,7 @@ class PyBulletModel(object):
         data = {}
 
         for uuid, (c_body, c_link) in self._collisions.items():
-            data[uuid] = {n: [] for n in self.robot_linkIds.keys()}
+            data[uuid] = {n: None for n in self.robot_linkIds.keys()}
 
             # This is a stupid / inefficient way to do this but I just want to get some data out
             points = pybullet.getClosestPoints(c_body, self.robotId, MAX_DISTANCE_MEASURED)
@@ -195,11 +195,11 @@ class PyBulletModel(object):
                 for point in points:
                     # if bodies and links match
                     if point[1] == c_body and point[2] == self.robotId and point[3] == c_link and point[4] == r_link: 
-                        data[uuid][frameName].append({
+                        data[uuid][frameName] = {
                             'postion_a': point[5],
                             'position_b': point[6],
                             'distance': point[8]
-                        })
+                        }
 
         return data
         
@@ -222,7 +222,7 @@ class PyBulletModel(object):
         data = {}
 
         for uuid, (o_body, o_link) in self._occupancy.items():
-            data[uuid] = {n: [] for n in self.robot_linkIds.keys()}
+            data[uuid] = {n: None for n in self.robot_linkIds.keys()}
 
             # This again is very stupid (less so than before but still)
             points = pybullet.getClosestPoints(o_body, self.robotId, MAX_DISTANCE_MEASURED)
@@ -232,11 +232,11 @@ class PyBulletModel(object):
                 for point in points:
                     # if bodies and links match
                     if point[1] == o_body and point[2] == self.robotId and point[3] == o_link and point[4] == r_link:
-                        data[uuid][frameName].append({
+                        data[uuid][frameName] = {
                             'position_a': point[5],
                             'position_b': point[6],
                             'distance': point[8]
-                        })
+                        }
 
         return data
 
@@ -255,15 +255,15 @@ class PyBulletModel(object):
             points = pybullet.getClosestPoints(self.robotId, self.robotId, MAX_DISTANCE_MEASURED)
 
             for b_frameName, b_r_link in self.robot_linkIds.items():
-                data[a_frameName][b_frameName] = []
+                data[a_frameName][b_frameName] = None
 
                 for point in points:
                     # if bodies and links match
                     if point[1] == self.robotId and point[2] == self.robotId and point[3] == a_r_link and point[4] == b_r_link:
-                        data[a_frameName][b_frameName].append({
+                        data[a_frameName][b_frameName] = {
                             'position_a': point[5],
                             'position_b': point[6],
                             'distance': point[8]
-                        })
+                        }
 
         return data
