@@ -6,22 +6,22 @@ Converts abstract trajectories into executed robot movement traces.
 Also applies graders to the traces to produce grade appraisals
 '''
 
-import tf2_ros
-import tf2_geometry_msgs
 import os
 import json
 import rospy
+import tf2_ros
+import tf2_geometry_msgs
 
-from evd_script import Trace, NodeParser, Pose
-from evd_interfaces.job_queue import JobQueue
-from evd_sim.lively_tk_solver import LivelyTKSolver
-from evd_sim.pybullet_model import PyBulletModel
 from evd_sim.pose_reached import poseReached
+from evd_interfaces.job_queue import JobQueue
 from evd_sim.joints_reached import jointsReached
+from evd_sim.pybullet_model import PyBulletModel
+from evd_sim.lively_tk_solver import LivelyTKSolver
 from evd_sim.pose_interpolator import PoseInterpolator
+from evd_sim.joint_interpolator import JointInterpolator
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
-from evd_sim.joint_interpolator import JointInterpolator
+from evd_script import Trace, NodeParser, Pose, OccupancyZone, CollisionMesh
 
 
 TIMEOUT_COUNT = 500
@@ -59,18 +59,21 @@ class TraceProcessor:
         self._ee_frame = self._config['link_groups']['end_effector_path']
         self._link_groups = self._config['link_groups']
         self._joint_names = self._config['joint_names']
+        self._timestep = self._config['pybullet']['timestep']
 
         self._tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0)) #tf buffer length
         self._tf_listener = tf2_ros.TransformListener(self._tf_buffer)
-        frontend = FrontendInterface(use_processor_configure=True)
+        frontend = FrontendInterface(use_processor_configure=True, processor_configure_cb=self._processor_configure_cb)
         self._job_queue = JobQueue('trace', self._start_job, self._end_job, frontend=frontend)
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
         self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
         self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
-        self._timestep = self._config['pybullet']['timestep']
-
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
+
+    def _processor_configure_cb(self, dct):
+        self.pyb.registerCollisionMeshes(dct['collision_meshes'])
+        self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
     def _handle_pose_offset(self, point):
         transform = self._tf_buffer.lookup_transform(self._fixed_frame, point.link, rospy.Time(0), rospy.Duration(1.0))
@@ -135,13 +138,12 @@ class TraceProcessor:
             "lively_frame_names": list(self.ltk.frame_names),
             "lively_frame_data": {n:[None] for n in self.ltk.frame_names},
             "pybullet_joint_names": list(self.ltk.joint_names),
-            "pybullet_joint_data": {n:[None] for n in self.ltk.joint_names},
-            "pybullet_joint_velocities": {n:[None] for n in self.ltk.joint_names},
+            "pybullet_joint_data": {n:[locStart.joints.joint_positions[i]] for i, n in enumerate(self.ltk.joint_names)},
             "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n:[None] for n in self.pyb.frame_names},
-            "pybullet_collisions": {}, #TODO fill this in later
-            "pybullet_occupancy": {},
-            "pybullet_pinchpoints": {} #TODO fill this in later
+            "pybullet_collisions": {uuid: {n: [None] for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
+            "pybullet_occupancy": {uuid: {n: [None] for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
+            "pybullet_self_collisions": {n: {m: [None] for m in self.pyb.frame_names} for n in self.pyb.frame_names},
         }
 
         self._input = data
@@ -205,7 +207,6 @@ class TraceProcessor:
                     if self._trace_data == None:
                         return # leave update if stop has been called
                     self._trace_data['pybullet_joint_data'][n].append(p)
-                    self._trace_data['pybullet_joint_velocities'][n].append(p)
 
                 (fp_pby, fn_pby) = pb_frames
                 for n, p in zip(fn_pby, fp_pby):
@@ -213,10 +214,24 @@ class TraceProcessor:
                         return # leave update if stop has been called
                     self._trace_data['pybullet_frame_data'][n].append(p)
 
-                #TODO collision packing & pinch point packing
+                # collision packing
                 pb_collisions = self.pyb.collisionCheck()
+                for uuid in pb_collisions.keys():
+                    for frameName in pb_collisions[uuid].keys():
+                        value = pb_collisions[uuid][frameName]
+                        self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
+
                 pb_occupancy = self.pyb.occupancyCheck()
-                pb_pinchs = self.pyb.pinchPointCheck()
+                for uuid in pb_occupancy.keys():
+                    for frameName in pb_occupancy[uuid].keys():
+                        value = pb_occupancy[uuid][frameName]
+                        self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
+
+                pb_selfCollisions = self.pyb.selfCollisionCheck()
+                for a in pb_selfCollisions.keys():
+                    for b in pb_selfCollisions[a].keys():
+                        value = pb_selfCollisions[a][b]
+                        self._trace_data['pybullet_self_collisions'][a][b].append(value)
                 
                 # check if leg of trajectory is done
                 (posThreshold, ortThreshold) = self._thresholds[self._index]
@@ -256,7 +271,6 @@ class TraceProcessor:
                     if self._trace_data == None:
                         return # leave update if stop has been called
                     self._trace_data['pybullet_joint_data'][n].append(p)
-                    self._trace_data['pybullet_joint_velocities'][n].append(p)
 
                 (fp_pby, fn_pby) = pb_frames
                 for n, p in zip(fn_pby, fp_pby):
@@ -264,10 +278,24 @@ class TraceProcessor:
                         return # leave update if stop has been called
                     self._trace_data['pybullet_frame_data'][n].append(p)
 
-                #TODO collision packing & pinch point packing
+                # collision packing
                 pb_collisions = self.pyb.collisionCheck()
+                for uuid in pb_collisions.keys():
+                    for frameName in pb_collisions[uuid].keys():
+                        value = pb_collisions[uuid][frameName]
+                        self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
+
                 pb_occupancy = self.pyb.occupancyCheck()
-                pb_pinchs = self.pyb.pinchPointCheck()
+                for uuid in pb_occupancy.keys():
+                    for frameName in pb_occupancy[uuid].keys():
+                        value = pb_occupancy[uuid][frameName]
+                        self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
+
+                pb_selfCollisions = self.pyb.selfCollisionCheck()
+                for a in pb_selfCollisions.keys():
+                    for b in pb_selfCollisions[a].keys():
+                        value = pb_selfCollisions[a][b]
+                        self._trace_data['pybullet_self_collisions'][a][b].append(value)
 
                 # check if leg of trajectoru is done
                 joint_thresholds = self._thresholds[self._index]

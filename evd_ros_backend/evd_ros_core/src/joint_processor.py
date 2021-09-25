@@ -10,13 +10,13 @@ import os
 import json
 import rospy
 
-from evd_script import Joints, NodeParser
 from evd_sim.pose_reached import poseReached
 from evd_interfaces.job_queue import JobQueue
 from evd_sim.lively_tk_solver import LivelyTKSolver
 from evd_sim.pybullet_model import PyBulletModel
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
+from evd_script import Joints, NodeParser, OccupancyZone, CollisionMesh
 
 
 TIMEOUT_COUNT = 500
@@ -44,18 +44,21 @@ class JointProcessor:
         self._fixed_frame = self._config['fixed_frame']
         self._ee_frame = self._config['link_groups']['end_effector_path']
         self._joint_names = self._config['joint_names']
+        self._timestep = self._config['pybullet']['timestep']
         
         self._tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0)) #tf buffer length
         self._tf_listener = tf2_ros.TransformListener(self._tf_buffer)
-        frontend = FrontendInterface(use_processor_configure=True)
+        frontend = FrontendInterface(use_processor_configure=True, processor_configure_cb=self._processor_configure_cb)
         self._job_queue = JobQueue('joints', self._start_job, self._end_job, frontend=frontend)
         self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
         self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
         self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
-        self._timestep = self._config['pybullet']['timestep']
-
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
+
+    def _processor_configure_cb(self, dct):
+        self.pyb.registerCollisionMeshes(dct['collision_meshes'])
+        self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
     def _start_job(self, data):
         #print('\n\nSTARTING JOB')
@@ -77,12 +80,11 @@ class JointProcessor:
             "lively_frame_data": {n:[] for n in self.ltk.frame_names},
             "pybullet_joint_names": list(self.pyb.joint_names),
             "pybullet_joint_data": {n:[] for n in self.pyb.joint_names},
-            "pybullet_joint_velocities": {n:[] for n in self.pyb.joint_names},
             "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
-            "pybullet_collisions": {}, #TODO fill this in later
-            "pybullet_occupancy": {},
-            "pybullet_pinchpoints": {} #TODO fill this in later
+            "pybullet_collisions": {uuid: {n: [] for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
+            "pybullet_occupancy": {uuid: {n: [] for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
+            "pybullet_self_collisions": {n: {m: [None] for m in self.pyb.frame_names} for n in self.pyb.frame_names},
         }
 
         self._input = data
@@ -154,7 +156,6 @@ class JointProcessor:
                     if self._trace_data == None:
                         return # leave update if stop has been called
                     self._trace_data['pybullet_joint_data'][n].append(p)
-                    self._trace_data['pybullet_joint_velocities'][n].append(p)
 
                 (fp_pby, fn_pby) = pb_frames
                 for n, p in zip(fn_pby, fp_pby):
@@ -162,10 +163,24 @@ class JointProcessor:
                         return # leave update if stop has been called
                     self._trace_data['pybullet_frame_data'][n].append(p)
 
-                #TODO collision packing & pinch point packing
+                # collision packing
                 pb_collisions = self.pyb.collisionCheck()
+                for uuid in pb_collisions.keys():
+                    for frameName in pb_collisions[uuid].keys():
+                        value = pb_collisions[uuid][frameName]
+                        self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
+
                 pb_occupancy = self.pyb.occupancyCheck()
-                pb_pinchs = self.pyb.pinchPointCheck()
+                for uuid in pb_occupancy.keys():
+                    for frameName in pb_occupancy[uuid].keys():
+                        value = pb_occupancy[uuid][frameName]
+                        self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
+
+                pb_selfCollisions = self.pyb.selfCollisionCheck()
+                for a in pb_selfCollisions.keys():
+                    for b in pb_selfCollisions[a].keys():
+                        value = pb_selfCollisions[a][b]
+                        self._trace_data['pybullet_self_collisions'][a][b].append(value)
 
                 self._joints.reachable = poseWasReached
                 self._job_queue.completed()

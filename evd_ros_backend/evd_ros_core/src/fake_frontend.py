@@ -190,7 +190,7 @@ class FakeFrontendNode:
         msg.data = json.dumps({
             'collision_meshes': [x.to_dct() for x in self._program.environment.collision_meshes],
             'pinch_points': [x.to_dct() for x in self._program.environment.pinch_points],
-            'occupancy_zones': [x.to_dct() for x in self._program.environment.occupancy_zones]
+            'occupancy_zones': list(filter(lambda x: x['occupancy_type'] == "human", [x.to_dct() for x in self._program.environment.occupancy_zones]))
         })
         self._configure_processors.publish(msg)
 
