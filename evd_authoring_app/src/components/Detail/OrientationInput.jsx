@@ -28,10 +28,6 @@ function OrientationInput (props)  {
  }
 
  
-const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
- state.setFocusItem]
- 
-));
 
 const [preVec, setPrevVec] = useState(null);
 if (props.value !== preVec){
@@ -44,7 +40,7 @@ if (props.value !== preVec){
     <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Orientation:</b>
     <Popover
     placement="left"
-    visible =  {(focusItem.transformMode === "rotate") ? true : false}
+    visible =  {props.openStatus}
     //onVisibleChange = {()=> changeTransformMode()}
     content={
       <Space>
@@ -90,7 +86,7 @@ if (props.value !== preVec){
            props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
          }}}
         />
-        <Button type="primary" onClick = {() =>setFocusItem(props.type,props.uuid,"inactive")}>Close</Button>
+        <Button type="primary" onClick = {props.onClose}>Close</Button>
       </Space>
     }
     title="Set Orientation"
@@ -103,7 +99,7 @@ if (props.value !== preVec){
       block
       icon={<EditOutlined />}
       style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-      onClick = {() => setFocusItem(props.type,props.uuid,"rotate")   }
+      onClick = {props.openStatus ? props.onClose : props.onOpen}
     >
     </Button>
     

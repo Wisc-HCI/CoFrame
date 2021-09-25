@@ -173,7 +173,7 @@ export const ComputedSlice = {
                             position: region.center_position,
                             rotation: {w:1,x:0,y:0,z:0},
                             scale: {x:region.uncertainty_x*10,y:region.uncertainty_y*10,z:region.uncertainty_z*10},
-                            transformMode: 'inactive',
+                            transformMode:this.secondaryFocusItem.transformMode,
                             color: {r:100,g:200,b:200,a:0.4},
                             highlighted: this.secondaryFocusItem.uuid === region.uuid,
                             hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
@@ -184,6 +184,7 @@ export const ComputedSlice = {
 
                 // Now enumerate the outputs and render the zones and items.
                 Object.keys(machine.outputs).forEach(thingType=>{
+                    
                     machine.outputs[thingType].forEach(zoneInfo=>{
                         const region = this.data.regions[zoneInfo.region_uuid];
                         items[zoneInfo.region_uuid] = {
@@ -192,7 +193,7 @@ export const ComputedSlice = {
                             position: region.center_position,
                             rotation: {w:1,x:0,y:0,z:0},
                             scale: {x:region.uncertainty_x,y:region.uncertainty_y,z:region.uncertainty_z},
-                            transformMode: 'inactive',
+                            transformMode: this.secondaryFocusItem.transformMode,
                             color: {r:200,g:100,b:100,a:0.4},
                             highlighted: this.secondaryFocusItem.uuid === region.uuid,
                             hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
