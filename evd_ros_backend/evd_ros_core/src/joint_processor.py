@@ -81,8 +81,7 @@ class JointProcessor:
             "pybullet_joint_names": list(self.pyb.joint_names),
             "pybullet_joint_data": {n: None for n in self.pyb.joint_names},
             "pybullet_frame_names": list(self.pyb.frame_names),
-            "pybullet_frame_data_local": {n: None for n in self.pyb.frame_names},
-            "pybullet_frame_data_world": {n: None for n in self.pyb.frame_names},
+            "pybullet_frame_data": {n: None for n in self.pyb.frame_names},
             "pybullet_collisions": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
             "pybullet_occupancy": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
             "pybullet_self_collisions": {n: {m: None for m in self.pyb.frame_names} for n in self.pyb.frame_names},
@@ -162,13 +161,7 @@ class JointProcessor:
                 for n, p in zip(fn_pby, fp_pby):
                     if self._trace_data == None:
                         return # leave update if stop has been called
-                    self._trace_data['pybullet_frame_data_world'][n] = p
-
-                (fp_pb_w, fn_pb_w) = self.pyb.readFrames_local()
-                for n, p in zip(fn_pb_w, fp_pb_w):
-                    if self._trace_data == None:
-                        return # leave update if stop has been called
-                    self._trace_data['pybullet_frame_data_local'][n] = p
+                    self._trace_data['pybullet_frame_data'][n] = p
 
                 # collision packing
                 pb_collisions = self.pyb.collisionCheck()

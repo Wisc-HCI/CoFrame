@@ -131,20 +131,19 @@ class TraceProcessor:
         self._trace_data = {
             "type": self._type,
             "duration": 0,
-            "time_data": [0],
-            "interpolator_path": {n: [None] for n in self.ltk.joint_names} if self._type == 'joint' else {'ee_pose': [None]},
+            "time_data": [],
+            "interpolator_path": {n: [] for n in self.ltk.joint_names} if self._type == 'joint' else {'ee_pose': []},
             "lively_joint_names": list(self.ltk.joint_names),
-            "lively_joint_data": {n: [locStart.joints.joint_positions[i] if self._type == 'ee_ik' else [None]] for i, n in enumerate(self.ltk.joint_names)},
+            "lively_joint_data": {n: [] for i, n in enumerate(self.ltk.joint_names)},
             "lively_frame_names": list(self.ltk.frame_names),
-            "lively_frame_data": {n:[None] for n in self.ltk.frame_names},
+            "lively_frame_data": {n:[] for n in self.ltk.frame_names},
             "pybullet_joint_names": list(self.ltk.joint_names),
-            "pybullet_joint_data": {n:[locStart.joints.joint_positions[i]] for i, n in enumerate(self.ltk.joint_names)},
+            "pybullet_joint_data": {n:[] for i, n in enumerate(self.ltk.joint_names)},
             "pybullet_frame_names": list(self.pyb.frame_names),
-            "pybullet_frame_data_local": {n:[None] for n in self.pyb.frame_names},
-            "pybullet_frame_data_world": {n:[None] for n in self.pyb.frame_names},
-            "pybullet_collisions": {uuid: {n: [None] for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
-            "pybullet_occupancy": {uuid: {n: [None] for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
-            "pybullet_self_collisions": {n: {m: [None] for m in self.pyb.frame_names} for n in self.pyb.frame_names},
+            "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
+            "pybullet_collisions": {uuid: {n: [] for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
+            "pybullet_occupancy": {uuid: {n: [] for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
+            "pybullet_self_collisions": {n: {m: [] for m in self.pyb.frame_names} for n in self.pyb.frame_names},
         }
 
         self._input = data
@@ -240,13 +239,7 @@ class TraceProcessor:
             for n, p in zip(fn_pby, fp_pby):
                 if self._trace_data == None:
                     return # leave update if stop has been called
-                self._trace_data['pybullet_frame_data_world'][n].append(p)
-
-            (fp_pb_w, fn_pb_w) = self.pyb.readFrames_local()
-            for n, p in zip(fn_pb_w, fp_pb_w):
-                if self._trace_data == None:
-                    return # leave update if stop has been called
-                self._trace_data['pybullet_frame_data_local'][n].append(p)
+                self._trace_data['pybullet_frame_data'][n].append(p)
 
             # collision packing
             pb_collisions = self.pyb.collisionCheck()
@@ -310,13 +303,7 @@ class TraceProcessor:
             for n, p in zip(fn_pby, fp_pby):
                 if self._trace_data == None:
                     return # leave update if stop has been called
-                self._trace_data['pybullet_frame_data_world'][n].append(p)
-
-            (fp_pb_w, fn_pb_w) = self.pyb.readFrames_local()
-            for n, p in zip(fn_pb_w, fp_pb_w):
-                if self._trace_data == None:
-                    return # leave update if stop has been called
-                self._trace_data['pybullet_frame_data_local'][n].append(p)
+                self._trace_data['pybullet_frame_data'][n].append(p)
 
             # collision packing
             pb_collisions = self.pyb.collisionCheck()

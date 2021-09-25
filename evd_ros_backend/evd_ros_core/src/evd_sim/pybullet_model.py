@@ -118,23 +118,6 @@ class PyBulletModel(object):
 
         return (jointPositions, jointVelocities, names)
 
-    def readFrames_local(self):
-        frames = []
-        names = []
-        for id in self.robot_jointIds.values():
-            info = pybullet.getJointInfo(
-                self.robotId,
-                id)
-            
-            linkName = info[12].decode("utf-8")
-            pos = info[14] #NOTE these are not correct. This is the position of joint in parent. To actually get the frame we need to know the joint angle and apply the rotation?
-            rot = info[15]
-
-            names.append(linkName)
-            frames.append((pos, rot))
-
-        return (frames, names)
-
     def readFrames_world(self):
 
         frames = []
