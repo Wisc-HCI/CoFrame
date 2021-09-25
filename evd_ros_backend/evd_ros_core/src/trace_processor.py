@@ -344,15 +344,12 @@ class TraceProcessor:
                 self._updateCount += 1
 
     def __post_processing(self):
-
-        #TODO transform frame positions into app_frame or world_frame (if its not already)
-
         #TODO Pivot collisions to be robot frames first
         # For each frame provide a float [0 to 1] for each step in time for closest collision.
         # 0 means no collision, 1 means in collision, in between means approaching collision
         # We need to set an arbitrary distance for this
         
-        #TODO 
+        #TODO Pivot self collisions
 
         pass
 

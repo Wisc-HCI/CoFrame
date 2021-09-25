@@ -51,6 +51,7 @@ class LivelyTKSolver(object):
 
         self.target_directions[0] = {'vector':[pose.position.x, pose.position.y, pose.position.z]}
         self.target_directions[1] = {'quaternion':[pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z]}
+        self.target_directions[2] = {'vector':[0,0,1]}
 
         inputs = []
         for idx, objective in enumerate(self.config.objectives):
