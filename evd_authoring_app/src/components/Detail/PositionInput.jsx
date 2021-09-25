@@ -8,14 +8,13 @@ function PositionInput (props)  {
    const [preVec, setPrevVec] = useState(null);
    let minMax = [-10,10];
    let steps = 0.01;
-   const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
-    state.setFocusItem]));
+  
     if (props.value !== preVec){
       setPrevVec(props.value);
       setInputVec(props.value);
     }
    
-
+   console.log(props.openStatus);
    return(
      
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
@@ -23,7 +22,7 @@ function PositionInput (props)  {
      
      <Popover
      placement="left"
-     visible =  {(focusItem.transformMode === "translate") ? true : false}
+     visible =  {props.openStatus}
      content={
        <Space>
          <h4 style={{ color: "red" }}>X</h4>
@@ -68,7 +67,7 @@ function PositionInput (props)  {
             props.onChange(updatedVec)
           }}}
          />
-          <Button type="primary" onClick = {() =>setFocusItem(props.type,props.uuid,"inactive")}>Close</Button>
+          <Button type="primary" onClick = {props.onClose}>Close</Button>
        </Space>
      }
      title="Set Position"
@@ -80,7 +79,7 @@ function PositionInput (props)  {
        block
        icon={<EditOutlined />}
        style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-       onClick = {() => setFocusItem(props.type,props.uuid,"translate")   }
+       onClick = {props.openStatus ? props.onClose : props.onOpen}
       
 
      >
