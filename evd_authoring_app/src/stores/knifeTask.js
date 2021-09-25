@@ -1,3 +1,7 @@
+import fakeTrajectory from './fakeTrajectory.json';
+
+const fakeTrace = fakeTrajectory.traces['trajectory.-py-d4d59d9a1ddf11ecaf7600155d1a70a2']
+
 const KNIFE_TASK = {
     "name": "Knife Assembly",
     "uuid": "primitive.hierarchical.program.-py-98888c021c1911ecbe2600155d1a70a2",
@@ -1090,7 +1094,13 @@ const KNIFE_TASK = {
                 "start_location_uuid": "node.pose.waypoint.location-js-c540bea6-a0a8-40c2-8fcc-cb6ae772697c",
                 "end_location_uuid": "node.pose.waypoint.location-js-b7daabbd-6e24-4b8f-9c8e-5ea22d727ad0",
                 "waypoint_uuids": [],
-                "trace": null,
+                "trace": {
+                    duration:fakeTrace.duration,
+                    joint_velocities:fakeTrace.pybullet_joint_velocities,
+                    collisions:fakeTrace.pybullet_collisions,
+                    pinchpoints:fakeTrace.pybullet_pinchpoints,
+                    frames:fakeTrace.pybullet_frame_data
+                },
                 "velocity": 0.5,
                 "move_type": "ee_ik"
             }

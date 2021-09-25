@@ -116,7 +116,7 @@ export function InfoTile(_) {
                     ))
                 )}
             </Row>
-            <div style={{height:'calc(100vh - 546pt)',backgroundColor:'rgba(0,0,0,0.6)', marginTop:10, padding: 10, borderRadius: 3, color:'white'}}>
+            <div style={{height:'calc(100vh - 546pt)',backgroundColor:'rgba(0,0,0,0.6)', marginTop:10, padding: 10, borderRadius: 3, color:'white', overflowY:'scroll'}}>
                 {tabs[currentTab] ? tabs[currentTab].contents : tabs[0].contents}
             </div>
         </div>

@@ -135,7 +135,6 @@ export const ComputedSlice = {
                     regionInfo.forEach(output=>focusedOutputs.push(output.region_uuid))
                 });
             }
-            console.log(focusedInputs)
 
             Object.values(this.data.machines).forEach(machine=>{
                 const mesh = EVD_MESH_LOOKUP[machine.mesh_id]
@@ -179,6 +178,9 @@ export const ComputedSlice = {
                 Object.keys(machine.inputs).forEach(thingType=>{
                     machine.inputs[thingType].forEach(zoneInfo=>{
                         const region = this.data.regions[zoneInfo.region_uuid];
+                        const debouncedOnMove = debounce(transform=>{
+                            this.setRegionTransform(region.uuid,transform);
+                        },1000)
                         let color = {r:245,g:206,b:66,a:0.4};
                         const machineInput = focusedInputs.includes(region.uuid);
                         const machineOutput = focusedOutputs.includes(region.uuid);
@@ -187,19 +189,21 @@ export const ComputedSlice = {
                         } else if (!machineInput && machineOutput) {
                             color = {r:66,g:245,b:156,a:0.4}
                         }
+                        
                         items[zoneInfo.region_uuid] = {
                             shape: region.uncertainty_x ? 'cube' : 'sphere',
                             frame: region.link,
                             position: region.center_position,
-                            rotation: {w:1,x:0,y:0,z:0},
-                            scale: {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5},
+                            rotation: region.center_orientation,
+                            scale: region.uncertainty_x ? {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5} : {x:region.uncertainty_radius*5,y:region.uncertainty_radius*5,z:region.uncertainty_radius*5},
                             transformMode: this.secondaryFocusItem.uuid === region.uuid ? this.secondaryFocusItem.transformMode : 'inactive',
                             color,
                             highlighted: this.secondaryFocusItem.uuid === region.uuid,
                             hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
-                            onClick: (_)=>{}
+                            onClick: (_)=>{},
+                            onMove: debouncedOnMove
                         }
-                        // items[zoneInfo.region_uuid+''] = {
+                        // items[zoneInfo.region_uuid+thingType] = {
                         //     shape: region.uncertainty_x ? 'cube' : 'sphere',
                         //     frame: region.link,
                         //     position: region.center_position,
@@ -219,6 +223,9 @@ export const ComputedSlice = {
                     
                     machine.outputs[thingType].forEach(zoneInfo=>{
                         const region = this.data.regions[zoneInfo.region_uuid];
+                        const debouncedOnMove = debounce(transform=>{
+                            this.setRegionTransform(region.uuid,transform);
+                        },1000)
                         items[zoneInfo.region_uuid] = {
                             shape: region.uncertainty_x ? 'cube' : 'sphere',
                             frame: region.link,
@@ -229,13 +236,14 @@ export const ComputedSlice = {
                             color: {r:200,g:100,b:100,a:0.4},
                             highlighted: this.secondaryFocusItem.uuid === region.uuid,
                             hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
-                            onClick: (_)=>{}
+                            onClick: (_)=>{},
+                            onMove: debouncedOnMove
                         }
                         const placeholder = this.data.placeholders[zoneInfo.placeholder_uuids[0]];
                         // items[placeholder.uuid] = {
 
                         // }
-                        console.log(placeholder)
+                        // console.log(placeholder)
                     })
                 })
             })

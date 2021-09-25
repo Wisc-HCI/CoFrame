@@ -14,7 +14,6 @@ function PositionInput (props)  {
       setInputVec(props.value);
     }
    
-   console.log(props.openStatus);
    return(
      
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>

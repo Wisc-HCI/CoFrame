@@ -295,6 +295,17 @@ export const EvdSlice = (set, get) => ({
       //state.renderData.waypoints[uuid] = state.data.waypoints[uuid];
     }
   }),
+  setRegionTransform: (uuid, transform) => set(state=>{
+    if (state.data.regions[uuid]) {
+      state.data.regions[uuid].center_position.x = transform.local.position.x;
+      state.data.regions[uuid].center_position.y = transform.local.position.y;
+      state.data.regions[uuid].center_position.z = transform.local.position.z;
+      state.data.regions[uuid].center_orientation.x = transform.local.quaternion.x;
+      state.data.regions[uuid].center_orientation.y = transform.local.quaternion.y;
+      state.data.regions[uuid].center_orientation.z = transform.local.quaternion.z;
+      state.data.regions[uuid].center_orientation.w = transform.local.quaternion.w;
+    }
+  }),
   setPrimitiveParameter: (type, uuid, property, value) => set((state) => {
     state.data[typeToKey(type)][uuid].parameters[property] = value
   }),
@@ -391,8 +402,5 @@ export const EvdSlice = (set, get) => ({
       }
     }
     
-  }),
-  toggleSkillEditable: (skill_uuid) => set((state) => {
-    state.data[typeToKey('skill')][skill_uuid].editable = !state.data[typeToKey('skill')][skill_uuid].editable
   })
 });
