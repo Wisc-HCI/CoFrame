@@ -42,6 +42,7 @@ class URRobotEnvironment:
             offset=Position(0,0,0.15))
         
         # Define Pinch Points
+        '''
         self._pinch_points = [
             PinchPoint(
                 link='simulated_shoulder_link', 
@@ -74,6 +75,8 @@ class URRobotEnvironment:
                 offset=Position.from_axis('z',0.1)
             )
         ]
+        '''
+        self._pinch_points = []
         
         # Defining thing types needed for machine
         leftHandleThingType = ThingType(

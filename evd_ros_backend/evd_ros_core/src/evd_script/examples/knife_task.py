@@ -41,6 +41,7 @@ def generate():
         offset=Position(0,0,0.15))
 
     # Define Pinch Points
+    '''
     prog.environment.pinch_points = [
         PinchPoint(
             link='simulated_shoulder_link', 
@@ -73,6 +74,8 @@ def generate():
             offset=Position.from_axis('z',0.1)
         )
     ]
+    '''
+    self._pinch_points = []
 
     # Define Collison
     printerCollisionMesh = CollisionMesh(
