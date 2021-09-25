@@ -93,7 +93,7 @@ class PyBulletModel(object):
         pybullet.stepSimulation()
   
         # (jointPositions, jointVelocities, names), (frames, names)
-        return self.readJointState(names), self.readFrames()
+        return self.readJointState(names), self.readFrames_local()
 
     def readJointState(self, names=None):
         if names == None:
@@ -118,7 +118,24 @@ class PyBulletModel(object):
 
         return (jointPositions, jointVelocities, names)
 
-    def readFrames(self):
+    def readFrames_local(self):
+        frames = []
+        names = []
+        for id in self.robot_jointIds.values():
+            info = pybullet.getJointInfo(
+                self.robotId,
+                id)
+            
+            linkName = info[12].decode("utf-8")
+            pos = info[14]
+            rot = info[15]
+
+            names.append(linkName)
+            frames.append((pos, rot))
+
+        return (frames, names)
+
+    def readFrames_world(self):
 
         frames = []
         names = []
@@ -127,8 +144,8 @@ class PyBulletModel(object):
                 self.robotId,
                 linkIndex=id)
 
-            pos = info[2]
-            rot = info[3]
+            pos = info[4]
+            rot = info[5]
 
             names.append(name)
             frames.append((pos, rot))

@@ -70,7 +70,7 @@ class LivelyTKSolver(object):
             only_core=True,
             return_frames=self._returnFrames)
 
-        return (joints, jNames), (frames, fNames)
+        return (joints, jNames), (frames[0], fNames)
 
     @property
     def joint_names(self):
@@ -84,7 +84,7 @@ class LivelyTKSolver(object):
     def get_ee_pose(cls, frames):
         pose = Pose()
 
-        pos, rot = frames[0][-1]
+        pos, rot = frames[-1]
 
         (x,y,z) = pos
         pose.position.x = x

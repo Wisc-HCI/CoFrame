@@ -129,18 +129,19 @@ class TraceProcessor:
 
         # structure the data to be captured (starts with initial state)
         self._trace_data = {
+            "type": self._type,
             "duration": 0,
             "time_data": [0],
-            "type": self._type,
             "interpolator_path": {n: [None] for n in self.ltk.joint_names} if self._type == 'joint' else {'ee_pose': [None]},
             "lively_joint_names": list(self.ltk.joint_names),
-            "lively_joint_data": {n:[locStart.joints.joint_positions[i]] for i, n in enumerate(self.ltk.joint_names)},
+            "lively_joint_data": {n: [locStart.joints.joint_positions[i] if self._type == 'ee_ik' else [None]] for i, n in enumerate(self.ltk.joint_names)},
             "lively_frame_names": list(self.ltk.frame_names),
             "lively_frame_data": {n:[None] for n in self.ltk.frame_names},
             "pybullet_joint_names": list(self.ltk.joint_names),
             "pybullet_joint_data": {n:[locStart.joints.joint_positions[i]] for i, n in enumerate(self.ltk.joint_names)},
             "pybullet_frame_names": list(self.pyb.frame_names),
-            "pybullet_frame_data": {n:[None] for n in self.pyb.frame_names},
+            "pybullet_frame_data_local": {n:[None] for n in self.pyb.frame_names},
+            "pybullet_frame_data_world": {n:[None] for n in self.pyb.frame_names},
             "pybullet_collisions": {uuid: {n: [None] for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
             "pybullet_occupancy": {uuid: {n: [None] for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
             "pybullet_self_collisions": {n: {m: [None] for m in self.pyb.frame_names} for n in self.pyb.frame_names},
@@ -172,150 +173,12 @@ class TraceProcessor:
 
     def _update_cb(self, event=None):
         # If the job has been started
-        # step through trajectory and record the joints / frames as they occur
+        # "running" - step through trajectory and record the joints / frames as they occur
+        # "post" - transform data for frontend
         if self._state == 'running':
 
-            if self._type == 'ee_ik':
-                # interpolate pose in this leg of trajectory
-                interpolator = self._path[self._index]
-                ee_pose_itp = interpolator.step(self._time_step)
-
-                self._trace_data['interpolator_path']['ee_pose'].append(Pose.from_ros(ee_pose_itp).to_simple_dct())
-
-                # run lively-ik
-                (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
-                ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
-                self.jsf.append(jp_ltk) # append to joint filter to know when lively is done
-
-                for n, p in zip(jn_ltk,jp_ltk):
-                    if self._trace_data == None:
-                        return # leave update if stop has been called
-                    self._trace_data['lively_joint_data'][n].append(p)
-
-                (fp_ltk, fn_ltk) = frames_ltk
-                for n, p in zip(fn_ltk, fp_ltk):
-                    if self._trace_data == None:
-                        return # leave update if stop has been called
-                    self._trace_data['lively_frame_data'][n].append(p)
-
-                # run pybullet model
-                pb_joints, pb_frames = self.pyb.step(jp_ltk, jn_ltk)
-                ee_pose_pyb = PyBulletModel.get_ee_pose(pb_frames)
-
-                (jp_pby, jv_pby, jn_pby) = pb_joints
-                for n, p, v in zip(jn_pby,jp_pby, jv_pby):
-                    if self._trace_data == None:
-                        return # leave update if stop has been called
-                    self._trace_data['pybullet_joint_data'][n].append(p)
-
-                (fp_pby, fn_pby) = pb_frames
-                for n, p in zip(fn_pby, fp_pby):
-                    if self._trace_data == None:
-                        return # leave update if stop has been called
-                    self._trace_data['pybullet_frame_data'][n].append(p)
-
-                # collision packing
-                pb_collisions = self.pyb.collisionCheck()
-                for uuid in pb_collisions.keys():
-                    for frameName in pb_collisions[uuid].keys():
-                        value = pb_collisions[uuid][frameName]
-                        self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
-
-                pb_occupancy = self.pyb.occupancyCheck()
-                for uuid in pb_occupancy.keys():
-                    for frameName in pb_occupancy[uuid].keys():
-                        value = pb_occupancy[uuid][frameName]
-                        self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
-
-                pb_selfCollisions = self.pyb.selfCollisionCheck()
-                for a in pb_selfCollisions.keys():
-                    for b in pb_selfCollisions[a].keys():
-                        value = pb_selfCollisions[a][b]
-                        self._trace_data['pybullet_self_collisions'][a][b].append(value)
-                
-                # check if leg of trajectory is done
-                (posThreshold, ortThreshold) = self._thresholds[self._index]
-                poseWasReached = poseReached(ee_pose_ltk, interpolator.end_pose, posThreshold, ortThreshold)
-                inTimeout = TIMEOUT_COUNT < self._updateCount
-                jointsAreStable = self.jsf.isStable()
-
-                if jointsAreStable and (poseWasReached or inTimeout):
-                    if inTimeout:
-                        print('\n\n\nIN Timeout\n\n\n')
-                        self._trace_data = None
-                        self._job_queue.completed()
-                        self._state = 'idle'
-                        return # Failed to run trajectory
-
-                    self._index += 1
-                    self._time_step = 0
-                    self._updateCount = 0
-                else:
-                    self._time_step += self._timestep
-                    self._updateCount += 1
-
-            else: # self._type == 'joint'
-                # joint interpolation
-                (interpolator, jn_itp) = self._path[self._index]
-                jp_itp = interpolator.step(self._time_step)
-
-                for n, j in zip(jn_itp, jp_itp):
-                    self._trace_data['interpolator_path'][n].append(float(j))
-
-                # run pybullet model
-                pb_joints, pb_frames = self.pyb.step(jp_itp, jn_itp)
-                ee_pose_pyb = PyBulletModel.get_ee_pose(pb_frames)
-
-                (jp_pby, jv_pby, jn_pby) = pb_joints
-                for n, p, v in zip(jn_pby,jp_pby, jv_pby):
-                    if self._trace_data == None:
-                        return # leave update if stop has been called
-                    self._trace_data['pybullet_joint_data'][n].append(p)
-
-                (fp_pby, fn_pby) = pb_frames
-                for n, p in zip(fn_pby, fp_pby):
-                    if self._trace_data == None:
-                        return # leave update if stop has been called
-                    self._trace_data['pybullet_frame_data'][n].append(p)
-
-                # collision packing
-                pb_collisions = self.pyb.collisionCheck()
-                for uuid in pb_collisions.keys():
-                    for frameName in pb_collisions[uuid].keys():
-                        value = pb_collisions[uuid][frameName]
-                        self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
-
-                pb_occupancy = self.pyb.occupancyCheck()
-                for uuid in pb_occupancy.keys():
-                    for frameName in pb_occupancy[uuid].keys():
-                        value = pb_occupancy[uuid][frameName]
-                        self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
-
-                pb_selfCollisions = self.pyb.selfCollisionCheck()
-                for a in pb_selfCollisions.keys():
-                    for b in pb_selfCollisions[a].keys():
-                        value = pb_selfCollisions[a][b]
-                        self._trace_data['pybullet_self_collisions'][a][b].append(value)
-
-                # check if leg of trajectoru is done
-                joint_thresholds = self._thresholds[self._index]
-                inTimeout = TIMEOUT_COUNT < self._updateCount
-                jointsWasReached = jointsReached(jp_pby, interpolator.end_joints, joint_thresholds)
-                if inTimeout or jointsWasReached:
-                    if inTimeout:
-                        print('\n\n\nIN Timeout\n\n\n')
-                        self._trace_data = None
-                        self._job_queue.completed()
-                        self._state = 'idle'
-                        return # Failed to run trajectory
-
-                    self._index += 1
-                    self._time_step = 0
-                    self._updateCount = 0
-                else:
-                    self._time_step += self._timestep
-                    self._updateCount += 1
-
+            self.__raw_processing()
+            
             # record timing info
             self._time_overall += self._timestep
             self._trace_data['time_data'].append(self._time_overall)
@@ -323,14 +186,188 @@ class TraceProcessor:
             # end condition is when trajectory has been fully traced
             if self._index >= len(self._path):
                 self._trace_data['duration'] = self._time_overall
-                self._job_queue.completed()
-                self._state = 'idle'
+                #self._job_queue.completed()
+                self._state = 'post'
+
+        elif self._state == 'post':
+
+            self.__post_processing()
+
+            self._job_queue.completed()
+            self._state = 'idle'
 
     def spin(self):
         rate = rospy.Rate(SPIN_RATE)
         while not rospy.is_shutdown():
             self._job_queue.update()
             rate.sleep()
+
+    def __raw_processing(self):
+        if self._type == 'ee_ik':
+            # interpolate pose in this leg of trajectory
+            interpolator = self._path[self._index]
+            ee_pose_itp = interpolator.step(self._time_step)
+
+            self._trace_data['interpolator_path']['ee_pose'].append(Pose.from_ros(ee_pose_itp).to_simple_dct())
+
+            # run lively-ik
+            (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
+            ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
+            self.jsf.append(jp_ltk) # append to joint filter to know when lively is done
+
+            for n, p in zip(jn_ltk,jp_ltk):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
+                self._trace_data['lively_joint_data'][n].append(p)
+
+            (fp_ltk, fn_ltk) = frames_ltk
+            for n, p in zip(fn_ltk, fp_ltk):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
+                self._trace_data['lively_frame_data'][n].append(p)
+
+            # run pybullet model
+            pb_joints, pb_frames = self.pyb.step(jp_ltk, jn_ltk)
+            ee_pose_pyb = PyBulletModel.get_ee_pose(pb_frames)
+
+            (jp_pby, jv_pby, jn_pby) = pb_joints
+            for n, p, v in zip(jn_pby,jp_pby, jv_pby):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
+                self._trace_data['pybullet_joint_data'][n].append(p)
+
+            (fp_pby, fn_pby) = pb_frames
+            for n, p in zip(fn_pby, fp_pby):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
+                self._trace_data['pybullet_frame_data_local'][n].append(p)
+
+            (fp_pb_w, fn_pb_w) = self.pyb.readFrames_world()
+            for n, p in zip(fn_pb_w, fp_pb_w):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
+                self._trace_data['pybullet_frame_data_world'][n].append(p)
+
+            # collision packing
+            pb_collisions = self.pyb.collisionCheck()
+            for uuid in pb_collisions.keys():
+                for frameName in pb_collisions[uuid].keys():
+                    value = pb_collisions[uuid][frameName]
+                    self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
+
+            pb_occupancy = self.pyb.occupancyCheck()
+            for uuid in pb_occupancy.keys():
+                for frameName in pb_occupancy[uuid].keys():
+                    value = pb_occupancy[uuid][frameName]
+                    self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
+
+            pb_selfCollisions = self.pyb.selfCollisionCheck()
+            for a in pb_selfCollisions.keys():
+                for b in pb_selfCollisions[a].keys():
+                    value = pb_selfCollisions[a][b]
+                    self._trace_data['pybullet_self_collisions'][a][b].append(value)
+            
+            # check if leg of trajectory is done
+            (posThreshold, ortThreshold) = self._thresholds[self._index]
+            poseWasReached = poseReached(ee_pose_ltk, interpolator.end_pose, posThreshold, ortThreshold)
+            inTimeout = TIMEOUT_COUNT < self._updateCount
+            jointsAreStable = self.jsf.isStable()
+
+            if jointsAreStable and (poseWasReached or inTimeout):
+                if inTimeout:
+                    print('\n\n\nIN Timeout\n\n\n')
+                    self._trace_data = None
+                    self._job_queue.completed()
+                    self._state = 'idle'
+                    return # Failed to run trajectory
+
+                self._index += 1
+                self._time_step = 0
+                self._updateCount = 0
+            else:
+                self._time_step += self._timestep
+                self._updateCount += 1
+
+        else: # self._type == 'joint'
+            # joint interpolation
+            (interpolator, jn_itp) = self._path[self._index]
+            jp_itp = interpolator.step(self._time_step)
+
+            for n, j in zip(jn_itp, jp_itp):
+                self._trace_data['interpolator_path'][n].append(float(j))
+
+            # run pybullet model
+            pb_joints, pb_frames = self.pyb.step(jp_itp, jn_itp)
+            ee_pose_pyb = PyBulletModel.get_ee_pose(pb_frames)
+
+            (jp_pby, jv_pby, jn_pby) = pb_joints
+            for n, p, v in zip(jn_pby,jp_pby, jv_pby):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
+                self._trace_data['pybullet_joint_data'][n].append(p)
+
+            (fp_pby, fn_pby) = pb_frames
+            for n, p in zip(fn_pby, fp_pby):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
+                self._trace_data['pybullet_frame_data_local'][n].append(p)
+
+            (fp_pb_w, fn_pb_w) = self.pyb.readFrames_world()
+            for n, p in zip(fn_pb_w, fp_pb_w):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
+                self._trace_data['pybullet_frame_data_world'][n].append(p)
+
+            # collision packing
+            pb_collisions = self.pyb.collisionCheck()
+            for uuid in pb_collisions.keys():
+                for frameName in pb_collisions[uuid].keys():
+                    value = pb_collisions[uuid][frameName]
+                    self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
+
+            pb_occupancy = self.pyb.occupancyCheck()
+            for uuid in pb_occupancy.keys():
+                for frameName in pb_occupancy[uuid].keys():
+                    value = pb_occupancy[uuid][frameName]
+                    self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
+
+            pb_selfCollisions = self.pyb.selfCollisionCheck()
+            for a in pb_selfCollisions.keys():
+                for b in pb_selfCollisions[a].keys():
+                    value = pb_selfCollisions[a][b]
+                    self._trace_data['pybullet_self_collisions'][a][b].append(value)
+
+            # check if leg of trajectoru is done
+            joint_thresholds = self._thresholds[self._index]
+            inTimeout = TIMEOUT_COUNT < self._updateCount
+            jointsWasReached = jointsReached(jp_pby, interpolator.end_joints, joint_thresholds)
+            if inTimeout or jointsWasReached:
+                if inTimeout:
+                    print('\n\n\nIN Timeout\n\n\n')
+                    self._trace_data = None
+                    self._job_queue.completed()
+                    self._state = 'idle'
+                    return # Failed to run trajectory
+
+                self._index += 1
+                self._time_step = 0
+                self._updateCount = 0
+            else:
+                self._time_step += self._timestep
+                self._updateCount += 1
+
+    def __post_processing(self):
+
+        #TODO transform frame positions into app_frame or world_frame (if its not already)
+
+        #TODO Pivot collisions to be robot frames first
+        # For each frame provide a float [0 to 1] for each step in time for closest collision.
+        # 0 means no collision, 1 means in collision, in between means approaching collision
+        # We need to set an arbitrary distance for this
+        
+        #TODO 
+
+        pass
 
 
 if __name__ == "__main__":
