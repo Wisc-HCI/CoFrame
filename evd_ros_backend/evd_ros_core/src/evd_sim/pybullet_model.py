@@ -211,10 +211,12 @@ class PyBulletModel(object):
         self._occupancy = {}
         for o in occupancyZones:
             cubeId = pybullet.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=[o.scale_x/2,o.scale_z/2,1])
-            pybullet.createMultiBody(baseMass=0, baseInertialFramePosition=[0,0,0], baseCollisionShapeIndex=cubeId, basePosition=[o.position_x,o.position_z,0], useMaximalCoordinates=True)
+            cubeBody = pybullet.createMultiBody(baseMass=0, baseInertialFramePosition=[0,0,0], baseCollisionShapeIndex=cubeId, basePosition=[o.position_x,o.position_z,0], useMaximalCoordinates=True)
 
             # We need to know the body to search under and -1 means the base collision objet (since we created it that way)
-            self._occupancy[o.uuid] = (cubeId, -1)
+            self._occupancy[o.uuid] = (cubeBody, -1)
+        
+        #print('\n\n\nOccupancy Zones', self._occupancy)
 
     def occupancyCheck(self):
         data = {}
@@ -224,6 +226,7 @@ class PyBulletModel(object):
 
             # This again is very stupid (less so than before but still)
             points = pybullet.getClosestPoints(o_body, self.robotId, MAX_DISTANCE_MEASURED)
+            #print('\n\n\nPOINTS FROM OCCUPANCY',o_body, points,'\n\n')
 
             for frameName, r_link in self.robot_linkIds.items():
                 for point in points:

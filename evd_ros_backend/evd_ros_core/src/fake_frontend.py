@@ -40,6 +40,7 @@ class FakeFrontendNode:
         self._active_joints_jobs = []
         self._active_trace_jobs = []
         self._temp_trace_store = {} # NOTE: We need this since EvD Traces are incompatible with the traces produced by trace processor
+        self._temp_joint_trace_store = {} # NOTE: We need this since EvD Joint traces don't exist
 
         ## Publish these as PoseStamped, the backend will create TFs from these
         #NOTE Ignore these
@@ -156,7 +157,8 @@ class FakeFrontendNode:
             raw = json.loads(msg.data)
 
             joints = NodeParser(raw['joint'])
-            joint_trace = raw['trace']
+            if raw['trace'] != None:
+                self._temp_joint_trace_store[msg.id] = raw['trace']
 
             wp = evd_cache.get(msg.id) # where job ID is the uuid of the parent object (only works for 1-1 relations)
             wp.joints = joints
@@ -169,7 +171,7 @@ class FakeFrontendNode:
         self._update_pub.publish(String(data))
 
     def _update_traces_cb(self, event=None):
-        data = json.dumps(self._temp_trace_store)
+        data = json.dumps({'traces': self._temp_trace_store, 'joints': self._temp_joint_trace_store})
         self._update_traces_pub.publish(String(data))
 
     def spin(self):
