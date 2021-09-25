@@ -170,16 +170,17 @@ class PyBulletModel(object):
     def registerCollisionMeshes(self, collisionMeshes):
         self._collisions = {}
         for c in collisionMeshes:
-            link = c.link
-            if link in self.robot_linkIds.keys():
-                body = self.robotId
-            elif link in self.env_linkIds.keys():
-                body = self.envId
+            if c.link in self.robot_linkIds.keys():
+                bodyId = self.robotId
+                linkId = self.robot_linkIds[c.link]
+            elif c.link in self.env_linkIds.keys():
+                bodyId = self.envId
+                linkId = self.env_linkIds[c.link]
             else:
                 break # Skipping this mesh
 
             # We need to know both the body to search under and the link for distance computation
-            self._collisions[c.uuid] = (body, link)
+            self._collisions[c.uuid] = (bodyId, linkId)
 
     def collisionCheck(self):
         data = {}
@@ -210,10 +211,10 @@ class PyBulletModel(object):
         self._occupancy = {}
         for o in occupancyZones:
             cubeId = pybullet.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=[o.scale_x/2,o.scale_z/2,1])
-            cubeBody = pybullet.createMultiBody(baseMass=0, baseInertialFramePosition=[0,0,0], baseCollisionShapeIndex=cubeId, basePosition=[o.position_x,o.position_z,0], useMaximalCoordinates=True)
+            pybullet.createMultiBody(baseMass=0, baseInertialFramePosition=[0,0,0], baseCollisionShapeIndex=cubeId, basePosition=[o.position_x,o.position_z,0], useMaximalCoordinates=True)
 
             # We need to know the body to search under and -1 means the base collision objet (since we created it that way)
-            self._occupancy[o.uuid] = (cubeBody, -1)
+            self._occupancy[o.uuid] = (cubeId, -1)
 
     def occupancyCheck(self):
         data = {}

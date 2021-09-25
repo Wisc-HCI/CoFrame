@@ -50,21 +50,24 @@ class TestDataVisualizer:
             markerArray = MarkerArray()
             updated_markers = {}
 
-            # Data Nodes
-            self.__render_locations(markerArray,updated_markers)
-            self.__render_things(markerArray,updated_markers)
-            self.__render_trajectories(markerArray,updated_markers)
-            self.__render_traces(markerArray,updated_markers)
+            try:
+                # Data Nodes
+                self.__render_locations(markerArray,updated_markers)
+                self.__render_things(markerArray,updated_markers)
+                self.__render_trajectories(markerArray,updated_markers)
+                self.__render_traces(markerArray,updated_markers)
 
-            # Environment Nodes
-            self.__render_reach_sphere(markerArray,updated_markers)
-            self.__render_collision_meshes(markerArray,updated_markers)
-            self.__render_occupancy_zones(markerArray,updated_markers)
-            self.__render_pinch_points(markerArray,updated_markers)
+                # Environment Nodes
+                self.__render_reach_sphere(markerArray,updated_markers)
+                self.__render_collision_meshes(markerArray,updated_markers)
+                self.__render_occupancy_zones(markerArray,updated_markers)
+                self.__render_pinch_points(markerArray,updated_markers)
 
-            # Update
-            self.__delete_old_markers(markerArray,updated_markers)
-            self.__publish_markers(markerArray,updated_markers)       
+                # Update
+                self.__delete_old_markers(markerArray,updated_markers)
+                self.__publish_markers(markerArray,updated_markers) 
+            except:
+                print('Error during visualization, probably the update colliding with this long visualization process')      
 
     def __render_trajectories(self, markerArray, updated_markers):
         # Get all trajectories and display all waypoints

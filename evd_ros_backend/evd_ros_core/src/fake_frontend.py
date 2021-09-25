@@ -64,6 +64,9 @@ class FakeFrontendNode:
         self._configure_processors = rospy.Publisher('{0}program/configure/processors'.format(prefix_fmt), String, queue_size=5) # This is a json obj of all nodes needed for trace processing
         self._configure_machines = rospy.Publisher('{0}program/configure/machines'.format(prefix_fmt), String, queue_size=5)
 
+        #NOTE: This topic is just for funzies don't need it in the real frontend
+        self._update_traces_pub = rospy.Publisher('{0}program/update_traces'.format(prefix_fmt), String, queue_size=5)
+
         ## Communication with trace processor
         # This processor produces graded traces from trajectories.
         # 1) Publish JOB with data JSON string of form below and an ID
@@ -106,6 +109,7 @@ class FakeFrontendNode:
 
         # NOTE: this is just for the fake frontend to publish periodic updates
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
+        self._timer1 = rospy.Timer(rospy.Duration(5), self._update_traces_cb)
 
         # NOTE: this is just for the fake frontend to publish some joint data
         self._joint_index = 0
@@ -131,6 +135,7 @@ class FakeFrontendNode:
 
     def _trace_submit_cb(self, msg):
         if msg.id in self._active_trace_jobs:
+            print('Trace Job - {} has been completed'.format(msg.id))
 
             raw = json.loads(msg.data)
 
@@ -146,6 +151,7 @@ class FakeFrontendNode:
 
     def _joints_submit_cb(self, msg):
         if msg.id in self._active_joints_jobs:
+            print('Joint Job - {} has been completed'.format(msg.id))
 
             raw = json.loads(msg.data)
 
@@ -161,6 +167,10 @@ class FakeFrontendNode:
         #print('\n\n\tIn periodic update push!\n\n')
         data = json.dumps(self._program.to_dct())
         self._update_pub.publish(String(data))
+
+    def _update_traces_cb(self, event=None):
+        data = json.dumps(self._temp_trace_store)
+        self._update_traces_pub.publish(String(data))
 
     def spin(self):
 
