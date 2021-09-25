@@ -32,7 +32,7 @@ export const ComputedSlice = {
             let tfs = {...INITIAL_SIM.tfs};
             Object.values(this.data.placeholders).forEach(placeholder=>{
                 // for now, place the placeholders at origin. 
-                console.log(placeholder)
+                // console.log(placeholder)
                 tfs[placeholder.uuid] = {
                     frame:'world',
                     translation:{x:0,y:0,z:0},
@@ -125,6 +125,18 @@ export const ComputedSlice = {
                 
             })
 
+            let focusedInputs = [];
+            let focusedOutputs = [];
+            if (this.focusItem.type === 'machine') {
+                Object.values(this.data.machines[this.focusItem.uuid].inputs).forEach(regionInfo=>{
+                    regionInfo.forEach(input=>focusedInputs.push(input.region_uuid))
+                });
+                Object.values(this.data.machines[this.focusItem.uuid].outputs).forEach(regionInfo=>{
+                    regionInfo.forEach(output=>focusedOutputs.push(output.region_uuid))
+                });
+            }
+            console.log(focusedInputs)
+
             Object.values(this.data.machines).forEach(machine=>{
                 const mesh = EVD_MESH_LOOKUP[machine.mesh_id]
                 items[machine.uuid] = {
@@ -167,12 +179,32 @@ export const ComputedSlice = {
                 Object.keys(machine.inputs).forEach(thingType=>{
                     machine.inputs[thingType].forEach(zoneInfo=>{
                         const region = this.data.regions[zoneInfo.region_uuid];
+                        let color = {r:245,g:206,b:66,a:0.4};
+                        const machineInput = focusedInputs.includes(region.uuid);
+                        const machineOutput = focusedOutputs.includes(region.uuid);
+                        if (machineInput && !machineOutput) {
+                            color = {r:245,g:105,b:66,a:0.4}
+                        } else if (!machineInput && machineOutput) {
+                            color = {r:66,g:245,b:156,a:0.4}
+                        }
                         items[zoneInfo.region_uuid] = {
                             shape: region.uncertainty_x ? 'cube' : 'sphere',
                             frame: region.link,
                             position: region.center_position,
                             rotation: {w:1,x:0,y:0,z:0},
-                            scale: {x:region.uncertainty_x*10,y:region.uncertainty_y*10,z:region.uncertainty_z*10},
+                            scale: {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5},
+                            transformMode: 'inactive',
+                            color,
+                            highlighted: this.secondaryFocusItem.uuid === region.uuid,
+                            hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
+                            onClick: (_)=>{}
+                        }
+                        items[zoneInfo.region_uuid+''] = {
+                            shape: region.uncertainty_x ? 'cube' : 'sphere',
+                            frame: region.link,
+                            position: region.center_position,
+                            rotation: {w:1,x:0,y:0,z:0},
+                            scale: {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5},
                             transformMode: 'inactive',
                             color: {r:100,g:200,b:200,a:0.4},
                             highlighted: this.secondaryFocusItem.uuid === region.uuid,
@@ -191,7 +223,7 @@ export const ComputedSlice = {
                             frame: region.link,
                             position: region.center_position,
                             rotation: {w:1,x:0,y:0,z:0},
-                            scale: {x:region.uncertainty_x,y:region.uncertainty_y,z:region.uncertainty_z},
+                            scale: {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5},
                             transformMode: 'inactive',
                             color: {r:200,g:100,b:100,a:0.4},
                             highlighted: this.secondaryFocusItem.uuid === region.uuid,

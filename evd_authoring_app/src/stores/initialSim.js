@@ -26,6 +26,12 @@ export const EVD_MESH_LOOKUP = {
     "package://evd_ros_tasks/description/meshes/visual/conveyor.stl":"conveyor",
     "package://evd_ros_tasks/description/meshes/visual/blade_feeder.stl":"conveyor_receiver",
     "package://evd_ros_tasks/description/meshes/visual/knife_feeder.stl":"conveyor_dispatcher",
+    "package://evd_ros_tasks/description/markers/left_handle.stl":"handle_l",
+    "package://evd_ros_tasks/description/markers/right_handle.stl":"handle_r",
+    "package://evd_ros_tasks/description/markers/blade.stl":"blade",
+    "package://evd_ros_tasks/description/markers/tranport_jig.stl":"transport_jig",
+    "package://evd_ros_tasks/description/markers/blade_with_transport_jig.stl":"blade_with_transport_jig",
+    "package://evd_ros_tasks/description/markers/knife_with_transport_jig.stl":"knife_with_transport_jig"
 }
 
 export const INITIAL_SIM =

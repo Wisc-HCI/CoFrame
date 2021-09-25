@@ -1365,7 +1365,7 @@ const KNIFE_TASK = {
         "regions": [
             {
                 "type": "node.pose.region.cube-region.",
-                "name": "",
+                "name": "Left Handle Spawn",
                 "uuid": "pose.region.cube-region.-py-98896bcc1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
@@ -1403,7 +1403,7 @@ const KNIFE_TASK = {
             },
             {
                 "type": "node.pose.region.cube-region.",
-                "name": "",
+                "name": "Right Handle Spawn",
                 "uuid": "pose.region.cube-region.-py-988976441c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
@@ -1441,7 +1441,7 @@ const KNIFE_TASK = {
             },
             {
                 "type": "node.pose.region.cube-region.",
-                "name": "",
+                "name": "Blade Receiver",
                 "uuid": "pose.region.cube-region.-py-98897e321c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
@@ -1479,7 +1479,7 @@ const KNIFE_TASK = {
             },
             {
                 "type": "node.pose.region.cube-region.",
-                "name": "",
+                "name": "Blade Dispatch",
                 "uuid": "pose.region.cube-region.-py-988982ec1c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
@@ -1517,7 +1517,7 @@ const KNIFE_TASK = {
             },
             {
                 "type": "node.pose.region.cube-region.",
-                "name": "",
+                "name": "Assembly Region",
                 "uuid": "pose.region.cube-region.-py-98898a621c1911ecbe2600155d1a70a2",
                 "editable": true,
                 "deleteable": true,
