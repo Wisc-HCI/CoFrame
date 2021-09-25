@@ -64,7 +64,7 @@ class JointProcessor:
         #print('\n\nSTARTING JOB')
         length = len(self._joint_names)
         waypoint = NodeParser(data['point'])
-        transform = self._tf_buffer.lookup_transform(self._fixed_frame, waypoint.link, rospy.Time(0), rospy.Duration(1.0))
+        transform = self._tf_buffer.lookup_transform(self._fixed_frame, waypoint.link if waypoint.link != "" else "app", rospy.Time(0), rospy.Duration(1.0))
         self._target = tf2_geometry_msgs.do_transform_pose(waypoint.to_ros(stamped=True), transform).pose
         
         self._joints = Joints(
@@ -162,13 +162,13 @@ class JointProcessor:
                 for n, p in zip(fn_pby, fp_pby):
                     if self._trace_data == None:
                         return # leave update if stop has been called
-                    self._trace_data['pybullet_frame_data_local'][n].append(p)
+                    self._trace_data['pybullet_frame_data_world'][n].append(p)
 
-                (fp_pb_w, fn_pb_w) = self.pyb.readFrames_world()
+                (fp_pb_w, fn_pb_w) = self.pyb.readFrames_local()
                 for n, p in zip(fn_pb_w, fp_pb_w):
                     if self._trace_data == None:
                         return # leave update if stop has been called
-                    self._trace_data['pybullet_frame_data_world'][n].append(p)
+                    self._trace_data['pybullet_frame_data_local'][n].append(p)
 
                 # collision packing
                 pb_collisions = self.pyb.collisionCheck()

@@ -495,10 +495,22 @@ class URRobotEnvironment:
             position=Position(0.2,-0.1,0.1),
             orientation=Orientation.Identity(),
             link='app')
+        noFrameLoc = Location(
+            position=Position(0,0,0),
+            orientation=Orientation.Identity(),
+            link=""
+        )
+        weirdFrameLoc = Location(
+            position=Position(0,0,0),
+            orientation=Orientation.Identity(),
+            link="3d_printer_link"
+        )
         self._locations = [
             unitLoc,
             reachableLoc,
-            homeLoc
+            homeLoc,
+            noFrameLoc,
+            weirdFrameLoc
         ]
 
         # Define some debug trajectories

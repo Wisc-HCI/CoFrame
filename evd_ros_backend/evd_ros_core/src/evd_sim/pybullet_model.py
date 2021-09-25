@@ -93,7 +93,7 @@ class PyBulletModel(object):
         pybullet.stepSimulation()
   
         # (jointPositions, jointVelocities, names), (frames, names)
-        return self.readJointState(names), self.readFrames_local()
+        return self.readJointState(names), self.readFrames_world()
 
     def readJointState(self, names=None):
         if names == None:
@@ -127,7 +127,7 @@ class PyBulletModel(object):
                 id)
             
             linkName = info[12].decode("utf-8")
-            pos = info[14]
+            pos = info[14] #NOTE these are not correct. This is the position of joint in parent. To actually get the frame we need to know the joint angle and apply the rotation?
             rot = info[15]
 
             names.append(linkName)
