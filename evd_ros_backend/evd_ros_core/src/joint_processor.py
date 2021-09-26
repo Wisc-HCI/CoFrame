@@ -109,7 +109,7 @@ class JointProcessor:
         self._trace_data = None
         self._updateCount = 0
 
-        submit_fnt(json.dumps({'input': inp, 'joint': data, 'trace': trace}))
+        submit_fnt(json.dumps({'input': inp, 'joint': data, 'trace': trace, 'status': status}))
 
     def _update_cb(self, event=None):
         

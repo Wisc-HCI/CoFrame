@@ -157,7 +157,7 @@ class TraceProcessor:
 
     def _end_job(self, status, submit_fnt):
         self._state = 'idle'
-        trace = self._trace_data
+        trace = self._trace_data if status else None
         inp = self._input
 
         self._path = None
@@ -168,7 +168,7 @@ class TraceProcessor:
         self._updateCount = 0
 
         #data = trace.to_dct() if status else None
-        submit_fnt(json.dumps({'input': inp, 'trace': trace}))
+        submit_fnt(json.dumps({'input': inp, 'trace': trace, 'status': status}))
 
     def _update_cb(self, event=None):
         # If the job has been started
