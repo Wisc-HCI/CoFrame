@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import { Space, Button, Popover,InputNumber } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import useStore from '../../stores/Store';
 
 function PositionInput (props)  {
    const [inputVec, setInputVec] = useState(props.value);

@@ -8,8 +8,8 @@ const SECTION_INFO = {
     endEffectorPoses:{
         name:'End Effector Poses',
         updater:findEndEffectorPoseIssues,
-        //dependencies:['reachabilitssssy']
-        dependencies:[]
+        dependencies:['reachability']
+        // dependencies:[]
     },
     pinchPoints:{
         name:'Pinch Points',
@@ -29,8 +29,8 @@ const SECTION_INFO = {
     thingMovement:{
         name:'Thing Movement',
         updater:findThingMovementIssues,
-        //dependencies:['endEffectorPoses']
-        dependencies:[]
+        dependencies:['endEffectorPoses']
+        // dependencies:[]
     },
     missingBlocks:{
         name:'Missing Blocks',
@@ -113,6 +113,8 @@ export const ReviewSlice = (set) => ({
             complete: bool (mainly for issues that don't require changes, whether it has been marked as complete)
             focus: {uuid:str, type:str} (what type of item to focus on in the gui when issue is selected)
             graphData: 🤷
+            sceneData: 🤷
+            code: str (whatever we want)
         }
         */
     },

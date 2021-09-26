@@ -14,20 +14,20 @@ const KNIFE_TASK = {
     "environment": {
         "grade_types": [],
         "occupancy_zones": [
-            {
-                "type": "node.environment-node.occupancy-zone.",
-                "name": "Robot Occupancy Zone",
-                "uuid": "environment-node.occupancy-zone.-py-988924c81c1911ecbe2600155d1a70a2",
-                "editable": true,
-                "deleteable": true,
-                "description": "",
-                "occupancy_type": "robot",
-                "position_x": 0,
-                "position_z": 0,
-                "scale_x": 1.6,
-                "scale_z": 1.2,
-                "height": -0.8
-            },
+            // {
+            //     "type": "node.environment-node.occupancy-zone.",
+            //     "name": "Robot Occupancy Zone",
+            //     "uuid": "environment-node.occupancy-zone.-py-988924c81c1911ecbe2600155d1a70a2",
+            //     "editable": true,
+            //     "deleteable": true,
+            //     "description": "",
+            //     "occupancy_type": "robot",
+            //     "position_x": 0,
+            //     "position_z": 0,
+            //     "scale_x": 1.6,
+            //     "scale_z": 1.2,
+            //     "height": -0.8
+            // },
             {
                 "type": "node.environment-node.occupancy-zone.",
                 "name": "Human Workspace Occupancy Zone",

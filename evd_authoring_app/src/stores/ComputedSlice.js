@@ -41,9 +41,7 @@ export const ComputedSlice = {
             })
             if (this.focusItem.uuid) {
                 const executable = this.executablePrimitives[this.focusItem.uuid];
-                if (executable) {
-                    console.log(executable)
-                }
+                console.log(executable)
             }
             return tfs
         },
@@ -269,6 +267,7 @@ export const ComputedSlice = {
 
                 const debouncedOnMove = debounce(transform=>{
                     this.setPoseTransform(location_uuid,transform);
+                    this.requestJointProcessorUpdate('location',location_uuid)
                 },1000)
 
                 poseDataToShapes(item, this.frame).forEach((shape,i) => {
@@ -307,6 +306,7 @@ export const ComputedSlice = {
 
                 const debouncedOnMove = debounce(transform=>{
                     this.setPoseTransform(waypoint_uuid,transform);
+                    this.requestJointProcessorUpdate('waypoint',waypoint_uuid)
                 },1000)
 
                 poseDataToShapes(item, this.frame).forEach(shape => {

@@ -49,13 +49,13 @@ export const EvdSlice = (set, get) => ({
     });
     get().addItem('reachSphere', program.environment.reach_sphere);
     program.environment.locations.forEach((location) => {
-      get().addItem('location', location)
+      get().addItem('location', location);
     });
     program.environment.waypoints.forEach((waypoint) => {
-      get().addItem('waypoint', waypoint)
+      get().addItem('waypoint', waypoint);
     });
     program.environment.trajectories.forEach((trajectory) => {
-      get().addItem('trajectory', trajectory)
+      get().addItem('trajectory', trajectory);
     });
     program.environment.regions.forEach((region) => {
       get().addItem('region', region)

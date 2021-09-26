@@ -1,6 +1,4 @@
 import React, {useState} from 'react';
-
-import useStore from '../../stores/Store';
 import { Space, Button, Popover,InputNumber } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';

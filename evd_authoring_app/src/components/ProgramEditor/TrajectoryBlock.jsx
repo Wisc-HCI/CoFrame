@@ -187,7 +187,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   {data.move_type === 'joint' ? (
                     <span style={selectionStyle}>Joint</span>
                   ) : (
-                    <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'joint')}>IK</Button>
+                    <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'joint')}>Joint</Button>
                   )}
                 </Col>
               </Row>)}

@@ -90,7 +90,8 @@ function executableTrajectory(trajectory,context) {
     trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
         executable.sequence.push(context[waypoint_uuid])
     })
-    executable.sequence.push(context[trajectory.end_location_uuid])
+    executable.sequence.push(context[trajectory.end_location_uuid]);
+    executable.trace = trajectory.trace;
     return executable
 }
 
@@ -208,7 +209,7 @@ export function tfAnimationFromExecutable(executable,tfs) {
     let times = [0];
     executable.forEach(chunk=>{
         if (chunk.type === 'node.primitive.gripper.') {
-            
+
         } else if (chunk.type === 'node.primitive.delay.') {
 
         }
