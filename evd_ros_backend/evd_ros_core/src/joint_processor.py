@@ -37,6 +37,7 @@ class JointProcessor:
         self._trace_data = None
         self._state = 'idle'
         self._updateCount = 0
+        self._pending_config = None
 
         with open(os.path.join(config_path, config_file_name),'r') as f:
             self._config = json.load(f)
@@ -57,10 +58,15 @@ class JointProcessor:
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _processor_configure_cb(self, dct):
-        self.pyb.registerCollisionMeshes(dct['collision_meshes'])
-        self.pyb.registerOccupancyZones(dct['occupancy_zones'])
+        if self._state != 'idle':
+            self._pending_config = dct
+        else:    
+            self.pyb.registerCollisionMeshes(dct['collision_meshes'])
+            self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
     def _start_job(self, data):
+        self._state = 'starting'
+
         #print('\n\nSTARTING JOB')
         length = len(self._joint_names)
         waypoint = NodeParser(data['point'])
@@ -102,7 +108,7 @@ class JointProcessor:
         self._state = 'running'
         
     def _end_job(self, status, submit_fnt):
-        self._state = 'idle'
+        self._state = 'ending'
 
         data = self._joints.to_dct()
         trace = self._trace_data
@@ -114,7 +120,13 @@ class JointProcessor:
         self._trace_data = None
         self._updateCount = 0
 
+        if self._pending_config != None:
+            self.pyb.registerCollisionMeshes(self._pending_config['collision_meshes'])
+            self.pyb.registerOccupancyZones(self._pending_config['occupancy_zones'])
+            self._pending_config = None
+
         submit_fnt(json.dumps({'input': inp, 'joint': data, 'trace': trace, 'status': status}))
+        self._state = 'idle'
 
     def _update_cb(self, event=None):
         

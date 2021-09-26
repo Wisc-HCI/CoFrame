@@ -51,6 +51,7 @@ class TraceProcessor:
         self._input = None
         self._state = 'idle'
         self._updateCount = 0
+        self._pending_config = None
 
         with open(os.path.join(config_path, config_file_name),'r') as f:
             self._config = json.load(f)
@@ -74,8 +75,11 @@ class TraceProcessor:
     def _processor_configure_cb(self, dct):
         print('Trace Processor Configuration',dct)
 
-        self.pyb.registerCollisionMeshes(dct['collision_meshes'])
-        self.pyb.registerOccupancyZones(dct['occupancy_zones'])
+        if self._state != 'idle':
+            self._pending_config = dct
+        else:    
+            self.pyb.registerCollisionMeshes(dct['collision_meshes'])
+            self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
     def _handle_pose_offset(self, point):
         transform = self._tf_buffer.lookup_transform(self._fixed_frame, point.link if point.link != "" else "app", rospy.Time(0), rospy.Duration(1.0))
@@ -168,6 +172,11 @@ class TraceProcessor:
         self._trace_data = None
         self._input = None
         self._updateCount = 0
+
+        if self._pending_config != None:
+            self.pyb.registerCollisionMeshes(self._pending_config['collision_meshes'])
+            self.pyb.registerOccupancyZones(self._pending_config['occupancy_zones'])
+            self._pending_config = None
 
         #data = trace.to_dct() if status else None
         submit_fnt(json.dumps({'input': inp, 'trace': trace, 'status': status}))
