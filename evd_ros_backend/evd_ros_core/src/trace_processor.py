@@ -27,8 +27,8 @@ from evd_script import Trace, NodeParser, Pose, OccupancyZone, CollisionMesh
 TIMEOUT_COUNT = 500
 SPIN_RATE = 5
 UPDATE_RATE = 1000
-JSF_NUM_STEPS = 20
-JSF_DISTANCE_THRESHOLD = 0.001
+JSF_NUM_STEPS = 10
+JSF_DISTANCE_THRESHOLD = 0.005
 
 POSITION_INTERMEDIATE_DISTANCE_THRESHOLD = 0.1
 ORIENTATION_INTERMEDIATE_DISTANCE_THRESHOLD = 0.5
@@ -73,11 +73,13 @@ class TraceProcessor:
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _processor_configure_cb(self, dct):
-        print('Trace Processor Configuration',dct)
+        print('Trace Processor - Configure', dct, 'Current State', self._state)
 
         if self._state != 'idle':
+            print('pending')
             self._pending_config = dct
         else:    
+            print('now')
             self.pyb.registerCollisionMeshes(dct['collision_meshes'])
             self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
@@ -93,6 +95,9 @@ class TraceProcessor:
         return joints
 
     def _start_job(self, data):
+        self._state = 'starting'
+
+        print('Trace Processor - Starting Job', data['trajectory']['uuid'])
         trajectory = NodeParser(data['trajectory'])
         points = {p['uuid']: NodeParser(p) for p in data['points']}
 
@@ -147,6 +152,8 @@ class TraceProcessor:
             "pybullet_joint_data": {n:[] for i, n in enumerate(self.ltk.joint_names)},
             "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
+            "pybullet_collision_uuids": list(self.pyb.collision_uuids),
+            "pybullet_occupancy_uuids": list(self.pyb.occupancy_uuids),
             "pybullet_collisions": {uuid: {n: [] for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
             "pybullet_occupancy": {uuid: {n: [] for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
             "pybullet_self_collisions": {n: {m: [] for m in self.pyb.frame_names} for n in self.pyb.frame_names},
@@ -162,7 +169,9 @@ class TraceProcessor:
         self._state = 'running'
 
     def _end_job(self, status, submit_fnt):
-        self._state = 'idle'
+        self._state = 'ending'
+
+        print('Trace Processor Ending Job', self._input['trajectory']['uuid'])
         trace = self._trace_data
         inp = self._input
 
@@ -180,6 +189,7 @@ class TraceProcessor:
 
         #data = trace.to_dct() if status else None
         submit_fnt(json.dumps({'input': inp, 'trace': trace, 'status': status}))
+        self._state = 'idle'
 
     def _update_cb(self, event=None):
         # If the job has been started
@@ -191,10 +201,14 @@ class TraceProcessor:
             
             # record timing info
             self._time_overall += self._timestep
+            if self._trace_data == None:
+                return # leave update if stop has been called
             self._trace_data['time_data'].append(self._time_overall)
 
             # end condition is when trajectory has been fully traced
             if self._index >= len(self._path):
+                if self._trace_data == None:
+                    return # leave update if stop has been called
                 self._trace_data['duration'] = self._time_overall
                 #self._job_queue.completed()
                 self._state = 'post'
@@ -214,6 +228,8 @@ class TraceProcessor:
 
     def __raw_processing(self):
         if self._type == 'ee_ik':
+            print('Trace Processor - Update', self._index, self._time_step, self._updateCount)
+
             # interpolate pose in this leg of trajectory
             interpolator = self._path[self._index]
             ee_pose_itp = interpolator.step(self._time_step)
@@ -256,18 +272,28 @@ class TraceProcessor:
             pb_collisions = self.pyb.collisionCheck()
             for uuid in pb_collisions.keys():
                 for frameName in pb_collisions[uuid].keys():
+                    if self._trace_data == None:
+                        return # leave update if stop has been called
+                    if uuid not in self._trace_data['pybullet_collision_uuids']:
+                        break # configuration changed
                     value = pb_collisions[uuid][frameName]
                     self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
 
             pb_occupancy = self.pyb.occupancyCheck()
             for uuid in pb_occupancy.keys():
                 for frameName in pb_occupancy[uuid].keys():
+                    if self._trace_data == None:
+                        return # leave update if stop has been called
+                    if uuid not in self._trace_data['pybullet_occupancy_uuids']:
+                        break # configuration changed
                     value = pb_occupancy[uuid][frameName]
                     self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
 
             pb_selfCollisions = self.pyb.selfCollisionCheck()
             for a in pb_selfCollisions.keys():
                 for b in pb_selfCollisions[a].keys():
+                    if self._trace_data == None:
+                        return # leave update if stop has been called
                     value = pb_selfCollisions[a][b]
                     self._trace_data['pybullet_self_collisions'][a][b].append(value)
             
@@ -276,6 +302,8 @@ class TraceProcessor:
             poseWasReached = poseReached(ee_pose_ltk, interpolator.end_pose, posThreshold, ortThreshold)
             inTimeout = TIMEOUT_COUNT < self._updateCount
             jointsAreStable = self.jsf.isStable()
+
+            print('Joints stable', jointsAreStable, 'pose reached', poseWasReached, 'in timeout', inTimeout)
 
             if jointsAreStable and (poseWasReached or inTimeout):
                 if inTimeout:
@@ -320,18 +348,24 @@ class TraceProcessor:
             pb_collisions = self.pyb.collisionCheck()
             for uuid in pb_collisions.keys():
                 for frameName in pb_collisions[uuid].keys():
+                    if self._trace_data == None:
+                        return # leave update if stop has been called
                     value = pb_collisions[uuid][frameName]
                     self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
 
             pb_occupancy = self.pyb.occupancyCheck()
             for uuid in pb_occupancy.keys():
                 for frameName in pb_occupancy[uuid].keys():
+                    if self._trace_data == None:
+                        return # leave update if stop has been called
                     value = pb_occupancy[uuid][frameName]
                     self._trace_data['pybullet_occupancy'][uuid][frameName].append(value)
 
             pb_selfCollisions = self.pyb.selfCollisionCheck()
             for a in pb_selfCollisions.keys():
                 for b in pb_selfCollisions[a].keys():
+                    if self._trace_data == None:
+                        return # leave update if stop has been called
                     value = pb_selfCollisions[a][b]
                     self._trace_data['pybullet_self_collisions'][a][b].append(value)
 

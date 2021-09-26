@@ -22,8 +22,8 @@ from evd_script import Joints, NodeParser, OccupancyZone, CollisionMesh
 TIMEOUT_COUNT = 500
 SPIN_RATE = 5
 UPDATE_RATE = 1000
-JSF_NUM_STEPS = 20
-JSF_DISTANCE_THRESHOLD = 0.001
+JSF_NUM_STEPS = 10
+JSF_DISTANCE_THRESHOLD = 0.005
 POSITION_DISTANCE_THRESHOLD = 0.05
 ORIENTATION_DISTANCE_THRESHOLD = 0.02
 
@@ -58,16 +58,19 @@ class JointProcessor:
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _processor_configure_cb(self, dct):
+        print('Joint Processor - Configure', dct, 'Current State', self._state)
         if self._state != 'idle':
+            print('pending')
             self._pending_config = dct
         else:    
+            print('now')
             self.pyb.registerCollisionMeshes(dct['collision_meshes'])
             self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
     def _start_job(self, data):
         self._state = 'starting'
 
-        #print('\n\nSTARTING JOB')
+        print('Joint Processor - Starting Job', data['point']['uuid'])
         length = len(self._joint_names)
         waypoint = NodeParser(data['point'])
         transform = self._tf_buffer.lookup_transform(self._fixed_frame, waypoint.link if waypoint.link != "" else "app", rospy.Time(0), rospy.Duration(1.0))
@@ -88,14 +91,11 @@ class JointProcessor:
             "pybullet_joint_data": {n: None for n in self.pyb.joint_names},
             "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n: None for n in self.pyb.frame_names},
+            "pybullet_collision_uuids": list(self.pyb.collision_uuids),
+            "pybullet_occupancy_uuids": list(self.pyb.occupancy_uuids),
             "pybullet_collisions": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
             "pybullet_occupancy": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
-            "pybullet_self_collisions": {n: {m: None for m in self.pyb.frame_names} for n in self.pyb.frame_names},
-            "debug": {
-                "joint_stablization": None,
-                'pose_reached': None,
-                'timeout': None
-            }
+            "pybullet_self_collisions": {n: {m: None for m in self.pyb.frame_names} for n in self.pyb.frame_names}
         }
 
         self._input = data
@@ -109,6 +109,8 @@ class JointProcessor:
         
     def _end_job(self, status, submit_fnt):
         self._state = 'ending'
+
+        print('Joint Processor Ending Job', self._input['point']['uuid'])
 
         data = self._joints.to_dct()
         trace = self._trace_data
@@ -154,13 +156,6 @@ class JointProcessor:
             inTimeout = TIMEOUT_COUNT < self._updateCount
             if self.jsf.isStable() and (poseWasReached or inTimeout):
 
-                #pack debug
-                '''
-                self._trace_data["debug"]["joint_stablization"] = self.jsf.debug
-                self._trace_data["debug"]["pose_reached"] = {"reached": poseWasReached, "deltas": poseReachedDebug(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)}
-                self._trace_data["debug"]["timeout"] = {"count": self._updateCount, "threshold": TIMEOUT_COUNT, "in_timeout": inTimeout}
-                '''
-
                 # pack trace
                 for n, p in zip(jn_ltk,jp_ltk):
                     if self._trace_data == None:
@@ -191,18 +186,28 @@ class JointProcessor:
                 pb_collisions = self.pyb.collisionCheck()
                 for uuid in pb_collisions.keys():
                     for frameName in pb_collisions[uuid].keys():
+                        if self._trace_data == None:
+                            return # leave update if stop has been called
+                        if uuid not in self._trace_data['pybullet_collision_uuids']:
+                            break # configuration changed
                         value = pb_collisions[uuid][frameName]
                         self._trace_data['pybullet_collisions'][uuid][frameName] = p
 
                 pb_occupancy = self.pyb.occupancyCheck()
                 for uuid in pb_occupancy.keys():
                     for frameName in pb_occupancy[uuid].keys():
+                        if self._trace_data == None:
+                            return # leave update if stop has been called
+                        if uuid not in self._trace_data['pybullet_occupancy_uuids']:
+                            break # configuration changed
                         value = pb_occupancy[uuid][frameName]
                         self._trace_data['pybullet_occupancy'][uuid][frameName] = p
 
                 pb_selfCollisions = self.pyb.selfCollisionCheck()
                 for a in pb_selfCollisions.keys():
                     for b in pb_selfCollisions[a].keys():
+                        if self._trace_data == None:
+                            return # leave update if stop has been called
                         value = pb_selfCollisions[a][b]
                         self._trace_data['pybullet_self_collisions'][a][b] = p
 
