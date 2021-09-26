@@ -11,6 +11,7 @@
   <arg name="load_rviz_cfg" default="true"/>
 
   <arg name="run_test" default="false"/>
+  <arg name="bullet_gui" default="true"/>
 
 <!--=========================================================================-->
 <!--  Robot                                                                  -->
@@ -32,6 +33,7 @@
     <arg name="config_file_name" value="model.json"/>
     <arg name="ros_frame_id" value="world"/>
     <arg name="run_test" value="$(arg run_test)"/>
+    <arg name="bullet_gui" value="$(arg bullet_gui)"/>
   </include>
 
   <!-- RVIZ -->

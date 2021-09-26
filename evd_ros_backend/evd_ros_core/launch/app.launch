@@ -4,6 +4,7 @@
   <arg name="config_file_name"/>
   <arg name="ros_frame_id"/>
   <arg name="run_test" default="false"/>
+  <arg name="bullet_gui" default="false"/>
 
   <include file="$(find evd_ros_core)/launch/rosbridge.launch"/>
 
@@ -21,13 +22,13 @@
   <node name="trace_processor" pkg="evd_ros_core" type="trace_processor.py" output="screen">
     <param name="config_path" value="$(arg config_path)" />
     <param name="config_file_name" value="$(arg config_file_name)"/>
-    <param name="use_gui" value="$(arg run_test)"/>
+    <param name="use_gui" value="$(arg bullet_gui)"/>
   </node>
 
   <node name="joint_processor" pkg="evd_ros_core" type="joint_processor.py" output="screen">
     <param name="config_path" value="$(arg config_path)" />
     <param name="config_file_name" value="$(arg config_file_name)"/>
-    <param name="use_gui" value="$(arg run_test)"/>
+    <param name="use_gui" value="$(arg bullet_gui)"/>
   </node>
 
   <!-- For Debug -->
