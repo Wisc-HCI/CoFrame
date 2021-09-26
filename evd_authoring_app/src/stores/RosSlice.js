@@ -127,15 +127,15 @@ export const RosSlice = (set, get) => ({
         console.log('receiving trace data from processor')
         console.log({input,trace,status})
         if (status) {
-            const { duration, time_data, pybullet_joint_data, pybullet_collisions, pybullet_pinchpoints, pybullet_frame_data } = trace;
+            const { duration, time_data, pybullet_joint_data, pybullet_collisions, pybullet_self_collisions, pybullet_frame_data } = trace;
             if (state.data.trajectories[msg.id]) {
                 state.data.trajectories[msg.id].trace = {
                     duration,
-                    time_data: time_data,
-                    joint_data: pybullet_joint_data,
-                    collisions: pybullet_collisions,
-                    pinchpoints: pybullet_pinchpoints,
-                    frames: pybullet_frame_data
+                    time_data,
+                    joint_data:pybullet_joint_data,
+                    frames:pybullet_frame_data,
+                    env_collisions:pybullet_collisions,
+                    self_collisions:pybullet_self_collisions,
                 }
             }
         }
