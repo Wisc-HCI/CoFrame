@@ -38,7 +38,7 @@ def  positionDifference(pos0, pos1):
 def poseReachedDebug(p0, p1, 
                 positionThreshold=DEFAULT_POSITION_THRESHOLD, 
                 orientationThreshold=DEFAULT_ORIENTATION_THRESHOLD):
-
+    '''
     return {
         "position_threshold": positionThreshold,
         "orientation_threshold": orientationThreshold,
@@ -46,3 +46,5 @@ def poseReachedDebug(p0, p1,
         "p1": (),
         "position_diff": positionDifference()
     }
+    '''
+    pass

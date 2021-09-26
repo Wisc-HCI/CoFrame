@@ -143,9 +143,11 @@ class JointProcessor:
             if self.jsf.isStable() and (poseWasReached or inTimeout):
 
                 #pack debug
+                '''
                 self._trace_data["debug"]["joint_stablization"] = self.jsf.debug
                 self._trace_data["debug"]["pose_reached"] = {"reached": poseWasReached, "deltas": poseReachedDebug(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)}
                 self._trace_data["debug"]["timeout"] = {"count": self._updateCount, "threshold": TIMEOUT_COUNT, "in_timeout": inTimeout}
+                '''
 
                 # pack trace
                 for n, p in zip(jn_ltk,jp_ltk):
