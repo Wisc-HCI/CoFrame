@@ -6,9 +6,37 @@ import PositionInput from './PositionInput';
 const { TextArea } = Input;
 
 export const MachineInOutRegionDetail = ({ uuid }) => {
+
     const region = useStore(useCallback(state => state.data.regions[uuid], [uuid]));
 
     const setItemProperty = useStore(state => state.setItemProperty);
+
+    const setSecondaryFocusItem = useStore(state => state.setSecondaryFocusItem);
+
+    const [activeTransform, setActiveTransform] = useState('inactive');
+
+    const positionOnOpen = () => {
+        setSecondaryFocusItem('region', region.uuid, 'translate');
+        setActiveTransform('translate');
+    }
+
+    const positionOnClose = () => {
+        setSecondaryFocusItem('region', region.uuid, 'inactive');
+        setActiveTransform('inactive');
+
+    }
+
+    function orientationOnClose() {
+        setSecondaryFocusItem('region', region.uuid, 'inactive');
+        setActiveTransform('inactive');
+
+    }
+
+    function orientationOnOpen() {
+        setSecondaryFocusItem('region', region.uuid, 'rotate');
+        setActiveTransform('rotate');
+
+    }
 
 
     let defaultShape = "Sphere"
@@ -22,7 +50,7 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
         if (newShape !== shape) {
             if (shape === 'Cube') {
                 let temp = region.uncertainty_x;
-    
+
                 setItemProperty('region', region.uuid, 'uncertainty_radius', temp)
                 setItemProperty('region', region.uuid, 'uncertainty_x', null)
                 setItemProperty('region', region.uuid, 'uncertainty_y', null)
@@ -30,7 +58,7 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
                 setShape('Sphere')
             } else {
                 let temp = region.uncertainty_radius;
-    
+
                 setItemProperty('region', region.uuid, 'uncertainty_x', temp)
                 setItemProperty('region', region.uuid, 'uncertainty_y', temp)
                 setItemProperty('region', region.uuid, 'uncertainty_z', temp)
@@ -108,17 +136,14 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
             </Divider>
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <PositionInput value={[region.center_position.x, region.center_position.y, region.center_position.z]}
+                <PositionInput value={[region.center_position.x, region.center_position.y, region.center_position.z]} onOpen={positionOnOpen} onClose={positionOnClose} openStatus={activeTransform === 'translate'}
                     onChange={e => setItemProperty('region', region.uuid, 'center_position', { ...region.center_position, x: e[0], y: e[1], z: e[2] })} />
-                <OrientationInput value={[region.center_orientation.w, region.center_orientation.x, region.center_orientation.y, region.center_orientation.z]}
+                <OrientationInput value={[region.center_orientation.w, region.center_orientation.x, region.center_orientation.y, region.center_orientation.z]} onOpen={orientationOnOpen} onClose={orientationOnClose} openStatus={activeTransform === 'rotate'}
                     onChange={e => setItemProperty('region', region.uuid, 'center_orientation', { ...region.center_orientation, w: e[0], x: e[1], y: e[2], z: e[3] })} />
                 <br />
                 <div style={{ paddingTop: '0px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}>Free Orientation:</b>
                     <Switch disabled={!region.editable} checked={region.free_orientation} style={{ left: '-30px' }} />
-
-
-
                 </div>
                 <Divider orientation="left" style={{ color: 'white', borderTopColor: 'rgba(255,255,255,0.12)', lineHeight: '1.5715px', paddingTop: '20px', paddingBottom: '5px' }}>
                     <span>Shape</span>
@@ -129,10 +154,10 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
                     <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}>Shape:</b>
                     <div>
 
-                        <Button style={{marginRight:2}} disabled={!region.editable && shape!=='Cube'} type={shape === 'Cube' ? 'primary' : 'default'} onClick={() => { changeShape('Cube') }}>
+                        <Button style={{ marginRight: 2 }} disabled={!region.editable && shape !== 'Cube'} type={shape === 'Cube' ? 'primary' : 'default'} onClick={() => { changeShape('Cube') }}>
                             Cube
                         </Button>
-                        <Button disabled={!region.editable && shape!=='Sphere'} type={shape === 'Cube' ? 'default' : 'primary'} onClick={() => { changeShape('Sphere') }}>
+                        <Button disabled={!region.editable && shape !== 'Sphere'} type={shape === 'Cube' ? 'default' : 'primary'} onClick={() => { changeShape('Sphere') }}>
                             Sphere
                         </Button>
                     </div>

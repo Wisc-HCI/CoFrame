@@ -13,8 +13,8 @@ import {ComputedSlice} from './ComputedSlice';
 // import {SimSlice} from './SimSlice';
 
 // import { INITIAL_SIM } from "./initialSim";
-import fakeEvdData from './fakeEvdData';
-// import KNIFE_TASK from './knifeTask';
+// import fakeEvdData from './fakeEvdData';
+import KNIFE_TASK from './knifeTask';
 
 const immer = (config) => (set, get, api) =>
   config(
@@ -34,11 +34,11 @@ const store = (set, get) => ({
     ...RosSlice(set,get),
 })
 
-const useStore = create(store,{...ComputedSlice,middleware:[immer,persist]});
-// const useStore = create(store,{...ComputedSlice,middleware:[immer]});
+// const useStore = create(store,{...ComputedSlice,middleware:[immer,persist]});
+const useStore = create(store,{...ComputedSlice,middleware:[immer]});
 
-useStore.getState().setProgram(fakeEvdData.arbitrary.program);
-// useStore.getState().setProgram(KNIFE_TASK)
+// useStore.getState().setProgram(fakeEvdData.arbitrary.program);
+useStore.getState().setProgram(KNIFE_TASK)
 useStore.getState().setUrl('ws://localhost:9090');
 
 export default useStore;

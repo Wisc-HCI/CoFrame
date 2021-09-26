@@ -1,4 +1,4 @@
-const GRIPPER_CONFIGURATIONS = {
+export const GRIPPER_CONFIGURATIONS = {
     "capture": {
         "simulated_robotiq_85_base_link": [
             [

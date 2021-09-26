@@ -20,54 +20,99 @@ export const COLLISION_MESHES = {
     'package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae':'package://robotiq_85_description/meshes/collision/robotiq_85_finger_tip_link.stl'
 }
 
+export const EVD_MESH_LOOKUP = {
+    "package://evd_ros_tasks/description/meshes/visual/3d_printer.stl":"package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
+    "package://evd_ros_tasks/description/meshes/visual/assembly_jig.stl":"assembly_jig",
+    "package://evd_ros_tasks/description/meshes/visual/conveyor.stl":"conveyor",
+    "package://evd_ros_tasks/description/meshes/visual/blade_feeder.stl":"conveyor_receiver",
+    "package://evd_ros_tasks/description/meshes/visual/knife_feeder.stl":"conveyor_dispatcher",
+    "package://evd_ros_tasks/description/markers/left_handle.stl":"handle_l",
+    "package://evd_ros_tasks/description/markers/right_handle.stl":"handle_r",
+    "package://evd_ros_tasks/description/markers/blade.stl":"blade",
+    "package://evd_ros_tasks/description/markers/tranport_jig.stl":"transport_jig",
+    "package://evd_ros_tasks/description/markers/blade_with_transport_jig.stl":"blade_with_transport_jig",
+    "package://evd_ros_tasks/description/markers/knife_with_transport_jig.stl":"knife_with_transport_jig"
+}
+
 export const INITIAL_SIM =
     {
         tfs:{
+            '3d_printer_link':{
+                frame:'world',
+                translation: { x: -0.28, y: 0.32, z: 0.3 },
+                rotation: { w: 1, x: 0, y: 0, z: 0 },
+            },
+            'assembly_jig_link':{
+                frame:'world',
+                translation: { x: 0.2, y: 0.28, z: 0.14 },
+                rotation: { w: -0.5, x: 0.5, y: -0.5, z: -0.5 },
+            },
+            'blade_conveyor_link':{
+                frame:'world',
+                translation: { x: -0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
+            },
+            'blade_feeder_link':{
+                frame:'world',
+                translation: { x: -0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
+            },
+            'knife_conveyor_link':{
+                frame:'world',
+                translation: { x: 0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
+            },
+            'knife_feeder_link':{
+                frame:'world',
+                translation: { x: 0.85, y: -0.25, z: -0.75 },
+                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
+            },
             'simulated_base_link':{
                 frame:'world',
                 translation: { x: 0, y: -0.15, z: 0 },
                 rotation: { w: 0, x: 0, y: 0, z: 1 },
             },
             'simulated_shoulder_link':{
-                frame:'simulated_base_link',
-                translation: { x: 0, y: 0, z: 0.15185 },
-                rotation: { w: 1, x: 0, y: 0, z: 0 },
+                frame:'world',
+                translation: { x: 0, y: -0.15, z: 0.15185 },
+                rotation: { w: 0.6669439077377319, x: 0, y: 0, z: 0.745107889175415 },
             },
             'simulated_upper_arm_link':{
-                frame:'simulated_shoulder_link',
-                translation: { x: 0, y: 0, z: 0 },
-                rotation: { w: 0.7071067811140325, x: 0.7071067812590626, y: 0, z: 0 }
+                frame:'world',
+                translation: { x: 0, y: -0.15, z: 0.15185 },
+                rotation: { w: -0.4478497803211212, x: 0.5932892560958862, y: -0.3847179114818573, z: 0.5472025871276855 }
             },
             'simulated_forearm_link':{
-                frame:'simulated_upper_arm_link',
-                translation: { x: -0.24355, y: 0, z: 0 },
-                rotation: { w: 1, x: 0, y: 0, z: 0 },
+                frame:'world',
+                translation: { x: -0.02560272067785263, y: 0.08055101335048676, z: 0.07763859629631042 },
+                rotation: { w: 0.6748411655426025, x: 0.1353885531425476, y: 0.694024384021759, z: 0.2111620008945465 },
             },
             'simulated_wrist_1_link':{
-                frame:'simulated_forearm_link',
-                translation: { x: -0.2132, y: 0, z: 0.13105},
-                rotation: { w: 1, x: 0, y: 0, z: 0 },
+                frame:'world',
+                translation: { x: 0.11584359407424927, y: -0.005812940187752247, z: 0.2651554048061371},
+                rotation: { w: -0.29463568329811096, x: 0.6713905930519104, y: -0.22188881039619446, z: 0.6427983641624451 },
             },
             'simulated_wrist_2_link':{
-                frame:'simulated_wrist_1_link',
-                translation: { x: 0, y: -0.08535, z: 0 },
-                rotation: { w: 0.7071067811140325, x: 0.7071067812590626, y: 0, z: 0 },
+                frame:'world',
+                translation: { x: 0.1089443638920784, y: 0.05631420761346817, z: 0.32326942682266235 },
+                rotation: { w: 0.9164819121360779, x: -0.39580079913139343, y: -0.05381776764988899, z: -0.022500555962324142 },
             },
             'simulated_wrist_3_link':{
-                frame:'simulated_wrist_2_link',
-                translation: { x: 0, y: 0.0921, z: 0 },
-                rotation: { w: 0.7071067811140325, x: -0.7071067812590626, y: 0, z: 0 },
+                frame:'world',
+                translation: { x: 0.11666648089885712, y: 0.11946450173854828, z: 0.25667497515678406 },
+                rotation: { w: -0.37005797028541565, x: 0.9280606508255005, y: -0.01538957841694355, z: 0.039035625755786896 },
             },
             'simulated_flange':{
-                frame:'simulated_wrist_3_link',
-                translation: { x: 0, y: 0, z: 0 },
-                rotation: { w: 0.5, x: -0.5, y: -0.5, z: -0.5 },
+                frame:'world',
+                translation: { x: 0.11666648089885712, y: 0.11946450173854828, z: 0.25667497515678406 },
+                rotation: { w: 0.29082435369491577, x: 0.676271915435791, y: 0.6218466758728027, z: -0.26717832684516907 },
               },
             'simulated_tool0':{
-                frame:'simulated_flange',
-                translation: { x: 0, y: 0, z: 0 },
-                rotation: { w: 0.5, x: 0.5, y: 0.5, z: 0.5 },
+                frame:'world',
+                translation: { x: 0.11666648089885712, y: 0.11946450173854828, z: 0.25667497515678406 },
+                rotation: { w: -0.37005797028541565, x: 0.9280606508255005, y: -0.01538957841694355, z: 0.039035625755786896 },
             },
+            // This starts the overriden values by gripper.js
             'simulated_robotiq_85_base_link':{
                 frame:'simulated_tool0',
                 translation: {x: 0, y: 0, z: 0},
@@ -126,46 +171,46 @@ export const INITIAL_SIM =
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
             },
-            bladeConveyor: {
-                shape: 'conveyor',
-                name: "Blade Production Conveyor Belt",
-                frame: "world",
-                position: { x: -0.85, y: -0.25, z: -0.75 },
-                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
-                scale: { x: 1, y: 1, z: 1 },
-                highlighted: false,
-                showName: false
-            },
-            conveyorReceiver: {
-                shape: 'conveyor_receiver',
-                name: "Blade Receiver",
-                frame: "world",
-                position: { x: -0.85, y: -0.25, z: -0.75 },
-                rotation: { w: 0.707, x: 0, y: 0, z: 0.707 },
-                scale: { x: 1, y: 1, z: 1 },
-                highlighted: false,
-                showName: false
-            },
-            knifeConveyor: {
-                shape: 'conveyor',
-                name: "Finished Knife Conveyor Belt",
-                frame: "world",
-                position: { x: 0.85, y: -0.25, z: -0.75 },
-                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
-                scale: { x: 1, y: 1, z: 1 },
-                highlighted: false,
-                showName: false,
-            },
-            conveyorDispatcher: {
-                shape: 'conveyor_dispatcher',
-                name: "Knife Dispatcher",
-                frame: "world",
-                position: { x: 0.85, y: -0.25, z: -0.75 },
-                rotation: { w: 0.707, x: 0, y: 0, z: -0.707 },
-                scale: { x: 1, y: 1, z: 1 },
-                highlighted: false,
-                showName: false,
-            },    
+            // bladeConveyor: {
+            //     shape: 'conveyor',
+            //     name: "Blade Production Conveyor Belt",
+            //     frame: "blade_conveyor_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 1, y: 1, z: 1 },
+            //     highlighted: false,
+            //     showName: false
+            // },
+            // conveyorReceiver: {
+            //     shape: 'conveyor_receiver',
+            //     name: "Blade Receiver",
+            //     frame: "blade_feeder_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 1, y: 1, z: 1 },
+            //     highlighted: false,
+            //     showName: false
+            // },
+            // knifeConveyor: {
+            //     shape: 'conveyor',
+            //     name: "Finished Knife Conveyor Belt",
+            //     frame: "knife_conveyor_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 1, y: 1, z: 1 },
+            //     highlighted: false,
+            //     showName: false,
+            // },
+            // conveyorDispatcher: {
+            //     shape: 'conveyor_dispatcher',
+            //     name: "Knife Dispatcher",
+            //     frame: "knife_feeder_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 1, y: 1, z: 1 },
+            //     highlighted: false,
+            //     showName: false,
+            // },    
             pedestal: {
                 shape: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl",
                 name: "Pedestal",
@@ -177,25 +222,25 @@ export const INITIAL_SIM =
                 highlighted: false,
                 scale: {x:1,y:1,z:1}
             },
-            printer: {
-                shape: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
-                name: "3D Printer",
-                frame: "world",
-                position: { x: -0.28, y: 0.32, z: 0.3 },
-                rotation: { w: 1, x: 0, y: 0, z: 0 },
-                showCollison: false,
-                highlighted: false,
-                scale: {x:1,y:1,z:1}
-            },
-            assemblyJig: {
-                shape: "assembly_jig",
-                name: "Assembly Jig",
-                frame: "world",
-                position: { x: 0.2, y: 0.28, z: 0.14 },
-                rotation: { w: -0.5, x: 0.5, y: -0.5, z: -0.5 },
-                scale: { x: 0.2, y: 0.2, z: 0.2 },
-                highlighted: false,
-            },
+            // printer: {
+            //     shape: "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
+            //     name: "3D Printer",
+            //     frame: "3d_printer_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     showCollison: false,
+            //     highlighted: false,
+            //     scale: {x:1,y:1,z:1}
+            // },
+            // assemblyJig: {
+            //     shape: "assembly_jig",
+            //     name: "Assembly Jig",
+            //     frame: "assembly_jig_link",
+            //     position: { x: 0, y: 0, z: 0 },
+            //     rotation: { w: 1, x: 0, y: 0, z: 0 },
+            //     scale: { x: 0.2, y: 0.2, z: 0.2 },
+            //     highlighted: false,
+            // },
             robotBase: {
                 shape: "package://ur_description/meshes/ur3/visual/base.dae",
                 name: 'Robot Base',

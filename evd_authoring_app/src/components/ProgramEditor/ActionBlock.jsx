@@ -21,9 +21,12 @@ const COMPONENT_LOOKUP = {
 export const ActionBlock = (props) => {
 
     const type = useStore(state=>{
-        return props.staticData ? props.staticData.type : state.data.primitives[props.uuid].type
+        return props.staticData ? props.staticData.type : state.data.primitives[props.uuid]?.type
     })
-
+    
+    if (!type) {
+        return null
+    }
     const Component = COMPONENT_LOOKUP[type];
 
     return <Component {...props} />

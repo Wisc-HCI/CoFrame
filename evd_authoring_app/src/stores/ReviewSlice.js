@@ -9,6 +9,7 @@ const SECTION_INFO = {
         name:'End Effector Poses',
         updater:findEndEffectorPoseIssues,
         dependencies:['reachability']
+        // dependencies:[]
     },
     pinchPoints:{
         name:'Pinch Points',
@@ -29,6 +30,7 @@ const SECTION_INFO = {
         name:'Thing Movement',
         updater:findThingMovementIssues,
         dependencies:['endEffectorPoses']
+        // dependencies:[]
     },
     missingBlocks:{
         name:'Missing Blocks',
@@ -111,6 +113,8 @@ export const ReviewSlice = (set) => ({
             complete: bool (mainly for issues that don't require changes, whether it has been marked as complete)
             focus: {uuid:str, type:str} (what type of item to focus on in the gui when issue is selected)
             graphData: 🤷
+            sceneData: 🤷
+            code: str (whatever we want)
         }
         */
     },
@@ -121,7 +125,7 @@ export const ReviewSlice = (set) => ({
     refresh: () => set(state=>{
         //state.issues = {};
         let newIssues = {};
-        let unrolledProgram = null;
+        let unrolledProgram = state.executablePrimitives[state.uuid];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
@@ -150,5 +154,6 @@ export const ReviewSlice = (set) => ({
         state.issues = newIssues;
         // Update the stats set.
         state.stats.push(allNewStats);
+        console.log(newIssues)
     })
 });

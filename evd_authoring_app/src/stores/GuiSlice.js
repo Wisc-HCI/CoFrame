@@ -17,6 +17,8 @@ const ACTIVE_TFS = [
 export const GuiSlice = (set, get) => ({
   // EDITOR/SETUP/MAIN
   // The frame specifies the expert (color) frame
+  //positionVec : [0,0,0],
+  //setPositionVec : (vec) => set(_ => ({postionVec : vec})),
   frame: 'safety',
   primaryColor: frameStyles.colors['safety'],
   setFrame: (frame) => set(state => {
@@ -53,7 +55,7 @@ export const GuiSlice = (set, get) => ({
   simMode: 'default',
   setSimMode: (mode) => set(_ => ({ simMode: mode })),
   secondaryFocusItem: { type: null, uuid: null },
-  setSecondaryFocusItem: (type, uuid) => set(_ => ({ secondaryFocusItem: { type: type, uuid: uuid } })),
+  setSecondaryFocusItem: (type, uuid, transformMode) => set(_ => ({ secondaryFocusItem: { type, uuid, transformMode } })),
   clearSecondaryFocusItem: () => set(_ => ({ secondaryFocusItem: { type: null, uuid: null } })),
   childrenDrawer: false,
   setChildrenDrawer: (input) => set(_ => ({ childrenDrawer: input })),

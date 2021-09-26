@@ -1,6 +1,4 @@
 import React, {useState} from 'react';
-
-import useStore from '../../stores/Store';
 import { Space, Button, Popover,InputNumber } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
@@ -28,17 +26,19 @@ function OrientationInput (props)  {
  }
 
  
-const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
- state.setFocusItem]
- 
-));
+
+const [preVec, setPrevVec] = useState(null);
+if (props.value !== preVec){
+  setPrevVec(props.value);
+  setEulerValues(props.value);
+}
 
   return(
     <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
     <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Orientation:</b>
     <Popover
     placement="left"
-    visible =  {(focusItem.transformMode === "rotate") ? true : false}
+    visible =  {props.openStatus}
     //onVisibleChange = {()=> changeTransformMode()}
     content={
       <Space>
@@ -84,7 +84,7 @@ const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
            props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
          }}}
         />
-        <Button type="primary" onClick = {() =>setFocusItem(props.type,props.uuid,"inactive")}>Close</Button>
+        <Button type="primary" onClick = {props.onClose}>Close</Button>
       </Space>
     }
     title="Set Orientation"
@@ -97,7 +97,7 @@ const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
       block
       icon={<EditOutlined />}
       style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-      onClick = {() => setFocusItem(props.type,props.uuid,"rotate")   }
+      onClick = {props.openStatus ? props.onClose : props.onOpen}
     >
     </Button>
     

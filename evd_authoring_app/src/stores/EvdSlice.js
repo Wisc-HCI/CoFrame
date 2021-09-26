@@ -49,13 +49,16 @@ export const EvdSlice = (set, get) => ({
     });
     get().addItem('reachSphere', program.environment.reach_sphere);
     program.environment.locations.forEach((location) => {
-      get().addItem('location', location)
+      get().addItem('location', location);
     });
     program.environment.waypoints.forEach((waypoint) => {
-      get().addItem('waypoint', waypoint)
+      get().addItem('waypoint', waypoint);
     });
     program.environment.trajectories.forEach((trajectory) => {
-      get().addItem('trajectory', trajectory)
+      get().addItem('trajectory', trajectory);
+    });
+    program.environment.regions.forEach((region) => {
+      get().addItem('region', region)
     });
     program.environment.machines.forEach((machine) => {
       get().addItem('machine', machine)
@@ -65,9 +68,6 @@ export const EvdSlice = (set, get) => ({
     });
     program.environment.placeholders.forEach((placeholder) => {
       get().addItem('placeholder', placeholder)
-    });
-    program.environment.regions.forEach((region) => {
-      get().addItem('region', region)
     });
     const [flattenedPrimitives, flattenedSkills] = flattenProgram(program.primitives, program.skills, { type: 'program', uuid: program.uuid });
     flattenedPrimitives.forEach((primitive) => {
@@ -129,8 +129,12 @@ export const EvdSlice = (set, get) => ({
   }),
   deleteChildPrimitive: (parentId, primitiveId) => set((state) => {
     if (parentId === state.uuid) {
-      // console.log('removing primitive from program')
-      state.primitiveIds = state.primitiveIds.filter(id => id !== primitiveId)
+      console.log('removing primitive '+primitiveId+' from program '+parentId)
+      const oldPrimitiveIds = state.primitiveIds;
+      const newPrimitiveIds = state.primitiveIds.filter(id => id !== primitiveId);
+      console.log(oldPrimitiveIds);
+      console.log(newPrimitiveIds);
+      state.primitiveIds = newPrimitiveIds;
     } else if (state.data.skills[parentId]) {
       state.data.skills[parentId].primitiveIds = state.data.skills[parentId].primitiveIds.filter(id => id !== primitiveId)
     } else if (state.data.primitives[parentId]) {
@@ -155,7 +159,7 @@ export const EvdSlice = (set, get) => ({
     // First, clean out all the contents recursively
     hierarchical.primitiveIds.forEach(id => {
       if (get().data.primitives[id].type.includes('hierarchical')) {
-        get().deleteHierarchical(get().data.primitives[id])
+        get().deleteHierarchical(get().data.primitives[id],hierarchical.uuid)
       } else {
         get().deleteChildPrimitive(hierarchical.uuid, id)
       }
@@ -260,6 +264,15 @@ export const EvdSlice = (set, get) => ({
     // if (['waypoint','location','trajectory'].includes(type)) {
     //   state.renderData[typeToKey(type)][uuid] = state.data[typeToKey(type)][uuid];
     // }
+    if (type === 'primitive' && state.data.primitives[uuid].type === 'node.primitive.gripper.' && property === 'position') {
+      if (value < 45) {
+        state.data.primitives[uuid].name = 'Grasp'
+      } else if (value > 55) {
+        state.data.primitives[uuid].name = 'Release'
+      } else {
+        state.data.primitives[uuid].name = 'Gripper Move'
+      }
+    }
   }),
   setPoseTransform: (uuid, transform) => set(state=>{
     if (state.data.locations[uuid]) {
@@ -280,6 +293,17 @@ export const EvdSlice = (set, get) => ({
       state.data.waypoints[uuid].orientation.z = transform.local.quaternion.z;
       state.data.waypoints[uuid].orientation.w = transform.local.quaternion.w;
       //state.renderData.waypoints[uuid] = state.data.waypoints[uuid];
+    }
+  }),
+  setRegionTransform: (uuid, transform) => set(state=>{
+    if (state.data.regions[uuid]) {
+      state.data.regions[uuid].center_position.x = transform.local.position.x;
+      state.data.regions[uuid].center_position.y = transform.local.position.y;
+      state.data.regions[uuid].center_position.z = transform.local.position.z;
+      state.data.regions[uuid].center_orientation.x = transform.local.quaternion.x;
+      state.data.regions[uuid].center_orientation.y = transform.local.quaternion.y;
+      state.data.regions[uuid].center_orientation.z = transform.local.quaternion.z;
+      state.data.regions[uuid].center_orientation.w = transform.local.quaternion.w;
     }
   }),
   setPrimitiveParameter: (type, uuid, property, value) => set((state) => {
@@ -378,8 +402,5 @@ export const EvdSlice = (set, get) => ({
       }
     }
     
-  }),
-  toggleSkillEditable: (skill_uuid) => set((state) => {
-    state.data[typeToKey('skill')][skill_uuid].editable = !state.data[typeToKey('skill')][skill_uuid].editable
   })
 });

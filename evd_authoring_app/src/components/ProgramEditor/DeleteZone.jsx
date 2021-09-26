@@ -15,18 +15,9 @@ export const DeleteZone = (_) => {
         accept: acceptTypes,
         drop: (item, _) => {
             console.log(item)
-            if (item.onDelete) {
-                item.onDelete()
+            if (item.onDelete && item.deleteable) {
+                item.onDelete(item)
             }
-            // if (item.type.includes('hierarchical')) {
-            //     console.log('deleting hierarchical')
-            //     deleteHierarchical(item)
-            // } else if (item.type.includes('primitive')) {
-            //     console.log('deleting primitive')
-            //     deleteChildPrimitive(item.uuid)
-            // } else {
-            //     console.log(`item type ${item.type} not recognized`)
-            // }
         },
         canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0 && item.deleteable),
         collect: (monitor) => ({

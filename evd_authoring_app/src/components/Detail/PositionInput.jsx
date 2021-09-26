@@ -1,25 +1,26 @@
 import React, {useState} from 'react';
 import { Space, Button, Popover,InputNumber } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import useStore from '../../stores/Store';
 
 function PositionInput (props)  {
    const [inputVec, setInputVec] = useState(props.value);
+   const [preVec, setPrevVec] = useState(null);
    let minMax = [-10,10];
    let steps = 0.01;
-   const [focusItem,setFocusItem] = useStore(state=>([state.focusItem,
-    state.setFocusItem]
-    
-));
-
-
+  
+    if (props.value !== preVec){
+      setPrevVec(props.value);
+      setInputVec(props.value);
+    }
+   
    return(
      
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
      <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Position:</b>
+     
      <Popover
      placement="left"
-     visible =  {(focusItem.transformMode === "translate") ? true : false}
+     visible =  {props.openStatus}
      content={
        <Space>
          <h4 style={{ color: "red" }}>X</h4>
@@ -64,7 +65,7 @@ function PositionInput (props)  {
             props.onChange(updatedVec)
           }}}
          />
-          <Button type="primary" onClick = {() =>setFocusItem(props.type,props.uuid,"inactive")}>Close</Button>
+          <Button type="primary" onClick = {props.onClose}>Close</Button>
        </Space>
      }
      title="Set Position"
@@ -76,7 +77,7 @@ function PositionInput (props)  {
        block
        icon={<EditOutlined />}
        style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-       onClick = {() => setFocusItem(props.type,props.uuid,"translate")   }
+       onClick = {props.openStatus ? props.onClose : props.onOpen}
       
 
      >

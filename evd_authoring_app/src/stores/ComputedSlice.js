@@ -1,23 +1,50 @@
 // import { objectMap } from "./helpers";
 import { 
     poseDataToShapes, 
-    trajectoryDataToLine,
     DEFAULT_WAYPOINT_COLOR,
     DEFAULT_LOCATION_COLOR,
     UNREACHABLE_COLOR,
     OCCUPANCY_ERROR_COLOR,
-    occupancyOverlap
+    occupancyOverlap,
+    DEFAULT_TRAJECTORY_COLOR,
+    executablePrimitive
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
-import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
+import { INITIAL_SIM, COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 
 const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
 const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('gripper'));
 
+
 export const ComputedSlice = {
 
     computed: {
+        executablePrimitives: function() {
+            let executableLookup = {};
+            executableLookup[this.uuid] = executablePrimitive(this.uuid,this);
+            this.primitiveIds.forEach(primitiveId=>{
+                executableLookup[primitiveId] = executablePrimitive(primitiveId,this)
+            })
+            return executableLookup
+        },
+        tfs: function() {
+            let tfs = {...INITIAL_SIM.tfs};
+            Object.values(this.data.placeholders).forEach(placeholder=>{
+                // for now, place the placeholders at origin. 
+                // console.log(placeholder)
+                tfs[placeholder.uuid] = {
+                    frame:'world',
+                    translation:{x:0,y:0,z:0},
+                    rotation:{w:1,x:0,y:0,z:0}
+                }
+            })
+            if (this.focusItem.uuid) {
+                const executable = this.executablePrimitives[this.focusItem.uuid];
+                console.log(executable)
+            }
+            return tfs
+        },
         items: function () {
             let items = {};
             const focusedTrajectoryChildren = this.focusItem.type === 'trajectory' ? [
@@ -85,7 +112,7 @@ export const ComputedSlice = {
                         frame: 'world',
                         position: {x:zone.position_x,y:zone.position_z,z:0.25},
                         rotation: {w:1,x:0,y:0,z:0},
-                        color: {...OCCUPANCY_ERROR_COLOR,a:0.3},
+                        color: {...OCCUPANCY_ERROR_COLOR,a:0.2},
                         scale: {x:zone.scale_x,y:zone.scale_z,z:2},
                         transformMode: "inactive",
                         highlighted: false,
@@ -94,6 +121,129 @@ export const ComputedSlice = {
                     }
                 }
                 
+            })
+
+            let focusedInputs = [];
+            let focusedOutputs = [];
+            if (this.focusItem.type === 'machine') {
+                Object.values(this.data.machines[this.focusItem.uuid].inputs).forEach(regionInfo=>{
+                    regionInfo.forEach(input=>focusedInputs.push(input.region_uuid))
+                });
+                Object.values(this.data.machines[this.focusItem.uuid].outputs).forEach(regionInfo=>{
+                    regionInfo.forEach(output=>focusedOutputs.push(output.region_uuid))
+                });
+            }
+
+            Object.values(this.data.machines).forEach(machine=>{
+                const mesh = EVD_MESH_LOOKUP[machine.mesh_id]
+                items[machine.uuid] = {
+                    shape:mesh,
+                    name:machine.name,
+                    frame: machine.pose_offset.link,
+                    position: machine.pose_offset.position,
+                    rotation: machine.pose_offset.orientation,
+                    scale: machine.pose_offset.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : {x: 1, y: 1, z: 1},
+                    transformMode: 'inactive',
+                    highlighted: this.focusItem.uuid === machine.uuid,
+                    onClick: (e) => {
+                        if (this.focusItem.transformMode === "translate" || this.focusItem.transformMode ===  "rotate"){
+                            
+                        }else{
+                            console.log('clicked '+machine.name)
+                            e.stopPropagation();
+                            this.setFocusItem('machine', machine.uuid);
+                        }
+                        
+                    },
+                }
+                // Now add collisions
+                items[machine.uuid+'-collision'] = {
+                    shape:COLLISION_MESHES[mesh],
+                    name: machine.name + ' Collision',
+                    frame: machine.pose_offset.link,
+                    position: machine.pose_offset.position,
+                    rotation: machine.pose_offset.orientation,
+                    scale: machine.pose_offset.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : {x: 1, y: 1, z: 1},
+                    transformMode: 'inactive',
+                    highlighted: false,
+                    color: { r: 250, g: 0, b: 0, a: 0.6 },
+                    wireframe: true,
+                    hidden: !this.collisionsVisible,
+                    onClick: (_) => {},
+                }
+
+                // Now enumerate the inputs and render the zones and items.
+                Object.keys(machine.inputs).forEach(thingType=>{
+                    machine.inputs[thingType].forEach(zoneInfo=>{
+                        const region = this.data.regions[zoneInfo.region_uuid];
+                        const debouncedOnMove = debounce(transform=>{
+                            this.setRegionTransform(region.uuid,transform);
+                        },1000)
+                        let color = {r:245,g:206,b:66,a:0.4};
+                        const machineInput = focusedInputs.includes(region.uuid);
+                        const machineOutput = focusedOutputs.includes(region.uuid);
+                        if (machineInput && !machineOutput) {
+                            color = {r:245,g:105,b:66,a:0.4}
+                        } else if (!machineInput && machineOutput) {
+                            color = {r:66,g:245,b:156,a:0.4}
+                        }
+                        
+                        items[zoneInfo.region_uuid] = {
+                            shape: region.uncertainty_x ? 'cube' : 'sphere',
+                            frame: region.link,
+                            position: region.center_position,
+                            rotation: region.center_orientation,
+                            scale: region.uncertainty_x ? {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5} : {x:region.uncertainty_radius*5,y:region.uncertainty_radius*5,z:region.uncertainty_radius*5},
+                            transformMode: this.secondaryFocusItem.uuid === region.uuid ? this.secondaryFocusItem.transformMode : 'inactive',
+                            color,
+                            highlighted: this.secondaryFocusItem.uuid === region.uuid,
+                            hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
+                            onClick: (_)=>{},
+                            onMove: debouncedOnMove
+                        }
+                        // items[zoneInfo.region_uuid+thingType] = {
+                        //     shape: region.uncertainty_x ? 'cube' : 'sphere',
+                        //     frame: region.link,
+                        //     position: region.center_position,
+                        //     rotation: {w:1,x:0,y:0,z:0},
+                        //     scale: {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5},
+                        //     transformMode: 'inactive',
+                        //     color: {r:100,g:200,b:200,a:0.4},
+                        //     highlighted: this.secondaryFocusItem.uuid === region.uuid,
+                        //     hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
+                        //     onClick: (_)=>{}
+                        // }
+                    })
+                })
+
+                // Now enumerate the outputs and render the zones and items.
+                Object.keys(machine.outputs).forEach(thingType=>{
+                    
+                    machine.outputs[thingType].forEach(zoneInfo=>{
+                        const region = this.data.regions[zoneInfo.region_uuid];
+                        const debouncedOnMove = debounce(transform=>{
+                            this.setRegionTransform(region.uuid,transform);
+                        },1000)
+                        items[zoneInfo.region_uuid] = {
+                            shape: region.uncertainty_x ? 'cube' : 'sphere',
+                            frame: region.link,
+                            position: region.center_position,
+                            rotation: {w:1,x:0,y:0,z:0},
+                            scale: {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5},
+                            transformMode: this.secondaryFocusItem.uuid === region.uuid ? this.secondaryFocusItem.transformMode : 'inactive',
+                            color: {r:200,g:100,b:100,a:0.4},
+                            highlighted: this.secondaryFocusItem.uuid === region.uuid,
+                            hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
+                            onClick: (_)=>{},
+                            onMove: debouncedOnMove
+                        }
+                        const placeholder = this.data.placeholders[zoneInfo.placeholder_uuids[0]];
+                        // items[placeholder.uuid] = {
+
+                        // }
+                        // console.log(placeholder)
+                    })
+                })
             })
 
             Object.keys(this.data.locations).forEach(location_uuid => {
@@ -117,6 +267,7 @@ export const ComputedSlice = {
 
                 const debouncedOnMove = debounce(transform=>{
                     this.setPoseTransform(location_uuid,transform);
+                    this.requestJointProcessorUpdate('location',location_uuid)
                 },1000)
 
                 poseDataToShapes(item, this.frame).forEach((shape,i) => {
@@ -127,7 +278,9 @@ export const ComputedSlice = {
                         color,
                         transformMode: shape.uuid.includes('pointer') && focused ? this.focusItem.transformMode : "inactive",
                         onMove: shape.uuid.includes('pointer') && focused && this.focusItem.transformMode !== 'inactive' ? debouncedOnMove : (_)=>{} 
-                    };    
+                    }; 
+                   // e => setItemProperty('location', location_uuid, 'position', { ...this.data.locations[location_uuid].position, x: e[0], y: e[1], z: e[2] }); 
+
 
                 })
             })
@@ -153,6 +306,7 @@ export const ComputedSlice = {
 
                 const debouncedOnMove = debounce(transform=>{
                     this.setPoseTransform(waypoint_uuid,transform);
+                    this.requestJointProcessorUpdate('waypoint',waypoint_uuid)
                 },1000)
 
                 poseDataToShapes(item, this.frame).forEach(shape => {
@@ -175,16 +329,37 @@ export const ComputedSlice = {
             
             const lines = {};
             Object.values(this.data.trajectories).forEach(trajectory=>{
-                const hidden = this.focusItem.uuid !== trajectory.uuid && this.secondaryFocusItem.uuid !== trajectory.uuid
-                lines[trajectory.uuid] = {...trajectoryDataToLine(trajectory,this.data.locations,this.data.waypoints,this.frame),hidden,width:2}
+                const hidden = this.focusItem.uuid !== trajectory.uuid && this.secondaryFocusItem.uuid !== trajectory.uuid;
+                let poses = []
+                if (trajectory.start_location_uuid) {
+                    poses.push(this.data.locations[trajectory.start_location_uuid])
+                }
+                trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
+                    poses.push(this.data.waypoints[waypoint_uuid])
+                })
+                if (trajectory.end_location_uuid) {
+                    poses.push(this.data.locations[trajectory.end_location_uuid])
+                }
+                const vertices = poses.map(pose=>{
+                    let color = {...DEFAULT_TRAJECTORY_COLOR};
+                    //console.log(item.joints.reachable);
+                    if (this.frame === 'performance' && !pose.joints.reachable){//pose, frame, focused, locationOrWaypoint
+                        //console.log("entered");
+                        color = {...UNREACHABLE_COLOR};
+                    } else if (this.frame === 'safety' && occupancyOverlap(pose.position,this.data.occupancyZones)) {
+                        color = {...OCCUPANCY_ERROR_COLOR};
+                    }
+                    return {
+                        position:pose.position,
+                        color
+                    }
+                })
+                lines[trajectory.uuid] = {name:trajectory.name,vertices,frame:'world',hidden,width:2}
             })
             return lines
         },
         hulls: function() {
             return {}
         },
-        tfs: function() {
-            return INITIAL_SIM.tfs
-        }
     },
 }
