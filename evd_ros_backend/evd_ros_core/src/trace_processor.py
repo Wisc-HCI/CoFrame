@@ -72,6 +72,8 @@ class TraceProcessor:
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _processor_configure_cb(self, dct):
+        print('Trace Processor Configuration',dct)
+
         self.pyb.registerCollisionMeshes(dct['collision_meshes'])
         self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
