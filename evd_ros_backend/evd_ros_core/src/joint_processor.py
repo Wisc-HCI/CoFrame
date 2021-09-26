@@ -87,6 +87,7 @@ class JointProcessor:
             "lively_joint_data": {n: None for n in self.ltk.joint_names},
             "lively_frame_names": list(self.ltk.frame_names),
             "lively_frame_data": {n: None for n in self.ltk.frame_names},
+
             "pybullet_joint_names": list(self.pyb.joint_names),
             "pybullet_joint_data": {n: None for n in self.pyb.joint_names},
             "pybullet_frame_names": list(self.pyb.frame_names),
@@ -95,7 +96,14 @@ class JointProcessor:
             "pybullet_occupancy_uuids": list(self.pyb.occupancy_uuids),
             "pybullet_collisions": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
             "pybullet_occupancy": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
-            "pybullet_self_collisions": {n: {m: None for m in self.pyb.frame_names} for n in self.pyb.frame_names}
+            "pybullet_self_collisions": {n: {m: None for m in self.pyb.frame_names} for n in self.pyb.frame_names},
+        
+            "postprocess_collisions": {n: None for n in self.pyb.frame_names},
+            "postprocess_collisions_objs": {n: None for n in self.pyb.frame_names},
+            "postprocess_self_collisions": {n: None for n in self.pyb.frame_names},
+            "postprocess_self_collisions_objs": {n: None for n in self.pyb.frame_names},
+            "postprocess_occupancy": {n: None for n in self.pyb.frame_names},
+            "postprocess_occupancy_objs": {n: None for n in self.pyb.frame_names}
         }
 
         self._input = data
@@ -190,8 +198,9 @@ class JointProcessor:
                             return # leave update if stop has been called
                         if uuid not in self._trace_data['pybullet_collision_uuids']:
                             break # configuration changed
+
                         value = pb_collisions[uuid][frameName]
-                        self._trace_data['pybullet_collisions'][uuid][frameName] = p
+                        self._trace_data['pybullet_collisions'][uuid][frameName] = value
 
                 pb_occupancy = self.pyb.occupancyCheck()
                 for uuid in pb_occupancy.keys():
@@ -200,17 +209,77 @@ class JointProcessor:
                             return # leave update if stop has been called
                         if uuid not in self._trace_data['pybullet_occupancy_uuids']:
                             break # configuration changed
+
                         value = pb_occupancy[uuid][frameName]
-                        self._trace_data['pybullet_occupancy'][uuid][frameName] = p
+                        self._trace_data['pybullet_occupancy'][uuid][frameName] = value
 
                 pb_selfCollisions = self.pyb.selfCollisionCheck()
                 for a in pb_selfCollisions.keys():
                     for b in pb_selfCollisions[a].keys():
                         if self._trace_data == None:
                             return # leave update if stop has been called
-                        value = pb_selfCollisions[a][b]
-                        self._trace_data['pybullet_self_collisions'][a][b] = p
 
+                        value = pb_selfCollisions[a][b]
+                        self._trace_data['pybullet_self_collisions'][a][b] = value
+
+                # Pivot collisions to be robot frames first
+                # For each frame provide a float [0 to 1] for each step in time for closest collision.
+                # 0 means no collision, 1 means in collision, in between means approaching collision
+                # We need to set an arbitrary distance for this
+                for n in self._trace_data["pybullet_frame_names"]:
+                    min_dist = float('inf')
+                    obj = None
+                    for uuid in self._trace_data["pybullet_collisions"].keys():
+                        if self._trace_data["pybullet_collisions"][uuid][n] != None:
+                            dist = self._trace_data["pybullet_collisions"][uuid][n]['distance']
+                            if dist < min_dist:
+                                min_dist = dist
+                                obj = uuid
+
+                    value = self.collision_mapping(min_dist, 0.05)
+                    if value <= 0:
+                        obj = None # If no collision detected
+
+                    self._trace_data["postprocess_collisions"][n] = value
+                    self._trace_data["postprocess_collisions_objs"][n] = obj
+
+                # Pivot self collisions
+                #TODO we might need to filter this a bit (right now neighbors will always collide)
+                for n in self._trace_data["pybullet_self_collisions"].keys():
+                    min_dist = float('inf')
+                    obj = None
+                    for m in self._trace_data["pybullet_self_collisions"][n].keys():
+                        if self._trace_data["pybullet_self_collisions"][n][m] != None:
+                            dist = self._trace_data["pybullet_self_collisions"][n][m]['distance']
+                            if dist < min_dist:
+                                min_dist = dist
+                                obj = m
+                    
+                    value = self.collision_mapping(min_dist, 0.05)
+                    if value <= 0:
+                        obj = None # If no collision detected
+                    
+                    self._trace_data["postprocess_self_collisions"][n] = value
+                    self._trace_data["postprocess_self_collisions_objs"][n] = obj
+
+                # Pivot occupancy zones
+                for n in self._trace_data["pybullet_frame_names"]:
+                    min_dist = float('inf')
+                    obj = None
+                    for uuid in self._trace_data["pybullet_occupancy"].keys():
+                        if self._trace_data["pybullet_occupancy"][uuid][n] != None:
+                            dist = self._trace_data["pybullet_occupancy"][uuid][n]['distance']
+                            if dist < min_dist:
+                                min_dist = dist
+                                obj = uuid
+
+                    value = self.collision_mapping(min_dist, 0.05)
+                    if value <= 0:
+                        obj = None # If no collision detected
+
+                    self._trace_data["postprocess_occupancy"][n] = value
+                    self._trace_data["postprocess_occupancy_objs"][n] = obj
+                
                 self._joints.reachable = poseWasReached
                 self._job_queue.completed()
                 self._state = 'idle'
@@ -222,6 +291,17 @@ class JointProcessor:
         while not rospy.is_shutdown():
             self._job_queue.update()
             rate.sleep()
+
+    def clamp(self, v, minV=0, maxV=1):
+        if v < minV:
+            return minV
+        elif v > maxV:
+            return maxV
+        else:
+            return v
+
+    def collision_mapping(self, dist, threshold):
+        return self.clamp((-1 / threshold) * dist + 1)
 
 
 if __name__ == "__main__":
