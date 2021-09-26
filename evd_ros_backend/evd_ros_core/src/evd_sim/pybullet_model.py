@@ -12,6 +12,8 @@ class PyBulletModel(object):
     
     def __init__(self, urdf_path, config, gui=True):
         self.timeStep = config['timestep']
+        self._collisionFilter = config['collision_frame_ignore_filter']
+        self._selfCollisionFilter = config['self_collision_ignore_filters']
 
         # pybullet setup
         physicsClient = pybullet.connect(pybullet.GUI if gui else pybullet.DIRECT)
@@ -186,7 +188,7 @@ class PyBulletModel(object):
         data = {}
 
         for uuid, (c_body, c_link) in self._collisions.items():
-            data[uuid] = {n: None for n in self.robot_linkIds.keys()}
+            data[uuid] = {n: None for n in self.collision_frame_names}
 
             # This is a stupid / inefficient way to do this but I just want to get some data out
             points = pybullet.getClosestPoints(c_body, self.robotId, MAX_DISTANCE_MEASURED)
@@ -194,7 +196,7 @@ class PyBulletModel(object):
             for frameName, r_link in self.robot_linkIds.items():
                 for point in points:
                     # if bodies and links match
-                    if point[1] == c_body and point[2] == self.robotId and point[3] == c_link and point[4] == r_link: 
+                    if point[1] == c_body and point[2] == self.robotId and point[3] == c_link and point[4] == r_link and frameName in data[uuid].keys(): 
                         data[uuid][frameName] = {
                             'postion_a': point[5],
                             'position_b': point[6],
@@ -206,6 +208,10 @@ class PyBulletModel(object):
     @property
     def collision_uuids(self):
         return self._collisions.keys()
+
+    @property
+    def collision_frame_names(self):
+        return list(filter(lambda x: x not in self._collisionFilter, self.robot_linkIds.keys()))
 
     def registerOccupancyZones(self, occupancyZones):
         self._occupancy = {}
@@ -222,7 +228,7 @@ class PyBulletModel(object):
         data = {}
 
         for uuid, (o_body, o_link) in self._occupancy.items():
-            data[uuid] = {n: None for n in self.robot_linkIds.keys()}
+            data[uuid] = {n: None for n in self.occupancy_frame_names}
 
             # This again is very stupid (less so than before but still)
             points = pybullet.getClosestPoints(o_body, self.robotId, MAX_DISTANCE_MEASURED)
@@ -231,7 +237,7 @@ class PyBulletModel(object):
             for frameName, r_link in self.robot_linkIds.items():
                 for point in points:
                     # if bodies and links match
-                    if point[1] == o_body and point[2] == self.robotId and point[3] == o_link and point[4] == r_link:
+                    if point[1] == o_body and point[2] == self.robotId and point[3] == o_link and point[4] == r_link and frameName in data[uuid].keys():
                         data[uuid][frameName] = {
                             'position_a': point[5],
                             'position_b': point[6],
@@ -244,26 +250,37 @@ class PyBulletModel(object):
     def occupancy_uuids(self):
         return self._occupancy.keys()
 
+    @property
+    def occupancy_frame_names(self):
+        return self.collision_frame_names
+
     def selfCollisionCheck(self):
         data = {}
 
+        points = pybullet.getClosestPoints(self.robotId, self.robotId, MAX_DISTANCE_MEASURED)
+
         # and here for the monumentally stupid loop. But really don't care about the duplicates here right now
         for a_frameName, a_r_link in self.robot_linkIds.items():
+            if a_frameName not in self.collision_frame_names:
+                continue # Ignorable frame
+
             data[a_frameName] = {}
 
-            # Ow
-            points = pybullet.getClosestPoints(self.robotId, self.robotId, MAX_DISTANCE_MEASURED)
-
             for b_frameName, b_r_link in self.robot_linkIds.items():
+                if b_frameName not in self.collision_frame_names:
+                    continue #Ignore frame
+                
                 data[a_frameName][b_frameName] = None
-
-                for point in points:
-                    # if bodies and links match
-                    if point[1] == self.robotId and point[2] == self.robotId and point[3] == a_r_link and point[4] == b_r_link:
-                        data[a_frameName][b_frameName] = {
-                            'position_a': point[5],
-                            'position_b': point[6],
-                            'distance': point[8]
-                        }
+                if a_frameName in self._selfCollisionFilter.keys() and b_frameName in self._selfCollisionFilter[a_frameName]:
+                    continue # Frame in self collision filter
+                else:
+                    for point in points:
+                        # if bodies and links match
+                        if point[1] == self.robotId and point[2] == self.robotId and point[3] == a_r_link and point[4] == b_r_link:
+                            data[a_frameName][b_frameName] = {
+                                'position_a': point[5],
+                                'position_b': point[6],
+                                'distance': point[8]
+                            }
 
         return data

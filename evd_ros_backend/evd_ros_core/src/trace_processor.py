@@ -155,18 +155,22 @@ class TraceProcessor:
             "pybullet_joint_data": {n:[] for i, n in enumerate(self.ltk.joint_names)},
             "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n:[] for n in self.pyb.frame_names},
+
             "pybullet_collision_uuids": list(self.pyb.collision_uuids),
             "pybullet_occupancy_uuids": list(self.pyb.occupancy_uuids),
-            "pybullet_collisions": {uuid: {n: [] for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
-            "pybullet_occupancy": {uuid: {n: [] for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
-            "pybullet_self_collisions": {n: {m: [] for m in self.pyb.frame_names} for n in self.pyb.frame_names},
+            "pybullet_collision_frame_names": list(self.pyb.collision_frame_names),
+            "pybullet_occupancy_frame_names": list(self.pyb.occupancy_frame_names),
+            
+            "pybullet_collisions": {uuid: {n: [] for n in self.pyb.collision_frame_names} for uuid in self.pyb.collision_uuids}, 
+            "pybullet_occupancy": {uuid: {n: [] for n in self.pyb.occupancy_frame_names} for uuid in self.pyb.occupancy_uuids},
+            "pybullet_self_collisions": {n: {m: [] for m in self.pyb.collision_frame_names} for n in self.pyb.collision_frame_names},
 
-            "postprocess_collisions": {n: [] for n in self.pyb.frame_names},
-            "postprocess_collisions_objs": {n: [] for n in self.pyb.frame_names},
-            "postprocess_self_collisions": {n: [] for n in self.pyb.frame_names},
-            "postprocess_self_collisions_objs": {n: [] for n in self.pyb.frame_names},
-            "postprocess_occupancy": {n: [] for n in self.pyb.frame_names},
-            "postprocess_occupancy_objs": {n: [] for n in self.pyb.frame_names}
+            "postprocess_collisions": {n: [] for n in self.pyb.collision_frame_names},
+            "postprocess_collisions_objs": {n: [] for n in self.pyb.collision_frame_names},
+            "postprocess_self_collisions": {n: [] for n in self.pyb.collision_frame_names},
+            "postprocess_self_collisions_objs": {n: [] for n in self.pyb.collision_frame_names},
+            "postprocess_occupancy": {n: [] for n in self.pyb.occupancy_frame_names},
+            "postprocess_occupancy_objs": {n: [] for n in self.pyb.occupancy_frame_names}
         }
 
         self._input = data
@@ -409,11 +413,11 @@ class TraceProcessor:
         # For each frame provide a float [0 to 1] for each step in time for closest collision.
         # 0 means no collision, 1 means in collision, in between means approaching collision
         # We need to set an arbitrary distance for this
-        for n in self._trace_data["pybullet_frame_names"]:
+        for n in self._trace_data["pybullet_collision_frame_names"]:
             for idx in range(0,len(self._trace_data['time_data'])):
-
                 min_dist = float('inf')
                 obj = None
+
                 for uuid in self._trace_data["pybullet_collisions"].keys():
                     if self._trace_data["pybullet_collisions"][uuid][n][idx] != None:
                         dist = self._trace_data["pybullet_collisions"][uuid][n][idx]['distance']
@@ -427,34 +431,13 @@ class TraceProcessor:
 
                 self._trace_data["postprocess_collisions"][n].append(value)
                 self._trace_data["postprocess_collisions_objs"][n].append(obj)
-
-        # Pivot self collisions
-        #TODO we might need to filter this a bit (right now neighbors will always collide)
-        for n in self._trace_data["pybullet_self_collisions"].keys():
-            for idx in range(0,len(self._trace_data["time_data"])):
-
-                min_dist = float('inf')
-                obj = None
-                for m in self._trace_data["pybullet_self_collisions"][n].keys():
-                    if self._trace_data["pybullet_self_collisions"][n][m][idx] != None:
-                        dist = self._trace_data["pybullet_self_collisions"][n][m][idx]['distance']
-                        if dist < min_dist:
-                            min_dist = dist
-                            obj = m
-                
-                value = self.collision_mapping(min_dist, 0.05)
-                if value <= 0:
-                    obj = None # If no collision detected
-                
-                self._trace_data["postprocess_self_collisions"][n].append(value)
-                self._trace_data["postprocess_self_collisions_objs"][n].append(obj)
-
+        
         # Pivot occupancy zones
-        for n in self._trace_data["pybullet_frame_names"]:
+        for n in self._trace_data["pybullet_occupancy_frame_names"]:
             for idx in range(0,len(self._trace_data['time_data'])):
-
                 min_dist = float('inf')
                 obj = None
+
                 for uuid in self._trace_data["pybullet_occupancy"].keys():
                     if self._trace_data["pybullet_occupancy"][uuid][n][idx] != None:
                         dist = self._trace_data["pybullet_occupancy"][uuid][n][idx]['distance']
@@ -468,6 +451,31 @@ class TraceProcessor:
 
                 self._trace_data["postprocess_occupancy"][n].append(value)
                 self._trace_data["postprocess_occupancy_objs"][n].append(obj)
+
+        # Pivot self collisions
+        # we might need to filter this a bit (right now neighbors will always collide)
+        for n in self._trace_data["pybullet_self_collisions"].keys():
+            for idx in range(0,len(self._trace_data["time_data"])):
+
+                min_dist = float('inf')
+                obj = None
+                once = True
+                for m in self._trace_data["pybullet_self_collisions"][n].keys():
+                    if once:
+                        once = False
+
+                    if self._trace_data["pybullet_self_collisions"][n][m][idx] != None:
+                        dist = self._trace_data["pybullet_self_collisions"][n][m][idx]['distance']
+                        if dist < min_dist:
+                            min_dist = dist
+                            obj = m
+                
+                value = self.collision_mapping(min_dist, 0.05)
+                if value <= 0:
+                    obj = None # If no collision detected
+                
+                self._trace_data["postprocess_self_collisions"][n].append(value)
+                self._trace_data["postprocess_self_collisions_objs"][n].append(obj)
 
     def spin(self):
         rate = rospy.Rate(SPIN_RATE)
