@@ -85,6 +85,11 @@ class JointProcessor:
             "pybullet_collisions": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
             "pybullet_occupancy": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
             "pybullet_self_collisions": {n: {m: None for m in self.pyb.frame_names} for n in self.pyb.frame_names},
+            "debug": {
+                "joint_stablization": None,
+                'pose_reached': None,
+                'timeout': None
+            }
         }
 
         self._input = data
@@ -99,7 +104,7 @@ class JointProcessor:
     def _end_job(self, status, submit_fnt):
         self._state = 'idle'
 
-        data = self._joints.to_dct() if status else None
+        data = self._joints.to_dct()
         trace = self._trace_data
         inp = self._input
 
@@ -136,6 +141,11 @@ class JointProcessor:
             poseWasReached = poseReached(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)
             inTimeout = TIMEOUT_COUNT < self._updateCount
             if self.jsf.isStable() and (poseWasReached or inTimeout):
+
+                #pack debug
+                self._trace_data["debug"]["joint_stablization"] = self.jsf.debug
+                self._trace_data["debug"]["pose_reached"] = {"reached": poseWasReached, "deltas": poseReachedDebug(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)}
+                self._trace_data["debug"]["timeout"] = {"count": self._updateCount, "threshold": TIMEOUT_COUNT, "in_timeout": inTimeout}
 
                 # pack trace
                 for n, p in zip(jn_ltk,jp_ltk):

@@ -157,7 +157,7 @@ class TraceProcessor:
 
     def _end_job(self, status, submit_fnt):
         self._state = 'idle'
-        trace = self._trace_data if status else None
+        trace = self._trace_data
         inp = self._input
 
         self._path = None
