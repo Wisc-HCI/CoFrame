@@ -137,7 +137,7 @@ class TraceProcessor:
                 nextPose = self._handle_pose_offset(way)
                 interp = PoseInterpolator(lastPose, nextPose, trajectory.velocity)
                 expectedTime += interp.full_time
-                self._path.append(interp)
+                self._path.append((interp, way.joints.joint_positions))
                 lastPose = nextPose
                 self._thresholds.append((POSITION_INTERMEDIATE_DISTANCE_THRESHOLD,ORIENTATION_INTERMEDIATE_DISTANCE_THRESHOLD))
 
@@ -145,7 +145,7 @@ class TraceProcessor:
             nextPose = self._handle_pose_offset(locEnd)
             interp = PoseInterpolator(lastPose, nextPose, trajectory.velocity)
             expectedTime += interp.full_time
-            self._path.append(interp)
+            self._path.append((interp, locEnd.joints.joint_positions))
             self._thresholds.append((POSITION_DISTANCE_THRESHOLD,ORIENTATION_DISTANCE_THRESHOLD))
 
         # structure the data to be captured (starts with initial state)
@@ -250,12 +250,13 @@ class TraceProcessor:
 
         if self._type == 'ee_ik':
             # interpolate pose in this leg of trajectory
-            interpolator = self._path[self._index]
+            (interpolator, targetJoints) = self._path[self._index]
             ee_pose_itp = interpolator.step(self._time_step)
 
             self._trace_data['interpolator_path']['ee_pose'].append(Pose.from_ros(ee_pose_itp).to_simple_dct())
 
             # run lively-ik
+            #(jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp, finalJoints=targetJoints)
             (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
             ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
             self.jsf.append(jp_ltk) # append to joint filter to know when lively is done

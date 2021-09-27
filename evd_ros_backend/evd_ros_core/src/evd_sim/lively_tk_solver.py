@@ -45,13 +45,19 @@ class LivelyTKSolver(object):
             self.config_data['starting_config'][0],
             joints)
 
-    def step(self, pose):
+    def step(self, pose, finalJoints=[0,0,0,0,0,0]):
         if self.solver == None:
             raise Exception('Solver not initialized')
 
         self.target_directions[0] = {'vector':[pose.position.x, pose.position.y, pose.position.z]}
         self.target_directions[1] = {'quaternion':[pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z]}
         self.target_directions[2] = {'vector':[0,0,1]}
+        self.target_directions[3] = {'scalar': finalJoints[0]}
+        self.target_directions[4] = {'scalar': finalJoints[1]}
+        self.target_directions[5] = {'scalar': finalJoints[2]}
+        self.target_directions[6] = {'scalar': finalJoints[3]}
+        self.target_directions[7] = {'scalar': finalJoints[4]}
+        self.target_directions[8] = {'scalar': finalJoints[5]}
 
         inputs = []
         for idx, objective in enumerate(self.config.objectives):
