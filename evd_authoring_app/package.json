@@ -2,7 +2,7 @@
   "name": "cobots_web_app_authoring_ui",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://wisc-hci.github.io/CoFrame/",
+  "homepage": "./",
   "dependencies": {
     "@craco/craco": "^6.0.0",
     "@robostack/roslib": "^1.1.1",
