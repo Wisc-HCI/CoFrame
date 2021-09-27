@@ -1,3 +1,15 @@
+export const GRIPPER_FRAMES = [
+    "simulated_robotiq_85_base_link",
+    "simulated_robotiq_85_left_finger_link",
+    "simulated_robotiq_85_left_finger_tip_link",
+    "simulated_robotiq_85_left_inner_knuckle_link",
+    "simulated_robotiq_85_left_knuckle_link",
+    "simulated_robotiq_85_right_finger_link",
+    "simulated_robotiq_85_right_finger_tip_link",
+    "simulated_robotiq_85_right_inner_knuckle_link",
+    "simulated_robotiq_85_right_knuckle_link"
+]
+
 export const GRIPPER_CONFIGURATIONS = {
     "capture": {
         "simulated_robotiq_85_base_link": [
@@ -2752,27 +2764,27 @@ export const GRIPPER_CONFIGURATIONS = {
         ]
     },
     "cmd": [
-        0.0,
-        0.04020000000000001,
-        0.08040000000000001,
-        0.1206,
-        0.16080000000000003,
-        0.201,
-        0.2412,
-        0.2814,
-        0.32160000000000005,
-        0.3618,
-        0.402,
-        0.44220000000000004,
-        0.4824,
-        0.5226000000000001,
-        0.5628,
-        0.603,
-        0.6432000000000001,
-        0.6834,
-        0.7236,
-        0.7638,
-        0.804
+        0,
+        4.25,
+        8.5,
+        12.75,
+        17,
+        21.25,
+        25.5,
+        29.75,
+        34,
+        38.25,
+        42.5,
+        46.75,
+        51,
+        55.25,
+        59.5,
+        63.75,
+        68,
+        72.25,
+        76.5,
+        80.75,
+        85
     ],
     "subtree": [
         [

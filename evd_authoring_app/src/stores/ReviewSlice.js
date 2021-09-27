@@ -112,7 +112,7 @@ export const ReviewSlice = (set) => ({
             description: str (text string for error information, displayed in issue)
             complete: bool (mainly for issues that don't require changes, whether it has been marked as complete)
             focus: {uuid:str, type:str} (what type of item to focus on in the gui when issue is selected)
-            graphData: 🤷
+            graphData: {series : [{x: ..., '...': ..., ....},...], lineColors: ['#00000', ...],  xAxisLabel: '', yAxisLabel: '', title: ''}
             sceneData: 🤷
             code: str (whatever we want)
         }

@@ -12,6 +12,7 @@ import { getProgramInfo } from '../ContextualInfo/ProgramBlock';
 import { getSkillInfo } from '../ContextualInfo/SkillBlock';
 import { getPrimitiveInfo } from '../ContextualInfo/PrimitiveBlock';
 import { getTrajectoryInfo } from '../ContextualInfo/TrajectoryBlock';
+import { getPlotInfo } from '../ContextualInfo/Plots';
 
 export function InfoTile(_) {
 
@@ -82,6 +83,11 @@ export function InfoTile(_) {
     } else if (focusItem.type === 'trajectory') {
         tabs = getTrajectoryInfo(issueParams)
     } 
+
+    if (currentIssue && currentIssue.graphData) {
+        let temp = getPlotInfo(issueParams);
+        tabs = tabs.concat(temp);
+    }
 
     return (
         <div style={{height:'calc(100vh - 494pt)',backgroundColor:'rgba(100,100,100,0.3)', padding: 10, borderRadius: 3}}>
