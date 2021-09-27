@@ -12,13 +12,13 @@ export const primitiveTemplates = {
         }
     },
     'node.primitive.gripper.': {
-        name: 'Gripper',
+        name: 'Move Gripper',
         description: 'Close or Open the robot gripper',
         editable: true,
         deleteable: true,
         parameters: {
-            position: 0,
-            speed: 1,
+            position: 50,
+            speed: 50,
             effort: 1,
             semantic: 'releasing',
             thing_uuid: null
