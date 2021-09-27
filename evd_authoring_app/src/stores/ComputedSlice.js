@@ -8,7 +8,8 @@ import {
     occupancyOverlap,
     DEFAULT_TRAJECTORY_COLOR,
     executablePrimitive,
-    durationEstimate
+    durationEstimate,
+    idleTimeEstimate
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
@@ -43,6 +44,7 @@ export const ComputedSlice = {
                 const executable = this.executablePrimitives[this.focusItem.uuid];
                 console.log(executable);
                 console.log("this is duration : " + durationEstimate(executable));
+                console.log("this is delay: " + idleTimeEstimate(executable));
             }
             return tfs
         },
