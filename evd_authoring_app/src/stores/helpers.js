@@ -254,7 +254,7 @@ export function flattenProgram(primitives, skills, parentData) {
 
 function executableTrajectory(trajectory, context) {
     let executable = { uuid: trajectory.uuid, sequence: [], trace: null }
-    if (!trajectory.start_location_uuid || !trajectory.end_location_uuid) {
+    if (!trajectory.start_location_uuid || !trajectory.end_location_uuid || !trajectory.trace) {
         console.log('no start or end')
         return null
     }
@@ -426,18 +426,19 @@ const gripperFramesFromValue = (distance) => {
                 z: rawFrame[0][2]
             },
             rotation: {
-                x: rawFrame[0][0],
-                y: rawFrame[0][1],
-                z: rawFrame[0][2],
-                w: rawFrame[0][3]
+                x: rawFrame[1][0],
+                y: rawFrame[1][1],
+                z: rawFrame[1][2],
+                w: rawFrame[1][3]
             }
         }
     })
     return frames
 }
 
-const robotFramesFromPose = (pose) => {
+export const robotFramesFromPose = (pose) => {
     let frames = {};
+    console.log(pose.frames)
     ROBOT_FRAMES.forEach(frame=>{
         const rawFrame = pose.frames[frame];
         frames['simulated_'+frame] = {
@@ -447,10 +448,10 @@ const robotFramesFromPose = (pose) => {
                 z: rawFrame[0][2]
             },
             rotation: {
-                x: rawFrame[0][0],
-                y: rawFrame[0][1],
-                z: rawFrame[0][2],
-                w: rawFrame[0][3]
+                x: rawFrame[1][0],
+                y: rawFrame[1][1],
+                z: rawFrame[1][2],
+                w: rawFrame[1][3]
             }
         }
     })
@@ -484,10 +485,10 @@ const robotFramesFromIdx = (idx,trace) => {
                 z: rawFrame[0][2]
             },
             rotation: {
-                x: rawFrame[0][0],
-                y: rawFrame[0][1],
-                z: rawFrame[0][2],
-                w: rawFrame[0][3]
+                x: rawFrame[1][0],
+                y: rawFrame[1][1],
+                z: rawFrame[1][2],
+                w: rawFrame[1][3]
             }
         }
     })
@@ -528,6 +529,7 @@ const stepsToAnimatedTfs = (steps) => {
             tempAnimatedTfs[tfName].rotation.z.push(step.tfs[tfName].rotation.z);
         })
     })
+    console.log(tempAnimatedTfs)
     const animatedTfs = objectMap(tempAnimatedTfs,tf=>({
         translation:{
             x: interpolateScalar(timesteps, tf.translation.x),
@@ -541,6 +543,9 @@ const stepsToAnimatedTfs = (steps) => {
             z: interpolateScalar(timesteps, tf.rotation.z)
         }
     }))
+    // for (let timestep of timesteps) {
+    //     console.log(animatedTfs['simulated_tool0'].translation.x(timestep))
+    // }
 
     return animatedTfs
 }
