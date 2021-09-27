@@ -3,6 +3,160 @@ import lodash from 'lodash';
 import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES } from './gripper';
 import { Quaternion } from 'three';
 
+export function durationEstimate(unrolled){
+    let duration = 0;
+    const initialTrajectory = 50;
+    let gripperStart = 50;
+    let gripperEnd = null;
+    let first = true;
+    let tasks = [];
+    console.log("this is :" + unrolled);
+    if (unrolled === undefined || unrolled === null){
+        return 0;
+    }else{
+        Object.values(unrolled).forEach(primitive=>{
+            //console.log(primitive);
+            if (primitive.type === 'node.primitive.breakpoint.' ){
+               return duration;
+
+            }else if(primitive.type === 'node.primitive.delay.'){
+                if (tasks.length === 0){
+                    duration += primitive.parameters.duration ;
+                }else{
+                    let assigned = false;
+                    let i = 0;
+                    let waiting = false;
+                    while (assigned === false && i < tasks.length){
+                        if (tasks[i].status === 'started'){
+                            tasks[i].timeTaken += primitive.parameters.duration ;
+                            duration += primitive.parameters.duration ;
+                            assigned = true;
+                        }else if (tasks[i].status === 'waiting'){
+                            waiting = true;
+                            assigned = true;
+                        }else{
+                            i += 1;
+                        }
+                    }
+                    if (i === tasks.length || waiting === false){                           
+                        duration += primitive.parameters.duration ;                            
+                    }
+                }
+
+
+            }else if (primitive.type ==='node.primitive.gripper.'){
+                if (tasks.length === 0){
+                    if (first === true){
+                        //gripperStart = initialTrajectory;
+                        gripperEnd = primitive.parameters.position;
+                        first = false;
+                        duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
+                        gripperStart = primitive.parameters.position;
+                        
+                    }else{
+                        gripperEnd = primitive.parameters.position;
+                        duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
+                        gripperStart = primitive.parameters.position;
+                    }  
+                }else{
+                    let assigned = false;
+                    let i = 0;
+                    let waiting = false;
+                    while (assigned === false && i < tasks.length){
+                        if (tasks[i].status === 'started'){
+                            if (first === true){
+                                //gripperStart = initialTrajectory;
+                                gripperEnd = primitive.parameters.position;
+                                first = false;
+                                duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
+                                gripperStart = primitive.parameters.position;
+                                tasks[i].timeTaken += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
+                                
+                            }else{
+                                gripperEnd = primitive.parameters.position;
+                                duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
+                                gripperStart = primitive.parameters.position;
+                                tasks[i].timeTaken += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
+                            }  
+                            assigned = true;
+                        }else if (tasks[i].status === 'waiting'){
+                            waiting = true;
+                            assigned = true;
+                        }else{
+                            i += 1;
+                        }
+                    }
+                    if (i === tasks.length || waiting === false){
+                        gripperEnd = primitive.parameters.position;
+                        duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
+                        gripperStart = primitive.parameters.position;
+                    }
+                }           
+            }else if (primitive.type === 'node.primitive.move-trajectory.'){
+                if (primitive.trajectory_uuid === null){
+                    duration += 0;
+                }else {
+                    if (tasks.length === 0){
+                        duration += primitive.parameters.trajectory_uuid.trace.duration ;
+                    }else{
+                        let assigned = false;
+                        let i = 0;
+                        let waiting = true;
+                        while (assigned === false && i < tasks.length){
+                            if (tasks[i].status === 'started'){
+                                tasks[i].timeTaken += primitive.parameters.trajectory_uuid.trace.duration ;
+                                duration += primitive.parameters.trajectory_uuid.trace.duration ;
+                                assigned = true;
+                            }else if (tasks[i].status === 'waiting'){
+                                waiting = true;
+                                assigned = true;
+                            }else{
+                                i += 1;
+                            }
+                        }
+                        if (i === tasks.length || waiting === false){                           
+                            duration += primitive.parameters.trajectory_uuid.trace.duration ;                            
+                        }
+                    }
+                }
+                }else if (primitive.type === 'node.primitive.machine-primitive.machine-start.' ){
+                tasks.push({'machineUUID' : primitive.parameters.machine_uuid.uuid, 
+                           'status' : 'started', 'processTime' :primitive.parameters.machine_uuid.process_time, 'timeTaken': 0 });
+                
+            }else if(primitive.type === 'node.primitive.machine-primitive.machine-wait.'){
+                if (tasks.length === 0){
+                    console.log("this might be an error");
+                }else{
+                   
+                    tasks.forEach((task) => 
+                    {   
+                        
+                        if (primitive.parameters.machine_uuid.uuid === task.machineUUID &&task.status === 'started') {
+                            duration +=  task.processTime - task.timeTaken;
+                            console.log(duration);
+                            task.timeTaken += task.processTime - task.timeTaken;
+                            console.log(task.timeTaken);    
+                            task.status = 'waiting';
+                            
+                        }
+                    })
+                }
+            }else if (primitive.type ===  'node.primitive.machine-primitive.machine-stop.'){
+                tasks.forEach((task) => {if (primitive.parameters.machine_uuid.uuid === task.machineUUID) task.status = 'stopped'} ); 
+            }
+        });
+
+        tasks.forEach((task) => {if (task.status === 'closed'){
+
+        }})
+        return duration;
+    }
+
+
+   
+
+}
+
 export const typeToKey = (type) => {
     let key;
     switch (type) {

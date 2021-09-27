@@ -19,7 +19,6 @@ const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.include
 
 
 export const ComputedSlice = {
-
     computed: {
         executablePrimitives: function() {
             let executableLookup = {};
