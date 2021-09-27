@@ -284,3 +284,7 @@ class PyBulletModel(object):
                             }
 
         return data
+
+    @property
+    def self_collision_filter(self):
+        return self._selfCollisionFilter

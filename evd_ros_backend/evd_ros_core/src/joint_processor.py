@@ -92,18 +92,23 @@ class JointProcessor:
             "pybullet_joint_data": {n: None for n in self.pyb.joint_names},
             "pybullet_frame_names": list(self.pyb.frame_names),
             "pybullet_frame_data": {n: None for n in self.pyb.frame_names},
+
             "pybullet_collision_uuids": list(self.pyb.collision_uuids),
             "pybullet_occupancy_uuids": list(self.pyb.occupancy_uuids),
-            "pybullet_collisions": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.collision_uuids}, 
-            "pybullet_occupancy": {uuid: {n: None for n in self.pyb.frame_names} for uuid in self.pyb.occupancy_uuids},
-            "pybullet_self_collisions": {n: {m: None for m in self.pyb.frame_names} for n in self.pyb.frame_names},
+            "pybullet_collision_frame_names": list(self.pyb.collision_frame_names),
+            "pybullet_occupancy_frame_names": list(self.pyb.occupancy_frame_names),
+            "pybullet_self_collision_filter": self.pyb.self_collision_filter,
+            
+            "pybullet_collisions": {uuid: {n: None for n in self.pyb.collision_frame_names} for uuid in self.pyb.collision_uuids}, 
+            "pybullet_occupancy": {uuid: {n: None for n in self.pyb.occupancy_frame_names} for uuid in self.pyb.occupancy_uuids},
+            "pybullet_self_collisions": {n: {m: None for m in self.pyb.collision_frame_names} for n in self.pyb.collision_frame_names},
         
-            "postprocess_collisions": {n: None for n in self.pyb.frame_names},
-            "postprocess_collisions_objs": {n: None for n in self.pyb.frame_names},
-            "postprocess_self_collisions": {n: None for n in self.pyb.frame_names},
-            "postprocess_self_collisions_objs": {n: None for n in self.pyb.frame_names},
-            "postprocess_occupancy": {n: None for n in self.pyb.frame_names},
-            "postprocess_occupancy_objs": {n: None for n in self.pyb.frame_names}
+            "postprocess_collisions": {n: None for n in self.pyb.collision_frame_names},
+            "postprocess_collisions_objs": {n: None for n in self.pyb.collision_frame_names},
+            "postprocess_self_collisions": {n: None for n in self.pyb.collision_frame_names},
+            "postprocess_self_collisions_objs": {n: None for n in self.pyb.collision_frame_names},
+            "postprocess_occupancy": {n: None for n in self.pyb.occupancy_frame_names},
+            "postprocess_occupancy_objs": {n: None for n in self.pyb.occupancy_frame_names}
         }
 
         self._input = data
@@ -226,7 +231,7 @@ class JointProcessor:
                 # For each frame provide a float [0 to 1] for each step in time for closest collision.
                 # 0 means no collision, 1 means in collision, in between means approaching collision
                 # We need to set an arbitrary distance for this
-                for n in self._trace_data["pybullet_frame_names"]:
+                for n in self._trace_data["pybullet_collision_frame_names"]:
                     min_dist = float('inf')
                     obj = None
                     for uuid in self._trace_data["pybullet_collisions"].keys():
@@ -244,10 +249,11 @@ class JointProcessor:
                     self._trace_data["postprocess_collisions_objs"][n] = obj
 
                 # Pivot self collisions
-                #TODO we might need to filter this a bit (right now neighbors will always collide)
+                # we might need to filter this a bit (right now neighbors will always collide)
                 for n in self._trace_data["pybullet_self_collisions"].keys():
                     min_dist = float('inf')
                     obj = None
+
                     for m in self._trace_data["pybullet_self_collisions"][n].keys():
                         if self._trace_data["pybullet_self_collisions"][n][m] != None:
                             dist = self._trace_data["pybullet_self_collisions"][n][m]['distance']
@@ -263,7 +269,7 @@ class JointProcessor:
                     self._trace_data["postprocess_self_collisions_objs"][n] = obj
 
                 # Pivot occupancy zones
-                for n in self._trace_data["pybullet_frame_names"]:
+                for n in self._trace_data["pybullet_occupancy_frame_names"]:
                     min_dist = float('inf')
                     obj = None
                     for uuid in self._trace_data["pybullet_occupancy"].keys():

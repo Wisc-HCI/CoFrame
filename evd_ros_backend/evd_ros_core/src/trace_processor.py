@@ -160,6 +160,7 @@ class TraceProcessor:
             "pybullet_occupancy_uuids": list(self.pyb.occupancy_uuids),
             "pybullet_collision_frame_names": list(self.pyb.collision_frame_names),
             "pybullet_occupancy_frame_names": list(self.pyb.occupancy_frame_names),
+            "pybullet_self_collision_filter": self.pyb.self_collision_filter,
             
             "pybullet_collisions": {uuid: {n: [] for n in self.pyb.collision_frame_names} for uuid in self.pyb.collision_uuids}, 
             "pybullet_occupancy": {uuid: {n: [] for n in self.pyb.occupancy_frame_names} for uuid in self.pyb.occupancy_uuids},
@@ -456,14 +457,10 @@ class TraceProcessor:
         # we might need to filter this a bit (right now neighbors will always collide)
         for n in self._trace_data["pybullet_self_collisions"].keys():
             for idx in range(0,len(self._trace_data["time_data"])):
-
                 min_dist = float('inf')
                 obj = None
-                once = True
-                for m in self._trace_data["pybullet_self_collisions"][n].keys():
-                    if once:
-                        once = False
 
+                for m in self._trace_data["pybullet_self_collisions"][n].keys():
                     if self._trace_data["pybullet_self_collisions"][n][m][idx] != None:
                         dist = self._trace_data["pybullet_self_collisions"][n][m][idx]['distance']
                         if dist < min_dist:
