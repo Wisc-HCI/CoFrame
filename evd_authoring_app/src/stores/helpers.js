@@ -6,7 +6,6 @@ import { Quaternion } from 'three';
 
 export function idleTimeEstimate(unrolled){
     let delay = 0;
-    const initialTrajectory = 50;
     let gripperStart = 50;
     let gripperEnd = null;
     let first = true;
@@ -158,7 +157,6 @@ export function idleTimeEstimate(unrolled){
 
 export function durationEstimate(unrolled){
     let duration = 0;
-    const initialTrajectory = 50;
     let gripperStart = 50;
     let gripperEnd = null;
     let first = true;
@@ -996,4 +994,18 @@ export const createTrajectory = (trajectory, locations, waypoints, frame, humanZ
     lines: { ...state.lines, [trajectory.uuid]: trajectoryDataToLine(trajectory, locations, waypoints, frame, humanZone) },
     items: { ...state.items, ...trajectoryDataToShapes(trajectory, locations, waypoints, frame, humanZone) }
 }))
+
+export const machineDataToPlaceholderPreviews = (machine,things,regions,placeholders) => {
+    let items = {};
+    Object.keys(machine.inputs).forEach(thingType=>{
+        machine.inputs[thingType].forEach(zoneInfo=>{
+
+        })
+    })
+    Object.keys(machine.outputs).forEach(thingType=>{
+        machine.outputs[thingType].forEach(zoneInfo=>{
+
+        })
+    })
+}
 

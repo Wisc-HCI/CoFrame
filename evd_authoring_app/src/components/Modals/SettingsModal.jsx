@@ -7,14 +7,13 @@ import shallow from 'zustand/shallow';
 
 export const SettingsModal = (_) => {
 
-    const {activeModal, closeModal, url, setUrl, connection, connect, doBulkJointRequest} = useStore(state=>({
+    const {activeModal, closeModal, url, setUrl, connection, connect} = useStore(state=>({
         activeModal:state.activeModal,
         closeModal:state.closeModal,
         url:state.url,
         setUrl:state.setUrl,
         connection:state.connection,
-        connect:state.connect,
-        doBulkJointRequest:state.doBulkJointRequest
+        connect:state.connect
     }),shallow);
     
     let connectButtonText = 'Connect';

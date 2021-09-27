@@ -18,10 +18,8 @@ export function getPlotInfo({editorPane,setupTab,frame,primaryColor,focusData,se
                             <Label value={currentIssue.graphData.xAxisLabel} offset={-2} position="insideBottom" />
                         </XAxis>
                         <YAxis label={{ value: currentIssue.graphData.yAxisLabel, angle: -90, position: 'insideLeft'}}/>
-                        {Object.keys(currentIssue.graphData.series[0]).map((entry, idx) => {
-                            if (entry !== 'x') {
-                                return <Line type="linear" dataKey={entry} key={entry} stroke={colors[idx-1]} dot={false}/>
-                            }
+                        {Object.keys(currentIssue.graphData.series[0]).filter(entry=>entry!=='x').map((entry, idx) => {
+                            return <Line type="linear" dataKey={entry} key={entry} stroke={colors[idx-1]} dot={false}/>
                         })}
                         <Tooltip contentStyle={{backgroundColor: '#141414'}} />
                         {showLegend && <Legend verticalAlign="top" layout="horizontal" align="right" />}
