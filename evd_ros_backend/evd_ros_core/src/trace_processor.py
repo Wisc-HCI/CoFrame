@@ -23,8 +23,8 @@ from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
 from evd_script import Trace, NodeParser, Pose, OccupancyZone, CollisionMesh
 
-
-TIMEOUT_COUNT = 500
+TIMEOUT_COUNT = 0 # This gets set at start of job
+TIMEOUT_COUNT_CORE = 400
 SPIN_RATE = 5
 UPDATE_RATE = 1000
 JSF_NUM_STEPS = 10
@@ -109,19 +109,26 @@ class TraceProcessor:
         self._index = 0
         self._type = trajectory.move_type
         names = self.ltk.joint_names
+
+        expectedTime = 0
+
         if self._type == 'joint':
             locStart = points[trajectory.start_location_uuid]
             lastJoints = locStart.joints.joint_positions
 
             for way in [points[id] for id in trajectory.waypoint_uuids]:
                 nextJoints = way.joints.joint_positions
-                self._path.append((JointInterpolator(self._handle_joint_packing(lastJoints, nextJoints), trajectory.velocity), names))
+                interp = JointInterpolator(self._handle_joint_packing(lastJoints, nextJoints), trajectory.velocity)
+                expectedTime += interp.full_time
+                self._path.append((interp, names))
                 lastJoints = nextJoints
                 self._thresholds.append([JOINTS_INTERMEDIATE_DISTANCE_THRESHOLD]*len(nextJoints))
                 
             locEnd = points[trajectory.end_location_uuid]
             nextJoints = locEnd.joints.joint_positions
-            self._path.append((JointInterpolator(self._handle_joint_packing(lastJoints, nextJoints), trajectory.velocity), names))
+            interp = JointInterpolator(self._handle_joint_packing(lastJoints, nextJoints), trajectory.velocity)
+            expectedTime + interp.full_time
+            self._path.append((interp, names))
             self._thresholds.append([JOINTS_DISTANCE_THRESHOLD]*len(nextJoints))
 
         else: # ee_ik
@@ -130,13 +137,20 @@ class TraceProcessor:
 
             for way in [points[id] for id in trajectory.waypoint_uuids]:
                 nextPose = self._handle_pose_offset(way)
-                self._path.append(PoseInterpolator(lastPose, nextPose, trajectory.velocity))
+                interp = PoseInterpolator(lastPose, nextPose, trajectory.velocity)
+                expectedTime += interp.full_time
+                self._path.append(interp)
                 lastPose = nextPose
                 self._thresholds.append((POSITION_INTERMEDIATE_DISTANCE_THRESHOLD,ORIENTATION_INTERMEDIATE_DISTANCE_THRESHOLD))
 
             locEnd = points[trajectory.end_location_uuid]
-            self._path.append(PoseInterpolator(lastPose, self._handle_pose_offset(locEnd), trajectory.velocity))
+            nextPose = self._handle_pose_offset(locEnd)
+            interp = PoseInterpolator(lastPose, nextPose, trajectory.velocity)
+            expectedTime += interp.full_time
+            self._path.append(interp)
             self._thresholds.append((POSITION_DISTANCE_THRESHOLD,ORIENTATION_DISTANCE_THRESHOLD))
+
+        TIMEOUT_COUNT = TIMEOUT_COUNT_CORE * (expectedTime + 1)
 
         # structure the data to be captured (starts with initial state)
         self._trace_data = {
