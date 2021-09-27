@@ -685,7 +685,7 @@ const stepsToAnimatedTfs = (steps) => {
     // console.log(tempAnimatedTfs)
     const animatedTfs = objectMap(tempAnimatedTfs,(tf,key)=>({
         translation:{
-            x: key==='simulated_tool0'?(v)=>console.log(interpolateScalar(timesteps, tf.translation.x)(v)):interpolateScalar(timesteps, tf.translation.x),
+            x: interpolateScalar(timesteps, tf.translation.x),
             y: interpolateScalar(timesteps, tf.translation.y),
             z: interpolateScalar(timesteps, tf.translation.z)
         },
@@ -796,6 +796,7 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
             };
         })
     })
+    steps.push({...lodash.cloneDeep(steps[steps.length - 1]),time:currentTime+1000})
     return stepsToAnimatedTfs(steps)
 }
 
@@ -807,7 +808,7 @@ function interpolateScalar(x, y) {
         return null
     }
     const interp = (v) => {
-        const val = v > x[x.length - 1] ? v % x : v;
+        const val = v > x[x.length - 1] ? v % x[x.length-1] : v;
         let lastIdx = 0;
         for (let i = 0; i < x.length; i++) {
             if (x[i] <= val) {
