@@ -7,7 +7,8 @@ import {
     OCCUPANCY_ERROR_COLOR,
     occupancyOverlap,
     DEFAULT_TRAJECTORY_COLOR,
-    executablePrimitive
+    executablePrimitive,
+    durationEstimate
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
@@ -18,7 +19,6 @@ const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.include
 
 
 export const ComputedSlice = {
-
     computed: {
         executablePrimitives: function() {
             let executableLookup = {};
@@ -41,7 +41,8 @@ export const ComputedSlice = {
             })
             if (this.focusItem.uuid) {
                 const executable = this.executablePrimitives[this.focusItem.uuid];
-                console.log(executable)
+                console.log(executable);
+                console.log("this is duration : " + durationEstimate(executable));
             }
             return tfs
         },

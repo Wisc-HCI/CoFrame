@@ -729,7 +729,7 @@ const KNIFE_TASK = {
                         }
                     ]
                 },
-                "process_time": 0,
+                "process_time": 3,
                 "mesh_id": "package://evd_ros_tasks/description/meshes/visual/assembly_jig.stl",
                 "pose_offset": {
                     "type": "node.pose.",
@@ -805,7 +805,7 @@ const KNIFE_TASK = {
                         }
                     ]
                 },
-                "process_time": 0,
+                "process_time": 6,
                 "mesh_id": "package://evd_ros_tasks/description/meshes/visual/assembly_jig.stl",
                 "pose_offset": {
                     "type": "node.pose.",
