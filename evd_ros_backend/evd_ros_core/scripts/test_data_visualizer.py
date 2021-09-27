@@ -50,21 +50,24 @@ class TestDataVisualizer:
             markerArray = MarkerArray()
             updated_markers = {}
 
-            # Data Nodes
-            self.__render_locations(markerArray,updated_markers)
-            self.__render_things(markerArray,updated_markers)
-            self.__render_trajectories(markerArray,updated_markers)
-            self.__render_traces(markerArray,updated_markers)
+            try:
+                # Data Nodes
+                self.__render_locations(markerArray,updated_markers)
+                self.__render_things(markerArray,updated_markers)
+                self.__render_trajectories(markerArray,updated_markers)
+                self.__render_traces(markerArray,updated_markers)
 
-            # Environment Nodes
-            self.__render_reach_sphere(markerArray,updated_markers)
-            self.__render_collision_meshes(markerArray,updated_markers)
-            self.__render_occupancy_zones(markerArray,updated_markers)
-            self.__render_pinch_points(markerArray,updated_markers)
+                # Environment Nodes
+                self.__render_reach_sphere(markerArray,updated_markers)
+                self.__render_collision_meshes(markerArray,updated_markers)
+                self.__render_occupancy_zones(markerArray,updated_markers)
+                self.__render_pinch_points(markerArray,updated_markers)
 
-            # Update
-            self.__delete_old_markers(markerArray,updated_markers)
-            self.__publish_markers(markerArray,updated_markers)       
+                # Update
+                self.__delete_old_markers(markerArray,updated_markers)
+                self.__publish_markers(markerArray,updated_markers) 
+            except:
+                print('Error during visualization, probably the update colliding with this long visualization process')      
 
     def __render_trajectories(self, markerArray, updated_markers):
         # Get all trajectories and display all waypoints
@@ -72,8 +75,12 @@ class TestDataVisualizer:
         #print '\n\nTrajectories', trajectories
         for traj in trajectories:
 
-            trajMarker, waypointMarkers, waypointUuids = traj.to_ros_markers(self._ros_frame_id, self._count)
-            self._count = self._count + 1 + len(waypointMarkers)
+            try:
+                trajMarker, waypointMarkers, waypointUuids = traj.to_ros_markers(self._ros_frame_id, self._count)
+                self._count = self._count + 1 + len(waypointMarkers)
+            except:
+                print('Failed to produce trajectory marker')
+                continue
 
             # waypoints
             for i in range(0,len(waypointMarkers)):
@@ -92,8 +99,13 @@ class TestDataVisualizer:
         #print '\n\nTrajectories', trajectories
         for traj in trajectories:
             if traj.trace != None:
-                traceMarkers, renderpointMarkers, renderpointUuids = traj.trace.to_ros_markers(self._ros_frame_id,self._count)
-                self._count = self._count + len(traceMarkers) + len(renderpointMarkers)
+
+                try:
+                    traceMarkers, renderpointMarkers, renderpointUuids = traj.trace.to_ros_markers(self._ros_frame_id,self._count)
+                    self._count = self._count + len(traceMarkers) + len(renderpointMarkers)
+                except:
+                    print('Failed to produce trace marker')
+                    continue
 
                 # For each trace
                 for i in range(0,len(traceMarkers)):
@@ -117,9 +129,14 @@ class TestDataVisualizer:
         pinchpoints = self._program.environment.pinch_points
         #print '\n\nPinch Points', pinchpoints
         for point in pinchpoints:
-            marker  = point.to_ros_marker(self._count)
+            try:
+                marker  = point.to_ros_marker(self._count)
+                self._count += 1
+            except:
+                print('Failed to produce pinch point marker')
+                continue
+            
             markerArray.markers.append(marker)
-            self._count += 1
             updated_markers[point.uuid] = marker
 
     def __render_collision_meshes(self, markerArray, updated_markers):
@@ -127,9 +144,14 @@ class TestDataVisualizer:
         meshes = self._program.environment.collision_meshes
         #print '\n\nCollision Meshes', meshes
         for mesh in meshes:
-            marker = mesh.to_ros_marker(self._count)
+            try:
+                marker = mesh.to_ros_marker(self._count)
+                self._count += 1
+            except:
+                print('Failed to produce collision mesh marker')
+                continue
+
             markerArray.markers.append(marker)
-            self._count += 1
             updated_markers[mesh.uuid] = marker
 
     def __render_locations(self, markerArray, updated_markers):
@@ -137,10 +159,16 @@ class TestDataVisualizer:
         locations = self._program.environment.locations
         #print '\n\nLocations=', locations
         for loc in locations:
-            marker = loc.to_ros_marker(self._ros_frame_id,self._count)
+
+            try:
+                marker = loc.to_ros_marker(self._ros_frame_id,self._count)
+                self._count += 1
+            except:
+                print('Failed to produce location marker')
+                continue
+
             #print 'adding location markers', loc.uuid
             markerArray.markers.append(marker)
-            self._count += 1
             updated_markers[loc.uuid] = marker
 
     def __render_things(self, markerArray, updated_markers):
@@ -148,7 +176,12 @@ class TestDataVisualizer:
         things = self._program.environment.things
         #print '\n\nThings=', things
         for thing in things:
-            marker = thing.to_ros_marker(self._ros_frame_id,self._count)
+            try:
+                marker = thing.to_ros_marker(self._ros_frame_id,self._count)
+            except:
+                print('Failed to produce thing marker')
+                continue
+            
             if marker != None:
                 #print 'adding thing markers', thing.uuid
                 markerArray.markers.append(marker)
@@ -159,10 +192,15 @@ class TestDataVisualizer:
         # display reach sphere
         reach_sphere = self._program.environment.reach_sphere
         if reach_sphere != None:
-            #print '\n\nReach Sphere', reach_sphere.uuid
-            marker = reach_sphere.to_ros_marker(self._ros_frame_id,self._count)
+            try:
+                #print '\n\nReach Sphere', reach_sphere.uuid
+                marker = reach_sphere.to_ros_marker(self._ros_frame_id,self._count)
+                self._count += 1
+            except:
+                print('Failed to produce reach sphere marker')
+                return
+
             markerArray.markers.append(marker)
-            self._count += 1
             updated_markers[reach_sphere.uuid] = marker
 
     def __render_occupancy_zones(self, markerArray, updated_markers):
@@ -170,9 +208,14 @@ class TestDataVisualizer:
         zones = self._program.environment.occupancy_zones
         #print '\n\nOccupancy Zones', zones
         for zone in zones:
-            marker = zone.to_ros_marker(self._ros_frame_id, self._count)
+            try:
+                marker = zone.to_ros_marker(self._ros_frame_id, self._count)
+                self._count += 1
+            except:
+                print("Failed to produce occupancy zone marker")
+                continue
+                
             markerArray.markers.append(marker)
-            self._count += 1
             updated_markers[zone.uuid] = marker
 
     def __delete_old_markers(self, markerArray, updated_markers):

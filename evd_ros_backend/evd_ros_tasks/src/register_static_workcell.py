@@ -42,6 +42,7 @@ class URRobotEnvironment:
             offset=Position(0,0,0.15))
         
         # Define Pinch Points
+        '''
         self._pinch_points = [
             PinchPoint(
                 link='simulated_shoulder_link', 
@@ -74,6 +75,8 @@ class URRobotEnvironment:
                 offset=Position.from_axis('z',0.1)
             )
         ]
+        '''
+        self._pinch_points = []
         
         # Defining thing types needed for machine
         leftHandleThingType = ThingType(
@@ -307,24 +310,20 @@ class URRobotEnvironment:
             uuid=MACHINE_UUID_3D_PRINTER,
             inputs={},
             outputs={
-                leftHandleThingType.uuid: [
-                    {
-                        'region_uuid': leftHandleRegion.uuid,
-                        'quantity': 1,
-                        'placeholder_uuids': [
-                            leftHandlePlaceholder.uuid
-                        ]
-                    }
-                ],
-                rightHandleThingType.uuid: [
-                    {
-                        'region_uuid': rightHandleRegion.uuid,
-                        'quantity': 1,
-                        'placeholder_uuids':[
-                            rightHandlePlaceholder.uuid
-                        ]
-                    }
-                ]
+                leftHandleThingType.uuid: [{
+                    'region_uuid': leftHandleRegion.uuid,
+                    'quantity': 1,
+                    'placeholder_uuids': [
+                        leftHandlePlaceholder.uuid
+                    ]
+                }],
+                rightHandleThingType.uuid: [{
+                    'region_uuid': rightHandleRegion.uuid,
+                    'quantity': 1,
+                    'placeholder_uuids':[
+                        rightHandlePlaceholder.uuid
+                    ]
+                }]
             },   
             passive=False,
             process_time=PROCESS_TIME_3D_PRINTER,
@@ -333,29 +332,29 @@ class URRobotEnvironment:
             collision_mesh_uuid=printerCollisionMesh.uuid)
         assemblyJigUnsafeMachine = Machine(
             name="Assembly Jig Machine",
-            uuid=MACHINE_UUID_ASSEMBLY_JIG,
+            uuid=MACHINE_UUID_ASSEMBLY_JIG+'_unsafe',
             inputs={
-                bladeThingType.uuid: {
+                bladeThingType.uuid: [{
                     'region_uuid': bladeAssemblyRegion.uuid,
                     'quantity': 1
-                },
-                leftHandleThingType.uuid: {
+                }],
+                leftHandleThingType.uuid: [{
                     'region_uuid': bladeAssemblyRegion.uuid,
                     'quantity': 1
-                },
-                rightHandleThingType.uuid: {
+                }],
+                rightHandleThingType.uuid: [{
                     'region_uuid': bladeAssemblyRegion.uuid,
                     'quantity': 1
-                }
+                }]
             },
             outputs={
-                knifeThingType.uuid: {
+                knifeThingType.uuid: [{
                     'region_uuid': bladeAssemblyRegion.uuid,
                     'quantity': 1,
                     'placeholder_uuids': [
                         knifePlaceholder.uuid
                     ]
-                }
+                }]
             },
             passive=True,
             process_time=PROCESS_TIME_ASSEMBLY_JIG,
@@ -364,29 +363,29 @@ class URRobotEnvironment:
             collision_mesh_uuid=assemblyJigCollisionMesh.uuid)
         assemblyJigSafeMachine = Machine(
             name="Assembly Jig Machine",
-            uuid=MACHINE_UUID_ASSEMBLY_JIG,
+            uuid=MACHINE_UUID_ASSEMBLY_JIG+'_safe',
             inputs={
-                bladeWithTransportJigThingType.uuid: {
+                bladeWithTransportJigThingType.uuid: [{
                     'region_uuid': bladeAssemblyRegion.uuid,
                     'quantity': 1
-                },
-                leftHandleThingType.uuid: {
+                }],
+                leftHandleThingType.uuid: [{
                     'region_uuid': bladeAssemblyRegion.uuid,
                     'quantity': 1
-                },
-                rightHandleThingType.uuid: {
+                }],
+                rightHandleThingType.uuid: [{
                     'region_uuid': bladeAssemblyRegion.uuid,
                     'quantity': 1
-                }
+                }]
             },
             outputs={
-                knifeWithTransportJigThingType.uuid: {
+                knifeWithTransportJigThingType.uuid: [{
                     'region_uuid': bladeAssemblyRegion.uuid,
                     'quantity': 1,
                     'placeholder_uuids': [
                         knifeWithTransportJigPlaceholder.uuid
                     ]
-                }
+                }]
             },
             passive=True,
             process_time=PROCESS_TIME_ASSEMBLY_JIG,
@@ -398,13 +397,13 @@ class URRobotEnvironment:
             uuid=MACHINE_UUID_BLADE_CONVEYOR,
             inputs={},
             outputs={
-                bladeThingType.uuid: {
+                bladeThingType.uuid: [{
                     'region_uuid': bladeFeederRegion.uuid,
                     'quantity': 1,
                     'placeholder_uuids': [
                         bladePlaceholder.uuid
                     ]
-                }
+                }]
             },
             passive=False,
             process_time=PROCESS_TIME_BLADE_CONVEYOR,
@@ -415,19 +414,19 @@ class URRobotEnvironment:
             name="Blade Feeder Machine",
             uuid=MACHINE_UUID_BLADE_FEEDER,
             inputs={
-                bladeThingType.uuid: {
+                bladeThingType.uuid: [{
                     'region_uuid': bladeFeederRegion.uuid,
                     'quantity': 1
-                }
+                }]
             },
             outputs={
-                bladeWithTransportJigThingType.uuid: {
+                bladeWithTransportJigThingType.uuid: [{
                     'region_uuid': bladeFeederRegion.uuid,
                     'quantity': 1,
                     'placeholder_uuids': [
                         knifeWithTransportJigPlaceholder.uuid
                     ]
-                }
+                }]
             },
             passive=False,
             process_time=PROCESS_TIME_BLADE_FEEDER,
@@ -438,19 +437,19 @@ class URRobotEnvironment:
             name="Knife Feeder Machine",
             uuid=MACHINE_UUID_KNIFE_FEEDER,
             inputs={
-                knifeWithTransportJigThingType.uuid: {
+                knifeWithTransportJigThingType.uuid: [{
                     'region_uuid': knifeFeederRegion.uuid,
                     'quality': 1
-                }
+                }]
             },
             outputs={
-                knifeThingType.uuid: {
+                knifeThingType.uuid: [{
                     'region_uuid': knifeFeederRegion.uuid,
                     'quality': 1,
                     'placeholder_uuids': [
                         knifePlaceholder.uuid
                     ]
-                }
+                }]
             },
             passive=True,
             process_time=PROCESS_TIME_KNIFE_FEEDER,
@@ -461,10 +460,10 @@ class URRobotEnvironment:
             name="Blade Conveyor Machine",
             uuid=MACHINE_UUID_KNIFE_CONVEYOR,
             inputs={
-                knifeThingType.uuid: {
+                knifeThingType.uuid: [{
                     'region_uuid': knifeFeederRegion.uuid,
                     'quantity': 1
-                }
+                }]
             },
             passive=False,
             outputs={},
@@ -496,16 +495,28 @@ class URRobotEnvironment:
             position=Position(0.2,-0.1,0.1),
             orientation=Orientation.Identity(),
             link='app')
+        noFrameLoc = Location(
+            position=Position(0,0,0),
+            orientation=Orientation.Identity(),
+            link=""
+        )
+        weirdFrameLoc = Location(
+            position=Position(0,0,0),
+            orientation=Orientation.Identity(),
+            link="3d_printer_link"
+        )
         self._locations = [
             unitLoc,
             reachableLoc,
-            homeLoc
+            homeLoc,
+            noFrameLoc,
+            weirdFrameLoc
         ]
 
         # Define some debug trajectories
         traj1 = Trajectory(unitLoc.uuid, homeLoc.uuid, move_type="ee_ik", velocity=1)
         traj2 = Trajectory(homeLoc.uuid, reachableLoc.uuid, move_type="joint",velocity=1)
-        traj3 = Trajectory(homeLoc.uuid, reachableLoc.uuid, move_type="ee_ik",velocity=1)
+        traj3 = Trajectory(reachableLoc.uuid, homeLoc.uuid, move_type="ee_ik",velocity=1)
         self._trajectories = [
             traj1,
             traj2,

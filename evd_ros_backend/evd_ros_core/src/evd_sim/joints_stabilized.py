@@ -34,5 +34,13 @@ class JointsStabilizedFilter:
 
         return len(list(filter(lambda x: x > self._threshold, distances))) == 0
 
+    @property
+    def debug(self):
+        return {
+            'threshold': self._threshold,
+            'filter': self._filter,
+            'max_length': self._filterLength
+        }
+
     def clear(self):
         self._filter = []

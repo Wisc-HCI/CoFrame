@@ -40,6 +40,7 @@ class FakeFrontendNode:
         self._active_joints_jobs = []
         self._active_trace_jobs = []
         self._temp_trace_store = {} # NOTE: We need this since EvD Traces are incompatible with the traces produced by trace processor
+        self._temp_joint_trace_store = {} # NOTE: We need this since EvD Joint traces don't exist
 
         ## Publish these as PoseStamped, the backend will create TFs from these
         #NOTE Ignore these
@@ -63,6 +64,9 @@ class FakeFrontendNode:
         self._update_pub = rospy.Publisher('{0}program/update'.format(prefix_fmt), String, queue_size=5) #this is optional (I use it for visualization)
         self._configure_processors = rospy.Publisher('{0}program/configure/processors'.format(prefix_fmt), String, queue_size=5) # This is a json obj of all nodes needed for trace processing
         self._configure_machines = rospy.Publisher('{0}program/configure/machines'.format(prefix_fmt), String, queue_size=5)
+
+        #NOTE: This topic is just for funzies don't need it in the real frontend
+        self._update_traces_pub = rospy.Publisher('{0}program/update_traces'.format(prefix_fmt), String, queue_size=5)
 
         ## Communication with trace processor
         # This processor produces graded traces from trajectories.
@@ -106,6 +110,7 @@ class FakeFrontendNode:
 
         # NOTE: this is just for the fake frontend to publish periodic updates
         self._timer = rospy.Timer(rospy.Duration(0.5), self._update_cb)
+        self._timer1 = rospy.Timer(rospy.Duration(5), self._update_traces_cb)
 
         # NOTE: this is just for the fake frontend to publish some joint data
         self._joint_index = 0
@@ -131,6 +136,7 @@ class FakeFrontendNode:
 
     def _trace_submit_cb(self, msg):
         if msg.id in self._active_trace_jobs:
+            print('Trace Job - {} has been completed'.format(msg.id))
 
             raw = json.loads(msg.data)
 
@@ -146,11 +152,13 @@ class FakeFrontendNode:
 
     def _joints_submit_cb(self, msg):
         if msg.id in self._active_joints_jobs:
+            print('Joint Job - {} has been completed'.format(msg.id))
 
             raw = json.loads(msg.data)
 
             joints = NodeParser(raw['joint'])
-            joint_trace = raw['trace']
+            if raw['trace'] != None:
+                self._temp_joint_trace_store[msg.id] = raw['trace']
 
             wp = evd_cache.get(msg.id) # where job ID is the uuid of the parent object (only works for 1-1 relations)
             wp.joints = joints
@@ -161,6 +169,10 @@ class FakeFrontendNode:
         #print('\n\n\tIn periodic update push!\n\n')
         data = json.dumps(self._program.to_dct())
         self._update_pub.publish(String(data))
+
+    def _update_traces_cb(self, event=None):
+        data = json.dumps({'traces': self._temp_trace_store, 'joints': self._temp_joint_trace_store})
+        self._update_traces_pub.publish(String(data))
 
     def spin(self):
 
@@ -190,7 +202,7 @@ class FakeFrontendNode:
         msg.data = json.dumps({
             'collision_meshes': [x.to_dct() for x in self._program.environment.collision_meshes],
             'pinch_points': [x.to_dct() for x in self._program.environment.pinch_points],
-            'occupancy_zones': [x.to_dct() for x in self._program.environment.occupancy_zones]
+            'occupancy_zones': list(filter(lambda x: x['occupancy_type'] == "human", [x.to_dct() for x in self._program.environment.occupancy_zones]))
         })
         self._configure_processors.publish(msg)
 

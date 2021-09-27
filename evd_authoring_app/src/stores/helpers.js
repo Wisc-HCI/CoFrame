@@ -682,7 +682,7 @@ const stepsToAnimatedTfs = (steps) => {
             tempAnimatedTfs[tfName].rotation.z.push(step.tfs[tfName].rotation.z);
         })
     })
-    console.log(tempAnimatedTfs)
+    // console.log(tempAnimatedTfs)
     const animatedTfs = objectMap(tempAnimatedTfs,tf=>({
         translation:{
             x: interpolateScalar(timesteps, tf.translation.x),
@@ -761,6 +761,7 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 steps.push(prevTfs)
             } else if (chunk.type === 'node.primitive.move-trajectory.') {
                 duration = chunk.parameters.trajectory_uuid.trace.duration * 1000;
+                if (chunk)
                 for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length-1; i++) {
                     prevTfs.tfs = {...prevTfs.tfs,...robotFramesFromIdx(i,chunk.parameters.trajectory_uuid.trace)};
                     if (carriedPlaceholder) {
@@ -770,6 +771,9 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                     prevTfs.time = currentTime+chunk.parameters.trajectory_uuid.trace.time_data[i]*1000;
                     steps.push(prevTfs)
                     prevTfs = lodash.cloneDeep(steps[steps.length - 1]);
+                }
+                if (chunk.parameters.trajectory_uuid.trace.in_timeout) {
+                    cancelled = true
                 }
             } else if (chunk.type === 'node.primitive.move-unplanned.') {
                 duration = 100;

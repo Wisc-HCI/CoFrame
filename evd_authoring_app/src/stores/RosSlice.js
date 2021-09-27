@@ -18,7 +18,7 @@ export const RosSlice = (set, get) => ({
     onConnection: () => {
         set((_) => ({ connection: 'connected' }))
         const configuration = {
-            occupancy_zones:Object.values(get().data.occupancyZones),
+            occupancy_zones:Object.values(get().data.occupancyZones).filter(zone => zone.occupancy_type === "human"),
             collision_meshes:Object.values(get().data.collisionMeshes),
             pinch_points:[]
         }
@@ -127,7 +127,10 @@ export const RosSlice = (set, get) => ({
         console.log('receiving trace data from processor')
         console.log({input,trace,status})
         if (status) {
-            const { duration, time_data, pybullet_joint_data, pybullet_collisions, pybullet_self_collisions, pybullet_frame_data } = trace;
+            const { 
+                duration, time_data, pybullet_joint_data, 
+                pybullet_collisions, pybullet_self_collisions, 
+                pybullet_frame_data, postprocess_occupancy} = trace;
             if (state.data.trajectories[msg.id]) {
                 state.data.trajectories[msg.id].trace = {
                     duration,
@@ -136,6 +139,8 @@ export const RosSlice = (set, get) => ({
                     frames:pybullet_frame_data,
                     env_collisions:pybullet_collisions,
                     self_collisions:pybullet_self_collisions,
+                    occupancy:postprocess_occupancy,
+                    pinch_points:null
                 }
             }
         }

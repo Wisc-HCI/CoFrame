@@ -1,13 +1,7 @@
 <?xml version="1.0" ?>
-<robot name="assembly_jig">
+<robot name="knife_feeder">
 
-    <link name="assembly_jig">
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0"/>
-            <geometry>
-                <mesh filename="./environment/assembly_jig.stl"/>
-            </geometry>
-        </visual>
+    <link name="collision_mesh_knife_feeder">
         <inertial>
             <mass value="0"/>
             <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -16,7 +10,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="./environment/assembly_jig.stl"/>
+                <mesh filename="../environment/collision/knife_feeder.stl"/>
             </geometry>
         </collision>
     </link>

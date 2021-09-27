@@ -10,10 +10,10 @@
 
   <node name="fake_frontend" pkg="evd_ros_core" type="fake_frontend.py" output="screen"/>
 
-  <node if="$(arg run_program_vis)" name="test_data_visualizer" pkg="evd_ros_core" type="test_data_visualizer.py">
+  <node if="$(arg run_program_vis)" name="test_data_visualizer" pkg="evd_ros_core" type="test_data_visualizer.py" output="screen">
     <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
   </node>
 
-  <node if="$(arg run_robot_controls)" name="test_robot_control_server" pkg="evd_ros_core" type="test_robot_control_server.py"/>
+  <node if="$(arg run_robot_controls)" name="test_robot_control_server" pkg="evd_ros_core" type="test_robot_control_server.py" output="screen"/>
 
 </launch>

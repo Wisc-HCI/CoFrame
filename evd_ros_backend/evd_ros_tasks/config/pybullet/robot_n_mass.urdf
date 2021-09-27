@@ -4,7 +4,7 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="robot">
-  <material name="visual_env_mesh">
+  <material name="collision_env_mesh">
     <color rgba="0.5019607843137255 0.5019607843137255 0.5019607843137255 1.0"/>
   </material>
   <!-- robot_common -->
@@ -126,117 +126,117 @@
   <!-- links: main serial chain -->
   <link name="base_link"/>
   <link name="base_link_inertia">
-    <visual>
+    <collision>
       <origin rpy="0 0 3.141592653589793" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="./robot/visual/base.dae"/>
+        <mesh filename="./robot/collision/base.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
       </material>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="2.0"/>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <inertia ixx="0.0030531654454" ixy="0.0" ixz="0.0" iyy="0.0030531654454" iyz="0.0" izz="0.005625"/>
-    </inertial> 
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="shoulder_link">
-    <visual>
+    <collision>
       <origin rpy="0 0 3.141592653589793" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="./robot/visual/shoulder.dae"/>
+        <mesh filename="./robot/collision/shoulder.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
       </material>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="2.0"/>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <inertia ixx="0.008093163429399999" ixy="0.0" ixz="0.0" iyy="0.008093163429399999" iyz="0.0" izz="0.005625"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="upper_arm_link">
-    <visual>
+    <collision>
       <origin rpy="1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0.12"/>
       <geometry>
-        <mesh filename="./robot/visual/upperarm.dae"/>
+        <mesh filename="./robot/collision/upperarm.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
       </material>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="3.42"/>
-      <origin rpy="0 1.5707963267948966 0" xyz="-0.121825 0.0 0.12"/>
-      <inertia ixx="0.021728483221103233" ixy="0.0" ixz="0.0" iyy="0.021728483221103233" iyz="0.0" izz="0.00961875"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="forearm_link">
-    <visual>
+    <collision>
       <origin rpy="1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0.027"/>
       <geometry>
-        <mesh filename="./robot/visual/forearm.dae"/>
+        <mesh filename="./robot/collision/forearm.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
       </material>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="1.26"/>
-      <origin rpy="0 1.5707963267948966 0" xyz="-0.1066 0.0 0.027"/>
-      <inertia ixx="0.0065445675821719194" ixy="0.0" ixz="0.0" iyy="0.0065445675821719194" iyz="0.0" izz="0.00354375"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="wrist_1_link">
-    <visual>
+    <collision>
       <!-- TODO: Move this to a parameter -->
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 -0.104"/>
       <geometry>
-        <mesh filename="./robot/visual/wrist1.dae"/>
+        <mesh filename="./robot/collision/wrist1.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
       </material>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.8"/>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <inertia ixx="0.002084999166" ixy="0.0" ixz="0.0" iyy="0.002084999166" iyz="0.0" izz="0.00225"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="wrist_2_link">
-    <visual>
+    <collision>
       <origin rpy="0 0 0" xyz="0 0 -0.08535"/>
       <geometry>
-        <mesh filename="./robot/visual/wrist2.dae"/>
+        <mesh filename="./robot/collision/wrist2.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
       </material>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.8"/>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <inertia ixx="0.002084999166" ixy="0.0" ixz="0.0" iyy="0.002084999166" iyz="0.0" izz="0.00225"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="wrist_3_link">
-    <visual>
+    <collision>
       <origin rpy="1.5707963267948966 0 0" xyz="0 0 -0.0921"/>
       <geometry>
-        <mesh filename="./robot/visual/wrist3.dae"/>
+        <mesh filename="./robot/collision/wrist3.stl"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
       </material>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.35"/>
-      <origin rpy="0 0 0" xyz="0.0 0.0 -0.02"/>
-      <inertia ixx="0.00013626661215999998" ixy="0.0" ixz="0.0" iyy="0.00013626661215999998" iyz="0.0" izz="0.0001792"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <!-- joints: main serial chain -->
   <joint name="base_link-base_link_inertia" type="fixed">
@@ -330,16 +330,16 @@
     <origin rpy="1.570795 -1.570795 0" xyz="0 0 0"/>
   </joint>
   <link name="robotiq_85_base_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_base_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_base_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.636951"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000380" ixy="0.000000" ixz="0.000000" iyx="0.000000" iyy="0.001110" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.001171"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <joint name="robotiq_85_left_knuckle_joint" type="revolute">
     <parent link="robotiq_85_base_link"/>
@@ -357,28 +357,28 @@
     <mimic joint="robotiq_85_left_knuckle_joint"/>
   </joint>
   <link name="robotiq_85_left_knuckle_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_knuckle_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_knuckle_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.018491"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000009" ixy="-0.000001" ixz="0.000000" iyx="-0.000001" iyy="0.000001" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.000010"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="robotiq_85_right_knuckle_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_knuckle_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_knuckle_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.018491"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000009" ixy="-0.000001" ixz="0.000000" iyx="-0.000001" iyy="0.000001" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.000010"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <joint name="robotiq_85_left_finger_joint" type="continuous">
     <parent link="robotiq_85_left_knuckle_link"/>
@@ -391,28 +391,28 @@
     <origin rpy="0 0 0" xyz="-0.00408552455 -0.03148604435 0.0"/>
   </joint>
   <link name="robotiq_85_left_finger_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_finger_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_finger_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.027309"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000003" ixy="-0.000002" ixz="0.000000" iyx="-0.000002" iyy="0.000021" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.000020"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="robotiq_85_right_finger_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_finger_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_finger_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.027309"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000003" ixy="-0.000002" ixz="0.000000" iyx="-0.000002" iyy="0.000021" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.000020"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <joint name="robotiq_85_left_inner_knuckle_joint" type="continuous">
     <parent link="robotiq_85_base_link"/>
@@ -431,28 +431,28 @@
     <mimic joint="robotiq_85_left_knuckle_joint" offset="0"/>
   </joint>
   <link name="robotiq_85_left_inner_knuckle_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_inner_knuckle_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_inner_knuckle_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.029951"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000039" ixy="0.000000" ixz="0.000000" iyx="0.000000" iyy="0.000005" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.000035"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="robotiq_85_right_inner_knuckle_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_inner_knuckle_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_inner_knuckle_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.029951"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000039" ixy="0.000000" ixz="0.000000" iyx="0.000000" iyy="0.000005" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.000035"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <joint name="robotiq_85_left_finger_tip_joint" type="continuous">
     <parent link="robotiq_85_left_inner_knuckle_link"/>
@@ -471,28 +471,28 @@
     <mimic joint="robotiq_85_left_knuckle_joint" multiplier="-1"/>
   </joint>
   <link name="robotiq_85_left_finger_tip_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_finger_tip_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_finger_tip_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.019555"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000002" ixy="0.000000" ixz="0.000000" iyx="0.000000" iyy="0.000005" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.000006"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <link name="robotiq_85_right_finger_tip_link">
-    <visual>
+    <collision>
       <geometry>
-        <mesh filename="./robot/visual/robotiq_85_finger_tip_link.dae"/>
+        <mesh filename="./robot/collision/robotiq_85_finger_tip_link.stl"/>
       </geometry>
-    </visual>
+    </collision>
     <inertial>
-      <mass value="0.019555"/>
-      <origin xyz="0.0 0.0 0.0"/>
-      <inertia ixx="0.000002" ixy="0.000000" ixz="0.000000" iyx="0.000000" iyy="0.000005" iyz="0.000000" izx="0.000000" izy="0.000000" izz="0.000006"/>
-    </inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <transmission name="robotiq_85_left_knuckle_trans">
     <type>transmission_interface/SimpleTransmission</type>
@@ -539,13 +539,18 @@
   </gazebo>
   <!-- Robot Pedestal -->
   <link name="ur3e_pedestal_link" type="fixed">
-    <visual>
+    <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://evd_ros_tasks/description/meshes/visual/pedestal.stl"/>
+        <mesh filename="./environment/collision/pedestal.stl"/>
       </geometry>
-      <material name="visual_env_mesh"/>
-    </visual>
+      <material name="collision_env_mesh"/>
+    </collision>
+    <inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
   </link>
   <joint name="robot_common_ur3e_pedestal_joint" type="fixed">
     <parent link="robot_common"/>

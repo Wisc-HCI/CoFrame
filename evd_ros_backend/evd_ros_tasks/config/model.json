@@ -1,22 +1,38 @@
 {
     "pybullet": {
         "urdf": {
-            "robot": "robot.urdf",
+            "robot": "robot_n_mass.urdf",
             "environment": "environment.urdf"
         },
         "timestep": 0.0165,
-        "collision_mesh_urdf_table": {
-            "package://evd_ros_tasks/description/meshes/collision/3d_printer.stl": "3d_printer.stl.urdf",
-            "package://evd_ros_tasks/description/meshes/collision/pedestal.stl": "pedestal.stl.urdf",
-            "package://evd_ros_tasks/description/meshes/collision/table.stl": "table.stl.urdf",
-            "package://evd_ros_tasks/description/meshes/collision/assembly_jig.stl": "assembly_jig.stl.urdf",
-            "package://evd_ros_tasks/description/meshes/collision/conveyor.stl": "conveyor.stl.urdf",
-            "package://evd_ros_tasks/description/meshes/collision/blade_feeder.stl": "blade_feeder.stl.urdf",
-            "ackage://evd_ros_tasks/description/meshes/collision/knife_feeder.stl": "knife_feeder.stl.urdf"
+        "collision_frame_ignore_filter": [
+            "base_link",
+            "base_link_inertia",
+            "flange",
+            "tool0",
+            "base",
+            "ur3e_pedestal_link"
+        ],
+        "self_collision_ignore_filters": {
+            "shoulder_link": ["shoulder_link","upper_arm_link"],
+            "upper_arm_link": ["upper_arm_link","shoulder_link","forearm_link"],
+            "forearm_link": ["forearm_link","upper_arm_link","wrist_1_link"],
+            "wrist_1_link": ["wrist_1_link","forearm_link","wrist_2_link"],
+            "wrist_2_link": ["wrist_2_link","wrist_1_link","wrist_3_link"],
+            "wrist_3_link": ["wrist_3_link","wrist_2_link","robotiq_85_base_link"],
+            "robotiq_85_base_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"],
+            "robotiq_85_left_knuckle_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"],
+            "robotiq_85_left_finger_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"],
+            "robotiq_85_right_knuckle_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"],
+            "robotiq_85_right_finger_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"],
+            "robotiq_85_left_inner_knuckle_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"],
+            "robotiq_85_left_finger_tip_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"],
+            "robotiq_85_right_inner_knuckle_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"],
+            "robotiq_85_right_finger_tip_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"]
         }
     },
     "lively-tk": {
-        "config": "ur3e_config_v1.json",
+        "config": "ur3e_config_v2.json",
         "timestep": 0.0165
     },
     "timestep": 0.0165,
