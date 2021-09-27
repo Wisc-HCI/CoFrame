@@ -1,5 +1,5 @@
-# Expert View Dashbaord
-Expert View Dashboard (EvD) is an educational environment used to train operators
+# CoFrame
+CoFrame is an educational environment used to train operators
 for collaborative robotic workcells.
 
 We accomplish this with an authoring tool that incorporates a Blockly-based visual
