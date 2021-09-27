@@ -1,11 +1,14 @@
 import { generateUuid } from "../generateUuid"
+import {idleTimeEstimate, durationEstimate} from "../helpers"
 
 // Requires trace timing + delay and machine wait primitives (start computation after move_unplanned in initialize)
 export const findCycleTimeIssues = ({program, unrolled, stats}) => {
     let issues = {};
 
     // TODO: Replace with Hunter's helper function
-    let randY = Math.random();
+    //let randY = Math.random();
+    const randY = durationEstimate(unrolled);
+    
 
     // get prior values
     let priorData = [];
@@ -42,7 +45,7 @@ export const findIdleTimeIssues = ({program, unrolled, stats}) => {
     let issues = {};
 
     // TODO: Replace with Hunter's helper function
-    let randY = Math.random();
+    const randY = idleTimeEstimate(unrolled);
 
     // get prior values
     let priorData = [];

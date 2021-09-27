@@ -14,7 +14,7 @@ const isBlocked = (state, sectionId) => (state.sections[sectionId].dependencies.
 
 const FRAMES = [
     { key: 'safety', title: 'Safety Concerns', sections: ['endEffectorPoses', 'thingMovement', 'pinchPoints', 'collisions', 'occupancy'] },
-    { key: 'quality', title: 'Program Quality', sections: ['missingBlocks', 'missingParameters', 'unusedSkills', 'unusedFeatures', 'emptyBlocks'] },
+    { key: 'quality', title: 'Program Quality', sections: ['missingBlocks', 'missingParameters', 'machineLogic', 'unusedSkills', 'unusedFeatures', 'emptyBlocks'] },
     { key: 'performance', title: 'Robot Performance', sections: ['reachability', 'jointSpeed', 'endEffectorSpeed', 'payload', 'spaceUsage'] },
     { key: 'business', title: 'Business Objectives', sections: ['cycleTime', 'idleTime', 'returnOnInvestment'] },
 ]

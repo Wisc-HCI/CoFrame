@@ -128,6 +128,14 @@ export const findJointSpeedIssues = ({program}) => {
         'wrist_2_joint': 'Wrist 2 Joint',
         'wrist_3_joint': 'Wrist 3 Joint'
     };
+    const jointLinkMap = {
+        'shoulder_pan_joint': 'shoulder_link',
+        'shoulder_lift_joint': 'upper_arm_link',
+        'elbow_joint': 'forearm_link',
+        'wrist_1_joint': 'wrist_1_link',
+        'wrist_2_joint': 'wrist_2_link',
+        'wrist_3_joint': 'wrist_3_link'
+    };
     const jointThresholds = {
         'shoulder_pan_joint': {warning: 1.9, error: 2},
         'shoulder_lift_joint': {warning: 1.9, error: 2},
@@ -145,10 +153,15 @@ export const findJointSpeedIssues = ({program}) => {
         'wrist_3_joint': '#0b9e00'
     };
 
+    const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
+    const WARNING_COLOR = {r: 230, g: 159, b: 0};
+    const ERROR_COLOR = {r: 204, g: 75, b: 10};
+
     // Used for adjusting the x axes time data
     const precision = 1000;
 
     Object.values(program.data.trajectories).forEach(trajectory=>{
+        let sceneData = {};
         let jointVelocities = {};
         let jointGraphData = [];
         let timeData = trajectory.trace.time_data;
@@ -156,11 +169,13 @@ export const findJointSpeedIssues = ({program}) => {
 
         let jointDataLength = trajectory.trace.joint_data[jointNames[0]].length;
 
+        let hasWarningVelocity = false;
         let hasErrorVelocity = false;
         let shouldGraphJoint = [];
 
         for (let i = 0; i < jointNames.length; i++) {
             jointVelocities[jointNames[i]] = [0];
+            sceneData[jointNames[i]] = [];
             shouldGraphJoint.push(false);
         }
 
@@ -168,15 +183,30 @@ export const findJointSpeedIssues = ({program}) => {
         for (let i = 0; i < jointNames.length; i++) {
             for (let j = 1; j < jointDataLength; j++) {
                 let calcVel = Math.abs((allJointData[jointNames[i]][j] - allJointData[jointNames[i]][j-1]) / (timeData[j] - timeData[j-1]));
+                let curFrame = trajectory.trace.frames[jointLinkMap[jointNames[i]]][j][0];
 
-                if (!shouldGraphJoint[i] && calcVel > jointThresholds[jointNames[i]].warning) {
-                    shouldGraphJoint[i] = true;
+                if (calcVel > jointThresholds[jointNames[i]].error) {
+                    if (!hasErrorVelocity) {
+                        hasErrorVelocity = true;
+                    }
+                    if (!hasWarningVelocity) {
+                        hasWarningVelocity = true;
+                    }
+                    if (!shouldGraphJoint[i]) {
+                        shouldGraphJoint[i] = true;
+                    }
+                    sceneData[jointNames[i]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
+                } else if (calcVel > jointThresholds[jointNames[i]].warning) {
+                    if (!hasWarningVelocity) {
+                        hasWarningVelocity = true;
+                    }
+                    if (!shouldGraphJoint[i]) {
+                        shouldGraphJoint[i] = true;
+                    }
+                    sceneData[jointNames[i]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
+                } else {
+                    sceneData[jointNames[i]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
                 }
-
-                if (!hasErrorVelocity && calcVel > jointThresholds[jointNames[i]].error) {
-                    hasErrorVelocity = true;
-                }
-
                 jointVelocities[jointNames[i]].push(calcVel);
             }
         }
@@ -192,6 +222,7 @@ export const findJointSpeedIssues = ({program}) => {
             jointGraphData.push(graphDataPoint);
         }
 
+        // Get associated colors
         let jointColors = [];
         for (let i = 0; i < jointNames.length; i++) {
             if (shouldGraphJoint[i]) {
@@ -199,22 +230,25 @@ export const findJointSpeedIssues = ({program}) => {
             }
         }
 
-        const uuid = generateUuid('issue');
-        issues[uuid] = {
-            uuid: uuid,
-            requiresChanges: hasErrorVelocity,
-            title: `Trajectory "${trajectory.name}" moves too fast`,
-            description: `The joints speeds for Trajectory "${trajectory.name}" are too fast`,
-            complete: false,
-            focus: {uuid:trajectory.uuid, type:'trajectory'},
-            graphData: {
-                series: jointGraphData,
-                lineColors: jointColors,
-                xAxisLabel: 'Timestamp',
-                yAxisLabel: 'Velocity',
-                title: ''
-            },
-            sceneData: {jointVelocities: jointVelocities}
+        // Build issue
+        if (hasWarningVelocity) {
+            const uuid = generateUuid('issue');
+            issues[uuid] = {
+                uuid: uuid,
+                requiresChanges: hasErrorVelocity,
+                title: `Robot joint(s) move too fast`,
+                description: `The robot's joint speeds are too fast`,
+                complete: false,
+                focus: {uuid:trajectory.uuid, type:'trajectory'},
+                graphData: {
+                    series: jointGraphData,
+                    lineColors: jointColors,
+                    xAxisLabel: 'Timestamp',
+                    yAxisLabel: 'Velocity',
+                    title: ''
+                },
+                sceneData: {vertices: sceneData}
+            }
         }
     });
 
@@ -225,7 +259,12 @@ export const findJointSpeedIssues = ({program}) => {
 export const findEndEffectorSpeedIssues = ({program}) => {
     let issues = {};
 
+    const warningLevel = 0.3;
     const errorLevel = 0.45;
+
+    const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
+    const WARNING_COLOR = {r: 230, g: 159, b: 0};
+    const ERROR_COLOR = {r: 204, g: 75, b: 10};
 
     // Used for adjusting the x axes time data
     const precision = 1000;
@@ -237,35 +276,51 @@ export const findEndEffectorSpeedIssues = ({program}) => {
         let frames = trajectory.trace.frames.tool0;
 
         let hasErrorVelocity = false;
+        let hasWarningVelocity = false;
 
         for (let i = 1; i < frames.length; i++) {
             let calcVel = Math.sqrt(Math.pow(frames[i][0][0] - frames[i-1][0][0], 2) + Math.pow(frames[i][0][1] - frames[i-1][0][1], 2) + Math.pow(frames[i][0][2] - frames[i-1][0][2], 2)) / (timeData[i] - timeData[i-1]);
 
-            if (!hasErrorVelocity && calcVel > errorLevel) {
-                hasErrorVelocity = true;
+            if (calcVel > errorLevel) {
+                if (!hasErrorVelocity) {
+                    hasErrorVelocity = true;
+                }
+                if (!hasWarningVelocity) {
+                    hasWarningVelocity = true;
+                }
+                endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: ERROR_COLOR});
+            } else if (calcVel > warningLevel) {
+                if (!hasWarningVelocity) {
+                    hasWarningVelocity = true;
+                }
+                endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: WARNING_COLOR});
+            } else {
+                endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: NO_ERROR_COLOR});
             }
 
             endEffectorGraphData.push({x: Math.floor(timeData[i] * precision) / precision, 'End Effector Velocity': calcVel});
-            endEffectorVelocities.push(calcVel);
+            
         }
 
-        const uuid = generateUuid('issue');
-        issues[uuid] = {
-            uuid: uuid,
-            requiresChanges: hasErrorVelocity,
-            title: `End effector moves too fast`,
-            description: `The end effector moves too fast for Trajectory "${trajectory.name}"`,
-            complete: false,
-            focus: {uuid:trajectory.uuid, type:'trajectory'},
-            graphData: {
-                series: endEffectorGraphData,
-                lineColors: ["#E69F00"],
-                shouldGraphLine: [true],
-                xAxisLabel: 'Timestamp',
-                yAxisLabel: 'Velocity',
-                title: ''
-            },
-            sceneData: {endEffectorVelocity: endEffectorVelocities}
+        if (hasErrorVelocity) {
+            const uuid = generateUuid('issue');
+            issues[uuid] = {
+                uuid: uuid,
+                requiresChanges: hasErrorVelocity,
+                title: `End effector moves too fast`,
+                description: `The end effector moves too fast for Trajectory "${trajectory.name}"`,
+                complete: false,
+                focus: {uuid:trajectory.uuid, type:'trajectory'},
+                graphData: {
+                    series: endEffectorGraphData,
+                    lineColors: ["#E69F00"],
+                    shouldGraphLine: [true],
+                    xAxisLabel: 'Timestamp',
+                    yAxisLabel: 'Velocity',
+                    title: ''
+                },
+                sceneData: {vertices: {endEffector: endEffectorVelocities}}
+            }
         }
     });
 

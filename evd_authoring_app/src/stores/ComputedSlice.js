@@ -8,6 +8,8 @@ import {
     occupancyOverlap,
     DEFAULT_TRAJECTORY_COLOR,
     executablePrimitive,
+    durationEstimate,
+    idleTimeEstimate,
     tfAnimationFromExecutable,
     robotFramesFromPose
 } from './helpers';
@@ -42,6 +44,9 @@ export const ComputedSlice = {
             })
             if (this.focusItem.uuid) {
                 const executable = this.executablePrimitives[this.focusItem.uuid];
+                console.log(executable);
+                console.log("this is duration : " + durationEstimate(executable));
+                console.log("this is delay: " + idleTimeEstimate(executable));
                 if (executable) {
                     tfs = tfAnimationFromExecutable(executable,tfs)
                 } else if (this.focusItem.type === 'location' && this.data.locations[this.focusItem.uuid].frames) {
@@ -338,31 +343,43 @@ export const ComputedSlice = {
             const lines = {};
             Object.values(this.data.trajectories).forEach(trajectory=>{
                 const hidden = this.focusItem.uuid !== trajectory.uuid && this.secondaryFocusItem.uuid !== trajectory.uuid;
-                let poses = []
-                if (trajectory.start_location_uuid) {
-                    poses.push(this.data.locations[trajectory.start_location_uuid])
-                }
-                trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
-                    poses.push(this.data.waypoints[waypoint_uuid])
-                })
-                if (trajectory.end_location_uuid) {
-                    poses.push(this.data.locations[trajectory.end_location_uuid])
-                }
-                const vertices = poses.map(pose=>{
-                    let color = {...DEFAULT_TRAJECTORY_COLOR};
-                    //console.log(item.joints.reachable);
-                    if (this.frame === 'performance' && !pose.joints.reachable){//pose, frame, focused, locationOrWaypoint
-                        //console.log("entered");
-                        color = {...UNREACHABLE_COLOR};
-                    } else if (this.frame === 'safety' && occupancyOverlap(pose.position,this.data.occupancyZones)) {
-                        color = {...OCCUPANCY_ERROR_COLOR};
+
+                if (this.secondaryFocusItem.type === "issue") {
+                    let currentIssue = this.issues[this.secondaryFocusItem.uuid];
+                    if (currentIssue.sceneData) {
+                        let vertKeys = Object.keys(currentIssue.sceneData.vertices);
+                        for (let i = 0; i < vertKeys.length; i++) {
+                            let uuid = trajectory.uuid.concat(vertKeys[i]);
+                            lines[uuid] = {name:vertKeys[i],vertices:currentIssue.sceneData.vertices[vertKeys[i]],frame:'world',hidden,width:2};
+                        }
                     }
-                    return {
-                        position:pose.position,
-                        color
+                } else {
+                    let poses = []
+                    if (trajectory.start_location_uuid) {
+                        poses.push(this.data.locations[trajectory.start_location_uuid])
                     }
-                })
-                lines[trajectory.uuid] = {name:trajectory.name,vertices,frame:'world',hidden,width:2}
+                    trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
+                        poses.push(this.data.waypoints[waypoint_uuid])
+                    })
+                    if (trajectory.end_location_uuid) {
+                        poses.push(this.data.locations[trajectory.end_location_uuid])
+                    }
+                    const vertices = poses.map(pose=>{
+                        let color = {...DEFAULT_TRAJECTORY_COLOR};
+                        //console.log(item.joints.reachable);
+                        if (this.frame === 'performance' && !pose.joints.reachable){//pose, frame, focused, locationOrWaypoint
+                            //console.log("entered");
+                            color = {...UNREACHABLE_COLOR};
+                        } else if (this.frame === 'safety' && occupancyOverlap(pose.position,this.data.occupancyZones)) {
+                            color = {...OCCUPANCY_ERROR_COLOR};
+                        }
+                        return {
+                            position:pose.position,
+                            color
+                        }
+                    })
+                    lines[trajectory.uuid] = {name:trajectory.name,vertices,frame:'world',hidden,width:2}
+                }
             })
             return lines
         },

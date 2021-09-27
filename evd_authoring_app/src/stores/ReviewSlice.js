@@ -1,5 +1,5 @@
 import { findCollisionIssues, findEndEffectorPoseIssues, findOccupancyIssues, findPinchPointIssues, findThingMovementIssues } from "./issueDetectors/safety";
-import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues } from "./issueDetectors/quality";
+import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues, findMachineLogicIssues } from "./issueDetectors/quality";
 import { findEndEffectorSpeedIssues, findJointSpeedIssues, findPayloadIssues, findReachabilityIssues, findSpaceUsageIssues } from "./issueDetectors/performance";
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
 import { objectMap } from "./helpers";
@@ -41,6 +41,11 @@ const SECTION_INFO = {
         name:'Missing Parameters',
         updater:findMissingParameterIssues,
         dependencies:[]
+    },
+    machineLogic:{
+        name:'Machine Logic',
+        updater:findMachineLogicIssues,
+        dependencies:['missingBlocks','missingParameters']
     },
     unusedSkills:{
         name:'Unused Skills',
