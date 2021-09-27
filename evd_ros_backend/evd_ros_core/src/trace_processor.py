@@ -125,7 +125,7 @@ class TraceProcessor:
             locEnd = points[trajectory.end_location_uuid]
             nextJoints = locEnd.joints.joint_positions
             interp = JointInterpolator(self._handle_joint_packing(lastJoints, nextJoints), trajectory.velocity)
-            expectedTime + interp.full_time
+            expectedTime += interp.full_time
             self._path.append((interp, names))
             self._thresholds.append([JOINTS_DISTANCE_THRESHOLD]*len(nextJoints))
 
@@ -256,8 +256,8 @@ class TraceProcessor:
             self._trace_data['interpolator_path']['ee_pose'].append(Pose.from_ros(ee_pose_itp).to_simple_dct())
 
             # run lively-ik
-            #(jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp, finalJoints=targetJoints)
-            (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
+            (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp, finalJoints=targetJoints)
+            #(jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp)
             ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
             self.jsf.append(jp_ltk) # append to joint filter to know when lively is done
 
@@ -403,7 +403,7 @@ class TraceProcessor:
             inTimeout = self._time_overall > self._trace_data["estimated_duration"] * 2
             jointsWasReached = jointsReached(jp_pby, interpolator.end_joints, joint_thresholds)
             
-            print('Joints reached', jointsWasReached, 'in timeout', inTimeout)
+            print('Joints reached', jointsWasReached, 'in timeout', inTimeout,  self._time_overall, self._trace_data["estimated_duration"] * 2)
             
             if inTimeout or jointsWasReached:
                 if inTimeout:
