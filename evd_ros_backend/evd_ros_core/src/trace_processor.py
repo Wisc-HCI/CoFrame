@@ -13,7 +13,7 @@ import rospy
 import tf2_ros
 import tf2_geometry_msgs
 
-from evd_sim.pose_reached import poseReached
+from evd_sim.pose_reached import poseReached, deltaDebug
 from evd_interfaces.job_queue import JobQueue
 from evd_sim.joints_reached import jointsReached
 from evd_sim.pybullet_model import PyBulletModel
@@ -24,8 +24,6 @@ from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
 from evd_script import Trace, NodeParser, Pose, OccupancyZone, CollisionMesh
 
-
-TIMEOUT_COUNT_CORE = 400
 SPIN_RATE = 5
 UPDATE_RATE = 1000
 JSF_NUM_STEPS = 10
@@ -51,7 +49,6 @@ class TraceProcessor:
         self._index = 0
         self._input = None
         self._state = 'idle'
-        self._updateCount = 0
         self._pending_config = None
 
         with open(os.path.join(config_path, config_file_name),'r') as f:
@@ -151,12 +148,12 @@ class TraceProcessor:
             self._path.append(interp)
             self._thresholds.append((POSITION_DISTANCE_THRESHOLD,ORIENTATION_DISTANCE_THRESHOLD))
 
-        self._TIMEOUT_COUNT = math.ceil(TIMEOUT_COUNT_CORE * (expectedTime + 1))
-
         # structure the data to be captured (starts with initial state)
         self._trace_data = {
             "type": self._type,
             "duration": 0,
+            "estimated_duration": expectedTime * 2,
+            "in_timeout": False,
             "time_data": [],
 
             "interpolator_path": {n: [] for n in self.ltk.joint_names} if self._type == 'joint' else {'ee_pose': []},
@@ -195,7 +192,6 @@ class TraceProcessor:
         self.ltk.set_joints(locStart.joints.joint_positions) # or jog to pose?
         self.pyb.set_joints(locStart.joints.joint_positions, locStart.joints.joint_names)
 
-        self._updateCount = 0
         self._state = 'running'
 
     def _end_job(self, status, submit_fnt):
@@ -210,7 +206,6 @@ class TraceProcessor:
         self._thresholds = None
         self._trace_data = None
         self._input = None
-        self._updateCount = 0
 
         if self._pending_config != None:
             self.pyb.registerCollisionMeshes(self._pending_config['collision_meshes'])
@@ -251,7 +246,7 @@ class TraceProcessor:
             self._state = 'idle'
 
     def __raw_processing(self):
-        print('Trace Processor - Update', self._type, self._index, self._time_step, self._updateCount)
+        print('Trace Processor - Update', self._type, self._index, self._time_step)
 
         if self._type == 'ee_ik':
             # interpolate pose in this leg of trajectory
@@ -326,25 +321,25 @@ class TraceProcessor:
             # check if leg of trajectory is done
             (posThreshold, ortThreshold) = self._thresholds[self._index]
             poseWasReached = poseReached(ee_pose_ltk, interpolator.end_pose, posThreshold, ortThreshold)
-            inTimeout = self._TIMEOUT_COUNT < self._updateCount
+            inTimeout = self._time_overall > self._trace_data["estimated_duration"] * 2
             jointsAreStable = self.jsf.isStable()
 
-            print('Joints stable', jointsAreStable, 'pose reached', poseWasReached, 'in timeout', inTimeout, 'TIMEOUT_CONST', self._TIMEOUT_COUNT)
+            print('Joints stable', jointsAreStable, 'pose reached', poseWasReached, 'in timeout', inTimeout, self._time_overall, self._trace_data["estimated_duration"] * 2)
+            print(deltaDebug(ee_pose_ltk, interpolator.end_pose))
 
             if jointsAreStable and (poseWasReached or inTimeout):
                 if inTimeout:
                     print('\n\n\nIN Timeout\n\n\n')
-                    self._trace_data = None
-                    self._job_queue.completed()
-                    self._state = 'idle'
+                    #self._job_queue.canceled()
+                    self._state = 'post'
+                    self._trace_data["in_timeout"] = inTimeout
+                    self._trace_data['duration'] = self._time_overall
                     return # Failed to run trajectory
 
                 self._index += 1
                 self._time_step = 0
-                self._updateCount = 0
             else:
                 self._time_step += self._timestep
-                self._updateCount += 1
 
         else: # self._type == 'joint'
             # joint interpolation
@@ -404,25 +399,24 @@ class TraceProcessor:
 
             # check if leg of trajectoru is done
             joint_thresholds = self._thresholds[self._index]
-            inTimeout = self._TIMEOUT_COUNT < self._updateCount
+            inTimeout = self._time_overall > self._trace_data["estimated_duration"] * 2
             jointsWasReached = jointsReached(jp_pby, interpolator.end_joints, joint_thresholds)
             
-            print('Joints reached', jointsWasReached, 'in timeout', inTimeout, 'TIMEOUT_CONST', self._TIMEOUT_COUNT)
+            print('Joints reached', jointsWasReached, 'in timeout', inTimeout)
             
             if inTimeout or jointsWasReached:
                 if inTimeout:
                     print('\n\n\nIN Timeout\n\n\n')
-                    self._trace_data = None
-                    self._job_queue.completed()
-                    self._state = 'idle'
+                    #self._job_queue.canceled()
+                    self._state = 'post'
+                    self._trace_data["in_timeout"] = inTimeout
+                    self._trace_data['duration'] = self._time_overall
                     return # Failed to run trajectory
 
                 self._index += 1
                 self._time_step = 0
-                self._updateCount = 0
             else:
                 self._time_step += self._timestep
-                self._updateCount += 1
 
     def __post_processing(self):
 

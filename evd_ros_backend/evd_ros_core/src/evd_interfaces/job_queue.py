@@ -96,3 +96,6 @@ class JobQueue:
 
     def completed(self):
         self._active_job['status'] = 'done'
+
+    def canceled(self):
+        self._active_job['status'] = 'canceled'

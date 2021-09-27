@@ -18,7 +18,7 @@ export const RosSlice = (set, get) => ({
     onConnection: () => {
         set((_) => ({ connection: 'connected' }))
         const configuration = {
-            occupancy_zones:Object.values(get().data.occupancyZones),
+            occupancy_zones:Object.values(get().data.occupancyZones).filter(zone => zone.occupancy_type === "human"),
             collision_meshes:Object.values(get().data.collisionMeshes),
             pinch_points:[]
         }

@@ -24,7 +24,7 @@ SPIN_RATE = 5
 UPDATE_RATE = 1000
 JSF_NUM_STEPS = 10
 JSF_DISTANCE_THRESHOLD = 0.005
-POSITION_DISTANCE_THRESHOLD = 0.05
+POSITION_DISTANCE_THRESHOLD = 0.05 # stricter than 0.05
 ORIENTATION_DISTANCE_THRESHOLD = 0.02
 
 
@@ -38,6 +38,7 @@ class JointProcessor:
         self._state = 'idle'
         self._updateCount = 0
         self._pending_config = None
+        self._time_overall = 0
 
         with open(os.path.join(config_path, config_file_name),'r') as f:
             self._config = json.load(f)
@@ -83,6 +84,14 @@ class JointProcessor:
             reachable=False)
 
         self._trace_data = {
+            "type": "ee_ik",
+            "duration": 0,
+            "estimated_duration": -1,
+            "in_timeout": False,
+            "time_data": None,
+
+            "interpolator_path": None,
+
             "lively_joint_names": list(self.ltk.joint_names),
             "lively_joint_data": {n: None for n in self.ltk.joint_names},
             "lively_frame_names": list(self.ltk.frame_names),
@@ -151,6 +160,7 @@ class JointProcessor:
         # check whether the target pose was reached within a margin of error
         if self._state == 'running':
             #print('\n\nUPDATE JOB')
+            self._time_overall += self._timestep
 
             # run lively-ik, run pybullet model
             if self._target == None:
@@ -287,6 +297,8 @@ class JointProcessor:
                     self._trace_data["postprocess_occupancy_objs"][n] = obj
                 
                 self._joints.reachable = poseWasReached
+                self._trace_data["in_timeout"] = inTimeout
+                self._trace_data["duration"] = self._time_overall
                 self._job_queue.completed()
                 self._state = 'idle'
             else:
