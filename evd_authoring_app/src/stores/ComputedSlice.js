@@ -346,10 +346,12 @@ export const ComputedSlice = {
 
                 if (this.secondaryFocusItem.type === "issue") {
                     let currentIssue = this.issues[this.secondaryFocusItem.uuid];
-                    let vertKeys = Object.keys(currentIssue.sceneData.vertices);
-                    for (let i = 0; i < vertKeys.length; i++) {
-                        let uuid = trajectory.uuid.concat(vertKeys[i]);
-                        lines[uuid] = {name:vertKeys[i],vertices:currentIssue.sceneData.vertices[vertKeys[i]],frame:'world',hidden,width:2};
+                    if (currentIssue.sceneData) {
+                        let vertKeys = Object.keys(currentIssue.sceneData.vertices);
+                        for (let i = 0; i < vertKeys.length; i++) {
+                            let uuid = trajectory.uuid.concat(vertKeys[i]);
+                            lines[uuid] = {name:vertKeys[i],vertices:currentIssue.sceneData.vertices[vertKeys[i]],frame:'world',hidden,width:2};
+                        }
                     }
                 } else {
                     let poses = []
