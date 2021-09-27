@@ -341,45 +341,51 @@ export const ComputedSlice = {
         lines: function () {
             
             const lines = {};
+            
+            Object.values(this.executablePrimitives).forEach(ePrim => {
+                Object.values(ePrim).forEach(primitive=>{
+                    if (primitive.type === "node.primitive.move-trajectory.") {
+                        const hidden = this.focusItem.uuid !== primitive.uuid && this.secondaryFocusItem.uuid !== primitive.uuid;
+                        if (this.secondaryFocusItem.type === "issue") {
+                            const currentIssue = this.issues[this.secondaryFocusItem.uuid];
+                            if (currentIssue.sceneData) {
+                                let vertKeys = Object.keys(currentIssue.sceneData.vertices);
+                                for (let i = 0; i < vertKeys.length; i++) {
+                                    lines[primitive.uuid.concat(vertKeys[i])] = {name:vertKeys[i],vertices:currentIssue.sceneData.vertices[vertKeys[i]],frame:'world',hidden,width:4};
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
             Object.values(this.data.trajectories).forEach(trajectory=>{
                 const hidden = this.focusItem.uuid !== trajectory.uuid && this.secondaryFocusItem.uuid !== trajectory.uuid;
-
-                if (this.secondaryFocusItem.type === "issue") {
-                    let currentIssue = this.issues[this.secondaryFocusItem.uuid];
-                    if (currentIssue.sceneData) {
-                        let vertKeys = Object.keys(currentIssue.sceneData.vertices);
-                        for (let i = 0; i < vertKeys.length; i++) {
-                            let uuid = trajectory.uuid.concat(vertKeys[i]);
-                            lines[uuid] = {name:vertKeys[i],vertices:currentIssue.sceneData.vertices[vertKeys[i]],frame:'world',hidden,width:2};
-                        }
-                    }
-                } else {
-                    let poses = []
-                    if (trajectory.start_location_uuid) {
-                        poses.push(this.data.locations[trajectory.start_location_uuid])
-                    }
-                    trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
-                        poses.push(this.data.waypoints[waypoint_uuid])
-                    })
-                    if (trajectory.end_location_uuid) {
-                        poses.push(this.data.locations[trajectory.end_location_uuid])
-                    }
-                    const vertices = poses.map(pose=>{
-                        let color = {...DEFAULT_TRAJECTORY_COLOR};
-                        //console.log(item.joints.reachable);
-                        if (this.frame === 'performance' && !pose.joints.reachable){//pose, frame, focused, locationOrWaypoint
-                            //console.log("entered");
-                            color = {...UNREACHABLE_COLOR};
-                        } else if (this.frame === 'safety' && occupancyOverlap(pose.position,this.data.occupancyZones)) {
-                            color = {...OCCUPANCY_ERROR_COLOR};
-                        }
-                        return {
-                            position:pose.position,
-                            color
-                        }
-                    })
-                    lines[trajectory.uuid] = {name:trajectory.name,vertices,frame:'world',hidden,width:2}
+                let poses = []
+                if (trajectory.start_location_uuid) {
+                    poses.push(this.data.locations[trajectory.start_location_uuid])
                 }
+                trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
+                    poses.push(this.data.waypoints[waypoint_uuid])
+                })
+                if (trajectory.end_location_uuid) {
+                    poses.push(this.data.locations[trajectory.end_location_uuid])
+                }
+                const vertices = poses.map(pose=>{
+                    let color = {...DEFAULT_TRAJECTORY_COLOR};
+                    //console.log(item.joints.reachable);
+                    if (this.frame === 'performance' && !pose.joints.reachable){//pose, frame, focused, locationOrWaypoint
+                        //console.log("entered");
+                        color = {...UNREACHABLE_COLOR};
+                    } else if (this.frame === 'safety' && occupancyOverlap(pose.position,this.data.occupancyZones)) {
+                        color = {...OCCUPANCY_ERROR_COLOR};
+                    }
+                    return {
+                        position:pose.position,
+                        color
+                    }
+                })
+                lines[trajectory.uuid] = {name:trajectory.name,vertices,frame:'world',hidden,width:2}
             })
             return lines
         },
