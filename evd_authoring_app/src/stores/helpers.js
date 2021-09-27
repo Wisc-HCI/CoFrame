@@ -683,9 +683,9 @@ const stepsToAnimatedTfs = (steps) => {
         })
     })
     // console.log(tempAnimatedTfs)
-    const animatedTfs = objectMap(tempAnimatedTfs,tf=>({
+    const animatedTfs = objectMap(tempAnimatedTfs,(tf,key)=>({
         translation:{
-            x: interpolateScalar(timesteps, tf.translation.x),
+            x: key==='simulated_tool0'?(v)=>console.log(interpolateScalar(timesteps, tf.translation.x)(v)):interpolateScalar(timesteps, tf.translation.x),
             y: interpolateScalar(timesteps, tf.translation.y),
             z: interpolateScalar(timesteps, tf.translation.z)
         },

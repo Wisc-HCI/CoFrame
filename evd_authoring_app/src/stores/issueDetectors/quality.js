@@ -273,3 +273,9 @@ export const findEmptyBlockIssues = ({program}) => {
 
     return [issues, {}];
 }
+
+export const findMachineLogicIssues = (_) => { // Hunter add code here
+    let issues = {};
+    // Generate issues here
+    return [issues, {}];
+}

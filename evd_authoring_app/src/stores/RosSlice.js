@@ -24,7 +24,8 @@ export const RosSlice = (set, get) => ({
         }
         console.log(configuration)
         get().configureProgramProcessorsTopic.publish({data:JSON.stringify(configuration)});
-        setTimeout(get().doBulkJointRequest(),5000);
+        const bulkRequest = get().doBulkJointRequest
+        setTimeout(bulkRequest(),5000);
     },
     onError: () => set((_) => ({ connection: 'disconnected' })),
     onClose: () => set((_) => ({ connection: 'disconnected' })),
@@ -128,27 +129,28 @@ export const RosSlice = (set, get) => ({
         console.log({input,trace,status})
         if (status) {
             const { 
-                duration, time_data, pybullet_joint_data, 
-                pybullet_collisions, pybullet_self_collisions, 
+                duration, time_data, in_timeout, pybullet_joint_data, 
+                postprocess_collisions, postprocess_self_collisions, 
                 pybullet_frame_data, postprocess_occupancy} = trace;
             if (state.data.trajectories[msg.id]) {
                 state.data.trajectories[msg.id].trace = {
                     duration,
                     time_data,
+                    in_timeout,
                     joint_data:pybullet_joint_data,
                     frames:pybullet_frame_data,
-                    env_collisions:pybullet_collisions,
-                    self_collisions:pybullet_self_collisions,
+                    env_collisions:postprocess_collisions,
+                    self_collisions:postprocess_self_collisions,
                     occupancy:postprocess_occupancy,
                     pinch_points:null
                 }
             }
         }
     }),
-    requestJointProcessorUpdate: (type, uuid) => {
+    requestJointProcessorUpdate: (type, uuid, bypass_connection_check=false) => {
         const poseInfo = get().data[typeToKey(type)][uuid];
         const msg = { id: uuid, data: JSON.stringify({ point: poseInfo }) };
-        if (get().connection === 'connected') {
+        if (get().connection === 'connected' || bypass_connection_check) {
             console.log('Requesting processing for joint ' + uuid)
             get().jointProcessorRequestTopic.publish(msg);
         } else {
@@ -156,8 +158,8 @@ export const RosSlice = (set, get) => ({
         }
     },
     doBulkJointRequest: () => {
-        Object.keys(get().data.locations).forEach(location => get().requestJointProcessorUpdate('location', location));
-        Object.keys(get().data.waypoints).forEach(waypoint => get().requestJointProcessorUpdate('waypoint', waypoint))
+        Object.keys(get().data.locations).forEach(location => get().requestJointProcessorUpdate('location', location, true));
+        Object.keys(get().data.waypoints).forEach(waypoint => get().requestJointProcessorUpdate('waypoint', waypoint, true))
     },
     requestTraceProcessorUpdate: (uuid) => {
         let trajectoryInfo = { ...get().data.trajectories[uuid] };
