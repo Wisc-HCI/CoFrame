@@ -1,6 +1,7 @@
 import fakeTrajectory from './fakeTrajectory.json';
+import lodash from 'lodash';
 
-const fakeTrace = fakeTrajectory.traces['trajectory.-py-d4d59d9a1ddf11ecaf7600155d1a70a2']
+const fakeTrace = fakeTrajectory.traces['trajectory.-py-96b542981e8611eca49200155d1a70a2']
 
 const KNIFE_TASK = {
     "name": "Knife Assembly",
@@ -1096,10 +1097,11 @@ const KNIFE_TASK = {
                 "waypoint_uuids": [],
                 "trace": {
                     duration:fakeTrace.duration,
-                    joint_velocities:fakeTrace.pybullet_joint_velocities,
-                    collisions:fakeTrace.pybullet_collisions,
-                    pinchpoints:fakeTrace.pybullet_pinchpoints,
-                    frames:fakeTrace.pybullet_frame_data
+                    time_data:fakeTrace.time_data,
+                    joint_data:fakeTrace.pybullet_joint_data,
+                    frames:lodash.pick(fakeTrace.pybullet_frame_data,'base','base_link','flange','forearm_link','shoulder_link','tool0','upper_arm_link','wrist_1_link','wrist_2_link','wrist_3_link'),
+                    env_collisions:fakeTrace.pybullet_collisions,
+                    self_collisions:fakeTrace.pybullet_self_collisions
                 },
                 "velocity": 0.5,
                 "move_type": "ee_ik"

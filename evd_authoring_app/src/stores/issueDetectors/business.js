@@ -12,10 +12,10 @@ export const findCycleTimeIssues = ({program, unrolled, stats}) => {
     let i = 0;
     for (i = 0; i < stats.length; i++) {
         if (stats[i].cycleTime) {
-            priorData.push({x:i, y:stats[i].cycleTime});
+            priorData.push({x:i, cycleTime:stats[i].cycleTime});
         }
     }
-    priorData.push({x:i, y:randY});
+    priorData.push({x:i, cycleTime:randY});
 
     // build cycle time issue
     let uuid = generateUuid('issue');
@@ -28,6 +28,7 @@ export const findCycleTimeIssues = ({program, unrolled, stats}) => {
         focus: {uuid:program.uuid, type:'program'},
         graphData: {
             series: priorData,
+            lineColors: ["#009e73"],
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'Cycle Time',
             title: '',
@@ -48,10 +49,10 @@ export const findIdleTimeIssues = ({program, unrolled, stats}) => {
     let i = 0;
     for (i = 0; i < stats.length; i++) {
         if (stats[i].idleTime) {
-            priorData.push({x:i, y:stats[i].idleTime});
+            priorData.push({x:i, idleTime:stats[i].idleTime});
         }
     }
-    priorData.push({x:i, y:randY});
+    priorData.push({x:i, idleTime:randY});
 
 
     // build idle time issue
@@ -65,6 +66,7 @@ export const findIdleTimeIssues = ({program, unrolled, stats}) => {
         focus: {uuid:program.uuid, type:'program'},
         graphData: {
             series: priorData,
+            lineColors: ["#009e73"],
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'Idle Time',
             title: '',
@@ -85,10 +87,10 @@ export const findReturnOnInvestmentIssues = ({program, unrolled, stats}) => {
     let i = 0;
     for (i = 0; i < stats.length; i++) {
         if (stats[i].roi) {
-            priorData.push({x:i, y:stats[i].roi});
+            priorData.push({x:i, ROI:stats[i].roi});
         }
     }
-    priorData.push({x:i, y:randY});
+    priorData.push({x:i, ROI:randY});
 
     // build roi issue
     let uuid = generateUuid('issue');
@@ -101,6 +103,7 @@ export const findReturnOnInvestmentIssues = ({program, unrolled, stats}) => {
         focus: {uuid:program.uuid, type:'program'},
         graphData: {
             series: priorData,
+            lineColors: ["#009e73"],
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'ROI',
             title: '',

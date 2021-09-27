@@ -39,6 +39,7 @@ const useStore = create(store,{...ComputedSlice,middleware:[immer]});
 
 // useStore.getState().setProgram(fakeEvdData.arbitrary.program);
 useStore.getState().setProgram(KNIFE_TASK)
+console.log(KNIFE_TASK.environment.trajectories[0])
 useStore.getState().setUrl('ws://localhost:9090');
 
 export default useStore;
