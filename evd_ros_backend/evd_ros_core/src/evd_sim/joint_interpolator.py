@@ -25,7 +25,7 @@ class JointInterpolator:
             
             times.append(t)
 
-        self._fullTime = max(times)
+        self._fullTime = max([t[1] for t in times])
 
         # Generate interpolation functions  
         self._interpFnts = []

@@ -7,6 +7,7 @@ Also applies graders to the traces to produce grade appraisals
 '''
 
 import os
+import math
 import json
 import rospy
 import tf2_ros
@@ -23,7 +24,7 @@ from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
 from evd_script import Trace, NodeParser, Pose, OccupancyZone, CollisionMesh
 
-TIMEOUT_COUNT = 0 # This gets set at start of job
+
 TIMEOUT_COUNT_CORE = 400
 SPIN_RATE = 5
 UPDATE_RATE = 1000
@@ -150,7 +151,7 @@ class TraceProcessor:
             self._path.append(interp)
             self._thresholds.append((POSITION_DISTANCE_THRESHOLD,ORIENTATION_DISTANCE_THRESHOLD))
 
-        TIMEOUT_COUNT = TIMEOUT_COUNT_CORE * (expectedTime + 1)
+        self._TIMEOUT_COUNT = math.ceil(TIMEOUT_COUNT_CORE * (expectedTime + 1))
 
         # structure the data to be captured (starts with initial state)
         self._trace_data = {
@@ -325,10 +326,10 @@ class TraceProcessor:
             # check if leg of trajectory is done
             (posThreshold, ortThreshold) = self._thresholds[self._index]
             poseWasReached = poseReached(ee_pose_ltk, interpolator.end_pose, posThreshold, ortThreshold)
-            inTimeout = TIMEOUT_COUNT < self._updateCount
+            inTimeout = self._TIMEOUT_COUNT < self._updateCount
             jointsAreStable = self.jsf.isStable()
 
-            print('Joints stable', jointsAreStable, 'pose reached', poseWasReached, 'in timeout', inTimeout)
+            print('Joints stable', jointsAreStable, 'pose reached', poseWasReached, 'in timeout', inTimeout, 'TIMEOUT_CONST', self._TIMEOUT_COUNT)
 
             if jointsAreStable and (poseWasReached or inTimeout):
                 if inTimeout:
@@ -403,8 +404,11 @@ class TraceProcessor:
 
             # check if leg of trajectoru is done
             joint_thresholds = self._thresholds[self._index]
-            inTimeout = TIMEOUT_COUNT < self._updateCount
+            inTimeout = self._TIMEOUT_COUNT < self._updateCount
             jointsWasReached = jointsReached(jp_pby, interpolator.end_joints, joint_thresholds)
+            
+            print('Joints reached', jointsWasReached, 'in timeout', inTimeout, 'TIMEOUT_CONST', self._TIMEOUT_COUNT)
+            
             if inTimeout or jointsWasReached:
                 if inTimeout:
                     print('\n\n\nIN Timeout\n\n\n')
