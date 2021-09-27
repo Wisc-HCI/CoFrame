@@ -9,7 +9,9 @@ import {
     DEFAULT_TRAJECTORY_COLOR,
     executablePrimitive,
     durationEstimate,
-    idleTimeEstimate
+    idleTimeEstimate,
+    tfAnimationFromExecutable,
+    robotFramesFromPose
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
@@ -45,6 +47,14 @@ export const ComputedSlice = {
                 console.log(executable);
                 console.log("this is duration : " + durationEstimate(executable));
                 console.log("this is delay: " + idleTimeEstimate(executable));
+                if (executable) {
+                    tfs = tfAnimationFromExecutable(executable,tfs)
+                } else if (this.focusItem.type === 'location' && this.data.locations[this.focusItem.uuid].frames) {
+                    console.log(this.data.locations[this.focusItem.uuid].frames)
+                    tfs = {...tfs,...robotFramesFromPose(this.data.locations[this.focusItem.uuid])}
+                } else if (this.focusItem.type === 'waypoint' && this.data.waypoints[this.focusItem.uuid].frames) {
+                    tfs = {...tfs,...robotFramesFromPose(this.data.waypoints[this.focusItem.uuid])}
+                }
             }
             return tfs
         },

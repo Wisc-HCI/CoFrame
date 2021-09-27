@@ -208,8 +208,9 @@ export const PrimitiveBlock = ({
                       <Col flex={3} style={{ textAlign: 'right' }}>
                         <InputNumber
                           min={0}
-                          max={100}
+                          max={85}
                           size='small'
+                          suffix='mm'
                           defaultValue={data.parameters.position}
                           disabled={!editingEnabled}
                           onChange={(v) => setPrimitiveParameter('primitive', data.uuid, 'position', v)}
@@ -217,7 +218,7 @@ export const PrimitiveBlock = ({
                           style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
                       </Col>
                     </Row>
-                    <Row align="middle" style={fieldStyle}>
+                    {/* <Row align="middle" style={fieldStyle}>
                       <Col flex={2}>Effort:</Col>
                       <Col flex={3} style={{ textAlign: 'right' }}>
                         <InputNumber
@@ -230,14 +231,15 @@ export const PrimitiveBlock = ({
                           bordered={false}
                           style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
                       </Col>
-                    </Row>
+                    </Row> */}
                     <Row align="middle" style={fieldStyle}>
                       <Col flex={2}>Speed:</Col>
                       <Col flex={3} style={{ textAlign: 'right' }}>
                         <InputNumber
-                          min={0}
-                          max={5}
+                          min={20}
+                          max={150}
                           size='small'
+                          suffix='mm/s'
                           defaultValue={data.parameters.speed}
                           disabled={!editingEnabled}
                           onChange={(v) => setPrimitiveParameter('primitive', data.uuid, 'speed', v)}

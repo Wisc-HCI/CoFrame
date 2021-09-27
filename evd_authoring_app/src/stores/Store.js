@@ -14,7 +14,8 @@ import {ComputedSlice} from './ComputedSlice';
 
 // import { INITIAL_SIM } from "./initialSim";
 // import fakeEvdData from './fakeEvdData';
-import KNIFE_TASK from './knifeTask';
+// import KNIFE_TASK from './knifeTask';
+import KnifeAssembly from './Knife_Assembly.json';
 
 const immer = (config) => (set, get, api) =>
   config(
@@ -38,8 +39,8 @@ const store = (set, get) => ({
 const useStore = create(store,{...ComputedSlice,middleware:[immer]});
 
 // useStore.getState().setProgram(fakeEvdData.arbitrary.program);
-useStore.getState().setProgram(KNIFE_TASK)
-console.log(KNIFE_TASK.environment.trajectories[0])
+useStore.getState().setProgram(KnifeAssembly)
+// console.log(KNIFE_TASK.environment.trajectories[0])
 useStore.getState().setUrl('ws://localhost:9090');
 
 export default useStore;
