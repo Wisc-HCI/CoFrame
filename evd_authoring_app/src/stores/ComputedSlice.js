@@ -7,7 +7,8 @@ import {
     OCCUPANCY_ERROR_COLOR,
     occupancyOverlap,
     DEFAULT_TRAJECTORY_COLOR,
-    executablePrimitive
+    executablePrimitive,
+    tfAnimationFromExecutable
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
@@ -41,7 +42,9 @@ export const ComputedSlice = {
             })
             if (this.focusItem.uuid) {
                 const executable = this.executablePrimitives[this.focusItem.uuid];
-                console.log(executable)
+                if (executable) {
+                    tfs = tfAnimationFromExecutable(executable,tfs)
+                }
             }
             return tfs
         },
