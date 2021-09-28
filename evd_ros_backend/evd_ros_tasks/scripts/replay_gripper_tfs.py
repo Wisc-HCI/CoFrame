@@ -9,7 +9,7 @@ import rospy
 if __name__ == "__main__":
     rospy.init_node('replay_gripper_tfs')
 
-    filename = rospy.get_params('~file')
+    filename = rospy.get_param('~file')
 
     rospy.sleep(1)
 
@@ -27,9 +27,9 @@ if __name__ == "__main__":
 
                 for (fromFrame, _tl) in data['subtree']:
                     if _tl == toFrame:
-                        br.sendTransform(pos, rot,
-                                        rospy.Time.now(),
-                                        toFrame, fromFrame)
+                        broadcaster.sendTransform(pos, rot,
+                                                  rospy.Time.now(),
+                                                  toFrame, fromFrame)
             
             rospy.sleep(1)
             index += 1
