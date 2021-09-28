@@ -343,20 +343,22 @@ export const ComputedSlice = {
             const lines = {};
             
             Object.values(this.executablePrimitives).forEach(ePrim => {
-                Object.values(ePrim).forEach(primitive=>{
-                    if (primitive.type === "node.primitive.move-trajectory.") {
-                        const hidden = this.focusItem.uuid !== primitive.uuid && this.secondaryFocusItem.uuid !== primitive.uuid;
-                        if (this.secondaryFocusItem.type === "issue") {
-                            const currentIssue = this.issues[this.secondaryFocusItem.uuid];
-                            if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.vertices) {
-                                let vertKeys = Object.keys(currentIssue.sceneData.vertices);
-                                for (let i = 0; i < vertKeys.length; i++) {
-                                    lines[primitive.uuid.concat(vertKeys[i])] = {name:vertKeys[i],vertices:currentIssue.sceneData.vertices[vertKeys[i]],frame:'world',hidden,width:4};
+                if (ePrim) {
+                    Object.values(ePrim).forEach(primitive=>{
+                        if (primitive.type === "node.primitive.move-trajectory.") {
+                            const hidden = this.focusItem.uuid !== primitive.uuid && this.secondaryFocusItem.uuid !== primitive.uuid;
+                            if (this.secondaryFocusItem.type === "issue") {
+                                const currentIssue = this.issues[this.secondaryFocusItem.uuid];
+                                if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.vertices) {
+                                    let vertKeys = Object.keys(currentIssue.sceneData.vertices);
+                                    for (let i = 0; i < vertKeys.length; i++) {
+                                        lines[primitive.uuid.concat(vertKeys[i])] = {name:vertKeys[i],vertices:currentIssue.sceneData.vertices[vertKeys[i]],frame:'world',hidden,width:4};
+                                    }
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                }
             });
 
             Object.values(this.data.trajectories).forEach(trajectory=>{
