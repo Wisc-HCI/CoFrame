@@ -1,5 +1,5 @@
 export const GRIPPER_FRAMES = [
-    "simulated_robotiq_85_base_link",
+    // "simulated_robotiq_85_base_link",
     "simulated_robotiq_85_left_finger_link",
     "simulated_robotiq_85_left_finger_tip_link",
     "simulated_robotiq_85_left_inner_knuckle_link",
