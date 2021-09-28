@@ -85,8 +85,11 @@ class Thing(Pose, VisualizeMarker):
                    uuid=dct['uuid'] if 'uuid' in dct.keys() else None,
                    name=dct['name'] if 'name' in dct.keys() else '')
 
-    def to_ros_marker(self, frame_id='app', id=0):
+    def to_ros_marker(self, frame_id=None, id=0):
         # The frame_id should be the application frame
+        if frame_id == None:
+            frame_id = self.link if self.link != "" and self.link != None else "app"
+
         marker = None
 
         marker = Marker()

@@ -83,10 +83,10 @@ class Waypoint(Pose):
             uuid=dct['uuid'],
             joints=NodeParser(dct['joints'], enforce_types=[Joints.type_string(trailing_delim=False)]) if dct['joints'] != None else None)
 
-    def to_ros_marker(self, frame_id='app', id=0):
+    def to_ros_marker(self, frame_id=None, id=0):
         # The frame_id should be the application frame
         if frame_id == None:
-            frame_id = self.link
+            frame_id = self.link if self.link != "" and self.link != None else "app"
 
         marker = Marker()
         marker.header.frame_id = frame_id
