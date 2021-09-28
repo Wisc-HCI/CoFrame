@@ -1,5 +1,5 @@
 import lodash from 'lodash';
-import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES } from './gripper';
+import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES, GRIPPER_PARENTS } from './gripper';
 import { Quaternion } from 'three';
 
 
@@ -604,11 +604,13 @@ const findLastSatisfiedFromReference = (x, fn) => {
 }
 
 const gripperFramesFromValue = (distance) => {
-    const idx = findLastSatisfiedFromReference(GRIPPER_CONFIGURATIONS.cmd, v => v <= distance);
+    const idx = findLastSatisfiedFromReference(GRIPPER_CONFIGURATIONS.cmd, v => v > distance);
+    console.log(idx)
     let frames = {};
     GRIPPER_FRAMES.forEach(frameName => {
         const rawFrame = GRIPPER_CONFIGURATIONS.capture[frameName][idx];
         frames[frameName] = {
+            frame:GRIPPER_PARENTS[frameName],
             translation: {
                 x: rawFrame[0][0],
                 y: rawFrame[0][1],
@@ -720,6 +722,7 @@ const stepsToAnimatedTfs = (steps) => {
     })
     // console.log(tempAnimatedTfs)
     const animatedTfs = objectMap(tempAnimatedTfs,(tf,key)=>({
+        frame:GRIPPER_PARENTS[key],
         translation:{
             x: interpolateScalar(timesteps, tf.translation.x),
             y: interpolateScalar(timesteps, tf.translation.y),
@@ -755,8 +758,12 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 const delta = chunk.parameters.position - gripperState;
                 const direction = delta >= 0 ? 1 : -1
                 duration = 1000 * Math.abs(delta) / chunk.parameters.speed;
-                for (let timeOffset of range(0,duration,250)) {
-                    const tempGripperState = chunk.parameters.speed * timeOffset * direction;
+                console.log(delta)
+                console.log(duration)
+
+                for (let timeOffset of range(0,duration,100)) {
+                    const tempGripperState = gripperState + chunk.parameters.speed * timeOffset/1000 * direction;
+                    console.log(tempGripperState)
                     prevTfs.tfs = {...prevTfs.tfs,...gripperFramesFromValue(tempGripperState)};
                     prevTfs.time = currentTime+timeOffset;
                     steps.push(prevTfs)
