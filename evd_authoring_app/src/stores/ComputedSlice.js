@@ -348,7 +348,7 @@ export const ComputedSlice = {
                         const hidden = this.focusItem.uuid !== primitive.uuid && this.secondaryFocusItem.uuid !== primitive.uuid;
                         if (this.secondaryFocusItem.type === "issue") {
                             const currentIssue = this.issues[this.secondaryFocusItem.uuid];
-                            if (currentIssue.sceneData) {
+                            if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.vertices) {
                                 let vertKeys = Object.keys(currentIssue.sceneData.vertices);
                                 for (let i = 0; i < vertKeys.length; i++) {
                                     lines[primitive.uuid.concat(vertKeys[i])] = {name:vertKeys[i],vertices:currentIssue.sceneData.vertices[vertKeys[i]],frame:'world',hidden,width:4};
