@@ -7,7 +7,7 @@ import {
     OCCUPANCY_ERROR_COLOR,
     occupancyOverlap,
     DEFAULT_TRAJECTORY_COLOR,
-    executablePrimitive,
+    executablePrimitives,
     durationEstimate,
     idleTimeEstimate,
     tfAnimationFromExecutable,
@@ -24,12 +24,13 @@ const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.include
 export const ComputedSlice = {
     computed: {
         executablePrimitives: function() {
-            let executableLookup = {};
-            executableLookup[this.uuid] = executablePrimitive(this.uuid,this);
-            this.primitiveIds.forEach(primitiveId=>{
-                executableLookup[primitiveId] = executablePrimitive(primitiveId,this)
-            })
-            return executableLookup
+            // let executableLookup = {};
+            // executableLookup[this.uuid] = executablePrimitive(this.uuid,this);
+            // this.primitiveIds.forEach(primitiveId=>{
+            //     executableLookup[primitiveId] = executablePrimitive(primitiveId,this)
+            // })
+            // return executableLookup
+            return executablePrimitives(this)
         },
         tfs: function() {
             let tfs = {...INITIAL_SIM.tfs};
@@ -283,7 +284,7 @@ export const ComputedSlice = {
                     this.requestJointProcessorUpdate('location',location_uuid)
                 },1000)
 
-                poseDataToShapes(item, this.frame).forEach((shape,i) => {
+                poseDataToShapes(item, this.frame, this.data.occupancyZones).forEach((shape,i) => {
                     items[shape.uuid] = { 
                         ...shape, 
                         highlighted: focused, 
@@ -322,7 +323,7 @@ export const ComputedSlice = {
                     this.requestJointProcessorUpdate('waypoint',waypoint_uuid)
                 },1000)
 
-                poseDataToShapes(item, this.frame).forEach(shape => {
+                poseDataToShapes(item, this.frame, this.data.occupancyZones).forEach(shape => {
                    // color.a = (time) => 0.5*Math.pow(Math.E,-Math.sin(time/800+i*0.3));
                     items[shape.uuid] = { 
                         ...shape, 

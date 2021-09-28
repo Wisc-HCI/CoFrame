@@ -1,4 +1,3 @@
-import useStore from './Store';
 import lodash from 'lodash';
 import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES } from './gripper';
 import { Quaternion } from 'three';
@@ -10,7 +9,6 @@ export function idleTimeEstimate(unrolled){
     let gripperEnd = null;
     let first = true;
     let tasks = [];
-    console.log("this is :" + unrolled);
     if (unrolled === undefined || unrolled === null){
         return 0;
     }else{
@@ -125,7 +123,7 @@ export function idleTimeEstimate(unrolled){
                 
             }else if(primitive.type === 'node.primitive.machine-primitive.machine-wait.'){
                 if (tasks.length === 0){
-                    console.log("this might be an error");
+                    // console.log("this might be an error");
                 }else{
                    
                     tasks.forEach((task) => 
@@ -135,7 +133,7 @@ export function idleTimeEstimate(unrolled){
                             delay +=  task.processTime - task.timeTaken;
                             //console.log(duration);
                             task.timeTaken += task.processTime - task.timeTaken;
-                            console.log(task.timeTaken);    
+                            // console.log(task.timeTaken);    
                             task.status = 'waiting';
                             
                         }
@@ -161,7 +159,7 @@ export function durationEstimate(unrolled){
     let gripperEnd = null;
     let first = true;
     let tasks = [];
-    console.log("this is :" + unrolled);
+    // console.log("this is :" + unrolled);
     if (unrolled === undefined || unrolled === null){
         return 0;
     }else{
@@ -276,7 +274,7 @@ export function durationEstimate(unrolled){
                 
             }else if(primitive.type === 'node.primitive.machine-primitive.machine-wait.'){
                 if (tasks.length === 0){
-                    console.log("this might be an error");
+                    // console.log("this might be an error");
                 }else{
                    
                     tasks.forEach((task) => 
@@ -284,9 +282,9 @@ export function durationEstimate(unrolled){
                         
                         if (primitive.parameters.machine_uuid.uuid === task.machineUUID &&task.status === 'started') {
                             duration +=  task.processTime - task.timeTaken;
-                            console.log(duration);
+                            // console.log(duration);
                             task.timeTaken += task.processTime - task.timeTaken;
-                            console.log(task.timeTaken);    
+                            // console.log(task.timeTaken);    
                             task.status = 'waiting';
                             
                         }
@@ -353,24 +351,23 @@ function* range(start, end, step=1) {
     }
 }
 
-export const inHumanZone = ({ x, y, z }) => {
-    if (HUMAN_ZONE.position.z + HUMAN_ZONE.height * 0.5 > z && HUMAN_ZONE.position.z - HUMAN_ZONE.height * 0.5 < z) {
-        return Math.pow(x - HUMAN_ZONE.position.x, 2) + Math.pow(y - HUMAN_ZONE.position.y, 2) < Math.pow(HUMAN_ZONE.radius, 2)
-    }
-    return false
-}
+// export const inHumanZone = ({ x, y, z }) => {
+//     if (HUMAN_ZONE.position.z + HUMAN_ZONE.height * 0.5 > z && HUMAN_ZONE.position.z - HUMAN_ZONE.height * 0.5 < z) {
+//         return Math.pow(x - HUMAN_ZONE.position.x, 2) + Math.pow(y - HUMAN_ZONE.position.y, 2) < Math.pow(HUMAN_ZONE.radius, 2)
+//     }
+//     return false
+// }
 
 export const occupancyOverlap = (position, occupancyZones) => {
-    let noOverlap = true
+    let overlap = false
     Object.values(occupancyZones).forEach(zone => {
-        if (position.x < zone.position_x + zone.scale_x &&
-            position.x > zone.position_x - zone.scale_x &&
-            position.y < zone.position_z + zone.scale_z &&
-            position.y > zone.position_z - zone.scale_z) {
-            noOverlap = false
+        const xOverlap = position.x < zone.position_x + zone.scale_x/2 && position.x > zone.position_x - zone.scale_x/2;
+        const yOverlap = position.y < zone.position_z + zone.scale_z/2 && position.y > zone.position_z - zone.scale_z/2;
+        if (xOverlap && yOverlap) {
+            overlap = true
         }
     })
-    return !noOverlap
+    return overlap
 }
 
 export function flattenProgram(primitives, skills, parentData) {
@@ -441,39 +438,42 @@ export function executableMachine(machine, context) {
 }
 
 function executablePrimitiveInner(primitiveId, state, context) {
+    let full = {};
     let executable = [];
     if (primitiveId === state.uuid) {
         // Program is the primitive;
         if (state.primitiveIds.some(childId => {
-            const children = executablePrimitiveInner(childId, state, context);
-            if (children === null || children.includes(null)) {
+            const inner = executablePrimitiveInner(childId, state, context);
+            if (inner === null || inner.children.includes(null)) {
                 return true
             } else {
-                executable = [...executable, ...children]
+                executable = [...executable, ...inner.children]
+                full = {...full,...inner.all,[childId]:inner.children}
                 return false
             }
         })) {
             // There was a null response
             return null
         } else {
-            return executable
+            return {children:executable,all:{...full,[primitiveId]:executable}}
         }
     } else {
         const primitive = state.data.primitives[primitiveId];
         if (primitive.type.includes('hierarchical')) {
             if (primitive.primitiveIds.some(childId => {
-                const children = executablePrimitiveInner(childId, state, context);
-                if (children === null || children.includes(null)) {
+                const inner = executablePrimitiveInner(childId, state, context);
+                if (inner === null || inner.children.includes(null)) {
                     return true
                 } else {
-                    executable = [...executable, ...children]
+                    executable = [...executable, ...inner.children]
+                    full = {...full,...inner.all,[childId]:inner.children}
                     return false
                 }
             })) {
                 // There was a null response
                 return null
             } else {
-                return executable
+                return {children:executable,all:{...full,[primitive.uuid]:executable}}
             }
         } else if (primitive.type.includes('skill-call')) {
             let innerContext = { ...context };
@@ -491,43 +491,50 @@ function executablePrimitiveInner(primitiveId, state, context) {
                 return null
             }
             const calledSkill = state.data.skills[primitive.parameters.skill_uuid];
+            if (!calledSkill) {
+                return null
+            }
             if (calledSkill.primitiveIds.some(childId => {
-                const children = executablePrimitiveInner(childId, state, innerContext);
-                if (children === null || children.includes(null)) {
+                const inner = executablePrimitiveInner(childId, state, innerContext);
+                if (inner === null || inner.children.includes(null)) {
                     return true
                 } else {
-                    executable = [...executable, ...children]
+                    executable = [...executable, ...inner.children]
                     return false
                 }
             })) {
                 // There was a null response
                 return null
             } else {
-                return executable
+                return {children:executable,all:{[primitive.uuid]:executable}}
             }
         } else if (primitive.type === 'node.primitive.breakpoint.' || primitive.type === 'node.primitive.delay.') {
-            return [...executable, primitive]
+            return {children:[primitive],all:{[primitive.uuid]:primitive}}
         } else if (primitive.type === 'node.primitive.gripper.') {
             if (context[primitive.parameters.thing_uuid]) {
-                return [...executable, { ...primitive, parameters: { ...primitive.parameters, thing_uuid: context[primitive.parameters.thing_uuid] } }]
+                const expanded = { ...primitive, parameters: { ...primitive.parameters, thing_uuid: context[primitive.parameters.thing_uuid] } }
+                return {children:[expanded],all:{[primitive.uuid]:expanded}}
             } else {
                 return null
             }
         } else if (primitive.type.includes('machine-primitive')) {
             if (context[primitive.parameters.machine_uuid]) {
-                return [...executable, { ...primitive, parameters: { ...primitive.parameters, machine_uuid: context[primitive.parameters.machine_uuid] } }]
+                const expanded = { ...primitive, parameters: { ...primitive.parameters, machine_uuid: context[primitive.parameters.machine_uuid] } }
+                return {children:[expanded],all:{[primitive.uuid]:expanded}}
             } else {
                 return null
             }
         } else if (primitive.type === 'node.primitive.move-trajectory.') {
             if (primitive.parameters.trajectory_uuid && context[primitive.parameters.trajectory_uuid]) {
-                return [...executable, { ...primitive, parameters: { ...primitive.parameters, trajectory_uuid: context[primitive.parameters.trajectory_uuid] } }]
+                const expanded = { ...primitive, parameters: { ...primitive.parameters, trajectory_uuid: context[primitive.parameters.trajectory_uuid] } }
+                return {children:[expanded],all:{[primitive.uuid]:expanded}}
             } else {
                 return null
             }
         } else if (primitive.type === 'node.primitive.move-unplanned.') {
             if (context[primitive.parameters.location_uuid]) {
-                return [...executable, { ...primitive, parameters: { ...primitive.parameters, location_uuid: context[primitive.parameters.location_uuid] } }]
+                const expanded = { ...primitive, parameters: { ...primitive.parameters, location_uuid: context[primitive.parameters.location_uuid] } }
+                return {children:[expanded],all:{[primitive.uuid]:expanded}}
             } else {
                 return null
             }
@@ -551,6 +558,37 @@ export function executablePrimitive(primitiveId, state) {
         context[machine.uuid] = executableMachine(machine, context)
     })
     return executablePrimitiveInner(primitiveId, state, context)
+}
+
+export function executablePrimitives(state) {
+    let context = {
+        ...state.data.placeholders,
+        ...state.data.locations,
+        ...state.data.waypoints,
+        ...state.data.thingTypes,
+        ...state.data.regions
+    }
+    Object.values(state.data.trajectories).forEach(trajectory => {
+        context[trajectory.uuid] = executableTrajectory(trajectory, context)
+    })
+    Object.values(state.data.machines).forEach(machine => {
+        context[machine.uuid] = executableMachine(machine, context)
+    })
+    // this should return all the primitives that are run through with the actual program
+    const inner = executablePrimitiveInner(state.uuid, state, context);
+    let executables = {}
+    if (inner) {
+        executables = {...inner.all};
+    }
+
+    // this should catch any primitives not called directly through the program that are valid
+    Object.values(state.data.primitives).forEach(primitive=>{
+        if (!executables[primitive.uuid]) {
+            executables = {...executables, ...executablePrimitiveInner(primitive.uuid, state, context)}
+        }
+    })
+    return executables
+
 }
 
 const findLastSatisfiedFromReference = (x, fn) => {
@@ -867,9 +905,9 @@ export function unFlattenProgramSkills(skills, primitives) {
     return unFlattenedSkills;
 }
 
-export function poseToColor(pose, frame, focused) {
+export function poseToColor(pose, frame, focused, occupancyZones) {
     let color = { r: 255, g: 255, b: 255, a: focused ? 1 : 0 };
-    if (frame === 'safety' && inHumanZone(pose.position)) {
+    if (frame === 'safety' && occupancyOverlap(pose.position,occupancyZones)) {
         color.r = 233;
         color.g = 53;
         color.b = 152;
@@ -897,7 +935,7 @@ export function reachabilityColor(focused, locationOrWaypoint) {
 }
 
 
-export function poseDataToShapes(pose, frame) {
+export function poseDataToShapes(pose, frame, occupancyZones) {
     let pose_stored = pose;
     return [
         {
@@ -910,7 +948,7 @@ export function poseDataToShapes(pose, frame) {
             scale: { x: -0.25, y: 0.25, z: 0.25 },
             highlighted: false,
             showName: false,
-            color: poseToColor(pose_stored, frame, false)
+            color: poseToColor(pose_stored, frame, false, occupancyZones)
         },
         {
             uuid: `${pose_stored.uuid}-pointer`,
@@ -921,7 +959,7 @@ export function poseDataToShapes(pose, frame) {
             scale: { x: 1, y: 1, z: 1 },
             highlighted: false,
             showName: false,
-            color: poseToColor(pose_stored, frame, false)
+            color: poseToColor(pose_stored, frame, false, occupancyZones)
         }
     ]
 }
@@ -971,29 +1009,24 @@ export function trajectoryDataToLine(trajectory, locations, waypoints, frame, re
     }
 }
 
-export function trajectoryDataToShapes(trajectory, locations, waypoints, frame) {
-    // For the time being, enumerate the location and waypoints
-    let shapes = [];
-    if (trajectory.start_location_uuid) {
-        let location = locations[trajectory.start_location_uuid];
-        shapes.push(poseDataToShapes(location, frame));
-    }
-    trajectory.waypoint_uuids.forEach(waypoint_uuid => {
-        let waypoint = waypoints[waypoint_uuid];
-        shapes.push(poseDataToShapes(waypoint, frame));
-    })
+// export function trajectoryDataToShapes(trajectory, locations, waypoints, frame) {
+//     // For the time being, enumerate the location and waypoints
+//     let shapes = [];
+//     if (trajectory.start_location_uuid) {
+//         let location = locations[trajectory.start_location_uuid];
+//         shapes.push(poseDataToShapes(location, frame));
+//     }
+//     trajectory.waypoint_uuids.forEach(waypoint_uuid => {
+//         let waypoint = waypoints[waypoint_uuid];
+//         shapes.push(poseDataToShapes(waypoint, frame));
+//     })
 
-    if (trajectory.end_location_uuid) {
-        let location = locations[trajectory.end_location_uuid];
-        shapes.push(poseDataToShapes(location, frame));
-    }
-    return shapes
-}
-
-export const createTrajectory = (trajectory, locations, waypoints, frame, humanZone) => useStore.setState(state => ({
-    lines: { ...state.lines, [trajectory.uuid]: trajectoryDataToLine(trajectory, locations, waypoints, frame, humanZone) },
-    items: { ...state.items, ...trajectoryDataToShapes(trajectory, locations, waypoints, frame, humanZone) }
-}))
+//     if (trajectory.end_location_uuid) {
+//         let location = locations[trajectory.end_location_uuid];
+//         shapes.push(poseDataToShapes(location, frame));
+//     }
+//     return shapes
+// }
 
 export const machineDataToPlaceholderPreviews = (machine,things,regions,placeholders) => {
     let items = {};

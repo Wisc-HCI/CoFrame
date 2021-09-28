@@ -39,138 +39,141 @@ export const findCollisionIssues = ({program}) => {
     const errorLevel = 1;
 
     Object.values(program.executablePrimitives).forEach(ePrim => {
-        Object.values(ePrim).forEach(primitive=>{
-            if (primitive.type === "node.primitive.move-trajectory.") {
-                let trajectory = primitive.parameters.trajectory_uuid;
-                let timeData = trajectory.trace.time_data;
-                let sCol = trajectory.trace.self_collisions;
-                let eCol = trajectory.trace.env_collisions;
-                const selfIndex = 0;
-                const envIndex = 1;
-                let collisionData = [{}, {}];
-                let graphData = [[], []];
-                let iterationLength = Object.values(sCol[linkNames[0]]).length;
-                let collisionErrors = [false, false];
-
-                let allSelfCollisions = {};
-                let allEnvCollisions = {};
-                let shouldGraphlink = [[], []];
-                for (let i = 0; i < linkNames.length; i++) {
-                    shouldGraphlink[selfIndex].push(false);
-                    shouldGraphlink[envIndex].push(false);
-                    collisionData[selfIndex][linkNames[i]] = [];
-                    collisionData[envIndex][linkNames[i]] = [];
-                    allSelfCollisions[linkNames[i]] = Object.values(sCol[linkNames[i]]);
-                    allEnvCollisions[linkNames[i]] = Object.values(eCol[linkNames[i]]);
-                }
-
-                // Determine what to graph/render in scene
-                for (let i = 0; i < linkNames.length; i++) {
-                    let selfCollisions = allSelfCollisions[linkNames[i]];
-                    let envCollisions = allEnvCollisions[linkNames[i]];
-
-                    for (let j = 0; j < iterationLength; j++) {
-                        if (selfCollisions[i] >= warningLevel) {
-                            shouldGraphlink[selfIndex][i] = true;
-                        }
-                        if (envCollisions[i] >= warningLevel) {
-                            shouldGraphlink[envIndex][i] = true;
-                        }
-
-                        if (shouldGraphlink[selfIndex][i] && shouldGraphlink[envIndex][i]) {
-                            j = selfCollisions.length;
-                        }
+        if (ePrim) {
+            Object.values(ePrim).forEach(primitive=>{
+                if (primitive.type === "node.primitive.move-trajectory.") {
+                    let trajectory = primitive.parameters.trajectory_uuid;
+                    let timeData = trajectory.trace.time_data;
+                    let sCol = trajectory.trace.self_collisions;
+                    let eCol = trajectory.trace.env_collisions;
+                    const selfIndex = 0;
+                    const envIndex = 1;
+                    let collisionData = [{}, {}];
+                    let graphData = [[], []];
+                    let iterationLength = Object.values(sCol[linkNames[0]]).length;
+                    let collisionErrors = [false, false];
+    
+                    let allSelfCollisions = {};
+                    let allEnvCollisions = {};
+                    let shouldGraphlink = [[], []];
+                    for (let i = 0; i < linkNames.length; i++) {
+                        shouldGraphlink[selfIndex].push(false);
+                        shouldGraphlink[envIndex].push(false);
+                        collisionData[selfIndex][linkNames[i]] = [];
+                        collisionData[envIndex][linkNames[i]] = [];
+                        allSelfCollisions[linkNames[i]] = Object.values(sCol[linkNames[i]]);
+                        allEnvCollisions[linkNames[i]] = Object.values(eCol[linkNames[i]]);
                     }
-                }
-
-                // Iteratively build the graph and scene data
-                for (let i = 0; i < iterationLength; i++) {
-                    let timestamp = Math.floor(timeData[i] * precision) / precision;
-                    graphData[selfIndex].push({x: timestamp});
-                    graphData[envIndex].push({x: timestamp});
-                    for (let j = 0; j < linkNames.length; j++) {
-                        if (shouldGraphlink[selfIndex][j]) {
-                            let curFrame = trajectory.trace.frames[linkNames[j]][i][0];
-
-                            if (allSelfCollisions[linkNames[j]][i] >= errorLevel) {
-                                collisionErrors[selfIndex] = true;
-                                collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
-                            } else if (allSelfCollisions[linkNames[j]][i] >= warningLevel) {
-                                collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
-                            } else {
-                                collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
+    
+                    // Determine what to graph/render in scene
+                    for (let i = 0; i < linkNames.length; i++) {
+                        let selfCollisions = allSelfCollisions[linkNames[i]];
+                        let envCollisions = allEnvCollisions[linkNames[i]];
+    
+                        for (let j = 0; j < iterationLength; j++) {
+                            if (selfCollisions[i] >= warningLevel) {
+                                shouldGraphlink[selfIndex][i] = true;
                             }
-                            graphData[selfIndex][i][linkNameMap[linkNames[j]]] = allSelfCollisions[linkNames[j]][i];
-                        }
-
-                        if (shouldGraphlink[envIndex][j]) {
-                            let curFrame = trajectory.trace.frames[linkNames[j]][i][0];
-
-                            if (allEnvCollisions[linkNames[j]][i] >= errorLevel) {
-                                collisionErrors[envIndex] = true;
-                                collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
-                            } else if (allSelfCollisions[linkNames[j]][i] >= warningLevel) {
-                                collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
-                            } else {
-                                collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
+                            if (envCollisions[i] >= warningLevel) {
+                                shouldGraphlink[envIndex][i] = true;
                             }
-                            graphData[envIndex][i][linkNameMap[linkNames[j]]] = allEnvCollisions[linkNames[j]][i];
+    
+                            if (shouldGraphlink[selfIndex][i] && shouldGraphlink[envIndex][i]) {
+                                j = selfCollisions.length;
+                            }
+                        }
+                    }
+    
+                    // Iteratively build the graph and scene data
+                    for (let i = 0; i < iterationLength; i++) {
+                        let timestamp = Math.floor(timeData[i] * precision) / precision;
+                        graphData[selfIndex].push({x: timestamp});
+                        graphData[envIndex].push({x: timestamp});
+                        for (let j = 0; j < linkNames.length; j++) {
+                            if (shouldGraphlink[selfIndex][j]) {
+                                let curFrame = trajectory.trace.frames[linkNames[j]][i][0];
+    
+                                if (allSelfCollisions[linkNames[j]][i] >= errorLevel) {
+                                    collisionErrors[selfIndex] = true;
+                                    collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
+                                } else if (allSelfCollisions[linkNames[j]][i] >= warningLevel) {
+                                    collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
+                                } else {
+                                    collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
+                                }
+                                graphData[selfIndex][i][linkNameMap[linkNames[j]]] = allSelfCollisions[linkNames[j]][i];
+                            }
+    
+                            if (shouldGraphlink[envIndex][j]) {
+                                let curFrame = trajectory.trace.frames[linkNames[j]][i][0];
+    
+                                if (allEnvCollisions[linkNames[j]][i] >= errorLevel) {
+                                    collisionErrors[envIndex] = true;
+                                    collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
+                                } else if (allSelfCollisions[linkNames[j]][i] >= warningLevel) {
+                                    collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
+                                } else {
+                                    collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
+                                }
+                                graphData[envIndex][i][linkNameMap[linkNames[j]]] = allEnvCollisions[linkNames[j]][i];
+                            }
+                        }
+                    }
+    
+                    // Build colors for the graph
+                    let linkColors = [[], []];
+                    for (let i = 0; i < linkNames.length; i++) {
+                        if (shouldGraphlink[selfIndex][i]) {
+                            linkColors[selfIndex].push(linkColorMap[linkNames[i]]);
+                        }
+                        if (shouldGraphlink[envIndex][i]) {
+                            linkColors[envIndex].push(linkColorMap[linkNames[i]]);
+                        }
+                    }
+    
+                    // Build issue for self collisions
+                    if (graphData[selfIndex].length > 0) {
+                        const uuid = generateUuid('issue');
+                        issues[uuid] = {
+                            uuid: uuid,
+                            requiresChanges: collisionErrors[selfIndex],
+                            title: `Robot collides with self`,
+                            description: `Robot collides with self`,
+                            complete: false,
+                            focus: {uuid:primitive.uuid, type:'primitive'},
+                            graphData: {
+                                series: graphData[selfIndex],
+                                lineColors: linkColors[selfIndex],
+                                xAxisLabel: 'Timestamp',
+                                yAxisLabel: 'Proximity',
+                                title: ''},
+                            sceneData: {vertices: collisionData[selfIndex]}
+                        }
+                    }
+    
+                    // Build issue for environmental collisions
+                    if (graphData[envIndex].length > 0) {
+                        const uuid = generateUuid('issue');
+                        issues[uuid] = {
+                            uuid: uuid,
+                            requiresChanges: collisionErrors[selfIndex],
+                            title: `Robot collides with the environment`,
+                            description: `Robot collides with the environment`,
+                            complete: false,
+                            focus: {uuid:primitive.uuid, type:'primitive'},
+                            graphData: {
+                                series: graphData[envIndex],
+                                lineColors: linkColors[envIndex],
+                                xAxisLabel: 'Timestamp',
+                                yAxisLabel: 'Proximity',
+                                title: ''},
+                            sceneData: {vertices: collisionData[envIndex]}
                         }
                     }
                 }
-
-                // Build colors for the graph
-                let linkColors = [[], []];
-                for (let i = 0; i < linkNames.length; i++) {
-                    if (shouldGraphlink[selfIndex][i]) {
-                        linkColors[selfIndex].push(linkColorMap[linkNames[i]]);
-                    }
-                    if (shouldGraphlink[envIndex][i]) {
-                        linkColors[envIndex].push(linkColorMap[linkNames[i]]);
-                    }
-                }
-
-                // Build issue for self collisions
-                if (graphData[selfIndex].length > 0) {
-                    const uuid = generateUuid('issue');
-                    issues[uuid] = {
-                        uuid: uuid,
-                        requiresChanges: collisionErrors[selfIndex],
-                        title: `Robot collides with self`,
-                        description: `Robot collides with self`,
-                        complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
-                        graphData: {
-                            series: graphData[selfIndex],
-                            lineColors: linkColors[selfIndex],
-                            xAxisLabel: 'Timestamp',
-                            yAxisLabel: 'Proximity',
-                            title: ''},
-                        sceneData: {vertices: collisionData[selfIndex]}
-                    }
-                }
-
-                // Build issue for environmental collisions
-                if (graphData[envIndex].length > 0) {
-                    const uuid = generateUuid('issue');
-                    issues[uuid] = {
-                        uuid: uuid,
-                        requiresChanges: collisionErrors[selfIndex],
-                        title: `Robot collides with the environment`,
-                        description: `Robot collides with the environment`,
-                        complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
-                        graphData: {
-                            series: graphData[envIndex],
-                            lineColors: linkColors[envIndex],
-                            xAxisLabel: 'Timestamp',
-                            yAxisLabel: 'Proximity',
-                            title: ''},
-                        sceneData: {vertices: collisionData[envIndex]}
-                    }
-                }
-            }
-        });
+            });
+        }
+        
     });
 
     return [issues, {}];

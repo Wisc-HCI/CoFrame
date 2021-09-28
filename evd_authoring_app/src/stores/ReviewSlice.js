@@ -2,109 +2,9 @@ import { findCollisionIssues, findEndEffectorPoseIssues, findOccupancyIssues, fi
 import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues, findMachineLogicIssues } from "./issueDetectors/quality";
 import { findEndEffectorSpeedIssues, findJointSpeedIssues, findPayloadIssues, findReachabilityIssues, findSpaceUsageIssues } from "./issueDetectors/performance";
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
-import { objectMap } from "./helpers";
+// import { objectMap } from "./helpers";
 
-const SECTION_INFO = {
-    endEffectorPoses:{
-        name:'End Effector Poses',
-        updater:findEndEffectorPoseIssues,
-        dependencies:['reachability']
-        // dependencies:[]
-    },
-    pinchPoints:{
-        name:'Pinch Points',
-        updater:findPinchPointIssues,
-        dependencies:[]
-    }, 
-    collisions:{
-        name:'Collisions',
-        updater:findCollisionIssues,
-        dependencies:[]
-    },
-    occupancy:{
-        name:'Occupancy',
-        updater:findOccupancyIssues,
-        dependencies:['spaceUsage']
-    },
-    thingMovement:{
-        name:'Thing Movement',
-        updater:findThingMovementIssues,
-        dependencies:['endEffectorPoses']
-        // dependencies:[]
-    },
-    missingBlocks:{
-        name:'Missing Blocks',
-        updater:findMissingBlockIssues,
-        dependencies:[]
-    },
-    missingParameters:{
-        name:'Missing Parameters',
-        updater:findMissingParameterIssues,
-        dependencies:[]
-    },
-    machineLogic:{
-        name:'Machine Logic',
-        updater:findMachineLogicIssues,
-        dependencies:['missingBlocks','missingParameters']
-    },
-    unusedSkills:{
-        name:'Unused Skills',
-        updater:findUnusedSkillIssues,
-        dependencies:[]
-    },
-    unusedFeatures:{
-        name:'Unused Features',
-        updater:findUnusedFeatureIssues,
-        dependencies:[]
-    },
-    emptyBlocks:{
-        name:'Empty Blocks',
-        updater:findEmptyBlockIssues,
-        dependencies:[]
-    },
-    reachability:{
-        name:'Reachability',
-        updater:findReachabilityIssues,
-        dependencies:[]
-    },
-    jointSpeed:{
-        name:'Joint Speed',
-        updater:findJointSpeedIssues,
-        dependencies:['reachability']
-    },
-    endEffectorSpeed:{
-        name:'End Effector Speed',
-        updater:findEndEffectorSpeedIssues,
-        dependencies:['reachability']
-    },
-    payload:{
-        name:'Payload',
-        updater:findPayloadIssues,
-        dependencies:['thingMovement']
-    },
-    spaceUsage:{
-        name:'Space Usage',
-        updater:findSpaceUsageIssues,
-        dependencies:[]
-    },
-    cycleTime:{
-        name:'Cycle Time',
-        updater:findCycleTimeIssues,
-        dependencies:[]
-    },
-    idleTime:{
-        name:'Idle Time',
-        updater:findIdleTimeIssues,
-        dependencies:[]
-    },
-    returnOnInvestment:{
-        name:'Return on Investment',
-        updater:findReturnOnInvestmentIssues,
-        dependencies:['cycleTime','idleTime']
-    }
-}
-
-export const ReviewSlice = (set) => ({
+export const ReviewSlice = (set, get) => ({
     // Issues are stored in a flat lookup
     stats: [],
     issues: {
@@ -123,18 +23,135 @@ export const ReviewSlice = (set) => ({
         }
         */
     },
-    sections: objectMap(SECTION_INFO,section=>({...section,issues:[]})),
+    sections: {
+        endEffectorPoses:{
+            name:'End Effector Poses',
+            updater:findEndEffectorPoseIssues,
+            dependencies:['reachability'],
+            // dependencies:[],
+            issues:[]
+        },
+        pinchPoints:{
+            name:'Pinch Points',
+            updater:findPinchPointIssues,
+            dependencies:[],
+            issues:[]
+        }, 
+        collisions:{
+            name:'Collisions',
+            updater:findCollisionIssues,
+            dependencies:[],
+            issues:[]
+        },
+        occupancy:{
+            name:'Occupancy',
+            updater:findOccupancyIssues,
+            dependencies:['spaceUsage'],
+            issues:[]
+        },
+        thingMovement:{
+            name:'Thing Movement',
+            updater:findThingMovementIssues,
+            dependencies:['endEffectorPoses'],
+            // dependencies:[],
+            issues:[]
+        },
+        missingBlocks:{
+            name:'Missing Blocks',
+            updater:findMissingBlockIssues,
+            dependencies:[],
+            issues:[]
+        },
+        missingParameters:{
+            name:'Missing Parameters',
+            updater:findMissingParameterIssues,
+            dependencies:[],
+            issues:[]
+        },
+        machineLogic:{
+            name:'Machine Logic',
+            updater:findMachineLogicIssues,
+            dependencies:['missingBlocks','missingParameters'],
+            issues:[]
+        },
+        unusedSkills:{
+            name:'Unused Skills',
+            updater:findUnusedSkillIssues,
+            dependencies:[],
+            issues:[]
+        },
+        unusedFeatures:{
+            name:'Unused Features',
+            updater:findUnusedFeatureIssues,
+            dependencies:[],
+            issues:[]
+        },
+        emptyBlocks:{
+            name:'Empty Blocks',
+            updater:findEmptyBlockIssues,
+            dependencies:[],
+            issues:[]
+        },
+        reachability:{
+            name:'Reachability',
+            updater:findReachabilityIssues,
+            dependencies:[],
+            issues:[]
+        },
+        jointSpeed:{
+            name:'Joint Speed',
+            updater:findJointSpeedIssues,
+            dependencies:['reachability'],
+            issues:[]
+        },
+        endEffectorSpeed:{
+            name:'End Effector Speed',
+            updater:findEndEffectorSpeedIssues,
+            dependencies:['reachability'],
+            issues:[]
+        },
+        payload:{
+            name:'Payload',
+            updater:findPayloadIssues,
+            dependencies:['thingMovement'],
+            issues:[]
+        },
+        spaceUsage:{
+            name:'Space Usage',
+            updater:findSpaceUsageIssues,
+            dependencies:[],
+            issues:[]
+        },
+        cycleTime:{
+            name:'Cycle Time',
+            updater:findCycleTimeIssues,
+            dependencies:[],
+            issues:[]
+        },
+        idleTime:{
+            name:'Idle Time',
+            updater:findIdleTimeIssues,
+            dependencies:[],
+            issues:[]
+        },
+        returnOnInvestment:{
+            name:'Return on Investment',
+            updater:findReturnOnInvestmentIssues,
+            dependencies:['cycleTime','idleTime'],
+            issues:[]
+        }
+    },
     setIssueCompletion: (uuid,complete) => set(state=>{
         state.issues[uuid].complete = complete
     }),
     refresh: () => set(state=>{
         //state.issues = {};
         let newIssues = {};
-        let unrolledProgram = state.executablePrimitives[state.uuid];
+        let unrolledProgram = get().executablePrimitives[state.uuid];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
-            let [newSectionIssues, newStats] = SECTION_INFO[sectionKey].updater({program:state,unrolled:unrolledProgram,stats:state.stats});
+            let [newSectionIssues, newStats] = state.sections[sectionKey].updater({program:state,unrolled:unrolledProgram,stats:state.stats});
             // Augment allNewStats with the new incoming stats.
             allNewStats = {...allNewStats,...newStats};
             // Enumerate the existing issues
