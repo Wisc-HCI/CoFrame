@@ -393,7 +393,10 @@ export const ComputedSlice = {
             return lines
         },
         hulls: function() {
-            return {}
+
+            let hulls = {}
+
+            return hulls
         },
     },
 }
