@@ -396,6 +396,25 @@ export const ComputedSlice = {
 
             let hulls = {}
 
+            Object.values(this.executablePrimitives).forEach(ePrim => {
+                if (ePrim) {
+                    Object.values(ePrim).forEach(primitive=>{
+                        if (primitive.type === "node.primitive.move-trajectory.") {
+                            const hidden = this.focusItem.uuid !== primitive.uuid && this.secondaryFocusItem.uuid !== primitive.uuid;
+                            if (this.secondaryFocusItem.type === "issue") {
+                                const currentIssue = this.issues[this.secondaryFocusItem.uuid];
+                                if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.hulls) {
+                                    let vertKeys = Object.keys(currentIssue.sceneData.hulls);
+                                    for (let i = 0; i < vertKeys.length; i++) {
+                                        hulls[primitive.uuid.concat(vertKeys[i])] = {name:vertKeys[i],vertices:currentIssue.sceneData.hulls[vertKeys[i]].vertices, color:currentIssue.sceneData.hulls[vertKeys[i]].color,frame:'world',hidden,width:2};
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            });  
+
             return hulls
         },
     },
