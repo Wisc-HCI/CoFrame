@@ -17,7 +17,7 @@ export function getPlotInfo({editorPane,setupTab,frame,primaryColor,focusData,se
                         <XAxis dataKey='x' interval={intervalLength}>
                             <Label value={currentIssue.graphData.xAxisLabel} offset={-2} position="insideBottom" />
                         </XAxis>
-                        <YAxis label={{ value: currentIssue.graphData.yAxisLabel, angle: -90, position: 'insideLeft'}}/>
+                        <YAxis label={{ value: currentIssue.graphData.yAxisLabel, angle: -90, position: 'insideBottomLeft'}}/>
                         {Object.keys(currentIssue.graphData.series[0]).filter(entry=>entry!=='x').map((entry, idx) => {
                             return <Line type="linear" dataKey={entry} key={entry} stroke={colors[idx]} dot={false}/>
                         })}

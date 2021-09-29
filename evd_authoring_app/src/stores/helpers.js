@@ -1,8 +1,7 @@
-import useStore from './Store';
 import lodash from 'lodash';
-import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES } from './gripper';
-import { Quaternion } from 'three';
-
+import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES, GRIPPER_PARENTS } from './gripper';
+import { Quaternion, Vector3 } from 'three';
+import { ConvexGeometry } from 'three-stdlib';
 
 export function idleTimeEstimate(unrolled){
     let delay = 0;
@@ -10,7 +9,6 @@ export function idleTimeEstimate(unrolled){
     let gripperEnd = null;
     let first = true;
     let tasks = [];
-    
     if (unrolled === undefined || unrolled === null){
         return 0;
     }else{
@@ -125,7 +123,7 @@ export function idleTimeEstimate(unrolled){
                 
             }else if(primitive.type === 'node.primitive.machine-primitive.machine-wait.'){
                 if (tasks.length === 0){
-                    console.log("this might be an error");
+                    // console.log("this might be an error");
                 }else{
                    
                     tasks.forEach((task) => 
@@ -135,7 +133,7 @@ export function idleTimeEstimate(unrolled){
                             delay +=  task.processTime - task.timeTaken;
                             //console.log(duration);
                             task.timeTaken += task.processTime - task.timeTaken;
-                            console.log(task.timeTaken);    
+                            // console.log(task.timeTaken);    
                             task.status = 'waiting';
                             
                         }
@@ -161,6 +159,7 @@ export function durationEstimate(unrolled){
     let gripperEnd = null;
     let first = true;
     let tasks = [];
+    // console.log("this is :" + unrolled);
     if (unrolled === undefined || unrolled === null){
         return 0;
     }else{
@@ -275,7 +274,7 @@ export function durationEstimate(unrolled){
                 
             }else if(primitive.type === 'node.primitive.machine-primitive.machine-wait.'){
                 if (tasks.length === 0){
-                    console.log("this might be an error");
+                    // console.log("this might be an error");
                 }else{
                    
                     tasks.forEach((task) => 
@@ -283,9 +282,9 @@ export function durationEstimate(unrolled){
                         
                         if (primitive.parameters.machine_uuid.uuid === task.machineUUID &&task.status === 'started') {
                             duration +=  task.processTime - task.timeTaken;
-                            console.log(duration);
+                            // console.log(duration);
                             task.timeTaken += task.processTime - task.timeTaken;
-                            console.log(task.timeTaken);    
+                            // console.log(task.timeTaken);    
                             task.status = 'waiting';
                             
                         }
@@ -352,24 +351,23 @@ function* range(start, end, step=1) {
     }
 }
 
-export const inHumanZone = ({ x, y, z }) => {
-    if (HUMAN_ZONE.position.z + HUMAN_ZONE.height * 0.5 > z && HUMAN_ZONE.position.z - HUMAN_ZONE.height * 0.5 < z) {
-        return Math.pow(x - HUMAN_ZONE.position.x, 2) + Math.pow(y - HUMAN_ZONE.position.y, 2) < Math.pow(HUMAN_ZONE.radius, 2)
-    }
-    return false
-}
+// export const inHumanZone = ({ x, y, z }) => {
+//     if (HUMAN_ZONE.position.z + HUMAN_ZONE.height * 0.5 > z && HUMAN_ZONE.position.z - HUMAN_ZONE.height * 0.5 < z) {
+//         return Math.pow(x - HUMAN_ZONE.position.x, 2) + Math.pow(y - HUMAN_ZONE.position.y, 2) < Math.pow(HUMAN_ZONE.radius, 2)
+//     }
+//     return false
+// }
 
 export const occupancyOverlap = (position, occupancyZones) => {
-    let noOverlap = true
+    let overlap = false
     Object.values(occupancyZones).forEach(zone => {
-        if (position.x < zone.position_x + zone.scale_x &&
-            position.x > zone.position_x - zone.scale_x &&
-            position.y < zone.position_z + zone.scale_z &&
-            position.y > zone.position_z - zone.scale_z) {
-            noOverlap = false
+        const xOverlap = position.x < zone.position_x + zone.scale_x/2 && position.x > zone.position_x - zone.scale_x/2;
+        const yOverlap = position.y < zone.position_z + zone.scale_z/2 && position.y > zone.position_z - zone.scale_z/2;
+        if (xOverlap && yOverlap) {
+            overlap = true
         }
     })
-    return !noOverlap
+    return overlap
 }
 
 export function flattenProgram(primitives, skills, parentData) {
@@ -414,6 +412,8 @@ function executableTrajectory(trajectory, context) {
     })
     executable.sequence.push(context[trajectory.end_location_uuid]);
     executable.trace = trajectory.trace;
+    executable.vertices = traceToVertices(trajectory.trace);
+    executable.volume = verticesToVolume(executable.vertices);
     return executable
 }
 
@@ -440,39 +440,42 @@ export function executableMachine(machine, context) {
 }
 
 function executablePrimitiveInner(primitiveId, state, context) {
+    let full = {};
     let executable = [];
     if (primitiveId === state.uuid) {
         // Program is the primitive;
         if (state.primitiveIds.some(childId => {
-            const children = executablePrimitiveInner(childId, state, context);
-            if (children === null || children.includes(null)) {
+            const inner = executablePrimitiveInner(childId, state, context);
+            if (inner === null || inner.children.includes(null)) {
                 return true
             } else {
-                executable = [...executable, ...children]
+                executable = [...executable, ...inner.children]
+                full = {...full,...inner.all,[childId]:inner.children}
                 return false
             }
         })) {
             // There was a null response
             return null
         } else {
-            return executable
+            return {children:executable,all:{...full,[primitiveId]:executable}}
         }
     } else {
         const primitive = state.data.primitives[primitiveId];
         if (primitive.type.includes('hierarchical')) {
             if (primitive.primitiveIds.some(childId => {
-                const children = executablePrimitiveInner(childId, state, context);
-                if (children === null || children.includes(null)) {
+                const inner = executablePrimitiveInner(childId, state, context);
+                if (inner === null || inner.children.includes(null)) {
                     return true
                 } else {
-                    executable = [...executable, ...children]
+                    executable = [...executable, ...inner.children]
+                    full = {...full,...inner.all,[childId]:inner.children}
                     return false
                 }
             })) {
                 // There was a null response
                 return null
             } else {
-                return executable
+                return {children:executable,all:{...full,[primitive.uuid]:executable}}
             }
         } else if (primitive.type.includes('skill-call')) {
             let innerContext = { ...context };
@@ -490,43 +493,50 @@ function executablePrimitiveInner(primitiveId, state, context) {
                 return null
             }
             const calledSkill = state.data.skills[primitive.parameters.skill_uuid];
+            if (!calledSkill) {
+                return null
+            }
             if (calledSkill.primitiveIds.some(childId => {
-                const children = executablePrimitiveInner(childId, state, innerContext);
-                if (children === null || children.includes(null)) {
+                const inner = executablePrimitiveInner(childId, state, innerContext);
+                if (inner === null || inner.children.includes(null)) {
                     return true
                 } else {
-                    executable = [...executable, ...children]
+                    executable = [...executable, ...inner.children]
                     return false
                 }
             })) {
                 // There was a null response
                 return null
             } else {
-                return executable
+                return {children:executable,all:{[primitive.uuid]:executable}}
             }
         } else if (primitive.type === 'node.primitive.breakpoint.' || primitive.type === 'node.primitive.delay.') {
-            return [...executable, primitive]
+            return {children:[primitive],all:{[primitive.uuid]:primitive}}
         } else if (primitive.type === 'node.primitive.gripper.') {
             if (context[primitive.parameters.thing_uuid]) {
-                return [...executable, { ...primitive, parameters: { ...primitive.parameters, thing_uuid: context[primitive.parameters.thing_uuid] } }]
+                const expanded = { ...primitive, parameters: { ...primitive.parameters, thing_uuid: context[primitive.parameters.thing_uuid] } }
+                return {children:[expanded],all:{[primitive.uuid]:expanded}}
             } else {
                 return null
             }
         } else if (primitive.type.includes('machine-primitive')) {
             if (context[primitive.parameters.machine_uuid]) {
-                return [...executable, { ...primitive, parameters: { ...primitive.parameters, machine_uuid: context[primitive.parameters.machine_uuid] } }]
+                const expanded = { ...primitive, parameters: { ...primitive.parameters, machine_uuid: context[primitive.parameters.machine_uuid] } }
+                return {children:[expanded],all:{[primitive.uuid]:expanded}}
             } else {
                 return null
             }
         } else if (primitive.type === 'node.primitive.move-trajectory.') {
             if (primitive.parameters.trajectory_uuid && context[primitive.parameters.trajectory_uuid]) {
-                return [...executable, { ...primitive, parameters: { ...primitive.parameters, trajectory_uuid: context[primitive.parameters.trajectory_uuid] } }]
+                const expanded = { ...primitive, parameters: { ...primitive.parameters, trajectory_uuid: context[primitive.parameters.trajectory_uuid] } }
+                return {children:[expanded],all:{[primitive.uuid]:expanded}}
             } else {
                 return null
             }
         } else if (primitive.type === 'node.primitive.move-unplanned.') {
             if (context[primitive.parameters.location_uuid]) {
-                return [...executable, { ...primitive, parameters: { ...primitive.parameters, location_uuid: context[primitive.parameters.location_uuid] } }]
+                const expanded = { ...primitive, parameters: { ...primitive.parameters, location_uuid: context[primitive.parameters.location_uuid] } }
+                return {children:[expanded],all:{[primitive.uuid]:expanded}}
             } else {
                 return null
             }
@@ -535,7 +545,24 @@ function executablePrimitiveInner(primitiveId, state, context) {
     return null
 }
 
-export function executablePrimitive(primitiveId, state) {
+// export function executablePrimitive(primitiveId, state) {
+//     let context = {
+//         ...state.data.placeholders,
+//         ...state.data.locations,
+//         ...state.data.waypoints,
+//         ...state.data.thingTypes,
+//         ...state.data.regions
+//     }
+//     Object.values(state.data.trajectories).forEach(trajectory => {
+//         context[trajectory.uuid] = executableTrajectory(trajectory, context)
+//     })
+//     Object.values(state.data.machines).forEach(machine => {
+//         context[machine.uuid] = executableMachine(machine, context)
+//     })
+//     return executablePrimitiveInner(primitiveId, state, context)
+// }
+
+export function executablePrimitives(state) {
     let context = {
         ...state.data.placeholders,
         ...state.data.locations,
@@ -549,7 +576,21 @@ export function executablePrimitive(primitiveId, state) {
     Object.values(state.data.machines).forEach(machine => {
         context[machine.uuid] = executableMachine(machine, context)
     })
-    return executablePrimitiveInner(primitiveId, state, context)
+    // this should return all the primitives that are run through with the actual program
+    const inner = executablePrimitiveInner(state.uuid, state, context);
+    let executables = {}
+    if (inner) {
+        executables = {...inner.all};
+    }
+
+    // this should catch any primitives not called directly through the program that are valid
+    Object.values(state.data.primitives).forEach(primitive=>{
+        if (!executables[primitive.uuid]) {
+            executables = {...executables, ...executablePrimitiveInner(primitive.uuid, state, context)}
+        }
+    })
+    return executables
+
 }
 
 const findLastSatisfiedFromReference = (x, fn) => {
@@ -565,11 +606,13 @@ const findLastSatisfiedFromReference = (x, fn) => {
 }
 
 const gripperFramesFromValue = (distance) => {
-    const idx = findLastSatisfiedFromReference(GRIPPER_CONFIGURATIONS.cmd, v => v <= distance);
+    const idx = findLastSatisfiedFromReference(GRIPPER_CONFIGURATIONS.cmd, v => v > distance);
+    console.log(idx)
     let frames = {};
     GRIPPER_FRAMES.forEach(frameName => {
         const rawFrame = GRIPPER_CONFIGURATIONS.capture[frameName][idx];
         frames[frameName] = {
+            frame:GRIPPER_PARENTS[frameName],
             translation: {
                 x: rawFrame[0][0],
                 y: rawFrame[0][1],
@@ -681,6 +724,7 @@ const stepsToAnimatedTfs = (steps) => {
     })
     // console.log(tempAnimatedTfs)
     const animatedTfs = objectMap(tempAnimatedTfs,(tf,key)=>({
+        frame:GRIPPER_PARENTS[key],
         translation:{
             x: interpolateScalar(timesteps, tf.translation.x),
             y: interpolateScalar(timesteps, tf.translation.y),
@@ -716,8 +760,12 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 const delta = chunk.parameters.position - gripperState;
                 const direction = delta >= 0 ? 1 : -1
                 duration = 1000 * Math.abs(delta) / chunk.parameters.speed;
-                for (let timeOffset of range(0,duration,250)) {
-                    const tempGripperState = chunk.parameters.speed * timeOffset * direction;
+                console.log(delta)
+                console.log(duration)
+
+                for (let timeOffset of range(0,duration,100)) {
+                    const tempGripperState = gripperState + chunk.parameters.speed * timeOffset/1000 * direction;
+                    console.log(tempGripperState)
                     prevTfs.tfs = {...prevTfs.tfs,...gripperFramesFromValue(tempGripperState)};
                     prevTfs.time = currentTime+timeOffset;
                     steps.push(prevTfs)
@@ -866,9 +914,9 @@ export function unFlattenProgramSkills(skills, primitives) {
     return unFlattenedSkills;
 }
 
-export function poseToColor(pose, frame, focused) {
+export function poseToColor(pose, frame, focused, occupancyZones) {
     let color = { r: 255, g: 255, b: 255, a: focused ? 1 : 0 };
-    if (frame === 'safety' && inHumanZone(pose.position)) {
+    if (frame === 'safety' && occupancyOverlap(pose.position,occupancyZones)) {
         color.r = 233;
         color.g = 53;
         color.b = 152;
@@ -896,7 +944,7 @@ export function reachabilityColor(focused, locationOrWaypoint) {
 }
 
 
-export function poseDataToShapes(pose, frame) {
+export function poseDataToShapes(pose, frame, occupancyZones) {
     let pose_stored = pose;
     return [
         {
@@ -909,7 +957,7 @@ export function poseDataToShapes(pose, frame) {
             scale: { x: -0.25, y: 0.25, z: 0.25 },
             highlighted: false,
             showName: false,
-            color: poseToColor(pose_stored, frame, false)
+            color: poseToColor(pose_stored, frame, false, occupancyZones)
         },
         {
             uuid: `${pose_stored.uuid}-pointer`,
@@ -920,7 +968,7 @@ export function poseDataToShapes(pose, frame) {
             scale: { x: 1, y: 1, z: 1 },
             highlighted: false,
             showName: false,
-            color: poseToColor(pose_stored, frame, false)
+            color: poseToColor(pose_stored, frame, false, occupancyZones)
         }
     ]
 }
@@ -970,29 +1018,24 @@ export function trajectoryDataToLine(trajectory, locations, waypoints, frame, re
     }
 }
 
-export function trajectoryDataToShapes(trajectory, locations, waypoints, frame) {
-    // For the time being, enumerate the location and waypoints
-    let shapes = [];
-    if (trajectory.start_location_uuid) {
-        let location = locations[trajectory.start_location_uuid];
-        shapes.push(poseDataToShapes(location, frame));
-    }
-    trajectory.waypoint_uuids.forEach(waypoint_uuid => {
-        let waypoint = waypoints[waypoint_uuid];
-        shapes.push(poseDataToShapes(waypoint, frame));
-    })
+// export function trajectoryDataToShapes(trajectory, locations, waypoints, frame) {
+//     // For the time being, enumerate the location and waypoints
+//     let shapes = [];
+//     if (trajectory.start_location_uuid) {
+//         let location = locations[trajectory.start_location_uuid];
+//         shapes.push(poseDataToShapes(location, frame));
+//     }
+//     trajectory.waypoint_uuids.forEach(waypoint_uuid => {
+//         let waypoint = waypoints[waypoint_uuid];
+//         shapes.push(poseDataToShapes(waypoint, frame));
+//     })
 
-    if (trajectory.end_location_uuid) {
-        let location = locations[trajectory.end_location_uuid];
-        shapes.push(poseDataToShapes(location, frame));
-    }
-    return shapes
-}
-
-export const createTrajectory = (trajectory, locations, waypoints, frame, humanZone) => useStore.setState(state => ({
-    lines: { ...state.lines, [trajectory.uuid]: trajectoryDataToLine(trajectory, locations, waypoints, frame, humanZone) },
-    items: { ...state.items, ...trajectoryDataToShapes(trajectory, locations, waypoints, frame, humanZone) }
-}))
+//     if (trajectory.end_location_uuid) {
+//         let location = locations[trajectory.end_location_uuid];
+//         shapes.push(poseDataToShapes(location, frame));
+//     }
+//     return shapes
+// }
 
 export const machineDataToPlaceholderPreviews = (machine,things,regions,placeholders) => {
     let items = {};
@@ -1007,4 +1050,64 @@ export const machineDataToPlaceholderPreviews = (machine,things,regions,placehol
         })
     })
 }
+
+export const traceToVertices = (trace) => {
+    let vertices = [];
+    ROBOT_FRAMES.forEach(frame=>{
+        for (let i = 0; i < trace.frames[frame].length; i+=10) {
+            vertices.push(new Vector3(...trace.frames[frame][i][0]))
+        }
+    })
+    return vertices
+}
+
+export const verticesToVolume = (vertices) => {
+    let geometry = new ConvexGeometry(vertices);
+    return getVolume(geometry)
+}
+
+export const spaceEstimate = (trace) => {
+    let geometry = new ConvexGeometry(traceToVertices(trace));
+    return getVolume(geometry)
+}
+
+/*
+https://discourse.threejs.org/t/volume-of-three-buffergeometry/5109
+*/
+function getVolume(geometry) {
+    if (!geometry.isBufferGeometry) {
+      console.log("'geometry' must be an indexed or non-indexed buffer geometry");
+      return 0;
+    }
+    var isIndexed = geometry.index !== null;
+    let position = geometry.attributes.position;
+    let sum = 0;
+    let p1 = new Vector3(),
+      p2 = new Vector3(),
+      p3 = new Vector3();
+    if (!isIndexed) {
+      let faces = position.count / 3;
+      for (let i = 0; i < faces; i++) {
+        p1.fromBufferAttribute(position, i * 3 + 0);
+        p2.fromBufferAttribute(position, i * 3 + 1);
+        p3.fromBufferAttribute(position, i * 3 + 2);
+        sum += signedVolumeOfTriangle(p1, p2, p3);
+      }
+    }
+    else {
+      let index = geometry.index;
+      let faces = index.count / 3;
+      for (let i = 0; i < faces; i++){
+        p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
+        p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
+        p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
+        sum += signedVolumeOfTriangle(p1, p2, p3);
+      }
+    }
+    return sum;
+  }
+
+  function signedVolumeOfTriangle(p1, p2, p3) {
+    return p1.dot(p2.cross(p3)) / 6.0;
+  }
 
