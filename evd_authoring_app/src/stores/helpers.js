@@ -131,6 +131,7 @@ function executableTrajectory(trajectory, context) {
     executable.vertices = traceToVertices(trajectory.trace);
     executable.volume = verticesToVolume(executable.vertices);
     executable.eePoseScores = traceToEEPoseScores(trajectory.trace);
+    console.log(executable)
     return executable
 }
 
@@ -724,8 +725,8 @@ export const machineDataToPlaceholderPreviews = (machine,things,regions) => {
 }
 
 export const traceToEEPoseScores = (trace) => {
-    let scores = [0];
-    for (let i = 1; i < trace.frames['tool0'].length; i+=10) {
+    let scores = [0,0];
+    for (let i = 1; i < trace.frames['tool0'].length; i++) {
         const p1 = trace.frames['tool0'][i][0];
         const p0 = trace.frames['tool0'][i-1][0];
         const q1 = trace.frames['tool0_endpoint'][i][0];
