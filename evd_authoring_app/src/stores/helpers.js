@@ -13,7 +13,8 @@ const ROBOT_FRAMES = [
     'wrist_2_link',
     'wrist_3_link',
     'flange',
-    'tool0'
+    'tool0',
+    'tool0_endpoint'
 ]
 
 export const HUMAN_ZONE = { radius: 2, height: 3, position: { x: 0, y: -1, z: 1 } }
@@ -129,6 +130,7 @@ function executableTrajectory(trajectory, context) {
     executable.trace = trajectory.trace;
     executable.vertices = traceToVertices(trajectory.trace);
     executable.volume = verticesToVolume(executable.vertices);
+    executable.eePoseScores = traceToEEPoseScores(trajectory.trace);
     return executable
 }
 
@@ -176,6 +178,9 @@ function executablePrimitiveInner(primitiveId, state, context) {
         }
     } else {
         const primitive = state.data.primitives[primitiveId];
+        if (!primitive) {
+            return null
+        }
         if (primitive.type.includes('hierarchical')) {
             if (primitive.primitiveIds.some(childId => {
                 const inner = executablePrimitiveInner(childId, state, context);
@@ -678,7 +683,6 @@ export const machineDataToPlaceholderPreviews = (machine,things,regions) => {
     let items = {};
     Object.keys(machine.inputs).forEach(thingType=>{
         const thingInfo = things[thingType];
-        console.log(thingInfo)
         machine.inputs[thingType].forEach(zoneInfo=>{
             const region = regions[zoneInfo.region_uuid];
             items[thingType+region.uuid] = {
@@ -717,6 +721,19 @@ export const machineDataToPlaceholderPreviews = (machine,things,regions) => {
     })
 
     return items
+}
+
+export const traceToEEPoseScores = (trace) => {
+    let scores = [0];
+    for (let i = 1; i < trace.frames['tool0'].length; i+=10) {
+        const p1 = trace.frames['tool0'][i][0];
+        const p0 = trace.frames['tool0'][i-1][0];
+        const q1 = trace.frames['tool0_endpoint'][i][0];
+        const movementVec = new Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]);
+        const directionVec = new Vector3(q1[0]-p1[0],q1[1]-p1[1],q1[2]-p1[2]);
+        scores.push(1000*movementVec.manhattanLength()/Math.pow(Math.E,movementVec.angleTo(directionVec)))
+    }
+    console.log(scores)
 }
 
 export const traceToVertices = (trace) => {
@@ -926,8 +943,6 @@ function getVolume(geometry) {
         return delay;
     }   
 }
-
-
 
 export function durationEstimate(unrolled){
     let duration = 0;

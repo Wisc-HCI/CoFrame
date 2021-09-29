@@ -125,7 +125,7 @@ export const ReviewSlice = (set, get) => ({
         cycleTime:{
             name:'Cycle Time',
             updater:findCycleTimeIssues,
-            dependencies:[],
+            dependencies:['machineLogic'],
             issues:[]
         },
         idleTime:{
@@ -137,7 +137,7 @@ export const ReviewSlice = (set, get) => ({
         returnOnInvestment:{
             name:'Return on Investment',
             updater:findReturnOnInvestmentIssues,
-            dependencies:['cycleTime','idleTime'],
+            dependencies:['idleTime'],
             issues:[]
         }
     },

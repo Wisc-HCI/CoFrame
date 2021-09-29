@@ -341,8 +341,8 @@ export const findSpaceUsageIssues = ({program, stats}) => {
     let issues = {};
     let addStats = {};
 
-    const warningLevel = 0.2;
-    const errorLevel = 0.8;
+    const warningLevel = 0.01;
+    const errorLevel = 0.2;
     
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {

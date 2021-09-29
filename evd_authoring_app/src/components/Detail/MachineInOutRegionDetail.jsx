@@ -3,11 +3,12 @@ import useStore from '../../stores/Store';
 import { Divider, Input, Switch, Space, Card, Button, Drawer } from 'antd';
 import OrientationInput from './OrientationInput';
 import PositionInput from './PositionInput';
+const EDITOR_TYPES = ['primitive', 'skill', 'program', 'trajectory', 'scene']
 const { TextArea } = Input;
 
-export const MachineInOutRegionDetail = ({uuid}) => {
+export const MachineInOutRegionDetail = ({ uuid }) => {
 
-    const region = useStore(useCallback(state => state.data.regions[uuid]),[uuid]);
+    const region = useStore(useCallback(state => state.data.regions[uuid], [uuid]));
 
     const setItemProperty = useStore(state => state.setItemProperty);
     const secondaryFocusItem = useStore(state => state.secondaryFocusItem);
@@ -38,7 +39,7 @@ export const MachineInOutRegionDetail = ({uuid}) => {
 
 
     const [shape, setShape] = useState(region?.uncertainty_radius ? 'sphere' : 'cube');
-    
+
     function changeShape(newShape) {
         if (newShape !== shape) {
             if (shape === 'Cube') {
@@ -61,70 +62,14 @@ export const MachineInOutRegionDetail = ({uuid}) => {
         }
     }
 
-
-
-
-    let dimension = null;
-    if (shape === 'Cube') {
-        dimension = (
-            <Card size='small'>
-                <Space>
-                    <div style={{ display: "flex", alignItems: 'center' }}>
-                        <b style={{ color: "red", paddingRight: '5px' }}>X: </b>
-                        <Input
-                            disabled={!region.editable}
-                            value={region.uncertainty_x}
-                            style={{ width: '40%' }}
-
-                        />
-                    </div>
-                    <div style={{ display: "flex", alignItems: 'center' }}>
-                        <b style={{ color: "lime", paddingRight: '5px' }}>Y: </b>
-                        <Input
-                            disabled={!region.editable}
-                            style={{ width: '40%' }}
-                            value={region.uncertainty_y}
-
-                        />
-                    </div>
-                    <div style={{ display: "flex", alignItems: 'center' }}>
-                        <b style={{ color: "blue", paddingRight: '5px' }}>Z: </b>
-                        <Input
-                            disabled={!region.editable}
-                            style={{ width: '40%' }}
-                            value={region.uncertainty_z}
-
-                        />
-                    </div>
-                </Space>
-            </Card>)
-    } else {
-        dimension = (
-            <div>
-                <Card size='small'>
-                    <b sbyle={{ color: "rgba(255, 255, 255, 0.85)", paddingRight: '5px' }}>Radius: </b>
-                    <Input
-                        disabled={!region.editable}
-                        style={{ width: '10%' }}
-                        value={region.uncertainty_radius}
-
-                    />
-                </Card>
-            </div>
-        )
-
-    }
-
-
-
-    return (
+    if (region) {
         <Drawer title={
             <Space>
-              <span style={{ textTransform: 'capitalize' }}>{secondaryFocusItem.type} </span>
-              <Input
-                defaultValue={region.name}
-                disabled={!region.editable}
-                onChange={e => setItemProperty(secondaryFocusItem.type, secondaryFocusItem.uuid, 'name', e.target.value)} />
+                <span style={{ textTransform: 'capitalize' }}>{secondaryFocusItem.type} </span>
+                <Input
+                    defaultValue={region.name}
+                    disabled={!region.editable}
+                    onChange={e => setItemProperty(secondaryFocusItem.type, secondaryFocusItem.uuid, 'name', e.target.value)} />
             </Space>}
             onClose={clearSecondaryFocusItem}
             visible={region !== null}
@@ -175,10 +120,62 @@ export const MachineInOutRegionDetail = ({uuid}) => {
 
                 <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}>Dimension:</b>
 
-                {dimension}
+                {region?.uncertainty_radius ? (
+                    <Card size='small'>
+                        <b sbyle={{ color: "rgba(255, 255, 255, 0.85)", paddingRight: '5px' }}>Radius: </b>
+                        <Input
+                            disabled={!region.editable}
+                            style={{ width: '10%' }}
+                            value={region.uncertainty_radius}
+
+                        />
+                    </Card>
+                ) : (
+                    <Card size='small'>
+                        <Space>
+                            <div style={{ display: "flex", alignItems: 'center' }}>
+                                <b style={{ color: "red", paddingRight: '5px' }}>X: </b>
+                                <Input
+                                    disabled={!region.editable}
+                                    value={region.uncertainty_x}
+                                    style={{ width: '40%' }}
+
+                                />
+                            </div>
+                            <div style={{ display: "flex", alignItems: 'center' }}>
+                                <b style={{ color: "lime", paddingRight: '5px' }}>Y: </b>
+                                <Input
+                                    disabled={!region.editable}
+                                    style={{ width: '40%' }}
+                                    value={region.uncertainty_y}
+
+                                />
+                            </div>
+                            <div style={{ display: "flex", alignItems: 'center' }}>
+                                <b style={{ color: "blue", paddingRight: '5px' }}>Z: </b>
+                                <Input
+                                    disabled={!region.editable}
+                                    style={{ width: '40%' }}
+                                    value={region.uncertainty_z}
+
+                                />
+                            </div>
+                        </Space>
+                    </Card>
+                )}
 
             </div>
         </Drawer>
-
-    )
+    } else {
+        return (
+            <Drawer
+                title={<span style={{ textTransform: 'capitalize' }}>{secondaryFocusItem.type} </span>}
+                visible={secondaryFocusItem.uuid !== null && secondaryFocusItem.type !== null && EDITOR_TYPES.indexOf(secondaryFocusItem.type) < 0}
+                onClose={clearSecondaryFocusItem}
+                getContainer={false}
+                width='25%'
+            >
+            </Drawer>
+        )
+    }
 }

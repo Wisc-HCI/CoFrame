@@ -8,8 +8,6 @@ import {
     occupancyOverlap,
     DEFAULT_TRAJECTORY_COLOR,
     executablePrimitives,
-    durationEstimate,
-    idleTimeEstimate,
     tfAnimationFromExecutable,
     robotFramesFromPose,
     machineDataToPlaceholderPreviews

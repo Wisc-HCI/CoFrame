@@ -20,21 +20,16 @@ export const Detail = (_) => {
     focusItem,
     clearFocusItem,
     secondaryFocusItem,
-    clearSecondaryFocusItem,
     deleteItem,
     setItemProperty,
-    item,
-    childItem
+    item
   } = useStore(state => ({
     focusItem: state.focusItem,
     clearFocusItem: state.clearFocusItem,
     secondaryFocusItem: state.secondaryFocusItem,
-    clearSecondaryFocusItem: state.clearSecondaryFocusItem,
-    secondaryFocusItem: state.secondaryFocusItem,
     deleteItem: state.deleteItem,
     setItemProperty: state.setItemProperty,
-    item: state.focusItem.type && EDITOR_TYPES.indexOf(state.focusItem.type) < 0 ? state.data[state.focusItem.type + 's'][state.focusItem.uuid] : null,
-    childItem: ['region'].indexOf(state.secondaryFocusItem.type) > -1 ? state.data[state.secondaryFocusItem.type + 's'][state.secondaryFocusItem.uuid] : { name: 'nothing', editable: false }
+    item: state.focusItem.type && EDITOR_TYPES.indexOf(state.focusItem.type) < 0 ? state.data[state.focusItem.type + 's'][state.focusItem.uuid] : null
   }));
 
   const handleOK = () => {
@@ -54,7 +49,7 @@ export const Detail = (_) => {
 
   )
 
-  if (EDITOR_TYPES.indexOf(focusItem.type) < 0 && item && childItem) {
+  if (EDITOR_TYPES.indexOf(focusItem.type) < 0 && item) {
     return (
       <div style={{ color: 'white' }}>
         <Drawer
@@ -108,21 +103,7 @@ export const Detail = (_) => {
             <>
               <div>
                 <MachineDetail uuid={focusItem.uuid} />
-                <Drawer title={
-                  <Space>
-                    <span style={{ textTransform: 'capitalize' }}>{secondaryFocusItem.type} </span>
-                    <Input
-                      defaultValue={childItem.name}
-                      disabled={!childItem.editable}
-                      onChange={e => setItemProperty(secondaryFocusItem.type, secondaryFocusItem.uuid, 'name', e.target.value)} />
-                  </Space>}
-                  onClose={clearSecondaryFocusItem}
-                  visible={secondaryFocusItem.type === 'region'}
-                  width='20%'
-                  mask={false}
-                  placement='right'>
-                  <MachineInOutRegionDetail uuid={secondaryFocusItem.uuid} />
-                </Drawer>
+                <MachineInOutRegionDetail uuid={secondaryFocusItem.uuid} />
               </div>
             </>
 
