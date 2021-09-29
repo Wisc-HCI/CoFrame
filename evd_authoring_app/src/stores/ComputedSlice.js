@@ -11,7 +11,8 @@ import {
     durationEstimate,
     idleTimeEstimate,
     tfAnimationFromExecutable,
-    robotFramesFromPose
+    robotFramesFromPose,
+    machineDataToPlaceholderPreviews
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
@@ -43,11 +44,15 @@ export const ComputedSlice = {
                     rotation:{w:1,x:0,y:0,z:0}
                 }
             })
+            Object.values(this.data.regions).forEach(region=>{
+                tfs[region.uuid] = {
+                    frame:region.link,
+                    translation:region.center_position,
+                    rotation:region.center_orientation
+                }
+            })
             if (this.focusItem.uuid) {
                 const executable = this.executablePrimitives[this.focusItem.uuid];
-                console.log(executable);
-                console.log("this is duration : " + durationEstimate(executable));
-                console.log("this is delay: " + idleTimeEstimate(executable));
                 if (executable) {
                     tfs = tfAnimationFromExecutable(executable,tfs)
                 } else if (this.focusItem.type === 'location' && this.data.locations[this.focusItem.uuid].frames) {
@@ -67,6 +72,7 @@ export const ComputedSlice = {
                 this.data.trajectories[this.focusItem.uuid].end_location_uuid,
             ] : []
 
+            // Add items from the initial static scene
             Object.keys(INITIAL_SIM.staticScene).forEach(itemKey => {
                 const item = INITIAL_SIM.staticScene[itemKey];
                 let highlighted = false;
@@ -88,7 +94,12 @@ export const ComputedSlice = {
                     transformMode: "inactive",
                     highlighted,
                     onClick: (e) => {
-                        if (this.focusItem.transformMode === "translate" || this.focusItem.transformMode ===  "rotate"){
+                        if (
+                            this.focusItem.transformMode === "translate" || 
+                            this.focusItem.transformMode ===  "rotate" ||
+                            this.secondaryFocusItem.transformMode === "translate" || 
+                            this.secondaryFocusItem.transformMode ===  "rotate"
+                        ){
                             
                         }else{
                             console.log('clicked '+item.name)
@@ -118,6 +129,7 @@ export const ComputedSlice = {
                 }
             })
 
+            // Add occupancy zones
             Object.values(this.data.occupancyZones).forEach(zone=>{
                 if (zone.occupancy_type === 'human') {
                     items[zone.uuid] = {
@@ -137,16 +149,34 @@ export const ComputedSlice = {
                 
             })
 
-            let focusedInputs = [];
-            let focusedOutputs = [];
-            if (this.focusItem.type === 'machine') {
-                Object.values(this.data.machines[this.focusItem.uuid].inputs).forEach(regionInfo=>{
-                    regionInfo.forEach(input=>focusedInputs.push(input.region_uuid))
-                });
-                Object.values(this.data.machines[this.focusItem.uuid].outputs).forEach(regionInfo=>{
-                    regionInfo.forEach(output=>focusedOutputs.push(output.region_uuid))
-                });
-            }
+            // Add regions
+            Object.values(this.data.regions).forEach(region=>{
+                const debouncedOnMove = debounce(transform=>{
+                    this.setRegionTransform(region.uuid,transform);
+                },1000)
+                items[region.uuid] = {
+                    shape: region.uncertainty_x ? 'cube' : 'sphere',
+                    frame: region.uuid,
+                    position: {x:0,y:0,z:0},
+                    rotation: {w:1,x:0,y:0,z:0},
+                    scale: region.uncertainty_x ? {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5} : {x:region.uncertainty_radius*5,y:region.uncertainty_radius*5,z:region.uncertainty_radius*5},
+                    transformMode: this.secondaryFocusItem.uuid === region.uuid ? this.secondaryFocusItem.transformMode : 'inactive',
+                    color:{r:0,g:0,b:0,a:0.3},
+                    highlighted: this.secondaryFocusItem.uuid === region.uuid,
+                    hidden: true,
+                    onClick: (_)=>{},
+                    onMove: debouncedOnMove
+                }
+            })
+
+            // if (this.focusItem.type === 'machine') {
+            //     Object.values(this.data.machines[this.focusItem.uuid].inputs).forEach(regionInfo=>{
+            //         regionInfo.forEach(input=>focusedInputs.push(input.region_uuid))
+            //     });
+            //     Object.values(this.data.machines[this.focusItem.uuid].outputs).forEach(regionInfo=>{
+            //         regionInfo.forEach(output=>focusedOutputs.push(output.region_uuid))
+            //     });
+            // }
 
             Object.values(this.data.machines).forEach(machine=>{
                 const mesh = EVD_MESH_LOOKUP[machine.mesh_id]
@@ -187,77 +217,22 @@ export const ComputedSlice = {
                 }
 
                 // Now enumerate the inputs and render the zones and items.
-                Object.keys(machine.inputs).forEach(thingType=>{
-                    machine.inputs[thingType].forEach(zoneInfo=>{
-                        const region = this.data.regions[zoneInfo.region_uuid];
-                        const debouncedOnMove = debounce(transform=>{
-                            this.setRegionTransform(region.uuid,transform);
-                        },1000)
-                        let color = {r:245,g:206,b:66,a:0.4};
-                        const machineInput = focusedInputs.includes(region.uuid);
-                        const machineOutput = focusedOutputs.includes(region.uuid);
-                        if (machineInput && !machineOutput) {
-                            color = {r:245,g:105,b:66,a:0.4}
-                        } else if (!machineInput && machineOutput) {
-                            color = {r:66,g:245,b:156,a:0.4}
-                        }
-                        
-                        items[zoneInfo.region_uuid] = {
-                            shape: region.uncertainty_x ? 'cube' : 'sphere',
-                            frame: region.link,
-                            position: region.center_position,
-                            rotation: region.center_orientation,
-                            scale: region.uncertainty_x ? {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5} : {x:region.uncertainty_radius*5,y:region.uncertainty_radius*5,z:region.uncertainty_radius*5},
-                            transformMode: this.secondaryFocusItem.uuid === region.uuid ? this.secondaryFocusItem.transformMode : 'inactive',
-                            color,
-                            highlighted: this.secondaryFocusItem.uuid === region.uuid,
-                            hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
-                            onClick: (_)=>{},
-                            onMove: debouncedOnMove
-                        }
-                        // items[zoneInfo.region_uuid+thingType] = {
-                        //     shape: region.uncertainty_x ? 'cube' : 'sphere',
-                        //     frame: region.link,
-                        //     position: region.center_position,
-                        //     rotation: {w:1,x:0,y:0,z:0},
-                        //     scale: {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5},
-                        //     transformMode: 'inactive',
-                        //     color: {r:100,g:200,b:200,a:0.4},
-                        //     highlighted: this.secondaryFocusItem.uuid === region.uuid,
-                        //     hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
-                        //     onClick: (_)=>{}
-                        // }
+                if (this.focusItem.uuid === machine.uuid) {
+                    Object.keys(machine.inputs).forEach(thingType=>{
+                        machine.inputs[thingType].forEach(zoneInfo=>{
+                            items[zoneInfo.region_uuid].color.r = 200;
+                            items[zoneInfo.region_uuid].hidden = false;
+                        })
                     })
-                })
-
-                // Now enumerate the outputs and render the zones and items.
-                Object.keys(machine.outputs).forEach(thingType=>{
-                    
-                    machine.outputs[thingType].forEach(zoneInfo=>{
-                        const region = this.data.regions[zoneInfo.region_uuid];
-                        const debouncedOnMove = debounce(transform=>{
-                            this.setRegionTransform(region.uuid,transform);
-                        },1000)
-                        items[zoneInfo.region_uuid] = {
-                            shape: region.uncertainty_x ? 'cube' : 'sphere',
-                            frame: region.link,
-                            position: region.center_position,
-                            rotation: {w:1,x:0,y:0,z:0},
-                            scale: {x:region.uncertainty_x*5,y:region.uncertainty_y*5,z:region.uncertainty_z*5},
-                            transformMode: this.secondaryFocusItem.uuid === region.uuid ? this.secondaryFocusItem.transformMode : 'inactive',
-                            color: {r:200,g:100,b:100,a:0.4},
-                            highlighted: this.secondaryFocusItem.uuid === region.uuid,
-                            hidden: !(this.focusItem.uuid === machine.uuid || this.secondaryFocusItem.uuid === region.uuid),
-                            onClick: (_)=>{},
-                            onMove: debouncedOnMove
-                        }
-                        const placeholder = this.data.placeholders[zoneInfo.placeholder_uuids[0]];
-                        // items[placeholder.uuid] = {
-
-                        // }
-                        // console.log(placeholder)
+                    Object.keys(machine.outputs).forEach(thingType=>{
+                        machine.outputs[thingType].forEach(zoneInfo=>{
+                            items[zoneInfo.region_uuid].color.g = 200;
+                            items[zoneInfo.region_uuid].hidden = false;
+                        })
                     })
-                })
+                }
+
+                items = {...items, ...machineDataToPlaceholderPreviews(machine,this.data.thingTypes,this.data.regions,this.data.placeholders)}
             })
 
             Object.keys(this.data.locations).forEach(location_uuid => {

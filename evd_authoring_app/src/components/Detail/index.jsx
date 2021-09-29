@@ -19,9 +19,8 @@ export const Detail = (_) => {
   const {
     focusItem,
     clearFocusItem,
-    childrenDrawer,
-    clearChildrenDrawer,
     secondaryFocusItem,
+    clearSecondaryFocusItem,
     deleteItem,
     setItemProperty,
     item,
@@ -29,8 +28,8 @@ export const Detail = (_) => {
   } = useStore(state => ({
     focusItem: state.focusItem,
     clearFocusItem: state.clearFocusItem,
-    childrenDrawer: state.childrenDrawer,
-    clearChildrenDrawer: state.clearChildrenDrawer,
+    secondaryFocusItem: state.secondaryFocusItem,
+    clearSecondaryFocusItem: state.clearSecondaryFocusItem,
     secondaryFocusItem: state.secondaryFocusItem,
     deleteItem: state.deleteItem,
     setItemProperty: state.setItemProperty,
@@ -117,8 +116,8 @@ export const Detail = (_) => {
                       disabled={!childItem.editable}
                       onChange={e => setItemProperty(secondaryFocusItem.type, secondaryFocusItem.uuid, 'name', e.target.value)} />
                   </Space>}
-                  onClose={clearChildrenDrawer}
-                  visible={childrenDrawer}
+                  onClose={clearSecondaryFocusItem}
+                  visible={secondaryFocusItem.type === 'region'}
                   width='20%'
                   mask={false}
                   placement='right'>

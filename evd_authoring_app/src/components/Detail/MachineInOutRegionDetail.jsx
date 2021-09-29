@@ -1,68 +1,61 @@
 import React, { useCallback, useState } from 'react';
 import useStore from '../../stores/Store';
-import { Divider, Input, Switch, Space, Card, Button } from 'antd';
+import { Divider, Input, Switch, Space, Card, Button, Drawer } from 'antd';
 import OrientationInput from './OrientationInput';
 import PositionInput from './PositionInput';
 const { TextArea } = Input;
 
-export const MachineInOutRegionDetail = ({ uuid }) => {
+export const MachineInOutRegionDetail = ({uuid}) => {
 
-    const region = useStore(useCallback(state => state.data.regions[uuid], [uuid]));
+    const region = useStore(useCallback(state => state.data.regions[uuid]),[uuid]);
 
     const setItemProperty = useStore(state => state.setItemProperty);
-
+    const secondaryFocusItem = useStore(state => state.secondaryFocusItem);
     const setSecondaryFocusItem = useStore(state => state.setSecondaryFocusItem);
+    const clearSecondaryFocusItem = useStore(state => state.clearSecondaryFocusItem);
 
     const [activeTransform, setActiveTransform] = useState('inactive');
 
     const positionOnOpen = () => {
-        setSecondaryFocusItem('region', region.uuid, 'translate');
+        setSecondaryFocusItem('region', uuid, 'translate');
         setActiveTransform('translate');
     }
 
     const positionOnClose = () => {
-        setSecondaryFocusItem('region', region.uuid, 'inactive');
+        setSecondaryFocusItem('region', uuid, 'inactive');
         setActiveTransform('inactive');
-
     }
 
     function orientationOnClose() {
-        setSecondaryFocusItem('region', region.uuid, 'inactive');
+        setSecondaryFocusItem('region', uuid, 'inactive');
         setActiveTransform('inactive');
-
     }
 
     function orientationOnOpen() {
-        setSecondaryFocusItem('region', region.uuid, 'rotate');
+        setSecondaryFocusItem('region', uuid, 'rotate');
         setActiveTransform('rotate');
-
     }
 
 
-    let defaultShape = "Sphere"
-    if (!region.uncertainty_radius) {
-        defaultShape = "Cube"
-    }
-
-
-    const [shape, setShape] = useState(defaultShape);
+    const [shape, setShape] = useState(region?.uncertainty_radius ? 'sphere' : 'cube');
+    
     function changeShape(newShape) {
         if (newShape !== shape) {
             if (shape === 'Cube') {
                 let temp = region.uncertainty_x;
 
-                setItemProperty('region', region.uuid, 'uncertainty_radius', temp)
-                setItemProperty('region', region.uuid, 'uncertainty_x', null)
-                setItemProperty('region', region.uuid, 'uncertainty_y', null)
-                setItemProperty('region', region.uuid, 'uncertainty_z', null)
+                setItemProperty('region', uuid, 'uncertainty_radius', temp)
+                setItemProperty('region', uuid, 'uncertainty_x', null)
+                setItemProperty('region', uuid, 'uncertainty_y', null)
+                setItemProperty('region', uuid, 'uncertainty_z', null)
                 setShape('Sphere')
             } else {
                 let temp = region.uncertainty_radius;
 
-                setItemProperty('region', region.uuid, 'uncertainty_x', temp)
-                setItemProperty('region', region.uuid, 'uncertainty_y', temp)
-                setItemProperty('region', region.uuid, 'uncertainty_z', temp)
-                setItemProperty('region', region.uuid, 'uncertainty_radius', null)
+                setItemProperty('region', uuid, 'uncertainty_x', temp)
+                setItemProperty('region', uuid, 'uncertainty_y', temp)
+                setItemProperty('region', uuid, 'uncertainty_z', temp)
+                setItemProperty('region', uuid, 'uncertainty_radius', null)
                 setShape('Cube')
             }
         }
@@ -125,7 +118,19 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
 
 
     return (
-        <>
+        <Drawer title={
+            <Space>
+              <span style={{ textTransform: 'capitalize' }}>{secondaryFocusItem.type} </span>
+              <Input
+                defaultValue={region.name}
+                disabled={!region.editable}
+                onChange={e => setItemProperty(secondaryFocusItem.type, secondaryFocusItem.uuid, 'name', e.target.value)} />
+            </Space>}
+            onClose={clearSecondaryFocusItem}
+            visible={region !== null}
+            width='20%'
+            mask={false}
+            placement='right'>
             <TextArea
                 defaultValue={region.description}
                 disabled={!region.editable}
@@ -137,9 +142,9 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <PositionInput value={[region.center_position.x, region.center_position.y, region.center_position.z]} onOpen={positionOnOpen} onClose={positionOnClose} openStatus={activeTransform === 'translate'}
-                    onChange={e => setItemProperty('region', region.uuid, 'center_position', { ...region.center_position, x: e[0], y: e[1], z: e[2] })} />
+                    onChange={e => setItemProperty('region', uuid, 'center_position', { ...region.center_position, x: e[0], y: e[1], z: e[2] })} />
                 <OrientationInput value={[region.center_orientation.w, region.center_orientation.x, region.center_orientation.y, region.center_orientation.z]} onOpen={orientationOnOpen} onClose={orientationOnClose} openStatus={activeTransform === 'rotate'}
-                    onChange={e => setItemProperty('region', region.uuid, 'center_orientation', { ...region.center_orientation, w: e[0], x: e[1], y: e[2], z: e[3] })} />
+                    onChange={e => setItemProperty('region', uuid, 'center_orientation', { ...region.center_orientation, w: e[0], x: e[1], y: e[2], z: e[3] })} />
                 <br />
                 <div style={{ paddingTop: '0px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}>Free Orientation:</b>
@@ -173,9 +178,7 @@ export const MachineInOutRegionDetail = ({ uuid }) => {
                 {dimension}
 
             </div>
-
-        </>
-
+        </Drawer>
 
     )
 }
