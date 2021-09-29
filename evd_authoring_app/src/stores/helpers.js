@@ -10,7 +10,7 @@ export function idleTimeEstimate(unrolled){
     let gripperEnd = null;
     let first = true;
     let tasks = [];
-    console.log("this is :" + unrolled);
+    
     if (unrolled === undefined || unrolled === null){
         return 0;
     }else{
@@ -161,7 +161,6 @@ export function durationEstimate(unrolled){
     let gripperEnd = null;
     let first = true;
     let tasks = [];
-    console.log("this is :" + unrolled);
     if (unrolled === undefined || unrolled === null){
         return 0;
     }else{

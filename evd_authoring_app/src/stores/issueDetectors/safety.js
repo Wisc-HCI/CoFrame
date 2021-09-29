@@ -137,17 +137,17 @@ export const findThingMovementIssues = ({program,unrolled}) => { // May require 
     
     Object.values(unrolled).forEach(primitive=>{
         
-        console.log(primitive.type);
+       // console.log(primitive.type);
         if (primitive.type === 'node.primitive.gripper.' && primitive.parameters.semantic === 'grasping'){
             const thingUUID = primitive.parameters.thing_uuid.uuid;
-            console.log(thingUUID + "  123" );
+            //console.log(thingUUID + "  123" );
             Object.values(program.data.placeholders).forEach(placeholder => {
-                console.log(placeholder.uuid );
+                //console.log(placeholder.uuid );
                 if (placeholder.uuid === thingUUID){
                   const thingTypeUUID = placeholder.pending_node.thing_type_uuid;
-                  console.log("true");
+                  //console.log("true");
                   Object.values(program.data.thingTypes).forEach(thingType => {
-                    console.log(thingType.uuid + "   " + thingTypeUUID);
+                    //console.log(thingType.uuid + "   " + thingTypeUUID);
                       if(thingType.uuid === thingTypeUUID && thingType.is_safe === false){
                         
                         const uuid = generateUuid('issue');
@@ -161,7 +161,7 @@ export const findThingMovementIssues = ({program,unrolled}) => { // May require 
                         graphData: null
             }
                       }else{
-                          console.log("false");
+                          //console.log("false");
                       }
                 })
                 }
