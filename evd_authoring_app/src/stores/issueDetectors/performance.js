@@ -351,7 +351,6 @@ export const findSpaceUsageIssues = ({program, stats}) => {
                     let trajectory = primitive.parameters.trajectory_uuid;
                     let spaceUtilization = trajectory.vertices;
                     
-                    let isWarning = false;
                     let isError = false;
 
                     // get prior values
@@ -372,39 +371,33 @@ export const findSpaceUsageIssues = ({program, stats}) => {
                         isError = true;
                         hullColor = {...ERROR_COLOR, a: 0.5}
                     } else if (trajectory.volume > warningLevel) {
-                        isWarning = true;
                         hullColor = {...WARNING_COLOR, a: 0.5}
                     }
 
                     // Keep track of specfic trajectory changes
                     addStats[trajectory.uuid] = {volume: trajectory.volume};
 
-
-                    if (isWarning || isError) {
-                        const uuid = generateUuid('issue');
-                        issues[uuid] = {
-                            uuid: uuid,
-                            requiresChanges: isError,
-                            title: `Robot Space Utilization`,
-                            description: `Robot Space Utilization`,
-                            complete: false,
-                            focus: {uuid:primitive.uuid, type:'primitive'},
-                            graphData: {
-                                series: priorData,
-                                lineColors: ["#E69F00"],
-                                xAxisLabel: 'Program Iteration',
-                                yAxisLabel: 'Space Usage',
-                                title: ''
-                            },
-                            sceneData: {hulls: {spaceUsage: {vertices: spaceUtilization, color: hullColor}}}
-                        }
+                    const uuid = generateUuid('issue');
+                    issues[uuid] = {
+                        uuid: uuid,
+                        requiresChanges: isError,
+                        title: `Robot Space Utilization`,
+                        description: `Robot Space Utilization`,
+                        complete: false,
+                        focus: {uuid:primitive.uuid, type:'primitive'},
+                        graphData: {
+                            series: priorData,
+                            lineColors: ["#E69F00"],
+                            xAxisLabel: 'Program Iteration',
+                            yAxisLabel: 'Space Usage',
+                            title: ''
+                        },
+                        sceneData: {hulls: {spaceUsage: {vertices: spaceUtilization, color: hullColor}}}
                     }
                 }
             });
         }
     });
-
-    
 
     return [issues, addStats];
 }
