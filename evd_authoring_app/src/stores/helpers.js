@@ -733,7 +733,7 @@ export const traceToEEPoseScores = (trace) => {
         const directionVec = new Vector3(q1[0]-p1[0],q1[1]-p1[1],q1[2]-p1[2]);
         scores.push(1000*movementVec.manhattanLength()/Math.pow(Math.E,movementVec.angleTo(directionVec)))
     }
-    console.log(scores)
+    return scores
 }
 
 export const traceToVertices = (trace) => {
