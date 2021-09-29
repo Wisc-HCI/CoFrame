@@ -17,7 +17,7 @@ from evd_sim.pybullet_model import PyBulletModel
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
 from evd_script import Joints, NodeParser, OccupancyZone, CollisionMesh
-
+from evd_sim.pinch_point_model import processPinchpoints_single
 
 TIMEOUT_COUNT = 500
 SPIN_RATE = 5
@@ -117,7 +117,10 @@ class JointProcessor:
             "postprocess_self_collisions": {n: None for n in self.pyb.collision_frame_names},
             "postprocess_self_collisions_objs": {n: None for n in self.pyb.collision_frame_names},
             "postprocess_occupancy": {n: None for n in self.pyb.occupancy_frame_names},
-            "postprocess_occupancy_objs": {n: None for n in self.pyb.occupancy_frame_names}
+            "postprocess_occupancy_objs": {n: None for n in self.pyb.occupancy_frame_names},
+
+            "pinchpoints_tracks": None,
+            "pinchpoints_semantics": None
         }
 
         self._input = data
@@ -295,6 +298,11 @@ class JointProcessor:
 
                     self._trace_data["postprocess_occupancy"][n] = value
                     self._trace_data["postprocess_occupancy_objs"][n] = obj
+
+                # Calculate pinch points
+                tracks, semantics = processPinchpoints_single(self._trace_data["pybullet_self_collisions"])
+                self._trace_data["pinchpoints_tracks"] = tracks
+                self._trace_data["pinchpoints_semantics"] = semantics
                 
                 self._joints.reachable = poseWasReached
                 self._trace_data["in_timeout"] = inTimeout

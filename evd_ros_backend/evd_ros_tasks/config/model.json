@@ -7,13 +7,13 @@
         "timestep": 0.0165,
         "collision_frame_ignore_filter": [
             "base_link",
-            "base_link_inertia",
             "flange",
             "tool0",
             "base",
             "ur3e_pedestal_link"
         ],
         "self_collision_ignore_filters": {
+            "base_link_inertia": ["base_link_inertia", "shoulder_link"],
             "shoulder_link": ["shoulder_link","upper_arm_link"],
             "upper_arm_link": ["upper_arm_link","shoulder_link","forearm_link"],
             "forearm_link": ["forearm_link","upper_arm_link","wrist_1_link"],

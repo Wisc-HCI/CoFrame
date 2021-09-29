@@ -23,6 +23,7 @@ from evd_sim.joint_interpolator import JointInterpolator
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
 from evd_script import Trace, NodeParser, Pose, OccupancyZone, CollisionMesh
+from evd_sim.pinch_point_model import processPinchpoints
 
 SPIN_RATE = 5
 UPDATE_RATE = 1000
@@ -183,7 +184,10 @@ class TraceProcessor:
             "postprocess_self_collisions": {n: [] for n in self.pyb.collision_frame_names},
             "postprocess_self_collisions_objs": {n: [] for n in self.pyb.collision_frame_names},
             "postprocess_occupancy": {n: [] for n in self.pyb.occupancy_frame_names},
-            "postprocess_occupancy_objs": {n: [] for n in self.pyb.occupancy_frame_names}
+            "postprocess_occupancy_objs": {n: [] for n in self.pyb.occupancy_frame_names},
+
+            "pinchpoints_tracks": None,
+            "pinchpoints_semantics": None
         }
 
         self._input = data
@@ -486,6 +490,11 @@ class TraceProcessor:
                 
                 self._trace_data["postprocess_self_collisions"][n].append(value)
                 self._trace_data["postprocess_self_collisions_objs"][n].append(obj)
+
+        # Calculate pinch points
+        tracks, semantics = processPinchpoints(self._trace_data["pybullet_self_collisions"], len(self._trace_data["time_data"]))
+        self._trace_data["pinchpoints_tracks"] = tracks
+        self._trace_data["pinchpoints_semantics"] = semantics
 
     def spin(self):
         rate = rospy.Rate(SPIN_RATE)
