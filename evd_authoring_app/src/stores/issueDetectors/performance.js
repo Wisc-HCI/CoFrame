@@ -1,5 +1,46 @@
 import { generateUuid } from "../generateUuid"
 
+const jointNames = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'];
+const jointNameMap = {
+    'shoulder_pan_joint': 'Shoulder Pan Joint',
+    'shoulder_lift_joint': 'Shoulder Lift Joint',
+    'elbow_joint': 'Elbow Joint',
+    'wrist_1_joint': 'Wrist 1 Joint',
+    'wrist_2_joint': 'Wrist 2 Joint',
+    'wrist_3_joint': 'Wrist 3 Joint'
+};
+const jointLinkMap = {
+    'shoulder_pan_joint': 'shoulder_link',
+    'shoulder_lift_joint': 'upper_arm_link',
+    'elbow_joint': 'forearm_link',
+    'wrist_1_joint': 'wrist_1_link',
+    'wrist_2_joint': 'wrist_2_link',
+    'wrist_3_joint': 'wrist_3_link'
+};
+const jointThresholds = {
+    'shoulder_pan_joint': {warning: 1.9, error: 2},
+    'shoulder_lift_joint': {warning: 1.9, error: 2},
+    'elbow_joint': {warning: 1.9, error: 2},
+    'wrist_1_joint': {warning: 1.9, error: 2},
+    'wrist_2_joint': {warning: 1.9, error: 2},
+    'wrist_3_joint': {warning: 1.9, error: 2}
+};
+const jointColorMap = {
+    'shoulder_pan_joint': '#009e9e',
+    'shoulder_lift_joint': '#9e0000',
+    'elbow_joint': '#9e0078',
+    'wrist_1_joint': '#9c9e00',
+    'wrist_2_joint': '#9e7100',
+    'wrist_3_joint': '#0b9e00'
+};
+
+const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
+const WARNING_COLOR = {r: 230, g: 159, b: 0};
+const ERROR_COLOR = {r: 204, g: 75, b: 10};
+
+// Used for adjusting the x axes time data
+const precision = 1000;
+
 export const findReachabilityIssues = ({program}) => { // requires joint_processor to produce joints for each waypoint/location
     let issues = {};
     let usedPoses = [];
@@ -119,47 +160,6 @@ export const findReachabilityIssues = ({program}) => { // requires joint_process
 export const findJointSpeedIssues = ({program}) => {
     let issues = {};
 
-    const jointNames = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'];
-    const jointNameMap = {
-        'shoulder_pan_joint': 'Shoulder Pan Joint',
-        'shoulder_lift_joint': 'Shoulder Lift Joint',
-        'elbow_joint': 'Elbow Joint',
-        'wrist_1_joint': 'Wrist 1 Joint',
-        'wrist_2_joint': 'Wrist 2 Joint',
-        'wrist_3_joint': 'Wrist 3 Joint'
-    };
-    const jointLinkMap = {
-        'shoulder_pan_joint': 'shoulder_link',
-        'shoulder_lift_joint': 'upper_arm_link',
-        'elbow_joint': 'forearm_link',
-        'wrist_1_joint': 'wrist_1_link',
-        'wrist_2_joint': 'wrist_2_link',
-        'wrist_3_joint': 'wrist_3_link'
-    };
-    const jointThresholds = {
-        'shoulder_pan_joint': {warning: 1.9, error: 2},
-        'shoulder_lift_joint': {warning: 1.9, error: 2},
-        'elbow_joint': {warning: 1.9, error: 2},
-        'wrist_1_joint': {warning: 1.9, error: 2},
-        'wrist_2_joint': {warning: 1.9, error: 2},
-        'wrist_3_joint': {warning: 1.9, error: 2}
-    };
-    const jointColorMap = {
-        'shoulder_pan_joint': '#009e9e',
-        'shoulder_lift_joint': '#9e0000',
-        'elbow_joint': '#9e0078',
-        'wrist_1_joint': '#9c9e00',
-        'wrist_2_joint': '#9e7100',
-        'wrist_3_joint': '#0b9e00'
-    };
-
-    const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
-    const WARNING_COLOR = {r: 230, g: 159, b: 0};
-    const ERROR_COLOR = {r: 204, g: 75, b: 10};
-
-    // Used for adjusting the x axes time data
-    const precision = 1000;
-
     Object.values(program.executablePrimitives).forEach(ePrim => {
         Object.values(ePrim).forEach(primitive=>{
             if (primitive.type === "node.primitive.move-trajectory.") {
@@ -267,14 +267,6 @@ export const findEndEffectorSpeedIssues = ({program}) => {
 
     const warningLevel = 0.3;
     const errorLevel = 0.45;
-
-    const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
-    const WARNING_COLOR = {r: 230, g: 159, b: 0};
-    const ERROR_COLOR = {r: 204, g: 75, b: 10};
-
-    // Used for adjusting the x axes time data
-    const precision = 1000;
-
     
     Object.values(program.executablePrimitives).forEach(ePrim => {
         Object.values(ePrim).forEach(primitive=>{
@@ -324,7 +316,6 @@ export const findEndEffectorSpeedIssues = ({program}) => {
                         graphData: {
                             series: endEffectorGraphData,
                             lineColors: ["#E69F00"],
-                            shouldGraphLine: [true],
                             xAxisLabel: 'Timestamp',
                             yAxisLabel: 'Velocity',
                             title: ''
@@ -345,10 +336,75 @@ export const findPayloadIssues = (_) => { // Shouldn't change during a trajector
     return [issues, {}];
 }
 
-export const findSpaceUsageIssues = (_) => { // Requires a convex hall operation on joint frames in traces. This volume can be compared against whole workcell (fraction) and can be used for intersection with extruded human occupancy zones 
+// Requires a convex hall operation on joint frames in traces. This volume can be compared against whole workcell (fraction) and can be used for intersection with extruded human occupancy zones 
+export const findSpaceUsageIssues = ({program, stats}) => {
     let issues = {};
+    let addStats = {};
+
+    const warningLevel = 0.2;
+    const errorLevel = 0.8;
+    
+    Object.values(program.executablePrimitives).forEach(ePrim => {
+        if (ePrim) {
+            Object.values(ePrim).forEach(primitive=>{
+                if (primitive.type === "node.primitive.move-trajectory.") {
+                    let trajectory = primitive.parameters.trajectory_uuid;
+                    let spaceUtilization = trajectory.vertices;
+                    
+                    let isWarning = false;
+                    let isError = false;
+
+                    // get prior values
+                    let priorData = [];
+                    let i = 0;
+                    for (i = 0; i < stats.length; i++) {
+                        if (stats[i][trajectory.uuid] && stats[i][trajectory.uuid].volume) {
+                            priorData.push({x:i, spaceUsage:stats[i][trajectory.uuid].volume});
+                        }
+                    }
+                    // add new one
+                    let newData = {x:i, spaceUsage:trajectory.volume}
+                    priorData.push(newData);
+
+                    // Adjust color of hull
+                    let hullColor = {...NO_ERROR_COLOR, a: 0.5};
+                    if (trajectory.volume > errorLevel) {
+                        isError = true;
+                        hullColor = {...ERROR_COLOR, a: 0.5}
+                    } else if (trajectory.volume > warningLevel) {
+                        isWarning = true;
+                        hullColor = {...WARNING_COLOR, a: 0.5}
+                    }
+
+                    // Keep track of specfic trajectory changes
+                    addStats[trajectory.uuid] = {volume: trajectory.volume};
+
+
+                    if (isWarning || isError) {
+                        const uuid = generateUuid('issue');
+                        issues[uuid] = {
+                            uuid: uuid,
+                            requiresChanges: isError,
+                            title: `Robot Space Utilization`,
+                            description: `Robot Space Utilization`,
+                            complete: false,
+                            focus: {uuid:primitive.uuid, type:'primitive'},
+                            graphData: {
+                                series: priorData,
+                                lineColors: ["#E69F00"],
+                                xAxisLabel: 'Program Iteration',
+                                yAxisLabel: 'Space Usage',
+                                title: ''
+                            },
+                            sceneData: {hulls: {spaceUsage: {vertices: spaceUtilization, color: hullColor}}}
+                        }
+                    }
+                }
+            });
+        }
+    });
 
     
 
-    return [issues, {}];
+    return [issues, addStats];
 }
