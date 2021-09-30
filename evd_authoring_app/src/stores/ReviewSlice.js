@@ -2,7 +2,7 @@ import { findCollisionIssues, findEndEffectorPoseIssues, findOccupancyIssues, fi
 import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues, findMachineLogicIssues } from "./issueDetectors/quality";
 import { findEndEffectorSpeedIssues, findJointSpeedIssues, findPayloadIssues, findReachabilityIssues, findSpaceUsageIssues } from "./issueDetectors/performance";
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
-// import { objectMap } from "./helpers";
+import { objectMap } from "./helpers";
 
 export const ReviewSlice = (set, get) => ({
     // Issues are stored in a flat lookup
@@ -170,7 +170,7 @@ export const ReviewSlice = (set, get) => ({
             })
             // Set the new issues for that section
             state.sections[sectionKey].issues = Object.keys(newSectionIssues);
-            newIssues = {...newIssues, ...newSectionIssues};
+            newIssues = {...newIssues, ...objectMap(newSectionIssues,(issue)=>({...issue,code:sectionKey}))};
         })
         // Update the issues set.
         state.issues = newIssues;

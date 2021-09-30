@@ -10,7 +10,9 @@ import {
     executablePrimitives,
     tfAnimationFromExecutable,
     robotFramesFromPose,
-    machineDataToPlaceholderPreviews
+    machineDataToPlaceholderPreviews,
+    PINCH_POINT_FIELDS,
+    pinchpointSizeAnimationFromExecutable
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
@@ -49,6 +51,14 @@ export const ComputedSlice = {
                     rotation:region.center_orientation
                 }
             })
+            Object.keys(PINCH_POINT_FIELDS).forEach(pinchPointGroup=>{
+                tfs[pinchPointGroup] = {
+                    frame:'world',
+                    translation:{x:0,y:0,z:0},
+                    rotation:{w:1,x:0,y:0,z:0}
+                }
+            })
+
             if (this.focusItem.uuid) {
                 const executable = this.executablePrimitives[this.focusItem.uuid];
                 if (executable) {
@@ -310,6 +320,23 @@ export const ComputedSlice = {
                     
                 })
             })
+
+            // Pinch Point visualizations
+            if (this.issues[this.secondaryFocusItem.uuid] && this.executablePrimitives[this.focusItem.uuid]) {
+                const pinchPointAnimations = pinchpointSizeAnimationFromExecutable(this.executablePrimitives[this.focusItem.uuid])
+                Object.keys(PINCH_POINT_FIELDS).forEach(field=>{
+                    items[field] = {
+                        shape: 'sphere',
+                        frame: 'world',
+                        position: {x:0,y:0,z:0},
+                        rotation: {w:1,x:0,y:0,z:0},
+                        onClick: ()=>{},
+                        ...pinchPointAnimations[field]
+                    }
+                })
+            }
+
+
             return items
         },
         lines: function () {

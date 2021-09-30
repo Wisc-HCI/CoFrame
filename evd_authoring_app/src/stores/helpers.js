@@ -29,6 +29,35 @@ export const UNREACHABLE_COLOR = { r: 204, g: 75, b: 10, a: 1 };
 
 export const OCCUPANCY_ERROR_COLOR = { r: 233, g: 53, b: 152, a: 1 };
 
+export const PINCH_POINT_FIELDS = {
+    base_link_inertia___forearm_link: {frame1: 'Base', frame2: 'Forearm', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___gripper: {frame1: 'Base', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___upper_arm_link: {frame1: 'Base', frame2: 'Upper Arm', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___wrist_1_link: {frame1: 'Base', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___wrist_2_link: {frame1: 'Base', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___wrist_2_link: {frame1: 'Base', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+
+    shoulder_link___forearm_link: {frame1: 'Shoulder', frame2: 'Forearm', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___gripper: {frame1: 'Shoulder', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___wrist_1_link: {frame1: 'Shoulder', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___wrist_2_link: {frame1: 'Shoulder', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___wrist_2_link: {frame1: 'Shoulder', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+
+    upper_arm_link___gripper: {frame1: 'Upper Arm', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    upper_arm_link___wrist_1_link: {frame1: 'Upper Arm', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    upper_arm_link___wrist_2_link: {frame1: 'Upper Arm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    upper_arm_link___wrist_2_link: {frame1: 'Upper Arm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+
+    forearm_link___gripper: {frame1: 'Forearm', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    forearm_link___wrist_2_link: {frame1: 'Forearm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    forearm_link___wrist_2_link: {frame1: 'Forearm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+
+    wrist_1_link___gripper: {frame1: 'Wrist 1', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    wrist_1_link___wrist_3_link: {frame1: 'Wrist 1', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+
+    wrist_2_link___gripper: {frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+}
+
 export const typeToKey = (type) => {
     let key;
     switch (type) {
@@ -131,7 +160,7 @@ function executableTrajectory(trajectory, context) {
     executable.vertices = traceToVertices(trajectory.trace);
     executable.volume = verticesToVolume(executable.vertices);
     executable.eePoseScores = traceToEEPoseScores(trajectory.trace);
-    console.log(executable)
+    // console.log(executable)
     return executable
 }
 
@@ -392,6 +421,21 @@ const robotFramesFromIdx = (idx,trace) => {
     return frames
 }
 
+const pinchColorFromMagnitude = (magnitude=0) => {
+    return {r:204+29*magnitude,g:121-68*magnitude,b:167-15*magnitude,a:0.3};
+}
+
+const pinchPointVisualsByIdx = (idx,trace) => {
+    let pinchPoints = {};
+    Object.keys(trace.pinch_points).forEach(pinchPointPair=>{
+        const errorMagnitude = trace.pinch_points[pinchPointPair][idx] ? 1/Math.pow(Math.E,trace.pinch_points[pinchPointPair][idx]) : 0
+        pinchPoints[pinchPointPair] = {
+            scale: {x:errorMagnitude*0.1,y:errorMagnitude*0.1,z:errorMagnitude*0.1}, 
+            color: pinchColorFromMagnitude(errorMagnitude)
+        }
+    })
+}
+
 const poseDiff = (pose1,pose2) => {
     const translationDistance = Math.sqrt(
         Math.pow(pose1.position.x-pose2.position.x,2) + 
@@ -448,6 +492,113 @@ const stepsToAnimatedTfs = (steps) => {
     return animatedTfs
 }
 
+const stepsToAnimatedPinchPoints = (steps) => {
+    if (steps.length === 0) {
+        return {}
+    }
+    let tempAnimatedPinchPoints = objectMap(steps[0].pinchPoints,_=>({
+            scale:{x:[],y:[],z:[]},
+            color:{r:[],g:[],b:[]}
+        })
+    )
+    const pinchPointPairs = Object.keys(tempAnimatedPinchPoints);
+    console.log(pinchPointPairs)
+    let timesteps = steps.map(step=>step.time)
+    steps.forEach(step=>{
+        pinchPointPairs.forEach(pairName=>{
+            tempAnimatedPinchPoints[pairName].scale.x.push(step.pinchPoints[pairName].scale.x);
+            tempAnimatedPinchPoints[pairName].scale.y.push(step.pinchPoints[pairName].scale.y);
+            tempAnimatedPinchPoints[pairName].scale.z.push(step.pinchPoints[pairName].scale.z);
+            tempAnimatedPinchPoints[pairName].color.r.push(step.pinchPoints[pairName].color.r);
+            tempAnimatedPinchPoints[pairName].color.g.push(step.pinchPoints[pairName].color.g);
+            tempAnimatedPinchPoints[pairName].color.b.push(step.pinchPoints[pairName].color.b);
+        })
+    })
+    // console.log(tempAnimatedPinchPoints)
+    const animatedPinchPoints = objectMap(tempAnimatedPinchPoints,pinchPoint=>({
+        frame:'world',
+        scale:{
+            x: interpolateScalar(timesteps, pinchPoint.scale.x),
+            y: interpolateScalar(timesteps, pinchPoint.scale.y),
+            z: interpolateScalar(timesteps, pinchPoint.scale.z)
+        },
+        color:{
+            r: interpolateScalar(timesteps, pinchPoint.color.r),
+            g: interpolateScalar(timesteps, pinchPoint.color.g),
+            b: interpolateScalar(timesteps, pinchPoint.color.b),
+            a: 0.3
+        }
+    }))
+    console.log(animatedPinchPoints)
+    return animatedPinchPoints
+}
+
+export function pinchpointSizeAnimationFromExecutable(executable) {
+    let steps = [{ time: 0, pinchPoints: PINCH_POINT_FIELDS }]
+    let machineProcessing = {};
+    let cancelled = false;
+    let currentTime = 0;
+    let gripperState = 55;
+    executable.forEach(chunk => {
+        let prevStep = lodash.cloneDeep(steps[steps.length - 1]);
+        let duration = 0;
+        if (!cancelled) {
+            if (chunk.type === 'node.primitive.gripper.') {
+                const delta = chunk.parameters.position - gripperState;
+                duration = 1000 * Math.abs(delta) / chunk.parameters.speed;
+
+                for (let timeOffset of range(0,duration,100)) {
+                    prevStep.time = currentTime+timeOffset;
+                    steps.push(prevStep)
+                    prevStep = lodash.cloneDeep(steps[steps.length - 1]);
+                }
+            } else if (chunk.type === 'node.primitive.delay.') {
+                duration = chunk.parameters.duration * 1000;
+                steps.push({ ...prevStep, time: currentTime + duration })
+            } else if (chunk.type === 'node.primitive.breakpoint.') {
+                cancelled = true;
+            } else if (chunk.type === 'node.primitive.machine-primitive.machine-initialize.') {
+                // Ignore
+            } else if (chunk.type === 'node.primitive.machine-primitive.machine-start.') {
+                machineProcessing[chunk.parameters.machine_uuid.uuid] = chunk.parameters.machine_uuid.process_time;
+            } else if (chunk.type === 'node.primitive.machine-primitive.machine-stop.') {
+                // Ignore
+            } else if (chunk.type === 'node.primitive.machine-primitive.machine-wait.') {
+                if (machineProcessing[chunk.parameters.machine_uuid.uuid]) {
+                    duration = machineProcessing[chunk.parameters.machine_uuid.uuid]
+                }
+            } else if (chunk.type === 'node.primitive.move-trajectory.') {
+                duration = chunk.parameters.trajectory_uuid.trace.duration * 1000;
+                if (chunk)
+                for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length-1; i++) {
+                    prevStep.pinchPoints = {...prevStep.pinchPoints,...pinchPointVisualsByIdx(i,chunk.parameters.trajectory_uuid.trace)};
+                    prevStep.time = currentTime+chunk.parameters.trajectory_uuid.trace.time_data[i]*1000;
+                    steps.push(prevStep)
+                    prevStep = lodash.cloneDeep(steps[steps.length - 1]);
+                }
+                if (chunk.parameters.trajectory_uuid.trace.in_timeout) {
+                    cancelled = true
+                }
+            } else if (chunk.type === 'node.primitive.move-unplanned.') {
+                duration = 100;
+                prevStep.time = prevStep.time + 100;
+                steps.push(prevStep)
+                prevStep = lodash.cloneDeep(steps[steps.length - 1]);
+            }
+        }
+        currentTime += duration;
+        machineProcessing = objectMap(machineProcessing, val => {
+            if (val - duration < 0) {
+                return 0
+            } else {
+                return val - duration
+            };
+        })
+    })
+    steps.push({...lodash.cloneDeep(steps[steps.length - 1]),time:currentTime+1000})
+    return stepsToAnimatedPinchPoints(steps)
+}
+
 export function tfAnimationFromExecutable(executable, startingTfs) {
     let steps = [{ time: 0, tfs: startingTfs }]
     let machineProcessing = {};
@@ -464,12 +615,9 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 const delta = chunk.parameters.position - gripperState;
                 const direction = delta >= 0 ? 1 : -1
                 duration = 1000 * Math.abs(delta) / chunk.parameters.speed;
-                console.log(delta)
-                console.log(duration)
 
                 for (let timeOffset of range(0,duration,100)) {
                     const tempGripperState = gripperState + chunk.parameters.speed * timeOffset/1000 * direction;
-                    console.log(tempGripperState)
                     prevTfs.tfs = {...prevTfs.tfs,...gripperFramesFromValue(tempGripperState)};
                     prevTfs.time = currentTime+timeOffset;
                     steps.push(prevTfs)
@@ -510,7 +658,6 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 steps.push(prevTfs)
             } else if (chunk.type === 'node.primitive.move-trajectory.') {
                 duration = chunk.parameters.trajectory_uuid.trace.duration * 1000;
-                if (chunk)
                 for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length-1; i++) {
                     prevTfs.tfs = {...prevTfs.tfs,...robotFramesFromIdx(i,chunk.parameters.trajectory_uuid.trace)};
                     if (carriedPlaceholder) {
