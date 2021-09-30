@@ -194,7 +194,7 @@ class TraceProcessor:
         trace_data = {
             "type": mtype,
             "duration": 0,
-            "estimated_duration": expectedTime * 2,
+            "estimated_duration": expectedTime,
             "in_timeout": False,
             "time_data": [],
 
