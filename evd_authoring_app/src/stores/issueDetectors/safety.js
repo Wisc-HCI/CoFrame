@@ -26,8 +26,58 @@ const ERROR_COLOR = {r: 233, g: 53, b: 152};
 const precision = 1000;
 
 
-export const findEndEffectorPoseIssues = (_) => { // Requires trace pose information
+export const findEndEffectorPoseIssues = ({program}) => { // Requires trace pose information
     let issues = {};
+
+    let warningLevel = 2;
+    let errorLevel = 5;
+
+    Object.values(program.executablePrimitives).forEach(ePrim => {
+        if (ePrim) {
+            Object.values(ePrim).forEach(primitive=>{
+                if (primitive.type === "node.primitive.move-trajectory.") {
+                    let trajectory = primitive.parameters.trajectory_uuid;
+                    let frames = trajectory.trace.frames.tool0;
+                    let scores = primitive.parameters.trajectory_uuid.eePoseScores;
+                    let timeData = primitive.parameters.trajectory_uuid.trace.time_data;
+                    let endEffectorScores = [];
+                    let graphData = [];
+                    let hasError = false;
+
+                    for (let i = 0; i < frames.length; i++) {
+                        let curFrame = frames[i][0]
+                        if (scores[i] >= errorLevel) {
+                            hasError = true;
+                            endEffectorScores.push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
+                        } else if (scores[i] >= warningLevel) {
+                            endEffectorScores.push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
+                        } else {
+                            endEffectorScores.push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
+                        }
+                        graphData.push({x: Math.floor(timeData[i] * precision) / precision, endEffectorScore: scores[i]});
+                    }
+
+                    const uuid = generateUuid('issue');
+                    issues[uuid] = {
+                        uuid: uuid,
+                        requiresChanges: hasError,
+                        title: `End effector pose is poor`,
+                        description: `End effector pose is poor`,
+                        complete: false,
+                        focus: {uuid:primitive.uuid, type:'primitive'},
+                        graphData: {
+                            series: graphData,
+                            lineColors: ["#CC79A7"],
+                            xAxisLabel: 'Timestamp',
+                            yAxisLabel: 'Pose Score',
+                            title: ''
+                        },
+                        sceneData: {vertices: {endEffectorPose: endEffectorScores}}
+                    }
+                }
+            });
+        }
+    });
 
     return [issues, {}];
 }

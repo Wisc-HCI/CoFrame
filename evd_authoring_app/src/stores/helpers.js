@@ -872,7 +872,7 @@ export const machineDataToPlaceholderPreviews = (machine,things,regions) => {
 }
 
 export const traceToEEPoseScores = (trace) => {
-    let scores = [0,0];
+    let scores = [0];
     for (let i = 1; i < trace.frames['tool0'].length; i++) {
         const p1 = trace.frames['tool0'][i][0];
         const p0 = trace.frames['tool0'][i-1][0];
