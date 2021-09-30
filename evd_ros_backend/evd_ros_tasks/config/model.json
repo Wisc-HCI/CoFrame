@@ -7,13 +7,13 @@
         "timestep": 0.0165,
         "collision_frame_ignore_filter": [
             "base_link",
-            "base_link_inertia",
             "flange",
             "tool0",
             "base",
             "ur3e_pedestal_link"
         ],
         "self_collision_ignore_filters": {
+            "base_link_inertia": ["base_link_inertia", "shoulder_link"],
             "shoulder_link": ["shoulder_link","upper_arm_link"],
             "upper_arm_link": ["upper_arm_link","shoulder_link","forearm_link"],
             "forearm_link": ["forearm_link","upper_arm_link","wrist_1_link"],
@@ -31,7 +31,11 @@
             "robotiq_85_right_finger_tip_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"]
         }
     },
-    "lively-tk": {
+    "lively-tk_trace": {
+        "config": "ur3e_config_v3.json",
+        "timestep": 0.0165
+    },
+    "lively-tk_joint": {
         "config": "ur3e_config_v2.json",
         "timestep": 0.0165
     },

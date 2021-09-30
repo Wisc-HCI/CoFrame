@@ -23,6 +23,7 @@ from evd_sim.joint_interpolator import JointInterpolator
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
 from evd_script import Trace, NodeParser, Pose, OccupancyZone, CollisionMesh
+from evd_sim.pinch_point_model import processPinchpoints
 
 SPIN_RATE = 5
 UPDATE_RATE = 1000
@@ -74,10 +75,10 @@ class TraceProcessor:
         print('Trace Processor - Configure', dct, 'Current State', self._state)
 
         if self._state != 'idle':
-            print('pending')
+            #print('pending')
             self._pending_config = dct
         else:    
-            print('now')
+            #print('now')
             self.pyb.registerCollisionMeshes(dct['collision_meshes'])
             self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
@@ -183,7 +184,10 @@ class TraceProcessor:
             "postprocess_self_collisions": {n: [] for n in self.pyb.collision_frame_names},
             "postprocess_self_collisions_objs": {n: [] for n in self.pyb.collision_frame_names},
             "postprocess_occupancy": {n: [] for n in self.pyb.occupancy_frame_names},
-            "postprocess_occupancy_objs": {n: [] for n in self.pyb.occupancy_frame_names}
+            "postprocess_occupancy_objs": {n: [] for n in self.pyb.occupancy_frame_names},
+
+            "pinchpoints_tracks": None,
+            "pinchpoints_semantics": None
         }
 
         self._input = data
@@ -191,6 +195,8 @@ class TraceProcessor:
         self.jsf.clear()
         self.ltk.set_joints(locStart.joints.joint_positions) # or jog to pose?
         self.pyb.set_joints(locStart.joints.joint_positions, locStart.joints.joint_names)
+
+        self._raw_processing_counts = 0
 
         self._state = 'running'
 
@@ -200,12 +206,6 @@ class TraceProcessor:
         print('Trace Processor Ending Job', self._input['trajectory']['uuid'])
         trace = self._trace_data
         inp = self._input
-
-        self._path = None
-        self._type = None
-        self._thresholds = None
-        self._trace_data = None
-        self._input = None
 
         if self._pending_config != None:
             self.pyb.registerCollisionMeshes(self._pending_config['collision_meshes'])
@@ -223,18 +223,11 @@ class TraceProcessor:
         if self._state == 'running':
 
             self.__raw_processing()
-            
-            # record timing info
-            self._time_overall += self._timestep
-            if self._trace_data == None:
-                return # leave update if stop has been called
-            self._trace_data['time_data'].append(self._time_overall)
 
             # end condition is when trajectory has been fully traced
-            if self._index >= len(self._path):
-                if self._trace_data == None:
-                    return # leave update if stop has been called
-                self._trace_data['duration'] = self._time_overall
+            if self._trace_data["in_timeout"] or self._index >= len(self._path):
+                if self._trace_data != None:
+                    self._trace_data['duration'] = self._time_overall
                 #self._job_queue.completed()
                 self._state = 'post'
 
@@ -245,8 +238,12 @@ class TraceProcessor:
             self._job_queue.completed()
             self._state = 'idle'
 
+
+
+
     def __raw_processing(self):
-        print('Trace Processor - Update', self._type, self._index, self._time_step)
+        self._raw_processing_counts += 1
+        #print('Trace Processor - Update', self._type, self._index, self._time_step)
 
         if self._type == 'ee_ik':
             # interpolate pose in this leg of trajectory
@@ -263,13 +260,13 @@ class TraceProcessor:
 
             for n, p in zip(jn_ltk,jp_ltk):
                 if self._trace_data == None:
-                    return # leave update if stop has been called
+                    break # leave update if stop has been called
                 self._trace_data['lively_joint_data'][n].append(p)
 
             (fp_ltk, fn_ltk) = frames_ltk
             for n, p in zip(fn_ltk, fp_ltk):
                 if self._trace_data == None:
-                    return # leave update if stop has been called
+                    break # leave update if stop has been called
                 self._trace_data['lively_frame_data'][n].append(p)
 
             # run pybullet model
@@ -279,32 +276,41 @@ class TraceProcessor:
             (jp_pby, jv_pby, jn_pby) = pb_joints
             for n, p, v in zip(jn_pby,jp_pby, jv_pby):
                 if self._trace_data == None:
-                    return # leave update if stop has been called
+                    break # leave update if stop has been called
                 self._trace_data['pybullet_joint_data'][n].append(p)
 
             (fp_pby, fn_pby) = pb_frames
             for n, p in zip(fn_pby, fp_pby):
                 if self._trace_data == None:
-                    return # leave update if stop has been called
+                    break # leave update if stop has been called
                 self._trace_data['pybullet_frame_data'][n].append(p)
 
             # collision packing
             pb_collisions = self.pyb.collisionCheck()
+
+            temp1 = len(self._trace_data['pybullet_collisions'][list(pb_collisions.keys())[0]]['base_link_inertia'])
+
             for uuid in pb_collisions.keys():
+                if uuid not in self._trace_data['pybullet_collision_uuids']:
+                    print('\n\nBREAKINGING>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+                    break # configuration changed
+
                 for frameName in pb_collisions[uuid].keys():
                     if self._trace_data == None:
-                        return # leave update if stop has been called
-                    if uuid not in self._trace_data['pybullet_collision_uuids']:
-                        break # configuration changed
-                        
+                        print('\n\nBREAKINGING_________________________________')
+                        break # leave update if stop has been called
+  
                     value = pb_collisions[uuid][frameName]
                     self._trace_data['pybullet_collisions'][uuid][frameName].append(value)
+
+            temp2 = len(self._trace_data['pybullet_collisions'][list(pb_collisions.keys())[0]]['base_link_inertia'])
+            print('\t\t\t\tCOLLISION_DATA', temp1, temp2, temp1 + 1 == temp2)
 
             pb_occupancy = self.pyb.occupancyCheck()
             for uuid in pb_occupancy.keys():
                 for frameName in pb_occupancy[uuid].keys():
                     if self._trace_data == None:
-                        return # leave update if stop has been called
+                        break # leave update if stop has been called
                     if uuid not in self._trace_data['pybullet_occupancy_uuids']:
                         break # configuration changed
 
@@ -315,7 +321,7 @@ class TraceProcessor:
             for a in pb_selfCollisions.keys():
                 for b in pb_selfCollisions[a].keys():
                     if self._trace_data == None:
-                        return # leave update if stop has been called
+                        break # leave update if stop has been called
                     value = pb_selfCollisions[a][b]
                     self._trace_data['pybullet_self_collisions'][a][b].append(value)
             
@@ -325,24 +331,29 @@ class TraceProcessor:
             inTimeout = self._time_overall > self._trace_data["estimated_duration"] * 2
             jointsAreStable = self.jsf.isStable()
 
-            print('Joints stable', jointsAreStable, 'pose reached', poseWasReached, 'in timeout', inTimeout, self._time_overall, self._trace_data["estimated_duration"] * 2)
-            print(deltaDebug(ee_pose_ltk, interpolator.end_pose))
+            self._trace_data["in_timeout"] = inTimeout
+
+            #print('Joints stable', jointsAreStable, 'pose reached', poseWasReached, 'in timeout', inTimeout, self._time_overall, self._trace_data["estimated_duration"] * 2)
+            #print(deltaDebug(ee_pose_ltk, interpolator.end_pose))
 
             if jointsAreStable and (poseWasReached or inTimeout):
-                if inTimeout:
-                    print('\n\n\nIN Timeout\n\n\n')
-                    #self._job_queue.canceled()
-                    self._state = 'post'
-                    self._trace_data["in_timeout"] = inTimeout
-                    self._trace_data['duration'] = self._time_overall
-                    return # Failed to run trajectory
-
                 self._index += 1
                 self._time_step = 0
             else:
                 self._time_step += self._timestep
 
-        else: # self._type == 'joint'
+            # record timing info
+            self._time_overall += self._timestep
+
+
+            temp = len(self._trace_data['time_data'])
+            self._trace_data['time_data'].append(self._time_overall)
+
+            temp2 = len(self._trace_data['time_data'])
+            print('TIMEOUT DATA', temp, temp2, temp + 1 == temp2)
+
+        elif self._type == 'joint': # self._type == 'joint'
+
             # joint interpolation
             (interpolator, jn_itp) = self._path[self._index]
             jp_itp = interpolator.step(self._time_step)
@@ -402,26 +413,37 @@ class TraceProcessor:
             joint_thresholds = self._thresholds[self._index]
             inTimeout = self._time_overall > self._trace_data["estimated_duration"] * 2
             jointsWasReached = jointsReached(jp_pby, interpolator.end_joints, joint_thresholds)
+            self._trace_data["in_timeout"] = inTimeout
             
-            print('Joints reached', jointsWasReached, 'in timeout', inTimeout,  self._time_overall, self._trace_data["estimated_duration"] * 2)
+            #print('Joints reached', jointsWasReached, 'in timeout', inTimeout,  self._time_overall, self._trace_data["estimated_duration"] * 2)
             
             if inTimeout or jointsWasReached:
-                if inTimeout:
-                    print('\n\n\nIN Timeout\n\n\n')
-                    #self._job_queue.canceled()
-                    self._state = 'post'
-                    self._trace_data["in_timeout"] = inTimeout
-                    self._trace_data['duration'] = self._time_overall
-                    return # Failed to run trajectory
-
                 self._index += 1
                 self._time_step = 0
             else:
                 self._time_step += self._timestep
 
+            # record timing info
+            self._time_overall += self._timestep
+            print('JOINT TYPES')
+            self._trace_data['time_data'].append(self._time_overall)
+        
+        else: #WTF ?
+            print('Invalid type', self._type)
+
     def __post_processing(self):
 
-        print('Trace Processor - Post Processing')
+        print('\n\n\nraw counts', self._raw_processing_counts, 'time_data_len', len(self._trace_data['time_data']))
+
+        # Confirming lengths
+        '''
+        for uuid in self._trace_data["pybullet_collisions"].keys():
+            for name in self._trace_data['pybullet_collisions'][uuid].keys():
+
+                print(uuid, name, len(self._trace_data['pybullet_collisions'][uuid][name]))
+        '''
+
+        #print('Trace Processor - Post Processing')
 
         # Pivot collisions to be robot frames first
         # For each frame provide a float [0 to 1] for each step in time for closest collision.
@@ -433,6 +455,7 @@ class TraceProcessor:
                 obj = None
 
                 for uuid in self._trace_data["pybullet_collisions"].keys():
+                    #print('Time_Data',len(self._trace_data['time_data']), uuid, n, len(self._trace_data["pybullet_collisions"][uuid][n]))
                     if self._trace_data["pybullet_collisions"][uuid][n][idx] != None:
                         dist = self._trace_data["pybullet_collisions"][uuid][n][idx]['distance']
                         if dist < min_dist:
@@ -487,6 +510,13 @@ class TraceProcessor:
                 self._trace_data["postprocess_self_collisions"][n].append(value)
                 self._trace_data["postprocess_self_collisions_objs"][n].append(obj)
 
+        # Calculate pinch points
+        tracks, semantics = processPinchpoints(self._trace_data["pybullet_self_collisions"], len(self._trace_data["time_data"]))
+        self._trace_data["pinchpoints_tracks"] = tracks
+        self._trace_data["pinchpoints_semantics"] = semantics
+
+
+
     def spin(self):
         rate = rospy.Rate(SPIN_RATE)
         while not rospy.is_shutdown():
@@ -506,6 +536,7 @@ class TraceProcessor:
 
 
 if __name__ == "__main__":
+
     rospy.init_node('trace_processor')
 
     config_path = rospy.get_param('~config_path')

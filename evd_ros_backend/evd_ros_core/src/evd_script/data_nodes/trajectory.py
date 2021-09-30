@@ -138,7 +138,10 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
             velocity=dct['velocity'],
             move_type=dct['move_type'])
 
-    def to_ros_markers(self, frame_id, id_start=0):
+    def to_ros_markers(self, frame_id=None, id_start=0):
+        if frame_id == None:
+            frame_id = self.link if self.link != "" and self.link != None else "app"
+            
         waypoint_markers = []
         waypoint_uuids = []
 
@@ -169,7 +172,7 @@ class Trajectory(Node, VisualizeMarker, VisualizeMarkers):
 
         return lineMarker, waypoint_markers, waypoint_uuids
 
-    def to_ros_marker(self, frame_id, id=0):
+    def to_ros_marker(self, frame_id=None, id=0):
         lineMarker, _, _ = self.to_ros_markers(frame_id,id)
         return lineMarker
 

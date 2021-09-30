@@ -11,7 +11,7 @@
   <arg name="load_rviz_cfg" default="true"/>
 
   <arg name="run_test" default="false"/>
-  <arg name="bullet_gui" default="true"/>
+  <arg name="bullet_gui" default="false"/>
 
 <!--=========================================================================-->
 <!--  Robot                                                                  -->
