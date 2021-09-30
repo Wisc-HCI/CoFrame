@@ -23,7 +23,7 @@ from evd_script import Trace, NodeParser, Pose, OccupancyZone, CollisionMesh
 SPIN_RATE = 5
 UPDATE_RATE = 1000
 JSF_NUM_STEPS = 10
-JSF_DISTANCE_THRESHOLD = 0.005
+JSF_DISTANCE_THRESHOLD = 0.01
 
 POSITION_INTERMEDIATE_DISTANCE_THRESHOLD = 0.1
 ORIENTATION_INTERMEDIATE_DISTANCE_THRESHOLD = 0.5
@@ -85,16 +85,20 @@ class TraceProcessor:
     def _update_cb(self, event=None):
 
         if self._state == 'idle' and self._pending_configuration != None:
+            print('Trace Processor - Updating Configuration')
             config = self._pending_configuration
             self._pending_configuration = None
             self.register_objs(config)
             self._state = 'idle'
 
         elif self._preempt_job != None:
+            print('Trace Processor - Preempting Job')
             job = self.pack_job(self._preempt_job)
             self._preempt_job = None
+            self._ended_job = self._active_job
+
             if job == None:
-                self._ended_job = None
+                self._active_job = None
                 self.job_queue.canceled()
                 self._state = 'idle'
             else:
@@ -113,11 +117,13 @@ class TraceProcessor:
                 self._state = 'postprocessing' #TODO handle joint discontinuity
 
         elif self._state == 'joint_discontinuity_repair':
+            print('Trace Processor - Joint Discontinuity Repair')
             job = self._active_job
             self.joint_discontinuity_repair(job)
             self._state = 'postprocessing' #TODO this needs to iterate
 
-        elif self._state == 'postprocesing':
+        elif self._state == 'postprocessing':
+            print('Trace Processor - Post Processing')
             job = self._active_job
             job['trace_data']['duration'] = job['time_overall']
             self.post_processing(job)
@@ -260,7 +266,6 @@ class TraceProcessor:
 
             (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp, finalJoints=tJoints)
             ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
-            self.jsf.append(jp_ltk)
 
             for n, p in zip(jn_ltk,jp_ltk):
                 job['trace_data']['lively_joint_data'][n].append(p)
@@ -289,13 +294,21 @@ class TraceProcessor:
         else:
             print('wtf?')
 
+        # Feed joint stabilzier
+        self.jsf.append(jointPositionsFromInterp)
+
         # Execute pybullet model
         self.run_pybullet(job, jointPositionsFromInterp, jointNamesFromInterp)
         self.pack_collisions(job)
 
         # check if leg of trajectory is done
         inTimeout = self.check_in_timeout(job)
-        if (self.jsf.isStable() and self.reached_target(job, currentState, targetState)) or inTimeout:
+        jointsStable = self.jsf.isStable()
+        targetReached = self.reached_target(job, currentState, targetState)
+
+        print('\t Running', 'T~', inTimeout, 'or ( JS~', jointsStable, 'and R~', targetReached, ')')
+
+        if (jointsStable and targetReached) or inTimeout:
             job['index'] += 1
             job['time_step'] = 0
         else:
