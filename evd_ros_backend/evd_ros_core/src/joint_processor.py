@@ -47,24 +47,25 @@ class JointProcessor:
         self._ee_frame = self._config['link_groups']['end_effector_path']
         self._joint_names = self._config['joint_names']
         self._timestep = self._config['pybullet']['timestep']
+
+        self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
+        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
+        self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
         
         self._tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0)) #tf buffer length
         self._tf_listener = tf2_ros.TransformListener(self._tf_buffer)
         frontend = FrontendInterface(use_processor_configure=True, processor_configure_cb=self._processor_configure_cb)
         self._job_queue = JobQueue('joints', self._start_job, self._end_job, frontend=frontend)
-        self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
-        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
-        self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _processor_configure_cb(self, dct):
         print('Joint Processor - Configure', dct, 'Current State', self._state)
         if self._state != 'idle':
-            print('pending')
+            #print('pending')
             self._pending_config = dct
         else:    
-            print('now')
+            #print('now')
             self.pyb.registerCollisionMeshes(dct['collision_meshes'])
             self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
