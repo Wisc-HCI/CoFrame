@@ -31,7 +31,11 @@
             "robotiq_85_right_finger_tip_link": ["robotiq_85_base_link","robotiq_85_left_knuckle_link","robotiq_85_left_finger_link","robotiq_85_right_knuckle_link","robotiq_85_right_finger_link","robotiq_85_left_inner_knuckle_link","robotiq_85_left_finger_tip_link","robotiq_85_right_inner_knuckle_link","robotiq_85_right_finger_tip_link"]
         }
     },
-    "lively-tk": {
+    "lively-tk_trace": {
+        "config": "ur3e_config_v3.json",
+        "timestep": 0.0165
+    },
+    "lively-tk_joint": {
         "config": "ur3e_config_v2.json",
         "timestep": 0.0165
     },

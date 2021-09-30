@@ -25,7 +25,7 @@
     <param name="use_gui" value="$(arg bullet_gui)"/>
   </node>
 
-  <node name="joint_processor" pkg="evd_ros_core" type="joint_processor.py">
+  <node name="joint_processor" pkg="evd_ros_core" type="joint_processor.py" output="screen">
     <param name="config_path" value="$(arg config_path)" />
     <param name="config_file_name" value="$(arg config_file_name)"/>
     <param name="use_gui" value="$(arg bullet_gui)"/>

@@ -10,7 +10,7 @@ import os
 import json
 import rospy
 
-from evd_sim.pose_reached import poseReached
+from evd_sim.pose_reached import poseReached, deltaDebug
 from evd_interfaces.job_queue import JobQueue
 from evd_sim.lively_tk_solver import LivelyTKSolver
 from evd_sim.pybullet_model import PyBulletModel
@@ -48,7 +48,7 @@ class JointProcessor:
         self._joint_names = self._config['joint_names']
         self._timestep = self._config['pybullet']['timestep']
 
-        self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
+        self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk_joint']['config']))
         self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
         self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
         
@@ -179,9 +179,14 @@ class JointProcessor:
                 return # leave update if stop has been called
             self._joints.set_joint_positions_by_names(jp_ltk,jn_ltk)
 
+            
+            jointsStable = self.jsf.isStable()
             poseWasReached = poseReached(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)
             inTimeout = TIMEOUT_COUNT < self._updateCount
-            if self.jsf.isStable() and (poseWasReached or inTimeout):
+            
+            print('Joints', 'stable', jointsStable, 'pose', poseWasReached, 'delta', deltaDebug(self._target, ee_pose_ltk), 'timeout', inTimeout)
+            
+            if (jointsStable and poseWasReached) or inTimeout:
 
                 # pack trace
                 for n, p in zip(jn_ltk,jp_ltk):

@@ -53,7 +53,7 @@ class TraceProcessor:
         self._joint_names = self._config['joint_names']
         self._timestep = self._config['pybullet']['timestep']
 
-        self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
+        self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk_trace']['config']))
         self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
         self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
@@ -164,7 +164,7 @@ class TraceProcessor:
                 path.append((interp, names))
                 lastJoints = nextJoints
                 thresholds.append([JOINTS_INTERMEDIATE_DISTANCE_THRESHOLD]*len(nextJoints))
-                   
+                
             nextJoints = locEnd.joints.joint_positions
             interp = JointInterpolator(self.handle_joint_packing(lastJoints, nextJoints), trajectory.velocity)
             expectedTime += interp.full_time
@@ -194,7 +194,7 @@ class TraceProcessor:
         trace_data = {
             "type": mtype,
             "duration": 0,
-            "estimated_duration": expectedTime,
+            "estimated_duration": expectedTime * 2,
             "in_timeout": False,
             "time_data": [],
 
@@ -264,7 +264,7 @@ class TraceProcessor:
 
             job['trace_data']['interpolator_path']['ee_pose'].append(Pose.from_ros(ee_pose_itp).to_simple_dct())
 
-            (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp, finalJoints=tJoints)
+            (jp_ltk, jn_ltk), frames_ltk = self.ltk.step(ee_pose_itp, finalJoints=tJoints, jointWeights=[5]*6)
             ee_pose_ltk = LivelyTKSolver.get_ee_pose(frames_ltk[0])
 
             for n, p in zip(jn_ltk,jp_ltk):
@@ -307,6 +307,7 @@ class TraceProcessor:
         targetReached = self.reached_target(job, currentState, targetState)
 
         print('\t Running', 'T~', inTimeout, 'or ( JS~', jointsStable, 'and R~', targetReached, ')')
+        print('\t\t Type', job['mtype'], 'Time', job['time_overall'], 'Expected', job['trace_data']["estimated_duration"] * 2)
 
         if (jointsStable and targetReached) or inTimeout:
             job['index'] += 1
