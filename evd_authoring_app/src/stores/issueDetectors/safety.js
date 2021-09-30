@@ -1,4 +1,5 @@
 import { generateUuid } from "../generateUuid";
+import { PINCH_POINT_FIELDS, objectMap } from "../helpers";
 
 const linkNames = ['shoulder_link', 'upper_arm_link', 'forearm_link', 'wrist_1_link', 'wrist_2_link', 'wrist_3_link'];
 const linkNameMap = {
@@ -29,13 +30,15 @@ const precision = 1000;
 export const findEndEffectorPoseIssues = ({program}) => { // Requires trace pose information
     let issues = {};
 
+    let addressed = [];
+
     let warningLevel = 2;
     let errorLevel = 5;
 
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {
             Object.values(ePrim).forEach(primitive=>{
-                if (primitive.type === "node.primitive.move-trajectory.") {
+                if (primitive.type === "node.primitive.move-trajectory." && !addressed.includes(primitive.uuid)) {
                     let trajectory = primitive.parameters.trajectory_uuid;
                     let frames = trajectory.trace.frames.tool0;
                     let scores = primitive.parameters.trajectory_uuid.eePoseScores;
@@ -74,6 +77,7 @@ export const findEndEffectorPoseIssues = ({program}) => { // Requires trace pose
                         },
                         sceneData: {vertices: {endEffectorPose: endEffectorScores}}
                     }
+                    addressed.push(primitive.uuid)
                 }
             });
         }
@@ -85,13 +89,14 @@ export const findEndEffectorPoseIssues = ({program}) => { // Requires trace pose
 // Requires collision graders
 export const findCollisionIssues = ({program}) => { 
     let issues = {};
+    let addressed = [];
     const warningLevel = 0.1;
     const errorLevel = 1;
 
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {
             Object.values(ePrim).forEach(primitive=>{
-                if (primitive.type === "node.primitive.move-trajectory.") {
+                if (primitive.type === "node.primitive.move-trajectory." && !addressed.includes(primitive.uuid)) {
                     let trajectory = primitive.parameters.trajectory_uuid;
                     let timeData = trajectory.trace.time_data;
                     let sCol = trajectory.trace.self_collisions;
@@ -199,6 +204,7 @@ export const findCollisionIssues = ({program}) => {
                                 title: ''},
                             sceneData: {vertices: collisionData[selfIndex]}
                         }
+                        addressed.push(primitive.uuid)
                     }
     
                     // Build issue for environmental collisions
@@ -219,6 +225,7 @@ export const findCollisionIssues = ({program}) => {
                                 title: ''},
                             sceneData: {vertices: collisionData[envIndex]}
                         }
+                        addressed.push(primitive.uuid)
                     }
                 }
             });
@@ -320,8 +327,37 @@ export const findOccupancyIssues = ({program}) => {
     return [issues, {}];
 }
 
-export const findPinchPointIssues = (_) => { // Requires pinch-point graders
+export const findPinchPointIssues = ({unrolled}) => { // Requires pinch-point graders
+    
     let issues = {};
+    let addressed = [];
+
+    // cancel if the unrolled program is invalid
+    if (!unrolled) {return [issues, {}];}
+
+    Object.values(unrolled).forEach(primitive => {
+        if (primitive.type === "node.primitive.move-trajectory." && !addressed.includes(primitive.uuid)) {
+            let trajectory = primitive.parameters.trajectory_uuid;
+            // let timeData = trajectory.trace.time_data;
+            console.log(trajectory.trace)
+            const hasError = objectMap(PINCH_POINT_FIELDS,(_,field)=>trajectory.trace.pinch_points[field].some(val=>val!==null));
+            console.log(hasError)
+            if (Object.values(hasError).includes(true)) {
+                const uuid = generateUuid('issue');
+                issues[uuid] = {
+                    uuid: uuid,
+                    requiresChanges: true,
+                    title: `Likely pinch points`,
+                    description: `Robot trajectory includes likely pinch points`,
+                    complete: false,
+                    focus: {uuid:primitive.uuid, type:'primitive'},
+                    graphData: null,
+                    sceneData: null
+                }
+                addressed.push(primitive.uuid)
+            }
+        }
+    });
 
     return [issues, {}];
 }

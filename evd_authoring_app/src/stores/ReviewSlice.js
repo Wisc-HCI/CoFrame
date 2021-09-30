@@ -52,8 +52,8 @@ export const ReviewSlice = (set, get) => ({
         thingMovement:{
             name:'Thing Movement',
             updater:findThingMovementIssues,
-            dependencies:['endEffectorPoses'],
-            // dependencies:[],
+            // dependencies:['endEffectorPoses'],
+            dependencies:[],
             issues:[]
         },
         missingBlocks:{

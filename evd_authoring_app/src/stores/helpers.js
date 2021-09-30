@@ -30,32 +30,32 @@ export const UNREACHABLE_COLOR = { r: 204, g: 75, b: 10, a: 1 };
 export const OCCUPANCY_ERROR_COLOR = { r: 233, g: 53, b: 152, a: 1 };
 
 export const PINCH_POINT_FIELDS = {
-    base_link_inertia___forearm_link: {frame1: 'Base', frame2: 'Forearm', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___gripper: {frame1: 'Base', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___upper_arm_link: {frame1: 'Base', frame2: 'Upper Arm', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___wrist_1_link: {frame1: 'Base', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___wrist_2_link: {frame1: 'Base', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___wrist_2_link: {frame1: 'Base', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___forearm_link: {parent: 'base_link', frame1: 'Base', frame2: 'Forearm', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___gripper: {parent: 'base_link', frame1: 'Base', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___upper_arm_link: {parent: 'base_link', frame1: 'Base', frame2: 'Upper Arm', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___wrist_1_link: {parent: 'base_link', frame1: 'Base', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___wrist_2_link: {parent: 'base_link', frame1: 'Base', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___wrist_3_link: {parent: 'base_link', frame1: 'Base', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 
-    shoulder_link___forearm_link: {frame1: 'Shoulder', frame2: 'Forearm', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    shoulder_link___gripper: {frame1: 'Shoulder', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    shoulder_link___wrist_1_link: {frame1: 'Shoulder', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    shoulder_link___wrist_2_link: {frame1: 'Shoulder', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    shoulder_link___wrist_2_link: {frame1: 'Shoulder', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___forearm_link: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Forearm', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___gripper: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___wrist_1_link: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___wrist_2_link: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___wrist_3_link: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 
-    upper_arm_link___gripper: {frame1: 'Upper Arm', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    upper_arm_link___wrist_1_link: {frame1: 'Upper Arm', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    upper_arm_link___wrist_2_link: {frame1: 'Upper Arm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    upper_arm_link___wrist_2_link: {frame1: 'Upper Arm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    upper_arm_link___gripper: {parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    upper_arm_link___wrist_1_link: {parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    upper_arm_link___wrist_2_link: {parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    upper_arm_link___wrist_3_link: {parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 
-    forearm_link___gripper: {frame1: 'Forearm', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    forearm_link___wrist_2_link: {frame1: 'Forearm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    forearm_link___wrist_2_link: {frame1: 'Forearm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    forearm_link___gripper: {parent: 'forearm_link', frame1: 'Forearm', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    forearm_link___wrist_2_link: {parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    forearm_link___wrist_3_link: {parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 
-    wrist_1_link___gripper: {frame1: 'Wrist 1', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    wrist_1_link___wrist_3_link: {frame1: 'Wrist 1', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    wrist_1_link___gripper: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    wrist_1_link___wrist_3_link: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 
-    wrist_2_link___gripper: {frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    wrist_2_link___gripper: {parent: 'wrist_2_link', frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 }
 
 export const typeToKey = (type) => {
@@ -427,13 +427,26 @@ const pinchColorFromMagnitude = (magnitude=0) => {
 
 const pinchPointVisualsByIdx = (idx,trace) => {
     let pinchPoints = {};
+    console.log(trace.pinch_points)
     Object.keys(trace.pinch_points).forEach(pinchPointPair=>{
-        const errorMagnitude = trace.pinch_points[pinchPointPair][idx] ? 1/Math.pow(Math.E,trace.pinch_points[pinchPointPair][idx]) : 0
-        pinchPoints[pinchPointPair] = {
-            scale: {x:errorMagnitude*0.1,y:errorMagnitude*0.1,z:errorMagnitude*0.1}, 
-            color: pinchColorFromMagnitude(errorMagnitude)
+        if (trace.pinch_points[pinchPointPair][idx]) {
+            let errorMagnitude = 1/Math.pow(Math.E,trace.pinch_points[pinchPointPair][idx].gap);
+            let errorPosition = trace.pinch_points[pinchPointPair][idx].position;
+            console.log({errorMagnitude,errorPosition})
+            pinchPoints[pinchPointPair] = {
+                scale: {x:errorMagnitude*0.1,y:errorMagnitude*0.1,z:errorMagnitude*0.1}, 
+                color: pinchColorFromMagnitude(errorMagnitude),
+                position: {x:errorPosition[0],y:errorPosition[1],z:errorPosition[2]}
+            }
+        } else {
+            pinchPoints[pinchPointPair] = {
+                scale: {x:0,y:0,z:0}, 
+                color: {r:0,g:0,b:0,a:0},
+                position: {x:0,y:0,z:0}
+            }
         }
     })
+    return pinchPoints
 }
 
 const poseDiff = (pose1,pose2) => {
@@ -497,15 +510,19 @@ const stepsToAnimatedPinchPoints = (steps) => {
         return {}
     }
     let tempAnimatedPinchPoints = objectMap(steps[0].pinchPoints,_=>({
+            position:{x:[],y:[],z:[]},
             scale:{x:[],y:[],z:[]},
             color:{r:[],g:[],b:[]}
         })
     )
     const pinchPointPairs = Object.keys(tempAnimatedPinchPoints);
-    console.log(pinchPointPairs)
+    // console.log(pinchPointPairs)
     let timesteps = steps.map(step=>step.time)
     steps.forEach(step=>{
         pinchPointPairs.forEach(pairName=>{
+            tempAnimatedPinchPoints[pairName].position.x.push(step.pinchPoints[pairName].position.x);
+            tempAnimatedPinchPoints[pairName].position.y.push(step.pinchPoints[pairName].position.y);
+            tempAnimatedPinchPoints[pairName].position.z.push(step.pinchPoints[pairName].position.z);
             tempAnimatedPinchPoints[pairName].scale.x.push(step.pinchPoints[pairName].scale.x);
             tempAnimatedPinchPoints[pairName].scale.y.push(step.pinchPoints[pairName].scale.y);
             tempAnimatedPinchPoints[pairName].scale.z.push(step.pinchPoints[pairName].scale.z);
@@ -514,9 +531,14 @@ const stepsToAnimatedPinchPoints = (steps) => {
             tempAnimatedPinchPoints[pairName].color.b.push(step.pinchPoints[pairName].color.b);
         })
     })
-    // console.log(tempAnimatedPinchPoints)
+    console.log(tempAnimatedPinchPoints)
     const animatedPinchPoints = objectMap(tempAnimatedPinchPoints,pinchPoint=>({
         frame:'world',
+        position:{
+            x: interpolateScalar(timesteps, pinchPoint.position.x),
+            y: interpolateScalar(timesteps, pinchPoint.position.y),
+            z: interpolateScalar(timesteps, pinchPoint.position.z)
+        },
         scale:{
             x: interpolateScalar(timesteps, pinchPoint.scale.x),
             y: interpolateScalar(timesteps, pinchPoint.scale.y),
@@ -533,7 +555,7 @@ const stepsToAnimatedPinchPoints = (steps) => {
     return animatedPinchPoints
 }
 
-export function pinchpointSizeAnimationFromExecutable(executable) {
+export function pinchpointAnimationFromExecutable(executable) {
     let steps = [{ time: 0, pinchPoints: PINCH_POINT_FIELDS }]
     let machineProcessing = {};
     let cancelled = false;
