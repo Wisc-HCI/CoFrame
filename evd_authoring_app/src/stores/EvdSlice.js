@@ -60,14 +60,14 @@ export const EvdSlice = (set, get) => ({
     program.environment.regions.forEach((region) => {
       get().addItem('region', region)
     });
-    program.environment.machines.forEach((machine) => {
-      get().addItem('machine', machine)
-    });
     program.environment.thing_types.forEach((thingType) => {
       get().addItem('thingType', thingType)
     });
     program.environment.placeholders.forEach((placeholder) => {
       get().addItem('placeholder', placeholder)
+    });
+    program.environment.machines.forEach((machine) => {
+      get().addItem('machine', machine)
     });
     const [flattenedPrimitives, flattenedSkills] = flattenProgram(program.primitives, program.skills, { type: 'program', uuid: program.uuid });
     flattenedPrimitives.forEach((primitive) => {
@@ -297,13 +297,13 @@ export const EvdSlice = (set, get) => ({
   }),
   setRegionTransform: (uuid, transform) => set(state=>{
     if (state.data.regions[uuid]) {
-      state.data.regions[uuid].center_position.x = transform.local.position.x;
-      state.data.regions[uuid].center_position.y = transform.local.position.y;
-      state.data.regions[uuid].center_position.z = transform.local.position.z;
-      state.data.regions[uuid].center_orientation.x = transform.local.quaternion.x;
-      state.data.regions[uuid].center_orientation.y = transform.local.quaternion.y;
-      state.data.regions[uuid].center_orientation.z = transform.local.quaternion.z;
-      state.data.regions[uuid].center_orientation.w = transform.local.quaternion.w;
+      state.data.regions[uuid].center_position.x = transform.world.position.x;
+      state.data.regions[uuid].center_position.y = transform.world.position.y;
+      state.data.regions[uuid].center_position.z = transform.world.position.z;
+      state.data.regions[uuid].center_orientation.x = transform.world.quaternion.x;
+      state.data.regions[uuid].center_orientation.y = transform.world.quaternion.y;
+      state.data.regions[uuid].center_orientation.z = transform.world.quaternion.z;
+      state.data.regions[uuid].center_orientation.w = transform.world.quaternion.w;
     }
   }),
   setPrimitiveParameter: (type, uuid, property, value) => set((state) => {

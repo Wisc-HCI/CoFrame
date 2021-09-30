@@ -41,6 +41,9 @@ export const GuiSlice = (set, get) => ({
   focusItem: { type: null, uuid: null, transformMode: null },
   setFocusItem: (type, uuid, transformMode) => set(state => {
     // TODO Clear current items.
+    if (type !== state.focusItem.type && uuid !== state.focusItem.uuid) {
+      state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
+    }
     state.focusItem = { type: type, uuid: uuid, transformMode: transformMode };
   }),
   clearFocusItem: () => set(state => {

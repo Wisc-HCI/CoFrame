@@ -1703,7 +1703,7 @@ const machine_primitive_template = {
 */
 
 const delay_template = {
-    type: 'node.primitive.delay',
+    type: 'node.primitive.delay.',
     name: 'Delay', // generated display name
     meta_data: [ // defining instance meta data
         {

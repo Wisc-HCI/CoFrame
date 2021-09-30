@@ -5,7 +5,7 @@ import { List, Space, Button, InputNumber, Row } from 'antd';
 export const InputOutputComponent = (props) => {
   const type = useStore(useCallback(state => state.data.thingTypes[props.typeuuid], [props.typeuuid]));
 
-  const setChildrenDrawer = useStore(state => state.setChildrenDrawer)
+  // const setChildrenDrawer = useStore(state => state.setChildrenDrawer)
 
 
 
@@ -30,7 +30,7 @@ export const InputOutputComponent = (props) => {
                 </Space>
                 <Space>
                   <b style={{ paddingRight: '4px' }}>Region:</b>
-                  <Button onClick={()=>{setChildrenDrawer(true); setSecondaryFocusItem('region',data.region_uuid)}}>
+                  <Button onClick={()=>{setSecondaryFocusItem('region',data.region_uuid)}}>
                     Edit
                   </Button>
                 </Space>
