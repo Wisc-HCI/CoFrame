@@ -82,7 +82,7 @@ export const findIdleTimeIssues = ({program, unrolled, stats}) => {
     return [issues, {idleTime: estimate}];
 }
 // Retrun on Investment
-export const findReturnOnInvestmentIssues = ({program, unrolled, stats}) => { 
+export const findReturnOnInvestmentIssues = ({program, unrolled, stats, settings}) => { 
     let issues = {};
     let newStats = {}
 
@@ -102,14 +102,14 @@ export const findReturnOnInvestmentIssues = ({program, unrolled, stats}) => {
     }
 
     // some constant product value and cost
-    const productValue = 10;
-    const productCost = 5;
+    const productValue = settings['productValue'].value;
+    const productCost = settings['productCost'].value;
 
     // track the cost of wear and tear due to robot acceleration
     let wearTearCost = 0;
 
     // destructive acceleration level
-    const errorAccelLevel = 10;
+    const errorAccelLevel = settings['roiAccelError'].value;
 
     const wearAndTear = (acceleration) => {
         return (Math.abs(acceleration) / errorAccelLevel) * 0.0001;
