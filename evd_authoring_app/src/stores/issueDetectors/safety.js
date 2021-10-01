@@ -27,13 +27,13 @@ const ERROR_COLOR = {r: 233, g: 53, b: 152};
 const precision = 1000;
 
 
-export const findEndEffectorPoseIssues = ({program}) => { // Requires trace pose information
+export const findEndEffectorPoseIssues = ({program, settings}) => { // Requires trace pose information
     let issues = {};
 
     let addressed = [];
 
-    let warningLevel = 2;
-    let errorLevel = 5;
+    let warningLevel = settings['eePoseWarn'].value;
+    let errorLevel = settings['eePoseErr'].value;
 
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {
@@ -87,11 +87,11 @@ export const findEndEffectorPoseIssues = ({program}) => { // Requires trace pose
 }
 
 // Requires collision graders
-export const findCollisionIssues = ({program}) => { 
+export const findCollisionIssues = ({program, settings}) => { 
     let issues = {};
     let addressed = [];
-    const warningLevel = 0.1;
-    const errorLevel = 1;
+    const warningLevel = settings['collisionWarn'].value;
+    const errorLevel = settings['collisionErr'].value;
 
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {
@@ -237,11 +237,11 @@ export const findCollisionIssues = ({program}) => {
 }
 
 // Requires occupancy zone graders
-export const findOccupancyIssues = ({program}) => {
+export const findOccupancyIssues = ({program, settings}) => {
     let issues = {};
 
-    const warningLevel = 0.8;
-    const errorLevel = 1;
+    const warningLevel = settings['occupancyWarn'].value;
+    const errorLevel = settings['occupancyErr'].value;
 
 
     Object.values(program.executablePrimitives).forEach(ePrim => {

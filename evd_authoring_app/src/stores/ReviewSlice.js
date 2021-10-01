@@ -7,6 +7,25 @@ import { objectMap } from "./helpers";
 export const ReviewSlice = (set, get) => ({
     // Issues are stored in a flat lookup
     stats: [],
+    // Settings for the issue detectors
+    issueSettings: {
+        'eePoseWarn': {uuid: 'eePoseWarn', name: "End Effector Pose Warning Level", value: 2, min: 0},
+        'eePoseErr': {uuid: 'eePoseErr', name: "End Effector Pose Error Level", value: 5, min: 0},
+        'collisionWarn': {uuid: 'collisionWarn', name: "Collision Warning Level", value: 0.1, min: 0, max: 1},
+        'collisionErr': {uuid: 'collisionErr', name: "Collision Error Level", value: 1, min: 0, max: 1},
+        'occupancyWarn': {uuid: 'occupancyWarn', name: "Occupancy Warning Level", value: 0.8, min: 0, max: 1},
+        'occupancyErr': {uuid: 'occupancyErr', name: "Occupancy Error Level", value: 1, min: 0, max: 1},
+        'jointMaxSpeed': {uuid: 'jointMaxSpeed', name: "Max Joint Speed", value: 10, min: 0},
+        'jointSpeedWarn': {uuid: 'jointSpeedWarn', name: "Joint Speed Warning Level (% of max speed)", value: 0.1, min: 0, max: 1},
+        'jointSpeedErr': {uuid: 'jointSpeedErr', name: "Joint Speed Error Level (% of max speed)", value: 0.5, min: 0, max: 1},
+        'eeSpeedWarn': {uuid: 'eeSpeedWarn', name: "End Effector Speed Warning Level", value: 0.3, min: 0, max: 1},
+        'eeSpeedErr': {uuid: 'eeSpeedErr', name: "End Effector Speed Error Level", value: 0.45, min: 0, max: 1},
+        'spaceUsageWarn': {uuid: 'spaceUsageWarn', name: "Space Usage Warning Level", value: 0.01, min: 0, max: 1},
+        'spaceUsageErr': {uuid: 'spaceUsageErr', name: "Space Usage Error Level", value: 0.2, min: 0, max: 1},
+        'productValue': {uuid: 'productValue', name: "Product Value", value: 10, min: 0},
+        'productCost': {uuid: 'productCost', name: "Product Cost", value: 5, min: 0},
+        'roiAccelError': {uuid: 'roiAccelError', name: "ROI Acceleration Error Level", value: 10, min: 0},
+    },
     issues: {
         /* 
         Each issue has the following structure:
@@ -151,7 +170,7 @@ export const ReviewSlice = (set, get) => ({
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
-            let [newSectionIssues, newStats] = state.sections[sectionKey].updater({program:state,unrolled:unrolledProgram,stats:state.stats});
+            let [newSectionIssues, newStats] = state.sections[sectionKey].updater({program:state,unrolled:unrolledProgram,stats:state.stats,settings:state.issueSettings});
             // Augment allNewStats with the new incoming stats.
             allNewStats = {...allNewStats,...newStats};
             // Enumerate the existing issues
@@ -177,5 +196,8 @@ export const ReviewSlice = (set, get) => ({
         // Update the stats set.
         state.stats.push(allNewStats);
         console.log(newIssues)
+    }),
+    updateIssueSetting: (newIssueSetting) => set(state => {
+        state.issueSettings[newIssueSetting.uuid] = newIssueSetting;
     })
 });

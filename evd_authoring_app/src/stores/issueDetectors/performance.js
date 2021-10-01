@@ -17,14 +17,6 @@ const jointLinkMap = {
     'wrist_2_joint': 'wrist_2_link',
     'wrist_3_joint': 'wrist_3_link'
 };
-const jointThresholds = {
-    'shoulder_pan_joint': {warning: 1.9, error: 2},
-    'shoulder_lift_joint': {warning: 1.9, error: 2},
-    'elbow_joint': {warning: 1.9, error: 2},
-    'wrist_1_joint': {warning: 1.9, error: 2},
-    'wrist_2_joint': {warning: 1.9, error: 2},
-    'wrist_3_joint': {warning: 1.9, error: 2}
-};
 const jointColorMap = {
     'shoulder_pan_joint': '#009e9e',
     'shoulder_lift_joint': '#9e0000',
@@ -157,8 +149,11 @@ export const findReachabilityIssues = ({program}) => { // requires joint_process
 }
 
 // requires trace processor, joint speed grader (can also use intermediate type)
-export const findJointSpeedIssues = ({program}) => {
+export const findJointSpeedIssues = ({program, settings}) => {
     let issues = {};
+
+    const warningLevel = settings["jointSpeedWarn"].value * settings['jointMaxSpeed'].value;
+    const errorLevel = settings["jointSpeedErr"].value * settings['jointMaxSpeed'].value;
 
     Object.values(program.executablePrimitives).forEach(ePrim => {
         Object.values(ePrim).forEach(primitive=>{
@@ -189,7 +184,7 @@ export const findJointSpeedIssues = ({program}) => {
                         let calcVel = Math.abs((allJointData[jointNames[i]][j] - allJointData[jointNames[i]][j-1]) / (timeData[j] - timeData[j-1]));
                         let curFrame = trajectory.trace.frames[jointLinkMap[jointNames[i]]][j][0];
 
-                        if (calcVel > jointThresholds[jointNames[i]].error) {
+                        if (calcVel > errorLevel) {
                             if (!hasErrorVelocity) {
                                 hasErrorVelocity = true;
                             }
@@ -200,7 +195,7 @@ export const findJointSpeedIssues = ({program}) => {
                                 shouldGraphJoint[i] = true;
                             }
                             sceneData[jointNames[i]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
-                        } else if (calcVel > jointThresholds[jointNames[i]].warning) {
+                        } else if (calcVel > warningLevel) {
                             if (!hasWarningVelocity) {
                                 hasWarningVelocity = true;
                             }
@@ -262,11 +257,11 @@ export const findJointSpeedIssues = ({program}) => {
 }
 
 // requires trace processor, end effector grader + intermediate end effector speed interediate type
-export const findEndEffectorSpeedIssues = ({program}) => {
+export const findEndEffectorSpeedIssues = ({program, settings}) => {
     let issues = {};
 
-    const warningLevel = 0.3;
-    const errorLevel = 0.45;
+    const warningLevel = settings['eeSpeedWarn'].value;
+    const errorLevel = settings['eeSpeedErr'].value;
     
     Object.values(program.executablePrimitives).forEach(ePrim => {
         Object.values(ePrim).forEach(primitive=>{
@@ -337,12 +332,12 @@ export const findPayloadIssues = (_) => { // Shouldn't change during a trajector
 }
 
 // Requires a convex hall operation on joint frames in traces. This volume can be compared against whole workcell (fraction) and can be used for intersection with extruded human occupancy zones 
-export const findSpaceUsageIssues = ({program, stats}) => {
+export const findSpaceUsageIssues = ({program, stats, settings}) => {
     let issues = {};
     let addStats = {};
 
-    const warningLevel = 0.01;
-    const errorLevel = 0.2;
+    const warningLevel = settings['spaceUsageWarn'].value;
+    const errorLevel = settings['spaceUsageErr'].value;
     
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {
