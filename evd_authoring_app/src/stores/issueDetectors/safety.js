@@ -365,6 +365,10 @@ export const findPinchPointIssues = ({unrolled}) => { // Requires pinch-point gr
 export const findThingMovementIssues = ({program,unrolled}) => { // May require trace pose information
     let issues = {};
     
+    if (!unrolled) {
+        return [issues, {}];
+    }
+
     Object.values(unrolled).forEach(primitive=>{
         
        // console.log(primitive.type);

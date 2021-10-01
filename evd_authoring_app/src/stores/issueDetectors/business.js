@@ -5,6 +5,10 @@ import {idleTimeEstimate, durationEstimate} from "../helpers"
 export const findCycleTimeIssues = ({program, unrolled, stats}) => {
     let issues = {};
 
+    if (!unrolled) {
+        return [issues, {}];
+    }
+
     const estimate = durationEstimate(unrolled);
 
     // get prior values
@@ -40,6 +44,10 @@ export const findCycleTimeIssues = ({program, unrolled, stats}) => {
 // Use delay and machine wait primitives (delays can be tweaked if application acceptable)
 export const findIdleTimeIssues = ({program, unrolled, stats}) => {
     let issues = {};
+
+    if (!unrolled) {
+        return [issues, {}];
+    }
 
     const estimate = idleTimeEstimate(unrolled);
 
@@ -77,6 +85,10 @@ export const findIdleTimeIssues = ({program, unrolled, stats}) => {
 export const findReturnOnInvestmentIssues = ({program, unrolled, stats}) => { 
     let issues = {};
     let newStats = {}
+
+    if (!unrolled) {
+        return [issues, {}];
+    }
 
     const jointNames = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'];
 

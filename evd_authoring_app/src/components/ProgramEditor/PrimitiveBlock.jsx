@@ -25,7 +25,7 @@ export const PrimitiveBlock = ({
   const [focused, data, parameters, executable] = useStore(useCallback(state => {
     let parameterValues = {};
 
-    const data = staticData ? staticData : state.data.primitives[uuid];
+    const data = staticData ? staticData : state.data.primitives[uuid] ? state.data.primitives[uuid] : {parameters:{},type:''};
     const executable = state.executablePrimitives[data.uuid] ? true : false;
 
     // If there is a param and it exists in the context, create a fake data object, otherwise use the value in the store, if it exists there.

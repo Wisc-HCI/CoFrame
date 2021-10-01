@@ -67,6 +67,34 @@ export const findMissingParameterIssues = ({program}) => {
             };
         })
     })
+
+    Object.values(program.data.trajectories).forEach(trajectory=>{
+        if (!trajectory.start_location_uuid) {
+            const uuid = generateUuid('issue');
+                issues[uuid] = {
+                    uuid: uuid,
+                    requiresChanges: true,
+                    title: `Missing Start Location in trajectory`,
+                    description: `This trajectory needs a Start Location to be specified to be functional.`,
+                    complete: false,
+                    focus: {uuid:trajectory.uuid, type:'trajectory'},
+                    graphData: null
+                }
+        }
+        if (!trajectory.end_location_uuid) {
+            const uuid = generateUuid('issue');
+                issues[uuid] = {
+                    uuid: uuid,
+                    requiresChanges: true,
+                    title: `Missing End Location in trajectory`,
+                    description: `This trajectory needs a End Location to be specified to be functional.`,
+                    complete: false,
+                    focus: {uuid:trajectory.uuid, type:'trajectory'},
+                    graphData: null
+                }
+        }
+    })
+
     return [issues, {}];
 }
 
@@ -281,6 +309,10 @@ export const findMachineLogicIssues = ({unrolled}) => { //init , started, waitin
     let gripperStart = 50;
     let gripperEnd = 0;
     let duration = 0;
+
+    if (!unrolled) {
+        return [issues, {}];
+    }
     //console.log(JSON.stringify(unrolled));
     unrolled.forEach(primitive=>{
         if (primitive.type === 'node.primitive.delay.') {

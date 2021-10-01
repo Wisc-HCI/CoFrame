@@ -52,10 +52,10 @@ export const PINCH_POINT_FIELDS = {
     forearm_link___wrist_2_link: {parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
     forearm_link___wrist_3_link: {parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 
-    wrist_1_link___gripper: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    // wrist_1_link___gripper: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
     wrist_1_link___wrist_3_link: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 
-    wrist_2_link___gripper: {parent: 'wrist_2_link', frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    // wrist_2_link___gripper: {parent: 'wrist_2_link', frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 }
 
 export const typeToKey = (type) => {
@@ -901,7 +901,7 @@ export const traceToEEPoseScores = (trace) => {
         const q1 = trace.frames['tool0_endpoint'][i][0];
         const movementVec = new Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]);
         const directionVec = new Vector3(q1[0]-p1[0],q1[1]-p1[1],q1[2]-p1[2]);
-        scores.push(1000*movementVec.manhattanLength()/Math.pow(Math.E,movementVec.angleTo(directionVec)))
+        scores.push(1000*movementVec.manhattanLength()/Math.pow(Math.E,10*movementVec.angleTo(directionVec)))
     }
     return scores
 }

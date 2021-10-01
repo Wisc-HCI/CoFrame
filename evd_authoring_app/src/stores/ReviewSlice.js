@@ -52,8 +52,7 @@ export const ReviewSlice = (set, get) => ({
         thingMovement:{
             name:'Thing Movement',
             updater:findThingMovementIssues,
-            // dependencies:['endEffectorPoses'],
-            dependencies:[],
+            dependencies:['endEffectorPoses'],
             issues:[]
         },
         missingBlocks:{
@@ -137,7 +136,7 @@ export const ReviewSlice = (set, get) => ({
         returnOnInvestment:{
             name:'Return on Investment',
             updater:findReturnOnInvestmentIssues,
-            dependencies:['idleTime'],
+            dependencies:['cycleTime','idleTime'],
             issues:[]
         }
     },
