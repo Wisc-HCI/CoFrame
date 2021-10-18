@@ -92,6 +92,7 @@ export const findCollisionIssues = ({program, settings}) => {
     let addressed = [];
     const warningLevel = settings['collisionWarn'].value;
     const errorLevel = settings['collisionErr'].value;
+    console.log({warningLevel,errorLevel})
 
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {
@@ -150,6 +151,7 @@ export const findCollisionIssues = ({program, settings}) => {
     
                                 if (allSelfCollisions[linkNames[j]][i] >= errorLevel) {
                                     collisionErrors[selfIndex] = true;
+                                    console.log({value:allSelfCollisions[linkNames[j]][i],link:linkNames[j]})
                                     collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
                                 } else if (allSelfCollisions[linkNames[j]][i] >= warningLevel) {
                                     collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
@@ -192,7 +194,7 @@ export const findCollisionIssues = ({program, settings}) => {
                         issues[uuid] = {
                             uuid: uuid,
                             requiresChanges: collisionErrors[selfIndex],
-                            title: `Robot collides with self`,
+                            title: collisionErrors[selfIndex] ? `Robot collides with self` : `Robot is in near collision with self`,
                             description: `Robot collides with self`,
                             complete: false,
                             focus: {uuid:primitive.uuid, type:'primitive'},
@@ -213,7 +215,7 @@ export const findCollisionIssues = ({program, settings}) => {
                         issues[uuid] = {
                             uuid: uuid,
                             requiresChanges: collisionErrors[selfIndex],
-                            title: `Robot collides with the environment`,
+                            title: collisionErrors[selfIndex] ? `Robot collides with environment` : `Robot is in near collision with environment`,
                             description: `Robot collides with the environment`,
                             complete: false,
                             focus: {uuid:primitive.uuid, type:'primitive'},

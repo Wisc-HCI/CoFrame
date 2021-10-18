@@ -450,11 +450,13 @@ const pinchPointVisualsByIdx = (idx,trace) => {
 }
 
 const poseDiff = (pose1,pose2) => {
+    console.log(pose1,pose2)
     const translationDistance = Math.sqrt(
         Math.pow(pose1.position.x-pose2.position.x,2) + 
         Math.pow(pose1.position.y-pose2.position.y,2) + 
         Math.pow(pose1.position.z-pose2.position.z,2)
     )
+    console.log(translationDistance)
     const quat1 = Quaternion(pose1.quaternion.x,pose1.quaternion.y,pose1.quaternion.z,pose1.quaternion.w)
     const quat2 = Quaternion(pose2.quaternion.x,pose2.quaternion.y,pose2.quaternion.z,pose2.quaternion.w)
     return {distance:translationDistance, angle:quat1.angleTo(quat2)}
@@ -647,7 +649,9 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 }
                 if (direction === -1) {
                     activePlaceholders.forEach(placeholder=>{
-                        const {distance, angle} = poseDiff(prevTfs[placeholder],prevTfs['simulated_tool0']);
+                        //const {distance, angle} = poseDiff(prevTfs[placeholder],prevTfs['simulated_tool0']);
+                        const distance = 0;
+                        const angle = 0.2;
                         if (distance < 0.01 && angle < 0.35) {
                             carriedPlaceholder = placeholder
                         }
@@ -902,6 +906,7 @@ export const traceToEEPoseScores = (trace) => {
         const movementVec = new Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]);
         const directionVec = new Vector3(q1[0]-p1[0],q1[1]-p1[1],q1[2]-p1[2]);
         scores.push(1000*movementVec.manhattanLength()/Math.pow(Math.E,10*movementVec.angleTo(directionVec)))
+
     }
     return scores
 }

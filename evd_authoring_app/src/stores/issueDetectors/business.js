@@ -38,7 +38,7 @@ export const findCycleTimeIssues = ({program, unrolled, stats}) => {
             title: '',
         }
     }
-    
+    console.log('cycle time')
     return [issues, {cycleTime: estimate}];
 }
 // Use delay and machine wait primitives (delays can be tweaked if application acceptable)
@@ -78,7 +78,7 @@ export const findIdleTimeIssues = ({program, unrolled, stats}) => {
             title: '',
         }
     }
-
+    console.log('idle time')
     return [issues, {idleTime: estimate}];
 }
 // Retrun on Investment
@@ -163,5 +163,6 @@ export const findReturnOnInvestmentIssues = ({program, unrolled, stats, settings
         }
 
     }
+    console.log('roi')
     return [issues, newStats];
 }

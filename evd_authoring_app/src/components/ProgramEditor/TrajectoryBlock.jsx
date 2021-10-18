@@ -201,7 +201,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                     size='small'
                     defaultValue={data.velocity}
                     disabled={!editingEnabled}
-                    onChange={(v) => setItemProperty('trajectory', uuid, 'move_type', v)}
+                    onChange={(v) => setItemProperty('trajectory', uuid, 'velocity', v)}
                     bordered={false}
                     style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
                 </Col>
