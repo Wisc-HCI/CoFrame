@@ -131,7 +131,7 @@ export const RosSlice = (set, get) => ({
             const { 
                 duration, time_data, in_timeout, pybullet_joint_data, 
                 postprocess_collisions, postprocess_self_collisions, 
-                pybullet_frame_data, postprocess_occupancy} = trace;
+                pybullet_frame_data, postprocess_occupancy, pinchpoints_tracks} = trace;
             if (state.data.trajectories[msg.id]) {
                 state.data.trajectories[msg.id].trace = {
                     duration,
@@ -142,7 +142,7 @@ export const RosSlice = (set, get) => ({
                     env_collisions:postprocess_collisions,
                     self_collisions:postprocess_self_collisions,
                     occupancy:postprocess_occupancy,
-                    pinch_points:null
+                    pinch_points:pinchpoints_tracks
                 }
             }
         }

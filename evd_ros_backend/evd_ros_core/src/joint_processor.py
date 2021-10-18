@@ -10,14 +10,14 @@ import os
 import json
 import rospy
 
-from evd_sim.pose_reached import poseReached
+from evd_sim.pose_reached import poseReached, deltaDebug
 from evd_interfaces.job_queue import JobQueue
 from evd_sim.lively_tk_solver import LivelyTKSolver
 from evd_sim.pybullet_model import PyBulletModel
 from evd_sim.joints_stabilized import JointsStabilizedFilter
 from evd_interfaces.frontend_interface import FrontendInterface
 from evd_script import Joints, NodeParser, OccupancyZone, CollisionMesh
-
+from evd_sim.pinch_point_model import processPinchpoints_single
 
 TIMEOUT_COUNT = 500
 SPIN_RATE = 5
@@ -47,24 +47,25 @@ class JointProcessor:
         self._ee_frame = self._config['link_groups']['end_effector_path']
         self._joint_names = self._config['joint_names']
         self._timestep = self._config['pybullet']['timestep']
+
+        self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk_joint']['config']))
+        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
+        self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
         
         self._tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0)) #tf buffer length
         self._tf_listener = tf2_ros.TransformListener(self._tf_buffer)
         frontend = FrontendInterface(use_processor_configure=True, processor_configure_cb=self._processor_configure_cb)
         self._job_queue = JobQueue('joints', self._start_job, self._end_job, frontend=frontend)
-        self.ltk = LivelyTKSolver(os.path.join(config_path,'lively-tk',self._config['lively-tk']['config']))
-        self.pyb = PyBulletModel(os.path.join(config_path,'pybullet'), self._config['pybullet'], gui=use_gui)
-        self.jsf = JointsStabilizedFilter(JSF_NUM_STEPS, JSF_DISTANCE_THRESHOLD)
 
         self._timer = rospy.Timer(rospy.Duration(1/UPDATE_RATE), self._update_cb)
 
     def _processor_configure_cb(self, dct):
         print('Joint Processor - Configure', dct, 'Current State', self._state)
         if self._state != 'idle':
-            print('pending')
+            #print('pending')
             self._pending_config = dct
         else:    
-            print('now')
+            #print('now')
             self.pyb.registerCollisionMeshes(dct['collision_meshes'])
             self.pyb.registerOccupancyZones(dct['occupancy_zones'])
 
@@ -117,7 +118,10 @@ class JointProcessor:
             "postprocess_self_collisions": {n: None for n in self.pyb.collision_frame_names},
             "postprocess_self_collisions_objs": {n: None for n in self.pyb.collision_frame_names},
             "postprocess_occupancy": {n: None for n in self.pyb.occupancy_frame_names},
-            "postprocess_occupancy_objs": {n: None for n in self.pyb.occupancy_frame_names}
+            "postprocess_occupancy_objs": {n: None for n in self.pyb.occupancy_frame_names},
+
+            "pinchpoints_tracks": None,
+            "pinchpoints_semantics": None
         }
 
         self._input = data
@@ -175,9 +179,14 @@ class JointProcessor:
                 return # leave update if stop has been called
             self._joints.set_joint_positions_by_names(jp_ltk,jn_ltk)
 
+            
+            jointsStable = self.jsf.isStable()
             poseWasReached = poseReached(self._target, ee_pose_ltk, POSITION_DISTANCE_THRESHOLD, ORIENTATION_DISTANCE_THRESHOLD)
             inTimeout = TIMEOUT_COUNT < self._updateCount
-            if self.jsf.isStable() and (poseWasReached or inTimeout):
+            
+            print('Joints', 'stable', jointsStable, 'pose', poseWasReached, 'delta', deltaDebug(self._target, ee_pose_ltk), 'timeout', inTimeout)
+            
+            if (jointsStable and poseWasReached) or inTimeout:
 
                 # pack trace
                 for n, p in zip(jn_ltk,jp_ltk):
@@ -295,6 +304,11 @@ class JointProcessor:
 
                     self._trace_data["postprocess_occupancy"][n] = value
                     self._trace_data["postprocess_occupancy_objs"][n] = obj
+
+                # Calculate pinch points
+                tracks, semantics = processPinchpoints_single(self._trace_data["pybullet_self_collisions"])
+                self._trace_data["pinchpoints_tracks"] = tracks
+                self._trace_data["pinchpoints_semantics"] = semantics
                 
                 self._joints.reachable = poseWasReached
                 self._trace_data["in_timeout"] = inTimeout

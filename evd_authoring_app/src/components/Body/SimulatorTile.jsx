@@ -12,6 +12,7 @@ export const SimulatorTile = (_) => {
 
     const primaryColor = useStore(state => state.primaryColor);
     const clearFocusItem = useStore(state=> state.clearFocusItem);
+    const paused = useStore(state=>state.focusItem.uuid === null);
 
     return (
         <div style={{height:'calc(100vh - 48pt)',padding:10}}>
@@ -35,6 +36,7 @@ export const SimulatorTile = (_) => {
                             fov={50}
                             store={useStore}
                             onPointerMissed={clearFocusItem}
+                            paused={paused}
                         />
 
                     </div>

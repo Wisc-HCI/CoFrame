@@ -30,7 +30,14 @@ if __name__ == "__main__":
     listener = tf.TransformListener()
 
     subtree = [
-        ('planner_tool0','planner_tool0'),
+        ('planner_base_link','planner_shoulder_link'),
+        ('planner_shoulder_link','planner_upper_arm_link'),
+        ('planner_upper_arm_link','planner_forearm_link'),
+        ('planner_forearm_link','planner_wrist_1_link'),
+        ('planner_wrist_1_link','planner_wrist_2_link'),
+        ('planner_wrist_2_link','planner_wrist_3_link'),
+        ('planner_wrist_3_link','planner_flange'),
+        ('planner_flange','planner_tool0'),
         ('planner_tool0','planner_robotiq_85_base_link'),
         ('planner_robotiq_85_base_link','planner_robotiq_85_left_knuckle_link'),
         ('planner_robotiq_85_base_link','planner_robotiq_85_right_knuckle_link'),

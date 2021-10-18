@@ -16,10 +16,18 @@ const isComplete = (state, sectionId) => (state.sections[sectionId].issues.map(i
 
 const FRAMES = [
     { key: 'safety', title: 'Safety Concerns', sections: ['endEffectorPoses', 'thingMovement', 'pinchPoints', 'collisions', 'occupancy'] },
-    { key: 'quality', title: 'Program Quality', sections: ['missingBlocks', 'missingParameters', 'unusedSkills', 'unusedFeatures', 'emptyBlocks'] },
+    { key: 'quality', title: 'Program Quality', sections: ['missingBlocks', 'missingParameters', 'machineLogic', 'unusedSkills', 'unusedFeatures', 'emptyBlocks'] },
     { key: 'performance', title: 'Robot Performance', sections: ['reachability', 'jointSpeed', 'endEffectorSpeed', 'payload', 'spaceUsage'] },
     { key: 'business', title: 'Business Objectives', sections: ['cycleTime', 'idleTime', 'returnOnInvestment'] },
 ]
+
+const NAMES = {
+    safety: 'Safety Concerns', 
+    quality: 'Program Quality', 
+    performance: 'Robot Performance', 
+    business: 'Business Objectives'
+};
+
 const sectionFrame = (sectionId) => FRAMES.filter(filter=>filter.sections.indexOf(sectionId)>-1)[0].key
 
 export function ReviewSection({sectionId, blocked, initialBlocked}) {
@@ -51,7 +59,7 @@ export function ReviewSection({sectionId, blocked, initialBlocked}) {
                         border: `1px solid ${frameStyles.colors[depFrames[i]]}`,
                         backgroundColor:`${frameStyles.colors[depFrames[i]]}44`}}>
                         <span style={{marginRight:20}}>Resolve <b>{depNames[i]}</b> before continuing</span>
-                        {(frame !== depFrames[i]) && (<FrameButton frame={depFrames[i]} active={false} text={`Go to ${FRAMES[i].title}`} onClick={()=>setFrame(depFrames[i])}/>)}
+                        {(frame !== depFrames[i]) && (<FrameButton frame={depFrames[i]} active={false} text={`Go to ${NAMES[sectionFrame(dependencies[i])]}`} onClick={()=>setFrame(depFrames[i])}/>)}
                 </Row>
             ))}
             <Collapse

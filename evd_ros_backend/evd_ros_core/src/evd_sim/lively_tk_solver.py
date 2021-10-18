@@ -45,13 +45,13 @@ class LivelyTKSolver(object):
             self.config_data['starting_config'][0],
             joints)
 
-    def step(self, pose, finalJoints=[0,0,0,0,0,0]):
+    def step(self, pose, finalJoints=[0,0,0,0,0,0], jointWeights=[0,0,0,0,0,0], positionWeight=30, orientationWeight=20):
         if self.solver == None:
             raise Exception('Solver not initialized')
 
         self.target_directions[0] = {'vector':[pose.position.x, pose.position.y, pose.position.z]}
         self.target_directions[1] = {'quaternion':[pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z]}
-        self.target_directions[2] = {'vector':[0,0,1]}
+        self.target_directions[2] = {'vector':[0,0,0]} # We are ignoring for now
         self.target_directions[3] = {'scalar': finalJoints[0]}
         self.target_directions[4] = {'scalar': finalJoints[1]}
         self.target_directions[5] = {'scalar': finalJoints[2]}
@@ -59,6 +59,18 @@ class LivelyTKSolver(object):
         self.target_directions[7] = {'scalar': finalJoints[4]}
         self.target_directions[8] = {'scalar': finalJoints[5]}
 
+        '''
+        self.current_weights[0] = positionWeight
+        self.current_weights[1] = orientationWeight
+        self.current_weights[2] = 0
+        self.current_weights[3] = jointWeights[0]
+        self.current_weights[4] = jointWeights[1]
+        self.current_weights[5] = jointWeights[2]
+        self.current_weights[6] = jointWeights[3]
+        self.current_weights[7] = jointWeights[4]
+        self.current_weights[8] = jointWeights[5]
+        '''
+        
         inputs = []
         for idx, objective in enumerate(self.config.objectives):
             input_value = {}

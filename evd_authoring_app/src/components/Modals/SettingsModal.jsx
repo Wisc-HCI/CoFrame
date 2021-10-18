@@ -1,19 +1,21 @@
 import React from 'react';
 
-import { Modal, Input, Alert } from 'antd';
+import { Modal, Input, Alert, InputNumber } from 'antd';
 
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 
 export const SettingsModal = (_) => {
 
-    const {activeModal, closeModal, url, setUrl, connection, connect} = useStore(state=>({
+    const {activeModal, closeModal, url, setUrl, connection, connect, issueSettings, updateIssueSetting} = useStore(state=>({
         activeModal:state.activeModal,
         closeModal:state.closeModal,
         url:state.url,
         setUrl:state.setUrl,
         connection:state.connection,
-        connect:state.connect
+        connect:state.connect,
+        issueSettings: state.issueSettings,
+        updateIssueSetting: state.updateIssueSetting
     }),shallow);
     
     let connectButtonText = 'Connect';
@@ -21,6 +23,11 @@ export const SettingsModal = (_) => {
         connectButtonText = 'Connecting'
     } else if (connection === 'connected') {
         connectButtonText = 'Reconnect'
+    }
+
+    const updateIssue = (value, issue) => {
+        const item = {uuid: issue.uuid, name: issue.name, value: value};
+        updateIssueSetting(item);
     }
 
     return (
@@ -46,6 +53,26 @@ export const SettingsModal = (_) => {
                 onSearch={connect}
                 disabled={connection === 'connecting'}
             />
+
+            {issueSettings && Object.values(issueSettings).map((entry) => {
+                return <div key={entry.name.concat('div')} style={{marginTop: 5}}>
+                    <label key={entry.name.concat('label')}> {entry.name}:
+                    {!entry.max && <InputNumber 
+                        key={entry.name.concat('input')}
+                        min={entry.min}
+                        defaultValue={entry.value}
+                        onChange={(e)=>updateIssue(e, entry)}/>
+                    }
+                    {entry.max && <InputNumber 
+                        key={entry.name.concat('input')}
+                        min={entry.min}
+                        max={entry.max}
+                        defaultValue={entry.value}
+                        onChange={(e)=>updateIssue(e, entry)}/>
+                    }
+                    </label>
+                    </div>
+            })}
         </Modal>
     );
 }

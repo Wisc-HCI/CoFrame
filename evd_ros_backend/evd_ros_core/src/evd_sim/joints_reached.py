@@ -1,4 +1,6 @@
-  
+
+import math
+
 
 def jointsReached(joints, targets, threshold):
     if len(joints) != len(targets):

@@ -23,7 +23,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
       state.moveChildPrimitive, state.insertChildPrimitive, state.deleteChildPrimitive]),shallow);
 
   const [data, executable] = useStore(useCallback((state) => {
-    const data = staticData ? staticData : state.data.primitives[uuid]
+    const data = staticData ? staticData : state.data.primitives[uuid] ? state.data.primitives[uuid] : {primitiveIds:[],type:''}
     return [
       data,
       state.executablePrimitives[data.uuid] ? true : false

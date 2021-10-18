@@ -557,4 +557,18 @@
     <child link="ur3e_pedestal_link"/>
     <origin rpy="0.0 0 0" xyz="0.0 -0.15 -0.38"/>
   </joint>
+
+  <link name="tool0_endpoint" type="fixed">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.025"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="tool0_to_tool0_endpoint" type="fixed">
+    <parent link="tool0"/>
+    <child link="tool0_endpoint"/>
+    <origin rpy="0.0 0 0" xyz="0.0 0.0 0.15"/>
+  </joint>
 </robot>

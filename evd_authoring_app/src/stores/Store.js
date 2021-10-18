@@ -15,7 +15,8 @@ import {ComputedSlice} from './ComputedSlice';
 // import { INITIAL_SIM } from "./initialSim";
 // import fakeEvdData from './fakeEvdData';
 // import KNIFE_TASK from './knifeTask';
-import KnifeAssembly from './Knife_Assembly.json';
+// import KnifeAssembly from './Knife_Assembly.json';
+import KnifeAssembly from './Knife_Assembly_CS2.5.json';
 
 const immer = (config) => (set, get, api) =>
   config(
