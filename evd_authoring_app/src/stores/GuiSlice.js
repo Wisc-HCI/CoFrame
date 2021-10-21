@@ -17,8 +17,7 @@ const ACTIVE_TFS = [
 export const GuiSlice = (set, get) => ({
   // EDITOR/SETUP/MAIN
   // The frame specifies the expert (color) frame
-  //positionVec : [0,0,0],
-  //setPositionVec : (vec) => set(_ => ({postionVec : vec})),
+  editorTransform: {x: 0, y: 0, zoom: 1},
   frame: 'safety',
   primaryColor: frameStyles.colors['safety'],
   setFrame: (frame) => set(state => {

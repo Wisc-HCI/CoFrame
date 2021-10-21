@@ -52,7 +52,7 @@ export const NodeZone = ({ ancestors, children, context, onDrop, emptyMessage, d
     const showChildren = !empty && !showPreview;
 
     return (
-        <div ref={dropDisabled || !empty ? null : drop} style={{ ...containerStyle, ...style, }}>
+        <div className="nodrag" ref={dropDisabled || !empty ? null : drop} style={{ ...containerStyle, ...style, }}>
             {!showChildren && !showPreview && (
                 <div style={{ padding: 10 }}>
                     {emptyMessage}

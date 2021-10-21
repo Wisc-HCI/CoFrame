@@ -9,7 +9,7 @@ const skill2Call = (skill) => {
     skill.arguments.forEach(arg=>{parameters[arg.uuid] = null})
 
     return {
-        type: 'node.primitive.skill-call.',
+        type: 'skill-call',
         uuid: generateUuid('skill-call'),
         name: `Execute Skill: ${skill.name}`,
         editable: true,
@@ -25,7 +25,7 @@ export const SkillCallDrawer = (_) => {
         { uuid: 'drawer', ...acceptLookup.drawer.default }
     ];
 
-    const skills = useStore(state => Object.values(state.data.skills));
+    const skills = useStore(state => Object.values(state.data).filter(v=>v.type==='skill'));
 
     return (
         <React.Fragment>

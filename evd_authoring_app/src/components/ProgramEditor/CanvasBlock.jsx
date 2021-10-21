@@ -19,31 +19,30 @@ import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
 import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 
 const DEFAULT_ARG_NAMES = {
-    "node.machine.": 'Machine Parameter',
-    "node.trajectory.": 'Trajectory Parameter',
-    "node.pose.thing.": 'Thing Parameter',
-    "node.pose.waypoint.": 'Waypoint Parameter',
-    "node.pose.waypoint.location.": 'Location Parameter'
+    "machine": 'Machine Parameter',
+    "trajectory": 'Trajectory Parameter',
+    "thing": 'Thing Parameter',
+    "waypoint": 'Waypoint Parameter',
+    "location": 'Location Parameter'
 }
 
-export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,context,onDelete}) => {
+export const CanvasBlock = ({staticData,uuid,ancestors,context}) => {
 
-    const [frame,focusItem,deleteHierarchical,deleteChildPrimitive,
-        moveChildPrimitive,insertChildPrimitive, setItemProperty] = useStore(state=>(
-        [state.frame,state.focusItem,state.deleteHierarchical,state.deleteChildPrimitive,
+    const [frame,focusItem,deleteBlock,moveChildPrimitive,insertChildPrimitive, setItemProperty] = useStore(state=>(
+        [state.frame,state.focusItem,state.deleteBlock,
         state.moveChildPrimitive,state.insertChildPrimitive,state.setItemProperty]),shallow);
     
     const createSkillArgument = useStore(state=>state.createSkillArgument);
 
     const data = useStore(useCallback((state)=>{
-        return staticData ? staticData : state.data.skills[uuid];
+        return staticData ? staticData : state.data[uuid];
     },[staticData,uuid]),shallow)
     
     const focused = focusItem.uuid === data.uuid;
     const [editing, setEditing] = useState(false);
     // const toggleSkillEditable = useStore(state=>state.toggleSkillEditable);
 
-    const fieldData = acceptLookup['node.primitive.hierarchical.skill.'].primitiveIds;
+    const fieldData = acceptLookup['skill'].children;
 
     const inDrawer = ancestors[0].uuid === 'drawer';
     const editingEnabled = !inDrawer && data.editable;
@@ -54,14 +53,14 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     ];
 
     // Code for handling the draggability of the skill node itself
-    const [{ isDragging }, drag, preview] = useDrag(() => ({
-        type: data.type,
-        item: { ...data, parentData, dragBehavior, onDelete},
-        options: { dragEffect: dragBehavior },
-        collect: monitor => ({
-          isDragging: monitor.isDragging()
-        })
-    }))
+    // const [{ isDragging }, drag, preview] = useDrag(() => ({
+    //     type: data.type,
+    //     item: { ...data, parentData, dragBehavior, onDelete},
+    //     options: { dragEffect: dragBehavior },
+    //     collect: monitor => ({
+    //       isDragging: monitor.isDragging()
+    //     })
+    // }))
 
     // Code for handling how primitives are handled when dropped in
     const primitiveDrop = (dropData, idx) => {
@@ -88,41 +87,39 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
     let currentContext = {
         ...context
     };
-    data.arguments.forEach(arg=>{
-        currentContext[arg.uuid] = {name:arg.name,real:false}
-    })
+    if (data.type === "skill") {
+        data.arguments.forEach(arg=>{
+            currentContext[arg.uuid] = {name:arg.name,real:false}
+        })
+    }
 
     const onChildDelete = (dropData) => {
-        if (dropData.type.includes('hierarchical')) {
-          deleteHierarchical(dropData,data.uuid)
-        } else {
-          deleteChildPrimitive(data.uuid,dropData.uuid)
-        }
+        deleteBlock(dropData,data.uuid)
       }
 
     const dragBlockStyles = {
         display:'inline-block',
-        position: ancestors[0].uuid === 'drawer' ? 'relative' : 'absolute',
-        left:data.transform.x,
-        top:data.transform.y,
+        // position: ancestors[0].uuid === 'drawer' ? 'relative' : 'absolute',
+        // left:data.transform.x,
+        // top:data.transform.y,
         backgroundColor:
-          blockStyles['node.primitive.hierarchical.skill.'],
+          blockStyles[data.type],
         minHeight: 30,
         minWidth: 260,
         borderRadius: 3,
         padding: 5,
         zIndex: focused ? 100 : 1,
-        opacity: isDragging ? 0.4 : 1
+        // opacity: isDragging ? 0.4 : 1
     };
 
     return (
-        <div ref={preview} style={dragBlockStyles} className={focused?`focus-${frame}`:null}>
+        <div style={dragBlockStyles} className={focused?`focus-${frame}`:null}>
             <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-                <Row ref={editing ? null : drag} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: editing ? null : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
+                <Row wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: editing ? null : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
                     <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
                     <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : "grab" }} bordered={false} disabled={!editing} value={data.name} onChange={(e)=>setItemProperty('skill', data.uuid, 'name', e.target.value)} />
                 </Row>
-                <Row wrap={false} align='middle' style={{textAlign:'end'}}>
+                <Row className="nodrag" wrap={false} align='middle' style={{textAlign:'end'}}>
                     {editingEnabled ? <UnlockOutlined style={{marginRight:5,marginLeft:5}}/> : <LockOutlined style={{marginRight:5,marginLeft:5}}/>}
                     {editingEnabled && 
                     <Dropdown overlay={
@@ -156,7 +153,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                 </Row>
             </Row>
             <Row>
-                {!inDrawer && <EditableTagGroup skill={data} ancestors={skillAncestors}/>}
+                {!inDrawer && data.type === 'skill' && <EditableTagGroup skill={data} ancestors={skillAncestors}/>}
             </Row>
             <NodeZone
                 ancestors={skillAncestors}
@@ -165,7 +162,7 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                 dropDisabled={!editingEnabled}
                 context={currentContext}
             >
-                {data.primitiveIds.map((id, idx) => (
+                {data.children.map((id, idx) => (
                     <React.Fragment key={idx}>
                         {idx === 0 && (
                             <SortableSeparator
@@ -192,8 +189,8 @@ export const SkillBlock = ({staticData,uuid,parentData,dragBehavior,ancestors,co
                                 <SortableSeparator
                                     ancestors={skillAncestors}
                                     height={30}
-                                    end={idx === data.primitiveIds.length-1}
-                                    spacing={idx === data.primitiveIds.length-1 ? 0 : 5}
+                                    end={idx === data.children.length-1}
+                                    spacing={idx === data.children.length-1 ? 0 : 5}
                                     context={currentContext}
                                     onDrop={(dropData) => primitiveDrop(dropData, idx + 1)}
                                     dropDisabled={!editingEnabled}

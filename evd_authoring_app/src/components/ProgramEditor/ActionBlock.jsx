@@ -5,23 +5,23 @@ import { HierarchicalBlock } from './HierarchicalBlock';
 import { SkillCallBlock } from './SkillCallBlock';
 
 const COMPONENT_LOOKUP = {
-    'node.primitive.delay.':PrimitiveBlock,
-    'node.primitive.breakpoint':PrimitiveBlock,
-    'node.primitive.gripper.':PrimitiveBlock,
-    'node.primitive.machine-primitive.machine-initialize.':PrimitiveBlock,
-    'node.primitive.machine-primitive.machine-start.':PrimitiveBlock,
-    'node.primitive.machine-primitive.machine-stop.':PrimitiveBlock,
-    'node.primitive.machine-primitive.machine-wait.':PrimitiveBlock,
-    'node.primitive.move-trajectory.':PrimitiveBlock,
-    'node.primitive.move-unplanned.':PrimitiveBlock,
-    'node.primitive.skill-call.':SkillCallBlock,
-    'node.primitive.hierarchical.':HierarchicalBlock,
+    'delay':PrimitiveBlock,
+    'breakpoint':PrimitiveBlock,
+    'gripper':PrimitiveBlock,
+    'machine-initialize':PrimitiveBlock,
+    'process-start':PrimitiveBlock,
+    'process-stop':PrimitiveBlock,
+    'process-wait':PrimitiveBlock,
+    'move-trajectory':PrimitiveBlock,
+    'move-unplanned':PrimitiveBlock,
+    'skill-call':SkillCallBlock,
+    'hierarchical':HierarchicalBlock,
 }
 
 export const ActionBlock = (props) => {
 
     const type = useStore(state=>{
-        return props.staticData ? props.staticData.type : state.data.primitives[props.uuid]?.type
+        return props.staticData ? props.staticData.type : state.data[props.uuid]?.type
     })
     
     if (!type) {

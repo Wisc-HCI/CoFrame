@@ -26,7 +26,7 @@ export function App() {
     const simStyle = useSpring({width: simMode==='default' ? '45%' : '100%', config:config.stiff});
     const editStyle = useSpring({width: simMode==='default' ? '55%' : '0%', config:config.stiff});
     const connection = useStore(state=>state.connection);
-    const programName = useStore(state=>state.name);
+    const programName = useStore(state=>Object.values(state.data).filter(v=>v.type==='program')[0].name);
 
     useEffect(() => {
         if (frame === 'safety') {

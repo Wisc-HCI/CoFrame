@@ -18,7 +18,7 @@ import {ReactComponent as SkillIcon} from '../CustomIcons/Skill.svg';
 import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 import {ReactComponent as WaypointIcon} from '../CustomIcons/Waypoint.svg';
 import {ReactComponent as ContainerIcon} from '../CustomIcons/Container.svg';
-import { createWaypoint, createLocation, createMachine, createPlaceholder } from '../../stores/templates';
+import { createWaypoint, createLocation, createMachine, createThing } from '../../stores/templates';
 import { SkillCallDrawer } from './SkillCallDrawer';
 
 const SEARCHABLE = ['machines','locations','waypoints','placeholders']
@@ -73,11 +73,11 @@ export const Editor = () => {
       placeholders: {
         title: "Things",
         icon: <Icon component={ThingIcon}/>,
-        drawer: <UUIDDrawer itemType='placeholder'/>,
+        drawer: <UUIDDrawer itemType='thing'/>,
         addFn: (thingTypeUuid)=>{
-          const newPlaceholder = createPlaceholder(thingTypeUuid);
-          addItem('placeholder',newPlaceholder);
-          setFocusItem('placeholder',newPlaceholder.uuid);
+          const newThing = createThing(thingTypeUuid);
+          addItem('thing',newThing);
+          setFocusItem('thing',newThing.uuid);
         }
       },
       containers: {

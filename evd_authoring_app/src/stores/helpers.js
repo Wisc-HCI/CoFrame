@@ -17,6 +17,11 @@ const ROBOT_FRAMES = [
     'tool0_endpoint'
 ]
 
+export const PRIMITIVE_TYPES = [
+    'delay','gripper','machine-initialize','process-start','process-stop',
+    'process-wait','move-trajectory','move-unplanned','breakpoint','skill-call'
+]
+
 export const HUMAN_ZONE = { radius: 2, height: 3, position: { x: 0, y: -1, z: 1 } }
 
 export const DEFAULT_LOCATION_COLOR = { r: 62, g: 16, b: 102, a: 1 };
@@ -103,6 +108,20 @@ export function arrayMove(arr, old_index, new_index) {
     return arr; // for testing purposes
 };
 
+export function deleteAction(data, uuid) {
+    if (data[uuid].children) {
+        /* Delete as a hierarchical */
+        let children = data[uuid].children;
+        let updated = lodash.omit(data, uuid);
+        children.forEach(child=>{
+            updated = deleteAction(data, child)
+        })
+        return updated;
+    } else {
+        return lodash.omit(data,uuid)
+    }
+};
+
 export const occupancyOverlap = (position, occupancyZones) => {
     let overlap = false
     Object.values(occupancyZones).forEach(zone => {
@@ -123,7 +142,7 @@ export function flattenProgram(primitives, skills, parentData) {
     primitives.forEach(primitive => {
         if (primitive.type.includes('hierarchical')) {
             let newPrimitive = lodash.omit(primitive, 'primitives');
-            newPrimitive.primitiveIds = primitive.primitives.map(primitive => primitive.uuid);
+            newPrimitive.children = primitive.primitives.map(primitive => primitive.uuid);
             newPrimitive.parentData = { type: 'primitive', uuid: primitive }
             flattenedPrimitives.push(newPrimitive);
             const primitiveChildren = flattenProgram(primitive.primitives, [], { type: 'primitive', uuid: primitive.uuid })[0];
@@ -135,7 +154,7 @@ export function flattenProgram(primitives, skills, parentData) {
     skills.forEach(skill => {
         if (skill.type.includes('hierarchical')) {
             let newSkill = lodash.omit(skill, 'primitives');
-            newSkill.primitiveIds = skill.primitives.map(primitive => primitive.uuid);
+            newSkill.children = skill.primitives.map(primitive => primitive.uuid);
             flattenedSkills.push(newSkill);
             const primitiveChildren = flattenProgram(skill.primitives, [], { type: 'skill', uuid: skill.uuid })[0];
             flattenedPrimitives = [...flattenedPrimitives, ...primitiveChildren]
@@ -189,9 +208,12 @@ export function executableMachine(machine, context) {
 function executablePrimitiveInner(primitiveId, state, context) {
     let full = {};
     let executable = [];
-    if (primitiveId === state.uuid) {
-        // Program is the primitive;
-        if (state.primitiveIds.some(childId => {
+    const primitive = state.data[primitiveId];
+    if (!primitive) {
+        return null
+    }
+    if (primitive.children) {
+        if (primitive.children.some(childId => {
             const inner = executablePrimitiveInner(childId, state, context);
             if (inner === null || inner.children.includes(null)) {
                 return true
@@ -204,109 +226,81 @@ function executablePrimitiveInner(primitiveId, state, context) {
             // There was a null response
             return null
         } else {
-            return {children:executable,all:{...full,[primitiveId]:executable}}
+            return {children:executable,all:{...full,[primitive.uuid]:executable}}
         }
-    } else {
-        const primitive = state.data.primitives[primitiveId];
-        if (!primitive) {
+    } else if (primitive.type.includes('skill-call')) {
+        let innerContext = { ...context };
+        if (Object.keys(primitive.parameters).some(parameterKey => {
+            const value = primitive.parameters[parameterKey];
+            if (parameterKey !== 'skill_uuid' && context[value]) {
+                innerContext[parameterKey] = context[value]
+                return false
+            } else if (parameterKey !== 'skill_uuid') {
+                return true
+            }
+            return false
+        })) {
+            // There was a null param
             return null
         }
-        if (primitive.type.includes('hierarchical')) {
-            if (primitive.primitiveIds.some(childId => {
-                const inner = executablePrimitiveInner(childId, state, context);
-                if (inner === null || inner.children.includes(null)) {
-                    return true
-                } else {
-                    executable = [...executable, ...inner.children]
-                    full = {...full,...inner.all,[childId]:inner.children}
-                    return false
-                }
-            })) {
-                // There was a null response
-                return null
+        const calledSkill = state.data.skills[primitive.parameters.skill_uuid];
+        if (!calledSkill) {
+            return null
+        }
+        if (calledSkill.children.some(childId => {
+            const inner = executablePrimitiveInner(childId, state, innerContext);
+            if (inner === null || inner.children.includes(null)) {
+                return true
             } else {
-                return {children:executable,all:{...full,[primitive.uuid]:executable}}
-            }
-        } else if (primitive.type.includes('skill-call')) {
-            let innerContext = { ...context };
-            if (Object.keys(primitive.parameters).some(parameterKey => {
-                const value = primitive.parameters[parameterKey];
-                if (parameterKey !== 'skill_uuid' && context[value]) {
-                    innerContext[parameterKey] = context[value]
-                    return false
-                } else if (parameterKey !== 'skill_uuid') {
-                    return true
-                }
+                executable = [...executable, ...inner.children]
                 return false
-            })) {
-                // There was a null param
-                return null
             }
-            const calledSkill = state.data.skills[primitive.parameters.skill_uuid];
-            if (!calledSkill) {
-                return null
-            }
-            if (calledSkill.primitiveIds.some(childId => {
-                const inner = executablePrimitiveInner(childId, state, innerContext);
-                if (inner === null || inner.children.includes(null)) {
-                    return true
-                } else {
-                    executable = [...executable, ...inner.children]
-                    return false
-                }
-            })) {
-                // There was a null response
-                return null
-            } else {
-                return {children:executable,all:{[primitive.uuid]:executable}}
-            }
-        } else if (primitive.type === 'node.primitive.breakpoint.' || primitive.type === 'node.primitive.delay.') {
-            return {children:[primitive],all:{[primitive.uuid]:primitive}}
-        } else if (primitive.type === 'node.primitive.gripper.') {
-            if (context[primitive.parameters.thing_uuid]) {
-                const expanded = { ...primitive, parameters: { ...primitive.parameters, thing_uuid: context[primitive.parameters.thing_uuid] } }
-                return {children:[expanded],all:{[primitive.uuid]:expanded}}
-            } else {
-                return null
-            }
-        } else if (primitive.type.includes('machine-primitive')) {
-            if (context[primitive.parameters.machine_uuid]) {
-                const expanded = { ...primitive, parameters: { ...primitive.parameters, machine_uuid: context[primitive.parameters.machine_uuid] } }
-                return {children:[expanded],all:{[primitive.uuid]:expanded}}
-            } else {
-                return null
-            }
-        } else if (primitive.type === 'node.primitive.move-trajectory.') {
-            if (primitive.parameters.trajectory_uuid && context[primitive.parameters.trajectory_uuid]) {
-                const expanded = { ...primitive, parameters: { ...primitive.parameters, trajectory_uuid: context[primitive.parameters.trajectory_uuid] } }
-                return {children:[expanded],all:{[primitive.uuid]:expanded}}
-            } else {
-                return null
-            }
-        } else if (primitive.type === 'node.primitive.move-unplanned.') {
-            if (context[primitive.parameters.location_uuid]) {
-                const expanded = { ...primitive, parameters: { ...primitive.parameters, location_uuid: context[primitive.parameters.location_uuid] } }
-                return {children:[expanded],all:{[primitive.uuid]:expanded}}
-            } else {
-                return null
-            }
+        })) {
+            // There was a null response
+            return null
+        } else {
+            return {children:executable,all:{[primitive.uuid]:executable}}
+        }
+    } else if (primitive.type === 'node.primitive.breakpoint.' || primitive.type === 'node.primitive.delay.') {
+        return {children:[primitive],all:{[primitive.uuid]:primitive}}
+    } else if (primitive.type === 'node.primitive.gripper.') {
+        if (context[primitive.parameters.thing_uuid]) {
+            const expanded = { ...primitive, parameters: { ...primitive.parameters, thing_uuid: context[primitive.parameters.thing_uuid] } }
+            return {children:[expanded],all:{[primitive.uuid]:expanded}}
+        } else {
+            return null
+        }
+    } else if (primitive.type.includes('machine-primitive')) {
+        if (context[primitive.parameters.machine_uuid]) {
+            const expanded = { ...primitive, parameters: { ...primitive.parameters, machine_uuid: context[primitive.parameters.machine_uuid] } }
+            return {children:[expanded],all:{[primitive.uuid]:expanded}}
+        } else {
+            return null
+        }
+    } else if (primitive.type === 'node.primitive.move-trajectory.') {
+        if (primitive.parameters.trajectory_uuid && context[primitive.parameters.trajectory_uuid]) {
+            const expanded = { ...primitive, parameters: { ...primitive.parameters, trajectory_uuid: context[primitive.parameters.trajectory_uuid] } }
+            return {children:[expanded],all:{[primitive.uuid]:expanded}}
+        } else {
+            return null
+        }
+    } else if (primitive.type === 'node.primitive.move-unplanned.') {
+        if (context[primitive.parameters.location_uuid]) {
+            const expanded = { ...primitive, parameters: { ...primitive.parameters, location_uuid: context[primitive.parameters.location_uuid] } }
+            return {children:[expanded],all:{[primitive.uuid]:expanded}}
+        } else {
+            return null
         }
     }
     return null
 }
 
 export function executablePrimitives(state) {
-    let context = {
-        ...state.data.placeholders,
-        ...state.data.locations,
-        ...state.data.waypoints,
-        ...state.data.thingTypes,
-        ...state.data.regions
-    }
-    Object.values(state.data.trajectories).forEach(trajectory => {
+    let context = state.data;
+    Object.values(state.data).filter(v=>v.type === 'trajectory').forEach(trajectory => {
         context[trajectory.uuid] = executableTrajectory(trajectory, context)
     })
-    Object.values(state.data.machines).forEach(machine => {
+    Object.values(state.data).filter(v=>v.type === 'machine').forEach(machine => {
         context[machine.uuid] = executableMachine(machine, context)
     })
     // this should return all the primitives that are run through with the actual program
@@ -317,7 +311,7 @@ export function executablePrimitives(state) {
     }
 
     // this should catch any primitives not called directly through the program that are valid
-    Object.values(state.data.primitives).forEach(primitive=>{
+    Object.values(state.data).filter(v=>PRIMITIVE_TYPES.includes(v.type)).forEach(primitive=>{
         if (!executables[primitive.uuid]) {
             executables = {...executables, ...executablePrimitiveInner(primitive.uuid, state, context)}
         }
@@ -745,9 +739,9 @@ function interpolateScalar(x, y) {
 export function unFlattenProgramPrimitives(primitives, ids) {
     let unFlattenedPrimitives = [];
     ids.forEach(id => {
-        let newPrimitive = lodash.omit(primitives[id], 'primitiveIds');
+        let newPrimitive = lodash.omit(primitives[id], 'children');
         if (newPrimitive.type.includes('hierarchical')) {
-            newPrimitive.primitives = unFlattenProgramPrimitives(primitives, primitives[id].primitiveIds);
+            newPrimitive.primitives = unFlattenProgramPrimitives(primitives, primitives[id].children);
         };
         unFlattenedPrimitives.push(newPrimitive);
     });
@@ -758,8 +752,8 @@ export function unFlattenProgramSkills(skills, primitives) {
     let unflattenedSkillSet = Object.values(skills);
     let unFlattenedSkills = [];
     unflattenedSkillSet.forEach(skill => {
-        let newSkill = lodash.omit(skill, 'primitiveIds');
-        newSkill.primitives = unFlattenProgramPrimitives(primitives, skill.primitiveIds);
+        let newSkill = lodash.omit(skill, 'children');
+        newSkill.primitives = unFlattenProgramPrimitives(primitives, skill.children);
         unFlattenedSkills.push(newSkill);
     });
     return unFlattenedSkills;

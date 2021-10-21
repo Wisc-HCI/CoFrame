@@ -17,13 +17,13 @@ import useMeasure from 'react-use-measure';
 
 export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, dragDisabled, ancestors, context, onDelete, idx, after, locked }) => {
 
-  const [frame, focusItem, setFocusItem, setItemProperty, deleteHierarchical,
-    moveChildPrimitive, insertChildPrimitive, deleteChildPrimitive] = useStore(state => (
-      [state.frame, state.focusItem, state.setFocusItem, state.setItemProperty, state.deleteHierarchical,
-      state.moveChildPrimitive, state.insertChildPrimitive, state.deleteChildPrimitive]),shallow);
+  const [frame, focusItem, setFocusItem, setItemProperty, deleteBlock,
+    moveChildPrimitive, insertChildPrimitive] = useStore(state => (
+      [state.frame, state.focusItem, state.setFocusItem, state.setItemProperty, state.deleteBlock,
+      state.moveChildPrimitive, state.insertChildPrimitive]),shallow);
 
   const [data, executable] = useStore(useCallback((state) => {
-    const data = staticData ? staticData : state.data.primitives[uuid] ? state.data.primitives[uuid] : {primitiveIds:[],type:''}
+    const data = staticData ? staticData : state.data[uuid] ? state.data[uuid] : {children:[],type:''}
     return [
       data,
       state.executablePrimitives[data.uuid] ? true : false
@@ -65,7 +65,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
     }
   }
 
-  const fieldData = acceptLookup['node.primitive.hierarchical.'].primitiveIds;
+  const fieldData = acceptLookup['hierarchical'].children;
 
   const primitiveAncestors = [
     { uuid: data.uuid, ...fieldData },
@@ -87,11 +87,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
   };
 
   const onChildDelete = (dropData) => {
-    if (dropData.type.includes('hierarchical')) {
-      deleteHierarchical(dropData,data.uuid)
-    } else {
-      deleteChildPrimitive(data.uuid,dropData.uuid)
-    }
+    deleteBlock(dropData,data.uuid)
   }
 
   return (
@@ -106,7 +102,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
             {!inDrawer && <Button type='text' onClick={() => setExpanded(!expanded)} icon={<RightOutlined rotate={expanded ? 90 : 0} />} style={{zIndex:200}}/>}
             {editingEnabled && <Button type='text' onClick={() => setEditing(!editing)} icon={editing ? <SaveOutlined/> : <EditOutlined/>}/>}
             {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('primitive', uuid)}}/>}
-            <Badge count={data.primitiveIds.length} showZero={true} style={{backgroundColor:'rgba(0,0,0,0.3)',marginRight:5, marginLeft:5}}/>
+            <Badge count={data.children.length} showZero={true} style={{backgroundColor:'rgba(0,0,0,0.3)',marginRight:5, marginLeft:5}}/>
           </Row>
         </Row>
         <animated.div style={nodeListStyle}>
@@ -119,7 +115,7 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
               dropDisabled={!editingEnabled || isDragging || locked}
               context={context}
             >
-              {data.primitiveIds.map((id, idx) => (
+              {data.children.map((id, idx) => (
                 <React.Fragment key={idx}>
                   {idx === 0 && (
                     <SortableSeparator
@@ -146,8 +142,8 @@ export const HierarchicalBlock = ({ staticData, uuid, parentData, dragBehavior, 
                       <SortableSeparator
                         ancestors={primitiveAncestors}
                         height={40}
-                        end={idx === data.primitiveIds.length - 1}
-                        spacing={idx === data.primitiveIds.length - 1 ? 0 : 5}
+                        end={idx === data.children.length - 1}
+                        spacing={idx === data.children.length - 1 ? 0 : 5}
                         context={context}
                         onDrop={(dropData) => primitiveDrop(dropData, idx + 1)}
                         dropDisabled={!editingEnabled || isDragging || locked}

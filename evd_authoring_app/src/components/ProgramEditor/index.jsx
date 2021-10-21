@@ -2,6 +2,7 @@ import React from 'react';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+// import { MultiBackend } from 'react-dnd-multi-backend'
 import { Editor } from './Editor';
 
 export const ProgramEditor = (_) => {

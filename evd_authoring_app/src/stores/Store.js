@@ -2,6 +2,7 @@
 import create from 'zustand-store-addons';
 import produce from "immer";
 import { persist } from "zustand/middleware"
+import { createSelectorHooks } from 'auto-zustand-selectors-hook';
 import {GuiSlice} from './GuiSlice';
 import {ReviewSlice} from './ReviewSlice';
 import {EvdSlice} from './EvdSlice';
@@ -16,7 +17,7 @@ import {ComputedSlice} from './ComputedSlice';
 // import fakeEvdData from './fakeEvdData';
 // import KNIFE_TASK from './knifeTask';
 // import KnifeAssembly from './Knife_Assembly.json';
-import KnifeAssembly from './Knife_Assembly_CS2.5.json';
+import KnifeAssembly from './Knife_Assembly_Refactor.json';
 
 const immer = (config) => (set, get, api) =>
   config(
@@ -40,7 +41,8 @@ const store = (set, get) => ({
 const useStore = create(store,{...ComputedSlice,middleware:[immer]});
 
 // useStore.getState().setProgram(fakeEvdData.arbitrary.program);
-useStore.getState().setProgram(KnifeAssembly)
+useStore.getState().setData(KnifeAssembly)
+console.log(useStore.getState().data)
 // console.log(KNIFE_TASK.environment.trajectories[0])
 useStore.getState().setUrl('ws://localhost:9090');
 

@@ -17,13 +17,13 @@ import useMeasure from "react-use-measure";
 export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentData, dragBehavior, dragDisabled, onDelete }) => {
   
   const [focused, data, start_location, waypoints, end_location] = useStore(useCallback(state => {
-    const data = staticData ? staticData : state.data.trajectories[uuid] ? state.data.trajectories[uuid] : {uuid:'zombie',waypoint_uuids:[]};
+    const data = staticData ? staticData : state.data[uuid] ? state.data[uuid] : {uuid:'zombie',waypoints:[]};
     return [
       state.focusItem.uuid === data.uuid,
       data,
-      data.start_location_uuid ? state.data.locations[data.start_location_uuid] : null,
-      data.waypoint_uuids.map(uuid => state.data.waypoints[uuid]),
-      data.end_location_uuid ? state.data.locations[data.end_location_uuid] : null,
+      data.startLocation ? state.data[data.startLocation] : null,
+      data.waypoints.map(uuid => state.data[uuid]),
+      data.endLocation ? state.data[data.endLocation] : null,
     ]
   }, [staticData, uuid]), shallow);
 
@@ -102,9 +102,9 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
   const startDrop = (dropData) => {
     if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
       setItemProperty('trajectory', uuid, dropData.parentData.field, null);
-      setItemProperty('trajectory', uuid, 'start_location_uuid', dropData.uuid);
+      setItemProperty('trajectory', uuid, 'startLocation', dropData.uuid);
     } else {
-      setItemProperty('trajectory', uuid, 'start_location_uuid', dropData.uuid);
+      setItemProperty('trajectory', uuid, 'startLocation', dropData.uuid);
     }
   }
 
@@ -123,9 +123,9 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
   const endDrop = (dropData) => {
     if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
       setItemProperty('trajectory', uuid, dropData.parentData.field, null);
-      setItemProperty('trajectory', uuid, 'end_location_uuid', dropData.uuid);
+      setItemProperty('trajectory', uuid, 'endLocation', dropData.uuid);
     } else {
-      setItemProperty('trajectory', uuid, 'end_location_uuid', dropData.uuid);
+      setItemProperty('trajectory', uuid, 'endLocation', dropData.uuid);
     }
   }
 
@@ -226,11 +226,11 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                 idx={0}
                 hoverBehavior='replace'
                 dragBehavior='move'
-                parentData={{ type: 'trajectory', uuid, field: 'start_location_uuid' }}
+                parentData={{ type: 'trajectory', uuid, field: 'startLocation' }}
                 ancestors={trajectoryLocationAncestors}
                 context={context}
                 data={{ ...start_location, itemType: 'location', type: `uuid-location` }}
-                onDelete={(_) => setItemProperty('trajectory', uuid, 'start_location_uuid', null)}
+                onDelete={(_) => setItemProperty('trajectory', uuid, 'startLocation', null)}
                 onDrop={startDrop}
                 dragDisabled={!editingEnabled}
                 dropDisabled={!editingEnabled}
@@ -312,11 +312,11 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                 idx={0}
                 hoverBehavior='replace'
                 dragBehavior='move'
-                parentData={{ type: 'trajectory', uuid, field: 'end_location_uuid' }}
+                parentData={{ type: 'trajectory', uuid, field: 'endLocation' }}
                 ancestors={trajectoryLocationAncestors}
                 context={context}
                 data={{ ...end_location, itemType: 'location', type: `uuid-location` }}
-                onDelete={(_) => setItemProperty('trajectory', uuid, 'end_location_uuid', null)}
+                onDelete={(_) => setItemProperty('trajectory', uuid, 'endLocation', null)}
                 onDrop={endDrop}
                 dragDisabled={!editingEnabled}
                 dropDisabled={!editingEnabled}

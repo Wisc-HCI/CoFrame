@@ -25,33 +25,17 @@ export const PrimitiveBlock = ({
   const [focused, data, parameters, executable] = useStore(useCallback(state => {
     let parameterValues = {};
 
-    const data = staticData ? staticData : state.data.primitives[uuid] ? state.data.primitives[uuid] : {parameters:{},type:''};
+    const data = staticData ? staticData : state.data[uuid] ? state.data[uuid] : {parameters:{},type:''};
     const executable = state.executablePrimitives[data.uuid] ? true : false;
 
     // If there is a param and it exists in the context, create a fake data object, otherwise use the value in the store, if it exists there.
-    if (data.parameters.machine_uuid && state.data.machines[data.parameters.machine_uuid]) {
-      parameterValues.machine = state.data.machines[data.parameters.machine_uuid]
-    } else if (data.parameters.machine_uuid && context[data.parameters.machine_uuid]) {
-      parameterValues.machine = { uuid: data.parameters.machine_uuid, ...context[data.parameters.machine_uuid] }
-    }
-
-    if (data.parameters.thing_uuid && state.data.placeholders[data.parameters.thing_uuid]) {
-      parameterValues.thing = state.data.placeholders[data.parameters.thing_uuid]
-    } else if (data.parameters.thing_uuid && context[data.parameters.thing_uuid]) {
-      parameterValues.thing = { uuid: data.parameters.thing_uuid, pending_node: context[data.parameters.thing_uuid] }
-    }
-
-    if (data.parameters.trajectory_uuid && state.data.trajectories[data.parameters.trajectory_uuid]) {
-      parameterValues.trajectory = {...state.data.trajectories[data.parameters.trajectory_uuid],real:true}
-    } else if (data.parameters.trajectory_uuid && context[data.parameters.trajectory_uuid]) {
-      parameterValues.trajectory = { uuid: data.parameters.trajectory_uuid, ...context[data.parameters.trajectory_uuid] }
-    }
-
-    if (!data.parameters.location_uuid && !context[data.parameters.location_uuid]) {
-      parameterValues.location = state.data.locations[data.parameters.location_uuid]
-    } else if (data.parameters.location_uuid && context[data.parameters.location_uuid]) {
-      parameterValues.location = { uuid: data.parameters.location_uuid, ...context[data.parameters.location_uuid] }
-    }
+    Object.keys(data.parameters).forEach(parameter=>{
+      if (data.parameters[parameter] && state.data[data.parameters[parameter]]) {
+        parameterValues[parameter] = {...state.data[data.parameters[parameter]],real:true}
+      } else if (data.parameters[parameter] && context[data.parameters[parameter]]) {
+        parameterValues[parameter] = { uuid: data.parameters[parameter], ...context[data.parameters[parameter]] }
+      }
+    })
 
     return [
       state.focusItem.uuid === uuid,
@@ -110,8 +94,8 @@ export const PrimitiveBlock = ({
   const settingsStyle = useSpring({ height: height, config: config.stiff});
   
   const primitivesWithSettings = [
-    'node.primitive.gripper.',
-    'node.primitive.delay.'
+    'gripper',
+    'delay'
   ]
 
   const styles = {
@@ -135,9 +119,9 @@ export const PrimitiveBlock = ({
   }
 
   let Glyph = null;
-  if (data.type === 'node.primitive.skill-call.') {
+  if (data.type === 'skill-call') {
     Glyph = SkillIcon;
-  } else if (data.type === 'node.primitive.hierarchical.') {
+  } else if (data.type === 'hierarchical') {
     Glyph = ContainerIcon;
   } else {
     Glyph = PrimitiveIcon;
@@ -156,10 +140,10 @@ export const PrimitiveBlock = ({
 
   const trajectoryDrop = (dropData) => {
     if (dropData.type.includes('uuid')) {
-      setPrimitiveParameter('primitive', uuid, 'trajectory_uuid', dropData.uuid);
+      setPrimitiveParameter('primitive', uuid, 'trajectory', dropData.uuid);
     } else {
       console.log(dropData)
-      moveTrajectoryBlock(dropData, uuid, 'trajectory_uuid')
+      moveTrajectoryBlock(dropData, uuid, 'trajectory')
     }
   }
 
@@ -201,7 +185,7 @@ export const PrimitiveBlock = ({
             </Row>
             <animated.div style={{ overflow: 'hidden', ...settingsStyle }}>
               <div ref={settingsRef}>
-                {settingsExpanded && data.type === 'node.primitive.gripper.' && (
+                {settingsExpanded && data.type === 'gripper' && (
                   <>
                     <Row align="middle" style={fieldStyle}>
                       <Col flex={2}>Position:</Col>
@@ -249,7 +233,7 @@ export const PrimitiveBlock = ({
                     </Row>
                   </>
                 )}
-                {settingsExpanded && data.type === 'node.primitive.delay.' && (
+                {settingsExpanded && data.type === 'delay' && (
                   <>
                     <Row align="middle" style={fieldStyle}>
                       <Col flex={2}>Duration:</Col>
@@ -270,14 +254,14 @@ export const PrimitiveBlock = ({
               </div>
             </animated.div>
           </div>}
-        {data.type.includes("node.primitive.machine-primitive") && (
+        {['machine-initialize', 'process-start', 'process-wait', 'process-stop'].includes(data.type) && (
           <Row align="middle" style={fieldStyle}>
             <Col flex={2} style={{ paddingRight: 5 }}>Machine:</Col>
             <Col flex={3}>
               <NodeZone
                 ancestors={parameterAncestors.machine}
                 context={context}
-                onDrop={(dropData) => parameterDrop(dropData, 'machine_uuid')}
+                onDrop={(dropData) => parameterDrop(dropData, 'machine')}
                 emptyMessage='No Machine'
                 dropDisabled={!editingEnabled}
               >
@@ -290,10 +274,10 @@ export const PrimitiveBlock = ({
                     hoverBehavior='replace'
                     ancestors={parameterAncestors.machine}
                     context={context}
-                    parentData={{ type: 'primitive', uuid, field: 'machine_uuid' }}
+                    parentData={{ type: 'primitive', uuid, field: 'machine' }}
                     data={{ ...parameters.machine, itemType: 'machine', type: `uuid-machine` }}
-                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'machine_uuid', null)}
-                    onDrop={(dropData) => parameterDrop(dropData, 'machine_uuid')}
+                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'machine', null)}
+                    onDrop={(dropData) => parameterDrop(dropData, 'machine')}
                     dragDisabled={!editingEnabled}
                     dropDisabled={!editingEnabled}
                   />
@@ -303,15 +287,15 @@ export const PrimitiveBlock = ({
             </Col>
           </Row>
         )}
-        {data.type.includes("node.primitive.move-trajectory") && (
+        {data.type === 'move-trajectory' && (
           <Row align="middle" style={fieldStyle}>
             <Col flex={2} style={{ paddingRight: 5 }}>Trajectory:</Col>
             <Col flex={3}>
               <NodeZone
                 ancestors={parameterAncestors.trajectory}
                 context={context}
-                parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
-                onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory_uuid', parameters.trajectory.uuid)}
+                parentData={{ type: 'primitive', uuid, field: 'trajectory' }}
+                onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory', parameters.trajectory.uuid)}
                 onDrop={trajectoryDrop}
                 emptyMessage='No Trajectory'
                 dropDisabled={!editingEnabled}
@@ -321,11 +305,11 @@ export const PrimitiveBlock = ({
                     <TrajectoryBlock
                       uuid={parameters.trajectory.uuid}
                       idx={0}
-                      parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
+                      parentData={{ type: 'primitive', uuid, field: 'trajectory' }}
                       ancestors={parameterAncestors.trajectory}
                       dragBehavior='move'
                       dragDisabled={!editingEnabled}
-                      onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory_uuid', parameters.trajectory.uuid)}
+                      onDelete={(_) => deletePrimitiveTrajectory(uuid, 'trajectory', parameters.trajectory.uuid)}
                       context={context}
                     />
                   ) : (
@@ -337,9 +321,9 @@ export const PrimitiveBlock = ({
                       hoverBehavior='replace'
                       ancestors={parameterAncestors.trajectory}
                       context={context}
-                      parentData={{ type: 'primitive', uuid, field: 'trajectory_uuid' }}
+                      parentData={{ type: 'primitive', uuid, field: 'trajectory' }}
                       data={{ ...parameters.trajectory, itemType: 'trajectory', type: `uuid-trajectory` }}
-                      onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'trajectory_uuid', null)}
+                      onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'trajectory', null)}
                       onDrop={trajectoryDrop}
                       dragDisabled={!editingEnabled}
                       dropDisabled={!editingEnabled}
@@ -350,14 +334,14 @@ export const PrimitiveBlock = ({
             </Col>
           </Row>
         )}
-        {data.type.includes("node.primitive.move-unplanned") && (
+        {data.type === 'move-unplanned' && (
           <Row align="middle" style={fieldStyle}>
             <Col flex={2} style={{ paddingRight: 5 }}>To Location:</Col>
             <Col flex={3}>
               <NodeZone
                 ancestors={parameterAncestors.location}
                 context={context}
-                onDrop={(dropData) => parameterDrop(dropData, 'location_uuid')}
+                onDrop={(dropData) => parameterDrop(dropData, 'location')}
                 emptyMessage='No Location'
                 dropDisabled={!editingEnabled}
               >
@@ -370,10 +354,10 @@ export const PrimitiveBlock = ({
                     hoverBehavior='replace'
                     ancestors={parameterAncestors.location}
                     context={context}
-                    parentData={{ type: 'primitive', uuid, field: 'location_uuid' }}
+                    parentData={{ type: 'primitive', uuid, field: 'location' }}
                     data={{ ...parameters.location, itemType: 'location', type: `uuid-location` }}
-                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'location_uuid', null)}
-                    onDrop={(dropData) => parameterDrop(dropData, 'location_uuid')}
+                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'location', null)}
+                    onDrop={(dropData) => parameterDrop(dropData, 'location')}
                     dragDisabled={!editingEnabled}
                     dropDisabled={!editingEnabled}
                   />
@@ -383,14 +367,14 @@ export const PrimitiveBlock = ({
             </Col>
           </Row>
         )}
-        {data.type.includes("node.primitive.gripper") && (
+        {data.type === 'gripper' && (
           <Row align="middle" style={fieldStyle}>
             <Col flex={2} style={{ paddingRight: 5 }}>Thing:</Col>
             <Col flex={3}>
               <NodeZone
                 ancestors={parameterAncestors.thing}
                 context={context}
-                onDrop={(dropData) => parameterDrop(dropData, 'thing_uuid')}
+                onDrop={(dropData) => parameterDrop(dropData, 'thing')}
                 emptyMessage='No Thing'
                 dropDisabled={!editingEnabled}
               >
@@ -403,10 +387,10 @@ export const PrimitiveBlock = ({
                     hoverBehavior='replace'
                     ancestors={parameterAncestors.thing}
                     context={context}
-                    parentData={{ type: 'primitive', uuid, field: 'thing_uuid' }}
+                    parentData={{ type: 'primitive', uuid, field: 'thing' }}
                     data={{ ...parameters.thing, itemType: 'placeholder', type: `uuid-placeholder` }}
-                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'thing_uuid', null)}
-                    onDrop={(dropData) => parameterDrop(dropData, 'thing_uuid')}
+                    onDelete={(_) => setPrimitiveParameter('primitive', uuid, 'thing', null)}
+                    onDrop={(dropData) => parameterDrop(dropData, 'thing')}
                     dragDisabled={!editingEnabled}
                     dropDisabled={!editingEnabled}
                   />

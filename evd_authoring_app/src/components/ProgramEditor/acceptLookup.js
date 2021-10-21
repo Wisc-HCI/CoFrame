@@ -7,10 +7,10 @@ export const acceptLookup = {
         }
     },
     'grid': {
-        primitiveIds:{
+        children:{
             accepts:[
-                'node.primitive.hierarchical.skill.',
-                'node.primitive.hierarchical.program.'
+                'skill',
+                'program'
             ],
             placement:'free'
         }
@@ -20,19 +20,19 @@ export const acceptLookup = {
             accepts:[
                 'uuid-machine',
                 'uuid-waypoint',
-                'node.primitive.hierarchical.skill.',
-                'node.primitive.delay.',
-                'node.primitive.breakpoint',
-                'node.primitive.gripper.',
-                'node.primitive.machine-primitive.machine-initialize.',
-                'node.primitive.machine-primitive.machine-start.',
-                'node.primitive.machine-primitive.machine-stop.',
-                'node.primitive.machine-primitive.machine-wait.',
-                'node.primitive.move-trajectory.',
-                'node.primitive.move-unplanned.',
-                'node.primitive.skill-call.',
-                'node.primitive.hierarchical.',
-                'node.trajectory.',
+                'skill',
+                'delay',
+                'breakpoint',
+                'gripper',
+                'machine-initialize',
+                'process-start',
+                'process-stop',
+                'process-wait',
+                'move-trajectory',
+                'move-unplanned',
+                'skill-call',
+                'hierarchical',
+                'trajectory',
                 'uuid-location',
                 'uuid-waypoint',
                 'uuid-thing',
@@ -41,86 +41,86 @@ export const acceptLookup = {
             placement:'single'
         }
     },
-    'node.primitive.hierarchical.program.': {
-        primitiveIds:{
+    'program': {
+        children:{
             accepts:[
-                'node.primitive.delay.',
-                'node.primitive.breakpoint',
-                'node.primitive.gripper.',
-                'node.primitive.machine-primitive.machine-initialize.',
-                'node.primitive.machine-primitive.machine-start.',
-                'node.primitive.machine-primitive.machine-stop.',
-                'node.primitive.machine-primitive.machine-wait.',
-                'node.primitive.move-trajectory.',
-                'node.primitive.move-unplanned.',
-                'node.primitive.skill-call.',
-                'node.primitive.hierarchical.'
+                'delay',
+                'breakpoint',
+                'gripper',
+                'machine-initialize',
+                'process-start',
+                'process-stop',
+                'process-wait',
+                'move-trajectory',
+                'move-unplanned',
+                'skill-call',
+                'hierarchical'
             ],
             placement:'sequence'
         }
     },
-    'node.primitive.hierarchical.skill.': {
-        primitiveIds:{
+    'skill': {
+        children:{
             accepts:[
-                'node.primitive.delay.',
-                'node.primitive.breakpoint',
-                'node.primitive.gripper.',
-                'node.primitive.machine-primitive.machine-initialize.',
-                'node.primitive.machine-primitive.machine-start.',
-                'node.primitive.machine-primitive.machine-stop.',
-                'node.primitive.machine-primitive.machine-wait.',
-                'node.primitive.move-trajectory.',
-                'node.primitive.move-unplanned.',
-                'node.primitive.skill-call.',
-                'node.primitive.hierarchical.'
+                'delay',
+                'breakpoint',
+                'gripper',
+                'machine-initialize',
+                'process-start',
+                'process-stop',
+                'process-wait',
+                'move-trajectory',
+                'move-unplanned',
+                'skill-call',
+                'hierarchical'
             ],
             placement:'sequence'
         }
     },
-    'node.primitive.hierarchical.': {
-        primitiveIds:{
+    'hierarchical': {
+        children:{
             accepts:[
-                'node.primitive.delay.',
-                'node.primitive.breakpoint',
-                'node.primitive.gripper.',
-                'node.primitive.machine-primitive.machine-initialize.',
-                'node.primitive.machine-primitive.machine-start.',
-                'node.primitive.machine-primitive.machine-stop.',
-                'node.primitive.machine-primitive.machine-wait.',
-                'node.primitive.move-trajectory.',
-                'node.primitive.move-unplanned.',
-                'node.primitive.skill-call.',
-                'node.primitive.hierarchical.'
+                'delay',
+                'breakpoint',
+                'gripper',
+                'machine-initialize',
+                'process-start',
+                'process-stop',
+                'process-wait',
+                'move-trajectory',
+                'move-unplanned',
+                'skill-call',
+                'hierarchical'
             ],
             placement:'sequence'
         }
     },
-    'node.primitive.delay.':{},
-    'node.primitive.breakpoint':{},
-    'node.primitive.gripper.':{},
-    'node.primitive.machine-primitive.machine-initialize.':{},
-    'node.primitive.machine-primitive.machine-start.':{
+    'delay':{},
+    'breakpoint':{},
+    'gripper':{},
+    'machine-initialize':{},
+    'process-start':{
         machine_uuid: {
             accepts:['uuid-machine'],
             placment: 'single'
         }
     },
-    'node.primitive.machine-primitive.machine-stop.':{},
-    'node.primitive.machine-primitive.machine-wait.':{},
-    'node.primitive.move-trajectory.':{},
-    'node.primitive.move-unplanned.':{},
-    'node.primitive.skill-call.':{},
-    'node.trajectory.':{
-        start_location_uuid:{
-            accepts:['node.pose.waypoint.location.'],
+    'process-stop':{},
+    'process-wait':{},
+    'move-trajectory':{},
+    'move-unplanned':{},
+    'skill-call':{},
+    'node.trajectory':{
+        startLocation:{
+            accepts:['location'],
             placement: 'single'
         },
-        end_location_uuid:{
-            accepts:['node.pose.waypoint.location.'],
+        endLocation:{
+            accepts:['location'],
             placement: 'single'
         },
-        waypoint_uuids:{
-            accepts:['node.pose.waypoint.'],
+        waypoints:{
+            accepts:['waypoint'],
             placement: 'sequence'
         }
     }
