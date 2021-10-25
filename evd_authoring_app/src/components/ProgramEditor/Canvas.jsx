@@ -27,7 +27,13 @@ export const Canvas = () => {
         { uuid: 'grid', ...acceptLookup.grid.children }
     ];
 
-    const [blocks, moveItem, createAndPlaceItem, deleteBlock] = useStore(state => [lodash.filter(state.data,v=>v.type === 'program' || v.type === 'skill'), state.moveItem, state.createAndPlaceItem, state.deleteBlock], shallow);
+    const [blocks, setEditorTransform, moveItem, createAndPlaceItem, deleteBlock] = useStore(state => [
+        lodash.filter(state.data,v=>v.type === 'program' || v.type === 'skill'), 
+        state.setEditorTransform,
+        state.moveItem, 
+        state.createAndPlaceItem, 
+        state.deleteBlock
+    ], shallow);
     const nameLookup = useStore(state => lodash.filter(state.data, v=>['thing','location','waypoint','machine','trajectory'].includes(v.type)), shallow)
 
     // Do your draggable stuff here
@@ -64,51 +70,21 @@ export const Canvas = () => {
         />
     )
 
-    const initialElements = blocks.map(b=>({
+    const elements = blocks.map(b=>({
         id: b.uuid, 
         type: b.type,
         data: {ancestors,nameLookup,parentData,uuid:b.uuid},
         position: b.transform
     }));
 
-    console.log(initialElements)
-
-    // return (
-    //     <QuickPinchZoom onUpdate={onUpdate} minZoom={0.15} style={{ width: '100%', height: '100%', zIndex: 100, textAlign: 'left' }}>
-    //         <Grid ref={drop(ref)} onClick={clearFocusItem} >
-    //             <ProgramBlock
-    //                 ancestors={ancestors}
-    //                 context={nameLookup}
-    //                 dragBehavior='move'
-    //                 parentData={{ type: 'grid', uuid: 'grid' }}
-    //             />
-    //             {Object.keys(skills).map(uuid => (
-    //                 <SkillBlock
-    //                     key={uuid}
-    //                     uuid={uuid}
-    //                     onDelete={(dropData)=>deleteBlock(dropData,null)}
-    //                     parentData={{ type: 'grid', uuid: 'grid' }}
-    //                     dragBehavior='move'
-    //                     ancestors={ancestors}
-    //                     context={nameLookup} />
-    //             ))}
-    //         </Grid>
-    //     </QuickPinchZoom>
-
-
-    // )
-
-    const [elements, setElements] = useState(initialElements);
-    const onElementsRemove = (elementsToRemove) =>
-        setElements((els) => removeElements(elementsToRemove, els));
-    const onConnect = (params) => setElements((els) => addEdge(params, els));
-
     return (
         <ReactFlow
+            maxZoom={1.5}
             nodeTypes={{program: CanvasBlockNode, skill: CanvasBlockNode}}
+            onMove={(transform)=>{setEditorTransform(transform)}}
             elements={elements}
-            onElementsRemove={onElementsRemove}
-            onConnect={onConnect}
+            onElementsRemove={elements=>elements.forEach(element=>deleteBlock('grid', element.id))}
+            onConnect={(_) => {}}
             onLoad={(reactFlowInstance) => {reactFlowInstance.fitView()}}
             snapToGrid={true}
             snapGrid={[15, 15]}

@@ -6,10 +6,10 @@ import Icon, {CloseOutlined, PlusOutlined} from '@ant-design/icons';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 import { Canvas } from './Canvas';
-import { PrimitivesDrawer } from './PrimitivesDrawer';
-import { ContainersDrawer } from './ContainersDrawer';
-import { UUIDDrawer } from './UUIDDrawer';
-// import { ExecuteMacrosDrawer } from './ExecuteMacrosDrawer';
+import { PrimitivesDrawer } from './Drawers/PrimitivesDrawer';
+import { ContainersDrawer } from './Drawers/ContainersDrawer';
+import { UUIDDrawer } from './Drawers/UUIDDrawer';
+import { SkillCallDrawer } from './Drawers/SkillCallDrawer';
 import { DeleteZone } from './DeleteZone';
 import {ReactComponent as LocationIcon} from '../CustomIcons/Location.svg';
 import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
@@ -19,7 +19,6 @@ import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 import {ReactComponent as WaypointIcon} from '../CustomIcons/Waypoint.svg';
 import {ReactComponent as ContainerIcon} from '../CustomIcons/Container.svg';
 import { createWaypoint, createLocation, createMachine, createThing } from '../../stores/templates';
-import { SkillCallDrawer } from './SkillCallDrawer';
 
 const SEARCHABLE = ['machines','locations','waypoints','placeholders']
 

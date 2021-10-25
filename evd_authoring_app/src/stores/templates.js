@@ -4,8 +4,7 @@ export const primitiveTemplates = {
     'delay': {
         name: 'Delay',
         description: 'Delay robot for a specified time',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {
             duration: 1
         }
@@ -13,8 +12,7 @@ export const primitiveTemplates = {
     'gripper': {
         name: 'Move Gripper',
         description: 'Close or Open the robot gripper',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {
             position: 50,
             speed: 50,
@@ -26,8 +24,7 @@ export const primitiveTemplates = {
     'machine-initialize': {
         name: 'Machine Initialize',
         description: 'Initialize a machine',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {
             machine: null
         }
@@ -35,8 +32,7 @@ export const primitiveTemplates = {
     'process-start': {
         name: 'Process Start',
         description: 'Start a process',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {
             process: null,
             recipe: null
@@ -45,8 +41,7 @@ export const primitiveTemplates = {
     'process-stop': {
         name: 'Process Complete',
         description: 'Complete a process',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {
             process: null,
             recipe: null
@@ -55,8 +50,7 @@ export const primitiveTemplates = {
     'process-wait': {
         name: 'Process Wait',
         description: 'Pause a process',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {
             process: null,
             recipe: null
@@ -65,8 +59,7 @@ export const primitiveTemplates = {
     'move-trajectory': {
         name: 'Move Trajectory',
         description: 'Move the robot arm along a trajectory',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {
             velocity: 0.5, // suggestion (user configured)
             moveType: 'ee_ik',
@@ -77,8 +70,7 @@ export const primitiveTemplates = {
     'move-unplanned': {
         name: 'Move Unplanned',
         description: '[Dangerous] Move the robot to a specified location',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {
             velocity: 1,
             moveType: 'joint',
@@ -88,24 +80,23 @@ export const primitiveTemplates = {
     'breakpoint': {
         name: 'Breakpoint',
         description: 'Stop execution at this point',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         parameters: {}
     },
     'skill-call': {
         name: 'Skill Call',
         description: 'Execute a skill',
-        editable: true,
-        deleteable: true,
-        parameters: {} // TODO: FILL IN
+        readonly: false,
+        parameters: {
+            skill: null
+        } // TODO: FILL IN
     }
 }
 
 export const containerTemplates = {
     'trajectory': {
         name: 'New Trajectory',
-        deleteable: true,
-        editable: true,
+        readonly: false,
         description: 'A movement by the robot from one location to another.', // could be ''
         startLocation: null,
         endLocation: null,
@@ -115,16 +106,23 @@ export const containerTemplates = {
     'skill': {
         name: 'New Skill',
         transform: { x: 0, y: 0 },
-        editable: true,
-        deleteable: true,
+        readonly: false,
         description: 'A reusable and configurable behavior that can be executed from the elsewhere in the program.',
-        arguments: [],
+        arguments: [
+            /*
+            {
+                name: string, name for argument
+                uuid: string, unique identifier (used as key in skill-calls and children)
+                readonly: false,
+                type: string, type of argument (e.g. machine, trajectory, etc.)
+            }
+            */
+        ],
         children: []
     },
     'hierarchical': {
         name: 'New Group',
-        editable: true,
-        deleteable: true,
+        readonly: false,
         description: 'A simple grouping structure for related actions.',
         children: [],
         transform: {x: 0, y: 0}
@@ -132,7 +130,7 @@ export const containerTemplates = {
     'program': {
         name: 'New Program',
         editable: true,
-        deleteable: false,
+        readonly: false,
         description: 'The top-level program',
         parameters: {},
         children: [],
@@ -144,8 +142,7 @@ export const createWaypoint = () => ({
     type: 'waypoint',
     uuid: generateUuid('waypoint'),
     name: `New Waypoint`,
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string (optional)',
     reachable: false,
     trace: null,
@@ -167,8 +164,7 @@ export const createLocation = () => ({
     type: 'location',
     uuid: generateUuid('location'),
     name: `New Location`,
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string (optional)',
     reachable: false,
     trace: null,
@@ -189,8 +185,7 @@ export const createThing = (thingType) => ({
     type: 'thing',
     uuid: generateUuid('thing'),
     name: `New Thing`,
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string',
     thingType
 })
@@ -199,8 +194,7 @@ export const createThingType = () => ({
     type: 'thingType',
     uuid: generateUuid('thingType'),
     name: `New Thing Type`,
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string',
     mesh: 'box',
     safe: true,
@@ -211,8 +205,7 @@ export const createMachine = () => ({
     type: 'machine',
     uuid: generateUuid('machine'),
     name: `New Machine`,
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string',
     mesh: 'box',
     link: "world",
@@ -233,8 +226,7 @@ export const createProcess = () => ({
     type: 'process',
     uuid: generateUuid('process'),
     name: `New Process`,
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string',
     processTime: 0,
     machine: null,
@@ -246,8 +238,7 @@ export const createRobotAgent = () => ({
     type: 'robot-agent',
     uuid: generateUuid('robot-agent'),
     name: 'New Robot Agent',
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string'
 })
 
@@ -255,8 +246,7 @@ export const createHumanAgent = () => ({
     type: 'human-agent',
     uuid: generateUuid('human-agent'),
     name: 'New Human Agent',
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string'
 })
 
@@ -264,8 +254,7 @@ export const createZone = (agent) => ({
     type: 'zone',
     uuid: generateUuid('zone'),
     name: `New Zone`,
-    deleteable: true,
-    editable: true,
+    readonly: false,
     description: 'Some descriptor string',
     agent,
     scale: {

@@ -1,41 +1,33 @@
 import React from 'react';
 import { Row } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
-import { useDrop } from 'react-dnd';
-import { acceptLookup } from './acceptLookup';
-// import useStore from '../../stores/Store';
+import { useDroppable } from '@dnd-kit/core';
 
-export const DeleteZone = (_) => {
+export const DeleteZone = ({show, hovered}) => {
 
-    const acceptTypes = acceptLookup.trash.all.accepts;
+    // const acceptTypes = acceptLookup.trash.all.accepts;
 
     // const [deleteChildPrimitive,deleteHierarchical] = useStore(state=>[state.deleteChildPrimitive,state.deleteHierarchical]);
 
-    const [{isOver, canDrop}, drop] = useDrop({
-        accept: acceptTypes,
-        drop: (item, _) => {
-            console.log(item)
-            if (item.onDelete && item.deleteable) {
-                item.onDelete(item)
-            }
-        },
-        canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0 && item.deleteable),
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-            canDrop: monitor.canDrop()
-        })
-    })
+    // const [{isOver, canDrop}, drop] = useDrop({
+    //     accept: acceptTypes,
+    //     drop: (item, _) => {
+    //         console.log(item)
+    //         if (item.onDelete && item.deleteable) {
+    //             item.onDelete(item)
+    //         }
+    //     },
+    //     canDrop: (item, _) => (acceptTypes.indexOf(item.type)>=0 && item.deleteable),
+    //     collect: (monitor) => ({
+    //         isOver: monitor.isOver(),
+    //         canDrop: monitor.canDrop()
+    //     })
+    // })
 
-    if (!canDrop) {
-        console.log()
-    }
+    const {dropRef} = useDroppable({id:'delete'});
 
-    let opacity = 0.7;
-    let width = 70;
-    if (isOver) {
-        width = 300;
-        opacity = 0.5;
-    }
+    const opacity = hovered ? 0.5 : 0.7;
+    const width = hovered ? 300 : 70;
 
     const styles = {
         backgroundColor: '#a61d24',
@@ -52,7 +44,7 @@ export const DeleteZone = (_) => {
     }
 
     return (
-        <div hidden={!canDrop} ref={drop} style={styles} >
+        <div hidden={!show} ref={dropRef} style={styles} >
             <Row align='middle' justify='center' style={{flex:1,height:'100%',width:'100%',backgroundColor:`rgba(0,0,0,${opacity})`}}>
                 <DeleteFilled style={{color:'#a61d24',fontSize:40}}/>
             </Row>

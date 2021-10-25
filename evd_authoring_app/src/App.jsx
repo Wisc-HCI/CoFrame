@@ -106,12 +106,6 @@ export function App() {
                                 <animated.div style={{...editStyle,float:'right'}}>
                                     <ProgramTile/>
                                 </animated.div>
-                                {/* <Col style={{width:simMode==='default'? '45%' : '100%', transition: 'width 0.2s linear'}}>
-                                    
-                                </Col>
-                                <Col hidden={simMode!=='default'} style={{width:'55%'}}>
-                                    
-                                </Col> */}
                             </div>
                         </Layout.Content>
                     </Layout>
