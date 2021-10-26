@@ -2,18 +2,18 @@ import React, {useCallback, useState} from 'react';
 import { Input, Row, Button, Dropdown, Menu } from 'antd';
 import Icon, { EllipsisOutlined, UnlockOutlined, LockOutlined } from '@ant-design/icons';
 // import { ItemSortable } from './Wrappers';
-import { NodeList } from './NodeList';
-import useStore from '../../stores/Store';
+import { NodeList } from '../NodeList';
+import useStore from '../../../stores/Store';
 import shallow from 'zustand/shallow';
-import { acceptLookup } from './acceptLookup';
-import blockStyles from './blockStyles';
-import { ReactComponent as ContainerIcon } from '../CustomIcons/Container.svg'
-import './highlight.css';
-import { generateUuid } from '../../stores/generateUuid';
+import { acceptLookup } from '../acceptLookup';
+import blockStyles from '../blockStyles';
+import { ReactComponent as ContainerIcon } from '../../CustomIcons/Container.svg'
+import '../highlight.css';
+import { generateUuid } from '../../../stores/generateUuid';
 // import { EditableTagGroup } from './Tags/EditableTagGroup';
-import {ReactComponent as LocationIcon} from '../CustomIcons/Location.svg';
-import {ReactComponent as MachineIcon} from '../CustomIcons/Gear.svg';
-import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
+import {ReactComponent as LocationIcon} from '../../CustomIcons/Location.svg';
+import {ReactComponent as MachineIcon} from '../../CustomIcons/Gear.svg';
+import {ReactComponent as ThingIcon} from '../../CustomIcons/Thing.svg';
 import lodash from 'lodash';
 
 const DEFAULT_ARG_NAMES = {
@@ -24,7 +24,7 @@ const DEFAULT_ARG_NAMES = {
     "location": 'Location Parameter'
 }
 
-export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled}) => {
+export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,listeners,attributes}) => {
 
     const [frame,focusItem,deleteBlock,moveChildPrimitive,insertChildPrimitive, setItemProperty] = useStore(state=>(
         [state.frame,state.focusItem,state.deleteBlock,
@@ -70,19 +70,19 @@ export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled}) =>
     // }))
 
     // Code for handling how primitives are handled when dropped in
-    const primitiveDrop = (dropData, idx) => {
-        if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
-            const newIdx = dropData.idx <= idx ? idx - 1 : idx;
-            if (newIdx === dropData.idx) {
-                return
-            }
-            moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, newIdx);
-        } else if (dropData.dragBehavior === 'move') {
-            moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, idx)
-        } else {
-            insertChildPrimitive(dropData, uuid, idx);
-        }
-    }
+    // const primitiveDrop = (dropData, idx) => {
+    //     if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
+    //         const newIdx = dropData.idx <= idx ? idx - 1 : idx;
+    //         if (newIdx === dropData.idx) {
+    //             return
+    //         }
+    //         moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, newIdx);
+    //     } else if (dropData.dragBehavior === 'move') {
+    //         moveChildPrimitive(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, idx)
+    //     } else {
+    //         insertChildPrimitive(dropData, uuid, idx);
+    //     }
+    // }
 
     // Code for creating skill arguments
     const menuClickCreateArgument = e => {
@@ -109,10 +109,15 @@ export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled}) =>
         // opacity: isDragging ? 0.4 : 1
     };
 
+    const handleStuff = listeners && attributes ? {
+        ...listeners,
+        ...attributes
+    } : {}
+
     return (
         <div style={dragBlockStyles} className={focused?`focus-${frame}`:null}>
             <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-                <Row className='custom-drag-handle' wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: editing ? null : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
+                <Row className='custom-drag-handle' {...handleStuff} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: editing ? null : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
                     <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
                     <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : "grab" }} bordered={false} disabled={!editing} value={data.name} onChange={(e)=>setItemProperty('skill', data.uuid, 'name', e.target.value)} />
                 </Row>

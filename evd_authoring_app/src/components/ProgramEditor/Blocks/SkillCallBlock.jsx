@@ -11,7 +11,7 @@ import '../highlight.css';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 
-export const SkillCallBlock = ({ data, ancestors, context, dragDisabled }) => {
+export const SkillCallBlock = ({ data, ancestors, context, dragDisabled,listeners,attributes }) => {
 
   const [focused, skill, executable] = useStore(useCallback(state => {
     const executable = state.executablePrimitives[data.uuid] ? true : false;
@@ -25,9 +25,14 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled }) => {
   const [frame, setFocusItem, clearFocusItem, focusExists,
     setPrimitiveParameter] = useStore(
       (state) => [
-        state.frame, state.setFocusItem, 
+        state.frame, state.setFocusItem,
         state.clearFocusItem, state.focusItem.type !== null,
       ], shallow)
+
+  const handleStuff = listeners && attributes ? {
+    ...listeners,
+    ...attributes
+  } : {}
 
   const unfocused = focusExists && !focused;
 
@@ -65,7 +70,7 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled }) => {
     config: config.wobbly
   });
 
-  
+
 
   const styles = {
     backgroundColor:
@@ -88,10 +93,10 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled }) => {
   }
 
   return (
-    
+
     <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
       <Row wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Row wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
+        <Row {...handleStuff} wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
           <Icon style={{ marginLeft: 4, marginRight: 4 }} component={PrimitiveIcon} />
           {data.name}
         </Row>
@@ -106,9 +111,9 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled }) => {
             /> */}
         </Row>
       </Row>
-      {skill.arguments.map(argument=>(
+      {skill.arguments.map(argument => (
         <Row align="middle" style={fieldStyle}>
-          <Col flex={2} style={{ paddingRight: 5, textTransform: 'capitalize'}}>{argument.name}:</Col>
+          <Col flex={2} style={{ paddingRight: 5, textTransform: 'capitalize' }}>{argument.name}:</Col>
           <Col flex={3}>
             <NodeZone
               parentId={data.uuid}

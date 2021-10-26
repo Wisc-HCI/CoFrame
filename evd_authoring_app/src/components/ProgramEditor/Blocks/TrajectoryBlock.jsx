@@ -9,8 +9,8 @@ import { Row, Col, Button, Dropdown, Menu } from 'antd';
 import { ReactComponent as ContainerIcon } from '../../CustomIcons/Container.svg'
 import '../highlight.css';
 
-export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled }) => {
-  
+export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled,listeners,attributes }) => {
+
   const focused = useStore(useCallback(state => state.focusItem.uuid === data.uuid, [data]), shallow);
 
   const [
@@ -25,7 +25,7 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled }) => {
       state.insertTrajectoryWaypoint,
       state.deleteTrajectoryWaypoint,
       state.focusItem.type !== null
-    ],shallow);
+    ], shallow);
   const unfocused = focusExists && !focused;
 
   const inDrawer = ancestors[0].uuid === 'drawer';
@@ -42,6 +42,11 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled }) => {
     position: 'relative',
     zIndex: focused ? 100 : 1
   };
+
+  const handleStuff = listeners && attributes ? {
+    ...listeners,
+    ...attributes
+  } : {}
 
   const trajectoryWaypointAncestors = [
     { uuid: data.uuid, accepts: ['uuid-waypoint'] },
@@ -63,7 +68,7 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled }) => {
   return (
     <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
       <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Col span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', cursor: dragDisabled ? 'not-allowed' : 'grab' }}>
+        <Col {...handleStuff} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', cursor: dragDisabled ? 'not-allowed' : 'grab' }}>
           <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />{' '}{data.name}
         </Col>
         <Col span={6} offset={1} style={{ textAlign: 'end' }}>
@@ -91,7 +96,7 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled }) => {
             field='startLocation'
             ancestors={trajectoryLocationAncestors}
             context={context}
-            uuid={data.parameters.startLocation}
+            uuid={data.startLocation}
             dragDisabled={!editingEnabled}
           />
         </Col>
@@ -99,7 +104,7 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled }) => {
       <Row align="middle" style={fieldStyle}>
         <Col span="8">Waypoints:</Col>
         <Col span="16">
-          <NodeList ancestors={trajectoryWaypointAncestors} uuids={data.waypoints} context={context} dragDisabled={!editingEnabled}/>
+          <NodeList ancestors={trajectoryWaypointAncestors} uuids={data.waypoints} context={context} dragDisabled={!editingEnabled} />
         </Col>
       </Row>
       <Row align="middle" style={fieldStyle}>
@@ -110,7 +115,7 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled }) => {
             field='endLocation'
             ancestors={trajectoryLocationAncestors}
             context={context}
-            uuid={data.parameters.endLocation}
+            uuid={data.endLocation}
             dragDisabled={!editingEnabled}
           />
         </Col>

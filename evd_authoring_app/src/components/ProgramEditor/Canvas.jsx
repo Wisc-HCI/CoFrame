@@ -6,7 +6,7 @@ import { acceptLookup } from './acceptLookup';
 // import { Grid } from './Grid';
 import useStore from '../../stores/Store';
 // import { objectMap } from '../../stores/helpers';
-import { CanvasBlock } from './CanvasBlock';
+import { CanvasBlock } from './Blocks/CanvasBlock';
 import shallow from 'zustand/shallow';
 import ReactFlow, {
     removeElements,
