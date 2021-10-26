@@ -19,6 +19,7 @@ import {ReactComponent as ThingIcon} from '../CustomIcons/Thing.svg';
 import {ReactComponent as WaypointIcon} from '../CustomIcons/Waypoint.svg';
 import {ReactComponent as ContainerIcon} from '../CustomIcons/Container.svg';
 import { createWaypoint, createLocation, createMachine, createThing } from '../../stores/templates';
+import { SortableContext } from '@dnd-kit/sortable';
 
 const SEARCHABLE = ['machines','locations','waypoints','placeholders']
 
@@ -134,7 +135,9 @@ export const Editor = () => {
                   </Row>
                 )}
                 <div style={{width:'100%',marginTop:10, overflowY: 'scroll',height: SEARCHABLE.indexOf(activeDrawer) === -1 ? 'calc(100vh - 155pt)' : 'calc(100vh - 183pt)'}}>
-                  {drawers[activeDrawer].drawer}
+                  <SortableContext>
+                    {drawers[activeDrawer].drawer}
+                  </SortableContext>
                 </div>
                 
                </React.Fragment>
