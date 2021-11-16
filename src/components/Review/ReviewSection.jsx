@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 
-import { List, Switch, Collapse, Row, Space } from 'antd';
+import { List, Switch, Row, Space } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 
 import { ReviewIssue } from './ReviewIssue';
@@ -9,6 +9,8 @@ import useStore from '../../stores/Store';
 import { FrameButton } from '../FrameButton';
 
 import frameStyles from '../../frameStyles';
+
+import Collapse from '../Collapse';
 
 // import './custom.css'
 
@@ -62,26 +64,21 @@ export function ReviewSection({sectionId, blocked, initialBlocked}) {
                         {(frame !== depFrames[i]) && (<FrameButton frame={depFrames[i]} active={false} text={`Go to ${NAMES[sectionFrame(dependencies[i])]}`} onClick={()=>setFrame(depFrames[i])}/>)}
                 </Row>
             ))}
+            
             <Collapse
-                collapsible={!blocked ? null : 'disabled'} 
-                expandIcon={({ isActive }) => <CaretRightOutlined style={{color:'white'}} rotate={isActive ? 90 : 0} />}
-                style={{
-                    flex:1, 
-                    borderRadius: 3,
-                    opacity: !blocked ? 1 : 0.5,
-                    backgroundColor: '#1f1f1f',
-                    marginTop: 5, marginLeft: 5, marginRight: 5, marginBottom:0}}
-                expandIconPosition='right'
+                openable={!blocked}
+                borderWidth={3}
+                header={<Row style={{padding:10}}><h4>{name}</h4></Row>}
+                style={{marginBottom:5}}
+                extra={<Switch checkedChildren='Done!' checked={complete}/>}
             >
-                <Collapse.Panel style={{margin:0}} header={<span style={{color:'white'}}>{name}</span>} key="1" extra={<Switch checkedChildren='Done!' checked={complete}/>}>
-                    <List
-                        split={false}
-                        dataSource={issueIds}
-                        renderItem={(issue)=>(
-                            <ReviewIssue key={issue} issueId={issue}/>
-                        )}
-                    />
-                </Collapse.Panel>
+                <List
+                    split={false}
+                    dataSource={issueIds}
+                    renderItem={(issue)=>(
+                        <ReviewIssue key={issue} issueId={issue}/>
+                    )}
+                />
             </Collapse>
         </Space>
     </List.Item>

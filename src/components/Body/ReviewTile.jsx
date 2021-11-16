@@ -1,13 +1,14 @@
 import React from 'react';
-import { List, Card, Space, Button } from 'antd';
+import { List, Row, Space, Button } from 'antd';
 import { SyncOutlined } from '@ant-design/icons';
-
+import Tile from '../Tile';
 import { FrameButton } from '../FrameButton';
 
 import frameStyles from '../../frameStyles';
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 import { ReviewSection } from '../Review/ReviewSection';
+import { animated } from '@react-spring/web';
 
 const isComplete = (state, sectionId) => (state.sections[sectionId].issues.map(issueId=>state.issues[issueId]).filter(issue=>!issue.complete).length === 0);
 const isBlocked = (state, sectionId) => (state.sections[sectionId].dependencies.filter(dep=>!isComplete(state,dep)).length > 0)
@@ -31,7 +32,7 @@ export const ReviewTile = (_) => {
 
     return (
         <div style={{ height: '100%', paddingLeft: 10, paddingRight: 10, paddingBottom: 10, display: 'flex', flexDirection: 'column' }}>
-            <Space style={{ flexDirection: 'row', display: 'flex', justifyContent: 'space-between', margin: 5 }}>
+            <Space style={{ flexDirection: 'row', display: 'flex', justifyContent: 'space-between', marginTop: 5, marginBottom: 5 }}>
                 {FRAMES.map(frame => (
                     <FrameButton
                         key={frame.key}
@@ -41,13 +42,21 @@ export const ReviewTile = (_) => {
                         text={frame.title} />
                 ))}
             </Space>
-            <Card
-                extra={<Button icon={<SyncOutlined/>} onClick={refresh}>Refresh</Button>}
-                style={{ flex: 1 }}
-                bodyStyle={{ padding: 0, height:'calc(100vh - 150pt)',overflow:'auto'}}
-                title="Review"
+            <Tile
+                style={{ height:'calc(100vh - 100pt)',backgroundColor:'black'}}
+                borderWidth={5}
+                internalPaddingWidth={0.1}
+                header={
+                    <Row style={{width:'100%',paddingRight:10}} justify='space-between' align='middle'>
+                        <h3 style={{margin:'10pt'}}>
+                            Review
+                        </h3>
+                        <Button icon={<SyncOutlined/>} onClick={refresh}>Refresh</Button>
+                    </Row>
+                    
+                }
             >
-                <div style={{ height: '100%', borderWidth: 5, borderColor: frameStyles.colors[frameId] }}>
+                <div style={{height:'calc(100vh - 150pt)',overflowY:'scroll'}}>
                     <List
                         split={false}
                         dataSource={FRAMES[frameIdx].sections}
@@ -56,7 +65,7 @@ export const ReviewTile = (_) => {
                         )}
                     />
                 </div>
-            </Card>
+            </Tile>
         </div>
     );
 };

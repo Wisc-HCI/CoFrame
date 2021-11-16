@@ -1,0 +1,46 @@
+import React, {useState} from 'react';
+import { useSpring, animated } from '@react-spring/web';
+import { config } from 'react-spring';
+import { RightOutlined } from '@ant-design/icons';
+import { Row, Empty } from 'antd';
+
+export default function Collapse({openable, extra, style, header, children, backgroundColor, borderWidth, internalPaddingWidth}) {
+
+    const [open, setOpen] = useState(false)
+
+    const carrotStyle = useSpring({
+        rotate: open ? '90deg' : '0deg',
+        config: config.wobbly
+    });
+
+    const contentStyle = useSpring({ 
+        scaleY: open ? 1 : 0,
+        opacity: open ? 1 : 0,
+        config: config.stiff 
+      });
+
+    return (
+        <div style={{backgroundColor:'rgba(100,100,100,0.3)', padding: borderWidth, borderRadius: 3, ...style}}>
+            {header && (
+                <Row style={{paddingBottom:borderWidth,width:'100%'}} justify='space-between'>
+                    {header}
+                    <Row justify='end' align='middle'>
+                        {extra}
+                        <animated.div onClick={()=>{openable && setOpen(!open)}} style={{...carrotStyle, margin:10}}><RightOutlined/></animated.div>
+                    </Row>
+                </Row>
+            )}
+            {open && (
+                <animated.div 
+                style={{
+                    ...contentStyle,
+                    backgroundColor:backgroundColor?backgroundColor:'rgba(0,0,0,0.6)', 
+                    padding: internalPaddingWidth ? internalPaddingWidth : 10, 
+                    borderRadius: 3, color:'white'
+                }}>
+                {children ? children : <Empty/>}
+                </animated.div>
+            )}
+        </div>
+    )
+}
