@@ -1,10 +1,6 @@
-This project is composed of several subsystems each with their own inherited
-components with different license agreements. Please refer to each subsystem's
-LICENSE file for further details.
-
-- evd_authoring_app/LICENSE
-- evd_ros_backend/LICENSE
-- evd_unity_sim_app/LICENSE
+This project is composed of several packages each with their own inherited
+components with different license agreements. We use NPM to manage these
+dependencies. Please refer to that manifest for License information.
 
 Our code is under an MIT License provided below:
 

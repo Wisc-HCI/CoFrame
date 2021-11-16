@@ -1,0 +1,39 @@
+<launch>
+
+  <arg name="config_path"/>
+  <arg name="config_file_name"/>
+  <arg name="ros_frame_id"/>
+  <arg name="run_test" default="false"/>
+  <arg name="bullet_gui" default="false"/>
+
+  <include file="$(find evd_ros_core)/launch/rosbridge.launch"/>
+
+  <!-- <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher"/> -->
+  <!-- <node name="tf_world_publisher" pkg="evd_ros_core" type="tf_world_publisher.py">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node> -->
+
+  <node name="application_tf_handler" pkg="evd_ros_core" type="application_tf_handler.py">
+    <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+  </node>
+
+  <node name="robot_control_server" pkg="evd_ros_core" type="robot_control_server.py"/>
+
+  <node name="trace_processor" pkg="evd_ros_core" type="trace_processor_v2.py" output="screen">
+    <param name="config_path" value="$(arg config_path)" />
+    <param name="config_file_name" value="$(arg config_file_name)"/>
+    <param name="use_gui" value="$(arg bullet_gui)"/>
+  </node>
+
+  <node name="joint_processor" pkg="evd_ros_core" type="joint_processor.py" output="screen">
+    <param name="config_path" value="$(arg config_path)" />
+    <param name="config_file_name" value="$(arg config_file_name)"/>
+    <param name="use_gui" value="$(arg bullet_gui)"/>
+  </node>
+
+  <!-- For Debug -->
+  <include if="$(arg run_test)" file="$(find evd_ros_core)/launch/_test/test_core_application.launch">
+    <arg name="ros_frame_id" value="world"/>
+  </include>
+
+</launch>

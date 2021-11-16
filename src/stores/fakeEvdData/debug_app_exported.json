@@ -1,0 +1,1389 @@
+{
+    "type": "node.primitive.hierarchical.program.",
+    "name": "",
+    "uuid": "primitive.hierarchical.program.-py-f87315b6d2fd11eb907d00155d5e7d92",
+    "editable": true,
+    "deleteable": true,
+    "description": "",
+    "parameters": {},
+    "primitives": [],
+    "environment": {
+        "type": "node.context.environment.",
+        "name": "",
+        "uuid": "context.environment.-py-f8731304d2fd11eb907d00155d5e7d92",
+        "editable": true,
+        "deleteable": true,
+        "description": "",
+        "locations": [
+            {
+                "type": "node.pose.waypoint.location.",
+                "name": "home",
+                "uuid": "pose.waypoint.location.-py-f8735c2ed2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8735a08d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.2,
+                    "z": 0
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8735b20d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.location.",
+                "name": "pick stock",
+                "uuid": "pose.waypoint.location.-py-f873623cd2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f87360cad2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.1,
+                    "y": 0.3,
+                    "z": 0
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8736188d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.location.",
+                "name": "place stock",
+                "uuid": "pose.waypoint.location.-py-f8736796d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f87363f4d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.4,
+                    "y": 0.4,
+                    "z": 0.2
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f87366ced2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.location.",
+                "name": "retract",
+                "uuid": "pose.waypoint.location.-py-f8736ab6d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8736958d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.3,
+                    "y": 0.3,
+                    "z": 0.4
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f87369eed2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.location.",
+                "name": "pick_final",
+                "uuid": "pose.waypoint.location.-py-f8736d7cd2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8736c50d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.4,
+                    "y": 0.4,
+                    "z": 0.2
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8736ce6d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.location.",
+                "name": "place_final",
+                "uuid": "pose.waypoint.location.-py-f8737056d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8736f0cd2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": -0.1,
+                    "y": -0.1,
+                    "z": -0.1
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8736fc0d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            }
+        ],
+        "machines": [
+            {
+                "type": "node.machine.",
+                "name": "cnc",
+                "uuid": "reserved-machine-cnc",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "inputs": {},
+                "outputs": {},
+                "process_time": 0,
+                "mesh_id": null,
+                "pose_offset": {
+                    "type": "node.pose.",
+                    "name": "",
+                    "uuid": "pose.-py-f8737c2cd2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "link": "",
+                    "position": {
+                        "type": "node.position.",
+                        "name": "",
+                        "uuid": "position.-py-f8737ce0d2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "orientation": {
+                        "type": "node.orientation.",
+                        "name": "",
+                        "uuid": "orientation.-py-f8737e2ad2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                    }
+                },
+                "link": "",
+                "collision_mesh_uuid": null
+            }
+        ],
+        "things": [
+            {
+                "type": "node.pose.thing.",
+                "name": "boat",
+                "uuid": "reserved-thing-raw-stock",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f873a2d8d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f873a486d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                },
+                "thing_type_uuid": "reserved-thing-type-stock"
+            }
+        ],
+        "waypoints": [
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f873c9ded2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f873c7c2d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.03333333333333333,
+                    "y": 0.23333333333333334,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f873c8dad2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f873d82ad2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f873d672d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.06666666666666667,
+                    "y": 0.26666666666666666,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f873d76cd2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f873eb76d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f873e9b4d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.2,
+                    "y": 0.3333333333333333,
+                    "z": 0.06666666666666667
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f873eab8d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f873f7d8d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f873f634d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.30000000000000004,
+                    "y": 0.3666666666666667,
+                    "z": 0.13333333333333333
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f873f724d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f8740e80d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8740c1ed2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.3666666666666667,
+                    "y": 0.3666666666666667,
+                    "z": 0.26666666666666666
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8740d5ed2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f8742046d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8741e16d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.33333333333333337,
+                    "y": 0.33333333333333337,
+                    "z": 0.33333333333333337
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8741f4cd2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f8743cc0d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8743a5ed2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.3333333333333333,
+                    "y": 0.3333333333333333,
+                    "z": 0.33333333333333337
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8743bbcd2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f8744e54d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8744c2ed2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.3666666666666667,
+                    "y": 0.3666666666666667,
+                    "z": 0.2666666666666667
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8744d5ad2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f8746cead2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f8746a92d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.23333333333333336,
+                    "y": 0.23333333333333336,
+                    "z": 0.1
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f8746be6d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f87482d4d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f874809ad2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0.06666666666666671,
+                    "y": 0.06666666666666671,
+                    "z": 0.0
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f87481dad2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f8749a94d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f87498b4d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": -0.06666666666666668,
+                    "y": 0.0,
+                    "z": -0.06666666666666668
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f87499b8d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            },
+            {
+                "type": "node.pose.waypoint.",
+                "name": "",
+                "uuid": "pose.waypoint.-py-f874aaf2d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "link": "app",
+                "position": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f874a944d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": -0.03333333333333334,
+                    "y": 0.1,
+                    "z": -0.03333333333333334
+                },
+                "orientation": {
+                    "type": "node.orientation.",
+                    "name": "",
+                    "uuid": "orientation.-py-f874aa34d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0.7071068,
+                    "z": 0,
+                    "w": 0.7071068
+                },
+                "joints": null
+            }
+        ],
+        "trajectories": [
+            {
+                "type": "node.trajectory.",
+                "name": "",
+                "uuid": "trajectory.-py-f873a8a0d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "start_location_uuid": "pose.waypoint.location.-py-f8735c2ed2fd11eb907d00155d5e7d92",
+                "end_location_uuid": "pose.waypoint.location.-py-f873623cd2fd11eb907d00155d5e7d92",
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-f873c9ded2fd11eb907d00155d5e7d92",
+                    "pose.waypoint.-py-f873d82ad2fd11eb907d00155d5e7d92"
+                ],
+                "trace": null,
+                "velocity": 0,
+                "move_type": "joint"
+            },
+            {
+                "type": "node.trajectory.",
+                "name": "",
+                "uuid": "trajectory.-py-f873a9a4d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "start_location_uuid": "pose.waypoint.location.-py-f873623cd2fd11eb907d00155d5e7d92",
+                "end_location_uuid": "pose.waypoint.location.-py-f8736796d2fd11eb907d00155d5e7d92",
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-f873eb76d2fd11eb907d00155d5e7d92",
+                    "pose.waypoint.-py-f873f7d8d2fd11eb907d00155d5e7d92"
+                ],
+                "trace": null,
+                "velocity": 0,
+                "move_type": "joint"
+            },
+            {
+                "type": "node.trajectory.",
+                "name": "",
+                "uuid": "trajectory.-py-f873aa44d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "start_location_uuid": "pose.waypoint.location.-py-f8736796d2fd11eb907d00155d5e7d92",
+                "end_location_uuid": "pose.waypoint.location.-py-f8736ab6d2fd11eb907d00155d5e7d92",
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-f8740e80d2fd11eb907d00155d5e7d92",
+                    "pose.waypoint.-py-f8742046d2fd11eb907d00155d5e7d92"
+                ],
+                "trace": null,
+                "velocity": 0,
+                "move_type": "joint"
+            },
+            {
+                "type": "node.trajectory.",
+                "name": "",
+                "uuid": "trajectory.-py-f873aadad2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "start_location_uuid": "pose.waypoint.location.-py-f8736ab6d2fd11eb907d00155d5e7d92",
+                "end_location_uuid": "pose.waypoint.location.-py-f8736d7cd2fd11eb907d00155d5e7d92",
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-f8743cc0d2fd11eb907d00155d5e7d92",
+                    "pose.waypoint.-py-f8744e54d2fd11eb907d00155d5e7d92"
+                ],
+                "trace": null,
+                "velocity": 0,
+                "move_type": "joint"
+            },
+            {
+                "type": "node.trajectory.",
+                "name": "",
+                "uuid": "trajectory.-py-f873ab66d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "start_location_uuid": "pose.waypoint.location.-py-f8736d7cd2fd11eb907d00155d5e7d92",
+                "end_location_uuid": "pose.waypoint.location.-py-f8737056d2fd11eb907d00155d5e7d92",
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-f8746cead2fd11eb907d00155d5e7d92",
+                    "pose.waypoint.-py-f87482d4d2fd11eb907d00155d5e7d92"
+                ],
+                "trace": null,
+                "velocity": 0,
+                "move_type": "joint"
+            },
+            {
+                "type": "node.trajectory.",
+                "name": "",
+                "uuid": "trajectory.-py-f873abf2d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "start_location_uuid": "pose.waypoint.location.-py-f8737056d2fd11eb907d00155d5e7d92",
+                "end_location_uuid": "pose.waypoint.location.-py-f8735c2ed2fd11eb907d00155d5e7d92",
+                "waypoint_uuids": [
+                    "pose.waypoint.-py-f8749a94d2fd11eb907d00155d5e7d92",
+                    "pose.waypoint.-py-f874aaf2d2fd11eb907d00155d5e7d92"
+                ],
+                "trace": null,
+                "velocity": 0,
+                "move_type": "joint"
+            }
+        ],
+        "thing_types": [
+            {
+                "type": "node.thing-type.",
+                "name": "stock",
+                "uuid": "reserved-thing-type-stock",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "mesh_id": "package://evd_ros_core/markers/3DBenchy.stl",
+                "is_safe": true,
+                "weight": 0.1
+            }
+        ],
+        "regions": [],
+        "grade_types": [],
+        "placeholders": [],
+        "reach_sphere": {
+            "type": "node.environment-node.reach-sphere.",
+            "name": "",
+            "uuid": "environment-node.reach-sphere.-py-f874af7ad2fd11eb907d00155d5e7d92",
+            "editable": true,
+            "deleteable": true,
+            "description": "",
+            "radius": 0.8,
+            "offset": {
+                "type": "node.position.",
+                "name": "",
+                "uuid": "position.-py-f874ae6cd2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "x": 0,
+                "y": 0,
+                "z": 0.15
+            }
+        },
+        "pinch_points": [
+            {
+                "type": "node.environment-node.pinch-point.",
+                "name": "",
+                "uuid": "environment-node.pinch-point.-py-f874b4c0d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "axis": "x",
+                "offset": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f874b3bcd2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0,
+                    "z": -0.05
+                },
+                "link": "simulated_shoulder_link",
+                "radius": 0.075,
+                "length": 0.2
+            },
+            {
+                "type": "node.environment-node.pinch-point.",
+                "name": "",
+                "uuid": "environment-node.pinch-point.-py-f874b704d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "axis": "x",
+                "offset": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f874b664d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0,
+                    "z": 0.075
+                },
+                "link": "simulated_upper_arm_link",
+                "radius": 0.075,
+                "length": 0.2
+            },
+            {
+                "type": "node.environment-node.pinch-point.",
+                "name": "",
+                "uuid": "environment-node.pinch-point.-py-f874b8dad2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "axis": "x",
+                "offset": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f874b844d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0,
+                    "z": 0.075
+                },
+                "link": "simulated_forearm_link",
+                "radius": 0.075,
+                "length": 0.2
+            },
+            {
+                "type": "node.environment-node.pinch-point.",
+                "name": "",
+                "uuid": "environment-node.pinch-point.-py-f874baa6d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "axis": "x",
+                "offset": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f874ba10d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0,
+                    "z": -0.05
+                },
+                "link": "simulated_wrist_1_link",
+                "radius": 0.06,
+                "length": 0.17
+            },
+            {
+                "type": "node.environment-node.pinch-point.",
+                "name": "",
+                "uuid": "environment-node.pinch-point.-py-f874bc68d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "axis": "x",
+                "offset": {
+                    "type": "node.position.",
+                    "name": "",
+                    "uuid": "position.-py-f874bbd2d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": true,
+                    "description": "",
+                    "x": 0,
+                    "y": 0,
+                    "z": 0.1
+                },
+                "link": "simulated_wrist_3_link",
+                "radius": 0.1,
+                "length": 0.16
+            }
+        ],
+        "collision_meshes": [
+            {
+                "type": "node.environment-node.collision-mesh.",
+                "name": "",
+                "uuid": "environment-node.collision-mesh.-py-f874c4a6d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "mesh_id": "package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Box.stl",
+                "pose_offset": {
+                    "type": "node.pose.",
+                    "name": "",
+                    "uuid": "pose.-py-f874cbb8d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "link": "box_link",
+                    "position": {
+                        "type": "node.position.",
+                        "name": "",
+                        "uuid": "position.-py-f874ce24d2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "orientation": {
+                        "type": "node.orientation.",
+                        "name": "",
+                        "uuid": "orientation.-py-f874d248d2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                    }
+                },
+                "link": "box_link"
+            },
+            {
+                "type": "node.environment-node.collision-mesh.",
+                "name": "",
+                "uuid": "environment-node.collision-mesh.-py-f874d946d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "mesh_id": "package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Table.stl",
+                "pose_offset": {
+                    "type": "node.pose.",
+                    "name": "",
+                    "uuid": "pose.-py-f874da04d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "link": "table_link",
+                    "position": {
+                        "type": "node.position.",
+                        "name": "",
+                        "uuid": "position.-py-f874da90d2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "orientation": {
+                        "type": "node.orientation.",
+                        "name": "",
+                        "uuid": "orientation.-py-f874dbc6d2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                    }
+                },
+                "link": "table_link"
+            },
+            {
+                "type": "node.environment-node.collision-mesh.",
+                "name": "",
+                "uuid": "environment-node.collision-mesh.-py-f874de32d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "mesh_id": "package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
+                "pose_offset": {
+                    "type": "node.pose.",
+                    "name": "",
+                    "uuid": "pose.-py-f874debed2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "link": "3d_printer_link",
+                    "position": {
+                        "type": "node.position.",
+                        "name": "",
+                        "uuid": "position.-py-f874df36d2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "orientation": {
+                        "type": "node.orientation.",
+                        "name": "",
+                        "uuid": "orientation.-py-f874e04ed2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                    }
+                },
+                "link": "3d_printer_link"
+            },
+            {
+                "type": "node.environment-node.collision-mesh.",
+                "name": "",
+                "uuid": "environment-node.collision-mesh.-py-f874e29cd2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "mesh_id": "package://evd_ros_tasks/description/3d_printer_machine_tending/collision_meshes/Pedestal.stl",
+                "pose_offset": {
+                    "type": "node.pose.",
+                    "name": "",
+                    "uuid": "pose.-py-f874e328d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "link": "ur3e_pedestal_link",
+                    "position": {
+                        "type": "node.position.",
+                        "name": "",
+                        "uuid": "position.-py-f874e3a0d2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "orientation": {
+                        "type": "node.orientation.",
+                        "name": "",
+                        "uuid": "orientation.-py-f874e4ccd2fd11eb907d00155d5e7d92",
+                        "editable": true,
+                        "deleteable": false,
+                        "description": "",
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                    }
+                },
+                "link": "ur3e_pedestal_link"
+            }
+        ],
+        "occupancy_zones": [
+            {
+                "type": "node.environment-node.occupancy-zone.",
+                "name": "",
+                "uuid": "environment-node.occupancy-zone.-py-f874f304d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "occupancy_type": "human",
+                "position_x": 0,
+                "position_z": 1,
+                "scale_x": 2,
+                "scale_z": 1,
+                "height": -0.77
+            },
+            {
+                "type": "node.environment-node.occupancy-zone.",
+                "name": "",
+                "uuid": "environment-node.occupancy-zone.-py-f874f7e6d2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "occupancy_type": "human",
+                "position_x": 0,
+                "position_z": -0.8,
+                "scale_x": 2,
+                "scale_z": 1,
+                "height": -0.77
+            },
+            {
+                "type": "node.environment-node.occupancy-zone.",
+                "name": "",
+                "uuid": "environment-node.occupancy-zone.-py-f874f8aed2fd11eb907d00155d5e7d92",
+                "editable": true,
+                "deleteable": true,
+                "description": "",
+                "occupancy_type": "robot",
+                "position_x": 0,
+                "position_z": 0,
+                "scale_x": 1.6,
+                "scale_z": 1.2,
+                "height": -0.77
+            }
+        ]
+    },
+    "skills": [
+        {
+            "type": "node.primitive.hierarchical.skill.machine-blocking-process.",
+            "name": "Machine Blocking Process",
+            "uuid": "primitive.hierarchical.skill.machine-blocking-process.-py-f8732100d2fd11eb907d00155d5e7d92",
+            "editable": false,
+            "deleteable": false,
+            "description": "",
+            "parameters": {},
+            "primitives": [
+                {
+                    "type": "node.primitive.machine-primitive.machine-start.",
+                    "name": "",
+                    "uuid": "primitive.machine-primitive.machine-start.-py-f8731e44d2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "machine_uuid": "skill-arguement-variable-py-f8731d72d2fd11eb907d00155d5e7d92"
+                    }
+                },
+                {
+                    "type": "node.primitive.machine-primitive.machine-wait.",
+                    "name": "",
+                    "uuid": "primitive.machine-primitive.machine-wait.-py-f8731f52d2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "machine_uuid": "skill-arguement-variable-py-f8731d72d2fd11eb907d00155d5e7d92"
+                    }
+                },
+                {
+                    "type": "node.primitive.machine-primitive.machine-stop.",
+                    "name": "",
+                    "uuid": "primitive.machine-primitive.machine-stop.-py-f873201ad2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "machine_uuid": "skill-arguement-variable-py-f8731d72d2fd11eb907d00155d5e7d92"
+                    }
+                }
+            ],
+            "arguments": []
+        },
+        {
+            "type": "node.primitive.hierarchical.skill.simple-pick-and-place.",
+            "name": "Simple Pick and Place",
+            "uuid": "primitive.hierarchical.skill.simple-pick-and-place.-py-f8733366d2fd11eb907d00155d5e7d92",
+            "editable": false,
+            "deleteable": false,
+            "description": "",
+            "parameters": {},
+            "primitives": [
+                {
+                    "type": "node.primitive.move-trajectory.",
+                    "name": "",
+                    "uuid": "primitive.move-trajectory.-py-f8732d94d2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "manual_safety": false,
+                        "trajectory_uuid": "skill-arguement-variable-py-f87326b4d2fd11eb907d00155d5e7d92"
+                    }
+                },
+                {
+                    "type": "node.primitive.gripper.",
+                    "name": "",
+                    "uuid": "primitive.gripper.-py-f8732e70d2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "thing_uuid": "skill-arguement-variable-py-f8732cead2fd11eb907d00155d5e7d92",
+                        "position": 100,
+                        "effort": 0,
+                        "speed": 0,
+                        "semantic": "grasping"
+                    }
+                },
+                {
+                    "type": "node.primitive.move-trajectory.",
+                    "name": "",
+                    "uuid": "primitive.move-trajectory.-py-f87330a0d2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "manual_safety": false,
+                        "trajectory_uuid": "skill-arguement-variable-py-f8732a88d2fd11eb907d00155d5e7d92"
+                    }
+                },
+                {
+                    "type": "node.primitive.gripper.",
+                    "name": "",
+                    "uuid": "primitive.gripper.-py-f873315ed2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "thing_uuid": "skill-arguement-variable-py-f8732cead2fd11eb907d00155d5e7d92",
+                        "position": 0,
+                        "effort": 0,
+                        "speed": 0,
+                        "semantic": "releasing"
+                    }
+                }
+            ],
+            "arguments": []
+        },
+        {
+            "type": "node.primitive.hierarchical.skill.open-gripper.",
+            "name": "Open Gripper",
+            "uuid": "primitive.hierarchical.skill.open-gripper.-py-f8733a78d2fd11eb907d00155d5e7d92",
+            "editable": true,
+            "deleteable": true,
+            "description": "",
+            "parameters": {},
+            "primitives": [
+                {
+                    "type": "node.primitive.gripper.",
+                    "name": "",
+                    "uuid": "primitive.gripper.-py-f87339a6d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "thing_uuid": "skill-arguement-variable-py-f873391ad2fd11eb907d00155d5e7d92",
+                        "position": 0,
+                        "effort": 0,
+                        "speed": 0,
+                        "semantic": "releasing"
+                    }
+                }
+            ],
+            "arguments": []
+        },
+        {
+            "type": "node.primitive.hierarchical.skill.close-gripper.",
+            "name": "Close Gripper",
+            "uuid": "primitive.hierarchical.skill.close-gripper.-py-f8733d8ed2fd11eb907d00155d5e7d92",
+            "editable": true,
+            "deleteable": true,
+            "description": "",
+            "parameters": {},
+            "primitives": [
+                {
+                    "type": "node.primitive.gripper.",
+                    "name": "",
+                    "uuid": "primitive.gripper.-py-f8733cd0d2fd11eb907d00155d5e7d92",
+                    "editable": true,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "thing_uuid": "skill-arguement-variable-py-f8733c4ed2fd11eb907d00155d5e7d92",
+                        "position": 100,
+                        "effort": 0,
+                        "speed": 0,
+                        "semantic": "grasping"
+                    }
+                }
+            ],
+            "arguments": []
+        },
+        {
+            "type": "node.primitive.hierarchical.skill.initialize.",
+            "name": "Initialize",
+            "uuid": "primitive.hierarchical.skill.initialize.-py-f87349bed2fd11eb907d00155d5e7d92",
+            "editable": false,
+            "deleteable": false,
+            "description": "",
+            "parameters": {},
+            "primitives": [
+                {
+                    "type": "node.primitive.machine-primitive.machine-initialize.",
+                    "name": "",
+                    "uuid": "primitive.machine-primitive.machine-initialize.-py-f87345a4d2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "machine_uuid": "skill-arguement-variable-py-f8734428d2fd11eb907d00155d5e7d92"
+                    }
+                },
+                {
+                    "type": "node.primitive.gripper.",
+                    "name": "",
+                    "uuid": "primitive.gripper.-py-f87346eed2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "thing_uuid": null,
+                        "position": 0,
+                        "effort": 0,
+                        "speed": 0,
+                        "semantic": "grasping"
+                    }
+                },
+                {
+                    "type": "node.primitive.move-unplanned.",
+                    "name": "",
+                    "uuid": "primitive.move-unplanned.-py-f87348e2d2fd11eb907d00155d5e7d92",
+                    "editable": false,
+                    "deleteable": false,
+                    "description": "",
+                    "parameters": {
+                        "velocity": 0,
+                        "move_type": "joint",
+                        "location_uuid": "skill-arguement-variable-py-f8733f3cd2fd11eb907d00155d5e7d92",
+                        "manual_safety": true
+                    }
+                }
+            ],
+            "arguments": []
+        }
+    ]
+}

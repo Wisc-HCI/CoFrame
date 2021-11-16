@@ -1,0 +1,41 @@
+<launch>
+
+  <arg name="type" default="planner"/>
+
+  <arg name="launch_rviz" default="true"/>
+  <arg name="load_rviz_cfg" default="true"/>
+
+  <arg name="kinematics_config" default="$(find ur_description)/config/ur3e/default_kinematics.yaml"/>
+
+  <!-- Bringup launch -->
+  <group ns="$(arg type)">
+    <include file="$(find evd_ros_tasks)/launch/_common/urcontroller.launch">
+      <arg name="type" value="$(arg type)"/>
+      <arg name="ip_address" value="170.16.0.3"/>
+      <arg name="port" value="50022"/>
+      <arg name="reverse_port" value="50021"/>
+      <arg name="fake_gripper" value="true"/>
+    </include>
+  </group>
+
+  <!-- Higher-level controller for communication with evd_ros -->
+  <node name="ur_controller" pkg="evd_ros_tasks" type="ur_controller_robot.py"/>
+
+  <!-- Robot State -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_description)/urdf/ur3e.xacro' kinematics_config:=$(arg kinematics_config)"/>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="/use_gui" value="true"/>
+    <param name="rate" value="25"/>
+    <rosparam param="/source_list">[physical/joint_states,simulated/joint_states,planner/joint_states]</rosparam>
+  </node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" />
+
+  <!-- RVIZ -->
+  <include file="$(find evd_ros_tasks)/launch/_common/rviz.launch">
+    <arg name="launch_rviz" value="$(arg launch_rviz)"/>
+    <arg name="load_rviz_cfg" value="$(arg load_rviz_cfg)"/>
+    <arg name="task_name" value="test_urcontroller"/>
+  </include>
+
+</launch>

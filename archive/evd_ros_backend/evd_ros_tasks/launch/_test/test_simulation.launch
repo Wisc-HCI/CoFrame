@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+    <arg name="launch_rviz" default="true"/>
+    <arg name="load_rviz_cfg" default="true"/>
+
+    <arg name="application_description_xacro" default="$(find evd_ros_tasks)/description/full_task.urdf.xacro"/>
+    <arg name="kinematics_config" default="$(find ur_description)/config/ur3_default.yaml"/>
+    <arg name="config_path" default="$(find evd_ros_tasks)/config/"/>
+    <arg name="config_file_name" default="model.json"/>
+
+    <include file="$(find evd_ros_core)/launch/rosbridge.launch"/>
+
+    <!-- <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher"/> -->
+    <!-- <node name="tf_world_publisher" pkg="evd_ros_core" type="tf_world_publisher.py">
+        <param name="ros_frame_id" value="$(arg ros_frame_id)"/>
+    </node> -->
+
+    <node name="test_simulation" pkg="evd_ros_core" type="test_simulation.py">
+        <param name="config_path" value="$(arg config_path)" />
+        <param name="config_file_name" value="$(arg config_file_name)"/>
+    </node>
+
+    <param name="robot_description" command="$(find xacro)/xacro '$(arg application_description_xacro)' kinematics_config:=$(arg kinematics_config)"/>
+
+    <node name="lively_joint_remapper" pkg="evd_ros_core" type="joint_remapper.py">
+        <rosparam param="input_topics">[lively_tk/joints]</rosparam>
+        <param name="output_topic" value="lively_mapped_joints"/>
+        <param name="prefix" value="planner_"/>
+    </node>
+
+    <node name="pybullet_joint_remapper" pkg="evd_ros_core" type="joint_remapper.py">
+        <rosparam param="input_topics">[pybullet/joints]</rosparam>
+        <param name="output_topic" value="pybullet_mapped_joints"/>
+        <param name="prefix" value="simulated_"/>
+    </node>
+
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="rate" value="25"/>
+        <rosparam param="/source_list">[lively_mapped_joints,pybullet_mapped_joints]</rosparam>
+    </node>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true"/>
+
+    <include file="$(find evd_ros_tasks)/launch/_common/rviz.launch">
+        <arg name="launch_rviz" value="$(arg launch_rviz)"/>
+        <arg name="load_rviz_cfg" value="$(arg load_rviz_cfg)"/>
+        <arg name="task_name" value="test_simulation"/>
+    </include>
+
+</launch>

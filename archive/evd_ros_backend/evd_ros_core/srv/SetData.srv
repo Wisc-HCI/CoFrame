@@ -1,0 +1,5 @@
+string uuid     # Optional idenitifer if desired
+string data     # Can be anything but probably should be valid JSON
+---
+bool status
+string message

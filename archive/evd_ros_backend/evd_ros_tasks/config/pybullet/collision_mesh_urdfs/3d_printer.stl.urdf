@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<robot name="3d_printer">
+
+    <link name="collision_mesh_3d_printer">
+        <inertial>
+            <mass value="0"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <inertia ixx="0" ixy="0.0" ixz="0.0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="../environment/collision/3d_printer.stl"/>
+            </geometry>
+        </collision>
+    </link>
+
+</robot>
