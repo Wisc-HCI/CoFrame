@@ -74,7 +74,7 @@ export const HierarchicalBlock = ({ data, ancestors, context, dragDisabled, drop
         <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
           {!inDrawer && <Button type='text' onClick={() => setExpanded(!expanded)} icon={<animated.div style={carrotStyle}><RightOutlined/></animated.div>} style={{zIndex:200}}/>}
           {editingEnabled && <Button type='text' onClick={() => setEditing(!editing)} icon={editing ? <SaveOutlined/> : <EditOutlined/>}/>}
-          {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('primitive', data.uuid)}}/>}
+          {executable && <Button type='text' icon={<EyeOutlined/>} onClick={(e) => {e.stopPropagation();setFocusItem('data', data.uuid)}}/>}
           <Badge count={data.children.length} showZero={true} style={{backgroundColor:'rgba(0,0,0,0.3)',marginRight:5, marginLeft:5}}/>
         </Row>
       </Row>

@@ -131,7 +131,8 @@
         "editable": true,
         "description": "Machine that prints handles.",
         "link": "3d_printer_link",
-        "mesh": "package://evd_ros_tasks/description/meshes/visual/3d_printer.stl",
+        "mesh": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
+        "collisionMesh": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
         "position": {
             "x": 0,
             "y": 0,
@@ -152,7 +153,8 @@
         "editable": true,
         "description": "Machine that attaches handles to the blade.",
         "link": "assembly_jig_link",
-        "mesh": "package://evd_ros_tasks/description/meshes/visual/assembly_jig.stl",
+        "mesh": "assembly_jig",
+        "collisionMesh": "assembly_jig_collision",
         "position": {
             "x": 0,
             "y": 0,
@@ -173,7 +175,8 @@
         "editable": true,
         "description": "Machine that produces blades",
         "link": "blade_conveyor_link",
-        "mesh": "package://evd_ros_tasks/description/meshes/visual/conveyor.stl",
+        "mesh": "conveyor",
+        "collisionMesh": "conveyor_collision",
         "position": {
             "x": 0,
             "y": 0,
@@ -194,7 +197,8 @@
         "editable": true,
         "description": "Machine that accepts blades from the conveyor.",
         "link": "blade_feeder_link",
-        "mesh": "package://evd_ros_tasks/description/meshes/visual/blade_feeder.stl",
+        "mesh": "conveyor_receiver",
+        "collisionMesh": "conveyor_receiver_collision",
         "position": {
             "x": 0,
             "y": 0,
@@ -215,7 +219,8 @@
         "editable": true,
         "description": "Machine that moves finished knives to the next stage.",
         "link": "knife_conveyor_link",
-        "mesh": "package://evd_ros_tasks/description/meshes/visual/conveyor.stl",
+        "mesh": "conveyor",
+        "collisionMesh": "conveyor_collision",
         "position": {
             "x": 0,
             "y": 0,
@@ -236,7 +241,8 @@
         "editable": true,
         "description": "Machine that dispatches blades to the knife conveyor.",
         "link": "knife_feeder_link",
-        "mesh": "package://evd_ros_tasks/description/meshes/visual/knife_feeder.stl",
+        "mesh": "conveyor_dispatcher",
+        "collisionMesh": "conveyor_dispatcher_collision",
         "position": {
             "x": 0,
             "y": 0,

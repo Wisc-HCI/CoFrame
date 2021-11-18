@@ -208,6 +208,7 @@ export const createMachine = () => ({
     readonly: false,
     description: 'Some descriptor string',
     mesh: 'box',
+    collisionMesh: 'box',
     link: "world",
     position: {
         x: .5 * (Math.random() - 0.5),

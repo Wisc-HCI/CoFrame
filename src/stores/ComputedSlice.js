@@ -56,10 +56,10 @@ export const ComputedSlice = {
                 const executable = this.executablePrimitives[this.focusItem.uuid];
                 if (executable) {
                     tfs = tfAnimationFromExecutable(executable, tfs)
-                } else if (this.data[this.focusItem.uuid].frames) {
-                    console.log(this.data[this.focusItem.uuid].frames)
-                    tfs = { ...tfs, ...robotFramesFromPose(this.data[this.focusItem.uuid]) }
-                }
+                } //else if (this.data[this.focusItem.uuid].frames) {
+                //  console.log(this.data[this.focusItem.uuid].frames)
+                //    tfs = { ...tfs, ...robotFramesFromPose(this.data[this.focusItem.uuid]) }
+                //}
             }
             return tfs
         },
@@ -145,9 +145,10 @@ export const ComputedSlice = {
                         hidden: !this.occupancyVisible
                     }
                 } else if (entry.type === 'machine') {
-                    const mesh = EVD_MESH_LOOKUP[entry.mesh]
+                    // console.log(entry.name)
+                    // const mesh = EVD_MESH_LOOKUP[entry.mesh]
                     items[entry.uuid] = {
-                        shape: mesh,
+                        shape: entry.mesh,
                         name: entry.name,
                         frame: entry.link,
                         position: entry.position,
@@ -161,14 +162,14 @@ export const ComputedSlice = {
                             } else {
                                 console.log('clicked ' + entry.name)
                                 e.stopPropagation();
-                                this.setFocusItem('machine', entry.uuid);
+                                this.setFocusItem('data', entry.uuid);
                             }
 
                         },
                     }
                     // Now add collisions
                     items[entry.uuid + '-collision'] = {
-                        shape: COLLISION_MESHES[mesh],
+                        shape: entry.collisionMesh,
                         name: entry.name + ' Collision',
                         frame: entry.link,
                         position: entry.position,

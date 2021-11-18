@@ -75,7 +75,7 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDi
           {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
           <Dropdown overlay={
             <Menu>
-              <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem('trajectory', data.uuid) }}>
+              <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem('data', data.uuid) }}>
                 <EyeOutlined />{' '}Show Trajectory
               </Menu.Item>
             </Menu>

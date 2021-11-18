@@ -71,7 +71,7 @@ export const UUIDBlock = ({ data, ancestors, context, dragDisabled,listeners,att
             <Dropdown overlay={
               <Menu>
                 {real && (
-                  <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem(refData.type, refData.uuid) }}>
+                  <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem('data', refData.uuid) }}>
                     <EyeOutlined />{' '}<span style={{ textTransform: "capitalize" }}>Show {refData.type}</span>
                   </Menu.Item>
                 )}
