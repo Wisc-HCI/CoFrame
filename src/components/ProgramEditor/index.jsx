@@ -147,7 +147,7 @@ export const ProgramEditor = (_) => {
 
   // const [ref, {width}] = useMeasure();
 
-  const drawerStyle = useSpring({ width: activeDrawer ? '205pt' : '0pt', padding: activeDrawer ? '5pt' : '0pt', config: config.stiff });
+  const drawerStyle = useSpring({ width: activeDrawer ? '205pt' : '0pt', config: config.stiff });
   const drawers = {
     machines: {
       title: "Machines",
@@ -242,7 +242,7 @@ export const ProgramEditor = (_) => {
               </Tooltip>
             ))}
           </div>
-          <animated.div onDrag={() => setActiveDrawer(null)} style={{ ...drawerStyle, align: 'left', backgroundColor: '#2f2f2f', fontSize: 14, height: 'calc(100vh - 108pt)' }}>
+          <animated.div style={{ ...drawerStyle, align: 'left', backgroundColor: '#2f2f2f', fontSize: 14, height: 'calc(100vh - 108pt)' }}>
             {activeDrawer && (
               <React.Fragment>
                 <Row align='middle' justify='space-between' style={{ padding: 5, marginLeft: 5 }}>
@@ -261,9 +261,9 @@ export const ProgramEditor = (_) => {
                     addonAfter={<CloseOutlined onClick={clearSearchTerm} />}
                     style={{ maxWidth: 300, minWidth: 100, display: "block" }} />
                 </Row>
-                <div style={{ width: '100%', marginTop: 10, overflowY: 'scroll', height: 'calc(100vh - 178pt)' }}>
-                  {drawers[activeDrawer].values.map(v => (
-                    <div key={v.uuid} style={{ marginBottom: 5 }}>
+                <div style={{ width: '100%', marginTop: 10, height: 'calc(100vh - 178pt)', overflowY:'scroll'}}>
+                  {drawers[activeDrawer].values.map((v,i) => (
+                    <div key={v.uuid} style={{ marginBottom: 5, marginLeft: 5, marginRight: 5, marginTop: i===0?5:0 }}>
                       <Block ancestors={ancestors} staticData={v} context={{}} dragDisabled={false} />
                     </div>
                   ))}

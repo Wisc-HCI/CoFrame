@@ -26,7 +26,7 @@ const selectionStyle = {
   height: 36
 }
 
-export const PrimitiveBlock = ({ data, ancestors, context, dragDisabled, dropDisabled,listeners,attributes }) => {
+export const PrimitiveBlock = ({ data, ancestors, context, dragDisabled, dropDisabled,listeners={} }) => {
 
   const [focused, executable] = useStore(useCallback(state => {
     const executable = state.executablePrimitives[data.uuid] ? true : false;
@@ -67,11 +67,6 @@ export const PrimitiveBlock = ({ data, ancestors, context, dragDisabled, dropDis
     ]
   }
 
-  const handleStuff = listeners && attributes ? {
-    ...listeners,
-    ...attributes
-} : {}
-
   // const [settingsRef, { height }] = useMeasure();
   const [settingsExpanded, setSettingsExpanded] = useState(false);
   const settingsStyle = useSpring({
@@ -109,7 +104,7 @@ export const PrimitiveBlock = ({ data, ancestors, context, dragDisabled, dropDis
   return (
 
     <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
-      <Row {...handleStuff} wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
+      <Row {...listeners} wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
         <Row wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
           <Icon style={{ marginLeft: 4, marginRight: 4 }} component={PrimitiveIcon} />
           {data.name}

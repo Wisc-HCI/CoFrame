@@ -9,7 +9,7 @@ import { Row, Col, Button, Dropdown, Menu } from 'antd';
 import { ReactComponent as ContainerIcon } from '../../CustomIcons/Container.svg'
 import '../highlight.css';
 
-export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDisabled, listeners,attributes }) => {
+export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDisabled, listeners={} }) => {
 
   const focused = useStore(useCallback(state => state.focusItem.uuid === data.uuid, [data]), shallow);
 
@@ -43,11 +43,6 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDi
     zIndex: focused ? 100 : 1
   };
 
-  const handleStuff = listeners && attributes ? {
-    ...listeners,
-    ...attributes
-  } : {}
-
   const trajectoryWaypointAncestors = [
     { uuid: data.uuid, accepts: ['uuid-waypoint'] },
     ...ancestors
@@ -68,7 +63,7 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDi
   return (
     <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
       <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Col {...handleStuff} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', cursor: dragDisabled ? 'not-allowed' : 'grab' }}>
+        <Col {...listeners} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', cursor: dragDisabled ? 'not-allowed' : 'grab' }}>
           <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />{' '}{data.name}
         </Col>
         <Col span={6} offset={1} style={{ textAlign: 'end' }}>

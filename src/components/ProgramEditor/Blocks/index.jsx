@@ -46,19 +46,19 @@ export const Block = ({ancestors, uuid, staticData, context, dragDisabled, dragC
     };
 
     return (
-        <div hidden={false && dragData?.data?.uuid === data.uuid && !dragCopy} ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <div hidden={false && dragData?.data?.uuid === data.uuid && !dragCopy} ref={setNodeRef} style={style} role='button' {...attributes} >
             {data.type.includes('uuid-') ? (
-                <UUIDBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled}/>
+                <UUIDBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} listeners={listeners}/>
             ) : data.type === 'skill-call' ? (
-                <SkillCallBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled}/>
+                <SkillCallBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} listeners={listeners}/>
             ) : data.type === 'skill' ? (
-                <CanvasBlock staticData={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled}/>
+                <CanvasBlock staticData={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} listeners={listeners}/>
             ) : data.type === 'hierarchical' ? (
-                <HierarchicalBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled}/>
+                <HierarchicalBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} listeners={listeners}/>
             ) : data.type === 'trajectory' ? (
-                <TrajectoryBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled}/>
+                <TrajectoryBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} listeners={listeners}/>
             ) : actionBlocks.includes(data.type) ? (
-                <PrimitiveBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled}/>
+                <PrimitiveBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} listeners={listeners}/>
             ) : null }
         </div>
     )

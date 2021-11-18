@@ -31,7 +31,7 @@
     "react-spring": "^9.2.4",
     "react-use-measure": "^2.0.4",
     "recharts": "^2.1.4",
-    "robot-scene": "github:Wisc-HCI/robot-scene#v0.5.9",
+    "robot-scene": "github:Wisc-HCI/robot-scene#v0.5.10",
     "serve": "^11.3.2",
     "source-map-loader": "^3.0.0",
     "style-loader": "^3.3.1",

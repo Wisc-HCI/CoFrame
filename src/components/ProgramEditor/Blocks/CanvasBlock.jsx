@@ -24,7 +24,7 @@ const DEFAULT_ARG_NAMES = {
     "location": 'Location Parameter'
 }
 
-export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,dropDisabled,listeners,attributes}) => {
+export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,dropDisabled,listeners={}}) => {
 
     const [frame,focusItem,deleteBlock,moveChildPrimitive,insertChildPrimitive, setItemProperty] = useStore(state=>(
         [state.frame,state.focusItem,state.deleteBlock,
@@ -84,15 +84,10 @@ export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,drop
         // opacity: isDragging ? 0.4 : 1
     };
 
-    const handleStuff = listeners && attributes ? {
-        ...listeners,
-        ...attributes
-    } : {}
-
     return (
         <div style={dragBlockStyles} className={focused?`focus-${frame}`:null}>
             <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-                <Row className='custom-drag-handle' {...handleStuff} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: editing ? null : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
+                <Row className='custom-drag-handle' {...listeners} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: editing ? null : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
                     <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
                     <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : "grab" }} bordered={false} disabled={!editing} value={data.name} onChange={(e)=>setItemProperty('skill', data.uuid, 'name', e.target.value)} />
                 </Row>

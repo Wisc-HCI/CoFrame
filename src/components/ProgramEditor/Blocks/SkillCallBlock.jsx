@@ -11,7 +11,7 @@ import '../highlight.css';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 
-export const SkillCallBlock = ({ data, ancestors, context, dragDisabled, dropDisabled, listeners,attributes }) => {
+export const SkillCallBlock = ({ data, ancestors, context, dragDisabled, dropDisabled, listeners={} }) => {
 
   const [focused, skill, executable] = useStore(useCallback(state => {
     const executable = state.executablePrimitives[data.uuid] ? true : false;
@@ -28,11 +28,6 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled, dropDis
         state.frame, state.setFocusItem,
         state.clearFocusItem, state.focusItem.type !== null,
       ], shallow)
-
-  const handleStuff = listeners && attributes ? {
-    ...listeners,
-    ...attributes
-  } : {}
 
   const unfocused = focusExists && !focused;
 
@@ -96,7 +91,7 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled, dropDis
 
     <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
       <Row wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Row {...handleStuff} wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
+        <Row {...listeners} wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
           <Icon style={{ marginLeft: 4, marginRight: 4 }} component={PrimitiveIcon} />
           {data.name}
         </Row>

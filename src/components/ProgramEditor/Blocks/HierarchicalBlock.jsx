@@ -11,7 +11,7 @@ import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 import '../highlight.css';
 
-export const HierarchicalBlock = ({ data, ancestors, context, dragDisabled, dropDisabled, listeners,attributes }) => {
+export const HierarchicalBlock = ({ data, ancestors, context, dragDisabled, dropDisabled, listeners={} }) => {
 
   const [frame, focusItem, setFocusItem, setItemProperty] = useStore(state => (
       [state.frame, state.focusItem, state.setFocusItem, state.setItemProperty]),shallow);
@@ -59,15 +59,10 @@ export const HierarchicalBlock = ({ data, ancestors, context, dragDisabled, drop
     zIndex: focused ? 100 : 1
   };
 
-  const handleStuff = listeners && attributes ? {
-    ...listeners,
-    ...attributes
-  } : {}
-
   return (
     <div style={dragBlockStyles} className={focused ? `focus-${frame}` : null}>
       <Row wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Row {...handleStuff} wrap={false} align='middle' style={{ boxShadow: editing?'inset 0px 0px 2px 1px #ffffff':null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab",zIndex:101, marginRight:5, height: 32 }}>
+        <Row {...listeners} wrap={false} align='middle' style={{ boxShadow: editing?'inset 0px 0px 2px 1px #ffffff':null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab",zIndex:101, marginRight:5, height: 32 }}>
           <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />
           <Input style={{maxWidth: 200, color:'white',cursor: editing ? 'text' : dragDisabled ? "not-allowed" : "grab"}} bordered={false} disabled={!editing} value={data.name} onChange={(e)=>setItemProperty('primitive', data.uuid, 'name', e.target.value)}/> 
         </Row>

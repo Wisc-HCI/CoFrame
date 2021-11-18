@@ -1,6 +1,4 @@
 import React from 'react';
-
-import { Row } from 'antd';
 import Tile from '../Tile';
 
 import {Scene} from 'robot-scene';
