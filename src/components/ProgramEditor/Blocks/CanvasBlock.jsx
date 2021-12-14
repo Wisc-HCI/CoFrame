@@ -25,7 +25,7 @@ const DEFAULT_ARG_NAMES = {
     "location": 'Location Parameter'
 }
 
-export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,dropDisabled,dragHandle}) => {
+export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,dropDisabled,dragHandle,onCanvas}) => {
 
     const [focusItem,setItemProperty] = useStore(state=>([state.focusItem,state.setItemProperty]),shallow);
 
@@ -65,6 +65,7 @@ export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,drop
 
     return (
         <Base
+          onCanvas={onCanvas}
           dragHandle={dragHandle}
           dragDisabled={dragDisabled}
           uuid={data.uuid}

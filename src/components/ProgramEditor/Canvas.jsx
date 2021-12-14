@@ -41,6 +41,7 @@ export const Canvas = ({bounding}) => {
 
     const CanvasBlockNode = ({ data }) => (
         <CanvasBlock
+            onCanvas
             uuid={data.uuid}
             onDelete={(dropData) => deleteBlock(dropData, null)}
             parentData={data.parentData}
