@@ -4,12 +4,12 @@ import shallow from 'zustand/shallow';
 import blockStyles from "../blockStyles";
 import { NodeZone } from "../NodeZone";
 import { NodeList } from "../NodeList";
-import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, EyeOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, EyeOutlined } from '@ant-design/icons';
 import { Row, Col, Button, Dropdown, Menu } from 'antd';
-import { ReactComponent as ContainerIcon } from '../../CustomIcons/Container.svg'
+import { Base } from "./Base";
 import '../highlight.css';
 
-export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDisabled, listeners={} }) => {
+export const TrajectoryBlock = ({ data, dragHandle, ancestors, context, dragDisabled, dropDisabled, style }) => {
 
   const focused = useStore(useCallback(state => state.focusItem.uuid === data.uuid, [data]), shallow);
 
@@ -40,7 +40,8 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDi
     margin: 0,
     padding: 5,
     position: 'relative',
-    zIndex: focused ? 100 : 1
+    zIndex: focused ? 100 : 1,
+    ...style
   };
 
   const trajectoryWaypointAncestors = [
@@ -61,28 +62,28 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDi
   }
 
   return (
-    <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
-      <Row style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Col {...listeners} span={17} style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', cursor: dragDisabled ? 'not-allowed' : 'grab' }}>
-          <Icon style={{ marginLeft: 4 }} component={ContainerIcon} />{' '}{data.name}
-        </Col>
-        <Col span={6} offset={1} style={{ textAlign: 'end' }}>
-          {editingEnabled ? <UnlockOutlined /> : <LockOutlined />}
-          <Dropdown overlay={
-            <Menu>
-              <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem('data', data.uuid) }}>
-                <EyeOutlined />{' '}Show Trajectory
-              </Menu.Item>
-            </Menu>
-          }>
-            <Button
-              type='text'
-              style={{ marginLeft: 5 }}
-              icon={<EllipsisOutlined />}
-            />
-          </Dropdown>
-        </Col>
-      </Row>
+    <Base
+      dragHandle={dragHandle}
+      dragDisabled={dragDisabled}
+      focused={focused}
+      locked={data.readonly}
+      name={data.name}
+      nameEditable={false}
+      type='trajectory'
+      extra={<Dropdown overlay={
+          <Menu>
+            <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem('data', data.uuid) }}>
+              <EyeOutlined />{' '}Show Trajectory
+            </Menu.Item>
+          </Menu>
+        }>
+          <Button
+            type='text'
+            style={{ marginLeft: 5 }}
+            icon={<EllipsisOutlined />}
+          />
+        </Dropdown>}
+    >
       <Row align="middle" style={fieldStyle}>
         <Col flex={2} style={{ paddingRight: 5 }}>Start Location:</Col>
         <Col flex={3}>
@@ -117,6 +118,6 @@ export const TrajectoryBlock = ({ data, ancestors, context, dragDisabled, dropDi
           />
         </Col>
       </Row>
-    </div>
-  );
+    </Base>
+  )
 };

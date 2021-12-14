@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { NodeZone } from "../NodeZone";
+import { Base } from "./Base";
 // import { ItemSortable } from "./Wrappers";
 import { InputNumber, Row, Col, Button } from "antd";
 import useStore from "../../../stores/Store";
@@ -26,7 +27,7 @@ const selectionStyle = {
   height: 36
 }
 
-export const PrimitiveBlock = ({ data, ancestors, context, dragDisabled, dropDisabled,listeners={} }) => {
+export const PrimitiveBlock = ({ data, dragHandle, ancestors, context, dragDisabled, dropDisabled, style }) => {
 
   const [focused, executable] = useStore(useCallback(state => {
     const executable = state.executablePrimitives[data.uuid] ? true : false;
@@ -91,7 +92,8 @@ export const PrimitiveBlock = ({ data, ancestors, context, dragDisabled, dropDis
     padding: 5,
     position: 'relative',
     margin: 0,
-    zIndex: focused ? 100 : 1
+    zIndex: focused ? 100 : 1,
+    ...style
   };
 
   const fieldStyle = {
@@ -102,24 +104,16 @@ export const PrimitiveBlock = ({ data, ancestors, context, dragDisabled, dropDis
   }
 
   return (
-
-    <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
-      <Row {...listeners} wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Row wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
-          <Icon style={{ marginLeft: 4, marginRight: 4 }} component={PrimitiveIcon} />
-          {data.name}
-        </Row>
-        <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
-          {executable && <Button type='text' icon={<EyeOutlined />} onClick={(e) => { e.stopPropagation(); setFocusItem('data', data.uuid) }} />}
-          {editingEnabled ? <UnlockOutlined style={{ marginRight: 5, marginLeft: 5 }} /> : <LockOutlined style={{ marginRight: 5, marginLeft: 5 }} />}
-          {/* <Button
-                type='text'
-                style={{marginLeft:2}}
-                onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}
-                icon={<EllipsisOutlined />}
-            /> */}
-        </Row>
-      </Row>
+    <Base
+      dragHandle={dragHandle}
+      dragDisabled={dragDisabled}
+      focused={focused}
+      locked={data.readonly}
+      name={data.name}
+      nameEditable={false}
+      type={data.type}
+      extra={executable && <Button type='text' icon={<EyeOutlined />} onClick={(e) => { e.stopPropagation(); setFocusItem('data', data.uuid) }} />}
+    >
       {primitivesWithSettings.some(primitive => primitive === data.type) &&
         <div style={fieldStyle}>
           <Row align="middle" style={{ marginBottom: 5 }}>
@@ -283,6 +277,29 @@ export const PrimitiveBlock = ({ data, ancestors, context, dragDisabled, dropDis
           </Col>
         </Row>
       )}
-    </div>
-  );
+    </Base>
+  )
+
+  // return (
+
+  //   <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
+  //     <Row ref={dragHandle} wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
+  //       <Row wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
+  //         <Icon style={{ marginLeft: 4, marginRight: 4 }} component={PrimitiveIcon} />
+  //         {data.name}
+  //       </Row>
+  //       <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
+  //         {executable && <Button type='text' icon={<EyeOutlined />} onClick={(e) => { e.stopPropagation(); setFocusItem('data', data.uuid) }} />}
+  //         {editingEnabled ? <UnlockOutlined style={{ marginRight: 5, marginLeft: 5 }} /> : <LockOutlined style={{ marginRight: 5, marginLeft: 5 }} />}
+  //         {/* <Button
+  //               type='text'
+  //               style={{marginLeft:2}}
+  //               onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}
+  //               icon={<EllipsisOutlined />}
+  //           /> */}
+  //       </Row>
+  //     </Row>
+      
+  //   </div>
+  // );
 };

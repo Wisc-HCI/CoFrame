@@ -19,6 +19,8 @@ export const GuiSlice = (set, get) => ({
   // The frame specifies the expert (color) frame
   editorTransform: {x: 0, y: 0, zoom: 1},
   setEditorTransform: (transform) => set(_=>({editorTransform:transform})),
+  flowInstance: null,
+  setFlowInstance: (instance) => set({flowInstance:instance}),
   frame: 'safety',
   primaryColor: frameStyles.colors['safety'],
   setFrame: (frame) => set(state => {

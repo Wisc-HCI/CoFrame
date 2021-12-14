@@ -10,7 +10,7 @@ import useStore from '../../../stores/Store';
 const actionBlocks = ['delay','breakpoint','gripper','machine-initialize',
 'process-start','process-stop','process-wait','move-trajectory','move-unplanned']
 
-export const DisplayBlock = ({ancestors, uuid, staticData, context, dragDisabled}) => {
+export const DisplayBlock = ({ancestors, uuid, staticData, context, dragDisabled, style}) => {
 
     const data = useStore(useCallback(state=>{
         if (staticData) {
@@ -25,17 +25,17 @@ export const DisplayBlock = ({ancestors, uuid, staticData, context, dragDisabled
     return (
         <React.Fragment>
             {data.type.includes('uuid-') ? (
-                <UUIDBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled}/>
+                <UUIDBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} style={style}/>
             ) : data.type === 'skill-call' ? (
-                <SkillCallBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} dropDisabled={true}/>
+                <SkillCallBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} dropDisabled={true} style={style}/>
             ) : data.type === 'skill' ? (
-                <CanvasBlock staticData={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} dropDisabled={true}/>
+                <CanvasBlock staticData={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} dropDisabled={true} style={style}/>
             ) : data.type === 'hierarchical' ? (
-                <HierarchicalBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} dropDisabled={true}/>
+                <HierarchicalBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} dropDisabled={true} style={style}/>
             ) : data.type === 'trajectory' ? (
-                <TrajectoryBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} dropDisabled={true}/>
+                <TrajectoryBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} dropDisabled={true} style={style}/>
             ) : actionBlocks.includes(data.type) ? (
-                <PrimitiveBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled}/>
+                <PrimitiveBlock data={data} ancestors={ancestors} context={context} dragDisabled={dragDisabled} style={style}/>
             ) : null }
         </React.Fragment>
     )

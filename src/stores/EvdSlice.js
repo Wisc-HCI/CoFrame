@@ -119,6 +119,39 @@ export const EvdSlice = (set, get) => ({
     state.data[uuid].transform.x = x;
     state.data[uuid].transform.y = y;
   }),
+  transferBlock: (data, previous, destination) => set(state=>{
+    console.log({data,previous,destination})
+    if (previous.uuid === 'drawer' && destination.idx === null) {
+      state.data[destination.uuid][destination.field] = data.uuid;
+      state.data[data.uuid] = data;
+      return
+    } else if (previous.uuid === 'drawer') {
+      state.data[destination.uuid][destination.field].splice(destination.idx, 0, data.uuid)
+      state.data[data.uuid] = data;
+      return
+    }
+    if (previous.uuid !== destination.uuid || previous.field !== destination.field) {
+      // Just delete from the previous location.
+      if (previous.idx === null) {
+        state.data[previous.uuid][previous.field] = null;
+      } else {
+        state.data[previous.uuid][previous.field].splice(previous.idx,1);
+      }
+      // Recreate in the destination location
+      if (destination.idx === null) {
+        state.data[destination.uuid][destination.field] = data.uuid;
+      } else {
+        state.data[destination.uuid][destination.field].splice(destination.idx,0, data.uuid);
+      }
+      return
+    } else {
+      if (previous.idx !== null) {
+        // Move in the array
+        arrayMove(state.data[previous.uuid][previous.field],previous.idx,destination.idx)
+        return
+      }
+    }
+  }),
   createAndPlaceItem: (item, x, y) => set((state) => {
     state.data[item.uuid] = lodash.omit({ ...item, transform: { x, y } }, 'parentData');
   }),

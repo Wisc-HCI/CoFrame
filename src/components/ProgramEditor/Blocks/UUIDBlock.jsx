@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
-import { Button, Dropdown, Input, Menu, Row } from "antd";
+import { Button, Dropdown, Menu } from "antd";
 // import { useDrag, useDrop } from 'react-dnd';
-import Icon, { UnlockOutlined, LockOutlined, EllipsisOutlined, DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import useStore from "../../../stores/Store";
 import shallow from 'zustand/shallow';
 import blockStyles from "../blockStyles";
@@ -11,6 +11,7 @@ import { ReactComponent as ThingIcon } from '../../CustomIcons/Thing.svg';
 import { ReactComponent as WaypointIcon } from '../../CustomIcons/Waypoint.svg';
 import { ReactComponent as ContainerIcon } from '../../CustomIcons/Container.svg';
 import '../highlight.css';
+import { Base } from "./Base";
 
 const ICONS = {
   'machine': MachineIcon,
@@ -20,7 +21,7 @@ const ICONS = {
   'trajectory': ContainerIcon
 }
 
-export const UUIDBlock = ({ data, ancestors, context, dragDisabled,listeners={},attributes={} }) => {
+export const UUIDBlock = ({ data, dragHandle, ancestors, context, dragDisabled, style }) => {
 
   // refData should always refer to something in the store or context
   const [refData, real] = useStore(useCallback(state => {
@@ -31,9 +32,9 @@ export const UUIDBlock = ({ data, ancestors, context, dragDisabled,listeners={},
   const [editing, setEditing] = useState(false);
 
   const [
-    frame, focusItem, setItemProperty, deleteItem,
+    focusItem, setItemProperty, deleteItem,
     setFocusItem, clearFocusItem] = useStore(state => ([
-      state.frame, state.focusItem, state.setItemProperty, state.deleteItem,
+      state.focusItem, state.setItemProperty, state.deleteItem,
       state.setFocusItem, state.clearFocusItem]
     ), shallow);
   const focused = focusItem.uuid === refData.uuid;
@@ -49,47 +50,46 @@ export const UUIDBlock = ({ data, ancestors, context, dragDisabled,listeners={},
     padding: 5,
     position: 'relative',
     zIndex: focused ? 100 : 50,
-    opacity: 1
+    opacity: 1,
+    ...style
   };
 
   return (
-    <div style={blockStyle} className={focused ? `focus-${frame}` : null} >
-      <Row wrap={false} style={{ fontSize: 16, display: 'flex', flexDirection: 'row' }} align='middle' justify='space-between'>
-        <Row {...listeners} wrap={false} align='middle' style={{ boxShadow: editing ? 'inset 0px 0px 2px 1px #ffffff' : null, borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
-          <Icon style={{ marginLeft: 5 }} component={ICONS[refData.type]} />
-          <Input style={{ maxWidth: 200, color: 'white', cursor: editing ? 'text' : "grab" }} bordered={false} disabled={!editing} value={refData.name} onChange={(e) => setItemProperty(refData.uuid, 'name', e.target.value)} />
-        </Row>
-        <Row wrap={false} style={{ width: 60, textTransform: 'capitalize', textAlign: 'right' }} align='middle' justify='end'>
-          {!refData.readonly ? <UnlockOutlined style={{ marginRight: real ? 0 : 5 }} /> : <LockOutlined style={{ marginRight: 5 }} />}
-          {/* {isArgument && refData.editable && !editing && <EditOutlined onClick={() => setEditing(true)}/>} */}
-          {real && (
-            <Dropdown overlay={
-              <Menu>
-                {real && (
-                  <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem('data', refData.uuid) }}>
-                    <EyeOutlined />{' '}<span style={{ textTransform: "capitalize" }}>Show {refData.type}</span>
-                  </Menu.Item>
-                )}
-                {real && (
-                  <Menu.Item key='edit' onClick={({ domEvent }) => { domEvent.stopPropagation(); setEditing(!editing) }}>
-                    <EditOutlined />{editing ? " Done Editing" : ' Edit Name'}
-                  </Menu.Item>
-                )}
-                {!inDrawer && !refData.readonly &&
-                  <Menu.Item key='delete' onClick={() => deleteItem(data.uuid)}>
-                    <DeleteOutlined />{' '}Clear
-                  </Menu.Item>}
-              </Menu>
-            }>
-              <Button
-                type='text'
-                icon={<EllipsisOutlined />}
-              />
-            </Dropdown>
+    <Base
+      dragHandle={dragHandle}
+      dragDisabled={dragDisabled}
+      focused={focused}
+      locked={refData.readonly}
+      name={refData.name}
+      nameEditable={editing}
+      onNameChange={(v) => setItemProperty(refData.uuid, 'name', v)}
+      type={refData.type}
+      extra={real && (
+        <Dropdown overlay={
+          <Menu>
+            {real && (
+              <Menu.Item key='show' onClick={({ domEvent }) => { domEvent.stopPropagation(); clearFocusItem(); setFocusItem('data', refData.uuid) }}>
+                <EyeOutlined />{' '}<span style={{ textTransform: "capitalize" }}>Show {refData.type}</span>
+              </Menu.Item>
+            )}
+            {real && (
+              <Menu.Item key='edit' onClick={({ domEvent }) => { domEvent.stopPropagation(); setEditing(!editing) }}>
+                <EditOutlined />{editing ? " Done Editing" : ' Edit Name'}
+              </Menu.Item>
+            )}
+            {!inDrawer && !refData.readonly &&
+              <Menu.Item key='delete' onClick={() => deleteItem(data.uuid)}>
+                <DeleteOutlined />{' '}Clear
+              </Menu.Item>}
+          </Menu>
+        }>
+          <Button
+            type='text'
+            icon={<EllipsisOutlined />}
+          />
+        </Dropdown>
 
-          )}
-        </Row>
-      </Row>
-    </div>
-  );
+      )}
+    />
+  )
 };

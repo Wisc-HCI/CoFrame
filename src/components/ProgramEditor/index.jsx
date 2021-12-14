@@ -21,27 +21,10 @@ import { generateUuid } from '../../stores/generateUuid';
 import { fromContainerTemplate } from '../../stores/templates';
 import { acceptLookup } from './acceptLookup';
 import { Block } from './Blocks';
-// import { DndProvider } from 'react-dnd';
-import {
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import { thresholdedClosestCorners } from '../../stores/helpers';
-import {
-  sortableKeyboardCoordinates
-} from '@dnd-kit/sortable';
-// import { HTML5Backend } from 'react-dnd-html5-backend';
-// import { MultiBackend } from 'react-dnd-multi-backend'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from 'react-dnd'
 import { DisplayBlock } from './Blocks/DisplayBlock';
-import {
-  restrictToWindowEdges,
-} from '@dnd-kit/modifiers';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import useMeasure from 'react-use-measure';
 
 const skill2Call = (skill) => {
   let parameters = { skill_uuid: skill.uuid };
@@ -69,26 +52,12 @@ const item2block = (item) => {
 
 export const ProgramEditor = (_) => {
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const [flowInstance, setFlowInstance] = useState(null);
   const flowWrapper = useRef(null);
 
   const [
-    editorTransform,
-    dragData, setDragData, setDropData, clearDragDrop,
     activeDrawer, setActiveDrawer, searchTerm,
-    setSearchTerm, clearSearchTerm, addItem, setFocusItem, drawerValues] = useStore(store => [
-      store.editorTransform,
-      store.dragData,
-      store.setDragData,
-      store.setDropData,
-      store.clearDragDrop,
+    setSearchTerm, clearSearchTerm, addItem, 
+    setFocusItem, drawerValues] = useStore(store => [
       store.activeDrawer,
       store.setActiveDrawer,
       store.searchTerm,
@@ -106,46 +75,6 @@ export const ProgramEditor = (_) => {
         actions: primitiveTypes.map(type => fromPrimitiveTemplate(type))
       }
     ], shallow);
-
-  // console.log(editorTransform)
-
-  const handleDragStart = (event) => {
-    const { active } = event;
-    console.log(active.data.current)
-    if (active) {
-      console.log(active.data.current)
-      setDragData(active.data.current)
-      setActiveDrawer(null)
-    }
-  }
-
-  const handleDragOver = (event) => {
-    const { active, over } = event;
-    console.log({ active, over })
-    if (over) {
-      setDropData(over.data.current)
-    } else {
-      setDropData(null)
-    }
-  }
-  
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    console.log(event);
-    if (over && over.id === 'grid' && ['program', 'skill'].includes(active.data.current.type)) {
-      const canvasBounds = flowWrapper.current.getBoundingClientRect();
-      console.log(event)
-      // const position = flowInstance.project({
-      //   x: 
-      // })
-    }
-    if (over && active.id !== over.id) {
-      console.log({ active, over })
-    }
-    clearDragDrop()
-  }
-
-  // const [ref, {width}] = useMeasure();
 
   const drawerStyle = useSpring({ width: activeDrawer ? '205pt' : '0pt', config: config.stiff });
   const drawers = {
@@ -221,14 +150,7 @@ export const ProgramEditor = (_) => {
   return (
 
     
-      <DndContext
-        sensors={sensors}
-        collisionDetection={({collisionRect,droppableContainers})=>thresholdedClosestCorners({collisionRect,droppableContainers,editorTransform})}
-        onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        modifiers={[restrictToWindowEdges]}
-      >
+      <DndProvider backend={HTML5Backend}>
         <div style={{ fontSize: 20, height: '100%', display: 'flex' }}>
           <div style={{ align: 'left', display: 'flex', flexDirection: 'column', padding: 5, height: 'calc(100vh - 108pt)', width: 60, backgroundColor:'rgba(31,31,31,0.4)'}}>
             {Object.keys(drawers).map(drawerKey => (
@@ -264,7 +186,7 @@ export const ProgramEditor = (_) => {
                 <div style={{ width: '100%', marginTop: 10, height: 'calc(100vh - 178pt)', overflowY:'scroll'}}>
                   {drawers[activeDrawer].values.map((v,i) => (
                     <div key={v.uuid} style={{ marginBottom: 5, marginLeft: 5, marginRight: 5, marginTop: i===0?5:0 }}>
-                      <Block ancestors={ancestors} staticData={v} context={{}} dragDisabled={false} />
+                      <Block ancestors={ancestors} field={null} idx={null} staticData={v} context={{}} dragDisabled={false} dragCopy/>
                     </div>
                   ))}
                 </div>
@@ -278,18 +200,13 @@ export const ProgramEditor = (_) => {
           <div style={{height: 'calc(100vh - 108pt)',flex:1}}>
             <ReactFlowProvider>
               <div ref={flowWrapper} style={{ height: '100%', width: '100%' }}>
-                <Canvas setFlowInstance={setFlowInstance} />
+                <Canvas bounding={flowWrapper?.current?.getBoundingClientRect()}/>
                 <DeleteZone />
               </div>
             </ReactFlowProvider>
           </div>
         </div>
-        <DragOverlay>
-          {dragData && (
-            <DisplayBlock ancestors={dragData.ancestors} staticData={dragData.data} context={dragData.context} dragDisabled={true} />
-          )}
-        </DragOverlay>
-      </DndContext>
+      </DndProvider>
   )
 
 }

@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { NodeZone } from "../NodeZone";
+import { Base } from "./Base";
 // import { ItemSortable } from "./Wrappers";
 import { InputNumber, Row, Col, Button } from "antd";
 import useStore from "../../../stores/Store";
@@ -11,7 +12,7 @@ import '../highlight.css';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 
-export const SkillCallBlock = ({ data, ancestors, context, dragDisabled, dropDisabled, listeners={} }) => {
+export const SkillCallBlock = ({ data, dragHandle, ancestors, context, dragDisabled, dropDisabled, style }) => {
 
   const [focused, skill, executable] = useStore(useCallback(state => {
     const executable = state.executablePrimitives[data.uuid] ? true : false;
@@ -77,7 +78,8 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled, dropDis
     padding: 5,
     position: 'relative',
     margin: 0,
-    zIndex: focused ? 100 : 1
+    zIndex: focused ? 100 : 1,
+    ...style
   };
 
   const fieldStyle = {
@@ -88,24 +90,16 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled, dropDis
   }
 
   return (
-
-    <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
-      <Row wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
-        <Row {...listeners} wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
-          <Icon style={{ marginLeft: 4, marginRight: 4 }} component={PrimitiveIcon} />
-          {data.name}
-        </Row>
-        <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
-          {executable && <Button type='text' icon={<EyeOutlined />} onClick={(e) => { e.stopPropagation(); setFocusItem('data', data.uuid) }} />}
-          {editingEnabled ? <UnlockOutlined style={{ marginRight: 5, marginLeft: 5 }} /> : <LockOutlined style={{ marginRight: 5, marginLeft: 5 }} />}
-          {/* <Button
-                type='text'
-                style={{marginLeft:2}}
-                onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}
-                icon={<EllipsisOutlined />}
-            /> */}
-        </Row>
-      </Row>
+    <Base
+      dragHandle={dragHandle}
+      dragDisabled={dragDisabled}
+      focused={focused}
+      locked={data.readonly}
+      name={data.name}
+      nameEditable={false}
+      type={data.type}
+      extra={executable && <Button type='text' icon={<EyeOutlined />} onClick={(e) => { e.stopPropagation(); setFocusItem('data', data.uuid) }} />}
+    >
       {skill.arguments.map(argument => (
         <Row align="middle" style={fieldStyle}>
           <Col flex={2} style={{ paddingRight: 5, textTransform: 'capitalize' }}>{argument.name}:</Col>
@@ -122,6 +116,44 @@ export const SkillCallBlock = ({ data, ancestors, context, dragDisabled, dropDis
           </Col>
         </Row>
       ))}
-    </div>
-  );
+    </Base>
+  )
+
+  // return (
+
+  //   <div style={styles} className={focused ? `focus-${frame}` : null} onClick={(e) => { e.stopPropagation(); unfocused && clearFocusItem() }}>
+  //     <Row wrap={false} style={{ fontSize: 16, marginBottom: 7 }} align='middle' justify='space-between'>
+  //       <Row ref={dragHandle} wrap={false} align='middle' span={17} style={{ textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, minWidth: 200, maxWidth: 230, cursor: dragDisabled ? 'not-allowed' : 'grab', zIndex: 101 }}>
+  //         <Icon style={{ marginLeft: 4, marginRight: 4 }} component={PrimitiveIcon} />
+  //         {data.name}
+  //       </Row>
+  //       <Row wrap={false} align='middle' style={{ textAlign: 'end' }}>
+  //         {executable && <Button type='text' icon={<EyeOutlined />} onClick={(e) => { e.stopPropagation(); setFocusItem('data', data.uuid) }} />}
+  //         {editingEnabled ? <UnlockOutlined style={{ marginRight: 5, marginLeft: 5 }} /> : <LockOutlined style={{ marginRight: 5, marginLeft: 5 }} />}
+  //         {/* <Button
+  //               type='text'
+  //               style={{marginLeft:2}}
+  //               onClick={(e) => {e.stopPropagation();setFocusItem('program', uuid)}}
+  //               icon={<EllipsisOutlined />}
+  //           /> */}
+  //       </Row>
+  //     </Row>
+  //     {skill.arguments.map(argument => (
+  //       <Row align="middle" style={fieldStyle}>
+  //         <Col flex={2} style={{ paddingRight: 5, textTransform: 'capitalize' }}>{argument.name}:</Col>
+  //         <Col flex={3}>
+  //           <NodeZone
+  //             parentId={data.uuid}
+  //             field={argument.uuid}
+  //             ancestors={parameterAncestors[argument.type]}
+  //             context={context}
+  //             uuid={data.parameters[argument.uuid]}
+  //             dragDisabled={!editingEnabled}
+  //             dropDisabled={dropDisabled}
+  //           />
+  //         </Col>
+  //       </Row>
+  //     ))}
+  //   </div>
+  // );
 };
