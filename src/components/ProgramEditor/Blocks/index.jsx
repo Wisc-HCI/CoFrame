@@ -13,7 +13,7 @@ import useStore from '../../../stores/Store';
 const actionBlocks = ['delay','breakpoint','gripper','machine-initialize',
 'process-start','process-stop','process-wait','move-trajectory','move-unplanned']
 
-export const Block = ({ancestors, uuid, staticData, context, dragDisabled, dropDisabled, dragCopy, field, idx, fromNodeList}) => {
+export const Block = ({ancestors, uuid, staticData, context, dragDisabled, dropDisabled, dragCopy, field, idx}) => {
 
     const data = useStore(useCallback(state=>{
         if (staticData) {
@@ -25,12 +25,15 @@ export const Block = ({ancestors, uuid, staticData, context, dragDisabled, dropD
         }
     },[uuid,staticData,context]))
 
+    // const setIsDragging = useStore(store=>store.setIsDragging)
+
     const setActiveDrawer = useStore(store=>store.setActiveDrawer)
 
     const [dragProps, drag, preview] = useDrag({
         type: data.type,
         item: () => {
             setTimeout(()=>setActiveDrawer(null),50)
+            // setIsDragging(true);
             return {data,context,ancestors,fieldInfo:{field,idx,uuid:ancestors[0].uuid}}
         },
         canDrag: !dragDisabled,
@@ -41,10 +44,6 @@ export const Block = ({ancestors, uuid, staticData, context, dragDisabled, dropD
           }
         },
     })
-
-    if (fromNodeList) {console.log({dragDisabled,dropDisabled,...dragProps,data})}
-
-
 
     return (
         <div hidden={dragProps.isDragging && !dragCopy} ref={preview}>

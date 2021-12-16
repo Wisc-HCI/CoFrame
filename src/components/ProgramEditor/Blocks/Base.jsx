@@ -33,7 +33,7 @@ const IconLookup = {
 }
 
 
-export const Base = ({ dragHandle, dragDisabled, uuid, name, nameEditable, onNameChange, extra, focused, children, type, style, locked, onCanvas }) => {
+export const Base = ({ dragHandle, dragDisabled, uuid, name, nameEditable, onNameChange, extra, focused, children, type, style, locked, onCanvas, isDragging }) => {
 
     const frame = useStore(store=>store.frame)
 
@@ -52,12 +52,10 @@ export const Base = ({ dragHandle, dragDisabled, uuid, name, nameEditable, onNam
         ...style
       };
 
-    console.log(!onCanvas)
-
     return (
-        <div style={blockStyle} className={focused ? `focus-${frame}` : null} onDrag={!onCanvas ? e=>{console.log('drag event');e.stopPropagation()} : null}>
+        <div className={'nodrag',focused ? `focus-${frame}` : null} style={{...blockStyle,pointerEvents:isDragging?'none':null}} onDrag={!onCanvas ? e=>{console.log('drag event');e.stopPropagation()} : null}>
             <Row className={dragHandle && 'nodrag'} wrap={false} style={{ fontSize: 16, marginBottom: children ? 7 : 0 }} align='middle' justify='space-between'>
-                <Row className={uuid} ref={dragHandle} wrap={false} align='middle' style={{ boxShadow: nameEditable ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
+                <Row className={dragHandle ? 'nodrag' : uuid} ref={dragHandle} wrap={false} align='middle' style={{ boxShadow: nameEditable ? 'inset 0px 0px 2px 1px #ffffff' : null, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, padding: 4, textAlign: 'start', flex: 1, minWidth: 130, maxWidth: 200, cursor: dragDisabled ? "not-allowed" : "grab", zIndex: 101, marginRight: 5, height: 32 }}>
                     <Icon className={dragHandle ? 'nodrag' : uuid} style={{ marginLeft: 4 }} component={IconLookup[type]} />
                     <Input className={['nodrag',nameEditable ? null : 'unselectable']} style={{maxWidth: 200, color: 'white', cursor: nameEditable ? 'text' : dragDisabled ? "not-allowed" : "grab" }} bordered={false} disabled={!nameEditable} value={name} onChange={(e) => onNameChange(e.target.value)} />
                 </Row>

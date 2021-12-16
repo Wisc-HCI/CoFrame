@@ -32,12 +32,6 @@ export const GuiSlice = (set, get) => ({
     }
     // TODO: recolor any items/lines/hulls.
   }),
-  dragData: null,
-  setDragData: (data) => set(_ => ({dragData:data})),
-  dropData: null,
-  setDropData: (data) => set(_ => ({dropData:data})),
-  clearDragDrop: () => set(_ => ({dragData:null,dropData:null})),
-  // the activeModal specifies the type of modal shown
   activeModal: null,
   setActiveModal: (modal) => set(_ => ({ activeModal: modal })),
   closeModal: () => set(_ => ({ activeModal: null })),

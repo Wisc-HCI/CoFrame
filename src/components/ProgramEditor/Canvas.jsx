@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDrop } from 'react-dnd';
+import { useDrop, useDragDropManager } from 'react-dnd';
 import { acceptLookup } from './acceptLookup';
 import useStore from '../../stores/Store';
 import { CanvasBlock } from './Blocks/CanvasBlock';
@@ -19,7 +19,7 @@ export const Canvas = ({bounding}) => {
 
     const [flowInstance, setFlowInstance] = useStore(state=>[state.flowInstance,state.setFlowInstance],shallow)
 
-    console.log(flowInstance)
+    const isDragging = useStore(state=>state.isDragging);
 
     const [blocks, setEditorTransform, createAndPlaceItem, deleteBlock] = useStore(state => [
         lodash.filter(state.data, v => v.type === 'program' || v.type === 'skill'),
@@ -39,8 +39,12 @@ export const Canvas = ({bounding}) => {
         dragHandle: `.${b.uuid}`
     }));
 
+    const dragDropManager = useDragDropManager();
+    console.log(dragDropManager.getMonitor().isDragging())
+
     const CanvasBlockNode = ({ data }) => (
         <CanvasBlock
+            isDragging={dragDropManager.getMonitor().isDragging()}
             onCanvas
             uuid={data.uuid}
             onDelete={(dropData) => deleteBlock(dropData, null)}

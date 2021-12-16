@@ -28,6 +28,7 @@ const DEFAULT_ARG_NAMES = {
 export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,dropDisabled,dragHandle,onCanvas}) => {
 
     const [focusItem,setItemProperty] = useStore(state=>([state.focusItem,state.setItemProperty]),shallow);
+    const isDragging = useStore(store=>store.isDragging);
 
     const createSkillArgument = useStore(state=>state.createSkillArgument);
 
@@ -65,6 +66,7 @@ export const CanvasBlock = ({staticData,uuid,ancestors,context,dragDisabled,drop
 
     return (
         <Base
+          isDragging={isDragging}
           onCanvas={onCanvas}
           dragHandle={dragHandle}
           dragDisabled={dragDisabled}
