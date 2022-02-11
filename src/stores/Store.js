@@ -1,13 +1,15 @@
 // import create from 'zustand'
-import create from 'zustand-store-addons';
+import create from 'zustand';
+import { computed } from 'zustand-middleware-computed-state'
 import produce from "immer";
 import { persist } from "zustand/middleware";
 import {GuiSlice} from './GuiSlice';
 import {ReviewSlice} from './ReviewSlice';
 import {EvdSlice} from './EvdSlice';
 import {RosSlice} from './RosSlice';
+import {ProgrammingSlice} from 'simple-vp';
 // import {SceneSlice} from 'robot-scene';
-import {ComputedSlice} from './ComputedSlice';
+import {computedSlice} from './ComputedSlice';
 // import {WatchedSlice} from './WatchedSlice';
 // import { computed } from 'zustand-middleware-computed-state';
 // import {SimSlice} from './SimSlice';
@@ -36,13 +38,14 @@ const immer = (config) => (set, get, api) =>
 
 const store = (set, get) => ({
     ...GuiSlice(set,get),
+    ...ProgrammingSlice(set,get),
     ...ReviewSlice(set,get),
     ...EvdSlice(set,get),
     ...RosSlice(set,get),
 })
 
-// const useStore = create(store,{...ComputedSlice,middleware:[immer,persist]});
-const useStore = create(store,{...ComputedSlice,middleware:[immer]});
+// const useStore = create(store,{...computedSlice,middleware:[immer,persist]});
+const useStore = create(computed(immer(store),computedSlice));
 
 // async function getSolver() {
 //   console.log(buffer);
@@ -65,7 +68,7 @@ const useStore = create(store,{...ComputedSlice,middleware:[immer]});
 useStore.getState().setData(KnifeAssembly);
 useStore.getState().loadSolver();
 // useStore.getState().setSolver()
-console.log(useStore.getState().data)
+console.log(useStore.getState())
 // console.log(KNIFE_TASK.environment.trajectories[0])
 useStore.getState().setUrl('ws://localhost:9090');
 

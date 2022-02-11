@@ -1,11 +1,15 @@
 import React from 'react';
 import { Card } from 'antd';
-import { ProgramEditor } from '../ProgramEditor';
+// import { ProgramEditor } from '../ProgramEditor';
+import { Environment } from 'simple-vp';
 import { Detail } from '../Detail';
 import Tile from '../Tile';
+import useStore from '../../stores/Store';
 
 
 export const ProgramTile = (props) => {
+
+    const highlightColor = useStore(store=>store.primaryColor)
 
     return (
         <div style={{height:'calc(100vh - 48pt)',paddingRight:'4pt',paddingTop:'8pt',paddingBottom:'8pt'}}>
@@ -19,7 +23,11 @@ export const ProgramTile = (props) => {
                     </h3>
                 }
             >
-                <ProgramEditor/>
+                {/* <ProgramEditor/> */}
+                <div style={{height:400, width: 400}}>
+                    <Environment store={useStore} highlightColor={highlightColor}/>
+                </div>
+                
             </Tile>
         </div>
         
