@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tooltip } from 'antd';
 import { Blurb } from './Blurb';
+import { Glossary } from './Glossary';
 
 export function getSkillInfo({editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}) {
     let tabs = [];
@@ -36,32 +36,16 @@ export function getSkillInfo({editorPane,setupTab,frame,primaryColor,focusData,s
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What is a Skill?</h3>
                     A Skill is a modular block of the program that can define its own parameters and execute other
-                    <Tooltip placement="top" title="The smallest functional activity that a robot can perform. Examples include 'Move Trajectory', 'Grasp', and 'Initialize Machine'.">
-                        <span style={{color:primaryColor}}>
-                            {" "}Actions
-                        </span>
-                    </Tooltip> and 
-                    <Tooltip placement="top" title="A special action that executes a procedure, that is specified in a Skill block.">
-                        <span style={{color:primaryColor}}>
-                            {" "}Skill-Calls
-                        </span>
-                    </Tooltip>.
+                    <Glossary.Actions primaryColor={primaryColor}/> and 
+                    <Glossary.SkillCalls primaryColor={primaryColor}/>.
                 </Blurb>
                 
                 {frame === 'quality' && (
                     <Blurb highlight={primaryColor}>
                         <h3 style={{color:primaryColor}}>Program Quality</h3>
                         Make sure to fully parameterize all 
-                        <Tooltip placement="top" title="The smallest functional activity that a robot can perform. Examples include 'Move Trajectory', 'Grasp', and 'Initialize Machine'.">
-                        <span style={{color:primaryColor}}>
-                            {" "}Actions
-                        </span>
-                        </Tooltip> and 
-                        <Tooltip placement="top" title="A special action that executes a procedure, that is specified in a Skill block.">
-                            <span style={{color:primaryColor}}>
-                                {" "}Skill-Calls
-                            </span>
-                        </Tooltip> in your skill.
+                        <Glossary.Actions primaryColor={primaryColor}/> and 
+                        <Glossary.SkillCalls primaryColor={primaryColor}/> in your skill.
                     </Blurb>
                 )}
             </div>

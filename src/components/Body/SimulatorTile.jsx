@@ -1,6 +1,6 @@
 import React from 'react';
 import Tile from '../Tile';
-
+import { Box } from 'grommet';
 import {Scene} from 'robot-scene';
 import useStore from '../../stores/Store';
 import { Controls } from '../Controls';
@@ -14,21 +14,21 @@ export const SimulatorTile = (_) => {
     const paused = useStore(state => state.focusItem.uuid === null);
 
     return (
-        <div style={{ height: 'calc(100vh - 48pt)', padding: 10 }}>
+        <Box direction='column' flex pad='6pt' >
             <Tile
-                style={{ height: '425pt', marginBottom: 10 }}
+                style={{ height: '408pt', marginBottom: 10 }}
                 backgroundColor={primaryColor}
                 borderWidth={3}
                 header={
-                    <>
+                    <Box direction='row' justify='between'>
                     <h3 style={{margin:'10pt'}}>
                         Simulator
                     </h3>
                     <Controls/>
-                    </>
+                    </Box>
                 }
             >
-                <div style={{ height: '364pt', width: '100%', backgroundColor:'black', padding:0 }}>
+                <div style={{ height: '368pt', width: '100%', backgroundColor:'black', padding:0 }}>
                     <Scene
                         displayTfs={false}
                         displayGrid={true}
@@ -45,7 +45,7 @@ export const SimulatorTile = (_) => {
                 </div>
             </Tile>
             <InfoTile />
-        </div>
+        </Box>
     )
 
     // return (

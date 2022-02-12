@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Row, Space, Button } from 'antd';
+import {List, Box, Button} from 'grommet';
 import { SyncOutlined } from '@ant-design/icons';
 import Tile from '../Tile';
 import { FrameButton } from '../FrameButton';
@@ -31,8 +31,8 @@ export const ReviewTile = (_) => {
     const frameIdx = FRAMES.map(frame=>frame.key).indexOf(frameId);
 
     return (
-        <div style={{ height: '100%', paddingLeft: 10, paddingRight: 10, paddingBottom: 10, display: 'flex', flexDirection: 'column' }}>
-            <Space style={{ flexDirection: 'row', display: 'flex', justifyContent: 'space-between', marginTop: 5, marginBottom: 5 }}>
+        <Box direction='column' width='100%' flex pad={{top:'xsmall',bottom:'xsmall',left:'xsmall'}}>
+            <Box direction='row' gap='xsmall' margin={{bottom:'xsmall'}}>
                 {FRAMES.map(frame => (
                     <FrameButton
                         key={frame.key}
@@ -41,31 +41,31 @@ export const ReviewTile = (_) => {
                         active={frameId === frame.key}
                         text={frame.title} />
                 ))}
-            </Space>
+            </Box>
             <Tile
-                style={{ height:'calc(100vh - 100pt)',backgroundColor:'black'}}
+                style={{ height:'100%',backgroundColor:'black'}}
                 borderWidth={5}
                 internalPaddingWidth={0.1}
                 header={
-                    <Row style={{width:'100%',paddingRight:10}} justify='space-between' align='middle'>
+                    <Box direction='row' width='100%' justify='between' align='center'>
                         <h3 style={{margin:'10pt'}}>
                             Review
                         </h3>
-                        <Button icon={<SyncOutlined/>} onClick={refresh}>Refresh</Button>
-                    </Row>
+                        <Button secondary size='small' round='none' icon={<SyncOutlined/>} onClick={refresh} label='Refresh'></Button>
+                    </Box>
                     
                 }
             >
-                <div style={{height:'calc(100vh - 150pt)',overflowY:'scroll'}}>
-                    <List
-                        split={false}
-                        dataSource={FRAMES[frameIdx].sections}
-                        renderItem={(section,idx) => (
-                            <ReviewSection sectionId={section} blocked={idx >= blockages[frameIdx]} initialBlocked={idx === blockages[frameIdx]}/>
+                <div style={{height:'calc(100vh - 144pt)',overflowY:'scroll'}}>
+                    <List data={FRAMES[frameIdx].sections} border={false} margin='none' pad='none'>
+                        {(section, idx) => (
+                            <Box key={idx} animation={{ type: 'fadeIn', delay: idx * 100 }} style={{ marginBottom: 5, width: '100%' }}>
+                                <ReviewSection sectionId={section} blocked={idx >= blockages[frameIdx]} initialBlocked={idx === blockages[frameIdx]}/>
+                            </Box>
                         )}
-                    />
+                    </List>
                 </div>
             </Tile>
-        </div>
+        </Box>
     );
 };

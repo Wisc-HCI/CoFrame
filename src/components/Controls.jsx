@@ -1,7 +1,9 @@
 import React from 'react';
 
 import { CaretRightFilled, PauseOutlined, RollbackOutlined, FullscreenExitOutlined, FullscreenOutlined, EllipsisOutlined } from '@ant-design/icons';
-import { Button, Space, Tooltip, Popover, Checkbox, Col, Row } from 'antd';
+// import { Button, Space, Tooltip, Popover, Checkbox, Col, Row } from 'antd';
+import { Button, Box} from 'grommet';
+import { TipContent } from './TipContent';
 
 import useStore from '../stores/Store';
 import shallow from 'zustand/shallow';
@@ -16,37 +18,58 @@ export function Controls() {
 
   return (
 
-    <Space style={{marginRight:'6pt'}}>
-      <Tooltip placement="top" title={simMode === 'default' ? "Expand" : "Shrink"}>
+    <Box direction='row' margin={{right:'small'}}>
+      
         <Button
-          type="outline"
+          tip={{
+            content: <TipContent message={simMode === 'default' ? 'Expand' : 'Shrink'} />,
+            plain: true,
+            dropProps: {
+                align: { bottom: 'top' }
+            }
+          }}
           icon={simMode === 'default' ? <FullscreenOutlined /> : <FullscreenExitOutlined />}
           onClick={() => setSimMode(simMode === 'default' ? 'expanded' : 'default')}
         />
-      </Tooltip>
-      <Tooltip placement="top" title="Play">
+      
+      
         <Button
-          type="outline"
+          tip={{
+            content: <TipContent message='Play' />,
+            plain: true,
+            dropProps: {
+                align: { bottom: 'top' }
+            }
+          }}
           icon={<CaretRightFilled />}
           onClick={() => console.log('PLAY')}
         />
-      </Tooltip>
-      <Tooltip placement="top" title="Pause">
+      
         <Button
-          type="outline"
+          tip={{
+            content: <TipContent message='Pause' />,
+            plain: true,
+            dropProps: {
+                align: { bottom: 'top' }
+            }
+          }}
           icon={<PauseOutlined />}
           onClick={() => console.log('PAUSE')}
         />
-      </Tooltip>
-      <Tooltip placement="top" title="Refresh">
+     
         <Button
-          type="outline"
+          tip={{
+            content: <TipContent message='Refresh' />,
+            plain: true,
+            dropProps: {
+                align: { bottom: 'top' }
+            }
+          }}
           icon={<RollbackOutlined />}
           onClick={() => console.log('REFRESH')}
         />
-      </Tooltip>
-      <Popover
-        title="Configure"
+      
+      {/* <Popover
         placement="bottomRight"
         content={
           <Col>
@@ -73,8 +96,8 @@ export function Controls() {
           type="outline"
           icon={<EllipsisOutlined />}
         />
-      </Popover>
+      </Popover> */}
 
-    </Space>
+    </Box>
   );
 }

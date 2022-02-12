@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tooltip } from 'antd';
 import { Blurb } from './Blurb';
+import { Glossary } from './Glossary';
 
 export function getThingInfo({editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}) {
     let tabs = [];
@@ -37,16 +37,9 @@ export function getThingInfo({editorPane,setupTab,frame,primaryColor,focusData,s
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Things?</h3>
                     Things are the parts that are created, consumed, or modified through the course of the program through the use of
-                    <Tooltip placement="top" title="A fixed tool in the environment that is capable of modifying Things according to a set of known recipes.">
-                        <span style={{color:primaryColor}}>
-                            {" "}Machines
-                        </span>
-                    </Tooltip>, and moved around by the robot with 
-                    <Tooltip placement="top" title="A action that can be added and customized in the Program Editor. To transport Things, you must first Grasp them.">
-                        <span style={{color:primaryColor}}>
-                            {" "}Move Trajectory Primitives
-                        </span>
-                    </Tooltip>.
+                    <Glossary.Machines primaryColor={primaryColor}/>, 
+                    and moved around by the robot with 
+                    <Glossary.MoveTrajectoryPrimitives primaryColor={primaryColor}/>.
                 </Blurb>
                 
                 {frame === 'safety' && (
@@ -58,12 +51,8 @@ export function getThingInfo({editorPane,setupTab,frame,primaryColor,focusData,s
                 {frame === 'performance' && (
                     <Blurb highlight={primaryColor}>
                         <h3 style={{color:primaryColor}}>Robot Performance</h3>
-                        In order to have correct robot movement, the robot's payload must be within the limits specified by the robot. This robot has a payload of 3kg, so any Thing greater than this weight cannot be carried in a 
-                        <Tooltip placement="top" title="A action that can be added and customized in the Program Editor. To transport Things, you must first Grasp them.">
-                            <span style={{color:primaryColor}}>
-                                {" "}Move Trajectory Primitive
-                            </span>
-                        </Tooltip>.
+                        In order to have correct robot movement, the robot's payload must be within the limits specified by the robot. This robot has a payload of 3kg, so any Thing greater than this weight cannot be carried in 
+                        <Glossary.MoveTrajectoryPrimitives primaryColor={primaryColor}/>.
                     </Blurb>
                 )}
                 {frame === 'business' && (

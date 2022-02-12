@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Button } from 'antd';
+import { Button } from 'grommet';
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 import { getSceneInfo } from '../ContextualInfo/Scene';
@@ -88,41 +88,24 @@ export function InfoTile(_) {
 
     return (
         <Tile
-            borderWidth={10}
+            style={{display:'flex',flexDirection:'column',height:'100%'}}
+            borderWidth={4}
+            internalPaddingWidth={10}
             header={
                 <div>
-                    {tabs.map((tab, i) =>
-                    (i === currentTab || (i === 0 && currentTab >= tabs.length) ? (
-                        <div
-                            key={i}
-                            align='center'
-                            style={{
-                                borderRadius: 2,
-                                fontFamily: 'inherit',
-                                fontWeight: 400,
-                                height: 32,
-                                display: 'inline-block',
-                                textAlign: 'center',
-                                backgroundColor: primaryColor,
-                                fontVariant: 'tabular-nums',
-                                lineHeight: 1.5715,
-                                padding: '6px 15px',
-                                marginRight: 10,
-                                fontSize: 14
-                            }}>
-                            {tab.title}
-                        </div>
-                    ) : (
+                    {tabs.map((tab, i) => (
                         <Button
+                            primary={i===currentTab || (i === 0 && currentTab >= tabs.length)}
+                            label={tab.title}
+                            onClick={() => setCurrentTab(i)}
                             key={i}
-                            style={{ marginRight: 10 }}
-                            type='ghost'
-                            onClick={() => setCurrentTab(i)}>{tab.title}
-                        </Button>
-                    ))
+                            pad={{right:'10pt'}}
+                            margin={{top:'3pt',bottom:'3pt'}}
+                        />
+                    )
                     )}
                 </div>}>
-            <div style={{ height: 'calc(100vh - 556pt)', overflowY: 'scroll' }}>
+            <div style={{ height: 'calc(100vh - 543pt)', overflowY: 'scroll' }}>
                 {tabs[currentTab] ? tabs[currentTab].contents : tabs[0].contents}
             </div>
         </Tile>

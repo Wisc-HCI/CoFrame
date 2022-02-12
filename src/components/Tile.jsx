@@ -10,7 +10,7 @@ export default function Tile({style, header, children, backgroundColor, borderWi
                     {header}
                 </Row>
             )}
-            <div style={{backgroundColor:backgroundColor?backgroundColor:'rgba(0,0,0,0.6)', padding: internalPaddingWidth ? internalPaddingWidth : 10, borderRadius: 3, color:'white'}}>
+            <div style={{backgroundColor:backgroundColor?backgroundColor:'rgba(0,0,0,0.6)', padding: internalPaddingWidth !== null ? internalPaddingWidth : 10, borderRadius: 3, color:'white'}}>
                 {children}
             </div>
         </div>

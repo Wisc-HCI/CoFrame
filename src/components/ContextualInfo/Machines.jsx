@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tooltip } from 'antd';
 import { Blurb } from './Blurb';
+import { Glossary } from './Glossary';
 
 export function getMachineInfo({editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}) {
     let tabs = [];
@@ -36,16 +36,10 @@ export function getMachineInfo({editorPane,setupTab,frame,primaryColor,focusData
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Machines?</h3>
                     Machines are components that are able to perform create, consume, or modify 
-                    <Tooltip placement="top" title="A part or piece that has been defined in the setup tab.">
-                        <span style={{color:primaryColor}}>
-                            {" "}Things
-                        </span>
-                    </Tooltip> in the program. They define specific 
-                    <Tooltip placement="top" title="A geometrical representation of a zone with some variability in either position or rotation">
-                        <span style={{color:primaryColor}}>
-                            {" "}Regions
-                        </span>
-                    </Tooltip> that are used for depositing or retrieving these things.
+                    <Glossary.Things primaryColor={primaryColor}/>
+                    in the program. They define specific 
+                    <Glossary.Regions primaryColor={primaryColor}/>
+                    that are used for depositing or retrieving these things.
                 </Blurb>
                 
                 {frame === 'safety' && (

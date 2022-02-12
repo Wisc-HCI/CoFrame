@@ -1,6 +1,7 @@
 import React from 'react';
-import { Tooltip } from 'antd';
+// import { Tooltip } from 'antd';
 import { Blurb } from './Blurb';
+import { Glossary } from './Glossary';
 
 export function getLocationInfo({frame,primaryColor,focusData,currentIssue}) {
     let tabs = [];
@@ -13,7 +14,7 @@ export function getLocationInfo({frame,primaryColor,focusData,currentIssue}) {
                         <h3>{currentIssue.description}</h3>
                         {currentIssue.description.includes('reachable') && (
                         <span>
-                            <br></br>Given the <Tooltip placement="top" title="The physical structure (joints and links) and how they impact the movement of the robot"><span style={{color:primaryColor}}>kinematics</span></Tooltip> and placement of the robot, certain locations or waypoints may not be reachable. 
+                            <br></br>Given the <Glossary.Kinematics primaryColor={primaryColor}/> and placement of the robot, certain locations or waypoints may not be reachable. 
                             Much like how reaching around to touch your back may be difficult (even if the location is clearly close to your body), 
                             robots can encounter difficulties accessing certain positions or orientations in the work cell. 
                             We have identified that the specific location you specified is not reachable either because it is too far from the robot base 
@@ -45,11 +46,7 @@ export function getLocationInfo({frame,primaryColor,focusData,currentIssue}) {
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Locations?</h3>
                     Locations are meaningful positions in the scene. For example, they can be used to define goals for placing or picking up 
-                    <Tooltip placement="top" title="A part or piece that has been defined in the setup tab. These may be created, consumed, or modified by machines">
-                        <span style={{color:primaryColor}}>
-                            {" "}Things
-                        </span>
-                    </Tooltip>, or specifying starting or ending positions for the robot.
+                    <Glossary.Things primaryColor={primaryColor}/>, or specifying starting or ending positions for the robot.
                 </Blurb>
                 
                 {frame === 'safety' && (

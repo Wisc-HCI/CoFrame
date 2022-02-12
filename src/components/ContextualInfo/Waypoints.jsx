@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tooltip } from 'antd';
 import { Blurb } from './Blurb';
+import { Glossary } from './Glossary';
 
 export function getWaypointInfo({frame,primaryColor,focusData,currentIssue}) {
     let tabs = [];
@@ -13,7 +13,7 @@ export function getWaypointInfo({frame,primaryColor,focusData,currentIssue}) {
                         <h3>{currentIssue.description}</h3>
                         {currentIssue.description.includes('reachable') && (
                         <span>
-                            <br></br>Given the <Tooltip placement="top" title="The physical structure (joints and links) and how they impact the movement of the robot"><span style={{color:primaryColor}}>kinematics</span></Tooltip> and placement of the robot, certain locations or waypoints may not be reachable. 
+                            <br></br>Given the <Glossary.Kinematics primaryColor={primaryColor}/> and placement of the robot, certain locations or waypoints may not be reachable. 
                             Much like how reaching around to touch your back may be difficult (even if the waypoint is clearly close to your body), 
                             robots can encounter difficulties accessing certain positions or orientations in the work cell. 
                             We have identified that the specific waypoint you specified is not reachable either because it is too far from the robot base 
@@ -45,11 +45,7 @@ export function getWaypointInfo({frame,primaryColor,focusData,currentIssue}) {
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Waypoints?</h3>
                     Waypoints are positions and orientations that are used as parts of
-                    <Tooltip placement="top" title="A specification of the robot's motion, utilizing a starting and ending Location, as well as a sequence of transitional waypoints between them. These are specified within the Program Editor as a block.">
-                        <span style={{color:primaryColor}}>
-                            {" "}Trajectories
-                        </span>
-                    </Tooltip>, and unlike Locations, do not have inherent meaning other than to allow greater specificity of the manner with which the robot moves between a pair of locations.
+                    <Glossary.Trajectories primaryColor={primaryColor}/>, and unlike Locations, do not have inherent meaning other than to allow greater specificity of the manner with which the robot moves between a pair of locations.
                 </Blurb>
                 
                 {frame === 'safety' && (

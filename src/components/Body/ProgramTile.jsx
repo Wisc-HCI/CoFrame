@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card } from 'antd';
+// import { Card } from 'antd';
+import { Box } from 'grommet';
 // import { ProgramEditor } from '../ProgramEditor';
 import { Environment } from 'simple-vp';
 import { Detail } from '../Detail';
@@ -12,11 +13,11 @@ export const ProgramTile = (props) => {
     const highlightColor = useStore(store=>store.primaryColor)
 
     return (
-        <div style={{height:'calc(100vh - 48pt)',paddingRight:'4pt',paddingTop:'8pt',paddingBottom:'8pt'}}>
+        <Box direction='column' flex pad={{right:'6pt',top:'6pt',bottom:'6pt'}} width='45vw'>
             <Tile
-                style={{ height: 'calc(100vh - 62pt)'}}
+                style={{ height: 'calc(100vh - 70pt)'}}
                 borderWidth={3}
-                internalPaddingWidth={0.1}
+                internalPaddingWidth={0}
                 header={
                     <h3 style={{margin:'10pt'}}>
                         Program Editor
@@ -24,12 +25,12 @@ export const ProgramTile = (props) => {
                 }
             >
                 {/* <ProgramEditor/> */}
-                <div style={{height:400, width: 400}}>
-                    <Environment store={useStore} highlightColor={highlightColor}/>
+                <div style={{display:'contents',flex:1,height:'100%', fontSize:10}}>
+                    <Environment store={useStore} highlightColor={highlightColor} height='calc(100vh - 110pt)'/>
                 </div>
                 
             </Tile>
-        </div>
+        </Box>
         
     )
     // return (

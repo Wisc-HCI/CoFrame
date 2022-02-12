@@ -2,7 +2,8 @@ import React, {useState} from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 import { RightOutlined } from '@ant-design/icons';
-import { Row, Empty } from 'antd';
+// import { Row, Empty } from 'antd';
+import { Box } from 'grommet';
 
 export default function Collapse({openable, extra, style, header, children, backgroundColor, borderWidth, internalPaddingWidth}) {
 
@@ -15,20 +16,19 @@ export default function Collapse({openable, extra, style, header, children, back
 
     const contentStyle = useSpring({ 
         scaleY: open ? 1 : 0,
-        opacity: open ? 1 : 0,
-        config: config.stiff 
+        opacity: open ? 1 : 0
       });
 
     return (
         <div style={{backgroundColor:'rgba(100,100,100,0.3)', padding: borderWidth, borderRadius: 3, ...style}}>
             {header && (
-                <Row style={{paddingBottom:borderWidth,width:'100%'}} justify='space-between'>
+                <Box direction='row' style={{paddingBottom:borderWidth,width:'100%'}} justify='between' align='center'>
                     {header}
-                    <Row justify='end' align='middle'>
+                    <Box direction='row' justify='end' align='center'>
                         {extra}
                         <animated.div onClick={()=>{openable && setOpen(!open)}} style={{...carrotStyle, margin:10}}><RightOutlined/></animated.div>
-                    </Row>
-                </Row>
+                    </Box>
+                </Box>
             )}
             {open && (
                 <animated.div 
@@ -38,7 +38,7 @@ export default function Collapse({openable, extra, style, header, children, back
                     padding: internalPaddingWidth ? internalPaddingWidth : 10, 
                     borderRadius: 3, color:'white'
                 }}>
-                {children ? children : <Empty/>}
+                {children ? children : <Box height='small' width='100%' align='center' justify='center'>No Data</Box>}
                 </animated.div>
             )}
         </div>

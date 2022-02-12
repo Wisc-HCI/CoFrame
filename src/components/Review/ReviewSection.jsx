@@ -1,7 +1,9 @@
 import React, {useCallback} from 'react';
 
-import { List, Switch, Row, Space } from 'antd';
-import { CaretRightOutlined } from '@ant-design/icons';
+// import { List, Switch, Row, Space } from 'antd';
+// import { CaretRightOutlined } from '@ant-design/icons';
+import { Box, List } from 'grommet';
+import { Toggle } from '../Toggle';
 
 import { ReviewIssue } from './ReviewIssue';
 import useStore from '../../stores/Store';
@@ -34,7 +36,7 @@ const sectionFrame = (sectionId) => FRAMES.filter(filter=>filter.sections.indexO
 
 export function ReviewSection({sectionId, blocked, initialBlocked}) {
   
-  const [frame, setFrame] = useStore(state=>([state.frame,state.setFrame]));
+  const [frame, setFrame, primaryColor] = useStore(state=>([state.frame,state.setFrame,state.primaryColor]));
   const [name, issueIds, complete, dependencies, depNames, depFrames] = useStore(useCallback(state=>{
     const name = state.sections[sectionId].name;
     const issueIds = state.sections[sectionId].issues;
@@ -47,13 +49,14 @@ export function ReviewSection({sectionId, blocked, initialBlocked}) {
   [sectionId, initialBlocked]))
 
   return (
-    <List.Item style={{margin:0,padding:0}}>
-        <Space direction='vertical' style={{width:'100%'}}>
+    <Box style={{margin:0,padding:0}}>
+        <Box direction='column' width='100%'>
             {dependencies.map((dep,i)=>(
-                <Row 
+                <Box 
                     key={dep} 
+                    direction='row'
                     align='middle'
-                    justify='space-between'
+                    justify='between'
                     style={{
                         padding:10,
                         marginBottom:0,marginTop:10,marginLeft:5,marginRight:5,
@@ -62,25 +65,33 @@ export function ReviewSection({sectionId, blocked, initialBlocked}) {
                         backgroundColor:`${frameStyles.colors[depFrames[i]]}44`}}>
                         <span style={{marginRight:20}}>Resolve <b>{depNames[i]}</b> before continuing</span>
                         {(frame !== depFrames[i]) && (<FrameButton frame={depFrames[i]} active={false} text={`Go to ${NAMES[sectionFrame(dependencies[i])]}`} onClick={()=>setFrame(depFrames[i])}/>)}
-                </Row>
+                </Box>
             ))}
             
             <Collapse
                 openable={!blocked}
                 borderWidth={3}
-                header={<Row style={{padding:10}}><h4>{name}</h4></Row>}
+                header={<Box direction='row' pad="10pt">{name}</Box>}
                 style={{marginBottom:5}}
-                extra={<Switch checkedChildren='Done!' checked={complete}/>}
+                extra={
+                <Toggle 
+                    selectedText="Done!"
+                    deselectedText=""
+                    backgroundColor={primaryColor}
+                    selected={complete} 
+                    disabled
+                />}
             >
-                <List
+                {issueIds.length > 0 ? <List
                     split={false}
-                    dataSource={issueIds}
-                    renderItem={(issue)=>(
+                    data={issueIds}
+                >
+                    {(issue)=>(
                         <ReviewIssue key={issue} issueId={issue}/>
                     )}
-                />
+                </List> : null}
             </Collapse>
-        </Space>
-    </List.Item>
+        </Box>
+    </Box>
   );
 };
