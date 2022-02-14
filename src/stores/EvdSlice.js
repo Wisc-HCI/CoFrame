@@ -4,15 +4,27 @@ import {urdf} from "./robot";
 import { FiClipboard, FiBriefcase, FiGrid, FiBox, FiLogOut, FiMoreHorizontal, FiLayers, FiFeather } from "react-icons/fi";
 import { DATA_TYPES, TYPES, EXTRA_TYPES, SIMPLE_PROPERTY_TYPES } from 'simple-vp';
 
+// These icons need to be readjusted for Simple-VP
+import { ReactComponent as LocationIcon } from '../components/CustomIcons/Location.svg';
+import { ReactComponent as PrimitiveIcon } from '../components/CustomIcons/Primitive.svg';
+import { ReactComponent as MachineIcon } from '../components/CustomIcons/Machine.svg';
+import { ReactComponent as SkillIcon } from '../components/CustomIcons/Skill.svg';
+import { ReactComponent as ThingIcon } from '../components/CustomIcons/Thing.svg';
+import { ReactComponent as WaypointIcon } from '../components/CustomIcons/Waypoint.svg';
+import { ReactComponent as ContainerIcon } from '../components/CustomIcons/Container.svg';
+
 export const EvdSlice = (set, get) => ({
   solver: null,
-  // Ported over the example code from the sandbox
   programSpec: {
     drawers: [
-      { title: "Structures", dataType: DATA_TYPES.INSTANCE, objectTypes: ["functionType", "operationType", "blockType"], icon: FiClipboard },
-      { title: "Functions", dataType: DATA_TYPES.CALL, objectType: 'functionType', icon: FiLogOut },
-      { title: "Hats", dataType: DATA_TYPES.REFERENCE, objectType: 'hatType', icon: FiGrid },
-      { title: "Boots", dataType: DATA_TYPES.REFERENCE, objectType: 'bootType', icon: FiBox },
+      // Icon is FiGrid, otherwise no icons show in the drawer
+      { title: "Machines", dataType: DATA_TYPES.REFERENCE, objectType: 'machineType', icon: FiGrid },
+      { title: "Locations", dataType: DATA_TYPES.REFERENCE, objectType: 'locationType', icon: LocationIcon },
+      { title: "Waypoints", dataType: DATA_TYPES.REFERENCE, objectType: 'waypointType', icon: WaypointIcon },
+      { title: "Things", dataType: DATA_TYPES.REFERENCE, objectType: 'thingType', icon: ThingIcon },
+      { title: "Containers", dataType: DATA_TYPES.INSTANCE, objectTypes: ['trajectoryType', 'hierarchicalType', 'skillType'], icon: ContainerIcon },
+      { title: "Skills", dataType: DATA_TYPES.CALL, objectType: 'skillType', icon: SkillIcon },
+      { title: "Actions", dataType: DATA_TYPES.INSTANCE, objectTypes: ['delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'], icon: PrimitiveIcon }
     ],
     objectTypes: {
       programType: {
@@ -64,102 +76,21 @@ export const EvdSlice = (set, get) => ({
         properties: {
           children: {
             name: 'Children',
-            accepts: ['operationType', 'functionType', 'blockType'],
+            accepts: ['hierarchicalType', 'skillType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'],
             default: [],
             isList: true,
             fullWidth: true
           }
         }
       },
-      blockType: {
-        name: "Block",
+      machineType: {
+        name: 'Machine',
         type: TYPES.OBJECT,
-        instanceBlock: {
+        instanceBlock: null,
+        referenceBlock: {
           onCanvas: false,
-          color: '#7f7f7f',
-          icon: FiLayers,
-          extras: [
-            EXTRA_TYPES.COLLAPSE_TOGGLE,
-            { 
-              type: EXTRA_TYPES.INDICATOR,
-              accessor: (data)=>data.properties.children.length,
-              label: 'Size'
-            },
-            { 
-              type: EXTRA_TYPES.FUNCTION_BUTTON,
-              onClick: 'updateItemBlockColors',
-              label: 'Cycle Color',
-              icon: FiFeather
-            },
-            EXTRA_TYPES.LOCKED_INDICATOR
-          ]
-        },
-        referenceBlock: null,
-        properties: {
-          children: {
-            name: 'Children',
-            accepts: ['operationType', 'functionType', 'blockType'],
-            default: [],
-            isList: true,
-            fullWidth: true
-          }
-        }
-      },
-      functionType: {
-        name: 'Function',
-        type: TYPES.FUNCTION,
-        instanceBlock: {
-          onCanvas: true,
-          color: "#62869e",
-          icon: FiLogOut,
-          extras: [
-            EXTRA_TYPES.LOCKED_INDICATOR,
-            {
-              icon: FiMoreHorizontal,
-              type: EXTRA_TYPES.DROPDOWN,
-              contents: [
-                EXTRA_TYPES.SELECTION_TOGGLE,
-                EXTRA_TYPES.DELETE_BUTTON,
-                EXTRA_TYPES.LOCKED_INDICATOR,
-                EXTRA_TYPES.DEBUG_TOGGLE,
-                {
-                  type: EXTRA_TYPES.ADD_ARGUMENT_GROUP,
-                  allowed: ['hatType','bootType']
-                },
-                {
-                  type: EXTRA_TYPES.ADD_ARGUMENT,
-                  argumentType: 'hatType'
-                }
-              ]
-            },
-            {
-              type: EXTRA_TYPES.ADD_ARGUMENT_GROUP,
-              allowed: ['hatType','bootType']
-            }
-          ]
-        },
-        callBlock: {
-          onCanvas: false,
-          color: "#62869e",
-          icon: FiLogOut
-        },
-        properties: {
-          children: {
-            name: 'Children',
-            accepts: ['operationType'],
-            default: [],
-            isList: true,
-            fullWidth: true
-          }
-        }
-      },
-      operationType: {
-        name: 'Operation',
-        type: TYPES.OBJECT,
-        instanceBlock: {
-          onCanvas: false,
-          color: "#629e6c",
-          icon: FiClipboard,
+          color: "#B3A533",
+          icon: FiGrid,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -171,47 +102,31 @@ export const EvdSlice = (set, get) => ({
               ]
             }
           ]
-        },
-        properties: {
-          hat: {
-            name: "Hat",
-            accepts: ["hatType"],
-            default: null,
-            isList: false
-          },
-          boot: {
-            name: "Boot",
-            accepts: ["bootType"],
-            default: null,
-            isList: false
-          },
-          speed: {
-            name: "Speed",
-            type: SIMPLE_PROPERTY_TYPES.NUMBER,
-            default: 1,
-            min: 0,
-            max: 2
-          },
-          doFunky: {
-            name: "Do Funky",
-            type: SIMPLE_PROPERTY_TYPES.BOOLEAN,
-            default: false
-          },
-          greeting: {
-            name: "Greeting",
-            type: SIMPLE_PROPERTY_TYPES.STRING,
-            default: ''
-          },
-          time: {
-            name: "Time",
-            type: SIMPLE_PROPERTY_TYPES.OPTIONS,
-            options: [{value:'am',label:'AM'},{value:'pm',label:'PM'}],
-            default: 'am'
-          }
         }
       },
-      hatType: {
-        name: 'Hat',
+      locationType: {
+        name: 'Location',
+        type: TYPES.OBJECT,
+        instanceBlock: null,
+        referenceBlock: {
+          onCanvas: false,
+          color: "#8624E0",
+          icon: FiGrid,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        }
+      },
+      waypointType: {
+        name: 'Waypoint',
         type: TYPES.OBJECT,
         instanceBlock: null,
         referenceBlock: {
@@ -231,13 +146,13 @@ export const EvdSlice = (set, get) => ({
           ]
         }
       },
-      bootType: {
-        name: 'Boot',
+      thingType: {
+        name: 'Thing',
         type: TYPES.OBJECT,
         instanceBlock: null,
         referenceBlock: {
           onCanvas: false,
-          color: "#B3A533",
+          color: "#E08024",
           icon: FiGrid,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
@@ -251,6 +166,392 @@ export const EvdSlice = (set, get) => ({
             }
           ]
         }
+      },
+      trajectoryType: {
+        name: 'Trajectory',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: true,
+          color: '#c5329a',
+          icon: FiLayers,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            EXTRA_TYPES.DELETE_BUTTON
+          ]
+        },
+        properties: {
+          startLocation: {
+            name: "Start Location",
+            accepts: ["locationType"],
+            default: null,
+            isList: false
+          },
+          waypoints: {
+            name: "Waypoints",
+            accepts: ["waypointType"],
+            default: [],
+            isList: true
+          },
+          endLocation: {
+            name: "End Location",
+            accepts: ["locationType"],
+            default: null,
+            isList: false
+          }
+        }
+      },
+      hierarchicalType: {
+        name: "Hierarchical",
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: '#7f7f7f',
+          icon: FiLayers,
+          extras: [
+            EXTRA_TYPES.COLLAPSE_TOGGLE,
+            { 
+              type: EXTRA_TYPES.INDICATOR,
+              accessor: (data)=>data.properties.children.length,
+              label: 'Size'
+            },
+            EXTRA_TYPES.LOCKED_INDICATOR
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          children: {
+            name: 'Children',
+            accepts: ['hierarchicalType', 'skillType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'],
+            default: [],
+            isList: true,
+            fullWidth: true
+          }
+        }
+      },
+      skillType: {
+        name: 'Skill',
+        type: TYPES.FUNCTION,
+        instanceBlock: {
+          onCanvas: true,
+          color: "#62869e",
+          icon: FiLogOut,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.SELECTION_TOGGLE,
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.LOCKED_INDICATOR,
+                EXTRA_TYPES.DEBUG_TOGGLE,
+                {
+                  type: EXTRA_TYPES.ADD_ARGUMENT_GROUP,
+                  allowed: ['machineType', 'locationType', 'thingType', 'trajectoryType']
+                }
+              ]
+            },
+            {
+              type: EXTRA_TYPES.ADD_ARGUMENT_GROUP,
+              allowed: ['machineType', 'locationType', 'thingType', 'trajectoryType']
+            }
+          ]
+        },
+        callBlock: {
+          onCanvas: false,
+          color: "#62869e",
+          icon: FiLogOut
+        },
+        properties: {
+          children: {
+            name: 'Children',
+            accepts: ['hierarchicalType', 'skillCallType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'],
+            default: [],
+            isList: true,
+            fullWidth: true
+          }
+        }
+      },
+      delayType: {
+        name: 'Delay',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          duration: {
+            name: 'Duration',
+            type: SIMPLE_PROPERTY_TYPES.NUMBER,
+            default: 1,
+            min: 0,
+            max: 5
+          }
+        }
+      },
+      breakpointType: {
+        name: 'Breakpoint',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null
+      },
+      gripperType: {
+        name: 'Gripper',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          machine: {
+            name: "Thing",
+            accepts: ["thingType"],
+            default: null,
+            isList: false
+          },
+          position: {
+            name: 'Position',
+            type: SIMPLE_PROPERTY_TYPES.NUMBER,
+            default: 50,
+            min: 0,
+            max: 85
+          },
+          speed: {
+            name: 'Speed',
+            type: SIMPLE_PROPERTY_TYPES.NUMBER,
+            default: 50,
+            min: 20,
+            max: 150
+          }
+        }
+      },
+      machineInitType: {
+        name: 'Machine Initialization',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          machine: {
+            name: "Machine",
+            accepts: ["machineType"],
+            default: null,
+            isList: false
+          }
+        }
+      },
+      processStartType: {
+        name: 'Process Start',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          machine: {
+            name: "Machine",
+            accepts: ["machineType"],
+            default: null,
+            isList: false
+          }
+        }
+      },
+      processStopType: {
+        name: 'Process Stop',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          machine: {
+            name: "Machine",
+            accepts: ["machineType"],
+            default: null,
+            isList: false
+          }
+        }
+      },
+      processWaitType: {
+        name: 'Process Wait',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          machine: {
+            name: "Machine",
+            accepts: ["machineType"],
+            default: null,
+            isList: false
+          }
+        }
+      },
+      moveTrajectoryType: {
+        name: 'Move Trajectory',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          trajectory: {
+            name: "Trajectory",
+            accepts: ["trajectoryType"],
+            default: null,
+            isList: false
+          },
+          velocity: {
+            name: 'Velocity',
+            type: SIMPLE_PROPERTY_TYPES.NUMBER,
+            default: 1,
+            min: 0.01,
+            max: 5
+          },
+          motionType: {
+            name: 'Motion Type',
+            type: SIMPLE_PROPERTY_TYPES.OPTIONS,
+            options: ['IK', 'Joint'],
+            default: 'IK'
+          }
+        }
+      },
+      moveUnplannedType: {
+        name: 'Move Unplanned',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIcon,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          location: {
+            name: "To Location",
+            accepts: ["locationType"],
+            default: null,
+            isList: false
+          }
+        }
       }
     }
   },
@@ -261,7 +562,7 @@ export const EvdSlice = (set, get) => ({
       type: "programType",
       dataType: DATA_TYPES.INSTANCE,
       properties: {
-        children: ['2dfsessfs']
+        children: []
       },
       position: { x: 0, y: 10 },
       canDelete: false,
@@ -272,9 +573,9 @@ export const EvdSlice = (set, get) => ({
     "655sssefs": {
       id: "655sssefs",
       name: 'MyFunction',
-      type: "functionType",
+      type: "skillType",
       dataType: DATA_TYPES.INSTANCE,
-      arguments: ['s3siakawme'],
+      arguments: [],
       properties: {
         children: []
       },
@@ -285,47 +586,40 @@ export const EvdSlice = (set, get) => ({
       editing: false,
       
     },
-    "s3siakawme" : {
-      id: "s3siakawme",
-      name: 'Passed Hat',
-      type: "hatType",
-      dataType: DATA_TYPES.ARGUMENT,
-      canDelete: true,
-      canEdit: true,
-      selected: false,
-      editing: false,
-    },
-    "2dfsessfs": {
-      id: "2dfsessfs",
-      name: 'MyOperation',
-      type: "operationType",
-      dataType: DATA_TYPES.INSTANCE,
-      properties: {
-        hat: null,
-        boot: null,
-        speed: 1,
-        doFunky: true,
-        greeting: 'Hello!'
-      },
-      canDelete: true,
-      canEdit: true,
-      selected: false,
-      editing: false,
-    },
     "6dewwwwww": {
       id: "6dewwwwww",
-      name: 'Sombrero',
-      type: "hatType",
+      name: 'Good Machine',
+      type: "machineType",
       dataType: DATA_TYPES.INSTANCE,
       canDelete: true,
       canEdit: true,
       selected: false,
       editing: false,
     },
-    "pspssse32": {
-      id: "pspssse32",
-      name: 'Fur Boots',
-      type: "bootType",
+    "95g7dc13": {
+      id: "95g7dc13",
+      name: 'Not Good Machine',
+      type: "machineType",
+      dataType: DATA_TYPES.INSTANCE,
+      canDelete: true,
+      canEdit: true,
+      selected: false,
+      editing: false,
+    },
+    "83h77t67a": {
+      id: "83h77t67a",
+      name: 'Some Location 1',
+      type: "locationType",
+      dataType: DATA_TYPES.INSTANCE,
+      canDelete: true,
+      canEdit: true,
+      selected: false,
+      editing: false,
+    },
+    "83h77t67b": {
+      id: "83h77t67b",
+      name: 'Some Location 2',
+      type: "locationType",
       dataType: DATA_TYPES.INSTANCE,
       canDelete: true,
       canEdit: true,
