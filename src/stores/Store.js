@@ -66,7 +66,7 @@ const useStore = create(computed(immer(store),computedSlice));
 // doGreet();
 
 useStore.getState().setData(KnifeAssembly);
-useStore.getState().loadSolver();
+// useStore.getState().loadSolver();
 // useStore.getState().setSolver()
 console.log(useStore.getState())
 // console.log(KNIFE_TASK.environment.trajectories[0])
