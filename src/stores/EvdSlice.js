@@ -13,18 +13,26 @@ import { ReactComponent as ThingIcon } from '../components/CustomIcons/Thing.svg
 import { ReactComponent as WaypointIcon } from '../components/CustomIcons/Waypoint.svg';
 import { ReactComponent as ContainerIcon } from '../components/CustomIcons/Container.svg';
 
+const LocationIconStyled = ()=><LocationIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
+const PrimitiveIconStyled = ()=><PrimitiveIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
+const MachineIconStyled = ()=><MachineIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
+const SkillIconStyled = ()=><SkillIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
+const ThingIconStyled = ()=><ThingIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
+const WaypointIconStyled = ()=><WaypointIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
+const ContainerIconStyled = ()=><ContainerIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
+
 export const EvdSlice = (set, get) => ({
   solver: null,
   programSpec: {
     drawers: [
       // Icon is FiGrid, otherwise no icons show in the drawer
-      { title: "Machines", dataType: DATA_TYPES.REFERENCE, objectType: 'machineType', icon: FiGrid },
-      { title: "Locations", dataType: DATA_TYPES.REFERENCE, objectType: 'locationType', icon: LocationIcon },
-      { title: "Waypoints", dataType: DATA_TYPES.REFERENCE, objectType: 'waypointType', icon: WaypointIcon },
-      { title: "Things", dataType: DATA_TYPES.REFERENCE, objectType: 'thingType', icon: ThingIcon },
-      { title: "Containers", dataType: DATA_TYPES.INSTANCE, objectTypes: ['trajectoryType', 'hierarchicalType', 'skillType'], icon: ContainerIcon },
-      { title: "Skills", dataType: DATA_TYPES.CALL, objectType: 'skillType', icon: SkillIcon },
-      { title: "Actions", dataType: DATA_TYPES.INSTANCE, objectTypes: ['delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'], icon: PrimitiveIcon }
+      { title: "Machines", dataType: DATA_TYPES.REFERENCE, objectType: 'machineType', icon: MachineIconStyled },
+      { title: "Locations", dataType: DATA_TYPES.REFERENCE, objectType: 'locationType', icon: LocationIconStyled },
+      { title: "Waypoints", dataType: DATA_TYPES.REFERENCE, objectType: 'waypointType', icon: WaypointIconStyled },
+      { title: "Things", dataType: DATA_TYPES.REFERENCE, objectType: 'thingType', icon: ThingIconStyled },
+      { title: "Containers", dataType: DATA_TYPES.INSTANCE, objectTypes: ['trajectoryType', 'hierarchicalType', 'skillType'], icon: ContainerIconStyled },
+      { title: "Skills", dataType: DATA_TYPES.CALL, objectType: 'skillType', icon: SkillIconStyled },
+      { title: "Actions", dataType: DATA_TYPES.INSTANCE, objectTypes: ['delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'], icon: PrimitiveIconStyled }
     ],
     objectTypes: {
       programType: {
@@ -33,7 +41,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: true,
           color: "#3f3f3f",
-          icon: FiBriefcase,
+          icon: ContainerIconStyled,
           extras: [
             { 
               type: EXTRA_TYPES.INDICATOR,
@@ -90,7 +98,7 @@ export const EvdSlice = (set, get) => ({
         referenceBlock: {
           onCanvas: false,
           color: "#B3A533",
-          icon: FiGrid,
+          icon: MachineIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -111,7 +119,7 @@ export const EvdSlice = (set, get) => ({
         referenceBlock: {
           onCanvas: false,
           color: "#8624E0",
-          icon: FiGrid,
+          icon: LocationIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -132,7 +140,7 @@ export const EvdSlice = (set, get) => ({
         referenceBlock: {
           onCanvas: false,
           color: "#AD1FDE",
-          icon: FiGrid,
+          icon: WaypointIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -153,7 +161,7 @@ export const EvdSlice = (set, get) => ({
         referenceBlock: {
           onCanvas: false,
           color: "#E08024",
-          icon: FiGrid,
+          icon: ThingIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -173,7 +181,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: true,
           color: '#c5329a',
-          icon: FiLayers,
+          icon: ContainerIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             EXTRA_TYPES.DELETE_BUTTON
@@ -206,7 +214,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: '#7f7f7f',
-          icon: FiLayers,
+          icon: ContainerIconStyled,
           extras: [
             EXTRA_TYPES.COLLAPSE_TOGGLE,
             { 
@@ -234,7 +242,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: true,
           color: "#62869e",
-          icon: FiLogOut,
+          icon: SkillIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -260,7 +268,7 @@ export const EvdSlice = (set, get) => ({
         callBlock: {
           onCanvas: false,
           color: "#62869e",
-          icon: FiLogOut
+          icon: SkillIconStyled
         },
         properties: {
           children: {
@@ -278,7 +286,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -308,7 +316,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -329,7 +337,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -372,7 +380,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -384,6 +392,7 @@ export const EvdSlice = (set, get) => ({
               ]
             }
           ]
+          
         },
         referenceBlock: null,
         properties: {
@@ -401,7 +410,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -430,7 +439,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -459,7 +468,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -488,7 +497,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
@@ -530,7 +539,7 @@ export const EvdSlice = (set, get) => ({
         instanceBlock: {
           onCanvas: false,
           color: "#629e6c",
-          icon: PrimitiveIcon,
+          icon: PrimitiveIconStyled,
           extras: [
             EXTRA_TYPES.LOCKED_INDICATOR,
             {
