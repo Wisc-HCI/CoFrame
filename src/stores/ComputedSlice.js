@@ -28,10 +28,10 @@ export const computedSlice = (state) => {
 
     // ===================== TFs =====================
     let tfs = { ...INITIAL_SIM.tfs };
-    Object.values(state.data).filter(v => v.type === 'thing').forEach(thing => {
+    Object.values(state.programData).filter(v => v.type === 'thingType').forEach(thing => {
         // for now, place the things at origin. 
         // console.log(thing)
-        tfs[thing.uuid] = {
+        tfs[thing.id] = {
             frame: 'world',
             translation: { x: 0, y: 0, z: 0 },
             rotation: { w: 1, x: 0, y: 0, z: 0 }
@@ -59,9 +59,9 @@ export const computedSlice = (state) => {
 
     let items = {};
     const focusedTrajectoryChildren = state.focusItem.type === 'trajectory' ? [
-        state.data[state.focusItem.uuid].start_location_uuid,
-        ...state.data[state.focusItem.uuid].waypoint_uuids,
-        state.data[state.focusItem.uuid].end_location_uuid,
+        state.programData[state.focusItem.uuid].properties.startLocation,
+        ...state.programData[state.focusItem.uuid].properties.waypoints,
+        state.programData[state.focusItem.uuid].properties.endLocation,
     ] : []
 
     // Add items from the initial static scene
@@ -122,52 +122,54 @@ export const computedSlice = (state) => {
     })
 
     // Add occupancy zones
-    Object.values(state.data).forEach(entry => {
-        if (entry.type === 'zone' && state.data[entry.agent].type === 'human-agent') {
-            items[entry.uuid] = {
+    Object.values(state.programData).forEach(entry => {
+        if (entry.type === 'zoneType' && state.programData[entry.properties.agent].type === 'humanAgentType') {
+            items[entry.id] = {
                 shape: 'cube',
                 name: entry.name,
                 frame: 'world',
-                position: entry.position,
-                rotation: entry.orientation,
+                position: entry.properties.position,
+                rotation: entry.properties.orientation,
                 color: { ...OCCUPANCY_ERROR_COLOR, a: 0.2 },
-                scale: entry.scale,
+                scale: entry.properties.scale,
                 transformMode: "inactive",
                 highlighted: false,
                 onClick: (_) => { },
                 hidden: !state.occupancyVisible
             }
-        } else if (entry.type === 'machine') {
+        } else if (entry.type === 'machineType') {
+            console.log(entry);
             // console.log(entry.name)
             // const mesh = EVD_MESH_LOOKUP[entry.mesh]
-            items[entry.uuid] = {
-                shape: entry.mesh,
+            let entryProps = entry.ref ? state.programData[entry.ref].properties : entry.properties;
+            items[entry.id] = {
+                shape: entryProps.mesh,
                 name: entry.name,
-                frame: entry.link,
-                position: entry.position,
-                rotation: entry.orientation,
-                scale: entry.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : { x: 1, y: 1, z: 1 },
+                frame: entryProps.link,
+                position: entryProps.position,
+                rotation: entryProps.orientation,
+                scale: entryProps.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : { x: 1, y: 1, z: 1 },
                 transformMode: 'inactive',
-                highlighted: state.focusItem.uuid === entry.uuid,
+                highlighted: state.focusItem.uuid === entry.id,
                 onClick: (e) => {
                     if (state.focusItem.transformMode === "translate" || state.focusItem.transformMode === "rotate") {
 
                     } else {
                         console.log('clicked ' + entry.name)
                         e.stopPropagation();
-                        state.setFocusItem('data', entry.uuid);
+                        state.setFocusItem('data', entry.id);
                     }
 
                 },
             }
             // Now add collisions
-            items[entry.uuid + '-collision'] = {
-                shape: entry.collisionMesh,
+            items[entry.id + '-collision'] = {
+                shape: entryProps.collisionMesh,
                 name: entry.name + ' Collision',
-                frame: entry.link,
-                position: entry.position,
-                rotation: entry.orientation,
-                scale: entry.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : { x: 1, y: 1, z: 1 },
+                frame: entryProps.link,
+                position: entryProps.position,
+                rotation: entryProps.orientation,
+                scale: entryProps.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : { x: 1, y: 1, z: 1 },
                 transformMode: 'inactive',
                 highlighted: false,
                 color: { r: 250, g: 0, b: 0, a: 0.6 },
@@ -193,30 +195,31 @@ export const computedSlice = (state) => {
             // }
 
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
-        } else if (entry.type === 'location' || entry.type === 'waypoint') {
-            const focused = state.focusItem.uuid === entry.uuid || state.secondaryFocusItem.uuid === entry.uuid;
-            const trajectoryFocused = focusedTrajectoryChildren.includes(entry.uuid);
+        } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
+            const focused = state.focusItem.uuid === entry.id || state.secondaryFocusItem.uuid === entry.id;
+            const trajectoryFocused = focusedTrajectoryChildren.includes(entry.id);
+            let correctEntry = entry.ref ? state.programData[entry.ref] : entry;
 
             // Handle in the case where the trajectory is focused
             let color = entry.type === 'location' ? { ...DEFAULT_LOCATION_COLOR } : { ...DEFAULT_WAYPOINT_COLOR };
             //console.log(item.joints.reachable);
-            if (state.frame === 'performance' && !entry.reachable) {//pose, frame, focused, locationOrWaypoint
+            if (state.frame === 'performance' && !correctEntry.properties.reachable) {//pose, frame, focused, locationOrWaypoint
                 //console.log("entered");
                 color = { ...UNREACHABLE_COLOR };
-            } else if (state.frame === 'safety' && occupancyOverlap(entry.position, state.data)) {
+            } else if (state.frame === 'safety' && occupancyOverlap(correctEntry.properties.position, state.programData)) {
                 color = { ...OCCUPANCY_ERROR_COLOR };
             }
             if (trajectoryFocused) {
-                const idx = focusedTrajectoryChildren.indexOf(entry.uuid);
+                const idx = focusedTrajectoryChildren.indexOf(entry.id);
                 color.a = (time) => 0.5 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
             }
 
             const debouncedOnMove = debounce(transform => {
-                state.setPoseTransform(entry.uuid, transform);
-                state.requestJointProcessorUpdate('location', entry.uuid)
+                state.setPoseTransform(entry.id, transform);
+                state.requestJointProcessorUpdate('location', entry.id)
             }, 1000)
 
-            poseDataToShapes(entry, state.frame, state.data).forEach((shape) => {
+            poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
                 items[shape.uuid] = {
                     ...shape,
                     highlighted: focused,
@@ -300,17 +303,17 @@ export const computedSlice = (state) => {
         }
     });
 
-    Object.values(state.data).filter(v => v.type === 'trajectory').forEach(trajectory => {
+    Object.values(state.programData).filter(v => v.type === 'trajectoryType').forEach(trajectory => {
         const hidden = state.focusItem.uuid !== trajectory.uuid && state.secondaryFocusItem.uuid !== trajectory.uuid;
         let poses = []
-        if (trajectory.startLocation) {
-            poses.push(state.data.locations[trajectory.startLocation])
+        if (trajectory.properties.startLocation) {
+            poses.push(state.programData[trajectory.properties.startLocation])
         }
-        trajectory.waypoints.forEach(waypointId => {
-            poses.push(state.data[waypointId])
+        trajectory.properties.waypoints.forEach(waypointId => {
+            poses.push(state.programData[waypointId])
         })
-        if (trajectory.endLocation) {
-            poses.push(state.data.locations[trajectory.endLocation])
+        if (trajectory.properties.endLocation) {
+            poses.push(state.programData[trajectory.properties.endLocation])
         }
         const vertices = poses.map(pose => {
             let color = { ...DEFAULT_TRAJECTORY_COLOR };
@@ -318,15 +321,15 @@ export const computedSlice = (state) => {
             if (state.frame === 'performance' && !pose.joints.reachable) {//pose, frame, focused, locationOrWaypoint
                 //console.log("entered");
                 color = { ...UNREACHABLE_COLOR };
-            } else if (state.frame === 'safety' && occupancyOverlap(pose.position, state.data.occupancyZones)) {
+            } else if (state.frame === 'safety' && occupancyOverlap(pose.properties.position, state.programData)) {
                 color = { ...OCCUPANCY_ERROR_COLOR };
             }
             return {
-                position: pose.position,
+                position: pose.properties.position,
                 color
             }
         })
-        lines[trajectory.uuid] = { name: trajectory.name, vertices, frame: 'world', hidden, width: 2 }
+        lines[trajectory.id] = { name: trajectory.name, vertices, frame: 'world', hidden, width: 2 }
     })
 
     // ===================== Hulls =====================

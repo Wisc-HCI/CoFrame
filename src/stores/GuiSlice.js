@@ -46,8 +46,11 @@ export const GuiSlice = (set, get) => ({
       state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
     }
     state.focusItem = { type: type, uuid: uuid, transformMode: transformMode };
+    state.updateItemSelected(uuid, true);
   }),
   clearFocusItem: () => set(state => {
+    state.updateItemSelected(state.focusItem.uuid, false);
+    state.updateItemSelected(state.secondaryFocusItem.uuid, false);
     state.focusItem = { type: null, uuid: null, transformMode: null };
     state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
   }),
@@ -59,8 +62,14 @@ export const GuiSlice = (set, get) => ({
   simMode: 'default',
   setSimMode: (mode) => set(_ => ({ simMode: mode })),
   secondaryFocusItem: { type: null, uuid: null },
-  setSecondaryFocusItem: (type, uuid, transformMode) => set(_ => ({ secondaryFocusItem: { type, uuid, transformMode } })),
-  clearSecondaryFocusItem: () => set(_ => ({ secondaryFocusItem: { type: null, uuid: null } })),
+  setSecondaryFocusItem: (type, uuid, transformMode) => set(state => { 
+    state.updateItemSelected(uuid, true);
+    state.secondaryFocusItem = { type, uuid, transformMode };
+  }),
+  clearSecondaryFocusItem: () => set(state => {
+    state.updateItemSelected(state.secondaryFocusItem.uuid, false);
+    state.secondaryFocusItem = { type: null, uuid: null };
+  }),
   childrenDrawer: false,
   setChildrenDrawer: (input) => set(_ => ({ childrenDrawer: input })),
   clearChildrenDrawer: () => set(_ => ({ childrenDrawer: false })),

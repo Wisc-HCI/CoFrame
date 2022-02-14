@@ -44,6 +44,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Program',
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: true,
           color: "#3f3f3f",
           icon: ContainerIconStyled,
@@ -59,6 +60,7 @@ export const EvdSlice = (set, get) => ({
               contents: [
                 EXTRA_TYPES.NAME_EDIT_TOGGLE,
                 EXTRA_TYPES.LOCKED_INDICATOR,
+                EXTRA_TYPES.SELECTION_TOGGLE,
                 {
                   icon: FiMoreHorizontal,
                   label: 'More Options',
@@ -87,6 +89,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           children: {
             name: 'Children',
             accepts: ['hierarchicalType', 'skillType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'],
@@ -115,6 +124,50 @@ export const EvdSlice = (set, get) => ({
               ]
             }
           ]
+        },
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          position: {
+            name: 'Position',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: {x: null, y: null, z: null},
+            isList: false,
+            fullWidth: true
+          },
+          orientation: {
+            name: 'Orientation',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: {x: null, y: null, z: null, w: null},
+            isList: false,
+            fullWidth: true
+          },
+          link: {
+            name: 'Link',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          mesh: {
+            name: 'Mesh',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          collisionMesh: {
+            name: 'Collision Mesh',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: "",
+            isList: false,
+            fullWidth: true
+          }
         }
       },
       locationType: {
@@ -136,6 +189,36 @@ export const EvdSlice = (set, get) => ({
               ]
             }
           ]
+        },
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          reachable: {
+            name: 'Reachable',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: false,
+            isList: false,
+            fullWidth: true
+          },
+          position: {
+            name: 'Position',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: {x: null, y: null, z: null},
+            isList: false,
+            fullWidth: true
+          },
+          orientation: {
+            name: 'Orientation',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: {x: null, y: null, z: null, w: null},
+            isList: false,
+            fullWidth: true
+          }
         }
       },
       waypointType: {
@@ -157,6 +240,36 @@ export const EvdSlice = (set, get) => ({
               ]
             }
           ]
+        },
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          reachable: {
+            name: 'Reachable',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: false,
+            isList: false,
+            fullWidth: true
+          },
+          position: {
+            name: 'Position',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: {x: null, y: null, z: null},
+            isList: false,
+            fullWidth: true
+          },
+          orientation: {
+            name: 'Orientation',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: {x: null, y: null, z: null, w: null},
+            isList: false,
+            fullWidth: true
+          }
         }
       },
       thingType: {
@@ -178,13 +291,44 @@ export const EvdSlice = (set, get) => ({
               ]
             }
           ]
+        },
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          safe: {
+            name: 'Safe',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: false,
+            isList: false,
+            fullWidth: true
+          },
+          weight: {
+            name: 'Weight',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: 0,
+            isList: false,
+            fullWidth: true
+          },
+          mesh: {
+            name: 'Mesh',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: "",
+            isList: false,
+            fullWidth: true
+          }
         }
       },
       trajectoryType: {
         name: 'Trajectory',
         type: TYPES.OBJECT,
         instanceBlock: {
-          onCanvas: true,
+          hideNewPrefix: true,
+          onCanvas: false,
           color: '#c5329a',
           icon: ContainerIconStyled,
           extras: [
@@ -193,6 +337,13 @@ export const EvdSlice = (set, get) => ({
           ]
         },
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           startLocation: {
             name: "Start Location",
             accepts: ["locationType"],
@@ -217,6 +368,7 @@ export const EvdSlice = (set, get) => ({
         name: "Hierarchical",
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: '#7f7f7f',
           icon: ContainerIconStyled,
@@ -232,6 +384,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           children: {
             name: 'Children',
             accepts: ['hierarchicalType', 'skillType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'],
@@ -245,6 +404,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Skill',
         type: TYPES.FUNCTION,
         instanceBlock: {
+          hideNewPrefix: false,
           onCanvas: true,
           color: "#62869e",
           icon: SkillIconStyled,
@@ -276,6 +436,13 @@ export const EvdSlice = (set, get) => ({
           icon: SkillIconStyled
         },
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           children: {
             name: 'Children',
             accepts: ['hierarchicalType', 'skillCallType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'],
@@ -289,6 +456,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Delay',
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: "#629e6c",
           icon: PrimitiveIconStyled,
@@ -306,6 +474,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           duration: {
             name: 'Duration',
             type: SIMPLE_PROPERTY_TYPES.NUMBER,
@@ -319,27 +494,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Breakpoint',
         type: TYPES.OBJECT,
         instanceBlock: {
-          onCanvas: false,
-          color: "#629e6c",
-          icon: PrimitiveIconStyled,
-          extras: [
-            EXTRA_TYPES.LOCKED_INDICATOR,
-            {
-              icon: FiMoreHorizontal,
-              type: EXTRA_TYPES.DROPDOWN,
-              contents: [
-                EXTRA_TYPES.DELETE_BUTTON,
-                EXTRA_TYPES.DEBUG_TOGGLE
-              ]
-            }
-          ]
-        },
-        referenceBlock: null
-      },
-      gripperType: {
-        name: 'Gripper',
-        type: TYPES.OBJECT,
-        instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: "#629e6c",
           icon: PrimitiveIconStyled,
@@ -357,6 +512,44 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          }
+        }
+      },
+      gripperType: {
+        name: 'Gripper',
+        type: TYPES.OBJECT,
+        instanceBlock: {
+          hideNewPrefix: true,
+          onCanvas: false,
+          color: "#629e6c",
+          icon: PrimitiveIconStyled,
+          extras: [
+            EXTRA_TYPES.LOCKED_INDICATOR,
+            {
+              icon: FiMoreHorizontal,
+              type: EXTRA_TYPES.DROPDOWN,
+              contents: [
+                EXTRA_TYPES.DELETE_BUTTON,
+                EXTRA_TYPES.DEBUG_TOGGLE
+              ]
+            }
+          ]
+        },
+        referenceBlock: null,
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           machine: {
             name: "Thing",
             accepts: ["thingType"],
@@ -383,6 +576,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Machine Initialization',
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: "#629e6c",
           icon: PrimitiveIconStyled,
@@ -401,6 +595,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           machine: {
             name: "Machine",
             accepts: ["machineType"],
@@ -413,6 +614,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Process Start',
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: "#629e6c",
           icon: PrimitiveIconStyled,
@@ -430,6 +632,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           machine: {
             name: "Machine",
             accepts: ["machineType"],
@@ -442,6 +651,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Process Stop',
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: "#629e6c",
           icon: PrimitiveIconStyled,
@@ -459,6 +669,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           machine: {
             name: "Machine",
             accepts: ["machineType"],
@@ -471,6 +688,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Process Wait',
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: "#629e6c",
           icon: PrimitiveIconStyled,
@@ -488,6 +706,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           machine: {
             name: "Machine",
             accepts: ["machineType"],
@@ -500,6 +725,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Move Trajectory',
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: "#629e6c",
           icon: PrimitiveIconStyled,
@@ -517,6 +743,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: false
+          },
           trajectory: {
             name: "Trajectory",
             accepts: ["trajectoryType"],
@@ -542,6 +775,7 @@ export const EvdSlice = (set, get) => ({
         name: 'Move Unplanned',
         type: TYPES.OBJECT,
         instanceBlock: {
+          hideNewPrefix: true,
           onCanvas: false,
           color: "#629e6c",
           icon: PrimitiveIconStyled,
@@ -559,6 +793,13 @@ export const EvdSlice = (set, get) => ({
         },
         referenceBlock: null,
         properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
           location: {
             name: "To Location",
             accepts: ["locationType"],
@@ -566,81 +807,126 @@ export const EvdSlice = (set, get) => ({
             isList: false
           }
         }
-      }
+      },
+      robotAgentType: {
+        name: 'robot-agent',
+        type: TYPES.OBJECT,
+        instanceBlock: null,
+        referenceBlock: null,
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          }
+        }
+      },
+      processType: {
+        name: 'process',
+        type: TYPES.OBJECT,
+        instanceBlock: null,
+        referenceBlock: null,
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          machine: {
+            name: 'Machine',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          processTime: {
+            name: 'Process Time',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: 0,
+            isList: false,
+            fullWidth: true
+          },
+          outputs: {
+            name: 'Outputs',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: [],
+            isList: true,
+            fullWidth: true
+          },
+          inputs: {
+            name: 'Inputs',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: [],
+            isList: true,
+            fullWidth: true
+          }
+        }
+      },
+      zoneType: {
+        name: 'zone',
+        type: TYPES.OBJECT,
+        instanceBlock: null,
+        referenceBlock: null,
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          agent: {
+            name: 'Agent ID',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          },
+          scale: {
+            name: 'Scale',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: {x: null, y: null, z: null},
+            isList: false,
+            fullWidth: true
+          },
+          position: {
+            name: 'Position',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: {x: null, y: null, z: null},
+            isList: false,
+            fullWidth: true
+          },
+          orientation: {
+            name: 'Orientation',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED,
+            default: {x: null, y: null, z: null, w: null},
+            isList: false,
+            fullWidth: true
+          }
+        }
+      },
+      humanAgentType: {
+        name: 'human-agent',
+        type: TYPES.OBJECT,
+        instanceBlock: null,
+        referenceBlock: null,
+        properties: {
+          description: {
+            name: 'Description',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+            default: "",
+            isList: false,
+            fullWidth: true
+          }
+        }
+      },
     }
   },
-  programData: {
-    "45535153s": {
-      id: "45535153s",
-      name: 'MyProgram',
-      type: "programType",
-      dataType: DATA_TYPES.INSTANCE,
-      properties: {
-        children: []
-      },
-      position: { x: 0, y: 10 },
-      canDelete: false,
-      canEdit: true,
-      selected: false,
-      editing: false,
-    },
-    "655sssefs": {
-      id: "655sssefs",
-      name: 'MyFunction',
-      type: "skillType",
-      dataType: DATA_TYPES.INSTANCE,
-      arguments: [],
-      properties: {
-        children: []
-      },
-      position: { x: 400, y: 10 },
-      canDelete: true,
-      canEdit: true,
-      selected: true,
-      editing: false,
-      
-    },
-    "6dewwwwww": {
-      id: "6dewwwwww",
-      name: 'Good Machine',
-      type: "machineType",
-      dataType: DATA_TYPES.INSTANCE,
-      canDelete: true,
-      canEdit: true,
-      selected: false,
-      editing: false,
-    },
-    "95g7dc13": {
-      id: "95g7dc13",
-      name: 'Not Good Machine',
-      type: "machineType",
-      dataType: DATA_TYPES.INSTANCE,
-      canDelete: true,
-      canEdit: true,
-      selected: false,
-      editing: false,
-    },
-    "83h77t67a": {
-      id: "83h77t67a",
-      name: 'Some Location 1',
-      type: "locationType",
-      dataType: DATA_TYPES.INSTANCE,
-      canDelete: true,
-      canEdit: true,
-      selected: false,
-      editing: false,
-    },
-    "83h77t67b": {
-      id: "83h77t67b",
-      name: 'Some Location 2',
-      type: "locationType",
-      dataType: DATA_TYPES.INSTANCE,
-      canDelete: true,
-      canEdit: true,
-      selected: false,
-      editing: false,
-    }
-  },
+  programData: {},
   // All the old stuff below
   data: {
     "program-484de43e-adaa-4801-a23b-bca38e211365":{
@@ -654,7 +940,7 @@ export const EvdSlice = (set, get) => ({
     }
   },
   // A macro for updating the entire program from raw data
-  setData: (data) => set((_) => ({ data: data})),
+  setData: (data) => set((_) => ({ programData: data})),
   updatePoseJoints: (id,value,process) => set(state=>{
     state.programData[id].joints = value;
     state.processes[id] = process;

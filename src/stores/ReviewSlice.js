@@ -165,31 +165,31 @@ export const ReviewSlice = (set, get) => ({
     refresh: () => set(state=>{
         //state.issues = {};
         let newIssues = {};
-        let unrolledProgram = get().executablePrimitives[state.uuid];
+        // let unrolledProgram = get().executablePrimitives[state.uuid];
         let allNewStats = {};
-        Object.entries(state.sections).forEach(([sectionKey,section])=>{
-            // Use the predefined updater to get the new issues
-            let [newSectionIssues, newStats] = state.sections[sectionKey].updater({program:state,unrolled:unrolledProgram,stats:state.stats,settings:state.issueSettings});
-            // Augment allNewStats with the new incoming stats.
-            allNewStats = {...allNewStats,...newStats};
-            // Enumerate the existing issues
-            // For any issues that are already completed, exist in the new set, 
-            // and don't now require changes, set them as complete.
-            section.issues.forEach(issueKey=>{
-                let existingIssue = state.issues[issueKey];
-                if (existingIssue.complete) {
-                    Object.entries(newSectionIssues).forEach(([newIssueKey,newIssue])=>{
-                        //console.log(`${newIssue.focus.type} ${existingIssue.focus.type} ${newIssue.focus.uuid} ${existingIssue.focus.uuid}`)
-                        if (newIssue.focus.uuid === existingIssue.focus.uuid && !newIssue.requiresChanges) {
-                            newSectionIssues[newIssueKey].complete = true;
-                        }
-                    })
-                };
-            })
-            // Set the new issues for that section
-            state.sections[sectionKey].issues = Object.keys(newSectionIssues);
-            newIssues = {...newIssues, ...objectMap(newSectionIssues,(issue)=>({...issue,code:sectionKey}))};
-        })
+        // Object.entries(state.sections).forEach(([sectionKey,section])=>{
+        //     // Use the predefined updater to get the new issues
+        //     let [newSectionIssues, newStats] = state.sections[sectionKey].updater({program:state,unrolled:unrolledProgram,stats:state.stats,settings:state.issueSettings});
+        //     // Augment allNewStats with the new incoming stats.
+        //     allNewStats = {...allNewStats,...newStats};
+        //     // Enumerate the existing issues
+        //     // For any issues that are already completed, exist in the new set, 
+        //     // and don't now require changes, set them as complete.
+        //     section.issues.forEach(issueKey=>{
+        //         let existingIssue = state.issues[issueKey];
+        //         if (existingIssue.complete) {
+        //             Object.entries(newSectionIssues).forEach(([newIssueKey,newIssue])=>{
+        //                 //console.log(`${newIssue.focus.type} ${existingIssue.focus.type} ${newIssue.focus.uuid} ${existingIssue.focus.uuid}`)
+        //                 if (newIssue.focus.uuid === existingIssue.focus.uuid && !newIssue.requiresChanges) {
+        //                     newSectionIssues[newIssueKey].complete = true;
+        //                 }
+        //             })
+        //         };
+        //     })
+        //     // Set the new issues for that section
+        //     state.sections[sectionKey].issues = Object.keys(newSectionIssues);
+        //     newIssues = {...newIssues, ...objectMap(newSectionIssues,(issue)=>({...issue,code:sectionKey}))};
+        // })
         // Update the issues set.
         state.issues = newIssues;
         // Update the stats set.

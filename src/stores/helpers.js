@@ -124,13 +124,15 @@ export function deleteAction(data, uuid) {
 
 export const occupancyOverlap = (position, occupancyZones) => {
     let overlap = false
-    Object.values(occupancyZones).forEach(zone => {
-        const xOverlap = position.x < zone.position_x + zone.scale_x/2 && position.x > zone.position_x - zone.scale_x/2;
-        const yOverlap = position.y < zone.position_z + zone.scale_z/2 && position.y > zone.position_z - zone.scale_z/2;
+    let zones = Object.values(occupancyZones).filter(v => v.type === 'zoneType');
+    for (let i = 0; i < zones.length; i++ ) {//.forEach(zone => {
+        let zone = zones[i];
+        const xOverlap = position.x < zone.properties.position.x + zone.properties.scale.x/2 && position.x > zone.properties.position.x - zone.properties.scale.x/2;
+        const yOverlap = position.y < zone.properties.position.z + zone.properties.scale.z/2 && position.y > zone.properties.position.z - zone.properties.scale.z/2;
         if (xOverlap && yOverlap) {
             overlap = true
         }
-    })
+    }
     return overlap
 }
 
@@ -761,7 +763,7 @@ export function unFlattenProgramSkills(skills, primitives) {
 
 export function poseToColor(pose, frame, focused, occupancyZones) {
     let color = { r: 255, g: 255, b: 255, a: focused ? 1 : 0 };
-    if (frame === 'safety' && occupancyOverlap(pose.position,occupancyZones)) {
+    if (frame === 'safety' && occupancyOverlap(pose.properties.position,occupancyZones)) {
         color.r = 233;
         color.g = 53;
         color.b = 152;
@@ -777,11 +779,11 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
     let pose_stored = pose;
     return [
         {
-            uuid: `${pose_stored.uuid}-tag`,
+            uuid: `${pose_stored.id}-tag`,
             frame: 'world',
             name: pose.name,
             shape: pose_stored.type.includes('location') ? 'flag' : 'tag',
-            position: pose_stored.position,
+            position: pose_stored.properties.position,
             rotation: { w: 1, x: 0, y: 0, z: 0 },
             scale: { x: -0.25, y: 0.25, z: 0.25 },
             highlighted: false,
@@ -789,11 +791,11 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
             color: poseToColor(pose_stored, frame, false, occupancyZones)
         },
         {
-            uuid: `${pose_stored.uuid}-pointer`,
+            uuid: `${pose_stored.id}-pointer`,
             frame: 'world',
             shape: pose_stored.type.includes('location') ? 'package://app/meshes/LocationMarker.stl' : 'package://app/meshes/OpenWaypointMarker.stl',
-            position: pose_stored.position,
-            rotation: pose_stored.orientation,
+            position: pose_stored.properties.position,
+            rotation: pose_stored.properties.orientation,
             scale: { x: 1, y: 1, z: 1 },
             highlighted: false,
             showName: false,
