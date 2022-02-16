@@ -37,3 +37,7 @@ body {
     border-left-color: transparent;
     box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.07);
 }
+
+.react-flow__attribution {
+    display: none
+}

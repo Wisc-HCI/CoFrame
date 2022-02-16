@@ -15,18 +15,11 @@ export const SettingsModal = () => {
     const issueSettings = useStore(store => store.issueSettings);
     const updateIssueSetting = useStore(store => store.updateIssueSetting);
 
-    const connectButtonText = connection === 'connecting'
-        ? 'Connecting'
-        : connection === 'connected'
-            ? 'Reconnect'
-            : 'Connect';
-
     const updateIssue = (value, issue) => {
         const item = { uuid: issue.uuid, name: issue.name, value: value };
         updateIssueSetting(item);
     }
-
-    console.log(activeModal)
+    
     if (activeModal) {
         return (
             <Layer

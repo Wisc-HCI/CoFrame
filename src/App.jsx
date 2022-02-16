@@ -15,6 +15,7 @@ import { ProgramTile } from "./components/Body/ProgramTile";
 import { Grommet, Header, Heading, Box, Button, Collapsible } from 'grommet';
 
 // import { Modals } from "./components/Modals";
+import { Detail } from './components/Detail';
 import { SettingsModal } from "./components/Settings";
 
 import useStore from "./stores/Store";
@@ -119,6 +120,7 @@ export default function App() {
 
             </Box>
             <SettingsModal/>
+            <Detail/>
             {/* <Modals /> */}
         </Grommet >
 
