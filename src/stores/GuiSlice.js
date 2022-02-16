@@ -17,10 +17,10 @@ const ACTIVE_TFS = [
 export const GuiSlice = (set, get) => ({
   // EDITOR/SETUP/MAIN
   // The frame specifies the expert (color) frame
-  editorTransform: {x: 0, y: 0, zoom: 1},
-  setEditorTransform: (transform) => set(_=>({editorTransform:transform})),
+  editorTransform: { x: 0, y: 0, zoom: 1 },
+  setEditorTransform: (transform) => set(_ => ({ editorTransform: transform })),
   flowInstance: null,
-  setFlowInstance: (instance) => set({flowInstance:instance}),
+  setFlowInstance: (instance) => set({ flowInstance: instance }),
   frame: 'safety',
   primaryColor: frameStyles.colors['safety'],
   setFrame: (frame) => set(state => {
@@ -40,17 +40,29 @@ export const GuiSlice = (set, get) => ({
   setActiveDrawer: (drawer) => set(_ => ({ activeDrawer: drawer })),
   // the focusItem specifies the type and uuid of data to focus on
   focusItem: { type: null, uuid: null, transformMode: null },
-  setFocusItem: (type, uuid, transformMode) => set(state => {
-    // TODO Clear current items.
-    if (type !== state.focusItem.type && uuid !== state.focusItem.uuid) {
-      state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
+  setFocusItem: (type, uuid, transformMode) => set(state=>{
+    console.log('setFocusItem')
+    // Clear out previous focusItem highlighting
+    if (state.focusItem.uuid && state.programData[state.focusItem.uuid]) {
+      state.programData[state.focusItem.uuid].selected = false
+    };
+    // Clear out previous secondaryFocusItem highlighting
+    if (state.secondaryFocusItem.uuid && state.programData[state.secondaryFocusItem.uuid]) {
+      state.programData[state.secondaryFocusItem.uuid].selected = false
     }
-    state.focusItem = { type: type, uuid: uuid, transformMode: transformMode };
-    state.updateItemSelected(uuid, true);
+    if (uuid && state.programData[uuid]) {
+      state.programData[uuid].selected = true
+    };
+    state.focusItem = { type, uuid, transformMode }
   }),
   clearFocusItem: () => set(state => {
-    state.updateItemSelected(state.focusItem.uuid, false);
-    state.updateItemSelected(state.secondaryFocusItem.uuid, false);
+    console.log('clearFocusItem')
+    if (state.focusItem.uuid && state.programData[state.focusItem.uuid]) {
+      state.programData[state.focusItem.uuid].selected = false
+    }
+    if (state.secondaryFocusItem.uuid && state.programData[state.secondaryFocusItem.uuid]) {
+      state.programData[state.secondaryFocusItem.uuid].selected = false
+    }
     state.focusItem = { type: null, uuid: null, transformMode: null };
     state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
   }),
@@ -62,13 +74,23 @@ export const GuiSlice = (set, get) => ({
   simMode: 'default',
   setSimMode: (mode) => set(_ => ({ simMode: mode })),
   secondaryFocusItem: { type: null, uuid: null },
-  setSecondaryFocusItem: (type, uuid, transformMode) => set(state => { 
-    state.updateItemSelected(uuid, true);
-    state.secondaryFocusItem = { type, uuid, transformMode };
+  setSecondaryFocusItem: (type, uuid, transformMode) => set(state=>{
+    console.log('setSecondaryFocusItem')
+    // Clear out previous secondaryFocusItem highlighting
+    if (state.secondaryFocusItem.uuid && state.programData[state.secondaryFocusItem.uuid]) {
+      state.programData[state.secondaryFocusItem.uuid].selected = false
+    }
+    if (uuid && state.programData[uuid]) {
+      state.programData[uuid].selected = true
+    };
+    state.secondaryFocusItem = { type, uuid, transformMode }
   }),
-  clearSecondaryFocusItem: () => set(state => {
-    state.updateItemSelected(state.secondaryFocusItem.uuid, false);
-    state.secondaryFocusItem = { type: null, uuid: null };
+  clearSecondaryFocusItem: () => set(state=>{
+    console.log('clearSecondaryFocusItem')
+    if (state.secondaryFocusItem.uuid && state.programData[state.secondaryFocusItem.uuid]) {
+      state.programData[state.secondaryFocusItem.uuid].selected = false
+    }
+    state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
   }),
   childrenDrawer: false,
   setChildrenDrawer: (input) => set(_ => ({ childrenDrawer: input })),

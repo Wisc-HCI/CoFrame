@@ -31,13 +31,13 @@ export const Detail = (_) => {
     secondaryFocusItem: state.secondaryFocusItem,
     deleteItem: state.deleteItem,
     setItemProperty: state.setItemProperty,
-    item: state.focusItem.type && EDITOR_TYPES.indexOf(state.focusItem.type) < 0 ? state.data[state.focusItem.type + 's'][state.focusItem.uuid] : null
+    item: state.focusItem.type ? state.programData[state.focusItem.uuid] : null
   }));
 
-  const handleOK = () => {
-    clearFocusItem();
-    deleteItem(focusItem.type, focusItem.uuid);
-  }
+  // const handleOK = () => {
+  //   clearFocusItem();
+  //   deleteItem(focusItem.type, focusItem.uuid);
+  // }
 
   // const content = (
   //   <Button
@@ -53,9 +53,9 @@ export const Detail = (_) => {
 
   console.log(focusItem)
   
-  if (!EDITOR_TYPES.includes(focusItem.type)) {
+  if (focusItem.uuid && !EDITOR_TYPES.includes(focusItem.type)) {
     return (
-      <Layer full="vertical" position="right" onClickOutside={clearFocusItem} onEsc={clearFocusItem}>
+      <Layer full="vertical" position="right" onEsc={clearFocusItem}>
         <Box fill style={{ minWidth: '378px' }} background='#444444'>
           <Box
             direction="row"
