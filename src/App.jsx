@@ -14,7 +14,8 @@ import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
 import { Grommet, Header, Heading, Box, Button, Collapsible } from 'grommet';
 
-import { Modals } from "./components/Modals";
+// import { Modals } from "./components/Modals";
+import { SettingsModal } from "./components/Settings";
 
 import useStore from "./stores/Store";
 import shallow from 'zustand/shallow';
@@ -68,44 +69,16 @@ export default function App() {
             color: primaryColor,
             hover: { border: { color: '#00000088' }, }
         },
-        textInput: { disabled: { opacity: 1 } }
+        textInput: { 
+            disabled: { opacity: 1 } 
+        }
     }
-
-    // useEffect(() => {
-    //     if (frame === 'safety') {
-    //         document.body.classList.remove('business');
-    //         document.body.classList.remove('performance');
-    //         document.body.classList.remove('quality');
-    //         document.body.classList.add('safety');
-    //     } else if (frame === 'quality') {
-    //         document.body.classList.remove('business');
-    //         document.body.classList.remove('performance');
-    //         document.body.classList.remove('safety');
-    //         document.body.classList.add('quality');
-    //     } else if (frame === 'performance') {
-    //         document.body.classList.remove('business');
-    //         document.body.classList.remove('quality');
-    //         document.body.classList.remove('safety');
-    //         document.body.classList.add('performance');
-    //     } else if (frame === 'business') {
-    //         document.body.classList.remove('performance');
-    //         document.body.classList.remove('quality');
-    //         document.body.classList.remove('safety');
-    //         document.body.classList.add('business');
-    //     }
-    // }, [frame]
-    // )
 
     const menuItems = [
         {
             modalKey: 'settings',
             name: 'Settings',
             icon: <SettingOutlined />
-        },
-        {
-            modalKey: 'sync',
-            name: 'Sync',
-            icon: <SyncOutlined />
         }
     ];
 
@@ -121,9 +94,7 @@ export default function App() {
                     <Box flex></Box>
                     <Box direction='row' align='center' gap='small'>
                         {menuItems.map(entry => (
-                            <Button key={entry.modalKey} icon={entry.icon} onClick={() => setActiveModal(entry.modalKey)}>
-                                {entry.name}
-                            </Button>
+                            <Button plain margin={{right:'medium'}} key={entry.modalKey} secondary icon={entry.icon} label={entry.name} onClick={() => setActiveModal(entry.modalKey)}/>
                         ))}
                     </Box>
                 </Header>
@@ -147,7 +118,7 @@ export default function App() {
                 </Box>
 
             </Box>
-            
+            <SettingsModal/>
             {/* <Modals /> */}
         </Grommet >
 
@@ -199,7 +170,7 @@ export default function App() {
                 </Layout>
             </Layout>
 
-            <Modals />
+            
         </>
     )
 }
