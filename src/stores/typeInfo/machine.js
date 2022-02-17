@@ -30,22 +30,8 @@ export const machineType = {
         isList: false,
         fullWidth: true
       },
-      position: {
-        name: 'Position',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: {x: null, y: null, z: null},
-        isList: false,
-        fullWidth: true
-      },
-      orientation: {
-        name: 'Orientation',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: {x: null, y: null, z: null, w: null},
-        isList: false,
-        fullWidth: true
-      },
-      link: {
-        name: 'Link',
+      tf: {
+        name: 'Transform Frame',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: "",
         isList: false,

@@ -171,20 +171,9 @@
         "canEdit": true,
         "properties": {
             "description": "Machine that prints handles.",
-            "link": "3d_printer_link",
-            "mesh": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
-            "collisionMesh": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "orientation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            }
+            "mesh": "mk2Printer",
+            "tf": "3d_printer_link",
+            "collisionMesh": "mk2PrinterCollision"
         },
         "dataType": 0,
         "selected": false,
@@ -198,20 +187,9 @@
         "canEdit": true,
         "properties": {
             "description": "Machine that attaches handles to the blade.",
-            "link": "assembly_jig_link",
             "mesh": "assembly_jig",
-            "collisionMesh": "assembly_jig_collision",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "orientation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            }
+            "tf": "assembly_jig_link",
+            "collisionMesh": "assembly_jig_collision"
         },
         "dataType": 0,
         "selected": false,
@@ -225,20 +203,9 @@
         "canEdit": true,
         "properties": {
             "description": "Machine that produces blades",
-            "link": "blade_conveyor_link",
+            "tf": "blade_conveyor_link",
             "mesh": "conveyor",
-            "collisionMesh": "conveyor_collision",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "orientation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            }
+            "collisionMesh": "conveyor_collision"
         },
         "dataType": 0,
         "selected": false,
@@ -252,20 +219,9 @@
         "canEdit": true,
         "properties": {
             "description": "Machine that accepts blades from the conveyor.",
-            "link": "blade_feeder_link",
+            "tf": "blade_feeder_link",
             "mesh": "conveyor_receiver",
-            "collisionMesh": "conveyor_receiver_collision",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "orientation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            }
+            "collisionMesh": "conveyor_receiver_collision"
         },
         "dataType": 0,
         "selected": false,
@@ -279,20 +235,9 @@
         "canEdit": true,
         "properties": {
             "description": "Machine that moves finished knives to the next stage.",
-            "link": "knife_conveyor_link",
+            "tf": "knife_conveyor_link",
             "mesh": "conveyor",
-            "collisionMesh": "conveyor_collision",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "orientation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            }
+            "collisionMesh": "conveyor_collision"
         },
         "dataType": 0,
         "selected": false,
@@ -306,20 +251,9 @@
         "canEdit": true,
         "properties": {
             "description": "Machine that dispatches blades to the knife conveyor.",
-            "link": "knife_feeder_link",
+            "tf": "knife_feeder_link",
             "mesh": "conveyor_dispatcher",
-            "collisionMesh": "conveyor_dispatcher_collision",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "orientation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            }
+            "collisionMesh": "conveyor_dispatcher_collision"
         },
         "dataType": 0,
         "selected": false,
@@ -787,5 +721,1754 @@
         "canEdit": true,
         "selected": true,
         "editing": false
+    },
+    "table": {
+        "id": "table",
+        "name": "Table",
+        "type": "fixtureType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "mesh": "tableMesh",
+            "frame": "table_tf",
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "pedestal": {
+        "id": "pedestal",
+        "name": "Pedestal",
+        "type": "fixtureType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "frame": "pedestal_tf",
+            "mesh": "pedestalMesh",
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "robotBase": {
+        "id": "robotBase",
+        "name": "Robot Base",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "robotBaseMesh",
+            "frame": "simulated_base_link",
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "robotShoulderLink": {
+        "id": "robotShoulderLink",
+        "name": "Shoulder Link",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "robotShoulderLinkMesh",
+            "frame": "simulated_shoulder_link",
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "robotUpperArmLink": {
+        "id": "robotUpperArmLink",
+        "name": "Upper Arm Link",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "robotUpperArmLinkMesh",
+            "collision": "robotUpperArmLinkCollision",
+            "frame": "simulated_upper_arm_link",
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "robotForearmLink": {
+        "id": "robotForearmLink",
+        "name": "Forearm Link",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "robotForearmLinkMesh",
+            "collision": "robotForearmLinkCollision",
+            "frame": "simulated_forearm_link",
+            "scale": {"x":1,"y":1,"z":1},
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "robotWrist1Link": {
+        "id": "robotWrist1Link",
+        "name": "Wrist 1 Link",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "robotWrist1LinkMesh",
+            "collision": "robotWrist1Collision",
+            "frame": "simulated_wrist_1_link",
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "robotWrist2Link": {
+        "id": "robotWrist2Link",
+        "name": "Wrist 2 Link",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "robotWrist2LinkMesh",
+            "collision": "robotWrist1Collision",
+            "frame": "simulated_wrist_2_link",
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "robotWrist3Link": {
+        "id": "robotWrist3Link",
+        "name": "Wrist 3 Link",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "robotWrist3LinkMesh",
+            "collision": "robotWrist3Collision",
+            "frame": "simulated_wrist_3_link",
+            "showCollision": false,
+            "highlighted": false
+        }
+    },
+    "gripperBaseLink":{
+        "id": "gripperBaseLink",
+        "name": "Gripper Base",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperBaseLinkMesh",
+            "frame": "simulated_robotiq_85_base_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "gripperLeftKnuckle":{
+        "id": "gripperLeftKnuckle",
+        "name": "Gripper Left Knuckle",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperLeftKnuckleMesh",
+            "frame": "simulated_robotiq_85_left_knuckle_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "gripperRightKnuckle":{
+        "id": "gripperRightKnuckle",
+        "name": "Gripper Right Knuckle",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperRightKnuckleMesh",
+            "frame": "simulated_robotiq_85_right_knuckle_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "gripperLeftFinger":{
+        "id": "gripperLeftFinger",
+        "name": "Gripper Left Finger",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperLeftFingerMesh",
+            "frame": "simulated_robotiq_85_left_finger_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "gripperRightFinger":{
+        "id": "gripperRightFinger",
+        "name": "Gripper Right Finger",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperRightFingerMesh",
+            "frame": "simulated_robotiq_85_right_finger_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "gripperLeftInnerKnuckle":{
+        "id": "gripperLeftInnerKnuckle",
+        "name": "Gripper Left Inner Knuckle",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperLeftInnerKnuckleMesh",
+            "frame": "simulated_robotiq_85_left_inner_knuckle_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "gripperRightInnerKnuckle":{
+        "id": "gripperRightInnerKnuckle",
+        "name": "Gripper Right Inner Knuckle",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperRightInnerKnuckleMesh",
+            "frame": "simulated_robotiq_85_right_inner_knuckle_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "gripperLeftFingerTip":{
+        "id": "gripperLeftFingerTip",
+        "name": "Gripper Left Finger Tip",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperLeftFingerTipMesh",
+            "frame": "simulated_robotiq_85_left_finger_tip_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "gripperRightFingerTip":{
+        "id": "gripperRightFingerTip",
+        "name": "Gripper Right Finger Tip",
+        "type": "linkType",
+        "dataType": 0,
+        "canDelete": false,
+        "canEdit": true,
+        "selected": true,
+        "editing": false,
+        "properties": {
+            "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+            "mesh": "gripperRightFingerTipMesh",
+            "frame": "simulated_robotiq_85_right_finger_tip_link",
+            "showName": false,
+            "highlighted": false
+        }
+    },
+    "tableMesh": {
+        "type": "meshType",
+        "id": "tableMesh",
+        "name": "Table Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl",
+            "color": {"r": 10, "g": 10, "b": 10, "a": 1},
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "pedestalMesh": {
+        "type": "meshType",
+        "id": "pedestalMesh",
+        "name": "Pedestal Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl",
+            "color": {"r": 15, "g": 15, "b": 15, "a": 1},
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotBaseMesh": {
+        "type": "meshType",
+        "id": "robotBaseMesh",
+        "name": "Robot Base Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/visual/base.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 1,
+                "w": 0
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotShoulderLinkMesh": {
+        "type": "meshType",
+        "id": "robotShoulderLinkMesh",
+        "name": "Robot Shoulder Link Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/visual/shoulder.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 1,
+                "w": 0
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotUpperArmLinkMesh": {
+        "type": "meshType",
+        "id": "robotUpperArmLinkMesh",
+        "name": "Robot Upper Arm Link Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/visual/upperarm.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0.12
+            },
+            "localRotation": {
+                "x": 0.5,
+                "y": -0.5,
+                "z": -0.5,
+                "w": 0.5
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotForearmLinkMesh": {
+        "type": "meshType",
+        "id": "robotForearmLinkMesh",
+        "name": "Robot Forearm Link Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/visual/forearm.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0.027
+            },
+            "localRotation": {
+                "x": 0.5,
+                "y": -0.5,
+                "z": -0.5,
+                "w": 0.5
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotWrist1LinkMesh": {
+        "type": "meshType",
+        "id": "robotWrist1LinkMesh",
+        "name": "Robot Wrist 1 Link Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/visual/wrist1.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": -0.104
+            },
+            "localRotation": {
+                "x": 0.7071068,
+                "y": 0,
+                "z": 0,
+                "w": 0.7071068
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotWrist2LinkMesh": {
+        "type": "meshType",
+        "id": "robotWrist2LinkMesh",
+        "name": "Robot Wrist 2 Link Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/visual/wrist2.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": -0.08535
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotWrist3LinkMesh": {
+        "type": "meshType",
+        "id": "robotWrist3LinkMesh",
+        "name": "Robot Wrist 3 Link Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/visual/wrist3.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": -0.0921
+            },
+            "localRotation": {
+                "x": 0.7071068,
+                "y": 0,
+                "z": 0,
+                "w": 0.7071068
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperBaseLinkMesh": {
+        "type": "meshType",
+        "id": "gripperBaseLinkMesh",
+        "name": "Gripper Base Link Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_base_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperLeftKnuckleMesh": {
+        "type": "meshType",
+        "id": "gripperLeftKnuckleMesh",
+        "name": "Gripper Left Knuckle Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperRightKnuckleMesh": {
+        "type": "meshType",
+        "id": "gripperRightKnuckleMesh",
+        "name": "Gripper Right Knuckle Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperLeftFingerMesh": {
+        "type": "meshType",
+        "id": "gripperLeftFingerMesh",
+        "name": "Gripper Left Finger Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperRightFingerMesh": {
+        "type": "meshType",
+        "id": "gripperRightFingerMesh",
+        "name": "Gripper Right Finger Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperLeftInnerKnuckleMesh": {
+        "type": "meshType",
+        "id": "gripperLeftInnerKnuckleMesh",
+        "name": "Gripper Left Inner Knuckle Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperRightInnerKnuckleMesh": {
+        "type": "meshType",
+        "id": "gripperRightInnerKnuckleMesh",
+        "name": "Gripper Right Inner Knuckle Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperLeftFingerTipMesh": {
+        "type": "meshType",
+        "id": "gripperLeftFingerTipMesh",
+        "name": "Gripper Left Finger Tip Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "gripperRightFingerTipMesh": {
+        "type": "meshType",
+        "id": "gripperRightFingerTipMesh",
+        "name": "Gripper Right Finger Tip Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "mk2Printer": {
+        "type": "meshType",
+        "id": "mk2Printer",
+        "name": "MK2 Printer",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "mk2PrinterCollision": {
+        "type": "meshType",
+        "id": "mk2PrinterCollision",
+        "name": "MK2 Printer Collision Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "assembly_jig": {
+        "type": "meshType",
+        "id": "assembly_jig",
+        "name": "Assembly Jig",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "assembly_jig",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 0.2, 
+                "y": 0.2, 
+                "z": 0.2
+            }
+        }
+    },
+    "assembly_jig_collision": {
+        "type": "meshType",
+        "id": "assembly_jig_collision",
+        "name": "Assembly Jig Collision",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "assembly_jig_collision",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "conveyor": {
+        "type": "meshType",
+        "id": "conveyor",
+        "name": "Conveyor",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "conveyor",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "conveyor_collision": {
+        "type": "meshType",
+        "id": "conveyor_collision",
+        "name": "Conveyor Collision",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "conveyor_collision",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "conveyor_receiver": {
+        "type": "meshType",
+        "id": "conveyor_receiver",
+        "name": "Conveyor",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "conveyor_receiver",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "conveyor_receiver_collision": {
+        "type": "meshType",
+        "id": "conveyor_receiver_collision",
+        "name": "Conveyor Receiver Collision",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "conveyor_receiver_collision",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "conveyor_dispatcher": {
+        "type": "meshType",
+        "id": "conveyor_dispatcher",
+        "name": "Conveyor",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "conveyor_dispatcher",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "conveyor_dispatcher_collision": {
+        "type": "meshType",
+        "id": "conveyor_dispatcher_collision",
+        "name": "Conveyor Dispatcher Collision",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "conveyor_dispatcher_collision",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotUpperArmLinkCollision": {
+        "type": "meshType",
+        "id": "robotUpperArmLinkCollision",
+        "name": "Robot Upper Arm Link Collision Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/collision/upperarm.stl",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotForearmLinkCollision": {
+        "type": "meshType",
+        "id": "robotForearmLinkCollision",
+        "name": "Robot Forearm Link Collision Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/collision/forearm.stl",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotWrist1Collision": {
+        "type": "meshType",
+        "id": "robotWrist1Collision",
+        "name": "Robot Wrist 1 Collision Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/collision/wrist1.stl",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotWrist2Collision": {
+        "type": "meshType",
+        "id": "robotWrist2Collision",
+        "name": "Robot Wrist 2 Collision Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/collision/wrist2.stl",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "robotWrist3Collision": {
+        "type": "meshType",
+        "id": "robotWrist3Collision",
+        "name": "Robot Wrist 3 Collision Mesh",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://ur_description/meshes/ur3/collision/wrist3.stl",
+            "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "localRotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0, 
+                "g": 0, 
+                "b": 0, 
+                "a": 1
+            },
+            "scale": {
+                "x": 1, 
+                "y": 1, 
+                "z": 1
+            }
+        }
+    },
+    "3d_printer_link":{
+        "type": "tfType",
+        "id": "3d_printer_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": -0.28, "y": 0.32, "z": 0.3 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    "assembly_jig_link":{
+        "type": "tfType",
+        "id": "assembly_jig_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0.2, "y": 0.28, "z": 0.14 },
+            "rotation": { "w": -0.5, "x": 0.5, "y": -0.5, "z": -0.5 }
+        }
+    },
+    "blade_conveyor_link":{
+        "type": "tfType",
+        "id": "blade_conveyor_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": -0.85, "y": -0.25, "z": -0.75 },
+            "rotation": { "w": 0.707, "x": 0, "y": 0, "z": 0.707 }
+        }
+    },
+    "blade_feeder_link":{
+        "type": "tfType",
+        "id": "blade_feeder_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": -0.85, "y": -0.25, "z": -0.75 },
+            "rotation": { "w": 0.707, "x": 0, "y": 0, "z": 0.707 }
+        }
+    },
+    "knife_conveyor_link":{
+        "type": "tfType",
+        "id": "knife_conveyor_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0.85, "y": -0.25, "z": -0.75 },
+            "rotation": { "w": 0.707, "x": 0, "y": 0, "z": -0.707 }
+        }
+    },
+    "knife_feeder_link":{
+        "type": "tfType",
+        "id": "knife_feeder_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0.85, "y": -0.25, "z": -0.75 },
+            "rotation": { "w": 0.707, "x": 0, "y": 0, "z": -0.707 }
+        }
+    },
+    "simulated_base_link":{
+        "type": "tfType",
+        "id": "simulated_base_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0, "y": -0.15, "z": 0 },
+            "rotation": { "w": 0, "x": 0, "y": 0, "z": 1 }
+        }
+    },
+    "simulated_shoulder_link":{
+        "type": "tfType",
+        "id": "simulated_shoulder_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0, "y": -0.15, "z": 0.15185 },
+            "rotation": { "w": 0.6669439077377319, "x": 0, "y": 0, "z": 0.745107889175415 }
+        }
+    },
+    "simulated_upper_arm_link":{
+        "type": "tfType",
+        "id": "simulated_upper_arm_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0, "y": -0.15, "z": 0.15185 },
+            "rotation": { "w": -0.4478497803211212, "x": 0.5932892560958862, "y": -0.3847179114818573, "z": 0.5472025871276855 }
+        }
+    },
+    "simulated_forearm_link":{
+        "type": "tfType",
+        "id": "simulated_forearm_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": -0.02560272067785263, "y": 0.08055101335048676, "z": 0.07763859629631042 },
+            "rotation": { "w": 0.6748411655426025, "x": 0.1353885531425476, "y": 0.694024384021759, "z": 0.2111620008945465 }
+        }
+    },
+    "simulated_wrist_1_link":{
+        "type": "tfType",
+        "id": "simulated_wrist_1_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0.11584359407424927, "y": -0.005812940187752247, "z": 0.2651554048061371},
+            "rotation": { "w": -0.29463568329811096, "x": 0.6713905930519104, "y": -0.22188881039619446, "z": 0.6427983641624451 }
+        }
+    },
+    "simulated_wrist_2_link":{
+        "type": "tfType",
+        "id": "simulated_wrist_2_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0.1089443638920784, "y": 0.05631420761346817, "z": 0.32326942682266235 },
+            "rotation": { "w": 0.9164819121360779, "x": -0.39580079913139343, "y": -0.05381776764988899, "z": -0.022500555962324142 }
+        }
+    },
+    "simulated_wrist_3_link":{
+        "type": "tfType",
+        "id": "simulated_wrist_3_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0.11666648089885712, "y": 0.11946450173854828, "z": 0.25667497515678406 },
+            "rotation": { "w": -0.37005797028541565, "x": 0.9280606508255005, "y": -0.01538957841694355, "z": 0.039035625755786896 }
+        }
+    },
+    "simulated_flange":{
+        "type": "tfType",
+        "id": "simulated_flange",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0.11666648089885712, "y": 0.11946450173854828, "z": 0.25667497515678406 },
+            "rotation": { "w": 0.29082435369491577, "x": 0.676271915435791, "y": 0.6218466758728027, "z": -0.26717832684516907 }
+        }
+      },
+    "simulated_tool0":{
+        "type": "tfType",
+        "id": "simulated_tool0",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"world",
+            "position": { "x": 0.11666648089885712, "y": 0.11946450173854828, "z": 0.25667497515678406 },
+            "rotation": { "w": -0.37005797028541565, "x": 0.9280606508255005, "y": -0.01538957841694355, "z": 0.039035625755786896 }
+        }
+    },
+    "simulated_robotiq_85_base_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_base_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_tool0",
+            "position": {"x": 0, "y": 0, "z": 0},
+            "rotation": { "w": 0.5, "x": 0.5, "y": -0.5, "z": 0.5}
+        }
+    },
+    "simulated_robotiq_85_left_knuckle_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_left_knuckle_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_robotiq_85_base_link",
+            "position": { "x": 0.05490451627, "y": 0.03060114443, "z": 0 },
+            "rotation": { "w": 0, "x": 1, "y": 0, "z": 0 }
+        }
+    },
+    "simulated_robotiq_85_right_knuckle_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_right_knuckle_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_robotiq_85_base_link",
+            "position": { "x": 0.05490451627, "y": -0.03060114443, "z": 0 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    "simulated_robotiq_85_left_finger_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_left_finger_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_robotiq_85_left_knuckle_link",
+            "position": { "x": -0.00408552455, "y": -0.03148604435, "z": 0 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    "simulated_robotiq_85_right_finger_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_right_finger_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_robotiq_85_right_knuckle_link",
+            "position": { "x": -0.00408552455, "y": -0.03148604435, "z": 0 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    "simulated_robotiq_85_left_inner_knuckle_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_left_inner_knuckle_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_robotiq_85_base_link",
+            "position": { "x": 0.06142, "y": 0.0127, "z": 0 },
+            "rotation": { "w": 0, "x": 1, "y": 0, "z": 0 }
+        }
+    },
+    "simulated_robotiq_85_right_inner_knuckle_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_right_inner_knuckle_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_robotiq_85_base_link",
+            "position": { "x": 0.06142, "y": -0.0127, "z": 0 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    "simulated_robotiq_85_left_finger_tip_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_left_finger_tip_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_robotiq_85_left_inner_knuckle_link",
+            "position": { "x": 0.04303959807, "y": -0.03759940821, "z": 0 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    "simulated_robotiq_85_right_finger_tip_link":{
+        "type": "tfType",
+        "id": "simulated_robotiq_85_right_finger_tip_link",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame":"simulated_robotiq_85_right_inner_knuckle_link",
+            "position": { "x": 0.04303959807, "y": -0.03759940821, "z": 0 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0}
+        }
+    },
+    "pedestal_tf": {
+        "type": "tfType",
+        "id": "pedestal_tf",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame": "world",
+            "position": { "x": 0, "y": -0.15, "z": -0.38 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+        }
+    },
+    "table_tf": {
+        "type": "tfType",
+        "id": "table_tf",
+        "name": "Transform Frame",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame": "world",
+            "position": { "x": 0, "y": 0.36, "z": -0.37 },
+            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+        }
     }
 }
