@@ -1,4 +1,5 @@
 import frameStyles from '../frameStyles';
+import { DATA_TYPES } from 'simple-vp';
 // import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
 
 // const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
@@ -92,6 +93,21 @@ export const GuiSlice = (set, get) => ({
     }
     state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
   }),
+  updateItemSelected: (id, value) => {
+    set((state) => {
+      const item = state.programData[id];
+      const usedId = (item.dataType === DATA_TYPES.REFERENCE || item.dataType === DATA_TYPES.CALL) ? item.ref : id;
+      state.programData[usedId].selected = value;
+      if (value) {
+        state.focusItem = { type:'data', uuid:usedId, transformMode:null }
+      } else {
+        state.focusItem = { type:null, uuid:null, transformMode:null }
+      }
+      if (state.secondaryFocusItem.uuid) {
+        state.secondaryFocusItem = { type:null, uuid:null, transformMode:null }
+      }
+    })
+  },
   childrenDrawer: false,
   setChildrenDrawer: (input) => set(_ => ({ childrenDrawer: input })),
   clearChildrenDrawer: () => set(_ => ({ childrenDrawer: false })),

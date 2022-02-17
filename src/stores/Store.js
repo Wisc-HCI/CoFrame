@@ -38,8 +38,8 @@ const immer = (config) => (set, get, api) =>
 );
 
 const store = (set, get) => ({
-    ...GuiSlice(set,get),
     ...ProgrammingSlice(set,get),
+    ...GuiSlice(set,get),
     ...ReviewSlice(set,get),
     ...EvdSlice(set,get),
     ...RosSlice(set,get),

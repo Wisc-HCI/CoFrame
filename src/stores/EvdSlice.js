@@ -529,12 +529,6 @@ export const EvdSlice = (set, get) => ({
     state.programData[id].joints = value;
     state.processes[id] = process;
   }),
-  performProcessStupid: (id) => {
-    console.log('starting stupidly ',id);
-    const result = performPoseProcess({urdf, pose:get().programData[id], scene:{}});
-    console.log('process finished', id);
-    console.log(result)
-  },
   performPoseProcess: async (id) => {
     console.log('starting ',id)
     const currentProcess = get().processes[id];
@@ -546,6 +540,7 @@ export const EvdSlice = (set, get) => ({
     get().updatePoseJoints(id,null,workerInstance);
     const workerLib = Comlink.wrap(workerInstance);
     const result = await workerLib.performPoseProcess({urdf, pose:get().programData[id], scene:{}});
+    console.log(result)
     get().updatePoseJoints(id,result,null);
   },
   processes: {}

@@ -30,6 +30,7 @@ export default function App() {
     // const editStyle = useSpring({ width: simMode === 'default' ? '55%' : '0%', config: config.stiff });
     const connection = useStore(state => state.connection);
     const programName = useStore(state => Object.values(state.programData).filter(v => v.type === 'programType')[0].name);
+    const performPoseProcess = useStore(state=>state.performPoseProcess);
 
     const theme = {
         name: 'CoFrame',
@@ -97,6 +98,7 @@ export default function App() {
                         {menuItems.map(entry => (
                             <Button plain margin={{right:'medium'}} key={entry.modalKey} secondary icon={entry.icon} label={entry.name} onClick={() => setActiveModal(entry.modalKey)}/>
                         ))}
+                        <Button plain label='Plan Test' margin={{right:'medium'}} key='planstupid' onClick={()=>performPoseProcess('location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c')}/>
                     </Box>
                 </Header>
                 <Box flex direction='row'>
