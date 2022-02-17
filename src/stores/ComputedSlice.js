@@ -18,16 +18,16 @@ import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
 import { INITIAL_SIM, COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 
-const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
-const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('gripper'));
-
-
 export const computedSlice = (state) => {
+    const ROBOT_PARTS = Object.keys(state.programData).filter(v => v.includes('robot'));
+    const GRIPPER_PARTS = Object.keys(state.programData).filter(v => v.includes('gripper'));
 
     let executablePrimitives = {};
 
     // ===================== TFs =====================
-    let tfs = { ...INITIAL_SIM.tfs };
+    let tfs = {};
+    let items = {};
+
     Object.values(state.programData).filter(v => v.type === 'thingType').forEach(thing => {
         // for now, place the things at origin. 
         // console.log(thing)
@@ -55,9 +55,17 @@ export const computedSlice = (state) => {
         //}
     }
 
+    // Pull world based tf data from the machines and robot links
+    Object.values(state.programData).filter(v => v.type === 'tfType').forEach(data => {
+        tfs[data.id] = {
+            frame: data.properties.frame,
+            translation: data.properties.position,
+            rotation: data.properties.rotation
+        }
+    });
+
     // ===================== Items =====================
 
-    let items = {};
     const focusedTrajectoryChildren = state.focusItem.type === 'trajectory' ? [
         state.programData[state.focusItem.uuid].properties.startLocation,
         ...state.programData[state.focusItem.uuid].properties.waypoints,
@@ -65,9 +73,10 @@ export const computedSlice = (state) => {
     ] : []
 
     // Add items from the initial static scene
-    Object.keys(INITIAL_SIM.staticScene).forEach(itemKey => {
-        const item = INITIAL_SIM.staticScene[itemKey];
+    Object.values(state.programData).filter(v => v.type === 'linkType' || v.type === 'fixtureType').forEach(item => {
+        const itemKey = item.id;
         let highlighted = false;
+        let meshObject = state.programData[item.properties.mesh];
         if (ROBOT_PARTS.indexOf(state.focusItem.uuid) >= 0 && ROBOT_PARTS.indexOf(itemKey) >= 0) {
             highlighted = true
         } else if (GRIPPER_PARTS.indexOf(state.focusItem.uuid) >= 0 && GRIPPER_PARTS.indexOf(itemKey) >= 0) {
@@ -76,13 +85,13 @@ export const computedSlice = (state) => {
             highlighted = true
         }
         items[itemKey] = {
-            shape: item.shape,
+            shape: meshObject.properties.keyword,
             name: item.name,
-            frame: item.frame,
-            position: item.position,
-            rotation: item.rotation,
-            color: item.color,
-            scale: item.scale,
+            frame: item.properties.frame,
+            position: meshObject.properties.localPosition,
+            rotation: meshObject.properties.localRotation,
+            color: meshObject.properties.color,
+            scale: meshObject.properties.scale,
             transformMode: "inactive",
             highlighted,
             onClick: (e) => {
@@ -96,20 +105,20 @@ export const computedSlice = (state) => {
                 } else {
                     console.log('clicked ' + item.name)
                     e.stopPropagation();
-                    state.setFocusItem('scene', itemKey);
+                    state.setFocusItem('scene', item.name);
                 }
 
             },
             onMove: (transform) => { console.log(transform) }
         }
-        if (COLLISION_MESHES[item.shape]) {
+        if (COLLISION_MESHES[meshObject.properties.keyword]) {
             items[itemKey + '-collision'] = {
-                shape: COLLISION_MESHES[item.shape],
+                shape: COLLISION_MESHES[meshObject.properties.keyword],
                 name: item.name + ' Collision',
-                frame: item.frame,
-                position: item.position,
-                rotation: item.rotation,
-                scale: item.scale,
+                frame: item.properties.frame,
+                position: meshObject.properties.localPosition,
+                rotation: meshObject.properties.localPosition,
+                scale: meshObject.properties.scale,
                 color: { r: 250, g: 0, b: 0, a: 0.6 },
                 transformMode: "inactive",
                 highlighted: false,
@@ -138,17 +147,20 @@ export const computedSlice = (state) => {
                 hidden: !state.occupancyVisible
             }
         } else if (entry.type === 'machineType') {
-            console.log(entry);
+            // console.log(entry);
             // console.log(entry.name)
             // const mesh = EVD_MESH_LOOKUP[entry.mesh]
             let entryProps = entry.ref ? state.programData[entry.ref].properties : entry.properties;
+            let meshObject = state.programData[entryProps.mesh];
+            let collisionObject = state.programData[entryProps.collisionMesh];
+
             items[entry.id] = {
-                shape: entryProps.mesh,
+                shape: meshObject.properties.keyword,
                 name: entry.name,
-                frame: entryProps.link,
-                position: entryProps.position,
-                rotation: entryProps.orientation,
-                scale: entryProps.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : { x: 1, y: 1, z: 1 },
+                frame: entryProps.tf,
+                position: meshObject.properties.localPosition,
+                rotation: meshObject.properties.localRotation,
+                scale: meshObject.properties.scale,
                 transformMode: 'inactive',
                 highlighted: state.focusItem.uuid === entry.id,
                 onClick: (e) => {
@@ -164,12 +176,12 @@ export const computedSlice = (state) => {
             }
             // Now add collisions
             items[entry.id + '-collision'] = {
-                shape: entryProps.collisionMesh,
+                shape: collisionObject.properties.keyword,
                 name: entry.name + ' Collision',
-                frame: entryProps.link,
-                position: entryProps.position,
-                rotation: entryProps.orientation,
-                scale: entryProps.link === 'assembly_jig_link' ? { x: 0.2, y: 0.2, z: 0.2 } : { x: 1, y: 1, z: 1 },
+                frame: entryProps.frame,
+                position: collisionObject.properties.localPosition,
+                rotation: collisionObject.properties.localPosition,
+                scale: collisionObject.properties.scale,
                 transformMode: 'inactive',
                 highlighted: false,
                 color: { r: 250, g: 0, b: 0, a: 0.6 },

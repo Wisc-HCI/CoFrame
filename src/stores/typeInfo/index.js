@@ -6,6 +6,10 @@ import { thingType } from './thing';
 import { trajectoryType } from './trajectory';
 import { hierarchicalType } from './hierarchical';
 import { skillType } from './skill';
+import { fixtureType } from './fixture';
+import { linkType } from './link';
+import { meshType } from './mesh';
+import { tfType } from './tf';
 
 export default { 
     programType, 
@@ -15,5 +19,9 @@ export default {
     thingType,
     trajectoryType,
     hierarchicalType,
-    skillType
+    skillType,
+    fixtureType,
+    linkType,
+    meshType,
+    tfType
 }
