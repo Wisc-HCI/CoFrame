@@ -1,5 +1,8 @@
 import * as Comlink from 'comlink';
-import { Quaternion, Vector3 } from 'three';
+import { Quaternion } from 'three';
+import { STATUS } from './Constants';
+import { DATA_TYPES } from 'simple-vp';
+import { pickBy } from 'lodash';
 
 const ROOT_BOUNDS = [
     {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}, // Translational
@@ -63,12 +66,39 @@ export const performPoseProcess = async (data) => {
     return result
 }
 
-const performTrajectoryProcess = (data) => {
-    const { urdf, action, trajectory, waypoints, locations, scene } = data;
+const getLeaves = (block, objectType) => {
+    return Object.keys(objectType.properties)
+        .filter(key=>objectType.properties[key].accepts)
+        .map(key=>({
+            key,
+            value:block.properties[key],
+            valid:objectType.properties[key].nullValid ? true : block.properties[key]!==null&&block.properties[key]!==undefined}))
+}
+
+const computeChanged = (process, objectTypes, context, solver) => {
+
+    return [none,STATUS.VALID]
+}
+
+
+const performTraceProcess = async (data) => {
+    const { urdf, programData, objectTypes, root } = data;
     // Process the data without stalling the UI
-    fibonacci(45);
+    const module = await loadModule();
+
+    // Create the solver
+    const solver = new module.Solver(urdf,[
+        {type:'PositionMatch',name:"EE Position",link:"wrist_3_link",weight:50},
+        {type:'OrientationMatch',name:"EE Rotation",link:"wrist_3_link",weight:25},
+        {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
+      ],ROOT_BOUNDS, createStaticEnvironment(scene), null, false, 1, 450);
+
+    const context = pickBy(programData,(entry)=>entry.dataType === DATA_TYPES.INSTANCE)
+
+    // This is recursive
+    const [computed, status] = computeChanged(programData[root],objectTypes,context,solver)
   
     return data;
 }
 
-Comlink.expose({performPoseProcess, performTrajectoryProcess})
+Comlink.expose({performPoseProcess, performTraceProcess})
