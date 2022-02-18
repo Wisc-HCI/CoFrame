@@ -50,7 +50,7 @@ export const Canvas = () => {
     })[1]
 
     return (
-        <div style={{ width: '100%', height: '100%', zIndex: 100, position: 'relative', overflow: 'scroll', textAlign: 'left' }}>
+        
             <Grid ref={drop(ref)} onClick={clearFocusItem} >
                 <ProgramBlock
                     ancestors={ancestors}
@@ -69,7 +69,7 @@ export const Canvas = () => {
                         context={nameLookup} />
                 ))}
             </Grid>
-        </div>
+        
 
 
     )

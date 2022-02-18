@@ -3,7 +3,8 @@ import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 import { Layout, Row, Button, Badge, Space } from 'antd';
 import Icon, { SyncOutlined, SettingOutlined } from '@ant-design/icons';
-import {ReactComponent as EvdIcon} from './components/CustomIcons/EVD.svg';
+import { ReactComponent as EvdIcon } from './components/CustomIcons/EVD.svg';
+import 'antd/dist/antd.dark.css';
 import './themes/safety.less';
 import './themes/quality.less';
 import './themes/performance.less';
@@ -20,13 +21,13 @@ import shallow from 'zustand/shallow';
 
 export function App() {
 
-    const setActiveModal = useStore(state=>state.setActiveModal);
-    const [frame,primaryColor] = useStore(state=>[state.frame,state.primaryColor],shallow);
-    const simMode = useStore(state=>state.simMode);
-    const simStyle = useSpring({width: simMode==='default' ? '45%' : '100%', config:config.stiff});
-    const editStyle = useSpring({width: simMode==='default' ? '55%' : '0%', config:config.stiff});
-    const connection = useStore(state=>state.connection);
-    const programName = useStore(state=>state.name);
+    const setActiveModal = useStore(state => state.setActiveModal);
+    const [frame, primaryColor] = useStore(state => [state.frame, state.primaryColor], shallow);
+    const simMode = useStore(state => state.simMode);
+    const simStyle = useSpring({ width: simMode === 'default' ? '45%' : '100%', config: config.stiff });
+    const editStyle = useSpring({ width: simMode === 'default' ? '55%' : '0%', config: config.stiff });
+    const connection = useStore(state => state.connection);
+    const programName = useStore(state => state.name);
 
     useEffect(() => {
         if (frame === 'safety') {
@@ -50,7 +51,7 @@ export function App() {
             document.body.classList.remove('safety');
             document.body.classList.add('business');
         }
-      }, [frame]
+    }, [frame]
     )
 
     const menuItems = [
@@ -68,16 +69,16 @@ export function App() {
 
     return (
         <>
-            <Layout style={{height:'100vh',width:'100vw'}}>
+            <Layout style={{ height: '100vh', width: '100vw' }}>
                 <Layout.Header className="header">
                     <Row align='middle' justify='space-between'>
-                        <Space style={{float:'left'}} >
-                            <Icon style={{color:primaryColor,fontSize:30}} component={EvdIcon}/>
-                            <h2 style={{paddingLeft:20}}><b>CoFrame<i> - {programName}</i></b></h2>
+                        <Space style={{ float: 'left' }} >
+                            <Icon style={{ color: primaryColor, fontSize: 30 }} component={EvdIcon} />
+                            <h2 style={{ paddingLeft: 20 }}><b>CoFrame<i> - {programName}</i></b></h2>
                         </Space>
-                        <span style={{float:'right'}} >
+                        <span style={{ float: 'right' }} >
                             {menuItems.map(entry => (
-                                <Button type='text' key={entry.modalKey} icon={entry.icon} onClick={()=>setActiveModal(entry.modalKey)}>
+                                <Button type='text' key={entry.modalKey} icon={entry.icon} onClick={() => setActiveModal(entry.modalKey)}>
                                     {entry.name}
                                 </Button>
                             ))}
@@ -93,32 +94,30 @@ export function App() {
                         </span>
                     </Row>
                 </Layout.Header>
-                <Layout>
-                    <Layout.Sider width='25vw'>
-                        <ReviewTile/>
-                    </Layout.Sider>
-                    <Layout width='75vw'>
-                        <Layout.Content>
-                            <div style={{height:'100%',width:'100%'}}>
-                                <animated.div style={{...simStyle,float:'left'}}>
-                                    <SimulatorTile/>
-                                </animated.div>
-                                <animated.div style={{...editStyle,float:'right'}}>
-                                    <ProgramTile/>
-                                </animated.div>
-                                {/* <Col style={{width:simMode==='default'? '45%' : '100%', transition: 'width 0.2s linear'}}>
+                <Row >
+                    <div style={{width:'25vw'}}>
+                     <ReviewTile />
+                    </div>
+                    
+                    <div style={{ width: '75vw'}}>
+                        <div style={{ height: '100%', width: '100%' }}>
+                            <animated.div style={{ ...simStyle, float: 'left' }}>
+                                <SimulatorTile />
+                            </animated.div>
+                            <animated.div style={{ ...editStyle, float: 'right' }}>
+                                <ProgramTile />
+                            </animated.div>
+                            {/* <Col style={{width:simMode==='default'? '45%' : '100%', transition: 'width 0.2s linear'}}>
                                     
                                 </Col>
                                 <Col hidden={simMode!=='default'} style={{width:'55%'}}>
                                     
                                 </Col> */}
-                            </div>
-                        </Layout.Content>
-                    </Layout>
-                </Layout>
+                        </div>
+                    </div>
+                </Row>
             </Layout>
-
-            <Modals/>
+            <Modals />
         </>
     )
 }

@@ -15,7 +15,7 @@ export const SimulatorTile = (_) => {
     const paused = useStore(state=>state.focusItem.uuid === null);
 
     return (
-        <div style={{height:'calc(100vh - 48pt)',padding:10}}>
+        <div style={{height:'calc(100vh - 48pt)',paddingTop:10,paddingBottom:10,paddingRight:10}}>
             <Card
                 style={{height:564,marginBottom:10}}
                 headStyle={{height:65}}

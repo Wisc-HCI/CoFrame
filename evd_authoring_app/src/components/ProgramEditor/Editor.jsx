@@ -98,8 +98,8 @@ export const Editor = () => {
     }
     
     return (
-        <Layout style={{ fontSize: 20, height: 'calc(100vh - 113pt)' }}>
-          <Layout.Sider collapsed collapsible trigger={null} style={{align: 'left', display: 'flex', flexDirection: 'column', padding: 5, height: 'calc(100vh - 113pt)' }}>
+        <div style={{ fontSize: 20, height: 'calc(100vh - 113pt)', width:'100%', display:'flex' }}>
+          <div style={{float: 'left',align: 'left', display: 'flex', flexDirection: 'column', padding: 5, height: 'calc(100vh - 113pt)', backgroundColor:'#262626'}}>
             {Object.keys(drawers).map(drawerKey=>(
               <Tooltip key={drawerKey} placement="right" title = {drawers[drawerKey].title}>
               <Button 
@@ -110,8 +110,8 @@ export const Editor = () => {
                 style={{ marginBottom: 5, alignItems: 'left' }}/>
                </Tooltip>
             ))}
-          </Layout.Sider>
-          <animated.div onDrag={()=>setActiveDrawer(null)} style={{...drawerStyle, align: 'left', backgroundColor: '#2f2f2f', fontSize: 14, height: 'calc(100vh - 113pt)'}}>
+          </div>
+          <animated.div onDrag={()=>setActiveDrawer(null)} style={{...drawerStyle, align: 'left', backgroundColor: '#2f2f2f', fontSize: 14, height: 'calc(100vh - 113pt)',float: 'left'}}>
              {activeDrawer && (
                <React.Fragment>
                 <Row align='middle' justify='space-between' style={{padding:5,marginLeft:5}}>
@@ -141,10 +141,10 @@ export const Editor = () => {
                </React.Fragment>
              )}
           </animated.div>
-          <Layout.Content style={{ height: 'calc(100vh - 113pt)'}}>
+          <div style={{ height: 'calc(100vh - 113pt)',float: 'left', flex:1, overflow: 'scroll'}}>
             <Canvas/>
             <DeleteZone/>
-          </Layout.Content>
-        </Layout>
+          </div>
+        </div>
     )
 }
