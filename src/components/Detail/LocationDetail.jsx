@@ -3,7 +3,9 @@ import React, { useCallback,useState } from 'react';
 import useStore from '../../stores/Store';
 
 import debounce from 'lodash.debounce';
-import { Divider, Input, Switch } from 'antd';
+//import { Divider, Input, Switch } from 'antd';
+import {Toggle} from '../Toggle';
+import { TextArea,Text } from 'grommet';
 import OrientationInput from './OrientationInput';
 import PositionInput from './PositionInput';
 
@@ -15,7 +17,7 @@ export const LocationDetail = ({ uuid }) => {
   })
     , [uuid]))
 
-  const { TextArea } = Input;
+  //const { TextArea } = Input;
   
   // const { deleteItem, setItemProperty } = useEvdStore(state=>({
   //     deleteItem:state.deleteItem,
@@ -56,15 +58,18 @@ export const LocationDetail = ({ uuid }) => {
 
   return (
     <>
-
       <TextArea
         value={location.description}
         disabled={!location.editable}
       />
 
-      <Divider orientation="left" style={{ color: 'white', borderTopColor: 'rgba(255,255,255,0.12)', lineHeight: '1.5715px', paddingTop: '20px', paddingBottom: '5px' }}>
+      {/* <Divider 
+      orientation="left" style={{ color: 'white', borderTopColor: 'rgba(255,255,255,0.12)', lineHeight: '1.5715px', paddingTop: '20px', paddingBottom: '5px' }}>
         Placement:
-      </Divider>
+      </Divider> */}
+      <Text>
+        Placement:
+      </Text>
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <PositionInput value={[location.position.x, location.position.y, location.position.z]} onOpen = {positionOnOpen} onClose = {positionOnClose}
@@ -74,9 +79,7 @@ export const LocationDetail = ({ uuid }) => {
         <br />
         <div style={{ paddingTop: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <b>Reachable:</b>
-          <Switch checked={location.joints.reachable} style={{ left: '-30px' }} />
-
-
+          <Toggle selected={location.joints.reachable} style={{ left: '-30px' }} />
         </div>
       </div>
 

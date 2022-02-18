@@ -1,8 +1,8 @@
 import React from 'react';
 
 // import { Drawer, Input, Empty, Space, Button, Popover } from 'antd';
-import { Box, Button, Layer, Text } from 'grommet';
-import { FormClose } from 'grommet-icons';
+import { Box, Button, Layer, Text, TextInput, DropButton } from 'grommet';
+import { FormClose, Trash } from 'grommet-icons';
 
 import { LocationDetail } from './LocationDetail';
 import { MachineDetail } from './MachineDetail';
@@ -15,6 +15,8 @@ import useStore from '../../stores/Store';
 
 const EDITOR_TYPES = ['primitive', 'skill', 'program', 'trajectory', 'scene']
 // const IGNORE_ITEMS = ['program','scene','trajectory']
+
+
 
 export const Detail = (_) => {
 
@@ -34,6 +36,8 @@ export const Detail = (_) => {
     item: state.focusItem.type ? state.programData[state.focusItem.uuid] : null
   }));
 
+  const [deleteBoxVisible, setDeleteBoxVisible] = React.useState(false);
+
   // const handleOK = () => {
   //   clearFocusItem();
   //   deleteItem(focusItem.type, focusItem.uuid);
@@ -52,7 +56,7 @@ export const Detail = (_) => {
   // )
 
   console.log(focusItem)
-  
+
   if (focusItem.uuid && !EDITOR_TYPES.includes(focusItem.type)) {
     return (
       <Layer full="vertical" position="right" onEsc={clearFocusItem}>
@@ -64,73 +68,38 @@ export const Detail = (_) => {
             justify="between"
             border={{ side: 'bottom', color: '#333333' }}
           >
-            <Text margin={{ left: 'small' }}>Header</Text>
-            <Button icon={<FormClose />} onClick={clearFocusItem}/>
+            <Text margin={{ left: 'small' }}>
+              <span style={{ textTransform: 'capitalize' }}>{focusItem.type} </span>
+            </Text>
+            <Button icon={<FormClose />} onClick={clearFocusItem} />
           </Box>
           <Box flex overflow="auto" pad="xsmall">
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
-            <span>body</span>
+            <TextInput
+              placeholder="type here"
+              value={item.name}
+              disabled={!item.editable}
+              onChange={e => setItemProperty(focusItem.type, focusItem.uuid, 'name', e.target.value)}
+            />
+
+            {focusItem.type === 'location' && (
+              <LocationDetail uuid={focusItem.uuid} />
+            )}
+            {focusItem.type === 'machine' && (
+              <>
+                <div>
+                  <MachineDetail uuid={focusItem.uuid} />
+                  <MachineInOutRegionDetail uuid={secondaryFocusItem.uuid} />
+                </div>
+              </>
+
+            )}
+            {focusItem.type === 'waypoint' && (
+              <WaypointDetail uuid={focusItem.uuid} />
+            )}
+            {focusItem.type === 'thingType' && (
+              <ThingDetail uuid={focusItem.uuid} />
+            )}
+
           </Box>
           <Box
             as="footer"
@@ -138,9 +107,50 @@ export const Detail = (_) => {
             pad="small"
             justify="end"
             direction="row"
+
             align="center"
           >
-            <Button primary label="Save" />
+            <div style={{ marginInline: "30%", display: 'flex' }}>
+              {item.deleteable ? (
+                <div style={{ display: 'flex' }}>
+                  <DropButton secondary icon={<Trash />}
+                    dropAlign={{ bottom: 'top', right: 'right' }}
+                    dropContent={
+                      <Box
+                        background="grey"
+                        pad="small"
+                        round="xxsmall"
+                        align="center"
+                        elevation="none"
+                        justify="center">
+                        <Text>
+                          Are you sure you want to delete this item?
+                        </Text>
+                        <div style={{ paddingTop: "5%" }}>
+                          <Button primary icon={<Trash />} label="Delete" color="#ab4646" />
+
+                        </div>
+
+                      </Box>
+                    }
+
+                    disabled={!item.deleteable}
+
+                    label="Delete" color="#ab4646"
+                  />
+                </div>
+
+
+              ) : (
+                <Button secondary icon={<Trash />} disabled={!item.deleteable} label="Delete" color="#ab4646" />
+
+              )}
+              <div style={{ marginInline: "30%", display: 'flex' }}>
+                <Button primary label="Save" />
+              </div>
+            </div>
+
+
           </Box>
         </Box>
       </Layer>

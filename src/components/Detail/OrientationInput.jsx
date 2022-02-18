@@ -1,6 +1,9 @@
 import React, {useState} from 'react';
-import { Space, Button, Popover,InputNumber } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+//import { Space, Button, Popover,InputNumber } from 'antd';
+//import { EditOutlined } from '@ant-design/icons';
+import {NumberInput} from '../NumberInput';
+import {Box,Button,DropButton,Text} from "grommet";
+import {FormEdit} from "grommet-icons";
 import {eulerFromQuaternion, quaternionFromEuler} from './Geometry';
 
 
@@ -36,19 +39,16 @@ if (props.value !== preVec){
   return(
     <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
     <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Orientation:</b>
-    <Popover
-    placement="left"
-    visible =  {props.openStatus}
-    //onVisibleChange = {()=> changeTransformMode()}
-    content={
-      <Space>
+    <DropButton
+    default
+    icon={<FormEdit/>}
+    dropAlign = {{right : 'left'}}
+    dropContent={
+      <Box>
         <h4 style={{ color: "red" }}>R</h4>
-        <InputNumber
+        <NumberInput
          min={limits[0]}
          max={limits[1]}
-         step={steps}
-         precision={2}
-         style={{ margin: '0 16px' }}
          value={eulerValues[0]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedEulerValues = [v,eulerValues[1],eulerValues[2]];
@@ -57,12 +57,9 @@ if (props.value !== preVec){
          }}}
         />
         <h4 style={{ color: "lime" }}>P</h4>
-        <InputNumber
+        <NumberInput
          min={limits[0]}
          max={limits[1]}
-         step={steps}
-         precision={2}
-         style={{ margin: '0 16px' }}
          value={eulerValues[1]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedEulerValues = [eulerValues[0],v,eulerValues[2]];
@@ -71,12 +68,9 @@ if (props.value !== preVec){
          }}}
         />
         <h4 style={{ color: "blue" }}>Y</h4>
-        <InputNumber
+        <NumberInput
          min={limits[0]}
          max={limits[1]}
-         step={steps}
-         precision={2}
-         style={{ margin: '0 16px' }}
          value={eulerValues[2]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedEulerValues = [eulerValues[0],eulerValues[1],v];
@@ -84,24 +78,21 @@ if (props.value !== preVec){
            props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
          }}}
         />
-        <Button type="primary" onClick = {props.onClose}>Close</Button>
-      </Space>
+        <Button primary onClick = {props.onClose}>Close</Button>
+      </Box>
     }
-    title="Set Orientation"
-    trigger="click"
+   
     
-  >
-    
-    
-    <Button
-      block
-      icon={<EditOutlined />}
+  />  
+    {/* <Button
+      default
+      icon={<FormEdit/>}
       style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
       onClick = {props.openStatus ? props.onClose : props.onOpen}
     >
-    </Button>
+    </Button> */}
     
-  </Popover>
+  
 
 
   </div>
