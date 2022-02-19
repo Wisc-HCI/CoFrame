@@ -1,6 +1,7 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
+import { STATUS } from "../Constants";
 
 export const programType = {
     name: 'Program',
@@ -58,6 +59,11 @@ export const programType = {
         default: [],
         isList: true,
         fullWidth: true
+      },
+      status: {
+        name: 'Status',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: STATUS.PENDING
       }
     }
   }

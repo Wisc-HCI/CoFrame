@@ -76,7 +76,7 @@ const getLeaves = (block, objectType) => {
 }
 
 const computeChanged = (process, objectTypes, context, solver) => {
-
+    
     return [none,STATUS.VALID]
 }
 

@@ -10,6 +10,10 @@ import { fixtureType } from './fixture';
 import { linkType } from './link';
 import { meshType } from './mesh';
 import { tfType } from './tf';
+import { processType } from './process';
+import { zoneType } from './zone';
+import actionTypes from './action';
+import agentTypes from './agents';
 
 export default { 
     programType, 
@@ -23,5 +27,9 @@ export default {
     fixtureType,
     linkType,
     meshType,
-    tfType
+    tfType,
+    processType,
+    zoneType,
+    ...actionTypes,
+    ...agentTypes
 }

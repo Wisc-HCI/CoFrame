@@ -1,5 +1,6 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled } from "./icons";
+import { STATUS } from "../Constants";
 // import { FiMoreHorizontal } from "react-icons/fi";
 
 export const hierarchicalType = {
@@ -35,6 +36,11 @@ export const hierarchicalType = {
         default: [],
         isList: true,
         fullWidth: true
+      },
+      status: {
+        name: 'Status',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: STATUS.PENDING
       }
     }
   }
