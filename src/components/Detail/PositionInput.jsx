@@ -1,6 +1,9 @@
 import React, {useState} from 'react';
-import { Space, Button, Popover,InputNumber } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+//import { Space, Popover} from 'antd';
+//import { EditOutlined } from '@ant-design/icons';
+import {NumberInput} from '../NumberInput';
+import {Box,Button,DropButton} from "grommet";
+import {FormEdit} from "grommet-icons";
 
 function PositionInput (props)  {
    const [inputVec, setInputVec] = useState(props.value);
@@ -18,18 +21,16 @@ function PositionInput (props)  {
      <div style={{ display:'flex',justifyContent: 'space-between',alignItems:'center'}}>
      <b style ={{color:'rgba(255, 255, 255, 0.85)'}}>Position:</b>
      
-     <Popover
-     placement="left"
-     visible =  {props.openStatus}
-     content={
-       <Space>
+     <DropButton
+      default
+      icon={<FormEdit/>}
+      dropAlign = {{right : 'left'}}
+      dropContent={
+       <Box>
          <h4 style={{ color: "red" }}>X</h4>
-         <InputNumber
+         <NumberInput
          min= {minMax[0]}
          max= {minMax[1]}
-         step= {steps}
-         precision={2}
-         style={{ margin: '0 16px' }}
          value={inputVec[0]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedVec = [v,inputVec[1],inputVec[2]];
@@ -38,12 +39,9 @@ function PositionInput (props)  {
          }}}
          />
          <h4 style={{ color: "lime" }}>Y</h4>
-         <InputNumber
+         <NumberInput
          min= {minMax[0]}
          max= {minMax[1]}
-         step= {steps}
-         precision={2}
-         style={{ margin: '0 16px' }}
          value={inputVec[1]}
          onChange={(v)=>{if (typeof v === 'number') {
            let updatedVec = [inputVec[0],v,inputVec[2]]
@@ -52,12 +50,9 @@ function PositionInput (props)  {
          }}}
          />
          <h4 style={{ color: "blue" }}>Z</h4>
-         <InputNumber
+         <NumberInput
           min= {minMax[0]}
           max= {minMax[1]}
-          step={steps}
-          precision={2}
-          style={{ margin: '0 16px' }}
           value={inputVec[2]}
           onChange={(v)=>{if (typeof v === 'number') {
             let updatedVec = [inputVec[0],inputVec[1],v];
@@ -65,25 +60,19 @@ function PositionInput (props)  {
             props.onChange(updatedVec)
           }}}
          />
-          <Button type="primary" onClick = {props.onClose}>Close</Button>
-       </Space>
+          <Button primary onClick = {props.onClose}>Close</Button>
+       </Box>
      }
-     title="Set Position"
-     trigger="click"
-
-
-   >
-     <Button
-       block
-       icon={<EditOutlined />}
+   />
+     {/* <Button
+       default
+       icon={<FormEdit/>}
        style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
        onClick = {props.openStatus ? props.onClose : props.onOpen}
-      
-
      >
-     </Button>
+     </Button> */}
      
-   </Popover>
+  
    
    </div>
    )

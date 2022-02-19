@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import useStore from '../../stores/Store';
 import { Space, Input } from 'antd';
-const { TextArea } = Input;
+import { Toggle } from '../Toggle';
+import { TextArea, Text, Box, TextInput } from 'grommet';
+//const { TextArea } = Input;
 
 export const ThingDetail = ({ uuid }) => {
 
@@ -10,9 +12,9 @@ export const ThingDetail = ({ uuid }) => {
   return (
     <>
       <p>
-        <b>Description:</b>
+        <Text>Description:</Text>
       </p>
-      <Space />
+      
 
       <TextArea
         value={thing.description}
