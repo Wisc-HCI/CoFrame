@@ -1,14 +1,5 @@
-import React, { useEffect } from "react";
-import { useSpring, animated } from '@react-spring/web';
-import { config } from 'react-spring';
-// import { Layout, Row, Button, Badge, Space } from 'antd';
-import Icon, { SyncOutlined, SettingOutlined } from '@ant-design/icons';
-import { ReactComponent as EvdIcon } from './components/CustomIcons/EVD.svg';
-// import 'antd/dist/antd.dark.css';
-// import './themes/safety.less';
-// import './themes/quality.less';
-// import './themes/performance.less';
-// import './themes/business.less';
+import React from "react";
+import { FiSettings } from "react-icons/fi";
 import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
@@ -17,6 +8,8 @@ import { Grommet, Header, Heading, Box, Button, Collapsible } from 'grommet';
 // import { Modals } from "./components/Modals";
 import { Detail } from './components/Detail';
 import { SettingsModal } from "./components/Settings";
+
+import { CoFrameIcon } from "./components/Icon";
 
 import useStore from "./stores/Store";
 import shallow from 'zustand/shallow';
@@ -80,7 +73,7 @@ export default function App() {
         {
             modalKey: 'settings',
             name: 'Settings',
-            icon: <SettingOutlined />
+            icon: <FiSettings />
         }
     ];
 
@@ -90,7 +83,7 @@ export default function App() {
             <Box direction="column" height='100vh' width='100vw'>
                 <Header direction='row' pad='none' background='rgb(31,31,31)' justify='between' align='center'>
                     <Box direction='row' align='center' gap='medium' pad={{ left: 'small' }}>
-                        <Icon style={{ color: primaryColor, fontSize: 30 }} component={EvdIcon} />
+                        <CoFrameIcon/>
                         <Heading level={4}><b>CoFrame<i> - {programName}</i></b></Heading>
                     </Box>
                     <Box flex></Box>
@@ -126,55 +119,5 @@ export default function App() {
             {/* <Modals /> */}
         </Grommet >
 
-    )
-
-    return (
-        <>
-            <Layout style={{ height: '100vh', width: '100vw' }}>
-                <Layout.Header className="header">
-                    <Row align='middle' justify='space-between'>
-                        <Space style={{ float: 'left' }} >
-                            <Icon style={{ color: primaryColor, fontSize: 30 }} component={EvdIcon} />
-                            <h2 style={{ paddingLeft: 20 }}><b>CoFrame<i> - {programName}</i></b></h2>
-                        </Space>
-                        <span style={{ float: 'right' }} >
-                            {menuItems.map(entry => (
-                                <Button type='text' key={entry.modalKey} icon={entry.icon} onClick={() => setActiveModal(entry.modalKey)}>
-                                    {entry.name}
-                                </Button>
-                            ))}
-                            {connection === 'connected' && (
-                                <Badge status="success" />
-                            )}
-                            {connection === 'connecting' && (
-                                <Badge status="warning" />
-                            )}
-                            {connection === 'disconnected' && (
-                                <Badge status="error" />
-                            )}
-                        </span>
-                    </Row>
-                </Layout.Header>
-                <Layout>
-                    <Layout.Sider width='25vw'>
-                        <ReviewTile />
-                    </Layout.Sider>
-                    <Layout width='75vw'>
-                        <Layout.Content>
-                            <div style={{ height: '100%', width: '100%' }}>
-                                <div style={{ width: '45%', float: 'left' }}>
-                                    <SimulatorTile />
-                                </div>
-                                <div style={{ width: '55%', float: 'right' }}>
-                                    <ProgramTile />
-                                </div>
-                            </div>
-                        </Layout.Content>
-                    </Layout>
-                </Layout>
-            </Layout>
-
-            
-        </>
     )
 }
