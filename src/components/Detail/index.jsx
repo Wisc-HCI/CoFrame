@@ -12,6 +12,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { MachineInOutRegionDetail } from './MachineInOutRegionDetail'
 
 import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 
 const EDITOR_TYPES = ['primitive', 'skill', 'program', 'trajectory', 'scene']
 // const IGNORE_ITEMS = ['program','scene','trajectory']
@@ -26,17 +27,17 @@ export const Detail = (_) => {
     secondaryFocusItem,
     deleteItem,
     setItemProperty,
-    item
+    item,
+    objectTypeInfo
   } = useStore(state => ({
     focusItem: state.focusItem,
     clearFocusItem: state.clearFocusItem,
     secondaryFocusItem: state.secondaryFocusItem,
     deleteItem: state.deleteItem,
     setItemProperty: state.setItemProperty,
-    item: state.focusItem.type ? state.programData[state.focusItem.uuid] : null
-  }));
-
-  const [deleteBoxVisible, setDeleteBoxVisible] = React.useState(false);
+    item: state.focusItem.type ? state.programData[state.focusItem.uuid] : null,
+    objectTypeInfo: state.focusItem.type ? state.programSpec.objectTypes[state.programData[state.focusItem.uuid].type] : null
+  }),shallow);
 
   // const handleOK = () => {
   //   clearFocusItem();
@@ -55,7 +56,7 @@ export const Detail = (_) => {
 
   // )
 
-  console.log(focusItem)
+  console.log({focusItem, item, objectTypeInfo})
 
   if (focusItem.uuid && !EDITOR_TYPES.includes(focusItem.type)) {
     return (
@@ -69,7 +70,7 @@ export const Detail = (_) => {
             border={{ side: 'bottom', color: '#333333' }}
           >
             <Text margin={{ left: 'small' }}>
-              <span style={{ textTransform: 'capitalize' }}>{focusItem.type} </span>
+              <span style={{ textTransform: 'capitalize' }}>{objectTypeInfo.name} Information</span>
             </Text>
             <Button icon={<FormClose />} onClick={clearFocusItem} />
           </Box>
