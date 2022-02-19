@@ -19,6 +19,7 @@ export const SimulatorTile = (_) => {
                 style={{ height: '408pt', marginBottom: 10 }}
                 backgroundColor={primaryColor}
                 borderWidth={3}
+                internalPaddingWidth={2}
                 header={
                     <Box direction='row' justify='between'>
                     <h3 style={{margin:'10pt'}}>
@@ -28,7 +29,7 @@ export const SimulatorTile = (_) => {
                     </Box>
                 }
             >
-                <div style={{ height: '368pt', width: '100%', backgroundColor:'black', padding:0 }}>
+                <div style={{ height: '364pt', width: '100%', backgroundColor:'black', padding:0 }}>
                     <Scene
                         displayTfs={false}
                         displayGrid={true}

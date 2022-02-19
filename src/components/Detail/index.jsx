@@ -60,7 +60,7 @@ export const Detail = (_) => {
 
   if (focusItem.uuid && !EDITOR_TYPES.includes(focusItem.type)) {
     return (
-      <Layer full="vertical" position="right" onEsc={clearFocusItem}>
+      <Layer full="vertical" position="right" onEsc={clearFocusItem} modal={false}>
         <Box fill style={{ minWidth: '378px' }} background='#444444'>
           <Box
             direction="row"

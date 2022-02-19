@@ -58,7 +58,7 @@ export const performPoseProcess = async (data) => {
         const achievedQuat = new Quaternion(r[1],r[2],r[3],r[0])
         const translationDistance = distance(achievedPos,pos);
         const rotationalDistance = goalQuat.angleTo(achievedQuat);
-        if (translationDistance < 0.005 && rotationalDistance < 0.005) {
+        if (translationDistance < 0.01 && rotationalDistance < 0.01) {
             result.status = 'success'
         }
     }
@@ -76,7 +76,7 @@ const getLeaves = (block, objectType) => {
 }
 
 const computeChanged = (process, objectTypes, context, solver) => {
-    
+
     return [none,STATUS.VALID]
 }
 
