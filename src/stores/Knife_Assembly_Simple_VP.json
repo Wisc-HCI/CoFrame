@@ -1044,12 +1044,12 @@
         "properties": {
             "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl",
             "color": {"r": 10, "g": 10, "b": 10, "a": 1},
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1074,12 +1074,12 @@
         "properties": {
             "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl",
             "color": {"r": 15, "g": 15, "b": 15, "a": 1},
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1103,12 +1103,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/visual/base.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 1,
@@ -1132,12 +1132,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/visual/shoulder.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 1,
@@ -1161,12 +1161,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/visual/upperarm.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0.12
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0.5,
                 "y": -0.5,
                 "z": -0.5,
@@ -1190,12 +1190,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/visual/forearm.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0.027
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0.5,
                 "y": -0.5,
                 "z": -0.5,
@@ -1219,12 +1219,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/visual/wrist1.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": -0.104
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0.7071068,
                 "y": 0,
                 "z": 0,
@@ -1248,12 +1248,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/visual/wrist2.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": -0.08535
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1277,12 +1277,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/visual/wrist3.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": -0.0921
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0.7071068,
                 "y": 0,
                 "z": 0,
@@ -1306,12 +1306,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_base_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1335,12 +1335,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1364,12 +1364,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1393,12 +1393,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1422,12 +1422,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1451,12 +1451,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1480,12 +1480,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1509,12 +1509,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1538,12 +1538,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1567,12 +1567,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1602,12 +1602,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1637,12 +1637,12 @@
         "editing": false,
         "properties": {
             "keyword": "assembly_jig",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1672,12 +1672,12 @@
         "editing": false,
         "properties": {
             "keyword": "assembly_jig_collision",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1707,12 +1707,12 @@
         "editing": false,
         "properties": {
             "keyword": "conveyor",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1742,12 +1742,12 @@
         "editing": false,
         "properties": {
             "keyword": "conveyor_collision",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1777,12 +1777,12 @@
         "editing": false,
         "properties": {
             "keyword": "conveyor_receiver",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1812,12 +1812,12 @@
         "editing": false,
         "properties": {
             "keyword": "conveyor_receiver_collision",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1847,12 +1847,12 @@
         "editing": false,
         "properties": {
             "keyword": "conveyor_dispatcher",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1882,12 +1882,12 @@
         "editing": false,
         "properties": {
             "keyword": "conveyor_dispatcher_collision",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1917,12 +1917,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/collision/upperarm.stl",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1952,12 +1952,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/collision/forearm.stl",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -1987,12 +1987,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/collision/wrist1.stl",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -2022,12 +2022,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/collision/wrist2.stl",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -2057,12 +2057,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://ur_description/meshes/ur3/collision/wrist3.stl",
-            "localPosition": {
+            "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "localRotation": {
+            "rotation": {
                 "x": 0,
                 "y": 0,
                 "z": 0,

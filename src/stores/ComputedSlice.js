@@ -16,7 +16,7 @@ import {
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
-import { INITIAL_SIM, COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
+import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 
 export const computedSlice = (state) => {
     const ROBOT_PARTS = Object.keys(state.programData).filter(v => v.includes('robot'));
@@ -88,8 +88,8 @@ export const computedSlice = (state) => {
             shape: meshObject.properties.keyword,
             name: item.name,
             frame: item.properties.frame,
-            position: meshObject.properties.localPosition,
-            rotation: meshObject.properties.localRotation,
+            position: meshObject.properties.position,
+            rotation: meshObject.properties.rotation,
             color: meshObject.properties.color,
             scale: meshObject.properties.scale,
             transformMode: "inactive",
@@ -105,7 +105,7 @@ export const computedSlice = (state) => {
                 } else {
                     console.log('clicked ' + item.name)
                     e.stopPropagation();
-                    state.setFocusItem('scene', item.name);
+                    state.setFocusItem('scene', item.id);
                 }
 
             },
@@ -116,8 +116,8 @@ export const computedSlice = (state) => {
                 shape: COLLISION_MESHES[meshObject.properties.keyword],
                 name: item.name + ' Collision',
                 frame: item.properties.frame,
-                position: meshObject.properties.localPosition,
-                rotation: meshObject.properties.localPosition,
+                position: meshObject.properties.position,
+                rotation: meshObject.properties.position,
                 scale: meshObject.properties.scale,
                 color: { r: 250, g: 0, b: 0, a: 0.6 },
                 transformMode: "inactive",
@@ -158,8 +158,8 @@ export const computedSlice = (state) => {
                 shape: meshObject.properties.keyword,
                 name: entry.name,
                 frame: entryProps.tf,
-                position: meshObject.properties.localPosition,
-                rotation: meshObject.properties.localRotation,
+                position: meshObject.properties.position,
+                rotation: meshObject.properties.rotation,
                 scale: meshObject.properties.scale,
                 transformMode: 'inactive',
                 highlighted: state.focusItem.uuid === entry.id,
@@ -179,8 +179,8 @@ export const computedSlice = (state) => {
                 shape: collisionObject.properties.keyword,
                 name: entry.name + ' Collision',
                 frame: entryProps.frame,
-                position: collisionObject.properties.localPosition,
-                rotation: collisionObject.properties.localPosition,
+                position: collisionObject.properties.position,
+                rotation: collisionObject.properties.position,
                 scale: collisionObject.properties.scale,
                 transformMode: 'inactive',
                 highlighted: false,
