@@ -77,6 +77,7 @@ export const computedSlice = (state) => {
         const itemKey = item.id;
         let highlighted = false;
         let meshObject = state.programData[item.properties.mesh];
+        let collisionObject = item.properties.collision ? state.programData[item.properties.collision] : null;
         if (ROBOT_PARTS.indexOf(state.focusItem.uuid) >= 0 && ROBOT_PARTS.indexOf(itemKey) >= 0) {
             highlighted = true
         } else if (GRIPPER_PARTS.indexOf(state.focusItem.uuid) >= 0 && GRIPPER_PARTS.indexOf(itemKey) >= 0) {
@@ -111,14 +112,15 @@ export const computedSlice = (state) => {
             },
             onMove: (transform) => { console.log(transform) }
         }
-        if (COLLISION_MESHES[meshObject.properties.keyword]) {
+
+        if (collisionObject) {
             items[itemKey + '-collision'] = {
-                shape: COLLISION_MESHES[meshObject.properties.keyword],
+                shape: COLLISION_MESHES[collisionObject.properties.keyword] ? COLLISION_MESHES[collisionObject.properties.keyword] : collisionObject.properties.keyword,
                 name: item.name + ' Collision',
                 frame: item.properties.frame,
-                position: meshObject.properties.position,
-                rotation: meshObject.properties.position,
-                scale: meshObject.properties.scale,
+                position: collisionObject.properties.position,
+                rotation: collisionObject.properties.rotation,
+                scale: collisionObject.properties.scale,
                 color: { r: 250, g: 0, b: 0, a: 0.6 },
                 transformMode: "inactive",
                 highlighted: false,
