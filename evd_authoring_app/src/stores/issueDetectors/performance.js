@@ -1,4 +1,5 @@
 import { generateUuid } from "../generateUuid"
+import { EMACalc } from "../helpers";
 
 const jointNames = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'];
 const jointNameMap = {
@@ -154,6 +155,7 @@ export const findJointSpeedIssues = ({program, settings}) => {
 
     const warningLevel = settings["jointSpeedWarn"].value * settings['jointMaxSpeed'].value;
     const errorLevel = settings["jointSpeedErr"].value * settings['jointMaxSpeed'].value;
+    let handled = [];
 
     Object.values(program.executablePrimitives).forEach(ePrim => {
         Object.values(ePrim).forEach(primitive=>{
@@ -182,6 +184,18 @@ export const findJointSpeedIssues = ({program, settings}) => {
                 for (let i = 0; i < jointNames.length; i++) {
                     for (let j = 1; j < jointDataLength; j++) {
                         let calcVel = Math.abs((allJointData[jointNames[i]][j] - allJointData[jointNames[i]][j-1]) / (timeData[j] - timeData[j-1]));
+                        jointVelocities[jointNames[i]].push(calcVel);
+                    }
+                }
+
+                for (let i = 0; i < jointNames.length; i++) {
+                    jointVelocities[jointNames[i]] = EMACalc(jointVelocities[jointNames[i]],10)
+                }
+
+                // Compute the sceneData
+                for (let i = 0; i < jointNames.length; i++) {
+                    for (let j = 1; j < jointDataLength; j++) {
+                        const calcVel = jointVelocities[jointNames[i]][j]
                         let curFrame = trajectory.trace.frames[jointLinkMap[jointNames[i]]][j][0];
 
                         if (calcVel > errorLevel) {
@@ -230,7 +244,7 @@ export const findJointSpeedIssues = ({program, settings}) => {
                 }
 
                 // Build issue
-                if (hasWarningVelocity) {
+                if (hasWarningVelocity && !handled.includes(primitive.uuid)) {
                     const uuid = generateUuid('issue');
                     issues[uuid] = {
                         uuid: uuid,
@@ -248,6 +262,7 @@ export const findJointSpeedIssues = ({program, settings}) => {
                         },
                         sceneData: {vertices: sceneData}
                     }
+                    handled.push(primitive.uuid)
                 }
             }
         })
@@ -262,6 +277,7 @@ export const findEndEffectorSpeedIssues = ({program, settings}) => {
 
     const warningLevel = settings['eeSpeedWarn'].value;
     const errorLevel = settings['eeSpeedErr'].value;
+    let handled = []
     
     Object.values(program.executablePrimitives).forEach(ePrim => {
         Object.values(ePrim).forEach(primitive=>{
@@ -269,6 +285,7 @@ export const findEndEffectorSpeedIssues = ({program, settings}) => {
                 let trajectory = primitive.parameters.trajectory_uuid;
                 let endEffectorVelocities = [];
                 let endEffectorGraphData = [];
+                let rawVelocities = [];
                 let timeData = trajectory.trace.time_data;
                 let frames = trajectory.trace.frames.tool0;
 
@@ -277,19 +294,24 @@ export const findEndEffectorSpeedIssues = ({program, settings}) => {
 
                 for (let i = 1; i < frames.length; i++) {
                     let calcVel = Math.sqrt(Math.pow(frames[i][0][0] - frames[i-1][0][0], 2) + Math.pow(frames[i][0][1] - frames[i-1][0][1], 2) + Math.pow(frames[i][0][2] - frames[i-1][0][2], 2)) / (timeData[i] - timeData[i-1]);
+                    rawVelocities.push(calcVel);
+                }
+
+                rawVelocities = EMACalc(rawVelocities,4);
+
+                for (let i = 1; i < frames.length; i++) {
+                    let calcVel = rawVelocities[i];
 
                     if (calcVel > errorLevel) {
-                        if (!hasErrorVelocity) {
-                            hasErrorVelocity = true;
-                        }
-                        if (!hasWarningVelocity) {
-                            hasWarningVelocity = true;
-                        }
+                        hasErrorVelocity = true;
+                    }
+                    if (calcVel > warningLevel) {
+                        hasWarningVelocity = true;
+                    }
+
+                    if (hasErrorVelocity) {
                         endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: ERROR_COLOR});
-                    } else if (calcVel > warningLevel) {
-                        if (!hasWarningVelocity) {
-                            hasWarningVelocity = true;
-                        }
+                    } else if (hasWarningVelocity) {
                         endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: WARNING_COLOR});
                     } else {
                         endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: NO_ERROR_COLOR});
@@ -299,7 +321,9 @@ export const findEndEffectorSpeedIssues = ({program, settings}) => {
                     
                 }
 
-                if (hasErrorVelocity) {
+                console.log()
+                
+                if (!handled.includes(primitive.uuid) && (hasErrorVelocity || hasWarningVelocity) ) {
                     const uuid = generateUuid('issue');
                     issues[uuid] = {
                         uuid: uuid,
@@ -317,6 +341,7 @@ export const findEndEffectorSpeedIssues = ({program, settings}) => {
                         },
                         sceneData: {vertices: {endEffector: endEffectorVelocities}}
                     }
+                    handled.push(primitive.uuid)
                 }
             }
         })
@@ -325,8 +350,49 @@ export const findEndEffectorSpeedIssues = ({program, settings}) => {
     return [issues, {}];
 }
 
-export const findPayloadIssues = (_) => { // Shouldn't change during a trajectory so more of a check on thing weight vs. robot payload (e.g., 3kg in 1g)
+export const findPayloadIssues = ({ program, unrolled }) => { // Shouldn't change during a trajectory so more of a check on thing weight vs. robot payload (e.g., 3kg in 1g)
     let issues = {};
+
+    if (!unrolled) {
+        return [issues, {}];
+    }
+
+    Object.values(unrolled).forEach(primitive => {
+
+        // console.log(primitive.type);
+        if (primitive.type === 'node.primitive.gripper.' && primitive.parameters.semantic === 'grasping') {
+            const thingUUID = primitive.parameters.thing_uuid.uuid;
+            //console.log(thingUUID + "  123" );
+            Object.values(program.data.placeholders).forEach(placeholder => {
+                //console.log(placeholder.uuid );
+                if (placeholder.uuid === thingUUID) {
+                    const thingTypeUUID = placeholder.pending_node.thing_type_uuid;
+                    //console.log("true");
+                    Object.values(program.data.thingTypes).forEach(thingType => {
+                        //console.log(thingType.uuid + "   " + thingTypeUUID);
+                        if (thingType.uuid === thingTypeUUID && thingType.weight > 3) {
+
+                            const uuid = generateUuid('issue');
+                            issues[uuid] = {
+                                uuid: uuid,
+                                requiresChanges: true,
+                                title: `Thing is too heavy to carry`, // might need some changes
+                                description: `Attempting to carry a thing that is too heavy`,// might need some changes
+                                complete: false,
+                                focus: { uuid: primitive.uuid, type: 'primitive' },
+                                graphData: null
+                            }
+                        } else {
+                            //console.log("false");
+                        }
+                    })
+                }
+            })
+
+
+
+        }
+    })
 
     return [issues, {}];
 }
@@ -335,6 +401,8 @@ export const findPayloadIssues = (_) => { // Shouldn't change during a trajector
 export const findSpaceUsageIssues = ({program, stats, settings}) => {
     let issues = {};
     let addStats = {};
+
+    let handled = []
 
     const warningLevel = settings['spaceUsageWarn'].value;
     const errorLevel = settings['spaceUsageErr'].value;
@@ -372,23 +440,27 @@ export const findSpaceUsageIssues = ({program, stats, settings}) => {
                     // Keep track of specfic trajectory changes
                     addStats[trajectory.uuid] = {volume: trajectory.volume};
 
-                    const uuid = generateUuid('issue');
-                    issues[uuid] = {
-                        uuid: uuid,
-                        requiresChanges: isError,
-                        title: `Robot Space Utilization`,
-                        description: `Robot Space Utilization`,
-                        complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
-                        graphData: {
-                            series: priorData,
-                            lineColors: ["#E69F00"],
-                            xAxisLabel: 'Program Iteration',
-                            yAxisLabel: 'Space Usage',
-                            title: ''
-                        },
-                        sceneData: {hulls: {spaceUsage: {vertices: spaceUtilization, color: hullColor}}}
+                    if (!handled.includes(primitive.uuid)) {
+                        const uuid = generateUuid('issue');
+                        issues[uuid] = {
+                            uuid: uuid,
+                            requiresChanges: isError,
+                            title: `Robot Space Utilization`,
+                            description: `Robot Space Utilization`,
+                            complete: false,
+                            focus: {uuid:primitive.uuid, type:'primitive'},
+                            graphData: {
+                                series: priorData,
+                                lineColors: ["#E69F00"],
+                                xAxisLabel: 'Program Iteration',
+                                yAxisLabel: 'Space Usage',
+                                title: ''
+                            },
+                            sceneData: {hulls: {spaceUsage: {vertices: spaceUtilization, color: hullColor}}}
+                        }
+                        handled.push(primitive.uuid)
                     }
+                    
                 }
             });
         }

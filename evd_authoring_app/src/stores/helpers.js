@@ -295,6 +295,17 @@ function executablePrimitiveInner(primitiveId, state, context) {
     return null
 }
 
+export function EMACalc(mArray,mRange) {
+    var k = 2/(mRange + 1);
+    // first item is just the same as the first item in the input
+    let emaArray = [mArray[0]];
+    // for the rest of the items, they are computed with the previous one
+    for (var i = 1; i < mArray.length; i++) {
+      emaArray.push(mArray[i] * k + emaArray[i - 1] * (1 - k));
+    }
+    return emaArray;
+  }
+
 export function executablePrimitives(state) {
     let context = {
         ...state.data.placeholders,
@@ -457,8 +468,8 @@ const poseDiff = (pose1,pose2) => {
         Math.pow(pose1.position.z-pose2.position.z,2)
     )
     console.log(translationDistance)
-    const quat1 = Quaternion(pose1.quaternion.x,pose1.quaternion.y,pose1.quaternion.z,pose1.quaternion.w)
-    const quat2 = Quaternion(pose2.quaternion.x,pose2.quaternion.y,pose2.quaternion.z,pose2.quaternion.w)
+    const quat1 = new Quaternion(pose1.quaternion.x,pose1.quaternion.y,pose1.quaternion.z,pose1.quaternion.w)
+    const quat2 = new Quaternion(pose2.quaternion.x,pose2.quaternion.y,pose2.quaternion.z,pose2.quaternion.w)
     return {distance:translationDistance, angle:quat1.angleTo(quat2)}
 }
 
@@ -902,13 +913,13 @@ export const traceToEEPoseScores = (trace) => {
     for (let i = 1; i < trace.frames['tool0'].length; i++) {
         const p1 = trace.frames['tool0'][i][0];
         const p0 = trace.frames['tool0'][i-1][0];
-        const q1 = trace.frames['tool0_endpoint'][i][0];
+        const f1 = trace.frames['wrist_2_link'][i][0];
         const movementVec = new Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]);
-        const directionVec = new Vector3(q1[0]-p1[0],q1[1]-p1[1],q1[2]-p1[2]);
-        scores.push(1000*movementVec.manhattanLength()/Math.pow(Math.E,10*movementVec.angleTo(directionVec)))
+        const directionVec = new Vector3(f1[0]-p1[0],f1[1]-p1[1],f1[2]-p1[2]);
+        scores.push(100*movementVec.length()*Math.pow(Math.E,movementVec.angleTo(directionVec)))
 
     }
-    return scores
+    return EMACalc(scores,4)
 }
 
 export const traceToVertices = (trace) => {

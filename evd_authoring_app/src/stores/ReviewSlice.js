@@ -9,13 +9,13 @@ export const ReviewSlice = (set, get) => ({
     stats: [],
     // Settings for the issue detectors
     issueSettings: {
-        'eePoseWarn': {uuid: 'eePoseWarn', name: "End Effector Pose Warning Level", value: 2, min: 0},
+        'eePoseWarn': {uuid: 'eePoseWarn', name: "End Effector Pose Warning Level", value: 4, min: 0},
         'eePoseErr': {uuid: 'eePoseErr', name: "End Effector Pose Error Level", value: 5, min: 0},
         'collisionWarn': {uuid: 'collisionWarn', name: "Collision Warning Level", value: 0.1, min: 0, max: 1},
         'collisionErr': {uuid: 'collisionErr', name: "Collision Error Level", value: 1, min: 0, max: 1},
         'occupancyWarn': {uuid: 'occupancyWarn', name: "Occupancy Warning Level", value: 0.8, min: 0, max: 1},
         'occupancyErr': {uuid: 'occupancyErr', name: "Occupancy Error Level", value: 1, min: 0, max: 1},
-        'jointMaxSpeed': {uuid: 'jointMaxSpeed', name: "Max Joint Speed", value: 10, min: 0},
+        'jointMaxSpeed': {uuid: 'jointMaxSpeed', name: "Max Joint Speed", value: 50, min: 0},
         'jointSpeedWarn': {uuid: 'jointSpeedWarn', name: "Joint Speed Warning Level (% of max speed)", value: 0.1, min: 0, max: 1},
         'jointSpeedErr': {uuid: 'jointSpeedErr', name: "Joint Speed Error Level (% of max speed)", value: 0.5, min: 0, max: 1},
         'eeSpeedWarn': {uuid: 'eeSpeedWarn', name: "End Effector Speed Warning Level", value: 0.3, min: 0, max: 1},

@@ -30,7 +30,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
   const [
     frame, clearFocusItem, setItemProperty, setFocusItem,
     moveTrajectoryWaypoint, insertTrajectoryWaypoint,
-    deleteTrajectoryWaypoint, focusExists] = useStore(state => [
+    deleteTrajectoryWaypoint, focusExists, requestTraceProcessorUpdate] = useStore(state => [
       state.frame,
       state.clearFocusItem,
       state.setItemProperty,
@@ -38,7 +38,8 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
       state.moveTrajectoryWaypoint,
       state.insertTrajectoryWaypoint,
       state.deleteTrajectoryWaypoint,
-      state.focusItem.type !== null
+      state.focusItem.type !== null,
+      state.requestTraceProcessorUpdate
     ],shallow);
   const unfocused = focusExists && !focused;
 
@@ -99,34 +100,40 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
     height: 36
   }
 
-  const startDrop = (dropData) => {
+  const startDrop = async (dropData) => {
     if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
-      setItemProperty('trajectory', uuid, dropData.parentData.field, null);
-      setItemProperty('trajectory', uuid, 'start_location_uuid', dropData.uuid);
+      await setItemProperty('trajectory', uuid, dropData.parentData.field, null);
+      await setItemProperty('trajectory', uuid, 'start_location_uuid', dropData.uuid);
     } else {
-      setItemProperty('trajectory', uuid, 'start_location_uuid', dropData.uuid);
+      await setItemProperty('trajectory', uuid, 'start_location_uuid', dropData.uuid);
     }
+    requestTraceProcessorUpdate(uuid)
+    requestTraceProcessorUpdate(dropData.parentData.uuid)
   }
 
-  const waypointDrop = (dropData, idx) => {
+  const waypointDrop = async (dropData, idx) => {
     if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
       const newIdx = dropData.idx <= idx ? idx - 1 : idx;
       if (newIdx === dropData.idx) {
         return
       }
-      moveTrajectoryWaypoint(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, newIdx);
+      await moveTrajectoryWaypoint(dropData.uuid, dropData.parentData.uuid, uuid, dropData.idx, newIdx);
     } else {
-      insertTrajectoryWaypoint(dropData.uuid, uuid, idx);
+      await insertTrajectoryWaypoint(dropData.uuid, uuid, idx);
     }
+    requestTraceProcessorUpdate(uuid)
+    requestTraceProcessorUpdate(dropData.parentData.uuid)
   }
 
-  const endDrop = (dropData) => {
+  const endDrop = async (dropData) => {
     if (dropData.parentData.uuid === uuid && dropData.dragBehavior === 'move') {
-      setItemProperty('trajectory', uuid, dropData.parentData.field, null);
-      setItemProperty('trajectory', uuid, 'end_location_uuid', dropData.uuid);
+      await setItemProperty('trajectory', uuid, dropData.parentData.field, null);
+      await setItemProperty('trajectory', uuid, 'end_location_uuid', dropData.uuid);
     } else {
-      setItemProperty('trajectory', uuid, 'end_location_uuid', dropData.uuid);
+      await setItemProperty('trajectory', uuid, 'end_location_uuid', dropData.uuid);
     }
+    requestTraceProcessorUpdate(uuid)
+    requestTraceProcessorUpdate(dropData.parentData.uuid)
   }
 
   return (
@@ -182,12 +189,12 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                   {data.move_type === 'ee_ik' ? (
                     <span style={selectionStyle}>IK</span>
                   ) : (
-                    <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'ee_ik')}>IK</Button>
+                    <Button type='text' disabled={!editingEnabled} onClick={async () => { await setItemProperty('trajectory', uuid, 'move_type', 'ee_ik'); requestTraceProcessorUpdate(uuid)}}>IK</Button>
                   )}
                   {data.move_type === 'joint' ? (
                     <span style={selectionStyle}>Joint</span>
                   ) : (
-                    <Button type='text' disabled={!editingEnabled} onClick={() => setItemProperty('trajectory', uuid, 'move_type', 'joint')}>Joint</Button>
+                    <Button type='text' disabled={!editingEnabled} onClick={async () => { await setItemProperty('trajectory', uuid, 'move_type', 'joint'); requestTraceProcessorUpdate(uuid)}}>Joint</Button>
                   )}
                 </Col>
               </Row>)}
@@ -201,7 +208,7 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                     size='small'
                     defaultValue={data.velocity}
                     disabled={!editingEnabled}
-                    onChange={(v) => setItemProperty('trajectory', uuid, 'velocity', v)}
+                    onChange={async (v) => {await setItemProperty('trajectory', uuid, 'velocity', v); requestTraceProcessorUpdate(uuid)}}
                     bordered={false}
                     style={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
                 </Col>
@@ -230,7 +237,10 @@ export const TrajectoryBlock = ({ staticData, uuid, ancestors, context, parentDa
                 ancestors={trajectoryLocationAncestors}
                 context={context}
                 data={{ ...start_location, itemType: 'location', type: `uuid-location` }}
-                onDelete={(_) => setItemProperty('trajectory', uuid, 'start_location_uuid', null)}
+                onDelete={async (_) => {
+                  await setItemProperty('trajectory', uuid, 'start_location_uuid', null); 
+
+                }}
                 onDrop={startDrop}
                 dragDisabled={!editingEnabled}
                 dropDisabled={!editingEnabled}
