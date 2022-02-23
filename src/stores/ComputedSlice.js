@@ -16,7 +16,7 @@ import {
 } from './helpers';
 import debounce from 'lodash.debounce';
 // import throttle from 'lodash.throttle';
-import { INITIAL_SIM, COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
+import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 
 export const computedSlice = (state) => {
     const ROBOT_PARTS = Object.keys(state.programData).filter(v => v.includes('robot'));
@@ -77,6 +77,7 @@ export const computedSlice = (state) => {
         const itemKey = item.id;
         let highlighted = false;
         let meshObject = state.programData[item.properties.mesh];
+        let collisionObject = item.properties.collision ? state.programData[item.properties.collision] : null;
         if (ROBOT_PARTS.indexOf(state.focusItem.uuid) >= 0 && ROBOT_PARTS.indexOf(itemKey) >= 0) {
             highlighted = true
         } else if (GRIPPER_PARTS.indexOf(state.focusItem.uuid) >= 0 && GRIPPER_PARTS.indexOf(itemKey) >= 0) {
@@ -88,8 +89,8 @@ export const computedSlice = (state) => {
             shape: meshObject.properties.keyword,
             name: item.name,
             frame: item.properties.frame,
-            position: meshObject.properties.localPosition,
-            rotation: meshObject.properties.localRotation,
+            position: meshObject.properties.position,
+            rotation: meshObject.properties.rotation,
             color: meshObject.properties.color,
             scale: meshObject.properties.scale,
             transformMode: "inactive",
@@ -105,20 +106,21 @@ export const computedSlice = (state) => {
                 } else {
                     console.log('clicked ' + item.name)
                     e.stopPropagation();
-                    state.setFocusItem('scene', item.name);
+                    state.setFocusItem('scene', item.id);
                 }
 
             },
             onMove: (transform) => { console.log(transform) }
         }
-        if (COLLISION_MESHES[meshObject.properties.keyword]) {
+
+        if (collisionObject) {
             items[itemKey + '-collision'] = {
-                shape: COLLISION_MESHES[meshObject.properties.keyword],
+                shape: COLLISION_MESHES[collisionObject.properties.keyword] ? COLLISION_MESHES[collisionObject.properties.keyword] : collisionObject.properties.keyword,
                 name: item.name + ' Collision',
                 frame: item.properties.frame,
-                position: meshObject.properties.localPosition,
-                rotation: meshObject.properties.localPosition,
-                scale: meshObject.properties.scale,
+                position: collisionObject.properties.position,
+                rotation: collisionObject.properties.rotation,
+                scale: collisionObject.properties.scale,
                 color: { r: 250, g: 0, b: 0, a: 0.6 },
                 transformMode: "inactive",
                 highlighted: false,
@@ -158,8 +160,8 @@ export const computedSlice = (state) => {
                 shape: meshObject.properties.keyword,
                 name: entry.name,
                 frame: entryProps.tf,
-                position: meshObject.properties.localPosition,
-                rotation: meshObject.properties.localRotation,
+                position: meshObject.properties.position,
+                rotation: meshObject.properties.rotation,
                 scale: meshObject.properties.scale,
                 transformMode: 'inactive',
                 highlighted: state.focusItem.uuid === entry.id,
@@ -179,8 +181,8 @@ export const computedSlice = (state) => {
                 shape: collisionObject.properties.keyword,
                 name: entry.name + ' Collision',
                 frame: entryProps.frame,
-                position: collisionObject.properties.localPosition,
-                rotation: collisionObject.properties.localPosition,
+                position: collisionObject.properties.position,
+                rotation: collisionObject.properties.position,
                 scale: collisionObject.properties.scale,
                 transformMode: 'inactive',
                 highlighted: false,
