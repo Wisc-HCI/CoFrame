@@ -1,7 +1,7 @@
 import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 
 export const processType = {
-    name: 'process',
+    name: 'Process',
     type: TYPES.OBJECT,
     instanceBlock: null,
     referenceBlock: null,
@@ -18,7 +18,8 @@ export const processType = {
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: "",
         isList: false,
-        fullWidth: true
+        fullWidth: true,
+        nullValid: true
       },
       processTime: {
         name: 'Process Time',
