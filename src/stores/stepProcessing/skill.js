@@ -1,4 +1,5 @@
+import { STATUS } from "../Constants";
 
 export const skillSteps = (data, objectTypes, context, solver, module, urdf) => {
-    return [[], {}, false]
+    return [[], {}, STATUS.VALID, false]
 }

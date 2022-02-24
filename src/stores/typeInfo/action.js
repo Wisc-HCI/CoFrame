@@ -67,7 +67,7 @@ const breakpointFeatures = {
   name: 'Breakpoint',
   properties: {
     description: {default: 'Stop computation and processing here'},
-    computeSteps: {default:STEP_CALCULATOR.BREAKPOINT}
+    computeSteps: {default:STEP_CALCULATOR.NULL}
   }
 }
 
