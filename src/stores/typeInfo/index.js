@@ -12,10 +12,13 @@ import { meshType } from './mesh';
 import { tfType } from './tf';
 import { processType } from './process';
 import { zoneType } from './zone';
+import {inputOutputType} from './inputOutput'
 import actionTypes from './action';
 import agentTypes from './agents';
 
+
 export default { 
+    inputOutputType,
     programType, 
     machineType, 
     locationType,

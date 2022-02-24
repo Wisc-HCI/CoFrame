@@ -16,32 +16,33 @@ export const processType = {
       },
       machine: {
         name: 'Machine',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: "",
+        accepts: ['machineType'],
+        default: null,
         isList: false,
-        fullWidth: true,
+        fullWidth: false,
         nullValid: true
       },
-      processTime: {
+      processTime: { 
         name: 'Process Time',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+        name: 'Duration',
+        type: SIMPLE_PROPERTY_TYPES.NUMBER,
         default: 0,
-        isList: false,
-        fullWidth: true
-      },
-      outputs: {
-        name: 'Outputs',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: [],
-        isList: true,
-        fullWidth: true
+        min: 0,
+        max: null
       },
       inputs: {
         name: 'Inputs',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
         default: [],
+        accepts: ["inputOutputType"],
         isList: true,
-        fullWidth: true
+        fullWidth: false
+      },
+      outputs: {
+        name: 'Outputs',
+        default: [],
+        accepts: ["inputOutputType"],
+        isList: true,
+        fullWidth: false
       },
       status: {
         name: 'Status',
