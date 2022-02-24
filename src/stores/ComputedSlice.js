@@ -233,19 +233,19 @@ export const computedSlice = (state) => {
                 state.requestJointProcessorUpdate('location', entry.id)
             }, 1000)
 
-            poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
-                items[shape.uuid] = {
-                    ...shape,
-                    highlighted: focused,
-                    hidden: !focused && !trajectoryFocused,
-                    color,
-                    transformMode: shape.uuid.includes('pointer') && focused ? state.focusItem.transformMode : "inactive",
-                    onMove: shape.uuid.includes('pointer') && focused && state.focusItem.transformMode !== 'inactive' ? debouncedOnMove : (_) => { }
-                };
-                // e => setItemProperty('location', location_uuid, 'position', { ...state.data.locations[location_uuid].position, x: e[0], y: e[1], z: e[2] }); 
+            // poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
+            //     items[shape.uuid] = {
+            //         ...shape,
+            //         highlighted: focused,
+            //         hidden: !focused && !trajectoryFocused,
+            //         color,
+            //         transformMode: shape.uuid.includes('pointer') && focused ? state.focusItem.transformMode : "inactive",
+            //         onMove: shape.uuid.includes('pointer') && focused && state.focusItem.transformMode !== 'inactive' ? debouncedOnMove : (_) => { }
+            //     };
+            //     // e => setItemProperty('location', location_uuid, 'position', { ...state.data.locations[location_uuid].position, x: e[0], y: e[1], z: e[2] }); 
 
 
-            })
+            // })
         }
     })
 
@@ -317,34 +317,34 @@ export const computedSlice = (state) => {
         }
     });
 
-    Object.values(state.programData).filter(v => v.type === 'trajectoryType').forEach(trajectory => {
-        const hidden = state.focusItem.uuid !== trajectory.uuid && state.secondaryFocusItem.uuid !== trajectory.uuid;
-        let poses = []
-        if (trajectory.properties.startLocation) {
-            poses.push(state.programData[trajectory.properties.startLocation])
-        }
-        trajectory.properties.waypoints.forEach(waypointId => {
-            poses.push(state.programData[waypointId])
-        })
-        if (trajectory.properties.endLocation) {
-            poses.push(state.programData[trajectory.properties.endLocation])
-        }
-        const vertices = poses.map(pose => {
-            let color = { ...DEFAULT_TRAJECTORY_COLOR };
-            //console.log(item.joints.reachable);
-            if (state.frame === 'performance' && !pose.joints.reachable) {//pose, frame, focused, locationOrWaypoint
-                //console.log("entered");
-                color = { ...UNREACHABLE_COLOR };
-            } else if (state.frame === 'safety' && occupancyOverlap(pose.properties.position, state.programData)) {
-                color = { ...OCCUPANCY_ERROR_COLOR };
-            }
-            return {
-                position: pose.properties.position,
-                color
-            }
-        })
-        lines[trajectory.id] = { name: trajectory.name, vertices, frame: 'world', hidden, width: 2 }
-    })
+    // Object.values(state.programData).filter(v => v.type === 'trajectoryType').forEach(trajectory => {
+    //     const hidden = state.focusItem.uuid !== trajectory.uuid && state.secondaryFocusItem.uuid !== trajectory.uuid;
+    //     let poses = []
+    //     if (trajectory.properties.startLocation) {
+    //         poses.push(state.programData[trajectory.properties.startLocation])
+    //     }
+    //     trajectory.properties.waypoints.forEach(waypointId => {
+    //         poses.push(state.programData[waypointId])
+    //     })
+    //     if (trajectory.properties.endLocation) {
+    //         poses.push(state.programData[trajectory.properties.endLocation])
+    //     }
+    //     const vertices = poses.map(pose => {
+    //         let color = { ...DEFAULT_TRAJECTORY_COLOR };
+    //         //console.log(item.joints.reachable);
+    //         if (state.frame === 'performance' && !pose.joints.reachable) {//pose, frame, focused, locationOrWaypoint
+    //             //console.log("entered");
+    //             color = { ...UNREACHABLE_COLOR };
+    //         } else if (state.frame === 'safety' && occupancyOverlap(pose.properties.position, state.programData)) {
+    //             color = { ...OCCUPANCY_ERROR_COLOR };
+    //         }
+    //         return {
+    //             position: pose.properties.position,
+    //             color
+    //         }
+    //     })
+    //     lines[trajectory.id] = { name: trajectory.name, vertices, frame: 'world', hidden, width: 2 }
+    // })
 
     // ===================== Hulls =====================
     let hulls = {}

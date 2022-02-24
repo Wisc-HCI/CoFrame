@@ -1,6 +1,7 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { SkillIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
+import { STATUS, STEP_CALCULATOR } from "../Constants";
 
 export const skillType = {
     name: 'Skill',
@@ -51,6 +52,21 @@ export const skillType = {
         default: [],
         isList: true,
         fullWidth: true
+      },
+      status: {
+        name: 'Status',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: STATUS.PENDING
+      },
+      computeSteps: {
+        name: 'Compute Steps',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: STEP_CALCULATOR.SKILL
+      },
+      steps: {
+        name: 'Steps',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: []
       }
     }
   }

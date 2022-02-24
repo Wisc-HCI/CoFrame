@@ -3,7 +3,7 @@ import { FiSettings } from "react-icons/fi";
 import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
-import { Grommet, Header, Heading, Box, Button, Collapsible } from 'grommet';
+import { Grommet, Header, Heading, Box, Button, Collapsible, Spinner } from 'grommet';
 
 // import { Modals } from "./components/Modals";
 import { Detail } from './components/Detail';
@@ -21,9 +21,11 @@ export default function App() {
     const simMode = useStore(state => state.simMode);
     // const simStyle = useSpring({ width: simMode === 'default' ? '45%' : '100%', config: config.stiff });
     // const editStyle = useSpring({ width: simMode === 'default' ? '55%' : '0%', config: config.stiff });
-    const connection = useStore(state => state.connection);
     const programName = useStore(state => Object.values(state.programData).filter(v => v.type === 'programType')[0].name);
     const performPoseProcess = useStore(state=>state.performPoseProcess);
+    const performPlanProcess = useStore(state=>state.performPlanProcess);
+    const isProcessing = useStore(state=>state.processes.planProcess!==null&&state.processes.planProcess!==undefined);
+
 
     const theme = {
         name: 'CoFrame',
@@ -88,10 +90,14 @@ export default function App() {
                     </Box>
                     <Box flex></Box>
                     <Box direction='row' align='center' gap='small'>
+                        {isProcessing && (
+                            <Spinner/>
+                        )}
                         {menuItems.map(entry => (
                             <Button plain margin={{right:'medium'}} key={entry.modalKey} secondary icon={entry.icon} label={entry.name} onClick={() => setActiveModal(entry.modalKey)}/>
                         ))}
-                        <Button plain label='Plan Test' margin={{right:'medium'}} key='planstupid' onClick={()=>performPoseProcess('location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c')}/>
+                        <Button plain label='Loc Test' margin={{right:'medium'}} key='locplanstupid' onClick={()=>performPoseProcess('location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c')}/>
+                        <Button plain label='Plan Test' margin={{right:'medium'}} key='planstupid' onClick={performPlanProcess}/>
                     </Box>
                 </Header>
                 <Box flex direction='row'>

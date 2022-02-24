@@ -1,7 +1,7 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { LocationIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
-import { STATUS } from "../Constants";
+import { STATUS, STEP_CALCULATOR } from "../Constants";
 
 export const locationType = {
     name: 'Location',
@@ -56,6 +56,16 @@ export const locationType = {
         name: 'Status',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: STATUS.PENDING
+      },
+      computeSteps: {
+        name: 'Compute Steps',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: STEP_CALCULATOR.POSE
+      },
+      steps: {
+        name: 'Steps',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: []
       }
     }
   }

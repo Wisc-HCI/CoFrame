@@ -1,6 +1,7 @@
 import * as Comlink from 'comlink';
 import { Quaternion } from 'three';
-import { STATUS } from './Constants';
+import { STATUS, STEP_CALCULATOR } from './Constants';
+import { stepProcessors } from './stepProcessing';
 import { DATA_TYPES } from 'simple-vp';
 import { pickBy } from 'lodash';
 
@@ -66,25 +67,25 @@ export const performPoseProcess = async (data) => {
     return result
 }
 
-const getLeaves = (block, objectType) => {
-    return Object.keys(objectType.properties)
-        .filter(key=>objectType.properties[key].accepts)
-        .map(key=>({
-            key,
-            value:block.properties[key],
-            valid:objectType.properties[key].nullValid ? true : block.properties[key]!==null&&block.properties[key]!==undefined}))
-}
-
-const computeChanged = (process, objectTypes, context, solver) => {
-
-    return [none,STATUS.VALID]
-}
-
-
-const performTraceProcess = async (data) => {
-    const { urdf, programData, objectTypes, root } = data;
+const performStepProcess = async (data) => {
+    const { urdf, programData, objectTypes } = data;
     // Process the data without stalling the UI
     const module = await loadModule();
+
+    const context = pickBy(programData,(entry)=>entry.dataType === DATA_TYPES.INSTANCE)
+
+    let root = null;
+    Object.values(context).some(v=>{
+        if (v.type==='programType') {
+            root = v.id;
+            return true
+        } else {
+            return false
+        }
+    })
+
+    // TODO: define scene based on the scene item instances
+    const scene = {}
 
     // Create the solver
     const solver = new module.Solver(urdf,[
@@ -93,12 +94,12 @@ const performTraceProcess = async (data) => {
         {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
       ],ROOT_BOUNDS, createStaticEnvironment(scene), null, false, 1, 450);
 
-    const context = pickBy(programData,(entry)=>entry.dataType === DATA_TYPES.INSTANCE)
-
     // This is recursive
-    const [computed, status] = computeChanged(programData[root],objectTypes,context,solver)
+    console.log({stepProcessors,computeSteps: objectTypes.programType.properties.computeSteps})
+    const [steps, inventory, status, _] = stepProcessors[objectTypes.programType.properties.computeSteps.default](programData[root],objectTypes,context,solver,module,urdf)
+    const newData = {...inventory,[root]:{properties:{steps,status}}};
   
-    return data;
+    return newData;
 }
 
-Comlink.expose({performPoseProcess, performTraceProcess})
+Comlink.expose({performPoseProcess, performStepProcess})

@@ -1,7 +1,6 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled } from "./icons";
-import { STATUS } from "../Constants";
-// import { FiMoreHorizontal } from "react-icons/fi";
+import { STATUS, STEP_CALCULATOR } from "../Constants";
 
 export const hierarchicalType = {
     name: "Hierarchical",
@@ -41,6 +40,16 @@ export const hierarchicalType = {
         name: 'Status',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: STATUS.PENDING
+      },
+      computeSteps: {
+        name: 'Compute Steps',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: STEP_CALCULATOR.SIMPLE
+      },
+      steps: {
+        name: 'Steps',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: []
       }
     }
   }

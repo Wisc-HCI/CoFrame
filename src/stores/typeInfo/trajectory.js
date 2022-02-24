@@ -1,5 +1,6 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled } from "./icons";
+import { STATUS, STEP_CALCULATOR } from "../Constants";
 
 export const trajectoryType = {
     name: 'Trajectory',
@@ -39,6 +40,21 @@ export const trajectoryType = {
         accepts: ["locationType"],
         default: null,
         isList: false
+      },
+      status: {
+        name: 'Status',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: STATUS.PENDING
+      },
+      computeSteps: {
+        name: 'Compute Steps',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: STEP_CALCULATOR.NULL
+      },
+      steps: {
+        name: 'Steps',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: []
       }
     }
   }

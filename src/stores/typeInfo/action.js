@@ -2,7 +2,7 @@ import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { PrimitiveIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { merge } from 'lodash';
-import { STATUS } from "../Constants";
+import { STATUS, STEP_CALCULATOR } from "../Constants";
 
 const basicActionData = {
   type: TYPES.OBJECT,
@@ -35,6 +35,15 @@ const basicActionData = {
       name: 'Status',
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: STATUS.PENDING
+    },
+    computeSteps: {
+      name: 'Compute Steps',
+      type: SIMPLE_PROPERTY_TYPES.IGNORED
+    },
+    steps: {
+      name: 'Steps',
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: []
     }
   }
 }
@@ -50,13 +59,15 @@ const delayFeatures = {
       min: 0,
       max: 5
     },
+    computeSteps: {default:STEP_CALCULATOR.DELAY}
   }
 }
 
 const breakpointFeatures = {
   name: 'Breakpoint',
   properties: {
-    description: {default: 'Stop computation and processing here'}
+    description: {default: 'Stop computation and processing here'},
+    computeSteps: {default:STEP_CALCULATOR.BREAKPOINT}
   }
 }
 
@@ -84,7 +95,8 @@ const gripperFeatures = {
       default: 50,
       min: 20,
       max: 150
-    }
+    },
+    computeSteps: {default:STEP_CALCULATOR.GRIPPER}
   }
 }
 
@@ -97,7 +109,8 @@ const machineInitFeatures = {
       accepts: ["machineType"],
       default: null,
       isList: false
-    }
+    },
+    computeSteps: {default:STEP_CALCULATOR.MACHINE}
   }
 }
 
@@ -111,7 +124,8 @@ const processStartFeatures = {
       default: null,
       isList: false
     }
-  }
+  },
+  computeSteps: {default:STEP_CALCULATOR.PROCESS}
 }
 
 const processStopFeatures = {
@@ -123,7 +137,8 @@ const processStopFeatures = {
       accepts: ["machineType"],
       default: null,
       isList: false
-    }
+    },
+    computeSteps: {default:STEP_CALCULATOR.PROCESS}
   }
 }
 
@@ -136,7 +151,8 @@ const processWaitFeatures = {
       accepts: ["machineType"],
       default: null,
       isList: false
-    }
+    },
+    computeSteps: {default:STEP_CALCULATOR.PROCESS}
   }
 }
 
@@ -162,7 +178,8 @@ const moveTrajectoryFeatures = {
       type: SIMPLE_PROPERTY_TYPES.OPTIONS,
       options: ['IK', 'Joint'],
       default: 'IK'
-    }
+    },
+    computeSteps: {default:STEP_CALCULATOR.ROBOT_MOTION}
   }
 }
 
@@ -175,7 +192,8 @@ const moveUnplannedFeatures = {
       accepts: ["locationType"],
       default: null,
       isList: false
-    }
+    },
+    computeSteps: {default:STEP_CALCULATOR.ROBOT_MOTION}
   }
 }
 
