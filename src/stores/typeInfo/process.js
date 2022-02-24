@@ -1,46 +1,55 @@
-import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
+import { TYPES, SIMPLE_PROPERTY_TYPES,EXTRA_TYPES } from "simple-vp";
 
 export const processType = {
-    name: 'Process',
-    type: TYPES.OBJECT,
-    instanceBlock: null,
-    referenceBlock: null,
-    properties: {
-      description: {
-        name: 'Description',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: "",
-        isList: false,
-        fullWidth: true
-      },
-      machine: {
-        name: 'Machine',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: "",
-        isList: false,
-        fullWidth: true,
-        nullValid: true
-      },
-      processTime: {
-        name: 'Process Time',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: 0,
-        isList: false,
-        fullWidth: true
-      },
-      outputs: {
-        name: 'Outputs',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: [],
-        isList: true,
-        fullWidth: true
-      },
-      inputs: {
-        name: 'Inputs',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: [],
-        isList: true,
-        fullWidth: true
-      }
-    }
+  name: 'Process',
+  type: TYPES.OBJECT,
+  instanceBlock: null,
+  referenceBlock: {
+    onCanvas: false,
+    color: '#888888',
+    // icon: ,
+    extras: [
+      EXTRA_TYPES.LOCKED_INDICATOR,
+      EXTRA_TYPES.DELETE_BUTTON
+    ]
+  },
+  properties: {
+    description: {
+      name: 'Description',
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: "",
+      isList: false,
+      fullWidth: true,
+      nullValid: true
+    },
+    machine: {
+      name: 'Machine',
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: "",
+      isList: false,
+      fullWidth: true
+    },
+    processTime: { 
+      name: 'Process Time',
+      name: 'Duration',
+      type: SIMPLE_PROPERTY_TYPES.NUMBER,
+      default: 0,
+      min: 0,
+      max: null
+    },
+    inputs: {
+      name: 'Inputs',
+      default: [],
+      accepts: ["inputOutputType"],
+      isList: true,
+      fullWidth: true
+    },
+    outputs: {
+      name: 'Outputs',
+      default: [],
+      accepts: ["inputOutputType"],
+      isList: true,
+      fullWidth: true
+    },
   }
+}
