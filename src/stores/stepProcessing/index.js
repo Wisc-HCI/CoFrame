@@ -9,6 +9,7 @@ import { simpleSteps } from './simple';
 import { skillSteps } from './skill';
 
 import { STEP_CALCULATOR } from "../Constants";
+import { DATA_TYPES } from "simple-vp";
 
 const KEY_MAPPING = {
     NULL: nullSteps,
@@ -24,3 +25,23 @@ const KEY_MAPPING = {
 // Ordering corresponds to the values in the STEP_CALCULATOR constant
 
 export const stepProcessors =  Object.keys(STEP_CALCULATOR).map(k=>KEY_MAPPING[k]);
+
+export const findInstance = (id, context) => {
+    let found = false;
+    let stale = false;
+    let data = undefined;
+    let dataId = id;
+
+    while (!found && !stale) {
+        data = context[dataId];
+        if (data.dataType === DATA_TYPES.INSTANCE) {
+            found = true;
+        } else if (data.dataType === DATA_TYPES.REFERENCE) {
+            dataId = data.ref;
+        } else {
+            stale = true
+        }
+    }
+
+    return data;
+}

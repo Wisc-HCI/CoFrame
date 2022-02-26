@@ -72,8 +72,6 @@ const performStepProcess = async (data) => {
     // Process the data without stalling the UI
     const module = await loadModule();
 
-    const context = pickBy(programData,(entry)=>entry.dataType === DATA_TYPES.INSTANCE)
-
     let root = null;
     Object.values(context).some(v=>{
         if (v.type==='programType') {
@@ -95,9 +93,17 @@ const performStepProcess = async (data) => {
       ],ROOT_BOUNDS, createStaticEnvironment(scene), null, false, 1, 450);
 
     // This is recursive
-    console.log({stepProcessors,computeSteps: objectTypes.programType.properties.computeSteps})
-    const [steps, inventory, status, _] = stepProcessors[objectTypes.programType.properties.computeSteps.default](programData[root],objectTypes,context,solver,module,urdf)
-    const newData = {...inventory,[root]:{properties:{steps,status}}};
+    const computeProps = {
+        data:programData[root],
+        objectTypes,
+        context:programData,
+        memo: {},
+        solver,
+        module,
+        urdf
+    }
+    const {steps, innerMemo, status} = stepProcessors[objectTypes.programType.properties.computeSteps.default](computeProps)
+    const newData = {...innerMemo,[root]:{properties:{steps,status}}};
   
     return newData;
 }
