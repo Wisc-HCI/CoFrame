@@ -1,5 +1,5 @@
 {
-    "robot-agent-988926121c1911eccbe2600155d1a70a2":{
+    "robot-agent-988926121c1911eccbe2600155d1a70a2": {
         "type": "robotAgentType",
         "id": "robot-agent-988926121c1911eccbe2600155d1a70a2",
         "name": "Robot Agent",
@@ -12,7 +12,7 @@
         "selected": false,
         "editing": false
     },
-    "human-agent-ccbe2600155d1a70a2988926121c1911e":{
+    "human-agent-ccbe2600155d1a70a2988926121c1911e": {
         "type": "humanAgentType",
         "id": "human-agent-ccbe2600155d1a70a2988926121c1911e",
         "name": "Human Agent",
@@ -25,7 +25,7 @@
         "selected": false,
         "editing": false
     },
-    "zone-988926121c1911ecbe2600155d1a70a2":{
+    "zone-988926121c1911ecbe2600155d1a70a2": {
         "type": "zoneType",
         "name": "Human Workspace Occupancy Zone",
         "id": "zone-988926121c1911ecbe2600155d1a70a2",
@@ -34,9 +34,22 @@
         "properties": {
             "description": "A place for the human to conduct their own work.",
             "agent": "human-agent-ccbe2600155d1a70a2988926121c1911e",
-            "scale": {"x": 2, "y": 1, "z": 0.8},
-            "position": { "x": 0, "y": 1, "z": 0.4},
-            "orientation": {"x": 0, "y": 0, "z": 0, "w": 1 }
+            "scale": {
+                "x": 2,
+                "y": 1,
+                "z": 0.8
+            },
+            "position": {
+                "x": 0,
+                "y": 1,
+                "z": 0.4
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            }
         },
         "dataType": 0,
         "selected": false,
@@ -51,15 +64,28 @@
         "properties": {
             "description": "A place for the human to walk.",
             "agent": "human-agent-ccbe2600155d1a70a2988926121c1911e",
-            "scale": {"x": 2, "y": 1, "z": 0.8},
-            "position": { "x": 0, "y": -1, "z": 0.4},
-            "orientation": {"x": 0, "y": 0, "z": 0, "w": 1 }
+            "scale": {
+                "x": 2,
+                "y": 1,
+                "z": 0.8
+            },
+            "position": {
+                "x": 0,
+                "y": -1,
+                "z": 0.4
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            }
         },
         "dataType": 0,
         "selected": false,
         "editing": false
     },
-    "location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c":{
+    "location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c": {
         "type": "locationType",
         "id": "location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c",
         "name": "Initial Location",
@@ -85,7 +111,7 @@
         "selected": false,
         "editing": false
     },
-    "location-b7daabbd-6e24-4b8f-9c8e-5ea22d727ad0":{
+    "location-b7daabbd-6e24-4b8f-9c8e-5ea22d727ad0": {
         "type": "locationType",
         "id": "location-b7daabbd-6e24-4b8f-9c8e-5ea22d727ad0",
         "name": "Deposit Location",
@@ -111,7 +137,7 @@
         "selected": false,
         "editing": false
     },
-    "location-47238d9d-5241-4bdb-8b29-877f78cb124d":{
+    "location-47238d9d-5241-4bdb-8b29-877f78cb124d": {
         "type": "locationType",
         "id": "location-47238d9d-5241-4bdb-8b29-877f78cb124d",
         "name": "Blade Fetch Location",
@@ -137,7 +163,7 @@
         "selected": false,
         "editing": false
     },
-    "waypoint-e7a63a7c-1df8-4ca6-9ffc-4f9b1e008aa4":{
+    "waypoint-e7a63a7c-1df8-4ca6-9ffc-4f9b1e008aa4": {
         "type": "waypointType",
         "id": "waypoint-e7a63a7c-1df8-4ca6-9ffc-4f9b1e008aa4",
         "name": "WP 1",
@@ -259,7 +285,7 @@
         "selected": false,
         "editing": false
     },
-    "thingType-98892a7c1c1911ecbe2600155d1a70a2":{
+    "thingType-98892a7c1c1911ecbe2600155d1a70a2": {
         "type": "thingType",
         "name": "Left Handle",
         "id": "thingType-98892a7c1c1911ecbe2600155d1a70a2",
@@ -275,7 +301,7 @@
         "selected": false,
         "editing": false
     },
-    "thingType-98892b3a1c1911ecbe2600155d1a70a2":{
+    "thingType-98892b3a1c1911ecbe2600155d1a70a2": {
         "type": "thingType",
         "name": "Right Handle",
         "id": "thingType-98892b3a1c1911ecbe2600155d1a70a2",
@@ -291,7 +317,7 @@
         "selected": false,
         "editing": false
     },
-    "thingType-98892bd01c1911ecbe2600155d1a70a2":{
+    "thingType-98892bd01c1911ecbe2600155d1a70a2": {
         "type": "thingType",
         "name": "Blade",
         "id": "thingType-98892bd01c1911ecbe2600155d1a70a2",
@@ -307,7 +333,7 @@
         "selected": false,
         "editing": false
     },
-    "thingType-98892c5c1c1911ecbe2600155d1a70a2":{
+    "thingType-98892c5c1c1911ecbe2600155d1a70a2": {
         "type": "thingType",
         "name": "Transport Jig",
         "id": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
@@ -323,7 +349,7 @@
         "selected": false,
         "editing": false
     },
-    "thingType-98892ce81c1911ecbe2600155d1a70a2":{
+    "thingType-98892ce81c1911ecbe2600155d1a70a2": {
         "type": "thingType",
         "name": "Sheathed Blade",
         "id": "thingType-98892ce81c1911ecbe2600155d1a70a2",
@@ -339,7 +365,7 @@
         "selected": false,
         "editing": false
     },
-    "thingType-98892d7e1c1911ecbe2600155d1a70a2":{
+    "thingType-98892d7e1c1911ecbe2600155d1a70a2": {
         "type": "thingType",
         "name": "Knife",
         "id": "thingType-98892d7e1c1911ecbe2600155d1a70a2",
@@ -355,7 +381,7 @@
         "selected": false,
         "editing": false
     },
-    "thingType-98892e001c1911ecbe2600155d1a70a2":{
+    "thingType-98892e001c1911ecbe2600155d1a70a2": {
         "type": "thingType",
         "name": "Sheathed Knife",
         "id": "thingType-98892e001c1911ecbe2600155d1a70a2",
@@ -371,7 +397,7 @@
         "selected": false,
         "editing": false
     },
-    "process-b3d277ad-050f-44e1-b478-75fc33656f05":{
+    "process-b3d277ad-050f-44e1-b478-75fc33656f05": {
         "type": "processType",
         "id": "process-b3d277ad-050f-44e1-b478-75fc33656f05",
         "name": "Print Handles",
@@ -419,7 +445,85 @@
         "selected": false,
         "editing": false
     },
-    "process-1d49b51a-de37-477e-ae56-e65ef6d0a8cf":{
+    "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc": {
+        "type": "inputOutputType",
+        "id": "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": null,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892bd01c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b": {
+        "type": "inputOutputType",
+        "id": "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7": {
+        "type": "inputOutputType",
+        "id": "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": null,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "process-1d49b51a-de37-477e-ae56-e65ef6d0a8cf": {
         "type": "processType",
         "id": "process-1d49b51a-de37-477e-ae56-e65ef6d0a8cf",
         "name": "Sheath Blade",
@@ -430,60 +534,96 @@
             "processTime": 60000,
             "machine": null,
             "inputs": [
-                {
-                    "thingType": "thingType-98892bd01c1911ecbe2600155d1a70a2",
-                    "relativeTo": null,
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                },
-                {
-                    "thingType": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
-                    "relativeTo": "thingType-98892bd01c1911ecbe2600155d1a70a2",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                }
+                "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc",
+                "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b"
             ],
             "outputs": [
-                {
-                    "thingType": "thingType-98892ce81c1911ecbe2600155d1a70a2",
-                    "relativeTo": null,
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                }
+                "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7"
             ]
         },
         "dataType": 0,
         "selected": false,
         "editing": false
     },
-    "process-e94f0386-35d9-4135-af0b-8d96ad80bb0c":{
+    "inputOutput-qazxc345-ip10-srg6-gyh6-ds5dytb56h": {
+        "type": "inputOutputType",
+        "id": "inputOutput-qazxc345-ip10-srg6-gyh6-ds5dytb56h",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": null,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "inputOutput-rjvneis1-nj20-tuy0-qwe6-d5janc89an0": {
+        "type": "inputOutputType",
+        "id": "inputOutput-rjvneis1-nj20-tuy0-qwe6-d5janc89an0",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": null,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "inputOutput-sjnv3fne9-io89-try0-qre6-d8ncns9nf0": {
+        "type": "inputOutputType",
+        "id": "inputOutput-sjnv3fne9-io89-try0-qre6-d8ncns9nf0",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "process-e94f0386-35d9-4135-af0b-8d96ad80bb0c": {
         "type": "processType",
         "id": "process-e94f0386-35d9-4135-af0b-8d96ad80bb0c",
         "name": "Unsheath Blade",
@@ -494,60 +634,122 @@
             "processTime": 60000,
             "machine": null,
             "inputs": [
-                {
-                    "thingType": "thingType-98892ce81c1911ecbe2600155d1a70a2",
-                    "relativeTo": null,
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                }
+                "inputOutput-qazxc345-ip10-srg6-gyh6-ds5dytb56h"
             ],
             "outputs": [
-                {
-                    "thingType": "thingType-98892bd01c1911ecbe2600155d1a70a2",
-                    "relativeTo": null,
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                },
-                {
-                    "thingType": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
-                    "relativeTo": "thingType-98892bd01c1911ecbe2600155d1a70a2",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                }
+                "inputOutput-rjvneis1-nj20-tuy0-qwe6-d5janc89an0",
+                "inputOutput-sjnv3fne9-io89-try0-qre6-d8ncns9nf0"
             ]
         },
         "dataType": 0,
         "selected": false,
         "editing": false
     },
-    "process-7d5a12c0-b5da-4122-8c03-dec647ff6a94":{
+    "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9s": {
+        "type": "inputOutputType",
+        "id": "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },   
+    "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s": {
+        "type": "inputOutputType",
+        "id": "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },  
+    "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9": {
+        "type": "inputOutputType",
+        "id": "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },  
+    "inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s": {
+        "type": "inputOutputType",
+        "id": "inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "thingType-98892bd01c1911ecbe2600155d1a70a2",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },   
+    "process-7d5a12c0-b5da-4122-8c03-dec647ff6a94": {
         "type": "processType",
         "id": "process-7d5a12c0-b5da-4122-8c03-dec647ff6a94",
         "name": "Assemble Knife",
@@ -558,75 +760,123 @@
             "processTime": 30000,
             "machine": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
             "inputs": [
-                {
-                    "thingType": "thingType-98892bd01c1911ecbe2600155d1a70a2",
-                    "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                },
-                {
-                    "thingType": "thingType-98892a7c1c1911ecbe2600155d1a70a2",
-                    "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                },
-                {
-                    "thingType": "thingType-98892b3a1c1911ecbe2600155d1a70a2",
-                    "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                }
+              "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9s",
+              "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s",
+              "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9"
             ],
             "outputs": [
-                {
-                    "thingType": "thingType-98892d7e1c1911ecbe2600155d1a70a2",
-                    "relativeTo": "thingType-98892bd01c1911ecbe2600155d1a70a2",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                }
+                "inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s"
             ]
         },
         "dataType": 0,
         "selected": false,
         "editing": false
     },
-    "process-2f8b97ab-aa27-4e8d-8454-adfb7924ed98":{
+    "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d": {
+        "type": "inputOutputType",
+        "id": "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s": {
+        "type": "inputOutputType",
+        "id": "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0": {
+        "type": "inputOutputType",
+        "id": "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923": {
+        "type": "inputOutputType",
+        "id": "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923",
+        "name": "Input / Output",
+        "canDelete": true,
+        "canEdit": true,
+        "properties": {
+            "description": "Description",
+            "relativeObject": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "status": null,
+            "computeSteps": null,
+            "steps": null
+        }
+    },
+    "process-2f8b97ab-aa27-4e8d-8454-adfb7924ed98": {
         "type": "processType",
         "id": "process-2f8b97ab-aa27-4e8d-8454-adfb7924ed98",
         "name": "Assemble Sheathed Knife",
@@ -637,80 +887,27 @@
             "processTime": 30000,
             "machine": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
             "inputs": [
-                {
-                    "thingType": "thingType-98892d7e1c1911ecbe2600155d1a70a2",
-                    "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                },
-                {
-                    "thingType": "thingType-98892a7c1c1911ecbe2600155d1a70a2",
-                    "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                },
-                {
-                    "thingType": "thingType-98892b3a1c1911ecbe2600155d1a70a2",
-                    "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                }
+                "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d",
+                "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s",
+                "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0"
             ],
             "outputs": [
-                {
-                    "thingType": "thingType-98892e001c1911ecbe2600155d1a70a2",
-                    "relativeTo": "thingType-98892bd01c1911ecbe2600155d1a70a2",
-                    "position": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
-                    },
-                    "orientation": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0,
-                        "w": 1
-                    }
-                }
+                "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923"
             ]
         },
         "dataType": 0,
         "selected": false,
         "editing": false
     },
-    "program-484de43e-adaa-4801-a23b-bca38e211365":{
+    "program-484de43e-adaa-4801-a23b-bca38e211365": {
         "name": "Knife Assembly",
-        "id":"program-484de43e-adaa-4801-a23b-bca38e211365",
+        "id": "program-484de43e-adaa-4801-a23b-bca38e211365",
         "type": "programType",
         "readonly": false,
-        "position": {"x": 0, "y": 0},
+        "position": {
+            "x": 0,
+            "y": 0
+        },
         "properties": {
             "description": "The top-level program",
             "parameters": {},
@@ -820,7 +1017,11 @@
             "mesh": "robotForearmLinkMesh",
             "collision": "robotForearmLinkCollision",
             "frame": "simulated_forearm_link",
-            "scale": {"x":1,"y":1,"z":1},
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
             "showCollision": false,
             "highlighted": false
         }
@@ -879,7 +1080,7 @@
             "highlighted": false
         }
     },
-    "gripperBaseLink":{
+    "gripperBaseLink": {
         "id": "gripperBaseLink",
         "name": "Gripper Base",
         "type": "linkType",
@@ -896,7 +1097,7 @@
             "highlighted": false
         }
     },
-    "gripperLeftKnuckle":{
+    "gripperLeftKnuckle": {
         "id": "gripperLeftKnuckle",
         "name": "Gripper Left Knuckle",
         "type": "linkType",
@@ -913,7 +1114,7 @@
             "highlighted": false
         }
     },
-    "gripperRightKnuckle":{
+    "gripperRightKnuckle": {
         "id": "gripperRightKnuckle",
         "name": "Gripper Right Knuckle",
         "type": "linkType",
@@ -930,7 +1131,7 @@
             "highlighted": false
         }
     },
-    "gripperLeftFinger":{
+    "gripperLeftFinger": {
         "id": "gripperLeftFinger",
         "name": "Gripper Left Finger",
         "type": "linkType",
@@ -947,7 +1148,7 @@
             "highlighted": false
         }
     },
-    "gripperRightFinger":{
+    "gripperRightFinger": {
         "id": "gripperRightFinger",
         "name": "Gripper Right Finger",
         "type": "linkType",
@@ -964,7 +1165,7 @@
             "highlighted": false
         }
     },
-    "gripperLeftInnerKnuckle":{
+    "gripperLeftInnerKnuckle": {
         "id": "gripperLeftInnerKnuckle",
         "name": "Gripper Left Inner Knuckle",
         "type": "linkType",
@@ -981,7 +1182,7 @@
             "highlighted": false
         }
     },
-    "gripperRightInnerKnuckle":{
+    "gripperRightInnerKnuckle": {
         "id": "gripperRightInnerKnuckle",
         "name": "Gripper Right Inner Knuckle",
         "type": "linkType",
@@ -998,7 +1199,7 @@
             "highlighted": false
         }
     },
-    "gripperLeftFingerTip":{
+    "gripperLeftFingerTip": {
         "id": "gripperLeftFingerTip",
         "name": "Gripper Left Finger Tip",
         "type": "linkType",
@@ -1015,7 +1216,7 @@
             "highlighted": false
         }
     },
-    "gripperRightFingerTip":{
+    "gripperRightFingerTip": {
         "id": "gripperRightFingerTip",
         "name": "Gripper Right Finger Tip",
         "type": "linkType",
@@ -1043,7 +1244,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl",
-            "color": {"r": 10, "g": 10, "b": 10, "a": 1},
+            "color": {
+                "r": 10,
+                "g": 10,
+                "b": 10,
+                "a": 1
+            },
             "position": {
                 "x": 0,
                 "y": 0,
@@ -1056,8 +1262,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1073,7 +1279,12 @@
         "editing": false,
         "properties": {
             "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl",
-            "color": {"r": 15, "g": 15, "b": 15, "a": 1},
+            "color": {
+                "r": 15,
+                "g": 15,
+                "b": 15,
+                "a": 1
+            },
             "position": {
                 "x": 0,
                 "y": 0,
@@ -1086,8 +1297,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1115,8 +1326,8 @@
                 "w": 0
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1144,8 +1355,8 @@
                 "w": 0
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1173,8 +1384,8 @@
                 "w": 0.5
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1202,8 +1413,8 @@
                 "w": 0.5
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1231,8 +1442,8 @@
                 "w": 0.7071068
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1260,8 +1471,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1289,8 +1500,8 @@
                 "w": 0.7071068
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1318,8 +1529,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1347,8 +1558,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1376,8 +1587,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1405,8 +1616,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1434,8 +1645,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1463,8 +1674,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1492,8 +1703,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1521,8 +1732,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1550,8 +1761,8 @@
                 "w": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1579,14 +1790,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1614,14 +1825,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1649,14 +1860,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 0.2, 
-                "y": 0.2, 
+                "x": 0.2,
+                "y": 0.2,
                 "z": 0.2
             }
         }
@@ -1684,14 +1895,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1719,14 +1930,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1754,14 +1965,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1789,14 +2000,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1824,14 +2035,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1859,14 +2070,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1894,14 +2105,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1929,14 +2140,14 @@
                 "w": 0.5
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1964,14 +2175,14 @@
                 "w": 0.5
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -1999,14 +2210,14 @@
                 "w": 0.7071068
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -2034,14 +2245,14 @@
                 "w": 1
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
@@ -2069,19 +2280,19 @@
                 "w": 0.7071068
             },
             "color": {
-                "r": 0, 
-                "g": 0, 
-                "b": 0, 
+                "r": 0,
+                "g": 0,
+                "b": 0,
                 "a": 1
             },
             "scale": {
-                "x": 1, 
-                "y": 1, 
+                "x": 1,
+                "y": 1,
                 "z": 1
             }
         }
     },
-    "3d_printer_link":{
+    "3d_printer_link": {
         "type": "tfType",
         "id": "3d_printer_link",
         "name": "Transform Frame",
@@ -2091,12 +2302,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": -0.28, "y": 0.32, "z": 0.3 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+            "frame": "world",
+            "position": {
+                "x": -0.28,
+                "y": 0.32,
+                "z": 0.3
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     },
-    "assembly_jig_link":{
+    "assembly_jig_link": {
         "type": "tfType",
         "id": "assembly_jig_link",
         "name": "Transform Frame",
@@ -2106,12 +2326,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0.2, "y": 0.28, "z": 0.14 },
-            "rotation": { "w": -0.5, "x": 0.5, "y": -0.5, "z": -0.5 }
+            "frame": "world",
+            "position": {
+                "x": 0.2,
+                "y": 0.28,
+                "z": 0.14
+            },
+            "rotation": {
+                "w": -0.5,
+                "x": 0.5,
+                "y": -0.5,
+                "z": -0.5
+            }
         }
     },
-    "blade_conveyor_link":{
+    "blade_conveyor_link": {
         "type": "tfType",
         "id": "blade_conveyor_link",
         "name": "Transform Frame",
@@ -2121,12 +2350,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": -0.85, "y": -0.25, "z": -0.75 },
-            "rotation": { "w": 0.707, "x": 0, "y": 0, "z": 0.707 }
+            "frame": "world",
+            "position": {
+                "x": -0.85,
+                "y": -0.25,
+                "z": -0.75
+            },
+            "rotation": {
+                "w": 0.707,
+                "x": 0,
+                "y": 0,
+                "z": 0.707
+            }
         }
     },
-    "blade_feeder_link":{
+    "blade_feeder_link": {
         "type": "tfType",
         "id": "blade_feeder_link",
         "name": "Transform Frame",
@@ -2136,12 +2374,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": -0.85, "y": -0.25, "z": -0.75 },
-            "rotation": { "w": 0.707, "x": 0, "y": 0, "z": 0.707 }
+            "frame": "world",
+            "position": {
+                "x": -0.85,
+                "y": -0.25,
+                "z": -0.75
+            },
+            "rotation": {
+                "w": 0.707,
+                "x": 0,
+                "y": 0,
+                "z": 0.707
+            }
         }
     },
-    "knife_conveyor_link":{
+    "knife_conveyor_link": {
         "type": "tfType",
         "id": "knife_conveyor_link",
         "name": "Transform Frame",
@@ -2151,12 +2398,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0.85, "y": -0.25, "z": -0.75 },
-            "rotation": { "w": 0.707, "x": 0, "y": 0, "z": -0.707 }
+            "frame": "world",
+            "position": {
+                "x": 0.85,
+                "y": -0.25,
+                "z": -0.75
+            },
+            "rotation": {
+                "w": 0.707,
+                "x": 0,
+                "y": 0,
+                "z": -0.707
+            }
         }
     },
-    "knife_feeder_link":{
+    "knife_feeder_link": {
         "type": "tfType",
         "id": "knife_feeder_link",
         "name": "Transform Frame",
@@ -2166,12 +2422,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0.85, "y": -0.25, "z": -0.75 },
-            "rotation": { "w": 0.707, "x": 0, "y": 0, "z": -0.707 }
+            "frame": "world",
+            "position": {
+                "x": 0.85,
+                "y": -0.25,
+                "z": -0.75
+            },
+            "rotation": {
+                "w": 0.707,
+                "x": 0,
+                "y": 0,
+                "z": -0.707
+            }
         }
     },
-    "simulated_base_link":{
+    "simulated_base_link": {
         "type": "tfType",
         "id": "simulated_base_link",
         "name": "Transform Frame",
@@ -2181,12 +2446,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0, "y": -0.15, "z": 0 },
-            "rotation": { "w": 0, "x": 0, "y": 0, "z": 1 }
+            "frame": "world",
+            "position": {
+                "x": 0,
+                "y": -0.15,
+                "z": 0
+            },
+            "rotation": {
+                "w": 0,
+                "x": 0,
+                "y": 0,
+                "z": 1
+            }
         }
     },
-    "simulated_shoulder_link":{
+    "simulated_shoulder_link": {
         "type": "tfType",
         "id": "simulated_shoulder_link",
         "name": "Transform Frame",
@@ -2196,12 +2470,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0, "y": -0.15, "z": 0.15185 },
-            "rotation": { "w": 0.6669439077377319, "x": 0, "y": 0, "z": 0.745107889175415 }
+            "frame": "world",
+            "position": {
+                "x": 0,
+                "y": -0.15,
+                "z": 0.15185
+            },
+            "rotation": {
+                "w": 0.6669439077377319,
+                "x": 0,
+                "y": 0,
+                "z": 0.745107889175415
+            }
         }
     },
-    "simulated_upper_arm_link":{
+    "simulated_upper_arm_link": {
         "type": "tfType",
         "id": "simulated_upper_arm_link",
         "name": "Transform Frame",
@@ -2211,12 +2494,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0, "y": -0.15, "z": 0.15185 },
-            "rotation": { "w": -0.4478497803211212, "x": 0.5932892560958862, "y": -0.3847179114818573, "z": 0.5472025871276855 }
+            "frame": "world",
+            "position": {
+                "x": 0,
+                "y": -0.15,
+                "z": 0.15185
+            },
+            "rotation": {
+                "w": -0.4478497803211212,
+                "x": 0.5932892560958862,
+                "y": -0.3847179114818573,
+                "z": 0.5472025871276855
+            }
         }
     },
-    "simulated_forearm_link":{
+    "simulated_forearm_link": {
         "type": "tfType",
         "id": "simulated_forearm_link",
         "name": "Transform Frame",
@@ -2226,12 +2518,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": -0.02560272067785263, "y": 0.08055101335048676, "z": 0.07763859629631042 },
-            "rotation": { "w": 0.6748411655426025, "x": 0.1353885531425476, "y": 0.694024384021759, "z": 0.2111620008945465 }
+            "frame": "world",
+            "position": {
+                "x": -0.02560272067785263,
+                "y": 0.08055101335048676,
+                "z": 0.07763859629631042
+            },
+            "rotation": {
+                "w": 0.6748411655426025,
+                "x": 0.1353885531425476,
+                "y": 0.694024384021759,
+                "z": 0.2111620008945465
+            }
         }
     },
-    "simulated_wrist_1_link":{
+    "simulated_wrist_1_link": {
         "type": "tfType",
         "id": "simulated_wrist_1_link",
         "name": "Transform Frame",
@@ -2241,12 +2542,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0.11584359407424927, "y": -0.005812940187752247, "z": 0.2651554048061371},
-            "rotation": { "w": -0.29463568329811096, "x": 0.6713905930519104, "y": -0.22188881039619446, "z": 0.6427983641624451 }
+            "frame": "world",
+            "position": {
+                "x": 0.11584359407424927,
+                "y": -0.005812940187752247,
+                "z": 0.2651554048061371
+            },
+            "rotation": {
+                "w": -0.29463568329811096,
+                "x": 0.6713905930519104,
+                "y": -0.22188881039619446,
+                "z": 0.6427983641624451
+            }
         }
     },
-    "simulated_wrist_2_link":{
+    "simulated_wrist_2_link": {
         "type": "tfType",
         "id": "simulated_wrist_2_link",
         "name": "Transform Frame",
@@ -2256,12 +2566,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0.1089443638920784, "y": 0.05631420761346817, "z": 0.32326942682266235 },
-            "rotation": { "w": 0.9164819121360779, "x": -0.39580079913139343, "y": -0.05381776764988899, "z": -0.022500555962324142 }
+            "frame": "world",
+            "position": {
+                "x": 0.1089443638920784,
+                "y": 0.05631420761346817,
+                "z": 0.32326942682266235
+            },
+            "rotation": {
+                "w": 0.9164819121360779,
+                "x": -0.39580079913139343,
+                "y": -0.05381776764988899,
+                "z": -0.022500555962324142
+            }
         }
     },
-    "simulated_wrist_3_link":{
+    "simulated_wrist_3_link": {
         "type": "tfType",
         "id": "simulated_wrist_3_link",
         "name": "Transform Frame",
@@ -2271,12 +2590,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0.11666648089885712, "y": 0.11946450173854828, "z": 0.25667497515678406 },
-            "rotation": { "w": -0.37005797028541565, "x": 0.9280606508255005, "y": -0.01538957841694355, "z": 0.039035625755786896 }
+            "frame": "world",
+            "position": {
+                "x": 0.11666648089885712,
+                "y": 0.11946450173854828,
+                "z": 0.25667497515678406
+            },
+            "rotation": {
+                "w": -0.37005797028541565,
+                "x": 0.9280606508255005,
+                "y": -0.01538957841694355,
+                "z": 0.039035625755786896
+            }
         }
     },
-    "simulated_flange":{
+    "simulated_flange": {
         "type": "tfType",
         "id": "simulated_flange",
         "name": "Transform Frame",
@@ -2286,12 +2614,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0.11666648089885712, "y": 0.11946450173854828, "z": 0.25667497515678406 },
-            "rotation": { "w": 0.29082435369491577, "x": 0.676271915435791, "y": 0.6218466758728027, "z": -0.26717832684516907 }
+            "frame": "world",
+            "position": {
+                "x": 0.11666648089885712,
+                "y": 0.11946450173854828,
+                "z": 0.25667497515678406
+            },
+            "rotation": {
+                "w": 0.29082435369491577,
+                "x": 0.676271915435791,
+                "y": 0.6218466758728027,
+                "z": -0.26717832684516907
+            }
         }
     },
-    "simulated_tool0":{
+    "simulated_tool0": {
         "type": "tfType",
         "id": "simulated_tool0",
         "name": "Transform Frame",
@@ -2301,12 +2638,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"world",
-            "position": { "x": 0.11666648089885712, "y": 0.11946450173854828, "z": 0.25667497515678406 },
-            "rotation": { "w": -0.37005797028541565, "x": 0.9280606508255005, "y": -0.01538957841694355, "z": 0.039035625755786896 }
+            "frame": "world",
+            "position": {
+                "x": 0.11666648089885712,
+                "y": 0.11946450173854828,
+                "z": 0.25667497515678406
+            },
+            "rotation": {
+                "w": -0.37005797028541565,
+                "x": 0.9280606508255005,
+                "y": -0.01538957841694355,
+                "z": 0.039035625755786896
+            }
         }
     },
-    "simulated_robotiq_85_base_link":{
+    "simulated_robotiq_85_base_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_base_link",
         "name": "Transform Frame",
@@ -2316,12 +2662,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_tool0",
-            "position": {"x": 0, "y": 0, "z": 0},
-            "rotation": { "w": 0.5, "x": 0.5, "y": -0.5, "z": 0.5}
+            "frame": "simulated_tool0",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 0.5,
+                "x": 0.5,
+                "y": -0.5,
+                "z": 0.5
+            }
         }
     },
-    "simulated_robotiq_85_left_knuckle_link":{
+    "simulated_robotiq_85_left_knuckle_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_left_knuckle_link",
         "name": "Transform Frame",
@@ -2331,12 +2686,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_robotiq_85_base_link",
-            "position": { "x": 0.05490451627, "y": 0.03060114443, "z": 0 },
-            "rotation": { "w": 0, "x": 1, "y": 0, "z": 0 }
+            "frame": "simulated_robotiq_85_base_link",
+            "position": {
+                "x": 0.05490451627,
+                "y": 0.03060114443,
+                "z": 0
+            },
+            "rotation": {
+                "w": 0,
+                "x": 1,
+                "y": 0,
+                "z": 0
+            }
         }
     },
-    "simulated_robotiq_85_right_knuckle_link":{
+    "simulated_robotiq_85_right_knuckle_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_right_knuckle_link",
         "name": "Transform Frame",
@@ -2346,12 +2710,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_robotiq_85_base_link",
-            "position": { "x": 0.05490451627, "y": -0.03060114443, "z": 0 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+            "frame": "simulated_robotiq_85_base_link",
+            "position": {
+                "x": 0.05490451627,
+                "y": -0.03060114443,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     },
-    "simulated_robotiq_85_left_finger_link":{
+    "simulated_robotiq_85_left_finger_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_left_finger_link",
         "name": "Transform Frame",
@@ -2361,12 +2734,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_robotiq_85_left_knuckle_link",
-            "position": { "x": -0.00408552455, "y": -0.03148604435, "z": 0 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+            "frame": "simulated_robotiq_85_left_knuckle_link",
+            "position": {
+                "x": -0.00408552455,
+                "y": -0.03148604435,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     },
-    "simulated_robotiq_85_right_finger_link":{
+    "simulated_robotiq_85_right_finger_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_right_finger_link",
         "name": "Transform Frame",
@@ -2376,12 +2758,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_robotiq_85_right_knuckle_link",
-            "position": { "x": -0.00408552455, "y": -0.03148604435, "z": 0 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+            "frame": "simulated_robotiq_85_right_knuckle_link",
+            "position": {
+                "x": -0.00408552455,
+                "y": -0.03148604435,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     },
-    "simulated_robotiq_85_left_inner_knuckle_link":{
+    "simulated_robotiq_85_left_inner_knuckle_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_left_inner_knuckle_link",
         "name": "Transform Frame",
@@ -2391,12 +2782,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_robotiq_85_base_link",
-            "position": { "x": 0.06142, "y": 0.0127, "z": 0 },
-            "rotation": { "w": 0, "x": 1, "y": 0, "z": 0 }
+            "frame": "simulated_robotiq_85_base_link",
+            "position": {
+                "x": 0.06142,
+                "y": 0.0127,
+                "z": 0
+            },
+            "rotation": {
+                "w": 0,
+                "x": 1,
+                "y": 0,
+                "z": 0
+            }
         }
     },
-    "simulated_robotiq_85_right_inner_knuckle_link":{
+    "simulated_robotiq_85_right_inner_knuckle_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_right_inner_knuckle_link",
         "name": "Transform Frame",
@@ -2406,12 +2806,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_robotiq_85_base_link",
-            "position": { "x": 0.06142, "y": -0.0127, "z": 0 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+            "frame": "simulated_robotiq_85_base_link",
+            "position": {
+                "x": 0.06142,
+                "y": -0.0127,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     },
-    "simulated_robotiq_85_left_finger_tip_link":{
+    "simulated_robotiq_85_left_finger_tip_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_left_finger_tip_link",
         "name": "Transform Frame",
@@ -2421,12 +2830,21 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_robotiq_85_left_inner_knuckle_link",
-            "position": { "x": 0.04303959807, "y": -0.03759940821, "z": 0 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+            "frame": "simulated_robotiq_85_left_inner_knuckle_link",
+            "position": {
+                "x": 0.04303959807,
+                "y": -0.03759940821,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     },
-    "simulated_robotiq_85_right_finger_tip_link":{
+    "simulated_robotiq_85_right_finger_tip_link": {
         "type": "tfType",
         "id": "simulated_robotiq_85_right_finger_tip_link",
         "name": "Transform Frame",
@@ -2436,9 +2854,18 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame":"simulated_robotiq_85_right_inner_knuckle_link",
-            "position": { "x": 0.04303959807, "y": -0.03759940821, "z": 0 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0}
+            "frame": "simulated_robotiq_85_right_inner_knuckle_link",
+            "position": {
+                "x": 0.04303959807,
+                "y": -0.03759940821,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     },
     "pedestal_tf": {
@@ -2452,8 +2879,17 @@
         "editing": false,
         "properties": {
             "frame": "world",
-            "position": { "x": 0, "y": -0.15, "z": -0.38 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+            "position": {
+                "x": 0,
+                "y": -0.15,
+                "z": -0.38
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     },
     "table_tf": {
@@ -2467,8 +2903,17 @@
         "editing": false,
         "properties": {
             "frame": "world",
-            "position": { "x": 0, "y": 0.36, "z": -0.37 },
-            "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 }
+            "position": {
+                "x": 0,
+                "y": 0.36,
+                "z": -0.37
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
         }
     }
 }
