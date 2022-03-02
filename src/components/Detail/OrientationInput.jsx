@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 //import { Space, Button, Popover,InputNumber } from 'antd';
 //import { EditOutlined } from '@ant-design/icons';
 import { NumberInput } from '../NumberInput';
-import { Box, Button, DropButton, Text, Accordion,AccordionPanel } from "grommet";
+import { Box, Button, DropButton, Text, Accordion, AccordionPanel } from "grommet";
 import { FormEdit } from "grommet-icons";
 import { eulerFromQuaternion, quaternionFromEuler } from './Geometry';
 
@@ -45,63 +45,50 @@ function OrientationInput(props) {
         dropAlign={{ right: 'right', top: "bottom" }}
         dropProps={{ elevation: 'none', round: "xsmall" }}
         dropContent={
-          <Box round = "xsmall" background = "grey" border = {{color : 'white', size : 'xsmall'}} width="xsmall" direction='column'
-               elevation="none" pad="xsmall" justify='center'>
+          <Box round="xsmall" background="grey" border={{ color: 'white', size: 'xsmall' }} width="xsmall" direction='column'
+            elevation="none" pad="xsmall" justify='center'>
             <Box direction='row' elevation="none" pad="xsmall" justify='center' width="xsmall">
-            <Text weight = "bolder" style={{ color: "red" , paddingRight : "7%"}}>X</Text>
-            <NumberInput
-            //  min={limits[0]}
-            //  max={limits[1]}
-            //  value={eulerValues[0]}
-            //  onChange={(v)=>{if (typeof v === 'number') {
-            //    let updatedEulerValues = [v,eulerValues[1],eulerValues[2]];
-            //    setEulerValues(updatedEulerValues);
-            //    props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
-            //  }}}
-            />
+              <Text weight="bolder" style={{ color: "red", paddingRight: "7%" }}>R</Text>
+              <NumberInput
+              //  min={limits[0]}
+              //  max={limits[1]}
+              //  value={eulerValues[0]}
+              //  onChange={(v)=>{if (typeof v === 'number') {
+              //    let updatedEulerValues = [v,eulerValues[1],eulerValues[2]];
+              //    setEulerValues(updatedEulerValues);
+              //    props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
+              //  }}}
+              />
             </Box>
 
             <Box direction='row' elevation="none" pad="xsmall" justify='center' width="xsmall">
-            <Text weight = "bolder" style={{ color: "lime" , paddingRight : "7%"}}>Y</Text>
-            <NumberInput
-            //  min={limits[0]}
-            //  max={limits[1]}
-            //  value={eulerValues[1]}
-            //  onChange={(v)=>{if (typeof v === 'number') {
-            //    let updatedEulerValues = [eulerValues[0],v,eulerValues[2]];
-            //    setEulerValues(updatedEulerValues);
-            //    props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
-            //  }}}
-            />
+              <Text weight="bolder" style={{ color: "lime", paddingRight: "7%" }}>P</Text>
+              <NumberInput
+              //  min={limits[0]}
+              //  max={limits[1]}
+              //  value={eulerValues[1]}
+              //  onChange={(v)=>{if (typeof v === 'number') {
+              //    let updatedEulerValues = [eulerValues[0],v,eulerValues[2]];
+              //    setEulerValues(updatedEulerValues);
+              //    props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
+              //  }}}
+              />
             </Box>
 
             <Box direction='row' elevation="none" pad="xsmall" justify='center' width="xsmall">
-            <Text weight = "bolder" style={{ color: "blue" , paddingRight : "7%"}}>Z</Text>
-            <NumberInput
-            //  min={limits[0]}
-            //  max={limits[1]}
-            //  value={eulerValues[2]}
-            //  onChange={(v)=>{if (typeof v === 'number') {
-            //    let updatedEulerValues = [eulerValues[0],eulerValues[1],v];
-            //    setEulerValues(updatedEulerValues);
-            //    props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
-            //  }}}
-            />
+              <Text weight="bolder" style={{ color: "blue", paddingRight: "7%" }}>Y</Text>
+              <NumberInput
+              //  min={limits[0]}
+              //  max={limits[1]}
+              //  value={eulerValues[2]}
+              //  onChange={(v)=>{if (typeof v === 'number') {
+              //    let updatedEulerValues = [eulerValues[0],eulerValues[1],v];
+              //    setEulerValues(updatedEulerValues);
+              //    props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
+              //  }}}
+              />
             </Box>
 
-            <Box direction='row' elevation="none" pad="xsmall" justify='center' width="xsmall">
-            <Text weight = "bolder" style={{ color: "orange" , paddingRight : "7%"}}>W</Text>
-            <NumberInput
-            //  min={limits[0]}
-            //  max={limits[1]}
-            //  value={eulerValues[2]}
-            //  onChange={(v)=>{if (typeof v === 'number') {
-            //    let updatedEulerValues = [eulerValues[0],eulerValues[1],v];
-            //    setEulerValues(updatedEulerValues);
-            //    props.onChange(quaternionFromEuler(eulerVecToRadians(updatedEulerValues)));
-            //  }}}
-            />
-            </Box>
 
 
 

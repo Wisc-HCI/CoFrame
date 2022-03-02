@@ -1,9 +1,10 @@
-import {React,useState} from 'react';
+import { React, useState } from 'react';
 import { LocationDetail } from './LocationDetail';
 import { MachineDetail } from './MachineDetail';
 import { ThingDetail } from './ThingDetail';
 import { WaypointDetail } from './WaypointDetail';
 import { ProcessDetail } from './ProcessDetail';
+import { InputOutputDetail } from './InputOutputDetail';
 
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
@@ -24,13 +25,16 @@ export const Detail = (_) => {
     objectTypeInfo: state.focusItem.type ? state.programSpec.objectTypes[state.programData[state.focusItem.uuid].type] : null
   }), shallow);
 
-  const [processItem,setProcessItem] = useState(null);
+  const [processItem, setProcessItem] = useState(null);
+  const [inputOutputItem, setInputOutputItem] = useState(null);
+  const [position, setPosition] = useState(null);
+  const [orientation, setOrientation] = useState(null);
 
   const data = useStore(state => state.programData);
 
-  
 
-  function handleProcessClick(id){
+
+  function handleProcessClick(id) {
     //console.log(id);
     for (const [key, value] of Object.entries(data)) {
       if (value.type === "processType" && value.id === id) {
@@ -40,13 +44,36 @@ export const Detail = (_) => {
     }
   }
 
-  console.log(processItem);
-  if (processItem !== null){
-    console.log('entered2');
+  function handleInputOutputClick(id, position, orientation) {
+    console.log(id);
+    console.log(position);
+    console.log(orientation);
+    for (const [key, value] of Object.entries(data)) {
+      if (value.id === id) {
+        setInputOutputItem(value);
+        setPosition(position);
+        setOrientation(orientation);
+      }
+    }
+
+  }
+
+  if (inputOutputItem !== null) {
+    console.log("InputOutputDetial", item);
+    return (
+      <>
+        <InputOutputDetail item={inputOutputItem} position={position} orientation={orientation} />
+      </>
+    )
+
+  }
+  else if (processItem !== null) {
+
     return (
       <>
         {processItem.type === 'processType' && (
-          <><ProcessDetail item = {processItem}/></>   
+          <><ProcessDetail item={processItem}
+            inputOutputClick={(id, position, orientation) => handleInputOutputClick(id, position, orientation)} /></>
         )}
       </>
     )
@@ -59,13 +86,13 @@ export const Detail = (_) => {
         {item.type === 'machineType' && (
           <>
             <div>
-              <MachineDetail item={item} objectTypeInfo={objectTypeInfo} processClick = {(id)=>handleProcessClick(id)} />
+              <MachineDetail item={item} objectTypeInfo={objectTypeInfo} processClick={(id) => handleProcessClick(id)} />
             </div>
           </>
 
         )}
 
-        
+
 
 
         {item.type === 'waypointType' && (
