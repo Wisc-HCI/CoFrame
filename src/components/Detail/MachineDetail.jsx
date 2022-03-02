@@ -4,7 +4,7 @@ import { TextArea, Text, Box, TextInput, Button, Accordion, AccordionPanel, Laye
 import { FormClose, Trash } from 'grommet-icons';
 import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 
-export const MachineDetail = ({ item, objectTypeInfo }) => {
+export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
   const data = useStore(state => state.programData);
   const clearFocusItem = useStore(state => state.clearFocusItem);
   //const processObjectTypeInfo = useStore(state => state.focusItem.type ? state.programSpec.objectTypes[state.programData[state.focusItem.uuid].type] : null);
@@ -13,13 +13,13 @@ export const MachineDetail = ({ item, objectTypeInfo }) => {
 
 
   useEffect(() => {
-    { IterateJSON() }
+    { IterateProcess() }
   }, [])
 
-  function IterateJSON() {
+  function IterateProcess() {
     for (const [key, value] of Object.entries(data)) {
       if (value.type === "processType" && value.properties.machine === item.id) {
-        console.log(value);
+        //console.log(value);
         setProcessList(tempArr => [...tempArr, value]);
       }
     }
@@ -30,14 +30,14 @@ export const MachineDetail = ({ item, objectTypeInfo }) => {
   function RenderProcessList() {
     let list = [];
     processList.forEach((item) => {
-      console.log(item.name);
+      //console.log(item.name);
       const processRef = referenceTemplateFromSpec('processType', item, objectTypeInfo);
       list.push(
         <div key={item.id}>
           <Box round="xsmall" background="grey" direction='column'
             elevation="none" pad="xsmall" justify='center'
             hoverIndicator={true} onClick={() => {
-
+              processClick(item.id);
             }}>
             <ExternalBlock
               store={useStore}
@@ -53,7 +53,7 @@ export const MachineDetail = ({ item, objectTypeInfo }) => {
     return list;
   }
 
-  console.log(objectTypeInfo);
+  
   return (
     <>
       <Layer full="vertical" onEsc={clearFocusItem} position="right" modal={false}>
