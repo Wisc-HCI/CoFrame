@@ -3,7 +3,7 @@ import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
 import { RightOutlined } from '@ant-design/icons';
 // import { Row, Empty } from 'antd';
-import { Box } from 'grommet';
+import { Collapsible, Box } from 'grommet'
 
 export default function Collapse({openable, extra, style, header, children, backgroundColor, borderWidth, internalPaddingWidth}) {
 
@@ -30,17 +30,17 @@ export default function Collapse({openable, extra, style, header, children, back
                     </Box>
                 </Box>
             )}
-            {open && (
-                <animated.div 
-                style={{
+            <Collapsible open={open}>
+                <Box style={{
                     ...contentStyle,
                     backgroundColor:backgroundColor?backgroundColor:'rgba(0,0,0,0.6)', 
                     padding: internalPaddingWidth ? internalPaddingWidth : 10, 
                     borderRadius: 3, color:'white'
                 }}>
-                {children ? children : <Box height='small' width='100%' align='center' justify='center'>No Data</Box>}
-                </animated.div>
-            )}
+                    {children ? children : <Box height='small' width='100%' align='center' justify='center'>No Data</Box>}
+                </Box>
+            </Collapsible>
+            
         </div>
     )
 }

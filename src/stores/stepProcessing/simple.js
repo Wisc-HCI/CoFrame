@@ -1,6 +1,7 @@
 import { DATA_TYPES } from "simple-vp/dist/components";
 import { STATUS } from "../Constants";
 import { findInstance, stepProcessors } from './index';
+import { merge } from 'lodash';
 
 export const simpleSteps = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
     console.log('simpleSteps: ',data.id)
@@ -53,7 +54,6 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
             }
             
         } else if (propertyInfo.accepts && propertyInfo.isList) {
-            console.log('isList')
             // Handle the list-based properties. Generally these are children properties, 
             // and correspond to the steps of a hierarchical, program, or skill.
             data.properties[property].forEach(id=>{
@@ -103,6 +103,9 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
     })
     
     let dataMemo = {...data,properties:{...data.properties,status,steps:newSteps}};
+    if (memo[data.id]) {
+        dataMemo.properties.steps = merge(memo[data.id])
+    }
     console.log(dataMemo)
     newMemo = {...newMemo,[data.id]:dataMemo};
     console.log(newMemo)
