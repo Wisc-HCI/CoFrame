@@ -8,13 +8,15 @@ import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp"
 
 
 
-export const ProcessDetail = ({ item }) => {
+export const ProcessDetail = ({ item, inputOutputClick }) => {
     const data = useStore(state => state.programData);
     const clearFocusItem = useStore(state => state.clearFocusItem);
     const [inputList, setInputList] = useState([]);
     const [outputList, setOutputList] = useState([]);
+    const [inputData, setInputData] = useState(null);
+    const [outputData, setOutputData] = useState(null);
 
-    console.log(item);
+
 
     useEffect(() => {
         { IterateInputOutput() }
@@ -51,6 +53,7 @@ export const ProcessDetail = ({ item }) => {
                         <Box round="xsmall" background="grey" direction='column'
                             elevation="none" pad="xsmall" justify='center'
                             hoverIndicator={true} onClick={() => {
+                                inputOutputClick(input.id, item.position, item.orientation);
 
                             }}>
                             {/* <ExternalBlock
@@ -81,7 +84,7 @@ export const ProcessDetail = ({ item }) => {
                         <Box round="xsmall" background="grey" direction='column'
                             elevation="none" pad="xsmall" justify='center'
                             hoverIndicator={true} onClick={() => {
-
+                                inputOutputClick(output.id, item.position, item.orientation);
                             }}>
                             {/* <ExternalBlock
                                 store={useStore}

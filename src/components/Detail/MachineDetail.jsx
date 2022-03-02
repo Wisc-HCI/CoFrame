@@ -53,7 +53,7 @@ export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
     return list;
   }
 
-  
+
   return (
     <>
       <Layer full="vertical" onEsc={clearFocusItem} position="right" modal={false}>
