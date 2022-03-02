@@ -21,7 +21,7 @@ export const Detail = (_) => {
     objectTypeInfo: state.focusItem.type ? state.programSpec.objectTypes[state.programData[state.focusItem.uuid].type] : null
   }), shallow);
 
-  console.log("item is ", focusItem);
+  //console.log("item is ", focusItem);
 
   if (focusItem.uuid && !EDITOR_TYPES.includes(focusItem.type)) {
     return (

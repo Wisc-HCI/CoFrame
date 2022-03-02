@@ -1,13 +1,15 @@
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import useStore from '../../stores/Store';
-import { TextArea, Text, Box, TextInput, Button, Accordion, AccordionPanel ,Layer,DropButton} from 'grommet';
+import { TextArea, Text, Box, TextInput, Button, Accordion, AccordionPanel, Layer, DropButton } from 'grommet';
 import { FormClose, Trash } from 'grommet-icons';
 import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 
-export const MachineDetail = ({item,objectTypeInfo}) => {
+export const MachineDetail = ({ item, objectTypeInfo }) => {
   const data = useStore(state => state.programData);
   const clearFocusItem = useStore(state => state.clearFocusItem);
+  //const processObjectTypeInfo = useStore(state => state.focusItem.type ? state.programSpec.objectTypes[state.programData[state.focusItem.uuid].type] : null);
   const [processList, setProcessList] = useState([]);
+
 
 
   useEffect(() => {
@@ -29,12 +31,19 @@ export const MachineDetail = ({item,objectTypeInfo}) => {
     let list = [];
     processList.forEach((item) => {
       console.log(item.name);
+      const processRef = referenceTemplateFromSpec('processType', item, objectTypeInfo);
       list.push(
         <div key={item.id}>
           <Box round="xsmall" background="grey" direction='column'
             elevation="none" pad="xsmall" justify='center'
-            hoverIndicator={true} onClick={() => { }}>
-            <Text>{item.name}</Text>
+            hoverIndicator={true} onClick={() => {
+
+            }}>
+            <ExternalBlock
+              store={useStore}
+              data={processRef}
+              highlightColor={"#333333"}
+            />
           </Box>
         </div>
 
@@ -44,6 +53,7 @@ export const MachineDetail = ({item,objectTypeInfo}) => {
     return list;
   }
 
+  console.log(objectTypeInfo);
   return (
     <>
       <Layer full="vertical" onEsc={clearFocusItem} position="right" modal={false}>
@@ -87,7 +97,7 @@ export const MachineDetail = ({item,objectTypeInfo}) => {
                   <Accordion>
                     <AccordionPanel label="Processes:">
                       <Box round="xsmall" background="grey" direction='column'
-                        elevation="none" pad="xsmall" justify='center'>
+                        elevation="none" pad="xxsmall" justify='center'>
                         {RenderProcessList()}
                       </Box>
                     </AccordionPanel>

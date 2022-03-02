@@ -2,8 +2,6 @@ import React, { useCallback } from 'react';
 
 import useStore from '../../stores/Store';
 
-//import { Space, Divider, Row, Input } from 'antd';
-//import { MachineInOutTypeDetail } from './MachineInOutTypeDetail';
 import { Toggle } from '../Toggle';
 import { TextArea, Text, Box, TextInput, Accordion, AccordionPanel } from 'grommet';
 import OrientationInput from './OrientationInput';
