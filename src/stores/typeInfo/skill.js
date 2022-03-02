@@ -26,10 +26,6 @@ export const skillType = {
               allowed: ['machineType', 'locationType', 'thingType', 'trajectoryType']
             }
           ]
-        },
-        {
-          type: EXTRA_TYPES.ADD_ARGUMENT_GROUP,
-          allowed: ['machineType', 'locationType', 'thingType', 'trajectoryType']
         }
       ]
     },

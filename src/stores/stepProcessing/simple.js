@@ -1,10 +1,10 @@
 import { DATA_TYPES } from "simple-vp/dist/components";
-import { STATUS } from "../Constants";
+import { STATUS, STEP_TYPE } from "../Constants";
 import { findInstance, stepProcessors } from './index';
 import { merge } from 'lodash';
 
 export const simpleSteps = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
-    console.log('simpleSteps: ',data.id)
+    
     let status = STATUS.VALID;
     let updated = false;
 
@@ -89,26 +89,30 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                         status = STATUS.FAILED;
                     }
                     // Update the memo to include the cached values
-                    console.log(innerMemo);
                     const pathInnerSteps = innerSteps[path];
                     newMemo = {...newMemo,...innerMemo};
-                    newSteps[path].push(pathInnerSteps.map(v=>({...v,time:v.time+lastTime})))
+                    let lastUpdateTime = 0;
+                    newSteps[path].push(pathInnerSteps.map(v=>{
+                        if (v.stepType !== STEP_TYPE.LANDMARK) {
+                            // Ignore landmarks
+                            lastUpdateTime = v.time
+                        }
+                        return {...v,time:v.time+lastTime}
+                    }))
                     if (pathInnerSteps.length > 0) {
-                        lastTime = pathInnerSteps[pathInnerSteps.length-1].time
+                        lastTime = lastTime + lastUpdateTime
                     }
                 }
 
             })
         }
     })
-    
+    newSteps[path].sort((stepA,stepB)=>stepA.time-stepB.time);
     let dataMemo = {...data,properties:{...data.properties,status,steps:newSteps}};
     if (memo[data.id]) {
         dataMemo.properties.steps = merge(memo[data.id])
     }
-    console.log(dataMemo)
     newMemo = {...newMemo,[data.id]:dataMemo};
-    console.log(newMemo)
 
     return {steps:newSteps, memo:newMemo, status, updated}
 }
