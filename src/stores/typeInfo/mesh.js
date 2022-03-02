@@ -31,7 +31,7 @@ export const meshType = {
         color: {
             name: 'Color',
             type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-            default: {r:0, g:0, b:0, a:1},
+            default: undefined,
             isList: false,
             fullWidth: true
         },
