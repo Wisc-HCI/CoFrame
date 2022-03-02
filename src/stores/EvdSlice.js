@@ -58,11 +58,12 @@ export const EvdSlice = (set, get) => ({
     const newData = lodash.mapValues(data, d => {
       if (d.dataType === DATA_TYPES.INSTANCE) {
         const defaultv = instanceTemplateFromSpec(d.type, state.programSpec.objectTypes[d.type], false);
-        return lodash.merge(defaultv, d)
+        return {...d,properties:{...defaultv.properties,...d.properties}};
       } else { return d }
     })
     state.programData = newData
   }),
+  // setData: (data) => set((_) => ({ programData: data})),
   updatePoseJoints: (id, value, process) => set(state => {
     state.programData[id].joints = value;
     state.processes[id] = process;

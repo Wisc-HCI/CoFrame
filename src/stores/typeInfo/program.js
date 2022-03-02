@@ -24,11 +24,11 @@ export const programType = {
               type: EXTRA_TYPES.INDICATOR,
               accessor: (data)=>{
                 if (data.properties.status===STATUS.FAILED) {
-                  return 'F'
+                  return 'Failure'
                 } else if (data.properties.status===STATUS.VALID) {
-                  return 'V'
+                  return 'Valid'
                 } else if (data.properties.status===STATUS.PENDING) {
-                  return 'P'
+                  return 'Pending'
                 }
               },
               label: 'Status'
