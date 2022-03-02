@@ -49,7 +49,7 @@ export const hierarchicalType = {
       steps: {
         name: 'Steps',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: []
+        default: {}
       }
     }
   }

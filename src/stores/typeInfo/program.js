@@ -12,11 +12,6 @@ export const programType = {
       color: "#3f3f3f",
       icon: ContainerIconStyled,
       extras: [
-        { 
-          type: EXTRA_TYPES.INDICATOR,
-          accessor: (data)=>data.properties.children.length,
-          label: 'Size'
-        },
         {
           icon: FiMoreHorizontal,
           type: EXTRA_TYPES.DROPDOWN,
@@ -24,20 +19,24 @@ export const programType = {
             EXTRA_TYPES.NAME_EDIT_TOGGLE,
             EXTRA_TYPES.LOCKED_INDICATOR,
             EXTRA_TYPES.SELECTION_TOGGLE,
-            {
-              icon: FiMoreHorizontal,
-              label: 'More Options',
-              type: EXTRA_TYPES.DROPDOWN,
-              contents: [
-                EXTRA_TYPES.NAME_EDIT_TOGGLE,
-                EXTRA_TYPES.COLLAPSE_TOGGLE,
-                EXTRA_TYPES.LOCKED_INDICATOR,
-                { 
-                  type: EXTRA_TYPES.INDICATOR,
-                  accessor: (data)=>data.properties.children.length,
-                  label: 'Size'
+            EXTRA_TYPES.DEBUG_TOGGLE,
+            { 
+              type: EXTRA_TYPES.INDICATOR,
+              accessor: (data)=>{
+                if (data.properties.status===STATUS.FAILED) {
+                  return 'F'
+                } else if (data.properties.status===STATUS.VALID) {
+                  return 'V'
+                } else if (data.properties.status===STATUS.PENDING) {
+                  return 'P'
                 }
-              ]
+              },
+              label: 'Status'
+            },
+            { 
+              type: EXTRA_TYPES.INDICATOR,
+              accessor: (data)=>data.properties.children.length,
+              label: 'Size'
             }
           ]
         },
@@ -73,7 +72,7 @@ export const programType = {
       steps: {
         name: 'Steps',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: []
+        default: {}
       }
     }
   }

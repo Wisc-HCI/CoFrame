@@ -15,3 +15,9 @@ export const STEP_CALCULATOR = {
     GRIPPER: 7,
     ROBOT_MOTION: 8
 }
+
+export const STEP_TYPE = {
+    LANDMARK: 0,
+    SCENE_UPDATE: 1,
+    SCENE_REMOVE: 2
+}

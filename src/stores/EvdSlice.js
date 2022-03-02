@@ -1,17 +1,18 @@
 import { arrayMove, deleteAction } from './helpers';
 import lodash from 'lodash';
-import {urdf} from "./robot";
+import { urdf } from "./robot";
 import { FiClipboard, FiBriefcase, FiGrid, FiBox, FiLogOut, FiMoreHorizontal, FiLayers, FiFeather } from "react-icons/fi";
 import { DATA_TYPES, TYPES, EXTRA_TYPES, SIMPLE_PROPERTY_TYPES } from 'simple-vp';
 
 import typeInfo from './typeInfo';
-import { performPoseProcess } from './planner-worker';
+// import { performPoseProcess } from './planner-worker';
+import { instanceTemplateFromSpec } from 'simple-vp/dist/components';
 
 import * as Comlink from 'comlink';
 /* eslint-disable import/no-webpack-loader-syntax */
 import Worker from 'worker-loader!./planner-worker';
 
-const cleanedObjectType = (objectType) => lodash.pick(objectType,['name','properties','type']);
+const cleanedObjectType = (objectType) => lodash.pick(objectType, ['name', 'properties', 'type']);
 
 import {
   LocationIconStyled,
@@ -41,55 +42,64 @@ export const EvdSlice = (set, get) => ({
   programData: {},
   // All the old stuff below
   data: {
-    "program-484de43e-adaa-4801-a23b-bca38e211365":{
+    "program-484de43e-adaa-4801-a23b-bca38e211365": {
       "name": "Knife Assembly",
       "editable": true,
       "deleteable": false,
       "description": "The top-level program",
       "parameters": {},
       "children": [],
-      "transform": {"x": 0, "y": 0}
+      "transform": { "x": 0, "y": 0 }
     }
   },
   // A macro for updating the entire program from raw data
-  setData: (data) => set((_) => ({ programData: data})),
-  updatePoseJoints: (id,value,process) => set(state=>{
+  setData: (data) => set((state) => {
+
+    const newData = lodash.mapValues(data, d => {
+      if (d.dataType === DATA_TYPES.INSTANCE) {
+        const defaultv = instanceTemplateFromSpec(d.type, state.programSpec.objectTypes[d.type], false);
+        return lodash.merge(defaultv, d)
+      } else { return d }
+    })
+    state.programData = newData
+  }),
+  updatePoseJoints: (id, value, process) => set(state => {
     state.programData[id].joints = value;
     state.processes[id] = process;
   }),
-  updatePlanProcess: (newData, process) => set(state=>{
+  updatePlanProcess: (newData, process) => set(state => {
     if (newData) {
-      state.programData = lodash.merge(state.programData,newData)
+      state.programData = lodash.merge(state.programData, newData)
     }
     state.processes.planProcess = process
   }),
   performPoseProcess: async (id) => {
-    console.log('starting ',id)
+    console.log('starting ', id)
     const currentProcess = get().processes[id];
     if (currentProcess) {
-        console.log('terminating process for ',id)
-        currentProcess.terminate();
+      console.log('terminating process for ', id)
+      currentProcess.terminate();
     }
     const workerInstance = new Worker();
-    get().updatePoseJoints(id,null,workerInstance);
+    get().updatePoseJoints(id, null, workerInstance);
     const workerLib = Comlink.wrap(workerInstance);
-    const result = await workerLib.performPoseProcess({urdf, pose:get().programData[id], scene:{}});
+    const result = await workerLib.performPoseProcess({ urdf, pose: get().programData[id], scene: {} });
     console.log(result)
-    get().updatePoseJoints(id,result,null);
+    get().updatePoseJoints(id, result, null);
   },
   performPlanProcess: async () => {
     console.log('starting plan processing')
     const currentProcess = get().processes.planProcess;
     if (currentProcess) {
-        console.log('terminating current plan process')
-        currentProcess.terminate();
+      console.log('terminating current plan process')
+      currentProcess.terminate();
     }
     const workerInstance = new Worker();
-    get().updatePlanProcess(null,workerInstance);
+    get().updatePlanProcess(null, workerInstance);
     const workerLib = Comlink.wrap(workerInstance);
-    const result = await workerLib.performStepProcess({urdf, programData:get().programData, objectTypes:lodash.mapValues(get().programSpec.objectTypes,cleanedObjectType)});
+    const result = await workerLib.performStepProcess({ urdf, programData: get().programData, objectTypes: lodash.mapValues(get().programSpec.objectTypes, cleanedObjectType) });
     console.log(result)
-    get().updatePlanProcess(result,null);
+    get().updatePlanProcess(result, null);
   },
   processes: {}
 });

@@ -57,7 +57,7 @@ export const processType = {
       steps: {
         name: 'Steps',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: []
+        default: {}
       }
     }
   }

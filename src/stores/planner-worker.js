@@ -73,7 +73,7 @@ const performStepProcess = async (data) => {
     const module = await loadModule();
 
     let root = null;
-    Object.values(context).some(v=>{
+    Object.values(programData).some(v=>{
         if (v.type==='programType') {
             root = v.id;
             return true
@@ -97,15 +97,16 @@ const performStepProcess = async (data) => {
         data:programData[root],
         objectTypes,
         context:programData,
+        path:['root'],
         memo: {},
         solver,
         module,
         urdf
     }
-    const {steps, innerMemo, status} = stepProcessors[objectTypes.programType.properties.computeSteps.default](computeProps)
-    const newData = {...innerMemo,[root]:{properties:{steps,status}}};
+    const {memo} = stepProcessors[objectTypes.programType.properties.computeSteps.default](computeProps)
+    // const newData = {...imemo,[root]:{properties:{steps,status}}};
   
-    return newData;
+    return memo;
 }
 
 Comlink.expose({performPoseProcess, performStepProcess})

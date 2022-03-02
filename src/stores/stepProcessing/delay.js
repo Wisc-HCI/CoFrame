@@ -1,5 +1,5 @@
 import { STATUS } from "../Constants";
 
-export const delaySteps = ({data, objectTypes, context, memo, solver, module, urdf}) => {
-    return {steps:[], memo:{}, status:STATUS.VALID, updated:false}
+export const delaySteps = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
+    return {steps:{[path]:[]}, memo:{}, status:STATUS.VALID, updated:false}
 }
