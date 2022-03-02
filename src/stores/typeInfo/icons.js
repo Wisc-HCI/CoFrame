@@ -15,4 +15,4 @@ export const SkillIconStyled = ()=><SkillIcon style={{color:'white',width:18,hei
 export const ThingIconStyled = ()=><ThingIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
 export const WaypointIconStyled = ()=><WaypointIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
 export const ContainerIconStyled = ()=><ContainerIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
-export const ProcessIconStyled = ()=><ProcesssIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
+export const ProcessIconStyled = ()=><ProcessIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
