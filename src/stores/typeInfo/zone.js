@@ -35,8 +35,8 @@ export const zoneType = {
         isList: false,
         fullWidth: true
       },
-      orientation: {
-        name: 'Orientation',
+      rotation: {
+        name: 'Rotation',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {x: null, y: null, z: null, w: null},
         isList: false,
