@@ -16,6 +16,7 @@ export const delaySteps = ({data, path, memo}) => {
         const step = {
             stepType: STEP_TYPE.SCENE_UPDATE,
             data: {},
+            source: data.id,
             time: data.properties.duration
         }
         updated = true;

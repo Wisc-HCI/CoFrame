@@ -29,10 +29,12 @@ export const machineSteps = ({data, path, context, memo}) => {
         const step = machine ? {
             stepType: STEP_TYPE.LANDMARK,
             data: {[machine.id]:{initialized:true}},
+            source: data.id,
             time: 0
         } : {
             stepType: STEP_TYPE.LANDMARK,
             data: {},
+            source: data.id,
             time: 0
         }
         updated = true;

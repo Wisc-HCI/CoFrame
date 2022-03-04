@@ -43,11 +43,13 @@ export const processSteps = ({data, path, context, memo}) => {
                 {
                     stepType: STEP_TYPE.LANDMARK,
                     data: processStartStatus,
+                    source: data.id,
                     time: 0
                 },
                 {
                     stepType: STEP_TYPE.LANDMARK,
                     data: processFinishStatus,
+                    source: data.id,
                     time: process ? process.properties.processTime : 0
                 }
             ]
@@ -56,6 +58,7 @@ export const processSteps = ({data, path, context, memo}) => {
                 {
                     stepType: STEP_TYPE.SCENE_UPDATE,
                     data: {},
+                    source: data.id,
                     time: processFinishStatus
                 }
             ];
@@ -64,6 +67,7 @@ export const processSteps = ({data, path, context, memo}) => {
                 {
                     stepType: STEP_TYPE.LANDMARK,
                     data: processStopStatus,
+                    source: data.id,
                     time: 0
                 },
             ]

@@ -99,7 +99,7 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                         let stepTime = 0;
                         if (typeof v.time === "object") {
                             // encode the timing based on the landmark specified
-                            const tempSteps = newSteps.slice().reverse();
+                            const tempSteps = newSteps[path].slice().reverse();
                             tempSteps.some(s=>{
                                 if (s.stepType === STEP_TYPE.LANDMARK && equals(s.data,v.time)) {
                                     stepTime = s.time
