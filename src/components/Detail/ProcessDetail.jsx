@@ -16,6 +16,8 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
     const [inputData, setInputData] = useState(null);
     const [outputData, setOutputData] = useState(null);
 
+   
+
 
 
     useEffect(() => {
@@ -77,6 +79,7 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                     if (key === item.thingType) {
                         output = value;
                     }
+                    console.log("value is :" , item);
                 }
                 //const processRef = referenceTemplateFromSpec('processType', item, objectTypeInfo);
                 list.push(
@@ -84,7 +87,7 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                         <Box round="xsmall" background="grey" direction='column'
                             elevation="none" pad="xsmall" justify='center'
                             hoverIndicator={true} onClick={() => {
-                                inputOutputClick(output.id, item.position, item.orientation);
+                                inputOutputClick(output.id, item.position, item.rotation);
                             }}>
                             {/* <ExternalBlock
                                 store={useStore}

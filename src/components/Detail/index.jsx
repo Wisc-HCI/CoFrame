@@ -28,7 +28,7 @@ export const Detail = (_) => {
   const [processItem, setProcessItem] = useState(null);
   const [inputOutputItem, setInputOutputItem] = useState(null);
   const [position, setPosition] = useState(null);
-  const [orientation, setOrientation] = useState(null);
+  const [rotation, setRotation] = useState(null);
 
   const data = useStore(state => state.programData);
 
@@ -44,15 +44,13 @@ export const Detail = (_) => {
     }
   }
 
-  function handleInputOutputClick(id, position, orientation) {
-    console.log(id);
-    console.log(position);
-    console.log(orientation);
+  function handleInputOutputClick(id, position, rotation) {
+   
     for (const [key, value] of Object.entries(data)) {
       if (value.id === id) {
         setInputOutputItem(value);
         setPosition(position);
-        setOrientation(orientation);
+        setRotation(rotation);
       }
     }
 
@@ -62,7 +60,7 @@ export const Detail = (_) => {
     console.log("InputOutputDetial", item);
     return (
       <>
-        <InputOutputDetail item={inputOutputItem} position={position} orientation={orientation} />
+        <InputOutputDetail item={inputOutputItem} position={position} rotation = {rotation} />
       </>
     )
 
@@ -73,7 +71,7 @@ export const Detail = (_) => {
       <>
         {processItem.type === 'processType' && (
           <><ProcessDetail item={processItem}
-            inputOutputClick={(id, position, orientation) => handleInputOutputClick(id, position, orientation)} /></>
+            inputOutputClick={(id, position, rotation) => handleInputOutputClick(id, position, rotation)} /></>
         )}
       </>
     )
