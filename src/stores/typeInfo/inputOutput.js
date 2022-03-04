@@ -35,8 +35,8 @@ export const inputOutputType = {
       isList: false,
       fullWidth: true
     },
-    orientation: {
-      name: 'Orientation',
+    rotation: {
+      name: 'Rotation',
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: { x: 0, y: 0, z: 0, w: 0 },
       isList: false,

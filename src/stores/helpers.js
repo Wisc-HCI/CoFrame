@@ -763,7 +763,8 @@ export function unFlattenProgramSkills(skills, primitives) {
 
 export function poseToColor(pose, frame, focused, occupancyZones) {
     let color = { r: 255, g: 255, b: 255, a: focused ? 1 : 0 };
-    if (frame === 'safety' && occupancyOverlap(pose.properties.position,occupancyZones)) {
+    let pos = pose.refData ? pose.refData.properties.position : pose.properties.position;
+    if (frame === 'safety' && occupancyOverlap(pos,occupancyZones)) {
         color.r = 233;
         color.g = 53;
         color.b = 152;
@@ -783,7 +784,7 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
             frame: 'world',
             name: pose.name,
             shape: pose_stored.type.includes('location') ? 'flag' : 'tag',
-            position: pose_stored.properties.position,
+            position: pose_stored.refData ? pose_stored.refData.properties.position : pose_stored.properties.position,
             rotation: { w: 1, x: 0, y: 0, z: 0 },
             scale: { x: -0.25, y: 0.25, z: 0.25 },
             highlighted: false,
@@ -794,8 +795,8 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
             uuid: `${pose_stored.id}-pointer`,
             frame: 'world',
             shape: pose_stored.type.includes('location') ? 'package://app/meshes/LocationMarker.stl' : 'package://app/meshes/OpenWaypointMarker.stl',
-            position: pose_stored.properties.position,
-            rotation: pose_stored.properties.orientation,
+            position: pose_stored.refData ? pose_stored.refData.properties.position : pose_stored.properties.position,
+            rotation: pose_stored.refData ? pose_stored.refData.properties.rotation : pose_stored.properties.rotation,
             scale: { x: 1, y: 1, z: 1 },
             highlighted: false,
             showName: false,
