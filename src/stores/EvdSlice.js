@@ -18,6 +18,7 @@ import {
   LocationIconStyled,
   PrimitiveIconStyled,
   MachineIconStyled,
+  ProcessIconStyled,
   SkillIconStyled,
   ThingIconStyled,
   WaypointIconStyled,
@@ -30,6 +31,7 @@ export const EvdSlice = (set, get) => ({
     drawers: [
       // Icon is FiGrid, otherwise no icons show in the drawer
       { title: "Machines", dataType: DATA_TYPES.REFERENCE, objectType: 'machineType', icon: MachineIconStyled },
+      { title: "Processes", dataType: DATA_TYPES.REFERENCE, objectType: 'processType', icon: ProcessIconStyled },
       { title: "Locations", dataType: DATA_TYPES.REFERENCE, objectType: 'locationType', icon: LocationIconStyled },
       { title: "Waypoints", dataType: DATA_TYPES.REFERENCE, objectType: 'waypointType', icon: WaypointIconStyled },
       { title: "Things", dataType: DATA_TYPES.REFERENCE, objectType: 'thingType', icon: ThingIconStyled },

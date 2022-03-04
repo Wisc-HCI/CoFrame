@@ -34,7 +34,9 @@ export const findInstance = (id, context) => {
 
     while (!found && !stale) {
         data = context[dataId];
-        if (data.dataType === DATA_TYPES.INSTANCE) {
+        if (!data) {
+            stale = true
+        } else if (data.dataType === DATA_TYPES.INSTANCE) {
             found = true;
         } else if (data.dataType === DATA_TYPES.REFERENCE) {
             dataId = data.ref;
@@ -45,3 +47,5 @@ export const findInstance = (id, context) => {
 
     return data;
 }
+
+export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);

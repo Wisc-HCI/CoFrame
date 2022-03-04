@@ -1,10 +1,11 @@
-import { DATA_TYPES } from "simple-vp/dist/components";
 import { STATUS, STEP_TYPE } from "../Constants";
 import { findInstance, stepProcessors } from './index';
 import { merge } from 'lodash';
+import { equals } from "./index";
 
 export const simpleSteps = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
-    
+    console.log('simpleSteps',data.id)
+    console.log(objectTypes)
     let status = STATUS.VALID;
     let updated = false;
 
@@ -74,6 +75,8 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                     status = STATUS.FAILED;
                 } else {
                     // Recurse into the node
+                    console.log(objectTypes[dataNode.type].properties.computeSteps)
+                    console.log(stepProcessors[objectTypes[dataNode.type].properties.computeSteps.default])
                     const {
                         steps:innerSteps,
                         memo:innerMemo, 
@@ -92,13 +95,30 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                     const pathInnerSteps = innerSteps[path];
                     newMemo = {...newMemo,...innerMemo};
                     let lastUpdateTime = 0;
-                    newSteps[path].push(pathInnerSteps.map(v=>{
+                    pathInnerSteps.forEach(v=>{
+                        let stepTime = 0;
+                        if (typeof v.time === "object") {
+                            // encode the timing based on the landmark specified
+                            const tempSteps = newSteps.slice().reverse();
+                            tempSteps.some(s=>{
+                                if (s.stepType === STEP_TYPE.LANDMARK && equals(s.data,v.time)) {
+                                    stepTime = s.time
+                                    return false
+                                } else if (s.time < lastUpdateTime) {
+                                    return true
+                                } else {
+                                    return false
+                                }
+                            })
+                        } else {
+                            stepTime = v.time
+                        }
                         if (v.stepType !== STEP_TYPE.LANDMARK) {
                             // Ignore landmarks
-                            lastUpdateTime = v.time
+                            lastUpdateTime = stepTime
                         }
-                        return {...v,time:v.time+lastTime}
-                    }))
+                        newSteps[path].push({...v,time:stepTime+lastTime})
+                    })
                     if (pathInnerSteps.length > 0) {
                         lastTime = lastTime + lastUpdateTime
                     }

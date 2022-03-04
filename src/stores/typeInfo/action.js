@@ -118,25 +118,39 @@ const processStartFeatures = {
   name: 'Process Start',
   properties: {
     description: {default: 'Begin a machine process'},
+    process: {
+      name: "Process",
+      accepts: ["processType"],
+      default: null,
+      isList: false
+    },
     machine: {
       name: "Machine",
       accepts: ["machineType"],
       default: null,
-      isList: false
-    }
-  },
-  computeSteps: {default:STEP_CALCULATOR.PROCESS}
+      isList: false,
+      nullValid: true
+    },
+    computeSteps: {default:STEP_CALCULATOR.PROCESS}
+  }
 }
 
 const processStopFeatures = {
   name: 'Process Stop',
   properties: {
     description: {default: 'Mark completion of a process and enable retrieval of results'},
+    process: {
+      name: "Process",
+      accepts: ["processType"],
+      default: null,
+      isList: false
+    },
     machine: {
       name: "Machine",
       accepts: ["machineType"],
       default: null,
-      isList: false
+      isList: false,
+      nullValid: true
     },
     computeSteps: {default:STEP_CALCULATOR.PROCESS}
   }
@@ -146,11 +160,18 @@ const processWaitFeatures = {
   name: 'Process Wait',
   properties: {
     description: {default: 'Fill any remaining time while process is running by making the robot wait'},
+    process: {
+      name: "Process",
+      accepts: ["processType"],
+      default: null,
+      isList: false
+    },
     machine: {
       name: "Machine",
       accepts: ["machineType"],
       default: null,
-      isList: false
+      isList: false,
+      nullValid: true
     },
     computeSteps: {default:STEP_CALCULATOR.PROCESS}
   }
@@ -208,5 +229,7 @@ const actionTypes = {
   moveTrajectoryType: merge(moveTrajectoryFeatures,basicActionData),
   moveUnplannedType: merge(moveUnplannedFeatures,basicActionData)
 }
+
+console.log(actionTypes)
 
 export default actionTypes

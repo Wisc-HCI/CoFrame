@@ -12,7 +12,7 @@ export const processType = {
     instanceBlock: null,
     referenceBlock: {
       onCanvas: false,
-      color: "#B3A533",
+      color: "#a83832",
       icon: ProcessIconStyled,
     },
     properties: {
