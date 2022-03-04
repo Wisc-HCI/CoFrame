@@ -14,7 +14,10 @@ function PositionInput(props) {
   //   if (props.value !== preVec){
   //     setPrevVec(props.value);
   //     setInputVec(props.value);
+
   //   }
+
+ 
 
   return (
 
@@ -31,13 +34,13 @@ function PositionInput(props) {
           dropProps={{ elevation: 'none',  round  : "xsmall"}}
 
           dropContent={
-            <Box round = "xsmall" background = "grey" border = {{color : 'white', size : 'xsmall'}} width="xsmall" direction='column' elevation="none" pad="xsmall" justify='center'>
-              <Box direction='row' elevation="none" pad="xsmall" justify='center' width="xsmall">
+            <Box round = "xsmall" background = "grey" border = {{color : 'white', size : 'xsmall'}} width="small" direction='column' elevation="none" pad="xsmall" justify='center'>
+              <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
               <Text weight = "bolder" style={{ color: "red" , paddingRight : "7%"}}>X</Text>
               <NumberInput
               //  min= {minMax[0]}
               //  max= {minMax[1]}
-              //  value={inputVec[0]}
+                value={props.position.x}
               //  onChange={(v)=>{if (typeof v === 'number') {
               //    let updatedVec = [v,inputVec[1],inputVec[2]];
               //    setInputVec(updatedVec)
@@ -47,12 +50,12 @@ function PositionInput(props) {
               />
               </Box>
 
-              <Box direction='row' elevation="none" pad="xsmall" justify='center' width="xsmall">
+              <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
               <Text weight = "bolder" style={{ color: "lime" , paddingRight : "7%"}}>Y</Text>
               <NumberInput
               //  min= {minMax[0]}
               //  max= {minMax[1]}
-              //  value={inputVec[1]}
+              value={props.position.y}
               //  onChange={(v)=>{if (typeof v === 'number') {
               //    let updatedVec = [inputVec[0],v,inputVec[2]]
               //    setInputVec(updatedVec)
@@ -61,12 +64,12 @@ function PositionInput(props) {
               />
               </Box>
 
-              <Box direction='row' elevation="none" pad="xsmall" justify='center' width="xsmall">
+              <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
               <Text weight = "bolder" style={{ color: "blue" , paddingRight : "7%"}}>Z</Text>
               <NumberInput
               // min= {minMax[0]}
               // max= {minMax[1]}
-              // value={inputVec[2]}
+              value={props.position.z}
               // onChange={(v)=>{if (typeof v === 'number') {
               //   let updatedVec = [inputVec[0],inputVec[1],v];
               //   setInputVec(updatedVec)

@@ -9,9 +9,9 @@ import PositionInput from './PositionInput';
 import { FormClose, Trash } from 'grommet-icons';
 
 
-export const InputOutputDetail = ({ item, position, orientation }) => {
+export const InputOutputDetail = ({ item, position, rotation }) => {
 
-    console.log("InputOutputDetial", item);
+    console.log("InputOutputDetial", rotation);
     const data = useStore(state => state.programData);
     const clearFocusItem = useStore(state => state.clearFocusItem);
 
@@ -63,8 +63,8 @@ export const InputOutputDetail = ({ item, position, orientation }) => {
                                                 <Text style={{ paddingRight: '42%' }}>Placement :</Text>
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', paddingLeft: '30%' }}>
-                                                <PositionInput />
-                                                <OrientationInput />
+                                                <PositionInput position = {position}/>
+                                                <OrientationInput rotation = {rotation}/>
                                             </div>
 
                                             <br />
