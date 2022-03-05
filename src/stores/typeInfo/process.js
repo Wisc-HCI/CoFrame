@@ -1,10 +1,6 @@
 import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { STATUS, STEP_CALCULATOR } from "../Constants";
-// import {Tasks} from 'grommet-icons';
 import { ProcessIconStyled } from "./icons";
-// import { FiMoreHorizontal } from "react-icons/fi";
-
-
 
 export const processType = {
     name: 'Process',
