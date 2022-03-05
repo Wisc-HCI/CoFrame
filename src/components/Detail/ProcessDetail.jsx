@@ -11,33 +11,29 @@ import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp"
 export const ProcessDetail = ({ item, inputOutputClick }) => {
     const data = useStore(state => state.programData);
     const clearFocusItem = useStore(state => state.clearFocusItem);
-    const [inputList, setInputList] = useState([]);
-    const [outputList, setOutputList] = useState([]);
-    const [inputData, setInputData] = useState(null);
-    const [outputData, setOutputData] = useState(null);
+    const inputList = useStore(state => {
+        let list = [];
 
-   
-
-
-
-    useEffect(() => {
-        { IterateInputOutput() }
-    }, [])
-
-    function IterateInputOutput() {
         if (item.properties.inputs.length > 0) {
             item.properties.inputs.forEach((item) => {
-                setInputList(tempArr => [...tempArr, item]);
+                list.push(item);
             })
         }
+
+        return list;
+
+    })
+    const outputList = useStore(state => {
+        let list = [];
 
         if (item.properties.outputs.length > 0) {
             item.properties.outputs.forEach((item) => {
-                setOutputList(tempArr => [...tempArr, item]);
+                list.push(item);
             })
         }
-        return null;
-    }
+
+        return list;
+    })
 
     function RenderInputList(input) {
         if (input === true) {

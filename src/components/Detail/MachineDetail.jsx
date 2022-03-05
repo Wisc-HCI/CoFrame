@@ -8,24 +8,21 @@ export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
   const data = useStore(state => state.programData);
   const clearFocusItem = useStore(state => state.clearFocusItem);
   //const processObjectTypeInfo = useStore(state => state.focusItem.type ? state.programSpec.objectTypes[state.programData[state.focusItem.uuid].type] : null);
-  const [processList, setProcessList] = useState([]);
+ 
 
-
-
-  useEffect(() => {
-    { IterateProcess() }
-  }, [])
-
-  function IterateProcess() {
-    for (const [key, value] of Object.entries(data)) {
+  const processList = useStore(state => {
+    let list = []
+    for (const [key,value] of Object.entries(data)){
       if (value.type === "processType" && value.properties.machine === item.id) {
-        //console.log(value);
-        setProcessList(tempArr => [...tempArr, value]);
+        list.push(value);
       }
-    }
 
-    return null;
-  }
+    }
+    return list;
+
+  })
+  
+
 
   function RenderProcessList() {
     let list = [];
