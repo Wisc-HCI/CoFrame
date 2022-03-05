@@ -1,16 +1,22 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React from 'react';
 
 import useStore from '../../stores/Store';
 
 import { TextArea, Text, Box, TextInput, Button, Accordion, AccordionPanel, Layer, DropButton } from 'grommet';
 import { FormClose, Trash } from 'grommet-icons';
 import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
-
+import shallow from 'zustand/shallow';
 
 
 export const ProcessDetail = ({ item, inputOutputClick }) => {
     const data = useStore(state => state.programData);
     const clearFocusItem = useStore(state => state.clearFocusItem);
+    const {
+        objectTypeInfo
+    } = useStore(state => ({
+        objectTypeInfo: item.type ? state.programSpec.objectTypes[data[item.id].type] : null
+    }), shallow);
+
     const inputList = useStore(state => {
         let list = [];
 
@@ -45,7 +51,7 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                         input = value;
                     }
                 }
-                //const processRef = referenceTemplateFromSpec('processType', item, objectTypeInfo);
+                const processRef = referenceTemplateFromSpec('inputOutputType', item, objectTypeInfo);
                 list.push(
                     <div key={item.id}>
                         <Box round="xsmall" background="grey" direction='column'
@@ -54,11 +60,11 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                                 inputOutputClick(input.id, item.position, item.orientation);
 
                             }}>
-                            {/* <ExternalBlock
+                            <ExternalBlock
                                 store={useStore}
                                 data={processRef}
                                 highlightColor={"#333333"}
-                            /> */}
+                            />
                             <Text>{input.name}</Text>
                         </Box>
                     </div>
@@ -75,9 +81,9 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                     if (key === item.thingType) {
                         output = value;
                     }
-                    console.log("value is :" , item);
+                    console.log("value is :", item);
                 }
-                //const processRef = referenceTemplateFromSpec('processType', item, objectTypeInfo);
+                const processRef = referenceTemplateFromSpec('inputOutputType', item, objectTypeInfo);
                 list.push(
                     <div key={item.id}>
                         <Box round="xsmall" background="grey" direction='column'
@@ -85,12 +91,13 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                             hoverIndicator={true} onClick={() => {
                                 inputOutputClick(output.id, item.position, item.rotation);
                             }}>
-                            {/* <ExternalBlock
+                            <Text>{output.name}</Text>
+                            <ExternalBlock
                                 store={useStore}
                                 data={processRef}
                                 highlightColor={"#333333"}
-                            /> */}
-                            <Text>{output.name}</Text>
+                            />
+
                         </Box>
                     </div>
 
