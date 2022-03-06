@@ -4,8 +4,8 @@ import { merge } from 'lodash';
 import { equals } from "./index";
 
 export const simpleSteps = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
-    console.log('simpleSteps',data.id)
-    console.log(objectTypes)
+    // console.log('simpleSteps',data.id)
+    // console.log(objectTypes)
     let status = STATUS.VALID;
     let updated = false;
 
@@ -75,8 +75,8 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                     status = STATUS.FAILED;
                 } else {
                     // Recurse into the node
-                    console.log(objectTypes[dataNode.type].properties.computeSteps)
-                    console.log(stepProcessors[objectTypes[dataNode.type].properties.computeSteps.default])
+                    // console.log(objectTypes[dataNode.type].properties.computeSteps)
+                    // console.log(stepProcessors[objectTypes[dataNode.type].properties.computeSteps.default])
                     const {
                         steps:innerSteps,
                         memo:innerMemo, 

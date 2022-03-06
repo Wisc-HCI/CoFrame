@@ -1,9 +1,10 @@
 // import create from 'zustand'
 import create from 'zustand';
-// import { subscribeWithSelector } from 'zustand/middleware'
+import shallow from 'zustand/shallow'
+import { subscribeWithSelector } from 'zustand/middleware'
 import { computed } from 'zustand-middleware-computed-state'
 import produce from "immer";
-import { persist } from "zustand/middleware";
+// import { persist } from "zustand/middleware";
 import {GuiSlice} from './GuiSlice';
 import {ReviewSlice} from './ReviewSlice';
 import {EvdSlice} from './EvdSlice';
@@ -15,7 +16,7 @@ import {computedSlice} from './ComputedSlice';
 // import {WatchedSlice} from './WatchedSlice';
 // import { computed } from 'zustand-middleware-computed-state';
 // import {SimSlice} from './SimSlice';
-
+import lodash from 'lodash';
 // import { INITIAL_SIM } from "./initialSim";
 // import fakeEvdData from './fakeEvdData';
 // import KNIFE_TASK from './knifeTask';
@@ -23,7 +24,6 @@ import {computedSlice} from './ComputedSlice';
 // import KnifeAssembly from './Knife_Assembly_Refactor.json';
 import KnifeAssembly from './Knife_Assembly_Simple_VP.json';
 import { STATUS } from './Constants';
-import { node } from 'webpack';
 // import { Solver } from '@people_and_robots/lively_tk';
 // import {ur3e} from './ur3e.xml';
 // import {buffer} from "@people_and_robots/lively_tk";
@@ -50,11 +50,22 @@ const store = (set, get) => ({
     ...RosSlice(set,get),
 })
 
-const useStore = create(computed(immer(store),computedSlice));
+const useStore = create(subscribeWithSelector(computed(immer(store),computedSlice)));
 
-// useStore.subscribe(store=>Object.values(store.programData).filter(n=>n.properties.status===STATUS.PENDING),(v)=>{console.log('REPLANNING',v);useStore.get().performPlanProcess()})
 
 useStore.getState().setData(KnifeAssembly);
+
+useStore.subscribe(store=>
+  lodash.mapValues(store.programData,(value)=>{
+    return value.properties.status ? value.properties.status : STATUS.PENDING
+  }),
+  ()=>{
+    console.log("REPLANNING")
+    useStore.getState().performPlanProcess()
+  },
+  {equalityFn:shallow}
+)
+
 // useStore.getState().loadSolver();
 // useStore.getState().setSolver()
 console.log(useStore.getState())
