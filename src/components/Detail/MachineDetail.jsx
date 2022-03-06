@@ -3,16 +3,17 @@ import useStore from '../../stores/Store';
 import { TextArea, Text, Box, TextInput, Button, Accordion, AccordionPanel, Layer, DropButton } from 'grommet';
 import { FormClose, Trash } from 'grommet-icons';
 import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
+import Collapse from '../Collapse';
 
 export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
   const data = useStore(state => state.programData);
   const clearFocusItem = useStore(state => state.clearFocusItem);
   //const processObjectTypeInfo = useStore(state => state.focusItem.type ? state.programSpec.objectTypes[state.programData[state.focusItem.uuid].type] : null);
- 
+
 
   const processList = useStore(state => {
     let list = []
-    for (const [key,value] of Object.entries(data)){
+    for (const [key, value] of Object.entries(data)) {
       if (value.type === "processType" && value.properties.machine === item.id) {
         list.push(value);
       }
@@ -21,7 +22,7 @@ export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
     return list;
 
   })
-  
+
 
 
   function RenderProcessList() {
@@ -31,7 +32,7 @@ export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
       const processRef = referenceTemplateFromSpec('processType', item, objectTypeInfo);
       list.push(
         <div key={item.id}>
-          <Box round="xsmall" background="grey" direction='column'
+          <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
             elevation="none" pad="xsmall" justify='center'
             hoverIndicator={true} onClick={() => {
               processClick(item.id);
@@ -91,14 +92,26 @@ export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
                 background="#303030"
                 pad="small" >
                 <Box direction='column'>
-                  <Accordion>
-                    <AccordionPanel label="Processes:">
-                      <Box round="xsmall" background="grey" direction='column'
-                        elevation="none" pad="xxsmall" justify='center'>
-                        {RenderProcessList()}
-                      </Box>
-                    </AccordionPanel>
-                  </Accordion>
+
+                 
+
+                  <Collapse
+                    openable={true}
+                    borderWidth={3}
+                    header={<Box direction='row' pad="10pt">Process: </Box>}
+                    style={{ marginBottom: 5 }}
+                  >
+                    
+                      {RenderProcessList()}
+                    
+                   
+                  </Collapse>
+
+
+
+
+
+
                 </Box>
               </Box>
             </div>

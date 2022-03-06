@@ -6,6 +6,7 @@ import { TextArea, Text, Box, TextInput, Button, Accordion, AccordionPanel, Laye
 import { FormClose, Trash } from 'grommet-icons';
 import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 import shallow from 'zustand/shallow';
+import Collapse from "../Collapse";
 
 
 export const ProcessDetail = ({ item, inputOutputClick }) => {
@@ -54,7 +55,7 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                 const processRef = referenceTemplateFromSpec('inputOutputType', item, objectTypeInfo);
                 list.push(
                     <div key={item.id}>
-                        <Box round="xsmall" background="grey" direction='column'
+                        <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
                             elevation="none" pad="xsmall" justify='center'
                             hoverIndicator={true} onClick={() => {
                                 inputOutputClick(input.id, item.position, item.orientation);
@@ -72,7 +73,12 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                 );
 
             })
-            return list;
+            if (list.length > 0) {
+                return list;
+            }else {
+                return null;
+            }
+            
         } else {
             let list = [];
             let output;
@@ -86,7 +92,7 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                 const processRef = referenceTemplateFromSpec('inputOutputType', item, objectTypeInfo);
                 list.push(
                     <div key={item.id}>
-                        <Box round="xsmall" background="grey" direction='column'
+                        <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
                             elevation="none" pad="xsmall" justify='center'
                             hoverIndicator={true} onClick={() => {
                                 inputOutputClick(output.id, item.position, item.rotation);
@@ -104,7 +110,11 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                 );
 
             })
-            return list;
+            if (list.length > 0) {
+                return list;
+            }else {
+                return null;
+            }
         }
 
 
@@ -164,26 +174,22 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                                     </Box>
 
                                     <div style={{ paddingTop: '4%' }}>
-                                        <Accordion>
-                                            <AccordionPanel label="Inputs :">
-                                                <Box round="xsmall" background="grey" direction='column'
-                                                    elevation="none" pad="xsmall" justify='center'>
-                                                    {RenderInputList(true)}
-                                                </Box>
-
-
-                                            </AccordionPanel>
-                                        </Accordion>
-                                        <Accordion>
-                                            <AccordionPanel label="Outputs :">
-                                                <Box round="xsmall" background="grey" direction='column'
-                                                    elevation="none" pad="xsmall" justify='center'>
-                                                    {RenderInputList(false)}
-                                                </Box>
-
-
-                                            </AccordionPanel>
-                                        </Accordion>
+                                        <Collapse
+                                            openable={true}
+                                            borderWidth={3}
+                                            header={<Box direction='row' pad="10pt">Inputs : </Box>}
+                                            style={{ marginBottom: 5 }}
+                                        >
+                                               {RenderInputList(true)}
+                                        </Collapse>
+                                        <Collapse
+                                            openable={true}
+                                            borderWidth={3}
+                                            header={<Box direction='row' pad="10pt">Outputs : </Box>}
+                                            style={{ marginBottom: 5 }}
+                                        >
+                                               {RenderInputList(false)}
+                                        </Collapse>
                                     </div>
 
                                 </Box>
