@@ -97,7 +97,7 @@ const performStepProcess = async (data) => {
         data:programData[root],
         objectTypes,
         context:programData,
-        path:['root'],
+        path:[{route:'root',args:{}}],
         memo: {},
         solver,
         module,

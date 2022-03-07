@@ -1,6 +1,6 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { STATUS, STEP_CALCULATOR } from "../Constants";
-import { ContainerIconStyled } from "./icons";
+import { InputOutputIconStyled } from "./icons";
 //import {Tasks} from 'grommet-icons';
 
 export const inputOutputType = {
@@ -9,7 +9,7 @@ export const inputOutputType = {
   referenceBlock: {
     onCanvas: false,
     color: '#0072b2',
-    icon: ContainerIconStyled
+    icon: InputOutputIconStyled
   },
   properties: {
     description: {

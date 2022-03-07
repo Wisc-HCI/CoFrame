@@ -57,7 +57,7 @@ useStore.getState().setData(KnifeAssembly);
 
 useStore.subscribe(store=>
   lodash.mapValues(store.programData,(value)=>{
-    return value.properties.status ? value.properties.status : STATUS.PENDING
+    return value?.properties?.status ? value.properties.status : STATUS.PENDING
   }),
   ()=>{
     console.log("REPLANNING")

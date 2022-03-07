@@ -7,6 +7,7 @@ import { ReactComponent as ThingIcon } from '../../components/CustomIcons/Thing.
 import { ReactComponent as WaypointIcon } from '../../components/CustomIcons/Waypoint.svg';
 import { ReactComponent as ContainerIcon } from '../../components/CustomIcons/Container.svg';
 import { ReactComponent as ProcessIcon } from '../../components/CustomIcons/Process.svg';
+import { ReactComponent as InputOutputIcon } from '../../components/CustomIcons/InputOutput.svg';
 
 export const LocationIconStyled = ()=><LocationIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
 export const PrimitiveIconStyled = ()=><PrimitiveIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
@@ -16,3 +17,4 @@ export const ThingIconStyled = ()=><ThingIcon style={{color:'white',width:18,hei
 export const WaypointIconStyled = ()=><WaypointIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
 export const ContainerIconStyled = ()=><ContainerIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
 export const ProcessIconStyled = ()=><ProcessIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
+export const InputOutputIconStyled = ()=><InputOutputIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
