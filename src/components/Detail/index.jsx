@@ -57,7 +57,6 @@ export const Detail = (_) => {
   }
 
   if (inputOutputItem !== null) {
-    console.log("InputOutputDetial", item);
     return (
       <>
         <InputOutputDetail item={inputOutputItem} position={position} rotation = {rotation} />
@@ -66,7 +65,6 @@ export const Detail = (_) => {
 
   }
   else if (processItem !== null) {
-
     return (
       <>
         {processItem.type === 'processType' && (
@@ -89,10 +87,6 @@ export const Detail = (_) => {
           </>
 
         )}
-
-
-
-
         {item.type === 'waypointType' && (
           <WaypointDetail uuid={item.id} />
         )}

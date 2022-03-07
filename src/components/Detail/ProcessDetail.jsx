@@ -10,6 +10,7 @@ import Collapse from "../Collapse";
 
 
 export const ProcessDetail = ({ item, inputOutputClick }) => {
+    console.log('unqiue id: ' , item);
     const data = useStore(state => state.programData);
     const clearFocusItem = useStore(state => state.clearFocusItem);
     const {
@@ -46,6 +47,7 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
         if (input === true) {
             let list = [];
             let input;
+           
             inputList.forEach((item) => {
                 for (const [key, value] of Object.entries(data)) {
                     if (key === item.thingType) {
@@ -66,7 +68,8 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                                 data={processRef}
                                 highlightColor={"#333333"}
                             />
-                            <Text>{input.name}</Text>
+                            
+                            <Text>{input === undefined ? null : input.name}</Text>
                         </Box>
                     </div>
 
@@ -87,7 +90,7 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                     if (key === item.thingType) {
                         output = value;
                     }
-                    console.log("value is :", item);
+                    
                 }
                 const processRef = referenceTemplateFromSpec('inputOutputType', item, objectTypeInfo);
                 list.push(
@@ -97,7 +100,7 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                             hoverIndicator={true} onClick={() => {
                                 inputOutputClick(output.id, item.position, item.rotation);
                             }}>
-                            <Text>{output.name}</Text>
+                            <Text>{output === undefined ? null : output.name}</Text>
                             <ExternalBlock
                                 store={useStore}
                                 data={processRef}
