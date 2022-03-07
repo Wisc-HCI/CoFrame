@@ -4,6 +4,10 @@ import { Quaternion, Vector3 } from 'three';
 import { ConvexGeometry } from 'three-stdlib';
 import { EVD_MESH_LOOKUP } from './initialSim';
 
+export const distance = (pos1, pos2) => {
+    return Math.sqrt(Math.pow(pos1.x-pos2.x,2)+Math.pow(pos1.y-pos2.y,2)+Math.pow(pos1.z-pos2.z,2))
+   }
+
 const ROBOT_FRAMES = [
     'base_link',
     'shoulder_link',

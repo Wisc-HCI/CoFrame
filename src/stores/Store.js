@@ -66,6 +66,8 @@ useStore.subscribe(store=>
   {equalityFn:shallow}
 )
 
+useStore.getState().performPlanProcess()
+
 // useStore.getState().loadSolver();
 // useStore.getState().setSolver()
 console.log(useStore.getState())

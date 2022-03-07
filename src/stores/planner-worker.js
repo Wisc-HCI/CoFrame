@@ -3,7 +3,6 @@ import { Quaternion } from 'three';
 import { STATUS, STEP_CALCULATOR } from './Constants';
 import { stepProcessors } from './stepProcessing';
 import { DATA_TYPES } from 'simple-vp';
-import { pickBy } from 'lodash';
 
 const ROOT_BOUNDS = [
     {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}, // Translational
@@ -92,19 +91,42 @@ const performStepProcess = async (data) => {
         {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
       ],ROOT_BOUNDS, createStaticEnvironment(scene), null, false, 1, 450);
 
+    // First, preprocess all locations and waypoints:
+    let memo = {};
+    Object.values(programData)
+        .filter(v=>v.type === 'locationType' || v.type === 'waypointType' && v.dataType === DATA_TYPES.INSTANCE)
+        .forEach(data=>{
+            const computeProps = {
+                data,
+                objectTypes,
+                context:programData,
+                path:{route:'root',args:{}},
+                memo,
+                solver,
+                module,
+                urdf
+            }
+            const {memo:newMemo} = stepProcessors[objectTypes[data.type].properties.computeSteps.default](computeProps)
+            memo = {...memo,...newMemo}
+    })
+
+    console.log(memo)
+
     // This is recursive
     const computeProps = {
         data:programData[root],
         objectTypes,
         context:programData,
-        path:[{route:'root',args:{}}],
-        memo: {},
+        path:{route:'root',args:{}},
+        memo,
         solver,
         module,
         urdf
     }
-    const {memo} = stepProcessors[objectTypes.programType.properties.computeSteps.default](computeProps)
+    const {memo:newMemo} = stepProcessors[objectTypes.programType.properties.computeSteps.default](computeProps)
     // const newData = {...imemo,[root]:{properties:{steps,status}}};
+
+    memo = {...memo,...newMemo}
   
     return memo;
 }

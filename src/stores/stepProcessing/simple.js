@@ -93,7 +93,7 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                     }
                     // Update the memo to include the cached values
                     const pathInnerSteps = innerSteps[path];
-                    newMemo = {...newMemo,...innerMemo};
+                    newMemo = merge(newMemo,innerMemo);
                     let lastUpdateTime = 0;
                     pathInnerSteps.forEach(v=>{
                         let stepTime = 0;

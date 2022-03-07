@@ -19,5 +19,11 @@ export const STEP_CALCULATOR = {
 export const STEP_TYPE = {
     LANDMARK: 0,
     SCENE_UPDATE: 1,
-    SCENE_REMOVE: 2
+    SCENE_REMOVE: 2,
+    RAW_DATA: 3
 }
+
+export const ROOT_BOUNDS = [
+    {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}, // Translational
+    {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}  // Rotational
+]

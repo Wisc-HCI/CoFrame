@@ -96,8 +96,8 @@ export default function App() {
                         {menuItems.map(entry => (
                             <Button plain margin={{right:'medium'}} key={entry.modalKey} secondary icon={entry.icon} label={entry.name} onClick={() => setActiveModal(entry.modalKey)}/>
                         ))}
-                        <Button plain label='Loc Test' margin={{right:'medium'}} key='locplanstupid' onClick={()=>performPoseProcess('location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c')}/>
-                        <Button plain label='Plan Test' margin={{right:'medium'}} key='planstupid' onClick={performPlanProcess}/>
+                        {/* <Button plain label='Loc Test' margin={{right:'medium'}} key='locplanstupid' onClick={()=>performPoseProcess('location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c')}/>
+                        <Button plain label='Plan Test' margin={{right:'medium'}} key='planstupid' onClick={performPlanProcess}/> */}
                     </Box>
                 </Header>
                 <Box flex direction='row'>

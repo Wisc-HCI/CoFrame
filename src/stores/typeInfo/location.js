@@ -31,13 +31,6 @@ export const locationType = {
         isList: false,
         fullWidth: true
       },
-      reachable: {
-        name: 'Reachable',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: false,
-        isList: false,
-        fullWidth: true
-      },
       position: {
         name: 'Position',
         type: SIMPLE_PROPERTY_TYPES.IGNORED, 
