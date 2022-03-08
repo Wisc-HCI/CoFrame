@@ -93,7 +93,12 @@ export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
       );
 
     })
-    return list;
+    if (list.length === 0){
+      return null;
+    }else {
+      return list;
+    }
+    
   }
 
 

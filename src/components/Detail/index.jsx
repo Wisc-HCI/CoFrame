@@ -169,56 +169,51 @@ export const Detail = (_) => {
 
   // }
 
-  if (inputOutputItem !== null) {
-    // console.log("InputOutputDetial", item);
-    return (
-      <>
-        <InputOutputDetail item={inputOutputItem} position={position} rotation={rotation} />
-      </>
-    )
+  // if (inputOutputItem !== null) {
+  //   // console.log("InputOutputDetial", item);
+  //   return (
+  //     <>
+  //       <InputOutputDetail item={inputOutputItem} position={position} rotation={rotation} />
+  //     </>
+  //   )
 
-  }
-  else if (processItem !== null) {
+  // }
+  // else if (processItem !== null) {
+  //   return (
+  //     <>
+  //       {processItem.type === 'processType' && (
+  //         <><ProcessDetail item={processItem}
+  //           inputOutputClick={(id, position, rotation) => handleInputOutputClick(id, position, rotation)} /></>
+  //       )}
+  //     </>
+  //   )
+  // } else if (focusItem.uuid && !EDITOR_TYPES.includes(focusItem.type)) {
+  //   return (
+  //     <>
+  //       {item.type === 'locationType' && (
+  //         <LocationDetail uuid={item.id} />
+  //       )}
+  //       {item.type === 'machineType' && (
+  //         <>
+  //           <div>
+  //             <MachineDetail item={item} objectTypeInfo={objectTypeInfo} processClick={(id) => handleProcessClick(id)} />
+  //           </div>
+  //         </>
 
-    return (
-      <>
-        {processItem.type === 'processType' && (
-          <><ProcessDetail item={processItem}
-            inputOutputClick={(id, position, rotation) => handleInputOutputClick(id, position, rotation)} /></>
-        )}
-      </>
-    )
-  } else if (focusItem.uuid && !EDITOR_TYPES.includes(focusItem.type)) {
-    return (
-      <>
-        {item.type === 'locationType' && (
-          <LocationDetail uuid={item.id} />
-        )}
-        {item.type === 'machineType' && (
-          <>
-            <div>
-              <MachineDetail item={item} objectTypeInfo={objectTypeInfo} processClick={(id) => handleProcessClick(id)} />
-            </div>
-          </>
-
-        )}
-
-
-
-
-        {item.type === 'waypointType' && (
-          <WaypointDetail uuid={item.id} />
-        )}
-        {item.type === 'thingTypeType' && (
-          <ThingDetail uuid={item.id} />
-        )}
+  //       )}
+  //       {item.type === 'waypointType' && (
+  //         <WaypointDetail uuid={item.id} />
+  //       )}
+  //       {item.type === 'thingTypeType' && (
+  //         <ThingDetail uuid={item.id} />
+  //       )}
 
 
-      </>
-    );
-  } else {
-    return null
-  }
+  //     </>
+  //   );
+  // } else {
+  //   return null
+  // }
 
 
 }
