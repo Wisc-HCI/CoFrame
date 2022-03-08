@@ -52,6 +52,7 @@ export const GuiSlice = (set, get) => ({
         state.programData[f].selected = true
       }
     });
+    state.activeFocus = state.focus[state.focus.length-1]
   }),
   activeModal: null,
   setActiveModal: (modal) => set(_ => ({ activeModal: modal })),
@@ -61,6 +62,8 @@ export const GuiSlice = (set, get) => ({
   // setActiveDrawer: (drawer) => set(_ => ({ activeDrawer: drawer })),
   // the focusItem specifies the type and uuid of data to focus on
   focus: [],
+  activeFocus: null,
+  setActiveFocus: (id) => set(state=>{state.activeFocus=id}),
   addFocusItem: (id, add) => set(state => {
     // By default clear out the current set
     state.focus.forEach(f => {
@@ -80,6 +83,7 @@ export const GuiSlice = (set, get) => ({
         state.programData[f].selected = true
       }
     });
+    state.activeFocus = state.focus[state.focus.length-1]
   }),
   clearFocus: () => set(state => {
     console.log('clearing focus')
@@ -89,6 +93,7 @@ export const GuiSlice = (set, get) => ({
       }
     });
     state.focus = []
+    state.activeFocus = null
   }),
   // setFocusItem: (type, uuid, transformMode) => set(state=>{
   //   console.log('setFocusItem')
@@ -176,6 +181,8 @@ export const GuiSlice = (set, get) => ({
           state.programData[f].selected = true
         }
       });
+
+      state.activeFocus = state.focus[state.focus.length-1]
     })
   },
   collisionsVisible: false,

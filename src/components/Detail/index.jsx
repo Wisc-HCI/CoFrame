@@ -24,7 +24,7 @@ export const Detail = (_) => {
   } = useStore(state => {
     let item = null;
     state.focus.slice().reverse().some(v => {
-      if (state.programData[v] && DETAIL_TYPES.includes(state.programData[v].type)) {
+      if (state.programData[v] && state.activeFocus === v && DETAIL_TYPES.includes(state.programData[v].type)) {
         item = state.programData[v]
         return true
       } else {

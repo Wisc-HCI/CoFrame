@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Text } from 'grommet';
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
+import { FiChevronRight } from 'react-icons/fi';
 import { getSceneInfo } from '../ContextualInfo/Scene';
 import { getLocationInfo } from '../ContextualInfo/Locations';
 import { getWaypointInfo } from '../ContextualInfo/Waypoints';
@@ -21,7 +22,9 @@ export function InfoTile(_) {
         activeDrawer,
         frame,
         primaryColor,
-        focusData
+        focusData,
+        activeFocus,
+        setActiveFocus
     ] = useStore(state => {
 
 
@@ -54,21 +57,32 @@ export function InfoTile(_) {
             state.frame,
             state.primaryColor,
             focusData,
-            programData
+            state.activeFocus,
+            state.setActiveFocus
         ]
     }, shallow)
 
-    const [currentTab, setCurrentTab] = useState(focusData.length-1);
+    // const [currentTab, setCurrentTab] = useState(focusData.length-1);
 
-    let tabs = focusData.map(focus=>{
+    let tabs = focusData.map((focus,i)=>{
         if (focus.code) {
             // Is an issue
-            return {title:'Issue',contents:<div>ISSUE CONTENT</div>}
+            return {title:'Issue',key:focus.uuid,contents:<div>ISSUE CONTENT</div>}
         } else if (focus.type !== undefined) {
             // Is a block/data object
-            return {title:focus.name,contents:<div>DATA CONTENT</div>}
+            return {title:focus.name,key:focus.id,contents:<div>DATA CONTENT</div>}
         } else {
-            return {title:'null',contents:<div>NULL CONTENT</div>}
+            return {title:'null',key:i,contents:<div>NULL CONTENT</div>}
+        }
+    })
+
+    let tabIdx = 0;
+    tabs.some((tab,i)=>{
+        if (tab.key === activeFocus) {
+            tabIdx = i;
+            return true
+        } else {
+            return false
         }
     })
 
@@ -106,24 +120,24 @@ export function InfoTile(_) {
             header={
                 <Box direction='row'>
                     {tabs.map((tab, i) => (
-                        <div key={i}>
+                        <Box key={i} direction='row' align='center' alignContent='center'>
                             <Button
                                 plain
                                 label={tab.title}
-                                onClick={() => setCurrentTab(i)}
+                                onClick={() => setActiveFocus(tab.key)}
                                 margin={{top:'7pt',bottom:'7pt',right:'5pt',left:'5pt'}}
-                                style={{color:i===currentTab?primaryColor:'white'}}
+                                style={{color:tab.key===activeFocus?primaryColor:'white'}}
                             />
                             {i < tabs.length - 1 && (
-                                <Text>/</Text>
+                                <FiChevronRight/>
                             )}
-                        </div>
+                        </Box>
                         
                     )
                     )}
                 </Box>}>
             <div style={{ height: 'calc(100vh - 543pt)', overflowY: 'scroll' }}>
-                {tabs[currentTab] ? tabs[currentTab].contents : tabs[0].contents}
+                {tabs[tabIdx] ? tabs[tabIdx].contents : tabs[0].contents}
             </div>
         </Tile>
     )
