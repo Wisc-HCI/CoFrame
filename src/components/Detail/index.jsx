@@ -98,6 +98,8 @@ export const Detail = (_) => {
                            />
 
           )}
+
+         
             
 
         </Box>

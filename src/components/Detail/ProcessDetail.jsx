@@ -17,14 +17,15 @@ export const ProcessDetail = ({process}) => {
         if (input === true) {
             let list = [];
             process.properties.inputs.forEach((ioItem) => {
-                const thingTypeItem = Object.values(programData).filter(value => value.id === ioItem.thingType);
-                const processRef = referenceTemplateFromSpec('inputOutputType', thingTypeItem[0], inputOutputTypeInfo);
+                const inputOutputTypeItem = Object.values(programData).filter(value => value.id === ioItem);
+                //const inputOutputTypeItem = Object.values(programData).filter(value => value.type === "inputOutputType" && value.properties.thing === thingTypeItem[0].id);
+                const processRef = referenceTemplateFromSpec('inputOutputType', inputOutputTypeItem[0], inputOutputTypeInfo);
                 list.push(
-                    <div key={ioItem.thingType}>
+                    <div key={ioItem.id}>
                         <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
                             elevation="none" pad="xsmall" justify='center'
                             hoverIndicator={true} onClick={() => {
-                                addFocusItem(ioItem.thingType,true);
+                                addFocusItem(inputOutputTypeItem[0],true);
 
                             }}>
                             <ExternalBlock
@@ -48,14 +49,14 @@ export const ProcessDetail = ({process}) => {
             let list = [];
             
             process.properties.outputs.forEach((ioItem) => {      
-                const thingTypeItem = Object.values(programData).filter(value => value.id === ioItem.thingType);
-                const processRef = referenceTemplateFromSpec('inputOutputType', thingTypeItem[0], inputOutputTypeInfo);
+                const inputOutputTypeItem = Object.values(programData).filter(value => value.id === ioItem);
+                const processRef = referenceTemplateFromSpec('inputOutputType', inputOutputTypeItem[0], inputOutputTypeInfo);
                 list.push(
-                    <div key={ioItem.thingType}>
+                    <div key={ioItem.id}>
                         <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
                             elevation="none" pad="xsmall" justify='center'
                             hoverIndicator={true} onClick={() => {
-                                addFocusItem(ioItem.thingType,true);
+                                addFocusItem(inputOutputTypeItem[0],true);
                             }}>
                             <ExternalBlock
                                 store={useStore}

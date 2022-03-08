@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import useStore from '../../stores/Store';
-import { TextArea, Text, Box} from 'grommet';
-import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
+import { Box} from 'grommet';
+import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 import Collapse from '../Collapse';
 
 export const MachineProcessList = ({ machineId }) => {
@@ -10,11 +10,6 @@ export const MachineProcessList = ({ machineId }) => {
 
   const addFocusItem = useStore(state => state.addFocusItem);
 
-  // const processList = useStore(
-  //   useCallback(
-  //     state => Object.values(state.programData)
-  //       .filter(value => value.type === 'processType' && value.properties.machine === machineId))
-  //   , [machineId])
   const processList = useStore(state => Object.values(state.programData)
        .filter(value => value.type === 'processType' && value.properties.machine === machineId));
 
