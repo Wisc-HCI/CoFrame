@@ -5,9 +5,9 @@ import { RightOutlined } from '@ant-design/icons';
 // import { Row, Empty } from 'antd';
 import { Collapsible, Box } from 'grommet'
 
-export default function Collapse({openable, extra, style, header, children, backgroundColor, borderWidth, internalPaddingWidth}) {
+export default function Collapse({openable, defaultOpen, extra, style, header, children, backgroundColor, borderWidth, internalPaddingWidth}) {
 
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(defaultOpen)
 
     const carrotStyle = useSpring({
         rotate: open ? '90deg' : '0deg',

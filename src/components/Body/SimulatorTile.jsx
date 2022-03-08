@@ -10,8 +10,8 @@ import { InfoTile } from './InfoTile';
 export const SimulatorTile = (_) => {
 
     const primaryColor = useStore(state => state.primaryColor);
-    const clearFocusItem = useStore(state => state.clearFocusItem);
-    const paused = useStore(state => state.focusItem.uuid === null);
+    const clearFocus = useStore(state => state.clearFocus);
+    const paused = useStore(state => state.focus === []);
 
     return (
         <Box direction='column' flex pad='6pt' >
@@ -40,7 +40,7 @@ export const SimulatorTile = (_) => {
                         plane={-0.75}
                         fov={50}
                         store={useStore}
-                        onPointerMissed={clearFocusItem}
+                        onPointerMissed={clearFocus}
                         paused={paused}
                     />
                 </div>

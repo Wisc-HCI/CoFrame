@@ -15,6 +15,7 @@ import {
     pinchpointAnimationFromExecutable
 } from './helpers';
 import debounce from 'lodash.debounce';
+import lodash from 'lodash';
 // import throttle from 'lodash.throttle';
 import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 
@@ -45,15 +46,31 @@ export const computedSlice = (state) => {
     //     }
     // })
 
-    if (state.focusItem.uuid) {
-        const executable = executablePrimitives[state.focusItem.uuid];
-        if (executable) {
-            tfs = tfAnimationFromExecutable(executable, tfs)
-        } //else if (state.data[state.focusItem.uuid].frames) {
-        //  console.log(state.data[state.focusItem.uuid].frames)
-        //    tfs = { ...tfs, ...robotFramesFromPose(state.data[state.focusItem.uuid]) }
-        //}
+    let reversedFocus = [];
+    for (var i = state.focus.length - 1; i >= 0; i--) {
+        reversedFocus.push(state.focus[i]);
     }
+    
+    // Show the tf animation of the farthest-down focus
+    reversedFocus.some(f=>{
+        if (executablePrimitives[f]) {
+            tfs = tfAnimationFromExecutable(executable, tfs)
+            return true
+        } else {
+            return false
+        }
+    })
+
+    // Get the deepest issue in case we need to visualize things
+    let deepestIssue = null;
+    reversedFocus.some(f=>{
+        if (state.issues[f]) {
+            deepestIssue = state.issues[f]
+            return true
+        } else {
+            return false
+        }
+    })
 
     // Pull world based tf data from the machines and robot links
     Object.values(state.programData).filter(v => v.type === 'tfType').forEach(data => {
@@ -66,11 +83,12 @@ export const computedSlice = (state) => {
 
     // ===================== Items =====================
 
-    const focusedTrajectoryChildren = state.focusItem.type === 'trajectory' ? [
-        state.programData[state.focusItem.uuid].properties.startLocation,
-        ...state.programData[state.focusItem.uuid].properties.waypoints,
-        state.programData[state.focusItem.uuid].properties.endLocation,
-    ] : []
+    // const focusedTrajectoryChildren = state.focusItem.type === 'trajectory' ? [
+    //     state.programData[state.focusItem.uuid].properties.startLocation,
+    //     ...state.programData[state.focusItem.uuid].properties.waypoints,
+    //     state.programData[state.focusItem.uuid].properties.endLocation,
+    // ] : []
+    const focusedTrajectoryChildren = [];
 
     // Add items from the initial static scene
     Object.values(state.programData).filter(v => v.type === 'linkType' || v.type === 'fixtureType').forEach(item => {
@@ -78,11 +96,9 @@ export const computedSlice = (state) => {
         let highlighted = false;
         let meshObject = state.programData[item.properties.mesh];
         let collisionObject = item.properties.collision ? state.programData[item.properties.collision] : null;
-        if (ROBOT_PARTS.indexOf(state.focusItem.uuid) >= 0 && ROBOT_PARTS.indexOf(itemKey) >= 0) {
+        if (lodash.intersection(ROBOT_PARTS,state.focus).length > 0 && ROBOT_PARTS.indexOf(itemKey) >= 0) {
             highlighted = true
-        } else if (GRIPPER_PARTS.indexOf(state.focusItem.uuid) >= 0 && GRIPPER_PARTS.indexOf(itemKey) >= 0) {
-            highlighted = true
-        } else if (state.focusItem.uuid === itemKey || state.secondaryFocusItem.uuid === itemKey) {
+        } else if (lodash.intersection(GRIPPER_PARTS,state.focus).length > 0 && GRIPPER_PARTS.includes(itemKey)) {
             highlighted = true
         }
         items[itemKey] = {
@@ -96,17 +112,10 @@ export const computedSlice = (state) => {
             transformMode: "inactive",
             highlighted,
             onClick: (e) => {
-                if (
-                    state.focusItem.transformMode === "translate" ||
-                    state.focusItem.transformMode === "rotate" ||
-                    state.secondaryFocusItem.transformMode === "translate" ||
-                    state.secondaryFocusItem.transformMode === "rotate"
-                ) {
-
-                } else {
+                if (!state.focus.includes('translate') && !state.focus.includes('rotate')) {
                     console.log('clicked ' + item.name)
                     e.stopPropagation();
-                    state.setFocusItem('scene', item.id);
+                    state.addFocusItem(item.id,false);
                 }
 
             },
@@ -164,14 +173,12 @@ export const computedSlice = (state) => {
                 rotation: meshObject.properties.rotation,
                 scale: meshObject.properties.scale,
                 transformMode: 'inactive',
-                highlighted: state.focusItem.uuid === entry.id,
+                highlighted: state.focus.includes(entry.id),
                 onClick: (e) => {
-                    if (state.focusItem.transformMode === "translate" || state.focusItem.transformMode === "rotate") {
-
-                    } else {
+                    if (!state.focus.includes('translate') && !state.focus.includes('rotate')) {
                         console.log('clicked ' + entry.name)
                         e.stopPropagation();
-                        state.setFocusItem('data', entry.id);
+                        state.addFocusItem(entry.id,false);
                     }
 
                 },
@@ -210,7 +217,7 @@ export const computedSlice = (state) => {
 
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
-            const focused = state.focusItem.uuid === entry.id || state.secondaryFocusItem.uuid === entry.id;
+            const focused = state.focus.includes(entry.id);
             const trajectoryFocused = focusedTrajectoryChildren.includes(entry.id);
             let correctEntry = entry.ref ? state.programData[entry.ref] : entry;
 
@@ -228,19 +235,28 @@ export const computedSlice = (state) => {
                 color.a = (time) => 0.5 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
             }
 
-            const debouncedOnMove = debounce(transform => {
-                state.setPoseTransform(entry.id, transform);
-                state.requestJointProcessorUpdate('location', entry.id)
-            }, 1000)
+            // const debouncedOnMove = debounce(transform => {
+            //     state.setPoseTransform(entry.id, transform);
+            //     state.requestJointProcessorUpdate('location', entry.id)
+            // }, 1000)
+
+            const onMove = (transform) => {
+                state.setPoseTransform(entry.id,transform)
+            }
 
             poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
+                const transform = state.focus.includes('translate') 
+                    ? 'translate' 
+                    : state.focus.includes('rotate')
+                    ? 'rotate'
+                    : 'inactive'
                 items[shape.uuid] = {
                     ...shape,
                     highlighted: focused,
                     hidden: !focused && !trajectoryFocused,
                     color,
-                    transformMode: shape.uuid.includes('pointer') && focused ? state.focusItem.transformMode : "inactive",
-                    onMove: shape.uuid.includes('pointer') && focused && state.focusItem.transformMode !== 'inactive' ? debouncedOnMove : (_) => { }
+                    transformMode: shape.uuid.includes('pointer') && focused ? transform : "inactive",
+                    onMove: shape.uuid.includes('pointer') && focused && transform !== 'inactive' ? onMove : (_) => { }
                 };
                 // e => setItemProperty('location', location_uuid, 'position', { ...state.data.locations[location_uuid].position, x: e[0], y: e[1], z: e[2] });
             })
@@ -248,9 +264,9 @@ export const computedSlice = (state) => {
     })
 
     // Pinch Point visualizations
-    if (state.issues[state.secondaryFocusItem.uuid] && state.executablePrimitives[state.focusItem.uuid] && state.issues[state.secondaryFocusItem.uuid].code === 'pinchPoints') {
+    if (deepestIssue && deepestIssue.code === 'pinchPoints' && executablePrimitives[deepestIssue.focus.uuid]) {
         console.log('---------show pinchpoints---------')
-        const pinchPointAnimations = pinchpointAnimationFromExecutable(state.executablePrimitives[state.focusItem.uuid])
+        const pinchPointAnimations = pinchpointAnimationFromExecutable(executablePrimitives[deepestIssue.focus.uuid])
         Object.keys(PINCH_POINT_FIELDS).forEach(field => {
             items[field] = {
                 shape: 'sphere',
@@ -300,7 +316,7 @@ export const computedSlice = (state) => {
         if (ePrim) {
             Object.values(ePrim).forEach(primitive => {
                 if (primitive.type === "move-trajectory") {
-                    const hidden = state.focusItem.uuid !== primitive.uuid && state.secondaryFocusItem.uuid !== primitive.uuid;
+                    const hidden = !state.focus.includes(primitive.uuid);
                     if (state.secondaryFocusItem.type === "issue") {
                         const currentIssue = state.issues[state.secondaryFocusItem.uuid];
                         if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.vertices) {
@@ -316,7 +332,7 @@ export const computedSlice = (state) => {
     });
 
     Object.values(state.programData).filter(v => v.type === 'trajectoryType').forEach(trajectory => {
-        const hidden = state.focusItem.uuid !== trajectory.id && state.secondaryFocusItem.uuid !== trajectory.id;
+        const hidden = !state.focus.includes(trajectory.id);
         let poses = []
         if (trajectory.properties.startLocation) {
             poses.push(state.programData[trajectory.properties.startLocation])
@@ -351,7 +367,7 @@ export const computedSlice = (state) => {
         if (ePrim) {
             Object.values(ePrim).forEach(primitive => {
                 if (primitive.type === "node.primitive.move-trajectory.") {
-                    const hidden = state.focusItem.uuid !== primitive.uuid && state.secondaryFocusItem.uuid !== primitive.uuid;
+                    const hidden = !state.focus.includes(primitive.uuid);
                     if (state.secondaryFocusItem.type === "issue") {
                         const currentIssue = state.issues[state.secondaryFocusItem.uuid];
                         if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.hulls) {

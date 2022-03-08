@@ -1,9 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import useStore from '../../stores/Store';
 import { TextArea, Text, Box, TextInput, Button, Accordion, AccordionPanel, Layer, DropButton } from 'grommet';
 import { FormClose, Trash } from 'grommet-icons';
 import { DATA_TYPES, ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 import Collapse from '../Collapse';
+
+export const MachineProcessList = ({ machineId }) => {
+
+  const processTypeInfo = useStore(state => state.programSpec.objectTypes.processType)
+
+  const addFocusItem = useStore(state => state.addFocusItem);
+
+  // const processList = useStore(
+  //   useCallback(
+  //     state => Object.values(state.programData)
+  //       .filter(value => value.type === 'processType' && value.properties.machine === machineId))
+  //   , [machineId])
+  const processList = useStore(state => Object.values(state.programData)
+       .filter(value => value.type === 'processType' && value.properties.machine === machineId));
+
+  return (
+    <Collapse
+      openable={true}
+      borderWidth={3}
+      defaultOpen={true}
+      style={{backgroundColor:'#303030',marginBottom: 5}}
+      backgroundColor='#202020'
+      header={<Box direction='row' pad="10pt">Process: </Box>}
+    >
+
+      {processList.map(process => {
+        const processRef = referenceTemplateFromSpec('processType', process, processTypeInfo);
+        return (
+          <Box key={process.id} round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
+            elevation="none" pad="xsmall" justify='center'
+            hoverIndicator={true}
+            onClick={() => {
+              addFocusItem(process.id, true);
+            }}>
+            <ExternalBlock
+              store={useStore}
+              data={processRef}
+              highlightColor={"#333333"}
+            />
+          </Box>
+        )
+      })}
+    </Collapse>
+  )
+}
 
 export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
   const data = useStore(state => state.programData);
@@ -93,7 +138,7 @@ export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
                 pad="small" >
                 <Box direction='column'>
 
-                 
+
 
                   <Collapse
                     openable={true}
@@ -101,10 +146,10 @@ export const MachineDetail = ({ item, objectTypeInfo, processClick }) => {
                     header={<Box direction='row' pad="10pt">Process: </Box>}
                     style={{ marginBottom: 5 }}
                   >
-                    
-                      {RenderProcessList()}
-                    
-                   
+
+                    {RenderProcessList()}
+
+
                   </Collapse>
 
 
