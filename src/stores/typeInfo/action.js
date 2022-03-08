@@ -206,19 +206,19 @@ const moveTrajectoryFeatures = {
   }
 }
 
-const moveUnplannedFeatures = {
-  name: 'Move Unplanned',
-  properties: {
-    description: {default: 'Instantly Move Robot (initialization only)'},
-    location: {
-      name: "To Location",
-      accepts: ["locationType"],
-      default: null,
-      isList: false
-    },
-    computeSteps: {default:STEP_CALCULATOR.ROBOT_MOTION}
-  }
-}
+// const moveUnplannedFeatures = {
+//   name: 'Move Unplanned',
+//   properties: {
+//     description: {default: 'Instantly Move Robot (initialization only)'},
+//     location: {
+//       name: "To Location",
+//       accepts: ["locationType"],
+//       default: null,
+//       isList: false
+//     },
+//     computeSteps: {default:STEP_CALCULATOR.ROBOT_MOTION}
+//   }
+// }
 
 const actionTypes = {
   delayType: merge(delayFeatures,basicActionData),
@@ -228,7 +228,7 @@ const actionTypes = {
   processStopType: merge(processStopFeatures,basicActionData),
   processWaitType: merge(processWaitFeatures,basicActionData),
   moveTrajectoryType: merge(moveTrajectoryFeatures,basicActionData),
-  moveUnplannedType: merge(moveUnplannedFeatures,basicActionData),
+  // moveUnplannedType: merge(moveUnplannedFeatures,basicActionData),
   breakpointType: merge(breakpointFeatures,basicActionData,{instanceBlock:{color: "#3a5e40"}})
 }
 

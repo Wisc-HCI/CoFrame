@@ -53,7 +53,7 @@ export const programType = {
         fullWidth: true
       },
       initialGripper: {
-        name: 'Gripper State',
+        name: 'Initial Grip State',
         type: SIMPLE_PROPERTY_TYPES.NUMBER,
         default: 50,
         min: 0,
