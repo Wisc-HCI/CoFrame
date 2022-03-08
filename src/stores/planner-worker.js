@@ -94,7 +94,7 @@ const performStepProcess = async (data) => {
     // First, preprocess all locations and waypoints:
     let memo = {};
     Object.values(programData)
-        .filter(v=>v.type === 'locationType' || v.type === 'waypointType' && v.dataType === DATA_TYPES.INSTANCE)
+        .filter(v=>(v.type === 'locationType' || v.type === 'waypointType') && v.dataType === DATA_TYPES.INSTANCE)
         .forEach(data=>{
             const computeProps = {
                 data,

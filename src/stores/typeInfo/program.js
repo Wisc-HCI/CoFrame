@@ -52,6 +52,12 @@ export const programType = {
         isList: false,
         fullWidth: true
       },
+      initialPosition: {
+        name: 'Initial Location',
+        accepts: ['locationType'],
+        default: null,
+        isList: false
+      },
       children: {
         name: 'Children',
         accepts: ['hierarchicalType', 'skillType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'],
