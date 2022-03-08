@@ -91,6 +91,14 @@ export const Detail = (_) => {
           {item.type === 'machineType' && (
             <MachineProcessList machineId={item.id}/>
           )}
+
+          {item.type === 'processType' &&(
+            <ProcessDetail process = {item}
+                           />
+
+          )}
+
+         
             
 
         </Box>
