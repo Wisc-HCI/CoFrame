@@ -52,6 +52,13 @@ export const programType = {
         isList: false,
         fullWidth: true
       },
+      initialGripper: {
+        name: 'Gripper State',
+        type: SIMPLE_PROPERTY_TYPES.NUMBER,
+        default: 50,
+        min: 0,
+        max: 85
+      },
       initialPosition: {
         name: 'Initial Location',
         accepts: ['locationType'],
