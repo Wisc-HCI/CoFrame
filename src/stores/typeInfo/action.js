@@ -54,11 +54,12 @@ const delayFeatures = {
   properties: {
     description: {default: 'Delay action for a specified amount of time'},
     duration: {
-      name: 'Duration',
+      name: 'Duration (sec)',
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
-      default: 1,
+      default: 1000,
       min: 0,
-      max: 5
+      max: Infinity,
+      visualScaling: 1/1000
     },
     computeSteps: {default:STEP_CALCULATOR.DELAY}
   }

@@ -46,7 +46,8 @@ export const processType = {
         type: SIMPLE_PROPERTY_TYPES.NUMBER,
         default: 0,
         min: 0,
-        max: null
+        max: Infinity,
+        visualScaling: 1/1000
       },
       inputs: {
         name: 'Inputs',
