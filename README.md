@@ -8,7 +8,7 @@ and an expert checklist that directs the operator to think in four frames:
 Safety, Program Quality, Robot Performance, and Buisness Objectives.
 
 ## System Architecture
-The current version of this system involves a web-based front-end and a ROS-based backend used for executing reachability detection and trajectory planning. While teh system functions basically without the backend, it is unable to generate data that is useful feedback without this connection. This means that to execute, you will need to install and run the ROS package according to the instructions below. 
+The current version of this system involves a web-based front-end and a ROS-based backend used for executing reachability detection and trajectory planning. While the system functions basically without the backend, it is unable to generate data that is useful feedback without this connection. This means that to execute, you will need to install and run the ROS package according to the instructions below. 
 
 Note, there is a version of the system that is currently being developed that does not need this backend to function (available in the `refactor` branch. Currently, this version is not fully functional and may contain errors. We hope to have this new version fully functional soon.
 
