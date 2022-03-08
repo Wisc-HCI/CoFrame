@@ -4,7 +4,7 @@ import { MachineProcessList } from './MachineDetail';
 import { ThingDetail } from './ThingDetail';
 import { WaypointDetail } from './WaypointDetail';
 import { ProcessIOList } from './ProcessDetail';
-import { InputOutputDetail } from './InputOutputDetail';
+import { ProcessIOPositionRotationDetail } from './InputOutputDetail';
 
 import { TextArea, Text, Box, TextInput, Button, Layer, DropButton } from 'grommet';
 
@@ -118,11 +118,14 @@ export const Detail = (_) => {
 
           )}
 
-          {/* {item.type === 'processType' &&(
-            <ProcessDetail process = {item}
-                           />
+          {item.type === 'inputOutputType' &&(
+            <>
+              <ProcessIOPositionRotationDetail inputOutputId = {item.id}/>
+            </>
+          )
 
-          )} */}
+          }
+
 
 
 
@@ -180,74 +183,7 @@ export const Detail = (_) => {
 
 
 
-  // function handleProcessClick(id) {
-  //   //console.log(id);
-  //   for (const [key, value] of Object.entries(data)) {
-  //     if (value.type === "processType" && value.id === id) {
-  //       //console.log('entered1');
-  //       setProcessItem(value);
-  //     }
-  //   }
-  // }
-
-  // function handleInputOutputClick(id, position, rotation) {
-
-  //   for (const [key, value] of Object.entries(data)) {
-  //     if (value.id === id) {
-  //       setInputOutputItem(value);
-  //       setPosition(position);
-  //       setRotation(rotation);
-  //     }
-  //   }
-
-  // }
-
-  // if (inputOutputItem !== null) {
-  //   // console.log("InputOutputDetial", item);
-  //   return (
-  //     <>
-  //       <InputOutputDetail item={inputOutputItem} position={position} rotation={rotation} />
-  //     </>
-  //   )
-
-  // }
-  // else if (processItem !== null) {
-  //   return (
-  //     <>
-  //       {processItem.type === 'processType' && (
-  //         <><ProcessDetail item={processItem}
-  //           inputOutputClick={(id, position, rotation) => handleInputOutputClick(id, position, rotation)} /></>
-  //       )}
-  //     </>
-  //   )
-  // } else if (focusItem.uuid && !EDITOR_TYPES.includes(focusItem.type)) {
-  //   return (
-  //     <>
-  //       {item.type === 'locationType' && (
-  //         <LocationDetail uuid={item.id} />
-  //       )}
-  //       {item.type === 'machineType' && (
-  //         <>
-  //           <div>
-  //             <MachineDetail item={item} objectTypeInfo={objectTypeInfo} processClick={(id) => handleProcessClick(id)} />
-  //           </div>
-  //         </>
-
-  //       )}
-  //       {item.type === 'waypointType' && (
-  //         <WaypointDetail uuid={item.id} />
-  //       )}
-  //       {item.type === 'thingTypeType' && (
-  //         <ThingDetail uuid={item.id} />
-  //       )}
-
-
-  //     </>
-  //   );
-  // } else {
-  //   return null
-  // }
-
+  
 
 }
 

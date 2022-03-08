@@ -16,8 +16,6 @@ export const ProcessIOList = ({ processId, isInput }) => {
             ? state.programData[processId].properties.inputs.map(io=>state.programData[io])
             : state.programData[processId].properties.outputs.map(io=>state.programData[io]);
     });
-
-    console.log(ioList)
   
     return (
       <Collapse
