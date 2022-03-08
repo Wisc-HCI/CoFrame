@@ -448,7 +448,7 @@
     "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc": {
         "type": "inputOutputType",
         "id": "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc",
-        "name": "Input / Output",
+        "name": "Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -474,7 +474,7 @@
     "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b": {
         "type": "inputOutputType",
         "id": "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b",
-        "name": "Input / Output",
+        "name": "Transport Jig",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -500,7 +500,7 @@
     "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7": {
         "type": "inputOutputType",
         "id": "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -548,7 +548,7 @@
     "inputOutput-qazxc345-ip10-srg6-gyh6-ds5dytb56h": {
         "type": "inputOutputType",
         "id": "inputOutput-qazxc345-ip10-srg6-gyh6-ds5dytb56h",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -574,7 +574,7 @@
     "inputOutput-rjvneis1-nj20-tuy0-qwe6-d5janc89an0": {
         "type": "inputOutputType",
         "id": "inputOutput-rjvneis1-nj20-tuy0-qwe6-d5janc89an0",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -600,7 +600,7 @@
     "inputOutput-sjnv3fne9-io89-try0-qre6-d8ncns9nf0": {
         "type": "inputOutputType",
         "id": "inputOutput-sjnv3fne9-io89-try0-qre6-d8ncns9nf0",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -648,7 +648,7 @@
     "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9s": {
         "type": "inputOutputType",
         "id": "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -674,7 +674,7 @@
     "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s": {
         "type": "inputOutputType",
         "id": "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -700,7 +700,7 @@
     "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9": {
         "type": "inputOutputType",
         "id": "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -726,7 +726,7 @@
     "inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s": {
         "type": "inputOutputType",
         "id": "inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -775,7 +775,7 @@
     "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d": {
         "type": "inputOutputType",
         "id": "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -801,7 +801,7 @@
     "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s": {
         "type": "inputOutputType",
         "id": "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -827,7 +827,7 @@
     "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0": {
         "type": "inputOutputType",
         "id": "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -853,7 +853,7 @@
     "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923": {
         "type": "inputOutputType",
         "id": "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923",
-        "name": "Input / Output",
+        "name": "Sheathed Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {

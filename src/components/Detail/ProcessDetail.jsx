@@ -10,7 +10,7 @@ import Collapse from "../Collapse";
 
 
 export const ProcessDetail = ({ item, inputOutputClick }) => {
-    console.log('unqiue id: ' , item);
+   
     const data = useStore(state => state.programData);
     const clearFocusItem = useStore(state => state.clearFocusItem);
     const {
@@ -18,7 +18,8 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
     } = useStore(state => ({
         objectTypeInfo: item.type ? state.programSpec.objectTypes[data[item.id].type] : null
     }), shallow);
-
+    
+    console.log("objectTypeInfo : ", objectTypeInfo);
     const inputList = useStore(state => {
         let list = [];
 
@@ -52,9 +53,10 @@ export const ProcessDetail = ({ item, inputOutputClick }) => {
                 for (const [key, value] of Object.entries(data)) {
                     if (key === item.thingType) {
                         input = value;
+                        console.log("hunter's uniqu input is :" , input);
                     }
                 }
-                const processRef = referenceTemplateFromSpec('inputOutputType', item, objectTypeInfo);
+                const processRef = referenceTemplateFromSpec('inputOutputType', input, objectTypeInfo);
                 list.push(
                     <div key={item.id}>
                         <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
