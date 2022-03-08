@@ -69,7 +69,7 @@ const breakpointFeatures = {
   name: 'Breakpoint',
   properties: {
     description: {default: 'Stop computation and processing here'},
-    computeSteps: {default:STEP_CALCULATOR.NULL}
+    computeSteps: {default:STEP_CALCULATOR.BREAK}
   }
 }
 
@@ -222,14 +222,14 @@ const moveUnplannedFeatures = {
 
 const actionTypes = {
   delayType: merge(delayFeatures,basicActionData),
-  breakpointType: merge(breakpointFeatures,basicActionData),
   gripperType: merge(gripperFeatures,basicActionData),
   machineInitType: merge(machineInitFeatures,basicActionData),
   processStartType: merge(processStartFeatures,basicActionData),
   processStopType: merge(processStopFeatures,basicActionData),
   processWaitType: merge(processWaitFeatures,basicActionData),
   moveTrajectoryType: merge(moveTrajectoryFeatures,basicActionData),
-  moveUnplannedType: merge(moveUnplannedFeatures,basicActionData)
+  moveUnplannedType: merge(moveUnplannedFeatures,basicActionData),
+  breakpointType: merge(breakpointFeatures,basicActionData,{instanceBlock:{color: "#3a5e40"}})
 }
 
 console.log(actionTypes)

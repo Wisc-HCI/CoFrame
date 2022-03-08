@@ -7,6 +7,7 @@ import { processSteps } from './process';
 import { robotMotionSteps } from './robotMotion';
 import { simpleSteps } from './simple';
 import { skillSteps } from './skill';
+import { breakSteps } from "./break";
 
 import { STEP_CALCULATOR, STATUS } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
@@ -20,7 +21,8 @@ const KEY_MAPPING = {
     SKILL: skillSteps,
     POSE: poseSteps,
     GRIPPER: gripperMotionSteps,
-    ROBOT_MOTION: robotMotionSteps
+    ROBOT_MOTION: robotMotionSteps,
+    BREAK: breakSteps
 }
 // Ordering corresponds to the values in the STEP_CALCULATOR constant
 
@@ -54,11 +56,20 @@ export const leafLogic = ({data, objectTypes, context, path, memo, solver, modul
     let newSteps = {};
     let updated = false;
     let status = STATUS.VALID;
+    let shouldBreak = false;
     if (memo[data.id]?.properties.steps[path]) {
         // Use the version in the memo
         console.log('using memoized version of ',data.id)
         newSteps = memo[data.id].properties.steps;
         status = memo[data.id].properties.status;
+        newSteps[path].some(step=>{
+            if (step.data.break) {
+                shouldBreak = true
+                return true
+            } else {
+                return false
+            }
+        })
         // Record a change if the status was previously pending
         updated = data.properties.status === STATUS.PENDING;
     } else if ([STATUS.FAILED,STATUS.VALID].includes(data.properties.status) && data.properties.steps[path]) {
@@ -70,6 +81,14 @@ export const leafLogic = ({data, objectTypes, context, path, memo, solver, modul
             : memo[data.id].properties.steps[path] 
             ? memo[data.id].properties.steps
             : {...memo[data.id].properties.steps,[path]:prevPath}
+        newSteps[path].some(step=>{
+            if (step.data.break) {
+                shouldBreak = true
+                return true
+            } else {
+                return false
+            }
+        })
         // Record a change if the status was previously pending
         status = data.properties.status;
         updated = data.properties.status === STATUS.PENDING;
@@ -79,12 +98,12 @@ export const leafLogic = ({data, objectTypes, context, path, memo, solver, modul
         const steps = result.steps;
         updated = true;
         status = result.status;
-        console.log(result.status)
+        shouldBreak = result.break;
         newSteps = memo[data.id] ? {...memo[data.id].properties.steps,[path]:steps} : {[path]:steps};
     }
     // Pack the data/steps into the memo
     const dataMemo = {...data,properties:{...data.properties,status,steps:newSteps}};
     const newMemo = {...newMemo,[data.id]:dataMemo};
     console.log(newMemo)
-    return {steps:newSteps, memo:newMemo, status, updated}
+    return {steps:newSteps, memo:newMemo, status, updated, break:shouldBreak}
 }

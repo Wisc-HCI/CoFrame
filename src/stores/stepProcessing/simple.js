@@ -15,6 +15,7 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
 
     let newSteps = {[path]:[]};
     let lastTime = 0;
+    let shouldBreak = false;
     
     Object.entries(objectType.properties).forEach(([property,propertyInfo])=>{
         if (propertyInfo.accepts && !propertyInfo.isList) {
@@ -57,7 +58,7 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
         } else if (propertyInfo.accepts && propertyInfo.isList) {
             // Handle the list-based properties. Generally these are children properties, 
             // and correspond to the steps of a hierarchical, program, or skill.
-            data.properties[property].forEach(id=>{
+            data.properties[property].some(id=>{
                 // Retrieve the actual instance based on context
                 const dataNode = findInstance(id,context);
                 const computeProps = {
@@ -73,6 +74,7 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                 if (!dataNode && !propertyInfo.nullValid) {
                     // If the node is null and it isn't allowed, log as a failure
                     status = STATUS.FAILED;
+                    return false
                 } else {
                     // Recurse into the node
                     // console.log(objectTypes[dataNode.type].properties.computeSteps)
@@ -81,7 +83,8 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                         steps:innerSteps,
                         memo:innerMemo, 
                         status:innerStatus, 
-                        updated:innerUpdated
+                        updated:innerUpdated,
+                        break:innerBreak
                     } = stepProcessors[objectTypes[dataNode.type].properties.computeSteps.default](computeProps)
                     if (innerUpdated) {
                         // Child is updated, so the parent is as well.
@@ -122,6 +125,11 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
                     if (pathInnerSteps.length > 0) {
                         lastTime = lastTime + lastUpdateTime
                     }
+                    if (innerBreak) {
+                        shouldBreak = true;
+                        return true
+                    }
+                    return false
                 }
 
             })
@@ -134,7 +142,7 @@ export const simpleSteps = ({data, objectTypes, context, path, memo, solver, mod
     }
     newMemo = {...newMemo,[data.id]:dataMemo};
 
-    return {steps:newSteps, memo:newMemo, status, updated}
+    return {steps:newSteps, memo:newMemo, status, updated, break:shouldBreak}
 }
 
 /*

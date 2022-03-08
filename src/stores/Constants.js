@@ -13,7 +13,8 @@ export const STEP_CALCULATOR = {
     SKILL: 5,
     POSE: 6,
     GRIPPER: 7,
-    ROBOT_MOTION: 8
+    ROBOT_MOTION: 8,
+    BREAK: 9
 }
 
 export const STEP_TYPE = {
