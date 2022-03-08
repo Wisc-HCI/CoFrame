@@ -1,5 +1,6 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled } from "./icons";
+import { FiMoreHorizontal } from "react-icons/fi";
 import { STATUS, STEP_CALCULATOR } from "../Constants";
 
 export const trajectoryType = {
@@ -12,7 +13,15 @@ export const trajectoryType = {
       icon: ContainerIconStyled,
       extras: [
         EXTRA_TYPES.LOCKED_INDICATOR,
-        EXTRA_TYPES.DELETE_BUTTON
+        {
+          icon: FiMoreHorizontal,
+          type: EXTRA_TYPES.DROPDOWN,
+          contents: [
+            EXTRA_TYPES.DELETE_BUTTON,
+            EXTRA_TYPES.DEBUG_TOGGLE,
+            EXTRA_TYPES.SELECTION_TOGGLE
+          ]
+        }
       ]
     },
     properties: {

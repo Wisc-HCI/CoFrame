@@ -1,7 +1,7 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { STATUS, STEP_CALCULATOR } from "../Constants";
 import { InputOutputIconStyled } from "./icons";
-//import {Tasks} from 'grommet-icons';
+import { FiMoreHorizontal } from "react-icons/fi";
 
 export const inputOutputType = {
   name: 'Input / Output',
@@ -9,7 +9,19 @@ export const inputOutputType = {
   referenceBlock: {
     onCanvas: false,
     color: '#0072b2',
-    icon: InputOutputIconStyled
+    icon: InputOutputIconStyled,
+    extras: [
+      EXTRA_TYPES.LOCKED_INDICATOR,
+      {
+        icon: FiMoreHorizontal,
+        type: EXTRA_TYPES.DROPDOWN,
+        contents: [
+          EXTRA_TYPES.DELETE_BUTTON,
+          EXTRA_TYPES.DEBUG_TOGGLE,
+          EXTRA_TYPES.SELECTION_TOGGLE
+        ]
+      }
+    ]
   },
   properties: {
     description: {

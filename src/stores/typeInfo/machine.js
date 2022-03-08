@@ -18,7 +18,8 @@ export const machineType = {
           type: EXTRA_TYPES.DROPDOWN,
           contents: [
             EXTRA_TYPES.DELETE_BUTTON,
-            EXTRA_TYPES.DEBUG_TOGGLE
+            EXTRA_TYPES.DEBUG_TOGGLE,
+            EXTRA_TYPES.SELECTION_TOGGLE
           ]
         }
       ]

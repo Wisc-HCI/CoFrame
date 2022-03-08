@@ -18,7 +18,8 @@ const basicActionData = {
         type: EXTRA_TYPES.DROPDOWN,
         contents: [
           EXTRA_TYPES.DELETE_BUTTON,
-          EXTRA_TYPES.DEBUG_TOGGLE
+          EXTRA_TYPES.DEBUG_TOGGLE,
+          EXTRA_TYPES.SELECTION_TOGGLE
         ]
       }
     ]

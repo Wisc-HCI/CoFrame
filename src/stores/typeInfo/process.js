@@ -1,6 +1,7 @@
-import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
+import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { STATUS, STEP_CALCULATOR } from "../Constants";
 import { ProcessIconStyled } from "./icons";
+import { FiMoreHorizontal } from "react-icons/fi";
 
 export const processType = {
     name: 'Process',
@@ -10,6 +11,18 @@ export const processType = {
       onCanvas: false,
       color: "#a83832",
       icon: ProcessIconStyled,
+      extras: [
+        EXTRA_TYPES.LOCKED_INDICATOR,
+        {
+          icon: FiMoreHorizontal,
+          type: EXTRA_TYPES.DROPDOWN,
+          contents: [
+            EXTRA_TYPES.DELETE_BUTTON,
+            EXTRA_TYPES.DEBUG_TOGGLE,
+            EXTRA_TYPES.SELECTION_TOGGLE
+          ]
+        }
+      ]
     },
     properties: {
       description: {

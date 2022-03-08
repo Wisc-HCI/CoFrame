@@ -15,6 +15,7 @@ import { getTrajectoryInfo } from '../ContextualInfo/TrajectoryBlock';
 import { getPlotInfo } from '../ContextualInfo/Plots';
 import Tile from '../Tile';
 import { DATA_TYPES } from 'simple-vp';
+import actionTypes from '../../stores/typeInfo/action';
 
 export function InfoTile(_) {
 
@@ -64,13 +65,20 @@ export function InfoTile(_) {
 
     // const [currentTab, setCurrentTab] = useState(focusData.length-1);
 
-    let tabs = focusData.map((focus,i)=>{
-        if (focus.code) {
+    let tabs = focusData.map((focusItem,i)=>{
+        if (focusItem.code) {
             // Is an issue
-            return {title:'Issue',key:focus.uuid,contents:<div>ISSUE CONTENT</div>}
-        } else if (focus.type !== undefined) {
+            let contents = <div>ISSUE CONTENT</div>;
+            return {title:'Issue',key:focusItem.uuid,contents}
+        } else if (focusItem.type !== undefined) {
+            let contents = <div>DATA CONTENT</div>;
+            if (focusItem.type === 'programType') {
+                contents = getProgramInfo({frame, primaryColor, focusData:focusItem})
+            } else if (Object.keys(actionTypes).includes(focusItem.type)) {
+                contents = getPrimitiveInfo({frame, primaryColor, focusData:focusItem})
+            }
             // Is a block/data object
-            return {title:focus.name,key:focus.id,contents:<div>DATA CONTENT</div>}
+            return {title:focusItem.name,key:focusItem.id,contents}
         } else {
             return {title:'null',key:i,contents:<div>NULL CONTENT</div>}
         }

@@ -149,6 +149,7 @@ export const GuiSlice = (set, get) => ({
   // }),
   updateItemSelected: (id, value) => {
     set((state) => {
+      console.log({id,value})
       const item = state.programData[id];
       const usedId = (item.dataType === DATA_TYPES.REFERENCE || item.dataType === DATA_TYPES.CALL) ? item.ref : id;
       

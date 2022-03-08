@@ -12,9 +12,7 @@ import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 import { FiTrash, FiX } from 'react-icons/fi';
 
-const DETAIL_TYPES = ['machineType','inputOutputType','processType','locationType','waypointType']
-
-
+const DETAIL_TYPES = ['machineType','inputOutputType','processType','locationType','waypointType','thingType']
 
 export const Detail = (_) => {
 
@@ -62,6 +60,7 @@ export const Detail = (_) => {
           align="center"
           as="header"
           justify="between"
+          background='#202020'
           border={{ side: 'bottom', color: '#333333' }}
         >
           <Text margin={{ left: 'small' }} size="xlarge" style={{ textTransform: 'capitalize',color:objectColor }}>
