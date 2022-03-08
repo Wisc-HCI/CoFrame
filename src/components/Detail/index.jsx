@@ -3,7 +3,7 @@ import { LocationDetail } from './LocationDetail';
 import { MachineProcessList } from './MachineDetail';
 import { ThingDetail } from './ThingDetail';
 import { WaypointDetail } from './WaypointDetail';
-import { ProcessDetail } from './ProcessDetail';
+import { ProcessIOList } from './ProcessDetail';
 import { InputOutputDetail } from './InputOutputDetail';
 
 import { TextArea, Text, Box, TextInput, Button, Layer, DropButton } from 'grommet';
@@ -11,8 +11,9 @@ import { TextArea, Text, Box, TextInput, Button, Layer, DropButton } from 'gromm
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 import { FiTrash, FiX } from 'react-icons/fi';
+import { NumberInput } from '../NumberInput';
 
-const DETAIL_TYPES = ['machineType','inputOutputType','processType','locationType','waypointType','thingType']
+const DETAIL_TYPES = ['machineType', 'inputOutputType', 'processType', 'locationType', 'waypointType', 'thingType']
 
 export const Detail = (_) => {
 
@@ -37,24 +38,25 @@ export const Detail = (_) => {
 
   const addFocusItem = useStore(state => state.addFocusItem);
   const clearFocus = useStore(state => state.clearFocus);
+  const updateItemSimpleProperty = useStore(state=>state.updateItemSimpleProperty);
 
   // const [processItem, setProcessItem] = useState(null);
   // const [inputOutputItem, setInputOutputItem] = useState(null);
   // const [position, setPosition] = useState(null);
   // const [rotation, setRotation] = useState(null);
-  console.log('BLOCK DATA',objectTypeInfo)
-  const objectColor = objectTypeInfo?.instanceBlock?.color 
-    ? objectTypeInfo.instanceBlock.color 
-    : objectTypeInfo?.referenceBlock?.color 
-    ? objectTypeInfo?.referenceBlock.color 
-    : '#333333'
+  
+  const objectColor = objectTypeInfo?.instanceBlock?.color
+    ? objectTypeInfo.instanceBlock.color
+    : objectTypeInfo?.referenceBlock?.color
+      ? objectTypeInfo?.referenceBlock.color
+      : '#333333'
 
   if (!item) {
     return null
   }
   return (
     <Layer full="vertical" onEsc={clearFocus} position="right" modal={false}>
-      <Box fill style={{ minWidth: '378px' }} background='#444444' border={{ side: 'left', color: objectColor, size:'medium' }}>
+      <Box fill style={{ minWidth: '378px' }} background='#444444' border={{ side: 'left', color: objectColor, size: 'medium' }}>
         <Box
           direction="row"
           align="center"
@@ -63,7 +65,7 @@ export const Detail = (_) => {
           background='#202020'
           border={{ side: 'bottom', color: '#333333' }}
         >
-          <Text margin={{ left: 'small' }} size="xlarge" style={{ textTransform: 'capitalize',color:objectColor }}>
+          <Text margin={{ left: 'small' }} size="xlarge" style={{ textTransform: 'capitalize', color: objectColor }}>
             {objectTypeInfo.name} Information
           </Text>
           <Button icon={<FiX />} onClick={clearFocus} />
@@ -76,7 +78,7 @@ export const Detail = (_) => {
           // onChange={e => setItemProperty(focusItem.type, focusItem.uuid, 'name', e.target.value)}
           />
           <br />
-          
+
           <Box round="xsmall" pad="small" background="#303030" >
             <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Description : </b>
             <div>
@@ -88,18 +90,42 @@ export const Detail = (_) => {
           </Box>
           <br />
 
-          {item.type === 'machineType' && (
-            <MachineProcessList machineId={item.id}/>
+          {item.properties.processTime !== undefined && (
+            <Box direction='row' background='#303030' round="xsmall" pad="small" style={{marginBottom: 5}} justify='between'>
+              <Text style={{ paddingRight: '3%' }}>Time :</Text>
+              <Box direction='row'>
+                <NumberInput 
+                    value={item.properties.processTime} 
+                    min={0} 
+                    max={Infinity} 
+                    onChange={(value)=>updateItemSimpleProperty(item.id, 'processTime', value)}
+                    disabled={!item.canDelete} 
+                    visualScaling={1/1000}/>
+                <Text style={{ paddingLeft: "4%" }}>sec</Text>
+              </Box>
+            </Box>
           )}
 
-          {item.type === 'processType' &&(
+          {item.type === 'machineType' && (
+            <MachineProcessList machineId={item.id} />
+          )}
+
+          {item.type === 'processType' && (
+            <>
+              <ProcessIOList processId={item.id} isInput />
+              <ProcessIOList processId={item.id} />
+            </>
+
+          )}
+
+          {/* {item.type === 'processType' &&(
             <ProcessDetail process = {item}
                            />
 
-          )}
+          )} */}
 
-         
-            
+
+
 
         </Box>
         <Box

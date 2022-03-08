@@ -1,6 +1,6 @@
 import React from 'react';
 import useStore from '../../stores/Store';
-import { Box} from 'grommet';
+import { Box, Text } from 'grommet';
 import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 import Collapse from '../Collapse';
 
@@ -23,7 +23,7 @@ export const MachineProcessList = ({ machineId }) => {
       header={<Box direction='row' pad="10pt">Process: </Box>}
     >
 
-      {processList.map(process => {
+      {processList.length > 0 ? processList.map(process => {
         const processRef = referenceTemplateFromSpec('processType', process, processTypeInfo);
         return (
           <Box key={process.id} round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
@@ -39,7 +39,9 @@ export const MachineProcessList = ({ machineId }) => {
             />
           </Box>
         )
-      })}
+      }) : (
+        <Text alignSelf='center'>No Associated Processes</Text>
+      )}
     </Collapse>
   )
 }
