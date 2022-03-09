@@ -18,6 +18,7 @@ import debounce from 'lodash.debounce';
 import lodash from 'lodash';
 // import throttle from 'lodash.throttle';
 import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
+import { DATA_TYPES } from 'simple-vp/dist/components';
 
 export const computedSlice = (state) => {
     const ROBOT_PARTS = Object.keys(state.programData).filter(v => v.includes('robot'));
@@ -29,7 +30,7 @@ export const computedSlice = (state) => {
     let tfs = {};
     let items = {};
 
-    Object.values(state.programData).filter(v => v.type === 'thingType').forEach(thing => {
+    Object.values(state.programData).filter(v => v.type === 'thingType' && v.dataType === DATA_TYPES.INSTANCE).forEach(thing => {
         // for now, place the things at origin. 
         // console.log(thing)
         tfs[thing.id] = {
@@ -38,11 +39,12 @@ export const computedSlice = (state) => {
             rotation: { w: 1, x: 0, y: 0, z: 0 }
         }
     })
-    // Object.values(state.data.regions).forEach(region=>{
-    //     tfs[region.uuid] = {
-    //         frame:region.link,
-    //         translation:region.center_position,
-    //         rotation:region.center_orientation
+
+    // Object.values(state.programData).filter(v => v.type === 'regionType').forEach(region=>{
+    //     tfs[region.id] = {
+    //         frame:region.properties.frame,
+    //         translation:region.properties.center_position,
+    //         rotation:region.properties.center_rotation
     //     }
     // })
 
@@ -142,7 +144,7 @@ export const computedSlice = (state) => {
     })
 
     // Add occupancy zones
-    Object.values(state.programData).forEach(entry => {
+    Object.values(state.programData).filter(v => v.dataType === DATA_TYPES.INSTANCE).forEach(entry => {
         if (entry.type === 'zoneType' && state.programData[entry.properties.agent].type === 'humanAgentType') {
             items[entry.id] = {
                 shape: 'cube',
@@ -157,10 +159,48 @@ export const computedSlice = (state) => {
                 onClick: (_) => { },
                 hidden: !state.occupancyVisible
             }
-        } else if (entry.type === 'machineType') {
-            // console.log(entry);
-            // console.log(entry.name)
-            // const mesh = EVD_MESH_LOOKUP[entry.mesh]
+        } /*else if (entry.type === 'processType') {
+
+            // TODO: highlight based on processes instead of machines
+            // Look through inputs/outputs
+
+
+            const region = regions[zoneInfo.region_uuid];
+
+            entry.properties.inputs.forEach(input => {
+                console.log(input);
+                console.log(state.programData[input]);
+                items[thingType+region.uuid] = {
+                    shape: EVD_MESH_LOOKUP[thingInfo.mesh_id],
+                    frame: region.uuid,
+                    position: {x:0,y:0,z:0},
+                    rotation: {w:1,x:0,y:0,z:0},
+                    scale: {x:0.2,y:0.2,z:0.2},
+                    transformMode: 'inactive',
+                    color: {r:200,g:0,b:0,a:0.2},
+                    highlighted: false,
+                    hidden: false,
+                    onClick: (_)=>{}
+                }
+            });
+            entry.properties.outputs.forEach(output => {
+                console.log(output);
+                items[thingType+region.uuid] = {
+                    shape: EVD_MESH_LOOKUP[thingInfo.mesh_id],
+                    frame: region.uuid,
+                    position: {x:0,y:0,z:0},
+                    rotation: {w:1,x:0,y:0,z:0},
+                    scale: {x:0.2,y:0.2,z:0.2},
+                    transformMode: 'inactive',
+                    color: {r:0,g:200,b:0,a:0.2},
+                    highlighted: false,
+                    hidden: false,
+                    onClick: (_)=>{}
+                }
+            });
+            //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
+            
+        } */ else if (entry.type === 'machineType') {
             let entryProps = entry.ref ? state.programData[entry.ref].properties : entry.properties;
             let meshObject = state.programData[entryProps.mesh];
             let collisionObject = state.programData[entryProps.collisionMesh];
@@ -198,22 +238,6 @@ export const computedSlice = (state) => {
                 hidden: !state.collisionsVisible,
                 onClick: (_) => { },
             }
-
-            // Now enumerate the inputs and render the zones and items.
-            // if (state.focusItem.uuid === machine.uuid) {
-            //     Object.keys(machine.inputs).forEach(thingType=>{
-            //         machine.inputs[thingType].forEach(zoneInfo=>{
-            //             items[zoneInfo.region_uuid].color.r = 200;
-            //             items[zoneInfo.region_uuid].hidden = false;
-            //         })
-            //     })
-            //     Object.keys(machine.outputs).forEach(thingType=>{
-            //         machine.outputs[thingType].forEach(zoneInfo=>{
-            //             items[zoneInfo.region_uuid].color.g = 200;
-            //             items[zoneInfo.region_uuid].hidden = false;
-            //         })
-            //     })
-            // }
 
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
@@ -331,7 +355,7 @@ export const computedSlice = (state) => {
         }
     });
 
-    Object.values(state.programData).filter(v => v.type === 'trajectoryType').forEach(trajectory => {
+    Object.values(state.programData).filter(v => v.type === 'trajectoryType' && v.dataType === DATA_TYPES.INSTANCE).forEach(trajectory => {
         const hidden = !state.focus.includes(trajectory.id);
         let poses = []
         if (trajectory.properties.startLocation) {
