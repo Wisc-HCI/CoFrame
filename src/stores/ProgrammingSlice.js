@@ -46,6 +46,7 @@ export function move(array, moveIndex, toIndex) {
         if (idsToDelete.includes(state.programData[parentData.properties[propName]]?.ref)) {
           delete state.programData[parentData.properties[propName]];
           state.programData[parentData.id].properties[propName] = null;
+          state.programData[parentData.id].properties.status = STATUS.PENDING;
         }
       });
       for (let i = 0; i < idsToDelete.length; i++) {
@@ -67,13 +68,18 @@ export function move(array, moveIndex, toIndex) {
               })
   
               for (let i = 0; i < idsToDelete.length; i++) {
-                remove(state.programData[parentData.id].properties[propName], (field) => state.programData[field]?.ref === idsToDelete[i]);
+                let removed_elems = remove(state.programData[parentData.id].properties[propName], (field) => state.programData[field]?.ref === idsToDelete[i]);
+                // Only update if elements were removed
+                if (removed_elems.length > 0) {
+                  state.programData[parentData.id].properties.status = STATUS.PENDING;
+                }
               }
             } else if (property && parentData.properties[propName] && idsToDelete.includes(state.programData[parentData.properties[propName]]?.ref)) {
               // Delete Reference to Child
               delete state.programData[parentData.properties[propName]];
               // entry.properties[propName] = null;
               state.programData[parentData.id].properties[propName] = null;
+              state.programData[parentData.id].properties.status = STATUS.PENDING;
             }
           }
         });
@@ -116,7 +122,11 @@ export function move(array, moveIndex, toIndex) {
                 // Iterate through property list and remove all applicable references
                 for (let i = 0; i < callIds.length; i++) {
                   if (entry.properties[propName]?.includes(callIds[i])) {
-                    remove(state.programData[entryId].properties[propName], (field) => field === callIds[i]);
+                    let removed_elems = remove(state.programData[entryId].properties[propName], (field) => field === callIds[i]);
+                    // Only update if elements were removed
+                    if (removed_elems.length > 0) {
+                      state.programData[entryId].properties.status = STATUS.PENDING;
+                    }
                   }
                 }
               } else if (property && entry.properties[propName]) {
@@ -124,6 +134,7 @@ export function move(array, moveIndex, toIndex) {
                 if (callIds.includes(entry.properties[propName])) {
                   entry.properties[propName] = null;
                   state.programData[entryId].properties[propName] = null;
+                  state.programData[entryId].properties.status = STATUS.PENDING;
                 }
               }
             }
