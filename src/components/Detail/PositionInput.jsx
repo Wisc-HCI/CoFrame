@@ -21,14 +21,15 @@ function PositionInput(props) {
 
   return (
 
-    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingBottom: '3%' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between',alignItems : 'center' }}>
       <div>
-        <Text style={{ color: 'rgba(255, 255, 255, 0.85)', paddingRight: "5%" }} >Position:</Text>
+        <Text style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Position:</Text>
       </div>
 
-      <div style={{ position: 'relative', left: '22.5%' }}>
+      <div >
         <DropButton
           primary
+          label = "Edit"
           icon={<FormEdit />}
           dropAlign={{ right: 'right', top: "bottom" }}
           dropProps={{ elevation: 'none',  round  : "xsmall"}}

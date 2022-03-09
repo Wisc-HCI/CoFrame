@@ -47,10 +47,11 @@ function OrientationInput(props) {
   
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
-      <Text style={{ color: 'rgba(255, 255, 255, 0.85)', paddingRight: "3%" }}>Orientation:</Text>
+    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between',alignItems : 'center' }}>
+      <Text style={{ color: 'rgba(255, 255, 255, 0.85)'}}>Orientation:</Text>
       <DropButton
         primary
+        label = "Edit"
         icon={<FormEdit />}
         dropAlign={{ right: 'right', top: "bottom" }}
         dropProps={{ elevation: 'none', round: "xsmall" }}
