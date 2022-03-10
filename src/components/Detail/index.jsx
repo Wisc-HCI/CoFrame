@@ -12,8 +12,7 @@ import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 import { FiTrash, FiX } from 'react-icons/fi';
 import { NumberInput } from '../NumberInput';
-
-const DETAIL_TYPES = ['machineType', 'inputOutputType', 'processType', 'locationType', 'waypointType', 'thingType']
+import { DETAIL_TYPES } from '../../stores/Constants';
 
 export const Detail = (_) => {
 
@@ -85,6 +84,7 @@ export const Detail = (_) => {
               <TextArea
                 value={item.properties.description}
                 disabled={!item.canEdit}
+                resize='vertical'
               />
             </div>
           </Box>

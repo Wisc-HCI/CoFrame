@@ -17,7 +17,7 @@ import Tile from '../Tile';
 import { DATA_TYPES } from 'simple-vp';
 import actionTypes from '../../stores/typeInfo/action';
 
-export function InfoTile(_) {
+export function InfoTile({maxHeight}) {
 
     const [
         activeDrawer,
@@ -122,7 +122,8 @@ export function InfoTile(_) {
 
     return (
         <Tile
-            style={{display:'flex',flexDirection:'column',height:'100%'}}
+
+            style={{display:'flex',flexDirection:'column',height:maxHeight}}
             borderWidth={4}
             internalPaddingWidth={10}
             header={
@@ -144,7 +145,7 @@ export function InfoTile(_) {
                     )
                     )}
                 </Box>}>
-            <div style={{ height: 'calc(100vh - 543pt)', overflowY: 'scroll' }}>
+            <div style={{ height: maxHeight-68, overflowY: 'scroll' }}>
                 {tabs[tabIdx] ? tabs[tabIdx].contents : tabs[0].contents}
             </div>
         </Tile>

@@ -5,16 +5,56 @@ import {Scene} from 'robot-scene';
 import useStore from '../../stores/Store';
 import { Controls } from '../Controls';
 import { InfoTile } from './InfoTile';
-
+import useMeasure from 'react-use-measure';
 
 export const SimulatorTile = (_) => {
 
     const primaryColor = useStore(state => state.primaryColor);
     const clearFocus = useStore(state => state.clearFocus);
     const paused = useStore(state => state.focus === []);
+    const [ ref, bounds ] = useMeasure();
 
     return (
-        <Box direction='column' flex pad='6pt' >
+
+        <Box ref={ref} flex direction='column' width='45vw' pad='4pt' gap='xsmall'>
+            <Tile
+                style={{ height:bounds.height*0.55, paddingBottom:'4pt' }}
+                backgroundColor={primaryColor}
+                borderWidth={3}
+                internalPaddingWidth={2}
+                header={
+                    <Box direction='row' justify='between'>
+                    <h3 style={{margin:'10pt'}}>
+                        Simulator
+                    </h3>
+                    <Controls/>
+                    </Box>
+                }
+            >
+                <div style={{ height: bounds.height*0.55-55, width: '100%', backgroundColor:'black', padding:0 }}>
+                    <Scene
+                        displayTfs={false}
+                        displayGrid={true}
+                        isPolar={false}
+                        backgroundColor='#1e1e1e'
+                        planeColor='#141414'
+                        highlightColor={primaryColor}
+                        plane={-0.75}
+                        fov={50}
+                        store={useStore}
+                        onPointerMissed={clearFocus}
+                        paused={paused}
+                    />
+                </div>
+
+            </Tile>
+            <InfoTile maxHeight={bounds.height*0.45-32}/>
+        </Box>
+
+        
+    )
+
+    return (<Box direction='column' flex pad='6pt' >
             <Tile
                 style={{ height: '408pt', marginBottom: 10 }}
                 backgroundColor={primaryColor}
@@ -46,8 +86,7 @@ export const SimulatorTile = (_) => {
                 </div>
             </Tile>
             <InfoTile />
-        </Box>
-    )
+        </Box>)
 
     // return (
     //     <div style={{ height: 'calc(100vh - 48pt)', padding: 10 }}>

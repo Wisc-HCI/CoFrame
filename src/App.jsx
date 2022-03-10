@@ -4,28 +4,27 @@ import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
 import { Grommet, Header, Heading, Box, Button, Collapsible, Spinner } from 'grommet';
-
+import { TIMELINE_TYPES } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
 import { Detail } from './components/Detail';
 import { SettingsModal } from "./components/Settings";
 
-import { CoFrameIcon } from "./components/Icon";
+// import { CoFrameIcon } from "./components/Icon";
 
 import useStore from "./stores/Store";
-import shallow from 'zustand/shallow';
+
+import { useSpring, animated } from '@react-spring/web';
+import { config } from 'react-spring';
 
 export default function App() {
 
-    const setActiveModal = useStore(state => state.setActiveModal);
-    const [frame, primaryColor] = useStore(state => [state.frame, state.primaryColor], shallow);
+    const primaryColor = useStore(state => state.primaryColor);
     const simMode = useStore(state => state.simMode);
     // const simStyle = useSpring({ width: simMode === 'default' ? '45%' : '100%', config: config.stiff });
     // const editStyle = useSpring({ width: simMode === 'default' ? '55%' : '0%', config: config.stiff });
-    const programName = useStore(state => Object.values(state.programData).filter(v => v.type === 'programType')[0].name);
-    const performPoseProcess = useStore(state=>state.performPoseProcess);
-    const performPlanProcess = useStore(state=>state.performPlanProcess);
-    const isProcessing = useStore(state=>state.processes.planProcess!==null&&state.processes.planProcess!==undefined);
-
+    const visibleSteps = useStore(state=>state.focus.some(focusItem=>TIMELINE_TYPES.includes(state.programData[focusItem]?.type)));
+    
+    const bodyStyle = useSpring({ width:'100vw',height: visibleSteps ? '80vh' : '100vh', config: config.stiff });
 
     const theme = {
         name: 'CoFrame',
@@ -71,36 +70,11 @@ export default function App() {
         }
     }
 
-    const menuItems = [
-        {
-            modalKey: 'settings',
-            name: 'Settings',
-            icon: <FiSettings />
-        }
-    ];
-
     return (
         <Grommet full theme={theme}>
             {/* Main container */}
             <Box direction="column" height='100vh' width='100vw'>
-                <Header direction='row' pad='none' background='rgb(31,31,31)' justify='between' align='center'>
-                    <Box direction='row' align='center' gap='medium' pad={{ left: 'small' }}>
-                        <CoFrameIcon/>
-                        <Heading level={4}><b>CoFrame<i> - {programName}</i></b></Heading>
-                    </Box>
-                    <Box flex></Box>
-                    <Box direction='row' align='center' gap='small'>
-                        {isProcessing && (
-                            <Spinner/>
-                        )}
-                        {menuItems.map(entry => (
-                            <Button plain margin={{right:'medium'}} key={entry.modalKey} secondary icon={entry.icon} label={entry.name} onClick={() => setActiveModal(entry.modalKey)}/>
-                        ))}
-                        {/* <Button plain label='Loc Test' margin={{right:'medium'}} key='locplanstupid' onClick={()=>performPoseProcess('location-c540bea6-a0a8-40c2-8fcc-cb6ae772697c')}/>
-                        <Button plain label='Plan Test' margin={{right:'medium'}} key='planstupid' onClick={performPlanProcess}/> */}
-                    </Box>
-                </Header>
-                <Box flex direction='row'>
+                <animated.div style={{...bodyStyle, width:'100vw',display:'flex',flexDirection:'row'}}>
                     <Box width='350pt'>
                         <ReviewTile/>
                     </Box>
@@ -117,6 +91,9 @@ export default function App() {
                         
                     </animated.div> */}
                     </Box>
+                </animated.div>
+                <Box direction='row' height={visibleSteps ? '20vh' : '0vh'} width='100vw' background='#444444' border={{ side: 'top', color: primaryColor, size: 'medium' }}>
+
                 </Box>
 
             </Box>

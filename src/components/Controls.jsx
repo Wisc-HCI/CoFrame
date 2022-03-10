@@ -25,10 +25,10 @@ export function Controls() {
 
       <Button
         tip={{
-          content: <TipContent message={simMode === 'default' ? 'Expand' : 'Shrink'} />,
+          content: <TipContent message={simMode === 'default' ? 'Expand' : 'Shrink'} inverted />,
           plain: true,
           dropProps: {
-            align: { bottom: 'top' }
+            align: { top: 'bottom' }
           }
         }}
         icon={simMode === 'default' ? <FiMaximize /> : <FiMinimize />}
