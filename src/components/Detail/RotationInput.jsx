@@ -29,7 +29,7 @@ function RotationInput(props) {
       pad="small"
       width="100%">
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ color: 'rgba(255, 255, 255, 0.85)' }}>Orientation:</Text>
+        <Text style={{ color: 'rgba(255, 255, 255, 0.85)' }}>Rotation:</Text>
         <DropButton
           primary
           label="Edit"
