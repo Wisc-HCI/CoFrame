@@ -13,7 +13,6 @@ import shallow from 'zustand/shallow';
 import { FiTrash, FiX } from 'react-icons/fi';
 import { NumberInput } from '../NumberInput';
 import { DETAIL_TYPES } from '../../stores/Constants';
-
 export const Detail = (_) => {
 
   const {
@@ -37,6 +36,7 @@ export const Detail = (_) => {
 
   //const addFocusItem = useStore(state => state.addFocusItem);
   const clearFocus = useStore(state => state.clearFocus);
+  const updateItemName = useStore(state => state.updateItemName);
   const updateItemSimpleProperty = useStore(state=>state.updateItemSimpleProperty)
   
   const objectColor = objectTypeInfo?.instanceBlock?.color
@@ -68,8 +68,8 @@ export const Detail = (_) => {
           <TextInput
             placeholder="type here"
             value={item.name}
-            disabled={item.canEdit}
-          // onChange={e => setItemProperty(focusItem.type, focusItem.uuid, 'name', e.target.value)}
+            disabled={!item.canEdit}
+            onChange={e => updateItemName(item.id, e.target.value)}
           />
           <br />
 
