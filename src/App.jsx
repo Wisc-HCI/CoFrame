@@ -4,10 +4,12 @@ import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
 import { Grommet, Header, Heading, Box, Button, Collapsible, Spinner } from 'grommet';
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import { TIMELINE_TYPES } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
 import { Detail } from './components/Detail';
 import { SettingsModal } from "./components/Settings";
+import Graph from "./components/Graph";
 
 // import { CoFrameIcon } from "./components/Icon";
 
@@ -15,6 +17,7 @@ import useStore from "./stores/Store";
 
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
+// import { Timeline } from "./components/Timeline";
 
 export default function App() {
 
@@ -92,9 +95,13 @@ export default function App() {
                     </animated.div> */}
                     </Box>
                 </animated.div>
-                <Box direction='row' height={visibleSteps ? '20vh' : '0vh'} width='100vw' background='#444444' border={{ side: 'top', color: primaryColor, size: 'medium' }}>
-
-                </Box>
+                {visibleSteps && (
+                    <Box direction='row' height={visibleSteps ? '20vh' : '0vh'} width='100vw' background='#444444' border={{ side: 'top', color: primaryColor, size: 'medium' }}>
+                        <ParentSize>
+                            {({ width, height }) => <Graph width={width} height={height-10} />}
+                        </ParentSize>
+                    </Box>
+                )}
 
             </Box>
             <SettingsModal/>
