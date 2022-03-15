@@ -9,6 +9,11 @@ function PositionInput(props) {
   const updateItemPositionProperty = useStore(state => state.updateItemPositionProperty);
   
   return (
+    <Box round="xsmall"
+    background="black"
+    pad="small"
+    width= "100%"
+    >
 
     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
       <div>
@@ -63,6 +68,8 @@ function PositionInput(props) {
         />
       </div>
     </div>
+    </Box>
+    
   )
 
 

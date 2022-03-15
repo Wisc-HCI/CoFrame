@@ -14,36 +14,7 @@ export const ProcessIOPositionRotationDetail = ({ inputOutputId }) => {
 
     return (
         <>
-            <Box
-                round="xsmall"
-                background="#303030"
-                pad="small" >
-                <Box direction='column'>
-                    <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Placement : </b>
-                    <div style={{ display: 'flex', flexDirection: 'column'}}>
-                        <div style={{paddingBottom: "4%"}}>
-                        <Box round="xsmall"
-                            background="black"
-                            pad="small"
-                            width= "100%"
-                            >
-                            <PositionInput position={position} itemID = {inputOutputId}/>
-                        </Box>
-                        </div>
-                        
-
-                        <Box round="xsmall"
-                            background="black"
-                            pad="small"
-                            width= "100%">
-                            <RotationInput rotation={rotation} itemID = {inputOutputId}/>
-                        </Box>
-                    </div>
-
-
-                </Box>
-            </Box>
-
+           
         </>
 
 
