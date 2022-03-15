@@ -3,8 +3,8 @@ import useStore from '../../stores/Store';
 //import { Space, Divider, Input, Switch } from 'antd';
 import { Toggle } from '../Toggle';
 import { TextArea, Text, Box, TextInput } from 'grommet';
-import OrientationInput from './OrientationInput';
-import PositionInput from './PositionInput';
+// import OrientationInput from './RotationInput';
+// import PositionInput from './PositionInput';
 import debounce from 'lodash.debounce';
 //const { TextArea } = Input;
 

@@ -35,14 +35,9 @@ export const Detail = (_) => {
     }
   }, shallow);
 
-  const addFocusItem = useStore(state => state.addFocusItem);
+  //const addFocusItem = useStore(state => state.addFocusItem);
   const clearFocus = useStore(state => state.clearFocus);
-  const updateItemSimpleProperty = useStore(state=>state.updateItemSimpleProperty);
-
-  // const [processItem, setProcessItem] = useState(null);
-  // const [inputOutputItem, setInputOutputItem] = useState(null);
-  // const [position, setPosition] = useState(null);
-  // const [rotation, setRotation] = useState(null);
+  const updateItemSimpleProperty = useStore(state=>state.updateItemSimpleProperty)
   
   const objectColor = objectTypeInfo?.instanceBlock?.color
     ? objectTypeInfo.instanceBlock.color

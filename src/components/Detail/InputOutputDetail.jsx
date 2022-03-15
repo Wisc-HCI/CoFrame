@@ -1,7 +1,7 @@
 import React from 'react';
 import useStore from '../../stores/Store';
 import { Text, Box } from 'grommet';
-import OrientationInput from './OrientationInput';
+import RotationInput from './RotationInput';
 import PositionInput from './PositionInput';
 export const ProcessIOPositionRotationDetail = ({ inputOutputId }) => {
     const position = useStore(state => {
@@ -27,7 +27,7 @@ export const ProcessIOPositionRotationDetail = ({ inputOutputId }) => {
                             pad="small"
                             width= "100%"
                             >
-                            <PositionInput position={position} />
+                            <PositionInput position={position} itemID = {inputOutputId}/>
                         </Box>
                         </div>
                         
@@ -36,7 +36,7 @@ export const ProcessIOPositionRotationDetail = ({ inputOutputId }) => {
                             background="black"
                             pad="small"
                             width= "100%">
-                            <OrientationInput rotation={rotation} />
+                            <RotationInput rotation={rotation} itemID = {inputOutputId}/>
                         </Box>
                     </div>
 
