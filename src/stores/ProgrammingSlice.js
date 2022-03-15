@@ -316,5 +316,26 @@ export function move(array, moveIndex, toIndex) {
           state.programData[id].properties[property] = value;
           state.programData[id].properties.status = STATUS.PENDING
         })
+      },
+      updateItemPositionProperty: (id, property, value) => {
+        set((state) => {
+          state.programData[id].properties.position[property] = value;
+          state.programData[id].properties.status = STATUS.PENDING
+        })
+      },
+      updateItemRotationProperty: (id, value) => {
+        set((state) => {
+          state.programData[id].properties.rotation['w'] = value[0];
+          state.programData[id].properties.rotation['x'] = value[1];
+          state.programData[id].properties.rotation['y'] = value[2];
+          state.programData[id].properties.rotation['z'] = value[3];
+          state.programData[id].properties.status = STATUS.PENDING
+        })
+      },
+      updateItemDescription: (id, value) => {
+        set((state) => {
+          state.programData[id].properties.description = value;
+        })
       }
+
     })

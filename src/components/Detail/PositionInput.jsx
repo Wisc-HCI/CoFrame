@@ -1,27 +1,21 @@
-import React, { useState } from 'react';
-//import { Space, Popover} from 'antd';
-//import { EditOutlined } from '@ant-design/icons';
+import React from 'react';
+import useStore from '../../stores/Store';
 import { NumberInput } from '../NumberInput';
-import { Box, Button, DropButton, Text } from "grommet";
+import { Box, DropButton, Text } from "grommet";
 import { FormEdit } from "grommet-icons";
 
 function PositionInput(props) {
-  //  const [inputVec, setInputVec] = useState(props.value);
-  //  const [preVec, setPrevVec] = useState(null);
-  //  let minMax = [-10,10];
-  //  let steps = 0.01;
-
-  //   if (props.value !== preVec){
-  //     setPrevVec(props.value);
-  //     setInputVec(props.value);
-
-  //   }
-
- 
-
+  let minMax = [-10, 10];
+  const updateItemPositionProperty = useStore(state => state.updateItemPositionProperty);
+  
   return (
+    <Box round="xsmall"
+    background="black"
+    pad="small"
+    width= "100%"
+    >
 
-    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between',alignItems : 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
       <div>
         <Text style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Position:</Text>
       </div>
@@ -29,71 +23,53 @@ function PositionInput(props) {
       <div >
         <DropButton
           primary
-          label = "Edit"
+          label="Edit"
           icon={<FormEdit />}
           dropAlign={{ right: 'right', top: "bottom" }}
-          dropProps={{ elevation: 'none',  round  : "xsmall"}}
+          dropProps={{ elevation: 'none', round: "xsmall" }}
 
           dropContent={
-            <Box round = "xsmall" background = "grey" border = {{color : 'white', size : 'xsmall'}} width="small" direction='column' elevation="none" pad="xsmall" justify='center'>
+            <Box round="xsmall" background="grey" border={{ color: 'white', size: 'xsmall' }} width="small" direction='column' elevation="none" pad="xsmall" justify='center'>
               <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
-              <Text weight = "bolder" style={{ color: "red" , paddingRight : "7%"}}>X</Text>
-              <NumberInput
-              //  min= {minMax[0]}
-              //  max= {minMax[1]}
-                value={props.position.x}
-              //  onChange={(v)=>{if (typeof v === 'number') {
-              //    let updatedVec = [v,inputVec[1],inputVec[2]];
-              //    setInputVec(updatedVec)
-              //    props.onChange(updatedVec)
-              //  }}}
+                <Text weight="bolder" style={{ color: "red", paddingRight: "7%" }}>X</Text>
+                <NumberInput
+                  min={minMax[0]}
+                  max={minMax[1]}
+                  value={props.position.x}
+                  onChange={(value) => updateItemPositionProperty(props.itemID, 'x', value)}
 
-              />
+                />
               </Box>
 
               <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
-              <Text weight = "bolder" style={{ color: "lime" , paddingRight : "7%"}}>Y</Text>
-              <NumberInput
-              //  min= {minMax[0]}
-              //  max= {minMax[1]}
-              value={props.position.y}
-              //  onChange={(v)=>{if (typeof v === 'number') {
-              //    let updatedVec = [inputVec[0],v,inputVec[2]]
-              //    setInputVec(updatedVec)
-              //    props.onChange(updatedVec)
-              //  }}}
-              />
+                <Text weight="bolder" style={{ color: "lime", paddingRight: "7%" }}>Y</Text>
+                <NumberInput
+                  min={minMax[0]}
+                  max={minMax[1]}
+                  value={props.position.y}
+                  onChange={(value) => updateItemPositionProperty(props.itemID, 'y', value)}
+
+                />
               </Box>
 
               <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
-              <Text weight = "bolder" style={{ color: "blue" , paddingRight : "7%"}}>Z</Text>
-              <NumberInput
-              // min= {minMax[0]}
-              // max= {minMax[1]}
-              value={props.position.z}
-              // onChange={(v)=>{if (typeof v === 'number') {
-              //   let updatedVec = [inputVec[0],inputVec[1],v];
-              //   setInputVec(updatedVec)
-              //   props.onChange(updatedVec)
-              // }}}
-              />
+                <Text weight="bolder" style={{ color: "blue", paddingRight: "7%" }}>Z</Text>
+                <NumberInput
+                  min={minMax[0]}
+                  max={minMax[1]}
+                  value={props.position.z}
+                  onChange={(value) => updateItemPositionProperty(props.itemID, 'z', value)}
+
+                />
               </Box>
 
             </Box>
           }
         />
       </div>
-      {/* <Button
-       default
-       icon={<FormEdit/>}
-       style={{ margin: 3,width:"30%",height:"4%",placement:"right"}}
-       onClick = {props.openStatus ? props.onClose : props.onOpen}
-     >
-     </Button> */}
-
-
-
     </div>
+    </Box>
+    
   )
 
 

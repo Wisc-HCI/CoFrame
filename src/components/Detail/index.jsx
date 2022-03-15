@@ -1,10 +1,8 @@
 import { React } from 'react';
-import { LocationDetail } from './LocationDetail';
 import { MachineProcessList } from './MachineDetail';
-import { ThingDetail } from './ThingDetail';
-import { WaypointDetail } from './WaypointDetail';
 import { ProcessIOList } from './ProcessDetail';
-import { ProcessIOPositionRotationDetail } from './InputOutputDetail';
+import PositionInput from './PositionInput';
+import RotationInput from './RotationInput';
 
 import { TextArea, Text, Box, TextInput, Button, Layer, DropButton } from 'grommet';
 
@@ -13,8 +11,8 @@ import shallow from 'zustand/shallow';
 import { FiTrash, FiX } from 'react-icons/fi';
 import { NumberInput } from '../NumberInput';
 import { DETAIL_TYPES } from '../../stores/Constants';
-
 export const Detail = (_) => {
+
 
   const {
     item,
@@ -35,21 +33,19 @@ export const Detail = (_) => {
     }
   }, shallow);
 
-  const addFocusItem = useStore(state => state.addFocusItem);
+  //const addFocusItem = useStore(state => state.addFocusItem);
   const clearFocus = useStore(state => state.clearFocus);
-  const updateItemSimpleProperty = useStore(state=>state.updateItemSimpleProperty);
+  const updateItemName = useStore(state => state.updateItemName);
+  const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty);
+  const updateItemDescription = useStore(state => state.updateItemDescription);
 
-  // const [processItem, setProcessItem] = useState(null);
-  // const [inputOutputItem, setInputOutputItem] = useState(null);
-  // const [position, setPosition] = useState(null);
-  // const [rotation, setRotation] = useState(null);
-  
   const objectColor = objectTypeInfo?.instanceBlock?.color
     ? objectTypeInfo.instanceBlock.color
     : objectTypeInfo?.referenceBlock?.color
       ? objectTypeInfo?.referenceBlock.color
       : '#333333'
 
+  console.log("item.position", item);
   if (!item) {
     return null
   }
@@ -73,8 +69,8 @@ export const Detail = (_) => {
           <TextInput
             placeholder="type here"
             value={item.name}
-            disabled={item.canEdit}
-          // onChange={e => setItemProperty(focusItem.type, focusItem.uuid, 'name', e.target.value)}
+            disabled={!item.canEdit}
+            onChange={e => updateItemName(item.id, e.target.value)}
           />
           <br />
 
@@ -85,25 +81,46 @@ export const Detail = (_) => {
                 value={item.properties.description}
                 disabled={!item.canEdit}
                 resize='vertical'
+                onChange={e => updateItemDescription(item.id, e.target.value)}
               />
             </div>
           </Box>
           <br />
 
           {item.properties.processTime !== undefined && (
-            <Box direction='row' background='#303030' round="xsmall" pad="small" style={{marginBottom: 5}} justify='between'>
+            <Box direction='row' background='#303030' round="xsmall" pad="small" style={{ marginBottom: 5 }} justify='between'>
               <Text style={{ paddingRight: '3%' }}>Time :</Text>
               <Box direction='row'>
-                <NumberInput 
-                    value={item.properties.processTime} 
-                    min={0} 
-                    max={Infinity} 
-                    onChange={(value)=>updateItemSimpleProperty(item.id, 'processTime', value)}
-                    disabled={!item.canDelete} 
-                    visualScaling={1/1000}/>
+                <NumberInput
+                  value={item.properties.processTime}
+                  min={0}
+                  max={Infinity}
+                  onChange={(value) => updateItemSimpleProperty(item.id, 'processTime', value)}
+                  disabled={!item.canDelete}
+                  visualScaling={1 / 1000} />
                 <Text style={{ paddingLeft: "4%" }}>sec</Text>
               </Box>
             </Box>
+          )}
+
+          {item.properties.position !== undefined && item.properties.rotation !== undefined && (
+            <>
+            <Box
+              round="xsmall"
+              background="#303030"
+              pad="small" >
+              <Box direction='column'>
+                <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Placement : </b>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ paddingBottom: "4%" }}>
+                    <PositionInput itemID={item.id} position={item.properties.position} />
+                  </div>
+                  <RotationInput rotation={item.properties.rotation} itemID={item.id} />
+                </div>
+              </Box>
+            </Box>
+            <br/>
+            </>
           )}
 
           {item.type === 'machineType' && (
@@ -117,18 +134,6 @@ export const Detail = (_) => {
             </>
 
           )}
-
-          {item.type === 'inputOutputType' &&(
-            <>
-              <ProcessIOPositionRotationDetail inputOutputId = {item.id}/>
-            </>
-          )
-
-          }
-
-
-
-
 
         </Box>
         <Box
@@ -183,7 +188,7 @@ export const Detail = (_) => {
 
 
 
-  
+
 
 }
 

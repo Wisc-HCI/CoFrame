@@ -6,8 +6,8 @@ import debounce from 'lodash.debounce';
 //import { Divider, Input, Switch } from 'antd';
 import {Toggle} from '../Toggle';
 import { TextArea,Text } from 'grommet';
-import OrientationInput from './OrientationInput';
-import PositionInput from './PositionInput';
+// import OrientationInput from './RotationInput';
+// import PositionInput from './PositionInput';
 
 export const LocationDetail = ({ uuid }) => {
 
