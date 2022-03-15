@@ -28,19 +28,13 @@ export const zoneType = {
         isList: false,
         fullWidth: true
       },
-      position: {
-        name: 'Position',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: {x: null, y: null, z: null},
-        isList: false,
-        fullWidth: true
-      },
-      rotation: {
-        name: 'Rotation',
+      tf: {
+        name: 'Transform Frame',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: {x: null, y: null, z: null, w: null},
+        default: "",
         isList: false,
         fullWidth: true
+
       },
       status: {
         name: 'Status',
