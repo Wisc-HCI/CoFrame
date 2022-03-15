@@ -14,7 +14,7 @@ import { FiTrash, FiX } from 'react-icons/fi';
 import { NumberInput } from '../NumberInput';
 import { DETAIL_TYPES } from '../../stores/Constants';
 export const Detail = (_) => {
-
+  
   const {
     item,
     objectTypeInfo
@@ -37,7 +37,8 @@ export const Detail = (_) => {
   //const addFocusItem = useStore(state => state.addFocusItem);
   const clearFocus = useStore(state => state.clearFocus);
   const updateItemName = useStore(state => state.updateItemName);
-  const updateItemSimpleProperty = useStore(state=>state.updateItemSimpleProperty)
+  const updateItemSimpleProperty = useStore(state=>state.updateItemSimpleProperty);
+  const updateItemDescription = useStore(state => state.updateItemDescription);
   
   const objectColor = objectTypeInfo?.instanceBlock?.color
     ? objectTypeInfo.instanceBlock.color
@@ -80,6 +81,7 @@ export const Detail = (_) => {
                 value={item.properties.description}
                 disabled={!item.canEdit}
                 resize='vertical'
+                onChange = {e => updateItemDescription(item.id, e.target.value)}
               />
             </div>
           </Box>
