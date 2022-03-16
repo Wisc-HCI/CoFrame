@@ -12,7 +12,8 @@ import {
     robotFramesFromPose,
     machineDataToPlaceholderPreviews,
     PINCH_POINT_FIELDS,
-    pinchpointAnimationFromExecutable
+    pinchpointAnimationFromExecutable,
+    itemTransformMethod
 } from './helpers';
 import debounce from 'lodash.debounce';
 import lodash from 'lodash';
@@ -103,15 +104,16 @@ export const computedSlice = (state) => {
         } else if (lodash.intersection(GRIPPER_PARTS,state.focus).length > 0 && GRIPPER_PARTS.includes(itemKey)) {
             highlighted = true
         }
+
         items[itemKey] = {
             shape: meshObject.properties.keyword,
             name: item.name,
-            frame: item.properties.frame,
+            frame: item.properties.tf,
             position: meshObject.properties.position,
             rotation: meshObject.properties.rotation,
             color: meshObject.properties.color,
             scale: meshObject.properties.scale,
-            transformMode: "inactive",
+            transformMode: itemTransformMethod(state, item.id),
             highlighted,
             onClick: (e) => {
                 if (!state.focus.includes('translate') && !state.focus.includes('rotate')) {
@@ -128,7 +130,7 @@ export const computedSlice = (state) => {
             items[itemKey + '-collision'] = {
                 shape: COLLISION_MESHES[collisionObject.properties.keyword] ? COLLISION_MESHES[collisionObject.properties.keyword] : collisionObject.properties.keyword,
                 name: item.name + ' Collision',
-                frame: item.properties.frame,
+                frame: item.properties.tf,
                 position: collisionObject.properties.position,
                 rotation: collisionObject.properties.rotation,
                 scale: collisionObject.properties.scale,
@@ -150,57 +152,51 @@ export const computedSlice = (state) => {
                 shape: 'cube',
                 name: entry.name,
                 frame: 'world',
-                position: entry.properties.position,
-                rotation: entry.properties.rotation,
+                position: state.programData[entry.properties.tf].properties.position,
+                rotation: state.programData[entry.properties.tf].properties.rotation,
                 color: { ...OCCUPANCY_ERROR_COLOR, a: 0.2 },
                 scale: entry.properties.scale,
-                transformMode: "inactive",
+                transformMode: itemTransformMethod(state, entry.id),
                 highlighted: false,
                 onClick: (_) => { },
                 hidden: !state.occupancyVisible
             }
-        } /*else if (entry.type === 'processType') {
-
-            // TODO: highlight based on processes instead of machines
-            // Look through inputs/outputs
-
-
-            const region = regions[zoneInfo.region_uuid];
-
+        } else if (entry.type === 'processType') {
             entry.properties.inputs.forEach(input => {
-                console.log(input);
-                console.log(state.programData[input]);
-                items[thingType+region.uuid] = {
-                    shape: EVD_MESH_LOOKUP[thingInfo.mesh_id],
-                    frame: region.uuid,
-                    position: {x:0,y:0,z:0},
-                    rotation: {w:1,x:0,y:0,z:0},
+                let inputObj = state.programData[input];
+                let thing = state.programData[inputObj.properties.thing];
+                let inFrame = inputObj.properties.relativeObject ? state.programData[inputObj.properties.relativeObject]?.properties?.tf : null;
+                items[input] = {
+                    shape: EVD_MESH_LOOKUP[thing.properties.mesh],
+                    frame: inFrame ? inFrame : "world",
+                    position: inputObj.properties.position,
+                    rotation: inputObj.properties.rotation,
                     scale: {x:0.2,y:0.2,z:0.2},
-                    transformMode: 'inactive',
-                    color: {r:200,g:0,b:0,a:0.2},
-                    highlighted: false,
-                    hidden: false,
-                    onClick: (_)=>{}
-                }
-            });
-            entry.properties.outputs.forEach(output => {
-                console.log(output);
-                items[thingType+region.uuid] = {
-                    shape: EVD_MESH_LOOKUP[thingInfo.mesh_id],
-                    frame: region.uuid,
-                    position: {x:0,y:0,z:0},
-                    rotation: {w:1,x:0,y:0,z:0},
-                    scale: {x:0.2,y:0.2,z:0.2},
-                    transformMode: 'inactive',
+                    transformMode: itemTransformMethod(state, input),
                     color: {r:0,g:200,b:0,a:0.2},
                     highlighted: false,
-                    hidden: false,
-                    onClick: (_)=>{}
+                    hidden: !state.focus.includes(entry.id),
+                    onClick: (_)=>{console.log(input)}
                 }
-            });
-            //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
-            
-        } */ else if (entry.type === 'machineType') {
+            });   
+            entry.properties.outputs.forEach(output => {
+                let outputObj = state.programData[output];
+                let thing = state.programData[outputObj.properties.thing];
+                let outFrame = outputObj.properties.relativeObject ? state.programData[outputObj.properties.relativeObject]?.properties?.tf : null;
+                items[output] = {
+                    shape: EVD_MESH_LOOKUP[thing.properties.mesh],
+                    frame: outFrame ? outFrame : "world",
+                    position: outputObj.properties.position,
+                    rotation: outputObj.properties.rotation,
+                    scale: {x:0.2,y:0.2,z:0.2},
+                    transformMode: itemTransformMethod(state, output),
+                    color: {r:0,g:200,b:0,a:0.2},
+                    highlighted: false,
+                    hidden: !state.focus.includes(entry.id),
+                    onClick: (_)=>{console.log(output)}
+                }
+            });            
+        } else if (entry.type === 'machineType') {
             let entryProps = entry.ref ? state.programData[entry.ref].properties : entry.properties;
             let meshObject = state.programData[entryProps.mesh];
             let collisionObject = state.programData[entryProps.collisionMesh];
@@ -212,7 +208,7 @@ export const computedSlice = (state) => {
                 position: meshObject.properties.position,
                 rotation: meshObject.properties.rotation,
                 scale: meshObject.properties.scale,
-                transformMode: 'inactive',
+                transformMode: itemTransformMethod(state, entry.id),
                 highlighted: state.focus.includes(entry.id),
                 onClick: (e) => {
                     if (!state.focus.includes('translate') && !state.focus.includes('rotate')) {
@@ -227,9 +223,9 @@ export const computedSlice = (state) => {
             items[entry.id + '-collision'] = {
                 shape: collisionObject.properties.keyword,
                 name: entry.name + ' Collision',
-                frame: entryProps.frame,
+                frame: entryProps.tf,
                 position: collisionObject.properties.position,
-                rotation: collisionObject.properties.position,
+                rotation: collisionObject.properties.rotation,
                 scale: collisionObject.properties.scale,
                 transformMode: 'inactive',
                 highlighted: false,

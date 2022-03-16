@@ -39,17 +39,7 @@
                 "y": 1,
                 "z": 0.8
             },
-            "position": {
-                "x": 0,
-                "y": 1,
-                "z": 0.4
-            },
-            "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            }
+            "tf": "humanWorkZone-tf"
         },
         "dataType": 0,
         "selected": false,
@@ -69,17 +59,7 @@
                 "y": 1,
                 "z": 0.8
             },
-            "position": {
-                "x": 0,
-                "y": -1,
-                "z": 0.4
-            },
-            "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            }
+            "tf": "humanCorridorZone-tf"
         },
         "dataType": 0,
         "selected": false,
@@ -969,7 +949,7 @@
         "editing": false,
         "properties": {
             "mesh": "tableMesh",
-            "frame": "table_tf",
+            "tf": "table_tf",
             "showCollision": false,
             "highlighted": false
         }
@@ -984,7 +964,7 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "pedestal_tf",
+            "tf": "pedestal_tf",
             "mesh": "pedestalMesh",
             "showCollision": false,
             "highlighted": false
@@ -1002,7 +982,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotBaseMesh",
-            "frame": "simulated_base_link",
+            "tf": "simulated_base_link",
             "showCollision": false,
             "highlighted": false
         }
@@ -1019,7 +999,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotShoulderLinkMesh",
-            "frame": "simulated_shoulder_link",
+            "tf": "simulated_shoulder_link",
             "showCollision": false,
             "highlighted": false
         }
@@ -1037,7 +1017,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotUpperArmLinkMesh",
             "collision": "robotUpperArmLinkCollision",
-            "frame": "simulated_upper_arm_link",
+            "tf": "simulated_upper_arm_link",
             "showCollision": false,
             "highlighted": false
         }
@@ -1055,7 +1035,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotForearmLinkMesh",
             "collision": "robotForearmLinkCollision",
-            "frame": "simulated_forearm_link",
+            "tf": "simulated_forearm_link",
             "scale": {
                 "x": 1,
                 "y": 1,
@@ -1078,7 +1058,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotWrist1LinkMesh",
             "collision": "robotWrist1Collision",
-            "frame": "simulated_wrist_1_link",
+            "tf": "simulated_wrist_1_link",
             "showCollision": false,
             "highlighted": false
         }
@@ -1096,7 +1076,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotWrist2LinkMesh",
             "collision": "robotWrist1Collision",
-            "frame": "simulated_wrist_2_link",
+            "tf": "simulated_wrist_2_link",
             "showCollision": false,
             "highlighted": false
         }
@@ -1114,7 +1094,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotWrist3LinkMesh",
             "collision": "robotWrist3Collision",
-            "frame": "simulated_wrist_3_link",
+            "tf": "simulated_wrist_3_link",
             "showCollision": false,
             "highlighted": false
         }
@@ -1131,7 +1111,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperBaseLinkMesh",
-            "frame": "simulated_robotiq_85_base_link",
+            "tf": "simulated_robotiq_85_base_link",
             "showName": false,
             "highlighted": false
         }
@@ -1148,7 +1128,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperLeftKnuckleMesh",
-            "frame": "simulated_robotiq_85_left_knuckle_link",
+            "tf": "simulated_robotiq_85_left_knuckle_link",
             "showName": false,
             "highlighted": false
         }
@@ -1165,7 +1145,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperRightKnuckleMesh",
-            "frame": "simulated_robotiq_85_right_knuckle_link",
+            "tf": "simulated_robotiq_85_right_knuckle_link",
             "showName": false,
             "highlighted": false
         }
@@ -1182,7 +1162,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperLeftFingerMesh",
-            "frame": "simulated_robotiq_85_left_finger_link",
+            "tf": "simulated_robotiq_85_left_finger_link",
             "showName": false,
             "highlighted": false
         }
@@ -1199,7 +1179,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperRightFingerMesh",
-            "frame": "simulated_robotiq_85_right_finger_link",
+            "tf": "simulated_robotiq_85_right_finger_link",
             "showName": false,
             "highlighted": false
         }
@@ -1216,7 +1196,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperLeftInnerKnuckleMesh",
-            "frame": "simulated_robotiq_85_left_inner_knuckle_link",
+            "tf": "simulated_robotiq_85_left_inner_knuckle_link",
             "showName": false,
             "highlighted": false
         }
@@ -1233,7 +1213,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperRightInnerKnuckleMesh",
-            "frame": "simulated_robotiq_85_right_inner_knuckle_link",
+            "tf": "simulated_robotiq_85_right_inner_knuckle_link",
             "showName": false,
             "highlighted": false
         }
@@ -1250,7 +1230,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperLeftFingerTipMesh",
-            "frame": "simulated_robotiq_85_left_finger_tip_link",
+            "tf": "simulated_robotiq_85_left_finger_tip_link",
             "showName": false,
             "highlighted": false
         }
@@ -1267,7 +1247,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "gripperRightFingerTipMesh",
-            "frame": "simulated_robotiq_85_right_finger_tip_link",
+            "tf": "simulated_robotiq_85_right_finger_tip_link",
             "showName": false,
             "highlighted": false
         }
@@ -1940,9 +1920,9 @@
                 "a": 1
             },
             "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 0.2,
+                "y": 0.2,
+                "z": 0.2
             }
         }
     },
@@ -2341,17 +2321,65 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "table_tf",
             "position": {
                 "x": -0.28,
-                "y": 0.32,
-                "z": 0.3
+                "y": -0.04,
+                "z": 0.67
             },
             "rotation": {
                 "w": 1,
                 "x": 0,
                 "y": 0,
                 "z": 0
+            }
+        }
+    },
+    "humanWorkZone-tf": {
+        "type": "tfType",
+        "id": "humanWorkZone-tf",
+        "name": "Human Zone TF",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame": "world",
+            "position": {
+                "x": 0,
+                "y": 1,
+                "z": 0.4
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            }
+        }
+    },
+    "humanCorridorZone-tf": {
+        "type": "tfType",
+        "id": "humanCorridorZone-tf",
+        "name": "Human Zone TF",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "frame": "world",
+            "position": {
+                "x": 0,
+                "y": -1,
+                "z": 0.4
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
             }
         }
     },
@@ -2485,11 +2513,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": 0,
-                "y": -0.15,
-                "z": 0
+                "y": 0,
+                "z": 0.38
             },
             "rotation": {
                 "w": 0,
@@ -2509,11 +2537,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": 0,
-                "y": -0.15,
-                "z": 0.15185
+                "y": 0,
+                "z": 0.53185
             },
             "rotation": {
                 "w": 0.6669439077377319,
@@ -2533,11 +2561,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": 0,
-                "y": -0.15,
-                "z": 0.15185
+                "y": 0,
+                "z": 0.53185
             },
             "rotation": {
                 "w": -0.4478497803211212,
@@ -2557,11 +2585,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": -0.02560272067785263,
-                "y": 0.08055101335048676,
-                "z": 0.07763859629631042
+                "y": 0.23055101335048676,
+                "z": 0.45763859629631042
             },
             "rotation": {
                 "w": 0.6748411655426025,
@@ -2581,11 +2609,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": 0.11584359407424927,
-                "y": -0.005812940187752247,
-                "z": 0.2651554048061371
+                "y": 0.14418705981224775,
+                "z": 0.6451554048061371
             },
             "rotation": {
                 "w": -0.29463568329811096,
@@ -2605,11 +2633,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": 0.1089443638920784,
-                "y": 0.05631420761346817,
-                "z": 0.32326942682266235
+                "y": 0.20631420761346817,
+                "z": 0.70326942682266235
             },
             "rotation": {
                 "w": 0.9164819121360779,
@@ -2629,11 +2657,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": 0.11666648089885712,
-                "y": 0.11946450173854828,
-                "z": 0.25667497515678406
+                "y": 0.26946450173854828,
+                "z": 0.63667497515678406
             },
             "rotation": {
                 "w": -0.37005797028541565,
@@ -2653,11 +2681,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": 0.11666648089885712,
-                "y": 0.11946450173854828,
-                "z": 0.25667497515678406
+                "y": 0.26946450173854828,
+                "z": 0.63667497515678406
             },
             "rotation": {
                 "w": 0.29082435369491577,
@@ -2677,11 +2705,11 @@
         "selected": false,
         "editing": false,
         "properties": {
-            "frame": "world",
+            "frame": "pedestal_tf",
             "position": {
                 "x": 0.11666648089885712,
-                "y": 0.11946450173854828,
-                "z": 0.25667497515678406
+                "y": 0.26946450173854828,
+                "z": 0.63667497515678406
             },
             "rotation": {
                 "w": -0.37005797028541565,

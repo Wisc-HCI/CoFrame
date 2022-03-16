@@ -112,6 +112,42 @@ export function arrayMove(arr, old_index, new_index) {
     return arr; // for testing purposes
 };
 
+export function itemTransformMethod(state, id) {
+    let idIncluded = false;
+    let transformMethod = 'inactive';
+
+    // This variable determines whether the encountered translate/rotate applies to the item being searched
+    let isTransformActive = false;
+
+    state.focus.some(f => {
+        let focusItemType = state.programData[f]?.type
+        let focusTypeInfo = focusItemType ? Object.keys(state.programSpec.objectTypes[focusItemType].properties) : null;
+        // Reset the isTransformActive, as the next translate/rotate would reference this new object
+        if (focusTypeInfo && idIncluded && focusTypeInfo.includes("position")) {
+            isTransformActive = false;
+        }
+
+        // Item exists in the focus array
+        if (f === id) {
+            idIncluded = true;
+            isTransformActive = true;
+        }
+
+        // If item exists, and still has the potential focus of the translate/rotate, determine if translation/rotation applies
+        if (idIncluded && isTransformActive && f === 'translate') {
+            transformMethod = 'translate';
+            return true;
+        }
+        if (idIncluded && isTransformActive && f === 'rotate') {
+            transformMethod = 'rotate';
+            return true;
+        }
+        return false;
+    });
+
+    return transformMethod;
+}
+
 export function deleteAction(data, uuid) {
     if (data[uuid].children) {
         /* Delete as a hierarchical */
@@ -130,9 +166,10 @@ export const occupancyOverlap = (position, occupancyZones) => {
     let overlap = false
     let zones = Object.values(occupancyZones).filter(v => v.type === 'zoneType');
     for (let i = 0; i < zones.length; i++ ) {//.forEach(zone => {
-        let zone = zones[i];
-        const xOverlap = position.x < zone.properties.position.x + zone.properties.scale.x/2 && position.x > zone.properties.position.x - zone.properties.scale.x/2;
-        const yOverlap = position.y < zone.properties.position.z + zone.properties.scale.z/2 && position.y > zone.properties.position.z - zone.properties.scale.z/2;
+        let zoneScale = zones[i].properties.scale;
+        let zone = occupancyZones[zones[i].properties.tf];
+        const xOverlap = position.x < zone.properties.position.x + zoneScale.x/2 && position.x > zone.properties.position.x - zoneScale.x/2;
+        const yOverlap = position.y < zone.properties.position.z + zoneScale.z/2 && position.y > zone.properties.position.z - zoneScale.z/2;
         if (xOverlap && yOverlap) {
             overlap = true
         }
