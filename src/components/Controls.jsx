@@ -16,8 +16,9 @@ export function Controls() {
     primaryColor,
     simMode, setSimMode,
     collisionsVisible, setCollisionsVisible,
-    occupancyVisible, setOccupancyVisible
-  ] = useStore(state => ([state.primaryColor, state.simMode, state.setSimMode, state.collisionsVisible, state.setCollisionsVisible, state.occupancyVisible, state.setOccupancyVisible]), shallow)
+    occupancyVisible, setOccupancyVisible,
+    tfVisible, setTfVisible
+  ] = useStore(state => ([state.primaryColor, state.simMode, state.setSimMode, state.collisionsVisible, state.setCollisionsVisible, state.occupancyVisible, state.setOccupancyVisible, state.tfVisible, state.setTfVisible]), shallow)
 
   return (
 
@@ -84,6 +85,10 @@ export function Controls() {
             <Box direction='row' justify='between' flex gap='xsmall' onClick={() => setOccupancyVisible(!occupancyVisible)} focusIndicator={false}>
             <Toggle size='small' selected={occupancyVisible} backgroundColor={primaryColor}/>
               Show Human Occupancy
+            </Box>
+            <Box direction='row' justify='between' flex gap='xsmall' onClick={() => setTfVisible(!tfVisible)} focusIndicator={false}>
+            <Toggle size='small' selected={tfVisible} backgroundColor={primaryColor}/>
+              Show TFs
             </Box>
           </Box>
         }

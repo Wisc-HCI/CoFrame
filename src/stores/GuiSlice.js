@@ -194,4 +194,8 @@ export const GuiSlice = (set, get) => ({
   setOccupancyVisible: (visible) => set(state => {
     state.occupancyVisible = visible;
   }),
+  tfVisible: false,
+  setTfVisible: (visible) => set(state => {
+    state.tfVisible = visible;
+  }),
 });

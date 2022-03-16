@@ -82,6 +82,19 @@ export const computedSlice = (state) => {
             translation: data.properties.position,
             rotation: data.properties.rotation
         }
+        items[data.id+'visual'] = {
+            shape: 'cube',
+            name: data.name,
+            frame: data.id,
+            position: {x: 0, y: 0, z: 0},
+            rotation: {w: 1, x: 0, y: 0, z: 0},
+            color: { r: 0, g: 0, b: 250, a: 0.6 },
+            scale: {x: 0.1, y: 0.1, z: 0.1},
+            transformMode: "inactive",
+            highlighted: false,
+            onClick: (_) => { console.log("TF for: " + data.id) },
+            hidden: !state.tfVisible
+        }
     });
 
     // ===================== Items =====================
