@@ -76,13 +76,13 @@ export const computedSlice = (state) => {
     })
 
     // Pull world based tf data from the machines and robot links
-    Object.values(state.programData).filter(v => v.type === 'tfType').forEach(data => {
-        tfs[data.id] = {
-            frame: data.properties.frame,
-            translation: data.properties.position,
-            rotation: data.properties.rotation
-        }
-    });
+    // Object.values(state.programData).filter(v => v.type === 'tfType').forEach(data => {
+    //     tfs[data.id] = {
+    //         frame: data.properties.frame,
+    //         translation: data.properties.position,
+    //         rotation: data.properties.rotation
+    //     }
+    // });
 
     // ===================== Items =====================
 
@@ -105,32 +105,40 @@ export const computedSlice = (state) => {
             highlighted = true
         }
 
-        items[itemKey] = {
-            shape: meshObject.properties.keyword,
-            name: item.name,
-            frame: item.properties.tf,
-            position: meshObject.properties.position,
-            rotation: meshObject.properties.rotation,
-            color: meshObject.properties.color,
-            scale: meshObject.properties.scale,
-            transformMode: itemTransformMethod(state, item.id),
-            highlighted,
-            onClick: (e) => {
-                if (!state.focus.includes('translate') && !state.focus.includes('rotate')) {
-                    console.log('clicked ' + item.name)
-                    e.stopPropagation();
-                    state.addFocusItem(item.id,false);
-                }
+        tfs[item.id] = {
+            frame: item.properties.relativeTo ? item.properties.relativeTo : "world",
+            translation: item.properties.position,
+            rotation: item.properties.rotation
+        }
 
-            },
-            onMove: (transform) => { console.log(transform) }
+        if (meshObject) {
+            items[itemKey] = {
+                shape: meshObject.properties.keyword,
+                name: item.name,
+                frame: item.id,
+                position: meshObject.properties.position,
+                rotation: meshObject.properties.rotation,
+                color: meshObject.properties.color,
+                scale: meshObject.properties.scale,
+                transformMode: itemTransformMethod(state, item.id),
+                highlighted,
+                onClick: (e) => {
+                    if (!state.focus.includes('translate') && !state.focus.includes('rotate')) {
+                        console.log('clicked ' + item.name)
+                        e.stopPropagation();
+                        state.addFocusItem(item.id,false);
+                    }
+    
+                },
+                onMove: (transform) => { console.log(transform) }
+            }
         }
 
         if (collisionObject) {
             items[itemKey + '-collision'] = {
                 shape: COLLISION_MESHES[collisionObject.properties.keyword] ? COLLISION_MESHES[collisionObject.properties.keyword] : collisionObject.properties.keyword,
                 name: item.name + ' Collision',
-                frame: item.properties.tf,
+                frame: item.id,
                 position: collisionObject.properties.position,
                 rotation: collisionObject.properties.rotation,
                 scale: collisionObject.properties.scale,
@@ -151,9 +159,9 @@ export const computedSlice = (state) => {
             items[entry.id] = {
                 shape: 'cube',
                 name: entry.name,
-                frame: 'world',
-                position: state.programData[entry.properties.tf].properties.position,
-                rotation: state.programData[entry.properties.tf].properties.rotation,
+                frame: entry.properties.relativeTo ? entry.properties.relativeTo : 'world',
+                position: entry.properties.position,
+                rotation: entry.properties.rotation,
                 color: { ...OCCUPANCY_ERROR_COLOR, a: 0.2 },
                 scale: entry.properties.scale,
                 transformMode: itemTransformMethod(state, entry.id),
@@ -165,10 +173,9 @@ export const computedSlice = (state) => {
             entry.properties.inputs.forEach(input => {
                 let inputObj = state.programData[input];
                 let thing = state.programData[inputObj.properties.thing];
-                let inFrame = inputObj.properties.relativeObject ? state.programData[inputObj.properties.relativeObject]?.properties?.tf : null;
                 items[input] = {
                     shape: EVD_MESH_LOOKUP[thing.properties.mesh],
-                    frame: inFrame ? inFrame : "world",
+                    frame: inputObj.properties.relativeTo ? inputObj.properties.relativeTo : "world",
                     position: inputObj.properties.position,
                     rotation: inputObj.properties.rotation,
                     scale: {x:0.2,y:0.2,z:0.2},
@@ -182,10 +189,9 @@ export const computedSlice = (state) => {
             entry.properties.outputs.forEach(output => {
                 let outputObj = state.programData[output];
                 let thing = state.programData[outputObj.properties.thing];
-                let outFrame = outputObj.properties.relativeObject ? state.programData[outputObj.properties.relativeObject]?.properties?.tf : null;
                 items[output] = {
                     shape: EVD_MESH_LOOKUP[thing.properties.mesh],
-                    frame: outFrame ? outFrame : "world",
+                    frame: outputObj.properties.relativeTo ? outputObj.properties.relativeTo : "world",
                     position: outputObj.properties.position,
                     rotation: outputObj.properties.rotation,
                     scale: {x:0.2,y:0.2,z:0.2},
@@ -197,14 +203,18 @@ export const computedSlice = (state) => {
                 }
             });            
         } else if (entry.type === 'machineType') {
-            let entryProps = entry.ref ? state.programData[entry.ref].properties : entry.properties;
+            let entryProps = entry.properties;
             let meshObject = state.programData[entryProps.mesh];
             let collisionObject = state.programData[entryProps.collisionMesh];
-
+            tfs[entry.id] = {
+                frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
+                translation: entry.properties.position,
+                rotation: entry.properties.rotation
+            }
             items[entry.id] = {
                 shape: meshObject.properties.keyword,
                 name: entry.name,
-                frame: entryProps.tf,
+                frame: entry.id,
                 position: meshObject.properties.position,
                 rotation: meshObject.properties.rotation,
                 scale: meshObject.properties.scale,
@@ -223,7 +233,7 @@ export const computedSlice = (state) => {
             items[entry.id + '-collision'] = {
                 shape: collisionObject.properties.keyword,
                 name: entry.name + ' Collision',
-                frame: entryProps.tf,
+                frame: entry.id,
                 position: collisionObject.properties.position,
                 rotation: collisionObject.properties.rotation,
                 scale: collisionObject.properties.scale,
