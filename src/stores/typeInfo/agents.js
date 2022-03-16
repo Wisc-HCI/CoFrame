@@ -3,7 +3,6 @@ import { merge } from 'lodash';
 import { STATUS, STEP_CALCULATOR } from "../Constants";
 
 const basicAgentData = {
-    name: 'robot-agent',
     type: TYPES.OBJECT,
     instanceBlock: null,
     referenceBlock: null,

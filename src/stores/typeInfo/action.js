@@ -84,8 +84,15 @@ const gripperFeatures = {
       isList: false,
       nullValid: true
     },
-    position: {
-      name: 'Position',
+    positionStart: {
+      name: 'Start Position',
+      type: SIMPLE_PROPERTY_TYPES.NUMBER,
+      default: 50,
+      min: 0,
+      max: 85
+    },
+    positionEnd: {
+      name: 'End Position',
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
       default: 50,
       min: 0,
@@ -113,6 +120,27 @@ const machineInitFeatures = {
       isList: false
     },
     computeSteps: {default:STEP_CALCULATOR.MACHINE}
+  }
+}
+
+const robotInitFeatures = {
+  name: 'Robot Initialize',
+  properties: {
+    description: {default: 'Initialize the robot for use'},
+    initialGripper: {
+      name: 'Initial Grip State',
+      type: SIMPLE_PROPERTY_TYPES.NUMBER,
+      default: 50,
+      min: 0,
+      max: 85
+    },
+    initialPosition: {
+      name: 'Initial Location',
+      accepts: ['locationType'],
+      default: null,
+      isList: false
+    },
+    computeSteps: {default:STEP_CALCULATOR.AGENT}
   }
 }
 
@@ -224,6 +252,7 @@ const actionTypes = {
   delayType: merge(delayFeatures,basicActionData),
   gripperType: merge(gripperFeatures,basicActionData),
   machineInitType: merge(machineInitFeatures,basicActionData),
+  robotInitType: merge(robotInitFeatures,basicActionData),
   processStartType: merge(processStartFeatures,basicActionData),
   processStopType: merge(processStopFeatures,basicActionData),
   processWaitType: merge(processWaitFeatures,basicActionData),

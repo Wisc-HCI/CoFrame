@@ -10,7 +10,7 @@ export const machineSteps = ({data, path, context, memo}) => {
         console.log({status})
         const steps = machine ? [{
             stepType: STEP_TYPE.LANDMARK,
-            data: {[machine.id]:{initialized:true}},
+            data: {[machine.id]:{initialized:true,code:'machineInitialized'}},
             source: data.id,
             time: 0
         }] : [{

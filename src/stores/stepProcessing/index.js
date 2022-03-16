@@ -8,6 +8,7 @@ import { robotMotionSteps } from './robotMotion';
 import { simpleSteps } from './simple';
 import { skillSteps } from './skill';
 import { breakSteps } from "./break";
+import { agentSteps } from "./agent";
 
 import { STEP_CALCULATOR, STATUS } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
@@ -22,7 +23,8 @@ const KEY_MAPPING = {
     POSE: poseSteps,
     GRIPPER: gripperMotionSteps,
     ROBOT_MOTION: robotMotionSteps,
-    BREAK: breakSteps
+    BREAK: breakSteps,
+    AGENT: agentSteps
 }
 // Ordering corresponds to the values in the STEP_CALCULATOR constant
 

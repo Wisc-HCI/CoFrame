@@ -21,6 +21,16 @@ export const processSteps = ({data, path, context, memo}) => {
         if (data.type === 'processStartType') {
             steps = [
                 {
+                    stepType: STEP_TYPE.PROCESS_START,
+                    data: {
+                        machine: machine?machine.id:null,
+                        process: process?process.id:null,
+                        id:data.id
+                    },
+                    source: data.id,
+                    time: 0
+                },
+                {
                     stepType: STEP_TYPE.LANDMARK,
                     data: processStartStatus,
                     source: data.id,
@@ -36,11 +46,23 @@ export const processSteps = ({data, path, context, memo}) => {
         } else if (data.type === 'processWaitType') {
             steps = [
                 {
+                    stepType: STEP_TYPE.ACTION_START,
+                    data: {agent: 'robot',id:data.id},
+                    source: data.id,
+                    time: 0
+                },
+                {
                     stepType: STEP_TYPE.SCENE_UPDATE,
                     data: {},
                     source: data.id,
                     time: processFinishStatus
-                }
+                },
+                {
+                    stepType: STEP_TYPE.ACTION_END,
+                    data: {agent: 'robot',id:data.id},
+                    source: data.id,
+                    time: 0
+                },
             ];
         } else if (data.type === 'processStopType') {
             steps = [
@@ -50,6 +72,16 @@ export const processSteps = ({data, path, context, memo}) => {
                     source: data.id,
                     time: 0
                 },
+                {
+                    stepType: STEP_TYPE.PROCESS_END,
+                    data: {
+                        machine: machine?machine.id:null,
+                        process: process?process.id:null,
+                        id:data.id
+                    },
+                    source: data.id,
+                    time: 0
+                }
             ]
         }
 

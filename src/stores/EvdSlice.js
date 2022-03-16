@@ -37,7 +37,7 @@ export const EvdSlice = (set, get) => ({
       { title: "Things", dataType: DATA_TYPES.REFERENCE, objectType: 'thingType', icon: ThingIconStyled },
       { title: "Containers", dataType: DATA_TYPES.INSTANCE, objectTypes: ['trajectoryType', 'hierarchicalType', 'skillType'], icon: ContainerIconStyled },
       { title: "Skills", dataType: DATA_TYPES.CALL, objectType: 'skillType', icon: SkillIconStyled },
-      { title: "Actions", dataType: DATA_TYPES.INSTANCE, objectTypes: ['delayType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'breakpointType'], icon: PrimitiveIconStyled }
+      { title: "Actions", dataType: DATA_TYPES.INSTANCE, objectTypes: ['delayType', 'gripperType', 'robotInitType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'breakpointType'], icon: PrimitiveIconStyled }
     ],
     objectTypes: typeInfo,
   },

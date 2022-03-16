@@ -14,14 +14,19 @@ export const STEP_CALCULATOR = {
     POSE: 6,
     GRIPPER: 7,
     ROBOT_MOTION: 8,
-    BREAK: 9
+    BREAK: 9,
+    AGENT: 10
 }
 
 export const STEP_TYPE = {
     LANDMARK: 0,
     SCENE_UPDATE: 1,
     SCENE_REMOVE: 2,
-    RAW_DATA: 3
+    RAW_DATA: 3,
+    ACTION_START: 4,
+    ACTION_END: 5,
+    PROCESS_START: 6,
+    PROCESS_END: 7
 }
 
 export const ROOT_BOUNDS = [

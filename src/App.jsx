@@ -70,6 +70,19 @@ export default function App() {
         },
         textInput: { 
             disabled: { opacity: 1 } 
+        },
+        notification: {
+            toast:{
+                container:{
+                    elevation:'none'
+                }
+            },
+            container: {
+                border: { color: 'lightgrey' },
+                background: {
+                    color: 'background-front',
+                }
+            }
         }
     }
 

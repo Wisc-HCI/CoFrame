@@ -52,22 +52,9 @@ export const programType = {
         isList: false,
         fullWidth: true
       },
-      initialGripper: {
-        name: 'Initial Grip State',
-        type: SIMPLE_PROPERTY_TYPES.NUMBER,
-        default: 50,
-        min: 0,
-        max: 85
-      },
-      initialPosition: {
-        name: 'Initial Location',
-        accepts: ['locationType'],
-        default: null,
-        isList: false
-      },
       children: {
         name: 'Children',
-        accepts: ['hierarchicalType', 'skillType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType'],
+        accepts: ['hierarchicalType', 'skillType', 'delayType', 'breakpointType', 'gripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType','robotInitType'],
         default: [],
         isList: true,
         fullWidth: true

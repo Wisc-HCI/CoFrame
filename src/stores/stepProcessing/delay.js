@@ -3,12 +3,20 @@ import { leafLogic } from './index';
 
 export const delaySteps = ({data, path, memo}) => {
     return leafLogic({data,path,memo,updateFn:({data})=>{
-        const steps = [{
-            stepType: STEP_TYPE.SCENE_UPDATE,
-            data: {},
-            source: data.id,
-            time: data.properties.duration
-        }]
+        const steps = [
+            {
+                stepType: STEP_TYPE.ACTION_START,
+                data: {agent: 'robot',id:data.id},
+                source: data.id,
+                time: 0
+            },
+            {
+                stepType: STEP_TYPE.ACTION_END,
+                data: {agent: 'robot',id:data.id},
+                source: data.id,
+                time: data.properties.duration
+            }
+        ]
         return {steps,status:STATUS.VALID}
     }})
 }
