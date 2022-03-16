@@ -1,9 +1,7 @@
 import { React } from 'react';
 import { MachineProcessList } from './MachineDetail';
 import { ProcessIOList } from './ProcessDetail';
-import PositionInput from './PositionInput';
-import RotationInput from './RotationInput';
-
+import PositionRotationTF from './PositionRotationTF';
 import { TextArea, Text, Box, TextInput, Button, Layer, DropButton } from 'grommet';
 
 import useStore from '../../stores/Store';
@@ -46,9 +44,14 @@ export const Detail = (_) => {
       : '#333333'
 
   console.log("item.position", item);
+
+
+
+
   if (!item) {
     return null
   }
+
   return (
     <Layer full="vertical" onEsc={clearFocus} position="right" modal={false}>
       <Box fill style={{ minWidth: '378px' }} background='#444444' border={{ side: 'left', color: objectColor, size: 'medium' }}>
@@ -103,23 +106,19 @@ export const Detail = (_) => {
             </Box>
           )}
 
+
+          {item.properties.tf !== undefined && (
+            <>
+              <PositionRotationTF itemID={item.properties.tf} inputOutput={false} />
+              <br />
+            </>
+          )}
+
           {item.properties.position !== undefined && item.properties.rotation !== undefined && (
             <>
-            <Box
-              round="xsmall"
-              background="#303030"
-              pad="small" >
-              <Box direction='column'>
-                <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Placement : </b>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ paddingBottom: "4%" }}>
-                    <PositionInput itemID={item.id} position={item.properties.position} />
-                  </div>
-                  <RotationInput rotation={item.properties.rotation} itemID={item.id} />
-                </div>
-              </Box>
-            </Box>
-            <br/>
+              <PositionRotationTF itemID={item.id} inputOutput={true} position={item.properties.position}
+                rotation={item.properties.rotation} />
+              <br />
             </>
           )}
 
