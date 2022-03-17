@@ -158,9 +158,9 @@ export const Detail = (_) => {
                         Are you sure you want to delete this item?
                       </Text>
                       <div style={{ paddingTop: "5%" }}>
-                        <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" onClick={() => {
-                          deleteBlock(item, "spawner", objectTypeInfo)
-                        }} />
+                        <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" onClick={() => 
+                          deleteBlock(item, item.id, objectTypeInfo)
+                        } />
 
                       </div>
 

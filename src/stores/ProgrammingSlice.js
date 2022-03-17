@@ -264,6 +264,7 @@ export function move(array, moveIndex, toIndex) {
         });
       },
       deleteBlock: (data, parentId, fieldInfo) => {
+        console.log("deleteBlock:" , data);
         set((state) => {
           // Delete block's children and parameters
           state = deleteChildren(state, data, parentId, fieldInfo);
