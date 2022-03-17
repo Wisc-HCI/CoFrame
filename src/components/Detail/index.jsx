@@ -17,6 +17,7 @@ export const Detail = (_) => {
     objectTypeInfo
   } = useStore(state => {
     let item = null;
+    console.log("state.programData:", state.programData) ;
     state.focus.slice().reverse().some(v => {
       if (state.programData[v] && state.activeFocus === v && DETAIL_TYPES.includes(state.programData[v].type)) {
         item = state.programData[v]
@@ -45,7 +46,7 @@ export const Detail = (_) => {
 
 
   const deleteBlock = useStore(state => state.deleteBlock);
-  console.log("item:", item);
+  const tryD = {name: "", value: null, accepts: [], isSpawner: true};
 
 
 
@@ -159,7 +160,7 @@ export const Detail = (_) => {
                       </Text>
                       <div style={{ paddingTop: "5%" }}>
                         <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" onClick={() => 
-                          deleteBlock(item, item.id, objectTypeInfo)
+                          deleteBlock(item, "spawner", objectTypeInfo)
                         } />
 
                       </div>

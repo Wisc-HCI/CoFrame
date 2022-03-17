@@ -282,7 +282,11 @@ export function move(array, moveIndex, toIndex) {
               remove(state.programData[parentId].properties[fieldInfo.value], (entry) => entry === data.id);
             }
           }
-          state.programData[parentId].properties.status = STATUS.PENDING;
+          console.log("state.programData[parentId]", state.programData[parentId]);
+          if (state.programData[parentId] !== undefined){
+            state.programData[parentId].properties.status = STATUS.PENDING;
+          }
+          
         });
       },
       createPlacedBlock: (data, x, y) => {
