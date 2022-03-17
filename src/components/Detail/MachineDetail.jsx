@@ -13,6 +13,8 @@ export const MachineProcessList = ({ machineId }) => {
   const processList = useStore(state => Object.values(state.programData)
        .filter(value => value.type === 'processType' && value.properties.machine === machineId));
 
+  
+
   return (
     <Collapse
       openable={true}

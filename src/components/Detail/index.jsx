@@ -43,7 +43,9 @@ export const Detail = (_) => {
       ? objectTypeInfo?.referenceBlock.color
       : '#333333'
 
-  console.log("item.position", item);
+
+  const deleteBlock = useStore(state => state.deleteBlock);
+  console.log("item:", item);
 
 
 
@@ -106,17 +108,9 @@ export const Detail = (_) => {
             </Box>
           )}
 
-
-          {item.properties.tf !== undefined && (
-            <>
-              <PositionRotationTF itemID={item.properties.tf} inputOutput={false} />
-              <br />
-            </>
-          )}
-
           {item.properties.position !== undefined && item.properties.rotation !== undefined && (
             <>
-              <PositionRotationTF itemID={item.id} inputOutput={true} position={item.properties.position}
+              <PositionRotationTF itemID={item.id} position={item.properties.position}
                 rotation={item.properties.rotation} />
               <br />
             </>
@@ -164,7 +158,9 @@ export const Detail = (_) => {
                         Are you sure you want to delete this item?
                       </Text>
                       <div style={{ paddingTop: "5%" }}>
-                        <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" />
+                        <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" onClick={() => {
+                          deleteBlock(item, "spawner", objectTypeInfo)
+                        }} />
 
                       </div>
 
@@ -177,7 +173,9 @@ export const Detail = (_) => {
                 />
               </div>
             ) : (
-              <Button secondary icon={<FiTrash />} disabled={!item.canDelete} label="Delete" color="#ab4646" />
+              <Button secondary icon={<FiTrash />} disabled={!item.canDelete} label="Delete" color="#ab4646"
+
+              />
             )}
           </div>
         </Box>
