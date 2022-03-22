@@ -71,19 +71,33 @@ export const GuiSlice = (set, get) => ({
         state.programData[f].selected = false
       }
     });
+    // Handle updating the focus given the id and add
     if (state.focus.includes(id)) {
+      // the focus already includes this id, so stub the focus there.
       state.focus.length = state.focus.indexOf(id) + 1
     } else if (add) {
+      // If add, push the id to the end.
       state.focus.push(id)
     } else {
+      // If not adding, replace the focus with a new stack.
       state.focus = [id]
     }
+    // Update the nodes to be selected if they appear in focus
     state.focus.forEach(f => {
       if (state.programData[f]) {
         state.programData[f].selected = true
       }
     });
-    state.activeFocus = state.focus[state.focus.length-1]
+    // Set the active focus to the last item that has
+    // an entry in the programData or issues
+    state.focus.slice().reverse().some(v=>{
+      if (state.programData[v] || state.issues[v]) {
+        state.activeFocus = v;
+        return true
+      } else {
+        return false
+      }
+    })
   }),
   clearFocus: () => set(state => {
     console.log('clearing focus')

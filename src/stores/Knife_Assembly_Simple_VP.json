@@ -1036,6 +1036,7 @@
         "selected": false,
         "editing": false,
         "properties": {
+            "description": "This is a table",
             "mesh": "tableMesh",
             "relativeTo": "world",
             "position": {

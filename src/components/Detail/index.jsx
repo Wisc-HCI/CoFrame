@@ -17,15 +17,20 @@ export const Detail = (_) => {
     objectTypeInfo
   } = useStore(state => {
     let item = null;
-    console.log("state.programData:", state.programData) ;
+   // console.log("state.focus:", state.focus) ;
     state.focus.slice().reverse().some(v => {
+     // console.log("v : ", v);
       if (state.programData[v] && state.activeFocus === v && DETAIL_TYPES.includes(state.programData[v].type)) {
-        item = state.programData[v]
+        item = state.programData[v];
+       
         return true
       } else {
+        
         return false
       }
     })
+    //console.log("item: ", item);
+   // console.log("state:", state.activeFocus);
     return {
       item,
       objectTypeInfo: item?.type ? state.programSpec.objectTypes[state.programData[item?.id].type] : null
@@ -46,7 +51,8 @@ export const Detail = (_) => {
 
 
   const deleteBlock = useStore(state => state.deleteBlock);
-  const tryD = {name: "", value: null, accepts: [], isSpawner: true};
+  //console.log("item:" ,item);
+ 
 
 
 
