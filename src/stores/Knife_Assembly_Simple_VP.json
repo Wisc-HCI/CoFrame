@@ -218,9 +218,9 @@
         "selected": false,
         "editing": false
     },
-    "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c": {
-        "type": "machineType",
-        "id": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+    "toolType-assembly-jig": {
+        "type": "toolType",
+        "id": "toolType-assembly-jig",
         "name": "Assembly Jig Machine",
         "canDelete": true,
         "canEdit": true,
@@ -239,7 +239,9 @@
                 "y": -0.5,
                 "z": -0.5
             },
-            "collisionMesh": "assembly_jig_collision"
+            "collisionMesh": "assembly_jig_collision",
+            "safe": true,
+            "weight": 0
         },
         "dataType": 0,
         "selected": false,
@@ -401,17 +403,30 @@
         "selected": false,
         "editing": false
     },
-    "thingType-98892c5c1c1911ecbe2600155d1a70a2": {
-        "type": "thingType",
+    "toolType-transport-jig": {
+        "type": "toolType",
         "name": "Transport Jig",
-        "id": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
+        "id": "toolType-transport-jig",
         "canEdit": true,
         "canDelete": true,
         "properties": {
             "description": "",
-            "mesh": "package://evd_ros_tasks/description/markers/tranport_jig.stl",
             "safe": true,
-            "weight": 0
+            "weight": 0,
+            "mesh": "transport_jig",
+            "relativeTo": "world",
+            "position": {
+                "x": 0.3,
+                "y": 0.28,
+                "z": 0.14
+            },
+            "rotation": {
+                "w": -0.5,
+                "x": 0.5,
+                "y": -0.5,
+                "z": -0.5
+            },
+            "collisionMesh": "transport_jig_collision"
         },
         "dataType": 0,
         "selected": false,
@@ -574,7 +589,7 @@
         "canEdit": true,
         "properties": {
             "description": "Description",
-            "relativeTo": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
+            "relativeTo": "toolType-transport-jig",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -586,7 +601,7 @@
                 "z": 0,
                 "w": 1
             },
-            "thing": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
+            "thing": "toolType-transport-jig",
             "status": null,
             "computeSteps": null,
             "steps": null
@@ -704,7 +719,7 @@
         "canEdit": true,
         "properties": {
             "description": "Description",
-            "relativeTo": "thingType-98892c5c1c1911ecbe2600155d1a70a2",
+            "relativeTo": "toolType-transport-jig",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -753,7 +768,7 @@
         "canEdit": true,
         "properties": {
             "description": "Description",
-            "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "relativeTo": "toolType-assembly-jig",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -780,7 +795,7 @@
         "canEdit": true,
         "properties": {
             "description": "Description",
-            "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "relativeTo": "toolType-assembly-jig",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -807,7 +822,7 @@
         "canEdit": true,
         "properties": {
             "description": "Description",
-            "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "relativeTo": "toolType-assembly-jig",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -861,7 +876,7 @@
         "properties": {
             "description": "Assembles a knife from two handles and a blade. All three must be present in appropriate orientation to occur.",
             "processTime": 30000,
-            "machine": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "machine": "toolType-assembly-jig",
             "inputs": [
               "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9s",
               "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s",
@@ -884,7 +899,7 @@
         "canEdit": true,
         "properties": {
             "description": "Description",
-            "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "relativeTo": "toolType-assembly-jig",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -911,7 +926,7 @@
         "canEdit": true,
         "properties": {
             "description": "Description",
-            "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "relativeTo": "toolType-assembly-jig",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -938,7 +953,7 @@
         "canEdit": true,
         "properties": {
             "description": "Description",
-            "relativeTo": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "relativeTo": "toolType-assembly-jig",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -992,7 +1007,7 @@
         "properties": {
             "description": "Assembles a sheathed knife from two handles and a sheathed blade. All three must be present in appropriate orientation to occur.",
             "processTime": 30000,
-            "machine": "machine-f74ac8e4-d7f1-4492-8e60-bd2ae6644e5c",
+            "machine": "toolType-assembly-jig",
             "inputs": [
                 "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d",
                 "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s",
@@ -2147,6 +2162,76 @@
         "editing": false,
         "properties": {
             "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        }
+    },
+    "transport_jig": {
+        "type": "meshType",
+        "id": "transport_jig",
+        "name": "Transport Jig",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "transport_jig",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+            },
+            "color": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+            },
+            "scale": {
+                "x": 0.2,
+                "y": 0.2,
+                "z": 0.2
+            }
+        }
+    },
+    "transport_jig_collision": {
+        "type": "meshType",
+        "id": "transport_jig_collision",
+        "name": "Transport Jig Collision",
+        "canDelete": true,
+        "canEdit": true,
+        "dataType": 0,
+        "selected": false,
+        "editing": false,
+        "properties": {
+            "keyword": "package://evd_ros_tasks/description/markers/tranport_jig.stl",
             "position": {
                 "x": 0,
                 "y": 0,

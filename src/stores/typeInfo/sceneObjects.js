@@ -30,7 +30,7 @@ const basicObject = {
         },
         relativeTo: {
             name: 'Relative To Object',
-            accepts: ["machineType", "thingType", "fixtureType", "linkType"],
+            accepts: ["machineType", "thingType", "fixtureType", "linkType", "toolType"],
             default: null,
             isList: false,
             nullValid: true
@@ -189,12 +189,59 @@ const zone = {
     }
 }
 
+const tool = {
+    name: 'Tool',
+    type: TYPES.OBJECT,
+    instanceBlock: null,
+    referenceBlock: {
+      onCanvas: false,
+      color: "#F8B22C",
+      icon: MachineIconStyled,
+      extras: [
+        EXTRA_TYPES.LOCKED_INDICATOR,
+        {
+          icon: FiMoreHorizontal,
+          type: EXTRA_TYPES.DROPDOWN,
+          contents: [
+            EXTRA_TYPES.DELETE_BUTTON,
+            EXTRA_TYPES.DEBUG_TOGGLE,
+            EXTRA_TYPES.SELECTION_TOGGLE
+          ]
+        }
+      ]
+    },
+    properties: {
+      safe: {
+        name: 'Safe',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+        default: false,
+        isList: false,
+        fullWidth: true
+      },
+      weight: {
+        name: 'Weight',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
+        default: 0,
+        isList: false,
+        fullWidth: true
+      },
+      collisionMesh: {
+          name: 'Collision Mesh',
+          accepts: ["meshType"],
+          default: null,
+          isList: false,
+          fullWidth: true
+      }
+    }
+}
+
 
 const sceneObjects = {
   machineType: merge(machine,basicObject),
   fixtureType: merge(fixture, basicObject),
   linkType: merge(link, basicObject),
-  zoneType: merge(zone, basicObject)
+  zoneType: merge(zone, basicObject),
+  toolType: merge(tool, basicObject)
 }
 
 export default sceneObjects

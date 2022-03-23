@@ -33,7 +33,7 @@ export const inputOutputType = {
     },
     relativeObject: {
       name: 'Relative to',
-      accepts: ["thingType", "machineType"],
+      accepts: ["thingType", "machineType", "toolType"],
       default: null,
       isList: false
     },   
@@ -53,7 +53,7 @@ export const inputOutputType = {
     },
     thing: {
       name: "Thing",
-      accepts: ["thingType"],
+      accepts: ["thingType", "toolType"],
       default: null,
       isList: false,
       nullValid: true

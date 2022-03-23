@@ -23,7 +23,7 @@ export const skillType = {
             EXTRA_TYPES.DEBUG_TOGGLE,
             {
               type: EXTRA_TYPES.ADD_ARGUMENT_GROUP,
-              allowed: ['machineType', 'locationType', 'thingType', 'trajectoryType']
+              allowed: ['machineType', 'locationType', 'thingType', 'toolType', 'trajectoryType']
             }
           ]
         }

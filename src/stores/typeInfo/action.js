@@ -79,7 +79,7 @@ const gripperFeatures = {
     description: {default: 'Adjust the gripper position'},
     thing: {
       name: "Thing",
-      accepts: ["thingType"],
+      accepts: ["thingType", "toolType"],
       default: null,
       isList: false,
       nullValid: true

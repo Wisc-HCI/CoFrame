@@ -179,7 +179,7 @@ export const computedSlice = (state) => {
                     onClick: (_)=>{console.log(output)}
                 }
             });            
-        } else if (entry.type === 'machineType') {
+        } else if (entry.type === 'machineType' || entry.type === 'toolType') {
             let entryProps = entry.properties;
             let meshObject = state.programData[entryProps.mesh];
             let collisionObject = state.programData[entryProps.collisionMesh];
