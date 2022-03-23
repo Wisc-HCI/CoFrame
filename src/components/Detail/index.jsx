@@ -1,9 +1,7 @@
 import { React } from 'react';
 import { MachineProcessList } from './MachineDetail';
 import { ProcessIOList } from './ProcessDetail';
-import PositionInput from './PositionInput';
-import RotationInput from './RotationInput';
-
+import PositionRotationTF from './PositionRotationTF';
 import { TextArea, Text, Box, TextInput, Button, Layer, DropButton } from 'grommet';
 
 import useStore from '../../stores/Store';
@@ -19,14 +17,20 @@ export const Detail = (_) => {
     objectTypeInfo
   } = useStore(state => {
     let item = null;
+   // console.log("state.focus:", state.focus) ;
     state.focus.slice().reverse().some(v => {
+     // console.log("v : ", v);
       if (state.programData[v] && state.activeFocus === v && DETAIL_TYPES.includes(state.programData[v].type)) {
-        item = state.programData[v]
+        item = state.programData[v];
+       
         return true
       } else {
+        
         return false
       }
     })
+    //console.log("item: ", item);
+   // console.log("state:", state.activeFocus);
     return {
       item,
       objectTypeInfo: item?.type ? state.programSpec.objectTypes[state.programData[item?.id].type] : null
@@ -45,10 +49,18 @@ export const Detail = (_) => {
       ? objectTypeInfo?.referenceBlock.color
       : '#333333'
 
-  console.log("item.position", item);
+
+  const deleteBlock = useStore(state => state.deleteBlock);
+  //console.log("item:" ,item);
+ 
+
+
+
+
   if (!item) {
     return null
   }
+
   return (
     <Layer full="vertical" onEsc={clearFocus} position="right" modal={false}>
       <Box fill style={{ minWidth: '378px' }} background='#444444' border={{ side: 'left', color: objectColor, size: 'medium' }}>
@@ -105,21 +117,9 @@ export const Detail = (_) => {
 
           {item.properties.position !== undefined && item.properties.rotation !== undefined && (
             <>
-            <Box
-              round="xsmall"
-              background="#303030"
-              pad="small" >
-              <Box direction='column'>
-                <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Placement : </b>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ paddingBottom: "4%" }}>
-                    <PositionInput itemID={item.id} position={item.properties.position} />
-                  </div>
-                  <RotationInput rotation={item.properties.rotation} itemID={item.id} />
-                </div>
-              </Box>
-            </Box>
-            <br/>
+              <PositionRotationTF itemID={item.id} position={item.properties.position}
+                rotation={item.properties.rotation} />
+              <br />
             </>
           )}
 
@@ -165,7 +165,9 @@ export const Detail = (_) => {
                         Are you sure you want to delete this item?
                       </Text>
                       <div style={{ paddingTop: "5%" }}>
-                        <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" />
+                        <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" onClick={() => 
+                          deleteBlock(item, "spawner", objectTypeInfo)
+                        } />
 
                       </div>
 
@@ -178,7 +180,9 @@ export const Detail = (_) => {
                 />
               </div>
             ) : (
-              <Button secondary icon={<FiTrash />} disabled={!item.canDelete} label="Delete" color="#ab4646" />
+              <Button secondary icon={<FiTrash />} disabled={!item.canDelete} label="Delete" color="#ab4646"
+
+              />
             )}
           </div>
         </Box>

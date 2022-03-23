@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { NumberInput } from '../NumberInput';
-import { Box, DropButton, Text } from "grommet";
+import { Box, DropButton, Text,Button } from "grommet";
 import { FormEdit } from "grommet-icons";
 import { eulerFromQuaternion, quaternionFromEuler } from './Geometry';
 import useStore from '../../stores/Store';
+import {FiX} from 'react-icons/fi';
 
 
 //RPY is Euler 
@@ -22,6 +23,18 @@ function RotationInput(props) {
   }
   const [eulerValues, setEulerValues] = useState(eulerVecToDegrees(eulerFromQuaternion(rotValue)));
   let limits = [-360, 360];
+  const addFocusItem = useStore(state => state.addFocusItem);
+  const [open,setOpen] = useState(false);
+
+  function buttonClick(){
+    addFocusItem("rotate", true);
+    setOpen(!open);
+  }
+
+  function handleClose(){
+    addFocusItem(props.itemID, true);
+    setOpen(!open);
+  }
 
   return (
     <Box round="xsmall"
@@ -36,6 +49,8 @@ function RotationInput(props) {
           icon={<FormEdit />}
           dropAlign={{ right: 'right', top: "bottom" }}
           dropProps={{ elevation: 'none', round: "xsmall" }}
+          onOpen={buttonClick}
+          open = {open}
           dropContent={
             <Box round="xsmall" background="grey" border={{ color: 'white', size: 'xsmall' }} width="small" direction='column'
               elevation="none" pad="xsmall" justify='center'>
@@ -87,6 +102,7 @@ function RotationInput(props) {
                   }}
                 />
               </Box>
+              <Button onClick = {handleClose} size = "small" margin = "xxsmall" primary icon={<FiX />} label="Close" color="#ab4646" />
             </Box>
           }
         />

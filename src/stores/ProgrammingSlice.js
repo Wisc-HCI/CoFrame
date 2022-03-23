@@ -264,6 +264,7 @@ export function move(array, moveIndex, toIndex) {
         });
       },
       deleteBlock: (data, parentId, fieldInfo) => {
+        
         set((state) => {
           // Delete block's children and parameters
           state = deleteChildren(state, data, parentId, fieldInfo);
@@ -281,7 +282,11 @@ export function move(array, moveIndex, toIndex) {
               remove(state.programData[parentId].properties[fieldInfo.value], (entry) => entry === data.id);
             }
           }
-          state.programData[parentId].properties.status = STATUS.PENDING;
+          
+          if (state.programData[parentId] !== undefined){
+            state.programData[parentId].properties.status = STATUS.PENDING;
+          }
+          
         });
       },
       createPlacedBlock: (data, x, y) => {

@@ -11,6 +11,7 @@ export const SimulatorTile = (_) => {
 
     const primaryColor = useStore(state => state.primaryColor);
     const clearFocus = useStore(state => state.clearFocus);
+    const tfVisible = useStore(state => state.tfVisible);
     const paused = useStore(state => state.focus === []);
     const [ ref, bounds ] = useMeasure();
 
@@ -33,7 +34,7 @@ export const SimulatorTile = (_) => {
             >
                 <div style={{ height: bounds.height*0.55-55, width: '100%', backgroundColor:'black', padding:0 }}>
                     <Scene
-                        displayTfs={false}
+                        displayTfs={tfVisible}
                         displayGrid={true}
                         isPolar={false}
                         backgroundColor='#1e1e1e'

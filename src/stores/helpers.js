@@ -166,10 +166,9 @@ export const occupancyOverlap = (position, occupancyZones) => {
     let overlap = false
     let zones = Object.values(occupancyZones).filter(v => v.type === 'zoneType');
     for (let i = 0; i < zones.length; i++ ) {//.forEach(zone => {
-        let zoneScale = zones[i].properties.scale;
-        let zone = occupancyZones[zones[i].properties.tf];
-        const xOverlap = position.x < zone.properties.position.x + zoneScale.x/2 && position.x > zone.properties.position.x - zoneScale.x/2;
-        const yOverlap = position.y < zone.properties.position.z + zoneScale.z/2 && position.y > zone.properties.position.z - zoneScale.z/2;
+        let zone = zones[i];
+        const xOverlap = position.x < zone.properties.position.x + zone.properties.scale.x/2 && position.x > zone.properties.position.x - zone.properties.scale.x/2;
+        const yOverlap = position.y < zone.properties.position.z + zone.properties.scale.z/2 && position.y > zone.properties.position.z - zone.properties.scale.z/2;
         if (xOverlap && yOverlap) {
             overlap = true
         }
