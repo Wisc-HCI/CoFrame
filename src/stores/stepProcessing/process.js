@@ -8,12 +8,29 @@ export const processSteps = ({data, path, context, memo}) => {
         const processMachine = findInstance(process?.properties.machine,context);
 
         // Define some statuses that are relevant
-        const machineStartStatus = status === STATUS.VALID && machine ? {[machine.id]:{running:true}} : {};
-        const processStartStatus = status === STATUS.VALID && process ? {[process.id]:{running:true},...machineStartStatus} : {};
-        const machineFinishStatus = status === STATUS.VALID && machine ? {[machine.id]:{finish:true}} : {};
-        const processFinishStatus = status === STATUS.VALID && process ? {[process.id]:{finish:true},...machineFinishStatus} : {};
-        const machineStopStatus = status === STATUS.VALID && machine ? {[machine.id]:{stopped:true}} : {};
-        const processStopStatus = status === STATUS.VALID && process ? {[process.id]:{stopped:true},...machineStopStatus} : {};
+        // const machineStartStatus = status === STATUS.VALID && machine ? {[machine.id]:{running:true}} : {};
+        // const processStartStatus = status === STATUS.VALID && process ? {[process.id]:{running:true},...machineStartStatus} : {};
+        
+        const machineStartStatus = status === STATUS.VALID && machine ? {[machine.id]:'started'} : {};
+        const processStartStatus = status === STATUS.VALID && process ? {[process.id]:'started',...machineStartStatus} : {};
+        const machineFinishStatus = status === STATUS.VALID && machine ? {[machine.id]:'finished'} : {};
+        const processFinishStatus = status === STATUS.VALID && process ? {[process.id]:'finished',...machineFinishStatus} : {};
+        const machineStopStatus = status === STATUS.VALID && machine ? {[machine.id]:'stopped'} : {};
+        const processStopStatus = status === STATUS.VALID && process ? {[process.id]:'stopped',...machineStopStatus} : {};
+
+        const startStepData = {
+            machine: machine?machine.id:null,
+            process: process?process.id:null,
+            statuses: processStartStatus,
+            id:data.id
+        }
+
+        const stopStepData = {
+            machine: machine?machine.id:null,
+            process: process?process.id:null,
+            statuses: processStopStatus,
+            id:data.id
+        }
 
         let steps = [];
         const status = machine === processMachine && process ? STATUS.VALID : STATUS.FAILED;
@@ -22,17 +39,7 @@ export const processSteps = ({data, path, context, memo}) => {
             steps = [
                 {
                     stepType: STEP_TYPE.PROCESS_START,
-                    data: {
-                        machine: machine?machine.id:null,
-                        process: process?process.id:null,
-                        id:data.id
-                    },
-                    source: data.id,
-                    time: 0
-                },
-                {
-                    stepType: STEP_TYPE.LANDMARK,
-                    data: processStartStatus,
+                    data: startStepData,
                     source: data.id,
                     time: 0
                 },
@@ -52,33 +59,17 @@ export const processSteps = ({data, path, context, memo}) => {
                     time: 0
                 },
                 {
-                    stepType: STEP_TYPE.SCENE_UPDATE,
-                    data: {},
-                    source: data.id,
-                    time: processFinishStatus
-                },
-                {
                     stepType: STEP_TYPE.ACTION_END,
                     data: {agent: 'robot',id:data.id},
                     source: data.id,
-                    time: 0
+                    time: processFinishStatus
                 },
             ];
         } else if (data.type === 'processStopType') {
             steps = [
                 {
-                    stepType: STEP_TYPE.LANDMARK,
-                    data: processStopStatus,
-                    source: data.id,
-                    time: 0
-                },
-                {
                     stepType: STEP_TYPE.PROCESS_END,
-                    data: {
-                        machine: machine?machine.id:null,
-                        process: process?process.id:null,
-                        id:data.id
-                    },
+                    data: stopStepData,
                     source: data.id,
                     time: 0
                 }

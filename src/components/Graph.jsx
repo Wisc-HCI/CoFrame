@@ -12,12 +12,8 @@ import { uniq } from 'lodash';
 import { Box, Button, Notification, Text } from "grommet";
 import { STATUS, STEP_TYPE } from "../stores/Constants";
 
-const purple1 = "#6c5efb";
-const purple2 = "#c998ff";
-const purple3 = "#a44afe";
-const purple4 = "#9249ff";
 export const background = "#eaedff";
-const defaultMargin = { top: 40, left: 50, right: 40, bottom: 50 };
+const defaultMargin = { top: 40, left: 80, right: 40, bottom: 50 };
 
 const tooltipStyles = {
     ...defaultStyles,
@@ -31,30 +27,12 @@ const pointSensitivity = 0.25;
 
 const round = (num) => Math.round(num * 10) / 10
 
-// const data = cityTemperature.slice(0, 12);
-
 const formatRow = (row) => row.charAt(0).toUpperCase() + row.slice(1);
-
-// scales
-// const xScale = scaleLinear({
-//   domain: [0, Math.max(...temperatureTotals)],
-//   nice: true
-// });
-// const dateScale = scaleBand({
-//   domain: data.map(getDate),
-//   padding: 0.2
-// });
-// const colorScale = scaleOrdinal({
-//   domain: keys,
-//   range: [purple1, purple2, purple3]
-// });
-
-let tooltipTimeout;
+const formatCol = (row) => round(row/1000);
 
 const getGroup = (d) => d.group;
 
 const axisColor = 'white';
-
 
 export default withTooltip(
     ({
@@ -83,7 +61,7 @@ export default withTooltip(
         const clearFocus = useStore(state => state.clearFocus);
         const primaryColor = useStore(state => state.primaryColor);
 
-        const [stepData, groups, errorType] = useStore(state => {
+        const [stepData, errorType] = useStore(state => {
             let activeStep = [];
             let groups = [];
             let errorType = null;
@@ -112,21 +90,18 @@ export default withTooltip(
                                         end: actionEnd?actionEnd.time:0
                                     }
                                     currentTime = actionEnd?actionEnd.time:currentTime
-                                    if (!groups.includes('Robot')) {
-                                        groups.push('Robot')
-                                    }
                                     activeStep.push(actionBlock)
                                 } else if (step.stepType === STEP_TYPE.PROCESS_START) {
                                     let processEnd = null;
                                     steps.slice(i).some(afterStep=>{
-                                        if (afterStep.stepType === STEP_TYPE.PROCESS_END && afterStep.data.id === step.data.id) {
+                                        if (afterStep.stepType === STEP_TYPE.LANDMARK && afterStep.source === step.source) {
                                             processEnd = afterStep;
                                             return true
                                         } else {
                                             return false
                                         }
                                     })
-                                    const group = step.data.machine ? state.programData[step.data.machine] : 'Robot'
+                                    const group = step.data.machine ? state.programData[step.data.machine].name : 'Robot'
                                     const process = state.programData[step.data.process] ? state.programData[step.data.process] : {name:'unknown'};
                                     const processBlock = {
                                         group,
@@ -136,9 +111,6 @@ export default withTooltip(
                                         end: processEnd?processEnd.time:0
                                     }
                                     currentTime = processEnd?processEnd.time:currentTime
-                                    if (!groups.includes(group)) {
-                                        groups.push(group)
-                                    }
                                     activeStep.push(processBlock)
                                 }
                             })
@@ -153,7 +125,7 @@ export default withTooltip(
                     return false
                 }
             })
-            return [activeStep, groups, errorType]
+            return [activeStep, errorType]
         })
         console.log({ stepData, errorType })
 
@@ -216,17 +188,7 @@ export default withTooltip(
             (event) => {
                 const { x, y } = localPoint(event) || { x: -10, y: -10 };
                 const x0 = xScale.invert(x - defaultMargin.left);
-                //   const index = bisectDate(stock, x0, 1);
-                //   const y0 = yScale.invert(y-defaultMargin.top);
-                // console.log(x0)
                 const d = stepData.filter(e => e.time ? Math.abs(e.time - x0) < pointSensitivity : e.start <= x0 && e.end >= x0).map(e => ({ ...e, progress: x0 - e.start }))
-                // console.log(d)
-                //   const d0 = stock[index - 1];
-                //   const d1 = stock[index];
-                //   let d = d0;
-                //   if (d1 && getDate(d1)) {
-                //     d = x0.valueOf() - getDate(d0).valueOf() > getDate(d1).valueOf() - x0.valueOf() ? d1 : d0;
-                //   }
                 showTooltip({
                     tooltipData: d,
                     tooltipLeft: x - defaultMargin.left,
@@ -344,12 +306,14 @@ export default withTooltip(
                                     fill: axisColor,
                                     fontSize: 11,
                                     textAnchor: "end",
-                                    dy: "0.33em"
+                                    dy: "0.33em",
+                                    width: defaultMargin.left-10
                                 })}
                             />
                             <AxisBottom
                                 top={yMax}
                                 scale={xScale}
+                                tickFormat={formatCol}
                                 stroke={axisColor}
                                 tickStroke={axisColor}
                                 tickLabelProps={() => ({
@@ -413,7 +377,7 @@ export default withTooltip(
                     {tooltipOpen && tooltipData && (
                         <Tooltip
                             top={tooltipTop}
-                            left={tooltipLeft > 0.8 * xMax ? tooltipLeft - 55 : tooltipLeft + 55}
+                            left={tooltipLeft > 0.8 * xMax ? tooltipLeft - 75 : tooltipLeft + 75}
                             style={tooltipStyles}
                         >
                             <Box gap="xsmall">
@@ -426,8 +390,8 @@ export default withTooltip(
                                             </Text>
                                         </Box>
                                         
-                                        {e.time === undefined && (<div> {round(e.progress)} / {e.end - e.start} sec</div>)}
-                                        {e.time !== undefined && (<div>@ {e.time} sec</div>)}
+                                        {e.time === undefined && (<div> {round(e.progress/1000)} / {round((e.end - e.start)/1000)} sec</div>)}
+                                        {e.time !== undefined && (<div>@ {round(e.time/1000)} sec</div>)}
 
                                     </div>
                                 ))}

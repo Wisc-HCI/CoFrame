@@ -21,12 +21,11 @@ export const STEP_CALCULATOR = {
 export const STEP_TYPE = {
     LANDMARK: 0,
     SCENE_UPDATE: 1,
-    SCENE_REMOVE: 2,
-    RAW_DATA: 3,
-    ACTION_START: 4,
-    ACTION_END: 5,
-    PROCESS_START: 6,
-    PROCESS_END: 7
+    RAW_DATA: 2,
+    ACTION_START: 3,
+    ACTION_END: 4,
+    PROCESS_START: 5,
+    PROCESS_END: 6
 }
 
 export const ROOT_BOUNDS = [
