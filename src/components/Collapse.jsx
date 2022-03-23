@@ -1,18 +1,14 @@
 import React, {useState} from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
-import { RightOutlined } from '@ant-design/icons';
+// import { RightOutlined } from '@ant-design/icons';
 // import { Row, Empty } from 'antd';
-import { Collapsible, Box } from 'grommet'
+import { Collapsible, Box } from 'grommet';
+import { ExpandCarrot } from './ExpandCarrot';
 
 export default function Collapse({openable, defaultOpen, extra, style, header, children, backgroundColor, borderWidth, internalPaddingWidth}) {
 
     const [open, setOpen] = useState(defaultOpen)
-
-    const carrotStyle = useSpring({
-        rotate: open ? '90deg' : '0deg',
-        config: config.wobbly
-    });
 
     const contentStyle = useSpring({ 
         scaleY: open ? 1 : 0,
@@ -26,7 +22,7 @@ export default function Collapse({openable, defaultOpen, extra, style, header, c
                     {header}
                     <Box direction='row' justify='end' align='center'>
                         {extra}
-                        <animated.div onClick={()=>{openable && setOpen(!open)}} style={{...carrotStyle, margin:10}}><RightOutlined/></animated.div>
+                        <ExpandCarrot expanded={open} onClick={()=>setOpen(!open)}/>
                     </Box>
                 </Box>
             )}

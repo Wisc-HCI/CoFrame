@@ -26,6 +26,7 @@ export const computedSlice = (state) => {
     // ===================== TFs =====================
     let tfs = {};
     let items = {};
+    let texts = {};
 
     Object.values(state.programData).filter(v => v.type === 'thingType' && v.dataType === DATA_TYPES.INSTANCE).forEach(thing => {
         // for now, place the things at origin. 
@@ -357,6 +358,7 @@ export const computedSlice = (state) => {
         tfs,
         items,
         lines,
-        hulls
+        hulls,
+        texts
     })
 }

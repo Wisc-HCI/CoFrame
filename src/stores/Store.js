@@ -16,6 +16,7 @@ import {computedSlice} from './ComputedSlice';
 // import {WatchedSlice} from './WatchedSlice';
 // import { computed } from 'zustand-middleware-computed-state';
 // import {SimSlice} from './SimSlice';
+import { SceneSlice } from 'robot-scene';
 import lodash from 'lodash';
 // import { INITIAL_SIM } from "./initialSim";
 // import fakeEvdData from './fakeEvdData';
@@ -42,6 +43,7 @@ const immer = (config) => (set, get, api) =>
 );
 
 const store = (set, get) => ({
+    ...SceneSlice(set,get),
     ...ProgrammingSlice(set,get), // default programming slice for simple-vp
     ...ProgrammingSliceOverride(set,get), // overrides data-editing functionality to update pending properties
     ...GuiSlice(set,get),

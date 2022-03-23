@@ -1,9 +1,8 @@
 import React from 'react';
 import { List, Box, Button } from 'grommet';
-import { SyncOutlined } from '@ant-design/icons';
 import Tile from '../Tile';
 import { FrameButton } from '../FrameButton';
-
+import { FiRefreshCw } from "react-icons/fi";
 // import frameStyles from '../../frameStyles';
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
@@ -56,7 +55,7 @@ export const ReviewTile = (_) => {
                         <h3 style={{ margin: '10pt' }}>
                             Review
                         </h3>
-                        <Button secondary size='small' round='none' icon={<SyncOutlined />} onClick={refresh} label='Refresh'></Button>
+                        <Button secondary size='small' round='none' icon={<FiRefreshCw/>} onClick={refresh} label='Refresh'></Button>
                     </Box>
                 </Box>
 

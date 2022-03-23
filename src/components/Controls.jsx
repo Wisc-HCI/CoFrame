@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CaretRightFilled, PauseOutlined, RollbackOutlined, FullscreenExitOutlined, FullscreenOutlined, EllipsisOutlined } from '@ant-design/icons';
+// import { CaretRightFilled, PauseOutlined, RollbackOutlined, FullscreenExitOutlined, FullscreenOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { FiMinimize, FiMaximize, FiMoreHorizontal } from 'react-icons/fi';
 import { Toggle } from './Toggle';
 // import { Button, Space, Tooltip, Popover, Checkbox, Col, Row } from 'antd';
