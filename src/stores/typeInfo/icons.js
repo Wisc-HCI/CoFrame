@@ -8,6 +8,10 @@ import { ReactComponent as WaypointIcon } from '../../components/CustomIcons/Way
 import { ReactComponent as ContainerIcon } from '../../components/CustomIcons/Container.svg';
 import { ReactComponent as ProcessIcon } from '../../components/CustomIcons/Process.svg';
 import { ReactComponent as InputOutputIcon } from '../../components/CustomIcons/InputOutput.svg';
+import { ReactComponent as ToolIcon } from '../../components/CustomIcons/Tool.svg';
+import { ReactComponent as FixtureIcon } from '../../components/CustomIcons/Fixture.svg';
+import { ReactComponent as ZoneIcon } from '../../components/CustomIcons/Zone.svg';
+import { ReactComponent as LinkIcon } from '../../components/CustomIcons/Link.svg';
 
 export const LocationIconStyled = ()=><LocationIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
 export const PrimitiveIconStyled = ()=><PrimitiveIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
@@ -18,3 +22,7 @@ export const WaypointIconStyled = ()=><WaypointIcon style={{color:'white',width:
 export const ContainerIconStyled = ()=><ContainerIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
 export const ProcessIconStyled = ()=><ProcessIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
 export const InputOutputIconStyled = ()=><InputOutputIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
+export const ToolIconStyled = ()=><ToolIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
+export const FixtureIconStyled = ()=><FixtureIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
+export const ZoneIconStyled = ()=><ZoneIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
+export const LinkIconStyled = ()=><LinkIcon style={{color:'white',width:18,height:17,fill:'white'}}/>

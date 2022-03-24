@@ -33,7 +33,7 @@ export const ROOT_BOUNDS = [
     {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}  // Rotational
 ]
 
-export const DETAIL_TYPES = ['machineType', 'inputOutputType', 'processType', 'locationType', 'waypointType', 'thingType','fixtureType']
+export const DETAIL_TYPES = ['machineType', 'inputOutputType', 'processType', 'locationType', 'waypointType', 'thingType','fixtureType','toolType']
 export const TIMELINE_TYPES = ['programType', 'skillType', 'hierarchicalType', 
                         'gripperType', 'machineInitType', 'processStartType', 
                         'processWaitType', 'processStopType', 'moveTrajectoryType',

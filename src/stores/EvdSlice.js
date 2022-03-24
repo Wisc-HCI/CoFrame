@@ -1,7 +1,7 @@
 import { arrayMove, deleteAction } from './helpers';
 import lodash from 'lodash';
 import { urdf } from "./robot";
-import { FiClipboard, FiBriefcase, FiGrid, FiBox, FiLogOut, FiMoreHorizontal, FiLayers, FiFeather } from "react-icons/fi";
+// import { FiClipboard, FiBriefcase, FiGrid, FiBox, FiLogOut, FiMoreHorizontal, FiLayers, FiFeather } from "react-icons/fi";
 import { DATA_TYPES, TYPES, EXTRA_TYPES, SIMPLE_PROPERTY_TYPES } from 'simple-vp';
 
 import typeInfo from './typeInfo';
@@ -22,7 +22,8 @@ import {
   SkillIconStyled,
   ThingIconStyled,
   WaypointIconStyled,
-  ContainerIconStyled
+  ContainerIconStyled,
+  ToolIconStyled
 } from './typeInfo/icons';
 
 export const EvdSlice = (set, get) => ({
@@ -35,7 +36,7 @@ export const EvdSlice = (set, get) => ({
       { title: "Locations", dataType: DATA_TYPES.REFERENCE, objectType: 'locationType', icon: LocationIconStyled },
       { title: "Waypoints", dataType: DATA_TYPES.REFERENCE, objectType: 'waypointType', icon: WaypointIconStyled },
       { title: "Things", dataType: DATA_TYPES.REFERENCE, objectType: 'thingType', icon: ThingIconStyled },
-      { title: "Tools", dataType: DATA_TYPES.REFERENCE, objectType: 'toolType', icon: ThingIconStyled },
+      { title: "Tools", dataType: DATA_TYPES.REFERENCE, objectType: 'toolType', icon: ToolIconStyled },
       { title: "Containers", dataType: DATA_TYPES.INSTANCE, objectTypes: ['trajectoryType', 'hierarchicalType', 'skillType'], icon: ContainerIconStyled },
       { title: "Skills", dataType: DATA_TYPES.CALL, objectType: 'skillType', icon: SkillIconStyled },
       { title: "Actions", dataType: DATA_TYPES.INSTANCE, objectTypes: ['delayType', 'gripperType', 'robotInitType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'breakpointType'], icon: PrimitiveIconStyled }
