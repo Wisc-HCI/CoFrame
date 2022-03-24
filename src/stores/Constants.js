@@ -4,7 +4,7 @@ export const STATUS = {
     FAILED: 2
 }
 
-export const STEP_CALCULATOR = {
+export const COMPILE_FUNCTIONS = {
     NULL: 0,
     SIMPLE: 1,
     MACHINE: 2,

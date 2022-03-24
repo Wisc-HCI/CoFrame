@@ -1,7 +1,7 @@
 import * as Comlink from 'comlink';
 import { Quaternion } from 'three';
 import { STATUS, STEP_CALCULATOR } from './Constants';
-import { stepProcessors } from './stepProcessing';
+import { compilers } from './compiling';
 import { DATA_TYPES } from 'simple-vp';
 
 const ROOT_BOUNDS = [
@@ -93,6 +93,7 @@ const performStepProcess = async (data) => {
 
     // First, preprocess all locations and waypoints:
     let memo = {};
+    const pathRoot = ['root']
     Object.values(programData)
         .filter(v=>(v.type === 'locationType' || v.type === 'waypointType') && v.dataType === DATA_TYPES.INSTANCE)
         .forEach(data=>{
@@ -100,13 +101,13 @@ const performStepProcess = async (data) => {
                 data,
                 objectTypes,
                 context:programData,
-                path:{route:'root',args:{}},
+                path:JSON.stringify(pathRoot),
                 memo,
                 solver,
                 module,
                 urdf
             }
-            const {memo:newMemo} = stepProcessors[objectTypes[data.type].properties.computeSteps.default](computeProps)
+            const {memo:newMemo} = compilers[objectTypes[data.type].properties.compileFn.default](computeProps)
             memo = {...memo,...newMemo}
     })
 
@@ -117,14 +118,13 @@ const performStepProcess = async (data) => {
         data:programData[root],
         objectTypes,
         context:programData,
-        path:{route:'root',args:{}},
+        path:JSON.stringify(pathRoot),
         memo,
         solver,
         module,
         urdf
     }
-    const {memo:newMemo} = stepProcessors[objectTypes.programType.properties.computeSteps.default](computeProps)
-    // const newData = {...imemo,[root]:{properties:{steps,status}}};
+    const {memo:newMemo} = compilers[objectTypes.programType.properties.compileFn.default](computeProps)
 
     memo = {...memo,...newMemo}
   

@@ -1,7 +1,7 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
-import { STATUS, STEP_CALCULATOR } from "../Constants";
+import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 
 export const programType = {
     name: 'Program',
@@ -64,13 +64,13 @@ export const programType = {
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: STATUS.PENDING
       },
-      computeSteps: {
-        name: 'Compute Steps',
+      compileFn: {
+        name: 'Compile Function',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: STEP_CALCULATOR.SIMPLE
+        default: COMPILE_FUNCTIONS.SIMPLE
       },
-      steps: {
-        name: 'Steps',
+      compiled: {
+        name: 'Compiled',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {}
       }

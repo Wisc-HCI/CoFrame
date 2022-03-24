@@ -1,34 +1,34 @@
-import { delaySteps } from "./delay";
-import { gripperMotionSteps } from "./gripperMotion";
-import { machineSteps } from "./machine";
-import { nullSteps } from './null';
-import { poseSteps } from './pose';
-import { processSteps } from './process';
-import { robotMotionSteps } from './robotMotion';
-import { simpleSteps } from './simple';
-import { skillSteps } from './skill';
-import { breakSteps } from "./break";
-import { agentSteps } from "./agent";
+import { delayCompiler } from "./delay";
+import { gripperMotionCompiler } from "./gripperMotion";
+import { machineCompiler } from "./machine";
+import { nullCompiler } from './null';
+import { poseCompiler } from './pose';
+import { processCompiler } from './process';
+import { robotMotionCompiler } from './robotMotion';
+import { simpleCompiler } from './simple';
+import { skillCompiler } from './skill';
+import { breakCompiler } from "./break";
+import { agentCompiler } from "./agent";
 
-import { STEP_CALCULATOR, STATUS } from "../Constants";
+import { COMPILE_FUNCTIONS, STATUS } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
 
 const KEY_MAPPING = {
-    NULL: nullSteps,
-    SIMPLE: simpleSteps,
-    MACHINE: machineSteps,
-    DELAY: delaySteps,
-    PROCESS: processSteps,
-    SKILL: skillSteps,
-    POSE: poseSteps,
-    GRIPPER: gripperMotionSteps,
-    ROBOT_MOTION: robotMotionSteps,
-    BREAK: breakSteps,
-    AGENT: agentSteps
+    NULL: nullCompiler,
+    SIMPLE: simpleCompiler,
+    MACHINE: machineCompiler,
+    DELAY: delayCompiler,
+    PROCESS: processCompiler,
+    SKILL: skillCompiler,
+    POSE: poseCompiler,
+    GRIPPER: gripperMotionCompiler,
+    ROBOT_MOTION: robotMotionCompiler,
+    BREAK: breakCompiler,
+    AGENT: agentCompiler
 }
-// Ordering corresponds to the values in the STEP_CALCULATOR constant
+// Ordering corresponds to the values in the COMPILE_FUNCTIONS constant
 
-export const stepProcessors =  Object.keys(STEP_CALCULATOR).map(k=>KEY_MAPPING[k]);
+export const compilers =  Object.keys(COMPILE_FUNCTIONS).map(k=>KEY_MAPPING[k]);
 
 export const findInstance = (id, context) => {
     let found = false;
@@ -55,16 +55,16 @@ export const findInstance = (id, context) => {
 export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 export const leafLogic = ({data, objectTypes, context, path, memo, solver, module, urdf, updateFn}) => {
-    let newSteps = {};
+    let newCompiled = {};
     let updated = false;
     let status = STATUS.VALID;
     let shouldBreak = false;
-    if (memo[data.id]?.properties.steps[path]) {
+    if (memo[data.id]?.properties.compiled[path]) {
         // Use the version in the memo
         console.log('using memoized version of ',data.id)
-        newSteps = memo[data.id].properties.steps;
+        newCompiled = memo[data.id].properties.compiled;
         status = memo[data.id].properties.status;
-        newSteps[path].some(step=>{
+        newCompiled[path].some(step=>{
             if (step.data.break) {
                 shouldBreak = true
                 return true
@@ -74,16 +74,16 @@ export const leafLogic = ({data, objectTypes, context, path, memo, solver, modul
         })
         // Record a change if the status was previously pending
         updated = data.properties.status === STATUS.PENDING;
-    } else if ([STATUS.FAILED,STATUS.VALID].includes(data.properties.status) && data.properties.steps[path]) {
+    } else if ([STATUS.FAILED,STATUS.VALID].includes(data.properties.status) && data.properties.compiled[path]) {
         // Use the version calculated previously
         console.log('using cached version of ',data.id)
-        const prevPath = data.properties.steps[path]
-        newSteps = memo[data.id] === undefined
+        const prevPath = data.properties.compiled[path]
+        newCompiled = memo[data.id] === undefined
             ? {[path]:prevPath}
-            : memo[data.id].properties.steps[path] 
-            ? memo[data.id].properties.steps
-            : {...memo[data.id].properties.steps,[path]:prevPath}
-        newSteps[path].some(step=>{
+            : memo[data.id].properties.compiled[path] 
+            ? memo[data.id].properties.compiled
+            : {...memo[data.id].properties.compiled,[path]:prevPath}
+        newCompiled[path].some(step=>{
             if (step.data.break) {
                 shouldBreak = true
                 return true
@@ -97,15 +97,15 @@ export const leafLogic = ({data, objectTypes, context, path, memo, solver, modul
     } else {
         console.log('updating version of ',data.id)
         let result = updateFn({data, objectTypes, context, path, memo, solver, module, urdf, updateFn});
-        const steps = result.steps;
+        const compiled = result.compiled;
         updated = true;
         status = result.status;
         shouldBreak = result.break;
-        newSteps = memo[data.id] ? {...memo[data.id].properties.steps,[path]:steps} : {[path]:steps};
+        newCompiled = memo[data.id] ? {...memo[data.id].properties.compiled,[path]:compiled} : {[path]:compiled};
     }
-    // Pack the data/steps into the memo
-    const dataMemo = {...data,properties:{...data.properties,status,steps:newSteps}};
+    // Pack the data/compiled into the memo
+    const dataMemo = {...data,properties:{...data.properties,status,compiled:newCompiled}};
     const newMemo = {...newMemo,[data.id]:dataMemo};
     console.log(newMemo)
-    return {steps:newSteps, memo:newMemo, status, updated, break:shouldBreak}
+    return {compiled:newCompiled, memo:newMemo, status, updated, break:shouldBreak}
 }

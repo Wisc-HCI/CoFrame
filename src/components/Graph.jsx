@@ -67,9 +67,9 @@ export default withTooltip(
             let errorType = null;
             state.focus.some(f => {
                 if (state.programData[f]?.properties?.status === STATUS.VALID || state.programData[f]?.properties?.status === STATUS.PENDING) {
-                    if (Object.keys(state.programData[f].properties?.steps).length === 1) {
+                    if (Object.keys(state.programData[f].properties?.compiled).length === 1) {
                         let currentTime = 0;
-                        const steps = state.programData[f].properties.steps[Object.keys(state.programData[f].properties?.steps)[0]]
+                        const steps = state.programData[f].properties.compiled[Object.keys(state.programData[f].properties?.compiled)[0]]
                         if (steps) {
                             steps.forEach((step,i) => {
                                 if (step.stepType === STEP_TYPE.ACTION_START) {
@@ -116,7 +116,7 @@ export default withTooltip(
                             })
                         }
                         return true
-                    } else if (Object.keys(state.programData[f].properties?.steps).length > 1) {
+                    } else if (Object.keys(state.programData[f].properties?.compiled).length > 1) {
                         errorType = 'traces'
                         return false
                     }
@@ -128,37 +128,6 @@ export default withTooltip(
             return [activeStep, errorType]
         })
         console.log({ stepData, errorType })
-
-        // const data = {
-        //     groups: ["hat", "boot", "scarf"],
-        //     eventTypes: {
-        //         wear: { label: "Wear", color: purple1 },
-        //         make: { label: "Make", color: purple2 },
-        //         bake: { label: "Bake", color: purple3 },
-        //         knit: { label: "Knit", color: purple4 }
-        //     },
-        //     entries: [
-        //         { group: "hat", event: "knit", label: "Knit Hat", start: 0, end: 4 },
-        //         { group: "hat", event: "bake", label: "Finished Baking", time: 4.5 },
-        //         { group: "hat", event: "wear", label: "Wear Hat", start: 5, end: 8 },
-        //         { group: "boot", event: "make", label: "Make Boot", start: 1, end: 3 },
-        //         {
-        //             group: "scarf",
-        //             event: "bake",
-        //             label: "Bake Scarf",
-        //             start: 3,
-        //             end: 4
-        //         },
-        //         { group: "scarf", event: "bake", label: "Started Baking", time: 8 },
-        //         {
-        //             group: "scarf",
-        //             event: "wear",
-        //             label: "Wear Scarf",
-        //             start: 6,
-        //             end: 14
-        //         }
-        //     ]
-        // };
 
         const lastEnd = Math.max(...stepData.map((e) => e.time ? e.time : e.end));
 

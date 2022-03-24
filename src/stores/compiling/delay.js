@@ -1,17 +1,23 @@
 import { STATUS, STEP_TYPE } from "../Constants";
 import { leafLogic } from './index';
 
-export const breakSteps = ({data, path, memo}) => {
+export const delayCompiler = ({data, path, memo}) => {
     return leafLogic({data,path,memo,updateFn:({data})=>{
-        const steps = [
+        const compiled = [
             {
-                stepType: STEP_TYPE.LANDMARK,
-                data: {break:true},
+                stepType: STEP_TYPE.ACTION_START,
+                data: {agent: 'robot',id:data.id},
                 source: data.id,
                 time: 0
+            },
+            {
+                stepType: STEP_TYPE.ACTION_END,
+                data: {agent: 'robot',id:data.id},
+                source: data.id,
+                time: data.properties.duration
             }
         ]
-        return {steps,status:STATUS.VALID,break:true}
+        return {compiled,status:STATUS.VALID}
     }})
 }
 

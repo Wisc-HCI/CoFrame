@@ -2,7 +2,7 @@ import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { MachineIconStyled, FixtureIconStyled, LinkIconStyled, ZoneIconStyled, ToolIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { merge } from 'lodash';
-import { STATUS, STEP_CALCULATOR } from "../Constants";
+import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 
 
 const basicObject = {
@@ -47,13 +47,13 @@ const basicObject = {
             type: SIMPLE_PROPERTY_TYPES.IGNORED,
             default: STATUS.PENDING
         },
-        computeSteps: {
-            name: 'Compute Steps',
+        compileFn: {
+            name: 'Compile Function',
             type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: STEP_CALCULATOR.NULL
+            default: COMPILE_FUNCTIONS.NULL
         },
-        steps: {
-            name: 'Steps',
+        compiled: {
+            name: 'Compiled',
             type: SIMPLE_PROPERTY_TYPES.IGNORED,
             default: {}
         }

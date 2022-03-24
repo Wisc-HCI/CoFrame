@@ -1,7 +1,7 @@
 import { STATUS, STEP_TYPE } from "../Constants";
 import { findInstance, leafLogic } from './index';
 
-export const processSteps = ({data, path, context, memo}) => {
+export const processCompiler = ({data, path, context, memo}) => {
     return leafLogic({data,path,memo,context,updateFn:({data, path, context, memo})=>{
         const process = findInstance(data.properties.process,context);
         const machine = findInstance(data.properties.machine,context);
@@ -32,11 +32,11 @@ export const processSteps = ({data, path, context, memo}) => {
             id:data.id
         }
 
-        let steps = [];
+        let compiled = [];
         const status = machine === processMachine && process ? STATUS.VALID : STATUS.FAILED;
 
         if (data.type === 'processStartType') {
-            steps = [
+            compiled = [
                 {
                     stepType: STEP_TYPE.PROCESS_START,
                     data: startStepData,
@@ -51,7 +51,7 @@ export const processSteps = ({data, path, context, memo}) => {
                 }
             ]
         } else if (data.type === 'processWaitType') {
-            steps = [
+            compiled = [
                 {
                     stepType: STEP_TYPE.ACTION_START,
                     data: {agent: 'robot',id:data.id},
@@ -66,7 +66,7 @@ export const processSteps = ({data, path, context, memo}) => {
                 },
             ];
         } else if (data.type === 'processStopType') {
-            steps = [
+            compiled = [
                 {
                     stepType: STEP_TYPE.PROCESS_END,
                     data: stopStepData,
@@ -76,6 +76,6 @@ export const processSteps = ({data, path, context, memo}) => {
             ]
         }
 
-        return {steps,status}
+        return {compiled,status}
     }})
 }

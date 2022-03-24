@@ -1,7 +1,7 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ThingIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
-import { STATUS, STEP_CALCULATOR } from "../Constants";
+import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 
 export const thingType = {
     name: 'Thing',
@@ -58,13 +58,13 @@ export const thingType = {
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: STATUS.PENDING
       },
-      computeSteps: {
-        name: 'Compute Steps',
+      compileFn: {
+        name: 'Compile Function',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: STEP_CALCULATOR.NULL
+        default: COMPILE_FUNCTIONS.NULL
       },
-      steps: {
-        name: 'Steps',
+      compiled: {
+        name: 'Compiled',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {}
       }

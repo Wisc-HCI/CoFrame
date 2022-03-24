@@ -1,14 +1,14 @@
 import { STATUS, STEP_TYPE } from "../Constants";
 import { findInstance, leafLogic } from './index';
 
-export const machineSteps = ({data, path, context, memo}) => {
-    console.log('machineSteps')
+export const machineCompiler = ({data, path, context, memo}) => {
+    console.log('machineCompiler')
     return leafLogic({data,path,memo,context,updateFn:({data, context})=>{
-        console.log('update machineSteps')
+        console.log('update machineCompiler')
         const machine = findInstance(data.properties.machine,context);
         const status = machine ? STATUS.VALID : STATUS.FAILED;
         console.log({status})
-        const steps = machine ? [{
+        const compiled = machine ? [{
             stepType: STEP_TYPE.LANDMARK,
             data: {[machine.id]:{initialized:true,code:'machineInitialized'}},
             source: data.id,
@@ -19,6 +19,6 @@ export const machineSteps = ({data, path, context, memo}) => {
             source: data.id,
             time: 0
         }]
-        return {steps,status}
+        return {compiled,status}
     }})
 }

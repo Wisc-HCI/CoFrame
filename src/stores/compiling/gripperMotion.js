@@ -1,14 +1,14 @@
 import { STATUS, STEP_TYPE } from "../Constants";
 import { leafLogic } from './index';
 
-export const gripperMotionSteps = ({data, path, memo}) => {
+export const gripperMotionCompiler = ({data, path, memo}) => {
     return leafLogic({data,path,memo,updateFn:({data})=>{
-        const steps = [{
+        const compiled = [{
             stepType: STEP_TYPE.LANDMARK,
-            data: {break:true},
+            data: {},
             source: data.id,
             time: 0
         }]
-        return {steps,status:STATUS.VALID,break:true}
+        return {compiled,status:STATUS.VALID,break:true}
     }})
 }

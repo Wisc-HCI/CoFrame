@@ -8,7 +8,7 @@ const createStaticEnvironment = (scene) => {
     return []
 }
 
-export const poseSteps = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
+export const poseCompiler = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
     return leafLogic({data,path,module,urdf,memo,updateFn:({data,path,module,urdf,memo})=>{
 
         const solver = new module.Solver(urdf,[
@@ -40,12 +40,12 @@ export const poseSteps = ({data, objectTypes, context, path, memo, solver, modul
             }
         }
 
-        const steps = [{
+        const compiled = [{
             stepType: STEP_TYPE.RAW_DATA,
             data: state,
             source: data.id,
             time: 0
         }]
-        return {steps,status}
+        return {compiled,status}
     }})
 }
