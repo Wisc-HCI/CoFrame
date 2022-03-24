@@ -1,0 +1,54 @@
+import React from 'react';
+import useStore from '../../stores/Store';
+import { Box, Text } from 'grommet';
+import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
+
+
+export const FixtureItem = ({ fixtureID }) => {
+
+    const fixtureTypeInfo = useStore(state => state.programSpec.objectTypes.fixtureType)
+
+    const addFocusItem = useStore(state => state.addFocusItem);
+
+    const fixtureItem = useStore(state => Object.values(state.programData)
+    .filter(value => value.type === 'fixtureType' && value.id === fixtureID)[0]);
+
+    console.log("fixtureItem: ", fixtureItem);
+
+    const fixtureRef = referenceTemplateFromSpec('fixtureType', fixtureItem, fixtureTypeInfo);
+
+    console.log("fixtureRef:" , fixtureRef);
+
+
+
+    return (
+        <>
+        
+        <Box round="xsmall" pad="small" background="#303030" >
+            <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Relative to : </b>
+            <div>
+            <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
+                elevation="none" pad="xsmall" justify='center'
+                hoverIndicator={true}
+                onClick={() => {
+                    addFocusItem(fixtureID, true);
+                }}>
+                <ExternalBlock
+                    store={useStore}
+                    data={fixtureRef}
+                    highlightColor={"#333333"}
+                />
+            </Box>        
+            </div>
+          </Box>
+            
+        </>
+
+
+
+
+
+
+    )
+}
+

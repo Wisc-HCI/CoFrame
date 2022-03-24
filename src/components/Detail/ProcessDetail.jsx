@@ -24,7 +24,10 @@ export const ProcessIOList = ({ processId, isInput }) => {
         defaultOpen={true}
         style={{backgroundColor:'#303030',marginBottom: 5}}
         backgroundColor='#202020'
-        header={<Box direction='row' pad="10pt">{isInput?'Inputs :' : 'Outputs :'}{' '}</Box>}
+        header={<Box direction='row' pad="10pt">{isInput?
+          <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Inputs : </b> :
+          <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Outputs : </b>}{' '}
+          </Box>}
       >
   
         {ioList.length > 0 ? ioList.map((io,i) => {

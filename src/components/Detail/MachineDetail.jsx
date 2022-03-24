@@ -22,7 +22,9 @@ export const MachineProcessList = ({ machineId }) => {
       defaultOpen={true}
       style={{backgroundColor:'#303030',marginBottom: 5}}
       backgroundColor='#202020'
-      header={<Box direction='row' pad="10pt">Process: </Box>}
+      header={<Box direction='row' pad="10pt"> 
+      <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Process : </b>
+      </Box>}
     >
 
       {processList.length > 0 ? processList.map(process => {

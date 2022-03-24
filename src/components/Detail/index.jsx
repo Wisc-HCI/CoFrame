@@ -3,6 +3,7 @@ import { MachineProcessList } from './MachineDetail';
 import { ProcessIOList } from './ProcessDetail';
 import PositionRotationTF from './PositionRotationTF';
 import { TextArea, Text, Box, TextInput, Button, Layer, DropButton } from 'grommet';
+import {FixtureItem} from './FixtureDetail'
 
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
@@ -17,20 +18,20 @@ export const Detail = (_) => {
     objectTypeInfo
   } = useStore(state => {
     let item = null;
-   // console.log("state.focus:", state.focus) ;
+     console.log("state.focus:", state.focus) ;
     state.focus.slice().reverse().some(v => {
-     // console.log("v : ", v);
+       console.log("v : ", v);
       if (state.programData[v] && state.activeFocus === v && DETAIL_TYPES.includes(state.programData[v].type)) {
         item = state.programData[v];
-       
+
         return true
       } else {
-        
+
         return false
       }
     })
-    //console.log("item: ", item);
-   // console.log("state:", state.activeFocus);
+    console.log("item: ", item);
+    // console.log("state:", state.activeFocus);
     return {
       item,
       objectTypeInfo: item?.type ? state.programSpec.objectTypes[state.programData[item?.id].type] : null
@@ -51,8 +52,13 @@ export const Detail = (_) => {
 
 
   const deleteBlock = useStore(state => state.deleteBlock);
-  //console.log("item:" ,item);
- 
+  console.log("item:", item);
+  
+
+  
+  
+
+
 
 
 
@@ -101,7 +107,7 @@ export const Detail = (_) => {
 
           {item.properties.processTime !== undefined && (
             <Box direction='row' background='#303030' round="xsmall" pad="small" style={{ marginBottom: 5 }} justify='between'>
-              <Text style={{ paddingRight: '3%' }}>Time :</Text>
+               <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Time : </b>
               <Box direction='row'>
                 <NumberInput
                   value={item.properties.processTime}
@@ -110,7 +116,7 @@ export const Detail = (_) => {
                   onChange={(value) => updateItemSimpleProperty(item.id, 'processTime', value)}
                   disabled={!item.canDelete}
                   visualScaling={1 / 1000} />
-                <Text style={{ paddingLeft: "4%" }}>sec</Text>
+                <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingLeft: "4%" }} >sec</b>
               </Box>
             </Box>
           )}
@@ -124,16 +130,30 @@ export const Detail = (_) => {
           )}
 
           {item.type === 'machineType' && (
+            <>
             <MachineProcessList machineId={item.id} />
+            <br />
+            </>
+            
           )}
 
           {item.type === 'processType' && (
             <>
               <ProcessIOList processId={item.id} isInput />
               <ProcessIOList processId={item.id} />
+              <br />
             </>
 
           )}
+          {item.properties.relativeTo !== undefined && (
+            
+           <>
+           <FixtureItem fixtureID = {item.properties.relativeTo} />
+            
+           </>
+          )}
+
+
 
         </Box>
         <Box
@@ -165,7 +185,7 @@ export const Detail = (_) => {
                         Are you sure you want to delete this item?
                       </Text>
                       <div style={{ paddingTop: "5%" }}>
-                        <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" onClick={() => 
+                        <Button primary icon={<FiTrash />} label="Delete" color="#ab4646" onClick={() =>
                           deleteBlock(item, "spawner", objectTypeInfo)
                         } />
 
