@@ -1,23 +1,24 @@
 import React from 'react';
 import useStore from '../../stores/Store';
 import { Box, Text } from 'grommet';
-import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
+import { ExternalBlock, referenceTemplateFromSpec, instanceTemplateFromSpec } from "simple-vp";
 
 
 export const FixtureItem = ({ fixtureID }) => {
 
-    const fixtureTypeInfo = useStore(state => state.programSpec.objectTypes.fixtureType)
+    const fixtureTypeInfo = useStore(state => state.programSpec.objectTypes.fixtureType);
+    
+
 
     const addFocusItem = useStore(state => state.addFocusItem);
 
-    const fixtureItem = useStore(state => Object.values(state.programData)
-    .filter(value => value.type === 'fixtureType' && value.id === fixtureID)[0]);
+    const fixtureItem = useStore(state => state.programData[fixtureID]);
 
-    console.log("fixtureItem: ", fixtureItem);
+    
 
     const fixtureRef = referenceTemplateFromSpec('fixtureType', fixtureItem, fixtureTypeInfo);
 
-    console.log("fixtureRef:" , fixtureRef);
+    
 
 
 

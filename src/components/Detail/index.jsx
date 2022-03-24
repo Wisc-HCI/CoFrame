@@ -145,7 +145,8 @@ export const Detail = (_) => {
             </>
 
           )}
-          {item.properties.relativeTo !== undefined && (
+          {item.properties.relativeTo !== undefined && item.properties.relativeTo !== "world" && 
+           item.properties.relativeTo !== null &&(
             
            <>
            <FixtureItem fixtureID = {item.properties.relativeTo} />
