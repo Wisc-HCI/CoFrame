@@ -1,12 +1,16 @@
 import lodash from 'lodash';
 import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES, GRIPPER_PARENTS } from './gripper';
-import { Quaternion, Vector3 } from 'three';
+import { Quaternion, Vector3, Group, Object3D } from 'three';
 import { ConvexGeometry } from 'three-stdlib';
 import { EVD_MESH_LOOKUP } from './initialSim';
+import { DATA_TYPES } from 'simple-vp';
+import { REFERENCEABLE_OBJECTS } from './Constants';
+
+Object3D.DefaultUp.set(0,0,1);
 
 export const distance = (pos1, pos2) => {
     return Math.sqrt(Math.pow(pos1.x-pos2.x,2)+Math.pow(pos1.y-pos2.y,2)+Math.pow(pos1.z-pos2.z,2))
-   }
+}
 
 const ROBOT_FRAMES = [
     'base_link',
@@ -65,6 +69,79 @@ export const PINCH_POINT_FIELDS = {
     wrist_1_link___wrist_3_link: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 
     // wrist_2_link___gripper: {parent: 'wrist_2_link', frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+}
+
+export const createStaticEnvironment = (model) => {
+    return Object.values(model).filter(item=>item.userData.parent!=='world'&&item.userData.collisionInfo).map(item=>{
+        // TODO: Create static collision info here
+    })
+}
+
+export const createEnvironmentModel = (programData) => {
+    let added = true;
+    let model = {};
+    model.world = new Group();
+    while (added) {
+        added = false
+        Object.values(programData).filter(i=>!Object.keys(model).includes(i.id)&&i.dataType===DATA_TYPES.INSTANCE&&REFERENCEABLE_OBJECTS.includes(i.type)).forEach(item=>{
+            const parentId = item.properties.relativeTo ? item.properties.relativeTo : 'world';
+            if (model[parentId]) {
+                model[item.id] = new Group();
+                model[item.id].userData.parent = parentId;
+                // TODO: rework collisions to have intelligble data here
+                if (false) {
+                    model[item.id].userData.collisionInfo = true;
+                }
+                model[item.id].position.set(item.properties.position.x,item.properties.position.y,item.properties.position.z);
+                model[item.id].quaternion.set(item.properties.rotation.x,item.properties.rotation.y,item.properties.rotation.z,item.properties.rotation.w);
+                model[parentId].add(model[item.id]);
+                added = true;
+            }
+        })
+    }
+    return model
+}
+
+export const computeRelativeTransform = (transformSource,transformRef) => {
+
+}
+
+export const likFramesToTransforms = (frames,links) => {
+    const worldTransforms = lodash.objectMap(frames,(frameData)=>({
+        frame: 'world',
+        translation: { 
+            x: frameData.translation[0], 
+            y: frameData.translation[1], 
+            z: frameData.translation[2] 
+        },
+        rotation: { 
+            w: frameData.rotation[3], 
+            x: frameData.rotation[0], 
+            y: frameData.rotation[1], 
+            z: frameData.rotation[2] 
+        }
+    }))
+    const localTransforms = lodash.objectMap(worldTransforms,(tfData)=>{
+        const parentLink = null;
+        
+    })
+}
+
+export const likStateToData = (state,agentInfo)=>{
+    console.log(state);
+    const data = {
+        joints: {
+
+        },
+        links: {
+
+        },
+        collisions: {
+
+        },
+
+    }
+    return state
 }
 
 export const typeToKey = (type) => {

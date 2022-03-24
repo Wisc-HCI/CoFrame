@@ -199,6 +199,13 @@ export const computedSlice = (state) => {
             }
 
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
+        } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType') {
+            tfs[entry.id] = {
+                frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
+                translation: entry.properties.position,
+                rotation: entry.properties.rotation
+            }
+            //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
             const focused = state.focus.includes(entry.id);
             const trajectoryFocused = focusedTrajectoryChildren.includes(entry.id);

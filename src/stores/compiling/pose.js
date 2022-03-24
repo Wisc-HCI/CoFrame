@@ -1,7 +1,7 @@
 import { STATUS, STEP_TYPE, ROOT_BOUNDS } from "../Constants";
 import { Quaternion } from 'three';
 import { leafLogic } from "./index";
-import { distance } from "../helpers";
+import { distance, likStateToData } from "../helpers";
 
 const createStaticEnvironment = (scene) => {
     // TODO: base static environment based on fixture collision bodies
@@ -42,7 +42,7 @@ export const poseCompiler = ({data, objectTypes, context, path, memo, solver, mo
 
         const compiled = [{
             stepType: STEP_TYPE.RAW_DATA,
-            data: state,
+            data: likStateToData(state),
             source: data.id,
             time: 0
         }]

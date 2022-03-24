@@ -39,3 +39,4 @@ export const TIMELINE_TYPES = ['programType', 'skillType', 'hierarchicalType',
                         'processWaitType', 'processStopType', 'moveTrajectoryType',
                         'robotInitType'
                     ]
+export const REFERENCEABLE_OBJECTS = ["machineType", "fixtureType", "linkType", "toolType", "robotAgentType", "humanAgentType"];

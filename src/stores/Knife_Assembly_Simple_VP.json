@@ -6,7 +6,16 @@
         "canDelete": true,
         "canEdit": true,
         "properties": {
-            "description": "Robot Agent"
+            "description": "Robot Agent",
+            "relativeTo": "pedestal",
+            "initialJointState": {
+                "elbow_joint": 0.02,
+                "shoulder_lift_joint": 0.55,
+                "shoulder_pan_joint": 0.3,
+                "wrist_1_joint": -2.13,
+                "wrist_2_joint": 1.6,
+                "wrist_3_joint": -0.2
+            }
         },
         "dataType": 0,
         "selected": false,
@@ -1110,7 +1119,7 @@
             "mesh": null,
             "showCollision": false,
             "highlighted": false,
-            "relativeTo": "pedestal",
+            "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": 0.11666648089885712,
                 "y": 0.26946450173854828,
@@ -1136,7 +1145,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotBaseMesh",
-            "relativeTo": "pedestal",
+            "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -1164,7 +1173,7 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotShoulderLinkMesh",
-            "relativeTo": "pedestal",
+            "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -1193,7 +1202,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotUpperArmLinkMesh",
             "collision": "robotUpperArmLinkCollision",
-            "relativeTo": "pedestal",
+            "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -1222,7 +1231,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotForearmLinkMesh",
             "collision": "robotForearmLinkCollision",
-            "relativeTo": "pedestal",
+            "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": -0.02560272067785263,
                 "y": 0.23055101335048676,
@@ -1256,7 +1265,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotWrist1LinkMesh",
             "collision": "robotWrist1Collision",
-            "relativeTo": "pedestal",
+            "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": 0.11584359407424927,
                 "y": 0.14418705981224775,
@@ -1285,7 +1294,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotWrist2LinkMesh",
             "collision": "robotWrist1Collision",
-            "relativeTo": "pedestal",
+            "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": 0.1089443638920784,
                 "y": 0.20631420761346817,
@@ -1314,7 +1323,7 @@
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": "robotWrist3LinkMesh",
             "collision": "robotWrist3Collision",
-            "relativeTo": "pedestal",
+            "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": 0.11666648089885712,
                 "y": 0.26946450173854828,

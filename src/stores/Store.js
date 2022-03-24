@@ -63,12 +63,12 @@ useStore.subscribe(store=>
   }),
   ()=>{
     console.log("REPLANNING")
-    useStore.getState().performPlanProcess()
+    useStore.getState().performCompileProcess()
   },
   {equalityFn:shallow}
 )
 
-useStore.getState().performPlanProcess()
+useStore.getState().performCompileProcess()
 
 // useStore.getState().loadSolver();
 // useStore.getState().setSolver()

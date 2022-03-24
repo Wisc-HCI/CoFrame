@@ -1,6 +1,6 @@
 import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { merge } from 'lodash';
-import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import { STATUS, COMPILE_FUNCTIONS, REFERENCEABLE_OBJECTS } from "../Constants";
 
 const basicAgentData = {
     type: TYPES.OBJECT,
@@ -12,6 +12,27 @@ const basicAgentData = {
         type: SIMPLE_PROPERTY_TYPES.IGNORED, 
         isList: false,
         fullWidth: true
+      },
+      position: {
+        name: 'Position',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: { x: 0, y: 0, z: 0 },
+        isList: false,
+        fullWidth: true
+      },
+      rotation: {
+          name: 'Rotation',
+          type: SIMPLE_PROPERTY_TYPES.IGNORED,
+          default: { w: 1, x: 0, y: 0, z: 0 },
+          isList: false,
+          fullWidth: true
+      },
+      relativeTo: {
+          name: 'Relative To Object',
+          accepts: REFERENCEABLE_OBJECTS,
+          default: null,
+          isList: false,
+          nullValid: true
       },
       status: {
         name: 'Status',
@@ -33,7 +54,14 @@ const basicAgentData = {
 
 const robotAgentFeatures = {
     name: 'Robot Agent',
-    properties: {description: {default: 'Robot Agent'}}
+    properties: {
+      description: {default: 'Robot Agent'},
+      initialJointState: {
+        name: 'Initial Joint State',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: []
+      },
+    }
 }
 
 const humanAgentFeatures = {

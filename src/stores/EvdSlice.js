@@ -78,21 +78,7 @@ export const EvdSlice = (set, get) => ({
     }
     state.processes.planProcess = process
   }),
-  performPoseProcess: async (id) => {
-    console.log('starting ', id)
-    const currentProcess = get().processes[id];
-    if (currentProcess) {
-      console.log('terminating process for ', id)
-      currentProcess.terminate();
-    }
-    const workerInstance = new Worker();
-    get().updatePoseJoints(id, null, workerInstance);
-    const workerLib = Comlink.wrap(workerInstance);
-    const result = await workerLib.performPoseProcess({ urdf, pose: get().programData[id], scene: {} });
-    console.log(result)
-    get().updatePoseJoints(id, result, null);
-  },
-  performPlanProcess: async () => {
+  performCompileProcess: async () => {
     console.log('starting plan processing')
     const currentProcess = get().processes.planProcess;
     if (currentProcess) {
@@ -102,7 +88,7 @@ export const EvdSlice = (set, get) => ({
     const workerInstance = new Worker();
     get().updatePlanProcess(null, workerInstance);
     const workerLib = Comlink.wrap(workerInstance);
-    const result = await workerLib.performStepProcess({ urdf, programData: get().programData, objectTypes: lodash.mapValues(get().programSpec.objectTypes, cleanedObjectType) });
+    const result = await workerLib.performCompileProcess({ urdf, programData: get().programData, objectTypes: lodash.mapValues(get().programSpec.objectTypes, cleanedObjectType) });
     console.log(result)
     get().updatePlanProcess(result, null);
   },

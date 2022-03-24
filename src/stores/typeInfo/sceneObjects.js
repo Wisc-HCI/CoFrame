@@ -3,7 +3,7 @@ import { MachineIconStyled, FixtureIconStyled, LinkIconStyled, ZoneIconStyled, T
 import { FiMoreHorizontal } from "react-icons/fi";
 import { merge } from 'lodash';
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
-
+import { REFERENCEABLE_OBJECTS } from "../Constants";
 
 const basicObject = {
     properties: {
@@ -24,13 +24,13 @@ const basicObject = {
         rotation: {
             name: 'Rotation',
             type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: { w: 0, x: 0, y: 0, z: 0 },
+            default: { w: 1, x: 0, y: 0, z: 0 },
             isList: false,
             fullWidth: true
         },
         relativeTo: {
             name: 'Relative To Object',
-            accepts: ["machineType", "thingType", "fixtureType", "linkType", "toolType"],
+            accepts: REFERENCEABLE_OBJECTS,
             default: null,
             isList: false,
             nullValid: true
