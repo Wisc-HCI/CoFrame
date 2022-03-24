@@ -101,17 +101,7 @@ export const computedSlice = (state) => {
                     rotation: meshObject.properties.rotation,
                     color: meshObject.properties.color,
                     scale: meshObject.properties.scale,
-                    transformMode: itemTransformMethod(state, entry.id),
-                    highlighted,
-                    onClick: (e) => {
-                        if (!state.focus.includes('translate') && !state.focus.includes('rotate')) {
-                            console.log('clicked ' + entry.name)
-                            e.stopPropagation();
-                            state.addFocusItem(entry.id,false);
-                        }
-        
-                    },
-                    onMove: (transform) => { console.log(transform) }
+                    transformMode: itemTransformMethod(state, entry.id)
                 }
             }
 
@@ -127,9 +117,7 @@ export const computedSlice = (state) => {
                     transformMode: "inactive",
                     highlighted: false,
                     wireframe: true,
-                    hidden: !state.collisionsVisible,
-                    onClick: (_) => { },
-                    onMove: (transform) => { console.log(transform) }
+                    hidden: !state.collisionsVisible
                 };
             }
         } else if (entry.type === 'zoneType' && state.programData[entry.properties.agent].type === 'humanAgentType') {
@@ -143,7 +131,6 @@ export const computedSlice = (state) => {
                 scale: entry.properties.scale,
                 transformMode: itemTransformMethod(state, entry.id),
                 highlighted: false,
-                onClick: (_) => { },
                 hidden: !state.occupancyVisible
             }
         } else if (entry.type === 'processType') {
@@ -159,8 +146,7 @@ export const computedSlice = (state) => {
                     transformMode: itemTransformMethod(state, input),
                     color: {r:0,g:200,b:0,a:0.2},
                     highlighted: false,
-                    hidden: !state.focus.includes(entry.id),
-                    onClick: (_)=>{console.log(input)}
+                    hidden: !state.focus.includes(entry.id)
                 }
             });   
             entry.properties.outputs.forEach(output => {
@@ -175,8 +161,7 @@ export const computedSlice = (state) => {
                     transformMode: itemTransformMethod(state, output),
                     color: {r:0,g:200,b:0,a:0.2},
                     highlighted: false,
-                    hidden: !state.focus.includes(entry.id),
-                    onClick: (_)=>{console.log(output)}
+                    hidden: !state.focus.includes(entry.id)
                 }
             });            
         } else if (entry.type === 'machineType' || entry.type === 'toolType') {
@@ -196,15 +181,7 @@ export const computedSlice = (state) => {
                 rotation: meshObject.properties.rotation,
                 scale: meshObject.properties.scale,
                 transformMode: itemTransformMethod(state, entry.id),
-                highlighted: state.focus.includes(entry.id),
-                onClick: (e) => {
-                    if (!state.focus.includes('translate') && !state.focus.includes('rotate')) {
-                        console.log('clicked ' + entry.name)
-                        e.stopPropagation();
-                        state.addFocusItem(entry.id,false);
-                    }
-
-                },
+                highlighted: state.focus.includes(entry.id)
             }
             // Now add collisions
             items[entry.id + '-collision'] = {
@@ -218,8 +195,7 @@ export const computedSlice = (state) => {
                 highlighted: false,
                 color: { r: 250, g: 0, b: 0, a: 0.6 },
                 wireframe: true,
-                hidden: !state.collisionsVisible,
-                onClick: (_) => { },
+                hidden: !state.collisionsVisible
             }
 
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
@@ -240,10 +216,6 @@ export const computedSlice = (state) => {
                 color.a = (time) => 0.5 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
             }
 
-            const onMove = (transform) => {
-                state.setPoseTransform(entry.id,transform)
-            }
-
             poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
                 const transform = state.focus.includes('translate') 
                     ? 'translate' 
@@ -255,8 +227,7 @@ export const computedSlice = (state) => {
                     highlighted: focused,
                     hidden: !focused && !trajectoryFocused,
                     color,
-                    transformMode: shape.uuid.includes('pointer') && focused ? transform : "inactive",
-                    onMove: shape.uuid.includes('pointer') && focused && transform !== 'inactive' ? onMove : (_) => { }
+                    transformMode: shape.uuid.includes('pointer') && focused ? transform : "inactive"
                 };
                 // e => setItemProperty('location', location_uuid, 'position', { ...state.data.locations[location_uuid].position, x: e[0], y: e[1], z: e[2] });
             })
@@ -271,7 +242,6 @@ export const computedSlice = (state) => {
             items[field] = {
                 shape: 'sphere',
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
-                onClick: () => { },
                 ...pinchPointAnimations[field],
                 frame: null//'simulated_'+PINCH_POINT_FIELDS[field].parent
             }

@@ -15,6 +15,49 @@ const ACTIVE_TFS = [
   'simulated_wrist_3_link'
 ]
 
+const onClickIgnoredTypes = [
+  "meshType",
+  "zoneType",
+  "inputOutputType"
+]
+
+const addFocus = (state, id, add) => {
+  // By default clear out the current set
+  state.focus.forEach(f => {
+    if (state.programData[f]) {
+      state.programData[f].selected = false
+    }
+  });
+  // Handle updating the focus given the id and add
+  if (state.focus.includes(id)) {
+    // the focus already includes this id, so stub the focus there.
+    state.focus.length = state.focus.indexOf(id) + 1
+  } else if (add) {
+    // If add, push the id to the end.
+    state.focus.push(id)
+  } else {
+    // If not adding, replace the focus with a new stack.
+    state.focus = [id]
+  }
+  // Update the nodes to be selected if they appear in focus
+  state.focus.forEach(f => {
+    if (state.programData[f]) {
+      state.programData[f].selected = true
+    }
+  });
+  // Set the active focus to the last item that has
+  // an entry in the programData or issues
+  state.focus.slice().reverse().some(v=>{
+    if (state.programData[v] || state.issues[v]) {
+      state.activeFocus = v;
+      return true
+    } else {
+      return false
+    }
+  })
+  return state;
+} 
+
 export const GuiSlice = (set, get) => ({
   // EDITOR/SETUP/MAIN
   // The frame specifies the expert (color) frame
@@ -65,39 +108,7 @@ export const GuiSlice = (set, get) => ({
   activeFocus: null,
   setActiveFocus: (id) => set(state=>{state.activeFocus=id}),
   addFocusItem: (id, add) => set(state => {
-    // By default clear out the current set
-    state.focus.forEach(f => {
-      if (state.programData[f]) {
-        state.programData[f].selected = false
-      }
-    });
-    // Handle updating the focus given the id and add
-    if (state.focus.includes(id)) {
-      // the focus already includes this id, so stub the focus there.
-      state.focus.length = state.focus.indexOf(id) + 1
-    } else if (add) {
-      // If add, push the id to the end.
-      state.focus.push(id)
-    } else {
-      // If not adding, replace the focus with a new stack.
-      state.focus = [id]
-    }
-    // Update the nodes to be selected if they appear in focus
-    state.focus.forEach(f => {
-      if (state.programData[f]) {
-        state.programData[f].selected = true
-      }
-    });
-    // Set the active focus to the last item that has
-    // an entry in the programData or issues
-    state.focus.slice().reverse().some(v=>{
-      if (state.programData[v] || state.issues[v]) {
-        state.activeFocus = v;
-        return true
-      } else {
-        return false
-      }
-    })
+    state = addFocus(state, id, add);
   }),
   clearFocus: () => set(state => {
     console.log('clearing focus')
@@ -212,4 +223,35 @@ export const GuiSlice = (set, get) => ({
   setTfVisible: (visible) => set(state => {
     state.tfVisible = visible;
   }),
+  onClick: (id) => set(state => {
+    // ignore movement for the clicks (translate/rotate)
+    // ignore collision meshes (-collision)
+    // ignore additional types (onClickIgnoredTypes)
+    if (!state.focus.includes('translate') && 
+        !state.focus.includes('rotate') && 
+        !id.includes('-collision') && 
+        !onClickIgnoredTypes.includes(state.programData[id].type)) {
+      console.log('clicked ' + id);
+      state = addFocus(state, id, false);
+    }
+  }),
+  onMove: (id, worldTransform, localTransform) => set(state => {
+    console.log('moved ', id);
+  //   const focused = state.focus.includes(id);
+  //   const transform = state.focus.includes('translate') 
+  //     ? 'translate' 
+  //     : state.focus.includes('rotate')
+  //     ? 'rotate'
+  //     : 'inactive'
+  //   if (id.includes('pointer') && focused && transform !== 'inactive') {
+  //     state.setPoseTransform(id.replace('-pointer', ''), transform);
+  //   }
+
+  //   if (!id.includes('pointer') && !id.includes('-tag' && focused && transform !== 'inactive')) {
+  //    // This isn't correct, we'll want to offset by the object's tf (since we are technically moving the mesh)
+  //    // Similarly, we'll want to compute the quaternion transformation
+  //     state.programData[id].properties.position = localTransform.position;
+  //     state.programData[id].properties.rotation = localTransform.quaternion;
+  //   }
+  })
 });
