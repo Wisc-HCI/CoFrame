@@ -465,7 +465,7 @@
         "canDelete": true,
         "properties": {
             "description": "",
-            "mesh": "package://evd_ros_tasks/description/markers/knife.stl",
+            "mesh": "knife",
             "safe": false,
             "weight": 0
         },
@@ -665,87 +665,6 @@
         "selected": false,
         "editing": false
     },
-    "inputOutput-qazxc345-ip10-srg6-gyh6-ds5dytb56h": {
-        "type": "inputOutputType",
-        "dataType": 0,
-        "id": "inputOutput-qazxc345-ip10-srg6-gyh6-ds5dytb56h",
-        "name": "Sheathed Blade",
-        "canDelete": true,
-        "canEdit": true,
-        "properties": {
-            "description": "Description",
-            "relativeTo": null,
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
-            "status": null,
-            "computeSteps": null,
-            "steps": null
-        }
-    },
-    "inputOutput-rjvneis1-nj20-tuy0-qwe6-d5janc89an0": {
-        "type": "inputOutputType",
-        "dataType": 0,
-        "id": "inputOutput-rjvneis1-nj20-tuy0-qwe6-d5janc89an0",
-        "name": "Sheathed Blade",
-        "canDelete": true,
-        "canEdit": true,
-        "properties": {
-            "description": "Description",
-            "relativeTo": null,
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
-            "status": null,
-            "computeSteps": null,
-            "steps": null
-        }
-    },
-    "inputOutput-sjnv3fne9-io89-try0-qre6-d8ncns9nf0": {
-        "type": "inputOutputType",
-        "dataType": 0,
-        "id": "inputOutput-sjnv3fne9-io89-try0-qre6-d8ncns9nf0",
-        "name": "Sheathed Blade",
-        "canDelete": true,
-        "canEdit": true,
-        "properties": {
-            "description": "Description",
-            "relativeTo": "toolType-transport-jig",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 1
-            },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
-            "status": null,
-            "computeSteps": null,
-            "steps": null
-        }
-    },
     "process-e94f0386-35d9-4135-af0b-8d96ad80bb0c": {
         "type": "processType",
         "id": "process-e94f0386-35d9-4135-af0b-8d96ad80bb0c",
@@ -757,11 +676,11 @@
             "processTime": 60000,
             "machine": null,
             "inputs": [
-                "inputOutput-qazxc345-ip10-srg6-gyh6-ds5dytb56h"
+                "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7"
             ],
             "outputs": [
-                "inputOutput-rjvneis1-nj20-tuy0-qwe6-d5janc89an0",
-                "inputOutput-sjnv3fne9-io89-try0-qre6-d8ncns9nf0"
+                "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc",
+                "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b"
             ]
         },
         "dataType": 0,
@@ -772,7 +691,7 @@
         "type": "inputOutputType",
         "dataType": 0,
         "id": "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9s",
-        "name": "Sheathed Blade",
+        "name": "Left Blade Handle",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -789,7 +708,7 @@
                 "z": 0,
                 "w": 1
             },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "thing": "thingType-98892a7c1c1911ecbe2600155d1a70a2",
             "status": null,
             "computeSteps": null,
             "steps": null
@@ -799,7 +718,7 @@
         "type": "inputOutputType",
         "dataType": 0,
         "id": "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s",
-        "name": "Sheathed Blade",
+        "name": "Right Blade Handle",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -816,7 +735,7 @@
                 "z": 0,
                 "w": 1
             },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "thing": "thingType-98892b3a1c1911ecbe2600155d1a70a2",
             "status": null,
             "computeSteps": null,
             "steps": null
@@ -826,7 +745,7 @@
         "type": "inputOutputType",
         "dataType": 0,
         "id": "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9",
-        "name": "Sheathed Blade",
+        "name": "Blade",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -843,7 +762,7 @@
                 "z": 0,
                 "w": 1
             },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "thing": "thingType-98892bd01c1911ecbe2600155d1a70a2",
             "status": null,
             "computeSteps": null,
             "steps": null
@@ -870,7 +789,7 @@
                 "z": 0,
                 "w": 1
             },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "thing": "thingType-98892d7e1c1911ecbe2600155d1a70a2",
             "status": null,
             "computeSteps": null,
             "steps": null
@@ -903,7 +822,7 @@
         "type": "inputOutputType",
         "dataType": 0,
         "id": "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d",
-        "name": "Sheathed Blade",
+        "name": "Left Blade Handle",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -920,7 +839,7 @@
                 "z": 0,
                 "w": 1
             },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "thing": "thingType-98892a7c1c1911ecbe2600155d1a70a2",
             "status": null,
             "computeSteps": null,
             "steps": null
@@ -930,7 +849,7 @@
         "type": "inputOutputType",
         "dataType": 0,
         "id": "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s",
-        "name": "Sheathed Blade",
+        "name": "Right Blade Handle",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -947,7 +866,7 @@
                 "z": 0,
                 "w": 1
             },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "thing": "thingType-98892b3a1c1911ecbe2600155d1a70a2",
             "status": null,
             "computeSteps": null,
             "steps": null
@@ -984,7 +903,7 @@
         "type": "inputOutputType",
         "dataType": 0,
         "id": "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923",
-        "name": "Sheathed Blade",
+        "name": "Sheathed Knife",
         "canDelete": true,
         "canEdit": true,
         "properties": {
@@ -1001,7 +920,7 @@
                 "z": 0,
                 "w": 1
             },
-            "thing": "thingType-98892ce81c1911ecbe2600155d1a70a2",
+            "thing": "thingType-98892e001c1911ecbe2600155d1a70a2",
             "status": null,
             "computeSteps": null,
             "steps": null

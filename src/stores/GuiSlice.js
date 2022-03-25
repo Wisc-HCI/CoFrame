@@ -223,35 +223,34 @@ export const GuiSlice = (set, get) => ({
   setTfVisible: (visible) => set(state => {
     state.tfVisible = visible;
   }),
-  onClick: (id) => set(state => {
+  onClick: (id, hidden, event) => set(state => {
+    // ignore hidden objects
     // ignore movement for the clicks (translate/rotate)
     // ignore collision meshes (-collision)
     // ignore additional types (onClickIgnoredTypes)
-    if (!state.focus.includes('translate') && 
+    if (!hidden && 
+        !state.focus.includes('translate') && 
         !state.focus.includes('rotate') && 
         !id.includes('-collision') && 
-        !onClickIgnoredTypes.includes(state.programData[id].type)) {
-      console.log('clicked ' + id);
+        !onClickIgnoredTypes.includes(state.programData[id]?.type)) {
       state = addFocus(state, id, false);
+      event.stopPropagation();
     }
   }),
   onMove: (id, worldTransform, localTransform) => set(state => {
-    console.log('moved ', id);
-  //   const focused = state.focus.includes(id);
-  //   const transform = state.focus.includes('translate') 
-  //     ? 'translate' 
-  //     : state.focus.includes('rotate')
-  //     ? 'rotate'
-  //     : 'inactive'
-  //   if (id.includes('pointer') && focused && transform !== 'inactive') {
-  //     state.setPoseTransform(id.replace('-pointer', ''), transform);
-  //   }
-
-  //   if (!id.includes('pointer') && !id.includes('-tag' && focused && transform !== 'inactive')) {
-  //    // This isn't correct, we'll want to offset by the object's tf (since we are technically moving the mesh)
-  //    // Similarly, we'll want to compute the quaternion transformation
-  //     state.programData[id].properties.position = localTransform.position;
-  //     state.programData[id].properties.rotation = localTransform.quaternion;
-  //   }
+    const focused = state.focus.includes(id);
+    const transform = state.focus.includes('translate') 
+      ? 'translate' 
+      : state.focus.includes('rotate')
+      ? 'rotate'
+      : 'inactive'
+    if (id.includes('pointer') && focused && transform !== 'inactive') {
+      state.setPoseTransform(id.replace('-pointer', ''), transform);
+    } else if (!id.includes('pointer') && !id.includes('-tag') && focused && transform !== 'inactive') {
+     // This isn't correct, we'll want to offset by the object's tf (since we are technically moving the mesh)
+     // Similarly, we'll want to compute the quaternion transformation
+      state.programData[id].properties.position = localTransform.position;
+      state.programData[id].properties.rotation = localTransform.quaternion;
+    }
   })
 });
