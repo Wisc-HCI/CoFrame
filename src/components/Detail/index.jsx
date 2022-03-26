@@ -92,23 +92,23 @@ export const Detail = (_) => {
           />
           <br />
 
-          <Box round="xsmall" pad="small" background="#303030" >
+          <Box round="xsmall" pad="small" background="#303030" wrap = {true} >
             <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Description : </b>
-            <div>
+            <Box>
               <TextArea
                 value={item.properties.description}
                 disabled={!item.canEdit}
                 resize='vertical'
                 onChange={e => updateItemDescription(item.id, e.target.value)}
               />
-            </div>
+            </Box>
           </Box>
           <br />
 
           {item.properties.processTime !== undefined && (
-            <Box direction='row' background='#303030' round="xsmall" pad="small" style={{ marginBottom: 5 }} justify='between'>
+            <Box direction='row' background='#303030' round="xsmall" pad="small" style={{ marginBottom: 5 }} justify='between' wrap = {true}>
                <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Time : </b>
-              <Box direction='row'>
+              <Box direction='row' >
                 <NumberInput
                   value={item.properties.processTime}
                   min={0}
@@ -123,9 +123,11 @@ export const Detail = (_) => {
 
           {item.properties.position !== undefined && item.properties.rotation !== undefined && (
             <>
+            <Box wrap = {true}>
               <PositionRotationTF itemID={item.id} position={item.properties.position}
-                rotation={item.properties.rotation} />
-              <br />
+                rotation={item.properties.rotation} /> 
+            </Box>
+             <br />
             </>
           )}
 
@@ -149,7 +151,9 @@ export const Detail = (_) => {
            item.properties.relativeTo !== null &&(
             
            <>
+           <Box>
            <FixtureItem fixtureID = {item.properties.relativeTo} />
+           </Box>
             
            </>
           )}
