@@ -28,7 +28,9 @@ function PositionInput(props) {
       background="black"
       pad="small"
       width="100%"
+      wrap = {true}
     >
+      <Box>
 
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
@@ -46,8 +48,6 @@ function PositionInput(props) {
             open = {open}
             dropContent={
               <div>
-
-
                 <Box round="xsmall" background="grey" border={{ color: 'white', size: 'xsmall' }} width="small" direction='column' elevation="none" pad="xsmall" justify='center'>
                   <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
                     <Text weight="bolder" style={{ color: "red", paddingRight: "7%" }}>X</Text>
@@ -90,6 +90,7 @@ function PositionInput(props) {
           />
         </div>
       </div>
+      </Box>
     </Box>
 
 

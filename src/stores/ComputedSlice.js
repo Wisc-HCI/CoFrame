@@ -85,6 +85,8 @@ export const computedSlice = (state) => {
                 highlighted = true
             } else if (lodash.intersection(GRIPPER_PARTS,state.focus).length > 0 && GRIPPER_PARTS.includes(itemKey)) {
                 highlighted = true
+            } else if (entry.type === 'fixtureType' && state.focus.includes(entry.id)) {
+                highlighted = true
             }
 
             tfs[entry.id] = {
@@ -103,7 +105,8 @@ export const computedSlice = (state) => {
                     rotation: meshObject.properties.rotation,
                     color: meshObject.properties.color,
                     scale: meshObject.properties.scale,
-                    transformMode: itemTransformMethod(state, entry.id)
+                    transformMode: itemTransformMethod(state, entry.id),
+                    highlighted
                 }
             }
 
@@ -140,7 +143,7 @@ export const computedSlice = (state) => {
                 let inputObj = state.programData[input];
                 let thing = state.programData[inputObj.properties.thing];
                 items[input] = {
-                    shape: EVD_MESH_LOOKUP[thing.properties.mesh],
+                    shape: EVD_MESH_LOOKUP[thing.properties.mesh] ? EVD_MESH_LOOKUP[thing.properties.mesh] : thing.properties.mesh,
                     frame: inputObj.properties.relativeTo ? inputObj.properties.relativeTo : "world",
                     position: inputObj.properties.position,
                     rotation: inputObj.properties.rotation,
@@ -155,7 +158,7 @@ export const computedSlice = (state) => {
                 let outputObj = state.programData[output];
                 let thing = state.programData[outputObj.properties.thing];
                 items[output] = {
-                    shape: EVD_MESH_LOOKUP[thing.properties.mesh],
+                    shape: EVD_MESH_LOOKUP[thing.properties.mesh] ? EVD_MESH_LOOKUP[thing.properties.mesh] : thing.properties.mesh,
                     frame: outputObj.properties.relativeTo ? outputObj.properties.relativeTo : "world",
                     position: outputObj.properties.position,
                     rotation: outputObj.properties.rotation,
