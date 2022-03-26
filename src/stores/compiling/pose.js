@@ -1,15 +1,11 @@
 import { STATUS, STEP_TYPE, ROOT_BOUNDS } from "../Constants";
 import { Quaternion } from 'three';
 import { leafLogic } from "./index";
-import { distance, likStateToData } from "../helpers";
+import { distance, likStateToData, createEnvironmentModel, createStaticEnvironment } from "../helpers";
 
-const createStaticEnvironment = (scene) => {
-    // TODO: base static environment based on fixture collision bodies
-    return []
-}
 
-export const poseCompiler = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
-    return leafLogic({data,path,module,urdf,memo,updateFn:({data,path,module,urdf,memo})=>{
+export const poseCompiler = ({data, objectTypes, context, path, memo, solver, module, urdf, worldModel}) => {
+    return leafLogic({data,path,module,urdf,memo,worldModel,updateFn:({data,path,module,urdf,memo,worldModel})=>{
 
         const solver = new module.Solver(urdf,[
             {type:'PositionMatch',name:"EE Position",link:"wrist_3_link",weight:50},

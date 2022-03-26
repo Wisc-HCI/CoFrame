@@ -33,8 +33,9 @@ export const computedSlice = (state) => {
         // console.log(thing)
         tfs[thing.id] = {
             frame: 'world',
-            translation: { x: 0, y: 0, z: 0 },
-            rotation: { w: 1, x: 0, y: 0, z: 0 }
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { w: 1, x: 0, y: 0, z: 0 },
+            scale: {x:1,y:1,z:1}
         }
     })
 
@@ -88,8 +89,9 @@ export const computedSlice = (state) => {
 
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
-                translation: entry.properties.position,
-                rotation: entry.properties.rotation
+                position: entry.properties.position,
+                rotation: entry.properties.rotation,
+                scale: {x:1,y:1,z:1}
             }
 
             if (meshObject) {
@@ -170,8 +172,9 @@ export const computedSlice = (state) => {
             let collisionObject = state.programData[entryProps.collisionMesh];
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
-                translation: entry.properties.position,
-                rotation: entry.properties.rotation
+                position: entry.properties.position,
+                rotation: entry.properties.rotation,
+                scale: {x:1,y:1,z:1}
             }
             items[entry.id] = {
                 shape: meshObject.properties.keyword,
@@ -202,8 +205,9 @@ export const computedSlice = (state) => {
         } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType') {
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
-                translation: entry.properties.position,
-                rotation: entry.properties.rotation
+                position: entry.properties.position,
+                rotation: entry.properties.rotation,
+                scale: {x:1,y:1,z:1}
             }
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'locationType' || entry.type === 'waypointType') {

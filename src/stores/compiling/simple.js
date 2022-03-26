@@ -3,7 +3,7 @@ import { findInstance, compilers } from './index';
 import { merge } from 'lodash';
 import { equals } from "./index";
 
-export const simpleCompiler = ({data, objectTypes, context, path, memo, solver, module, urdf}) => {
+export const simpleCompiler = ({data, objectTypes, context, path, memo, solver, module, urdf, worldModel}) => {
     // console.log('simpleSteps',data.id)
     // console.log(objectTypes)
     let status = STATUS.VALID;
@@ -31,7 +31,8 @@ export const simpleCompiler = ({data, objectTypes, context, path, memo, solver, 
                 memo: newMemo,
                 solver,
                 module,
-                urdf
+                urdf,
+                worldModel
             }
             if (!dataNode && !propertyInfo.nullValid) {
                 // If the node is null and it isn't allowed, log as a failure
@@ -69,7 +70,8 @@ export const simpleCompiler = ({data, objectTypes, context, path, memo, solver, 
                     memo: newMemo,
                     solver,
                     module,
-                    urdf
+                    urdf,
+                    worldModel
                 }
                 if (!dataNode && !propertyInfo.nullValid) {
                     // If the node is null and it isn't allowed, log as a failure

@@ -15,7 +15,8 @@
                 "wrist_1_joint": -2.13,
                 "wrist_2_joint": 1.6,
                 "wrist_3_joint": -0.2
-            }
+            },
+            "initialGripState": 50
         },
         "dataType": 0,
         "selected": false,

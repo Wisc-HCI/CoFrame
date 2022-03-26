@@ -42,7 +42,7 @@ const basicAgentData = {
       compileFn: {
         name: 'Compile Function',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: COMPILE_FUNCTIONS.NULL
+        default: COMPILE_FUNCTIONS.AGENT
       },
       compiled: {
         name: 'Compiled',
@@ -60,6 +60,11 @@ const robotAgentFeatures = {
         name: 'Initial Joint State',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: []
+      },
+      initialGripState: {
+        name: 'Initial Grip State',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: 50
       },
     }
 }
