@@ -1,5 +1,5 @@
 import { STATUS, STEP_TYPE } from "../Constants";
-import { findInstance, leafLogic } from './index';
+import { findInstance } from './index';
 
 export const processCompiler = ({data, path, context, memo}) => {
     return leafLogic({data,path,memo,context,updateFn:({data, path, context, memo})=>{

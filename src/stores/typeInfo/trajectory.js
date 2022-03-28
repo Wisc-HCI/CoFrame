@@ -64,6 +64,11 @@ export const trajectoryType = {
         name: 'Compiled',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {}
+      },
+      updateFields: {
+        name: 'Update Fields',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: ['startLocation','waypoints','endLocation']
       }
     }
   }

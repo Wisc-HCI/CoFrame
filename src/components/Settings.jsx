@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
-import { Layer, Box, Card, CardBody, Button, CardHeader, Notification, TextInput, List } from 'grommet';
+import { Layer, Box, Card, CardBody, Button, CardHeader, Notification, TextInput, List, Tabs, Tab } from 'grommet';
 import { FiRotateCw, FiDownload, FiUpload } from 'react-icons/fi';
 import useStore from '../stores/Store';
 import { saveAs } from 'file-saver';
 import YAML from 'yaml';
-
+import ReactJson from 'react-json-view'
 
 export const SettingsModal = () => {
 
@@ -25,7 +25,7 @@ export const SettingsModal = () => {
         const text = JSON.stringify(data);
 
         let name = 'default_program';
-        Object.values(data).some(block=>{
+        Object.values(data).some(block => {
             if (block.type === 'programType') {
                 name = block.name;
                 return true
@@ -79,77 +79,77 @@ export const SettingsModal = () => {
                     width='large'
                     elevation='none'
                 >
-                    <CardHeader
-                        background='#333333'
-                        pad='small'
-                        border={{ side: 'bottom', color: '#333333' }}
-                    >
-                        Settings
-                    </CardHeader>
-                    <CardBody pad='small'>
+                    <Tabs>
+                        <Tab title='Settings'>
+                            {/* ROS Connection (Not used currently) */}
+                            {connection === 'connected' && (
+                                <Notification status="normal" showIcon title="Connected!" message='You are connected to a ROS Server' round='xsmall' />
+                            )}
+                            {connection === 'connecting' && (
+                                <Notification status="unknown" showIcon title="Connecting..." message='You are connecting to a ROS Server' round='xsmall' />
+                            )}
+                            {connection === 'disconnected' && (
+                                <Notification status="warning" showIcon title="Disconnected" message='You are not connected to a ROS Server' round='xsmall' />
+                            )}
 
-                        {/* ROS Connection (Not used currently) */}
-                        {connection === 'connected' && (
-                            <Notification status="normal" showIcon title="Connected!" message='You are connected to a ROS Server' round='xsmall'/>
-                        )}
-                        {connection === 'connecting' && (
-                            <Notification status="unknown" showIcon title="Connecting..." message='You are connecting to a ROS Server' round='xsmall'/>
-                        )}
-                        {connection === 'disconnected' && (
-                            <Notification status="warning" showIcon title="Disconnected" message='You are not connected to a ROS Server' round='xsmall'/>
-                        )}
+                            <Box direction='row' gap='xsmall' align='center' alignContent='center' justify='center' margin={{ top: 'small' }}>
+                                <TextInput
+                                    placeholder="e.g. ws://localhost:9090"
+                                    value={url}
+                                    onChange={(e) => setUrl(e.target.value)}
+                                    size="large"
+                                />
+                                <Button primary size='small' icon={<FiRotateCw style={{ height: 14, width: 14 }} />} onClick={connect} />
+                            </Box>
 
-                        <Box direction='row' gap='xsmall' align='center' alignContent='center' justify='center' margin={{ top: 'small' }}>
-                            <TextInput
-                                placeholder="e.g. ws://localhost:9090"
-                                value={url}
-                                onChange={(e) => setUrl(e.target.value)}
-                                size="large"
-                            />
-                            <Button primary size='small' icon={<FiRotateCw style={{ height: 14, width: 14 }} />} onClick={connect} />
-                        </Box>
+                            {/* Upload/Download */}
+                            <Box direction='row' justify='around' margin={{ top: 'small' }} pad='small' background='#252525' round='xsmall'>
+                                <input
+                                    type='file'
+                                    ref={fileInputRef}
+                                    onChange={upload}
+                                    style={{ display: 'none' }}
+                                />
+                                <Button secondary icon={<FiUpload />} style={{ flex: 1, marginRight: 5 }} label='Upload' onClick={handleUploadClick} />
+                                <Button secondary icon={<FiDownload />} style={{ flex: 1, marginLeft: 5 }} label='Download' onClick={download} />
+                            </Box>
 
-                        {/* Upload/Download */}
-                        <Box direction='row' justify='around' margin={{ top: 'small' }} pad='small' background='#252525' round='xsmall'>
-                            <input
-                                type='file'
-                                ref={fileInputRef}
-                                onChange={upload}
-                                style={{ display: 'none' }}
-                            />
-                            <Button secondary icon={<FiUpload/>} style={{flex:1,marginRight:5}} label='Upload' onClick={handleUploadClick}/>
-                            <Button secondary icon={<FiDownload/>} style={{flex:1,marginLeft:5}} label='Download' onClick={download}/>
-                        </Box>
+                            {/* Expert Settings */}
+                            <Box height='40vh' background='#252525' style={{ overflowY: 'scroll' }} margin={{ top: 'small' }} round='xsmall'>
+                                <List data={Object.values(issueSettings)} style={{ padding: 5 }} margin='none' pad='none'>
+                                    {(entry, idx) => (
+                                        <Box animation={{ type: 'fadeIn', delay: idx * 100 }} direction='row' key={entry.name.concat('div')} margin='small' pad='xsmall'>
+                                            {entry.name}
+                                            {!entry.max && <TextInput
+                                                type='number'
+                                                key={entry.name.concat('input')}
+                                                min={entry.min}
+                                                defaultValue={entry.value}
+                                                onChange={(e) => updateIssue(e, entry)} />
+                                            }
+                                            {entry.max && <TextInput
+                                                type='number'
+                                                key={entry.name.concat('input')}
+                                                min={entry.min}
+                                                max={entry.max}
+                                                defaultValue={entry.value}
+                                                onChange={(e) => updateIssue(e, entry)} />
+                                            }
+                                        </Box>
+                                    )}
+                                </List>
+                            </Box>
+                            {issueSettings && Object.values(issueSettings).map((entry) => {
+                                return
+                            })}
+                        </Tab>
+                        <Tab title='Debug'>
 
-                        {/* Expert Settings */}
-                        <Box height='40vh' background='#252525' style={{ overflowY: 'scroll' }} margin={{ top: 'small' }} round='xsmall'>
-                            <List data={Object.values(issueSettings)} style={{ padding: 5 }} margin='none' pad='none'>
-                                {(entry, idx) => (
-                                    <Box animation={{ type: 'fadeIn', delay: idx * 100 }} direction='row' key={entry.name.concat('div')} margin='small' pad='xsmall'>
-                                        {entry.name}
-                                        {!entry.max && <TextInput
-                                            type='number'
-                                            key={entry.name.concat('input')}
-                                            min={entry.min}
-                                            defaultValue={entry.value}
-                                            onChange={(e) => updateIssue(e, entry)} />
-                                        }
-                                        {entry.max && <TextInput
-                                            type='number'
-                                            key={entry.name.concat('input')}
-                                            min={entry.min}
-                                            max={entry.max}
-                                            defaultValue={entry.value}
-                                            onChange={(e) => updateIssue(e, entry)} />
-                                        }
-                                    </Box>
-                                )}
-                            </List>
-                        </Box>
-                        {issueSettings && Object.values(issueSettings).map((entry) => {
-                            return
-                        })}
-                    </CardBody>
+                            <Box height='60vh' background='#252525' style={{ overflowY: 'scroll' }} margin={{ top: 'small' }} round='xsmall'>
+                                <ReactJson src={data} collapsed={1} theme='tomorrow'/>
+                            </Box>
+                        </Tab>
+                    </Tabs>
                     {/* <CardFooter>footer</CardFooter> */}
                 </Card>
             </Layer>

@@ -49,13 +49,16 @@ const basicObject = {
         },
         compileFn: {
             name: 'Compile Function',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: COMPILE_FUNCTIONS.NULL
+            type: SIMPLE_PROPERTY_TYPES.IGNORED
         },
         compiled: {
             name: 'Compiled',
             type: SIMPLE_PROPERTY_TYPES.IGNORED,
             default: {}
+        },
+        updateFields: {
+            name: 'Update Fields',
+            type: SIMPLE_PROPERTY_TYPES.IGNORED
         }
     }
 }
@@ -71,27 +74,8 @@ const fixture = {
         extras: []
     },
     properties: {
-        showCollision: {
-            name: 'Show Collision',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: false,
-            isList: false,
-            fullWidth: true
-        },
-        showName: {
-            name: 'Show Name',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: false,
-            isList: false,
-            fullWidth: true
-        },
-        highlighted: {
-            name: 'Highlighted',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: false,
-            isList: false,
-            fullWidth: true
-        }
+        compileFn: {default: COMPILE_FUNCTIONS.PROPERTY},
+        updateFields: {default: ['position','rotation','relativeTo']}
     }
 }
 
@@ -106,33 +90,11 @@ const link = {
         extras: []
     },
     properties: {
-        showCollision: {
-            name: 'Show Collision',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: false,
-            isList: false,
-            fullWidth: true
-        },
-        showName: {
-            name: 'Show Name',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: false,
-            isList: false,
-            fullWidth: true
-        },
-        highlighted: {
-            name: 'Highlighted',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: false,
-            isList: false,
-            fullWidth: true
-        },
         robot: {
-            name: 'Robot Ref',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: '',
-            isList: false,
-            fullWidth: true
+            name: 'Robot',
+            accepts: ['robotAgentType'],
+            default: null,
+            isList: false
         },
         collision: {
             name: 'Collision',
@@ -140,7 +102,9 @@ const link = {
             default: '',
             isList: false,
             fullWidth: true
-        }
+        },
+        compileFn: {default: COMPILE_FUNCTIONS.LINK},
+        updateFields: {default: ['position','rotation','relativeTo','robot']}
     }
 }
 
@@ -172,7 +136,9 @@ const machine = {
             default: "",
             isList: false,
             fullWidth: true
-        }
+        },
+        compileFn: {default: COMPILE_FUNCTIONS.PROPERTY},
+        updateFields: {default: ['position','rotation','relativeTo']}
     }
 }
 
@@ -200,7 +166,9 @@ const zone = {
             default: { x: null, y: null, z: null },
             isList: false,
             fullWidth: true
-        }
+        },
+        compileFn: {default: COMPILE_FUNCTIONS.PROPERTY},
+        updateFields: {default: ['position','rotation','relativeTo','scale','agent']}
     }
 }
 
@@ -246,7 +214,8 @@ const tool = {
             default: null,
             isList: false,
             fullWidth: true
-        }
+        },
+        compileFn: {default: COMPILE_FUNCTIONS.PROPERTY}
     }
 }
 

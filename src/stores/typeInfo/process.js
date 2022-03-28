@@ -71,12 +71,17 @@ export const processType = {
       compileFn: {
         name: 'Compile Function',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: COMPILE_FUNCTIONS.NULL
+        default: COMPILE_FUNCTIONS.PROPERTY
       },
       compiled: {
         name: 'Compiled',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {}
+      },
+      updateFields: {
+        name: 'Update Fields',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: ['machine','processTime','inputs','outputs']
       }
     }
   }

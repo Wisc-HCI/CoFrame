@@ -48,6 +48,10 @@ const basicAgentData = {
         name: 'Compiled',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {}
+      },
+      updateFields: {
+        name: 'Update Fields',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED
       }
     }
   }
@@ -66,12 +70,16 @@ const robotAgentFeatures = {
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: 50
       },
+      updateFields: {default: ['initialJointState','initialGripState','position','rotation','relativeTo']}
     }
 }
 
 const humanAgentFeatures = {
     name: 'Human Agent',
-    properties: {description: {default: 'Human Agent'}}
+    properties: {
+      description: {default: 'Human Agent'},
+      updateFields: {default: ['position','rotation','relativeTo']}
+    }
 }
 
 const agentTypes = {

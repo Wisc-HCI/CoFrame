@@ -1,13 +1,19 @@
 import * as Comlink from 'comlink';
 import { Quaternion } from 'three';
 import { STATUS, STEP_CALCULATOR } from './Constants';
-import { compilers } from './compiling';
+import { compilers, handleUpdate } from './compiling';
 import { DATA_TYPES } from 'simple-vp';
 import { createEnvironmentModel, createStaticEnvironment } from './helpers';
 
 const ROOT_BOUNDS = [
     {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}, // Translational
     {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}  // Rotational
+]
+
+const PREPROCESS_TYPES = [
+    'waypointType',
+    'locationType',
+    'robotAgentType'
 ]
 
 const INITIAL_STATE = [
@@ -89,12 +95,13 @@ const performCompileProcess = async (data) => {
         {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
       ],ROOT_BOUNDS, createStaticEnvironment(scene), null, false, 1, 450);
 
-    // First, preprocess all locations and waypoints:
+    // First, preprocess certain types:
     let memo = {};
     const pathRoot = ['root']
     Object.values(programData)
-        .filter(v=>(v.type === 'locationType' || v.type === 'waypointType') && v.dataType === DATA_TYPES.INSTANCE)
+        .filter(v=>PREPROCESS_TYPES.includes(v.type) && v.dataType === DATA_TYPES.INSTANCE)
         .forEach(data=>{
+            console.log('preprocessing',data)
             const computeProps = {
                 data,
                 objectTypes,
@@ -106,7 +113,7 @@ const performCompileProcess = async (data) => {
                 urdf,
                 worldModel
             }
-            const {memo:newMemo} = compilers[objectTypes[data.type].properties.compileFn.default](computeProps)
+            const {memo:newMemo} = handleUpdate(computeProps)
             memo = {...memo,...newMemo}
     })
 
@@ -124,7 +131,7 @@ const performCompileProcess = async (data) => {
         urdf,
         worldModel
     }
-    const {memo:newMemo} = compilers[objectTypes.programType.properties.compileFn.default](computeProps)
+    const {memo:newMemo} = handleUpdate(computeProps)
 
     memo = {...memo,...newMemo}
   

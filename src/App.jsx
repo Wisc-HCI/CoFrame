@@ -25,9 +25,9 @@ export default function App() {
     const simMode = useStore(state => state.simMode);
     // const simStyle = useSpring({ width: simMode === 'default' ? '45%' : '100%', config: config.stiff });
     // const editStyle = useSpring({ width: simMode === 'default' ? '55%' : '0%', config: config.stiff });
-    const visibleSteps = useStore(state=>state.focus.some(focusItem=>TIMELINE_TYPES.includes(state.programData[focusItem]?.type)));
-    
-    const bodyStyle = useSpring({ width:'100vw',height: visibleSteps ? '80vh' : '100vh', config: config.stiff });
+    const visibleSteps = useStore(state => state.focus.some(focusItem => TIMELINE_TYPES.includes(state.programData[focusItem]?.type)));
+
+    const bodyStyle = useSpring({ width: '100vw', height: visibleSteps ? '80vh' : '100vh', config: config.stiff });
 
     const theme = {
         name: 'CoFrame',
@@ -68,13 +68,13 @@ export default function App() {
             color: primaryColor,
             hover: { border: { color: '#00000088' }, }
         },
-        textInput: { 
-            disabled: { opacity: 1 } 
+        textInput: {
+            disabled: { opacity: 1 }
         },
         notification: {
-            toast:{
-                container:{
-                    elevation:'none'
+            toast: {
+                container: {
+                    elevation: 'none'
                 }
             },
             container: {
@@ -83,6 +83,36 @@ export default function App() {
                     color: 'background-front',
                 }
             }
+        },
+        tab: {
+            active: {
+                background: primaryColor,
+                color: 'dark-1'
+            },
+            background: 'dark-3',
+            border: undefined,
+            color: 'white',
+            hover: {
+                 background: '#444444',
+                 color: 'white'
+            },
+            margin: undefined,
+            pad: {
+                bottom: undefined,
+                horizontal: 'small',
+            },
+            extend: {
+                borderRadius: 4,
+                padding: 6
+            }
+        },
+        tabs: {
+            gap: 'medium',
+            header: {
+                extend: {padding: 10}
+            },
+            panel: { padding: 10 },
+            extend: {padding: 10}
         }
     }
 
@@ -90,20 +120,20 @@ export default function App() {
         <Grommet full theme={theme}>
             {/* Main container */}
             <Box direction="column" height='100vh' width='100vw'>
-                <animated.div style={{...bodyStyle, width:'100vw',display:'flex',flexDirection:'row'}}>
+                <animated.div style={{ ...bodyStyle, width: '100vw', display: 'flex', flexDirection: 'row' }}>
                     <Box width='350pt'>
-                        <ReviewTile/>
+                        <ReviewTile />
                     </Box>
 
                     <Box fill direction='row'>
                         {/* <animated.div style={{ ...simStyle, float: 'left' }}>
                         
                     </animated.div> */}
-                    <SimulatorTile />
-                    <Collapsible direction="horizontal" open={simMode==='default'}>
-                        <ProgramTile />
-                    </Collapsible>
-                    {/* <animated.div style={{ ...editStyle, float: 'right' }}>
+                        <SimulatorTile />
+                        <Collapsible direction="horizontal" open={simMode === 'default'}>
+                            <ProgramTile />
+                        </Collapsible>
+                        {/* <animated.div style={{ ...editStyle, float: 'right' }}>
                         
                     </animated.div> */}
                     </Box>
@@ -111,14 +141,14 @@ export default function App() {
                 {visibleSteps && (
                     <Box direction='row' height={visibleSteps ? '20vh' : '0vh'} width='100vw' background='#444444' border={{ side: 'top', color: primaryColor, size: 'medium' }}>
                         <ParentSize>
-                            {({ width, height }) => <Graph width={width} height={height-10} />}
+                            {({ width, height }) => <Graph width={width} height={height - 10} />}
                         </ParentSize>
                     </Box>
                 )}
 
             </Box>
-            <SettingsModal/>
-            <Detail/>
+            <SettingsModal />
+            <Detail />
             {/* <Modals /> */}
         </Grommet >
 

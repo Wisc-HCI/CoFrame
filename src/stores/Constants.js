@@ -15,7 +15,9 @@ export const COMPILE_FUNCTIONS = {
     GRIPPER: 7,
     ROBOT_MOTION: 8,
     BREAK: 9,
-    AGENT: 10
+    AGENT: 10,
+    LINK: 11,
+    PROPERTY: 12
 }
 
 export const STEP_TYPE = {

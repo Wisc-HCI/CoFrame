@@ -1,18 +1,17 @@
 import { STATUS, STEP_TYPE } from "../Constants";
-import { leafLogic } from './index';
 
-export const breakCompiler = ({data, path, memo}) => {
-    return leafLogic({data,path,memo,updateFn:({data})=>{
-        const compiled = [
+export const breakCompiler = ({ data }) => {
+    const newCompiled = {
+        break: true,
+        steps: [
             {
                 stepType: STEP_TYPE.LANDMARK,
-                data: {break:true},
                 source: data.id,
                 time: 0
             }
         ]
-        return {compiled,status:STATUS.VALID,break:true}
-    }})
+    }
+    return { newCompiled, status: STATUS.VALID, break: true }
 }
 
 // - If a node is STATUS.VALID, search internally and return the children so long as those children are also valid and are not updated.

@@ -1037,8 +1037,6 @@
         "properties": {
             "robot": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "mesh": null,
-            "showCollision": false,
-            "highlighted": false,
             "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
             "position": {
                 "x": 0.11666648089885712,
@@ -1076,9 +1074,7 @@
                 "x": 0,
                 "y": 0,
                 "z": 1
-            },
-            "showCollision": false,
-            "highlighted": false
+            }
         }
     },
     "robotShoulderLink": {
@@ -1104,9 +1100,7 @@
                 "x": 0,
                 "y": 0,
                 "z": 0.745107889175415
-            },
-            "showCollision": false,
-            "highlighted": false
+            }
         }
     },
     "robotUpperArmLink": {
@@ -1133,9 +1127,7 @@
                 "x": 0.5932892560958862,
                 "y": -0.3847179114818573,
                 "z": 0.5472025871276855
-            },
-            "showCollision": false,
-            "highlighted": false
+            }
         }
     },
     "robotForearmLink": {
@@ -1167,9 +1159,7 @@
                 "x": 1,
                 "y": 1,
                 "z": 1
-            },
-            "showCollision": false,
-            "highlighted": false
+            }
         }
     },
     "robotWrist1Link": {
@@ -1196,9 +1186,7 @@
                 "x": 0.6713905930519104,
                 "y": -0.22188881039619446,
                 "z": 0.6427983641624451
-            },
-            "showCollision": false,
-            "highlighted": false
+            }
         }
     },
     "robotWrist2Link": {
@@ -1225,9 +1213,7 @@
                 "x": -0.39580079913139343,
                 "y": -0.05381776764988899,
                 "z": -0.022500555962324142
-            },
-            "showCollision": false,
-            "highlighted": false
+            }
         }
     },
     "robotWrist3Link": {
@@ -1254,9 +1240,7 @@
                 "x": 0.9280606508255005,
                 "y": -0.01538957841694355,
                 "z": 0.039035625755786896
-            },
-            "showCollision": false,
-            "highlighted": false
+            }
         }
     },
     "gripperBaseLink": {
@@ -1282,9 +1266,7 @@
                 "x": 0.5,
                 "y": -0.5,
                 "z": 0.5
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "gripperLeftKnuckle": {
@@ -1310,9 +1292,7 @@
                 "x": 1,
                 "y": 0,
                 "z": 0
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "gripperRightKnuckle": {
@@ -1338,9 +1318,7 @@
                 "x": 0,
                 "y": 0,
                 "z": 0
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "gripperLeftFinger": {
@@ -1366,9 +1344,7 @@
                 "x": 0,
                 "y": 0,
                 "z": 0
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "gripperRightFinger": {
@@ -1394,9 +1370,7 @@
                 "x": 0,
                 "y": 0,
                 "z": 0
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "gripperLeftInnerKnuckle": {
@@ -1422,9 +1396,7 @@
                 "x": 1,
                 "y": 0,
                 "z": 0
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "gripperRightInnerKnuckle": {
@@ -1450,9 +1422,7 @@
                 "x": 0,
                 "y": 0,
                 "z": 0
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "gripperLeftFingerTip": {
@@ -1478,9 +1448,7 @@
                 "x": 0,
                 "y": 0,
                 "z": 0
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "gripperRightFingerTip": {
@@ -1506,9 +1474,7 @@
                 "x": 0,
                 "y": 0,
                 "z": 0
-            },
-            "showName": false,
-            "highlighted": false
+            }
         }
     },
     "tableMesh": {

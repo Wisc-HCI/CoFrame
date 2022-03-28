@@ -1,5 +1,5 @@
 import { STATUS } from "../Constants";
 
-export const nullCompiler = () => {
+export const linkCompiler = ({path}) => {
     return {newCompiled:null, memo:{}, status:STATUS.VALID, updated:false}
 }

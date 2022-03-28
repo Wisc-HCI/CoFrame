@@ -73,6 +73,11 @@ export const programType = {
         name: 'Compiled',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {}
+      },
+      updateFields: {
+        name: 'Update Fields',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: ['children']
       }
     }
   }

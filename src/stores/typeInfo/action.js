@@ -45,6 +45,10 @@ const basicActionData = {
       name: 'Compiled',
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: {}
+    },
+    updateFields: {
+      name: 'Update Fields',
+      type: SIMPLE_PROPERTY_TYPES.IGNORED
     }
   }
 }
@@ -61,7 +65,8 @@ const delayFeatures = {
       max: Infinity,
       visualScaling: 1/1000
     },
-    compileFn: {default:COMPILE_FUNCTIONS.DELAY}
+    compileFn: {default:COMPILE_FUNCTIONS.DELAY},
+    updateFields: {default: ['duration']}
   }
 }
 
@@ -69,7 +74,8 @@ const breakpointFeatures = {
   name: 'Breakpoint',
   properties: {
     description: {default: 'Stop computation and processing here'},
-    compileFn: {default:COMPILE_FUNCTIONS.BREAK}
+    compileFn: {default:COMPILE_FUNCTIONS.BREAK},
+    updateFields: {default: []}
   }
 }
 
@@ -105,7 +111,8 @@ const gripperFeatures = {
       min: 20,
       max: 150
     },
-    compileFn: {default:COMPILE_FUNCTIONS.GRIPPER}
+    compileFn: {default:COMPILE_FUNCTIONS.GRIPPER},
+    updateFields: {default: ['thing','positionStart','positionEnd','speed']}
   }
 }
 
@@ -119,28 +126,8 @@ const machineInitFeatures = {
       default: null,
       isList: false
     },
-    compileFn: {default:COMPILE_FUNCTIONS.MACHINE}
-  }
-}
-
-const robotInitFeatures = {
-  name: 'Robot Initialize',
-  properties: {
-    description: {default: 'Initialize the robot for use'},
-    initialGripper: {
-      name: 'Initial Grip State',
-      type: SIMPLE_PROPERTY_TYPES.NUMBER,
-      default: 50,
-      min: 0,
-      max: 85
-    },
-    initialPosition: {
-      name: 'Initial Location',
-      accepts: ['locationType'],
-      default: null,
-      isList: false
-    },
-    compileFn: {default:COMPILE_FUNCTIONS.AGENT}
+    compileFn: {default:COMPILE_FUNCTIONS.MACHINE},
+    updateFields: {default: ['machine']}
   }
 }
 
@@ -161,7 +148,8 @@ const processStartFeatures = {
       isList: false,
       nullValid: true
     },
-    compileFn: {default:COMPILE_FUNCTIONS.PROCESS}
+    compileFn: {default:COMPILE_FUNCTIONS.PROCESS},
+    updateFields: {default: ['process','machine']}
   }
 }
 
@@ -182,7 +170,8 @@ const processStopFeatures = {
       isList: false,
       nullValid: true
     },
-    compileFn: {default:COMPILE_FUNCTIONS.PROCESS}
+    compileFn: {default:COMPILE_FUNCTIONS.PROCESS},
+    updateFields: {default: ['process','machine']}
   }
 }
 
@@ -203,7 +192,8 @@ const processWaitFeatures = {
       isList: false,
       nullValid: true
     },
-    compileFn: {default:COMPILE_FUNCTIONS.PROCESS}
+    compileFn: {default:COMPILE_FUNCTIONS.PROCESS},
+    updateFields: {default: ['process','machine']}
   }
 }
 
@@ -230,7 +220,8 @@ const moveTrajectoryFeatures = {
       options: ['IK', 'Joint'],
       default: 'IK'
     },
-    compileFn: {default:COMPILE_FUNCTIONS.ROBOT_MOTION}
+    compileFn: {default:COMPILE_FUNCTIONS.ROBOT_MOTION},
+    updateFields: {default: ['trajectory','velocity','motionType']}
   }
 }
 
@@ -252,7 +243,6 @@ const actionTypes = {
   delayType: merge(delayFeatures,basicActionData),
   gripperType: merge(gripperFeatures,basicActionData),
   machineInitType: merge(machineInitFeatures,basicActionData),
-  robotInitType: merge(robotInitFeatures,basicActionData),
   processStartType: merge(processStartFeatures,basicActionData),
   processStopType: merge(processStopFeatures,basicActionData),
   processWaitType: merge(processWaitFeatures,basicActionData),
