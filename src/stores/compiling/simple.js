@@ -48,5 +48,5 @@ export const simpleCompiler = ({ data, properties, objectTypes, context, path, m
     // }
 
 
-    return { newCompiled, otherPropertyUpdates, status, updated, shouldBreak }
+    return { ...newCompiled, status, shouldBreak }
 }

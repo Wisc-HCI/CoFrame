@@ -63,7 +63,7 @@ const robotAgentFeatures = {
       initialJointState: {
         name: 'Initial Joint State',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: []
+        default: {}
       },
       initialGripState: {
         name: 'Initial Grip State',

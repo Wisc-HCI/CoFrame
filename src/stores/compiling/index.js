@@ -130,10 +130,10 @@ export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 // Copies data from a memo into the specified node.
 // Returns standard changes, which will need to be propagated back up.
 const copyMemoizedData = (memoizedData, data, path) => {
-    console.log('using memoized version of ', data.id)
+    // console.warn('copying memoized version of ', data)
     return [
         memoizedData, // memoizedData
-        memoizedData.properties.status, // status
+        memoizedData.properties.compiled[path].status, // status
         data.properties.status === STATUS.PENDING, // updated
         memoizedData.properties.compiled[path].break // shouldBreak
     ]
@@ -142,31 +142,37 @@ const copyMemoizedData = (memoizedData, data, path) => {
 // Copies data into memoized data.
 // Returns standard changes, which will need to be propagated back up.
 const updateMemoizedData = (memoizedData, data, path) => {
-    console.log('updating memoized version of ', data.id);
-    let newMemoizedData = lodash.set(memoizedData, ['properties', 'compiled', path], data.properties.compiled[path]);
+    //console.warn('updating memoized version of ', data.id);
+    let newMemoizedData = lodash.merge({properties:{compiled:{[path]:{}}}},memoizedData);
+    const pastCompiled = data.properties.compiled[path];
+    newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path],pastCompiled)
     return [
         newMemoizedData, // memoizedData
-        data.properties.status, // status
+        pastCompiled.status, // status
         data.properties.status === STATUS.PENDING, // updated
-        data.properties.compiled[path].break // shouldBreak
+        pastCompiled.break // shouldBreak
     ]
 }
 
 // Computes a new node, given that children have been updated.
 // Returns standard changes, which will need to be propagated back up.
 const performUpdate = (memoizedData, data, properties, objectTypes, context, path, memo, solver, module, urdf, worldModel, updateFn) => {
-    console.log('updating version of ', data.id);
-    let { newCompiled, otherPropertyUpdates, status, updated, shouldBreak } = updateFn({ data, properties, objectTypes, context, path, memo, solver, module, urdf, worldModel });
-    console.log('status',status)
-    let newMemoizedData = lodash.set(memoizedData, ['properties', 'compiled', path], newCompiled);
-    if (otherPropertyUpdates) {
-        newMemoizedData = lodash.merge(newMemoizedData, { properties: otherPropertyUpdates });
+    // console.warn('updating version of ', data.id);
+    let newCompiled = updateFn({ data, properties, objectTypes, context, path, memo, solver, module, urdf, worldModel });
+    // console.log('status',newCompiled.status)
+    // console.log('memoizedData',memoizedData)
+    // console.log('newCompiled',newCompiled)
+    let newMemoizedData = lodash.merge({properties:{compiled:{[path]:{}}}},memoizedData);
+    newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path],newCompiled)
+    if (newCompiled.otherPropertyUpdates) {
+        newMemoizedData = lodash.merge(newMemoizedData, { properties: newCompiled.otherPropertyUpdates });
     }
+    // console.log(newMemoizedData)
     return [
         newMemoizedData, // memoizedData
-        status, // status
-        updated, // updated
-        shouldBreak // shouldBreak
+        newCompiled.status, // status
+        data.properties.status === STATUS.PENDING, // updated
+        newCompiled.shouldBreak // shouldBreak
     ]
 }
 
@@ -185,17 +191,17 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
         status = STATUS.FAILED
     }
     if (!fieldValue) {
-        return { memoizedData: null, memo: newMemo, status, updated, shouldBreak }
+        return { memoizedData, memo: newMemo, status, updated, shouldBreak }
     }
 
     if (fieldInfo.accepts) {
         const propData = findInstance(fieldValue, context);
         // Check cases where the result is null here
         if (!propData && fieldInfo.nullValid) {
-            return { memoizedData: null, memo: newMemo, status, updated, shouldBreak }
+            return { memoizedData, memo: newMemo, status, updated, shouldBreak }
         } else if (!propData) {
             status = STATUS.FAILED;
-            return { memoizedData: null, memo: newMemo, status, updated, shouldBreak }
+            return { memoizedData, memo: newMemo, status, updated, shouldBreak }
         }
         // Since the prop is valid, continue
         const computeProps = {
@@ -240,16 +246,15 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
 // Returns standard changes, which will need to be propagated back up.
 export const handleUpdate = ({ data, objectTypes, context, path, memo, solver, module, urdf, worldModel }) => {
     let newMemo = { ...memo };
-
-    console.log(data)
+    // console.warn('MEMO:',memo)
     const updateFn = compilers[objectTypes[data.type].properties.compileFn.default];
-    let memoizedData = memo[data.id] ? lodash.pick(memo, [data.id]) : {};
+    let memoizedData = memo[data.id] ? memo[data.id] : {};
     let updated = false;
     let status = STATUS.VALID;
     let shouldBreak = false;
     if (memoizedData.properties?.compiled[path]) {
         // Use the version in the memo
-        [memoizedData, status, updated, shouldBreak] = copyMemoizedData(memoizedData,path);
+        [memoizedData, status, updated, shouldBreak] = copyMemoizedData(memoizedData,data,path);
     } else {
         // First, determine whether we need to compute. 
         // If the status is pending, recompute.
@@ -259,9 +264,9 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, solver, m
 
         // No change detected at this level, but we should progress though `updateFields` to be sure.
         let properties = {};
-        console.log(data)
+        // console.log(data)
         data.properties.updateFields.forEach(field => {
-            console.log('checking field', field)
+            // console.log('checking field', field)
             if (objectTypes[data.type].properties[field].isList) {
                 properties[field] = [];
                 data.properties[field].some(fieldItem=>{
@@ -328,14 +333,14 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, solver, m
     
     console.warn(`At the end of processing "${data.id}", status is "${status === STATUS.VALID ? 'VALID' : status === STATUS.PENDING ? 'PENDING' : 'FAILED'}"`)
     if (status === STATUS.VALID && (memoizedData.properties.status === undefined || memoizedData.properties.status !== STATUS.FAILED)) {
-        console.warn('SETTING STATUS VALID')
+        // console.warn('SETTING STATUS VALID')
         memoizedData.properties.status = STATUS.VALID
     } else if (status === STATUS.FAILED) {
-        console.warn('SETTING STATUS FAILED')
+        // console.warn('SETTING STATUS FAILED')
         memoizedData.properties.status = STATUS.FAILED
     }
     memoizedData.properties.compiled[path].break = shouldBreak
-    console.log(memoizedData)
+    // console.log(memoizedData)
 
     newMemo = { ...newMemo, [data.id]: memoizedData };
     return { memoizedData, memo: newMemo, status, updated, shouldBreak }

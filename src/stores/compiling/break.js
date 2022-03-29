@@ -2,7 +2,8 @@ import { STATUS, STEP_TYPE } from "../Constants";
 
 export const breakCompiler = ({ data }) => {
     const newCompiled = {
-        break: true,
+        shouldBreak: true,
+        status: STATUS.VALID,
         steps: [
             {
                 stepType: STEP_TYPE.LANDMARK,
@@ -11,7 +12,7 @@ export const breakCompiler = ({ data }) => {
             }
         ]
     }
-    return { newCompiled, status: STATUS.VALID, break: true }
+    return newCompiled
 }
 
 // - If a node is STATUS.VALID, search internally and return the children so long as those children are also valid and are not updated.

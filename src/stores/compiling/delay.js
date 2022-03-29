@@ -2,6 +2,7 @@ import { STATUS, STEP_TYPE } from "../Constants";
 
 export const delayCompiler = ({data}) => {
     const newCompiled = {
+        status: STATUS.VALID,
         steps: [
             {
                 stepType: STEP_TYPE.ACTION_START,
@@ -17,7 +18,7 @@ export const delayCompiler = ({data}) => {
             }
         ]
     }
-    return { newCompiled, status: STATUS.VALID }
+    return newCompiled
 }
 
 // - If a node is STATUS.VALID, search internally and return the children so long as those children are also valid and are not updated.

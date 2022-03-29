@@ -8,6 +8,17 @@
         "properties": {
             "description": "Robot Agent",
             "relativeTo": "pedestal",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0.38
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
             "initialJointState": {
                 "elbow_joint": 0.02,
                 "shoulder_lift_joint": 0.55,

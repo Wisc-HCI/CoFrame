@@ -6,6 +6,7 @@ export const machineCompiler = ({data, properties}) => {
     const status = machine ? STATUS.VALID : STATUS.FAILED;
 
     const newCompiled = machine ? {
+        status,
         steps: [
             {
                 stepType: STEP_TYPE.ACTION_START,
@@ -20,6 +21,9 @@ export const machineCompiler = ({data, properties}) => {
                 time: properties.duration
             }
         ]
-    } : null
-    return { newCompiled, status }
+    } : {
+        status,
+        steps:[]
+    }
+    return newCompiled
 }

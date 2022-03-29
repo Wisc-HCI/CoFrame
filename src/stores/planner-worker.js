@@ -13,6 +13,7 @@ const ROOT_BOUNDS = [
 const PREPROCESS_TYPES = [
     'waypointType',
     'locationType',
+    'linkType',
     'robotAgentType'
 ]
 

@@ -1,35 +1,50 @@
 import { STATUS, ROOT_BOUNDS } from "../Constants";
 import { Quaternion } from 'three';
-import { distance, likStateToData, createEnvironmentModel, createStaticEnvironment } from "../helpers";
+import { distance, likStateToData, createEnvironmentModel, createStaticEnvironment, queryWorldPose, quaternionLog } from "../helpers";
 
 export const agentCompiler = ({data, properties, path, context, memo, solver, module, urdf, worldModel}) => {
-    const links = solver.links;
-    console.log(links);
+    const joints = solver.joints;
+    const jointObjectives = joints.map(joint=>({
+        type: 'JointMatch',
+        name: 'Joint Match - '+joint.name,
+        joint: joint.name,
+        weight: 30
+    }));
+    const jointObjectiveWeights = jointObjectives.map(lo=>lo.weight);
+    const jointObjectiveGoals = joints.map(joint=>({
+        Scalar: properties.initialJointState[joint.name]
+    }));
+    const basePose = queryWorldPose(worldModel,data.id);
+    const quatLog = quaternionLog(basePose.rotation)
+    const rootBounds = [
+        {value:basePose.position.x,delta:0.0},{value:basePose.position.y,delta:0.0},{value:basePose.position.z,delta:0.0}, // Translational
+        {value:quatLog[0],delta:0.0},{value:quatLog[1],delta:0.0},{value:quatLog[2],delta:0.0}  // Rotational  
+    ]
     const fwdsolver = new module.Solver(urdf,[
+        ...jointObjectives,
         {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
-      ],ROOT_BOUNDS, createStaticEnvironment({}), null, false, 1, 450);
+      ],rootBounds, createStaticEnvironment(worldModel), null, false, 1, 450);
     const currentTime = Date.now();
     let status = STATUS.FAILED;
     let state = {};
-    const pos = properties.position;
-    const rot = properties.rotation;
     const goals = [
+        ...jointObjectiveGoals,
         null
     ]
     while (Date.now() - currentTime < 5000 && status === STATUS.FAILED) {
-        state = fwdsolver.solve(goals, [2]);
-        const p = state.frames.wrist_3_link.translation;
-        const r = state.frames.wrist_3_link.rotation;
-        const achievedPos = {x:p[0],y:p[1],z:p[2]}
-        const goalQuat = new Quaternion(rot.x,rot.y,rot.z,rot.w)
-        const achievedQuat = new Quaternion(r[1],r[2],r[3],r[0])
-        const translationDistance = distance(achievedPos,pos);
-        const rotationalDistance = goalQuat.angleTo(achievedQuat);
-        if (translationDistance < 0.01 && rotationalDistance < 0.01) {
+        state = fwdsolver.solve(goals, [...jointObjectiveWeights,2]);
+        const passes = true;
+        joints.some(joint=>{
+            if (0.01 < Math.abs(state.joints[joint.name] - properties.initialJointState[joint.name])) {
+                passes = false
+                return true
+            } else { return false }
+        })
+        if (passes) {
             status = STATUS.VALID
         }
     }
-
-    const newCompiled = likStateToData(state);
-    return { newCompiled, status }
+    console.log({state,worldModel,frame:data.id})
+    const newCompiled = likStateToData(state,worldModel,data.id);
+    return { ...newCompiled, status }
 }

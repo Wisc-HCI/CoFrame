@@ -6,10 +6,23 @@ import { EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp';
 import { REFERENCEABLE_OBJECTS } from './Constants';
 
-Object3D.DefaultUp.set(0,0,1);
+Object3D.DefaultUp.set(0, 0, 1);
 
 export const distance = (pos1, pos2) => {
-    return Math.sqrt(Math.pow(pos1.x-pos2.x,2)+Math.pow(pos1.y-pos2.y,2)+Math.pow(pos1.z-pos2.z,2))
+    return Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2) + Math.pow(pos1.z - pos2.z, 2))
+}
+
+export const quaternionLog = (quaternion) => {
+    let outVec = new Vector3(quaternion.x, quaternion.y, quaternion.z);
+    if (Math.abs(quaternion.w) < 1.0) {
+        let a = Math.acos(quaternion.w);
+        let sina = Math.sin(a);
+        if (Math.abs(sina) >= 0.005) {
+            let c = a / sina;
+            outVec.multiplyScalar(c);
+        }
+    }
+    return [outVec.x, outVec.y, outVec.z]
 }
 
 const ROBOT_FRAMES = [
@@ -26,8 +39,8 @@ const ROBOT_FRAMES = [
 ]
 
 export const PRIMITIVE_TYPES = [
-    'delay','gripper','machine-initialize','process-start','process-stop',
-    'process-wait','move-trajectory','move-unplanned','breakpoint','skill-call'
+    'delay', 'gripper', 'machine-initialize', 'process-start', 'process-stop',
+    'process-wait', 'move-trajectory', 'move-unplanned', 'breakpoint', 'skill-call'
 ]
 
 export const HUMAN_ZONE = { radius: 2, height: 3, position: { x: 0, y: -1, z: 1 } }
@@ -43,36 +56,81 @@ export const UNREACHABLE_COLOR = { r: 204, g: 75, b: 10, a: 1 };
 export const OCCUPANCY_ERROR_COLOR = { r: 233, g: 53, b: 152, a: 1 };
 
 export const PINCH_POINT_FIELDS = {
-    base_link_inertia___forearm_link: {parent: 'base_link', frame1: 'Base', frame2: 'Forearm', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___gripper: {parent: 'base_link', frame1: 'Base', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___upper_arm_link: {parent: 'base_link', frame1: 'Base', frame2: 'Upper Arm', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___wrist_1_link: {parent: 'base_link', frame1: 'Base', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___wrist_2_link: {parent: 'base_link', frame1: 'Base', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    base_link_inertia___wrist_3_link: {parent: 'base_link', frame1: 'Base', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    base_link_inertia___forearm_link: { parent: 'base_link', frame1: 'Base', frame2: 'Forearm', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    base_link_inertia___gripper: { parent: 'base_link', frame1: 'Base', frame2: 'Gripper', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    base_link_inertia___upper_arm_link: { parent: 'base_link', frame1: 'Base', frame2: 'Upper Arm', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    base_link_inertia___wrist_1_link: { parent: 'base_link', frame1: 'Base', frame2: 'Wrist 1', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    base_link_inertia___wrist_2_link: { parent: 'base_link', frame1: 'Base', frame2: 'Wrist 2', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    base_link_inertia___wrist_3_link: { parent: 'base_link', frame1: 'Base', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
 
-    shoulder_link___forearm_link: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Forearm', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    shoulder_link___gripper: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    shoulder_link___wrist_1_link: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    shoulder_link___wrist_2_link: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    shoulder_link___wrist_3_link: {parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    shoulder_link___forearm_link: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Forearm', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    shoulder_link___gripper: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Gripper', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    shoulder_link___wrist_1_link: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 1', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    shoulder_link___wrist_2_link: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 2', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    shoulder_link___wrist_3_link: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
 
-    upper_arm_link___gripper: {parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    upper_arm_link___wrist_1_link: {parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 1', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    upper_arm_link___wrist_2_link: {parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    upper_arm_link___wrist_3_link: {parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    upper_arm_link___gripper: { parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Gripper', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    upper_arm_link___wrist_1_link: { parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 1', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    upper_arm_link___wrist_2_link: { parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 2', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    upper_arm_link___wrist_3_link: { parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
 
-    forearm_link___gripper: {parent: 'forearm_link', frame1: 'Forearm', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    forearm_link___wrist_2_link: {parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 2', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    forearm_link___wrist_3_link: {parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    forearm_link___gripper: { parent: 'forearm_link', frame1: 'Forearm', frame2: 'Gripper', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    forearm_link___wrist_2_link: { parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 2', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
+    forearm_link___wrist_3_link: { parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
 
     // wrist_1_link___gripper: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    wrist_1_link___wrist_3_link: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Wrist 3', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
+    wrist_1_link___wrist_3_link: { parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
 
     // wrist_2_link___gripper: {parent: 'wrist_2_link', frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 }
 
+export const queryWorldPose = (model, ref) => {
+    const referenceFeature = model[ref];
+    console.log('REF FEATURE', { ref, referenceFeature });
+    const matrixWorld = referenceFeature.matrixWorld;
+    let position = referenceFeature.getWorldPosition(new Vector3());
+    let rotation = referenceFeature.getWorldQuaternion(new Quaternion());
+    return {
+        position: {
+            x: position.x,
+            y: position.y,
+            z: position.z
+        },
+        rotation: {
+            x: rotation.x,
+            y: rotation.y,
+            z: rotation.z,
+            w: rotation.w
+        }
+    }
+}
+
+export const queryLocalPose = (model, ref, localTransform) => {
+    const referenceFeature = model[ref];
+    const matrixWorld = referenceFeature.matrixWorld;
+    // create a temporary group to add to that reference;
+    const worldPose = new Group();
+    worldPose.position.set(localTransform.position.x, localTransform.position.y, localTransform.position.z);
+    worldPose.quaternion.set(localTransform.rotation.x, localTransform.rotation.y, localTransform.rotation.z, localTransform.rotation.w)
+    referenceFeature.attach(worldPose);
+    return {
+        position: {
+            x: worldPose.position.x,
+            y: worldPose.position.y,
+            z: worldPose.position.z
+        },
+        rotation: {
+            x: worldPose.quaternion.x,
+            y: worldPose.quaternion.y,
+            z: worldPose.quaternion.z,
+            w: worldPose.quaternion.w
+        }
+    }
+    worldPose.removeFromParent();
+}
+
 export const createStaticEnvironment = (model) => {
-    return Object.values(model).filter(item=>item.userData.parent!=='world'&&item.userData.collisionInfo).map(item=>{
+    return Object.values(model).filter(item => item.userData.parent !== 'world' && item.userData.collisionInfo).map(item => {
         // TODO: Create static collision info here
     })
 }
@@ -83,7 +141,7 @@ export const createEnvironmentModel = (programData) => {
     model.world = new Group();
     while (added) {
         added = false
-        Object.values(programData).filter(i=>!Object.keys(model).includes(i.id)&&i.dataType===DATA_TYPES.INSTANCE&&REFERENCEABLE_OBJECTS.includes(i.type)).forEach(item=>{
+        Object.values(programData).filter(i => !Object.keys(model).includes(i.id) && i.dataType === DATA_TYPES.INSTANCE && REFERENCEABLE_OBJECTS.includes(i.type)).forEach(item => {
             const parentId = item.properties.relativeTo ? item.properties.relativeTo : 'world';
             if (model[parentId]) {
                 model[item.id] = new Group();
@@ -92,8 +150,8 @@ export const createEnvironmentModel = (programData) => {
                 if (false) {
                     model[item.id].userData.collisionInfo = true;
                 }
-                model[item.id].position.set(item.properties.position.x,item.properties.position.y,item.properties.position.z);
-                model[item.id].quaternion.set(item.properties.rotation.x,item.properties.rotation.y,item.properties.rotation.z,item.properties.rotation.w);
+                model[item.id].position.set(item.properties.position.x, item.properties.position.y, item.properties.position.z);
+                model[item.id].quaternion.set(item.properties.rotation.x, item.properties.rotation.y, item.properties.rotation.z, item.properties.rotation.w);
                 model[parentId].add(model[item.id]);
                 added = true;
             }
@@ -102,46 +160,42 @@ export const createEnvironmentModel = (programData) => {
     return model
 }
 
-export const computeRelativeTransform = (transformSource,transformRef) => {
-
-}
-
-export const likFramesToTransforms = (frames,links) => {
-    const worldTransforms = lodash.objectMap(frames,(frameData)=>({
-        frame: 'world',
-        translation: { 
-            x: frameData.translation[0], 
-            y: frameData.translation[1], 
-            z: frameData.translation[2] 
-        },
-        rotation: { 
-            w: frameData.rotation[3], 
-            x: frameData.rotation[0], 
-            y: frameData.rotation[1], 
-            z: frameData.rotation[2] 
+export const likFramesToTransforms = (frames, model, frame) => {
+    const relativeFrameId = frame ? frame : 'world';
+    console.log({frames,model,frame})
+    const linkTransforms = lodash.mapValues(frames, (frameData) => {
+        const poseWorld = {
+            position: {
+                x: frameData.translation[0],
+                y: frameData.translation[1],
+                z: frameData.translation[2]
+            },
+            rotation: {
+                w: frameData.rotation[3],
+                x: frameData.rotation[0],
+                y: frameData.rotation[1],
+                z: frameData.rotation[2]
+            }
         }
-    }))
-    const localTransforms = lodash.objectMap(worldTransforms,(tfData)=>{
-        const parentLink = null;
-        
+        const poseLocal = queryLocalPose(model, relativeFrameId, poseWorld)
+        return {
+            frame,
+            ...poseLocal
+        }
     })
+    return linkTransforms
 }
 
-export const likStateToData = (state,agentInfo)=>{
-    console.log(state);
+export const likStateToData = (state, model, frame) => {
+    console.log('PRE-PARSED STATE DATA',state);
+    console.log({frames:state.frames,model,frame})
     const data = {
-        joints: {
-
-        },
-        links: {
-
-        },
-        collisions: {
-
-        },
-
+        joints: state.joints,
+        links: likFramesToTransforms(state.frames, model, frame),
+        proximity: state.proximity,
     }
-    return state
+    console.log('PARSED STATE DATA',data)
+    return data
 }
 
 export const typeToKey = (type) => {
@@ -159,8 +213,8 @@ export const typeToKey = (type) => {
     return key;
 }
 
-function* range(start, end, step=1) {
-    for (let i = start; i <= end; i+=step) {
+function* range(start, end, step = 1) {
+    for (let i = start; i <= end; i += step) {
         yield i;
     }
 }
@@ -230,22 +284,22 @@ export function deleteAction(data, uuid) {
         /* Delete as a hierarchical */
         let children = data[uuid].children;
         let updated = lodash.omit(data, uuid);
-        children.forEach(child=>{
+        children.forEach(child => {
             updated = deleteAction(data, child)
         })
         return updated;
     } else {
-        return lodash.omit(data,uuid)
+        return lodash.omit(data, uuid)
     }
 };
 
 export const occupancyOverlap = (position, occupancyZones) => {
     let overlap = false
     let zones = Object.values(occupancyZones).filter(v => v.type === 'zoneType');
-    for (let i = 0; i < zones.length; i++ ) {//.forEach(zone => {
+    for (let i = 0; i < zones.length; i++) {//.forEach(zone => {
         let zone = zones[i];
-        const xOverlap = position.x < zone.properties.position.x + zone.properties.scale.x/2 && position.x > zone.properties.position.x - zone.properties.scale.x/2;
-        const yOverlap = position.y < zone.properties.position.z + zone.properties.scale.z/2 && position.y > zone.properties.position.z - zone.properties.scale.z/2;
+        const xOverlap = position.x < zone.properties.position.x + zone.properties.scale.x / 2 && position.x > zone.properties.position.x - zone.properties.scale.x / 2;
+        const yOverlap = position.y < zone.properties.position.z + zone.properties.scale.z / 2 && position.y > zone.properties.position.z - zone.properties.scale.z / 2;
         if (xOverlap && yOverlap) {
             overlap = true
         }
@@ -303,21 +357,21 @@ function executableTrajectory(trajectory, context) {
 }
 
 export function executableMachine(machine, context) {
-    let executable = {...machine,inputData:[],outputData:[]};
-    Object.keys(machine.inputs).forEach(thingType=>{
+    let executable = { ...machine, inputData: [], outputData: [] };
+    Object.keys(machine.inputs).forEach(thingType => {
         const thingInfo = context[thingType];
-        machine.inputs[thingType].forEach(outputData=>{
+        machine.inputs[thingType].forEach(outputData => {
             const region = context[outputData.region_uuid];
             // For now, assume only one is created
-            executable.inputData.push({thing:thingInfo,region})
+            executable.inputData.push({ thing: thingInfo, region })
         })
     })
-    Object.keys(machine.outputs).forEach(thingType=>{
+    Object.keys(machine.outputs).forEach(thingType => {
         const thingInfo = context[thingType];
-        machine.outputs[thingType].forEach(outputData=>{
+        machine.outputs[thingType].forEach(outputData => {
             const region = context[outputData.region_uuid];
             // For now, assume only one is created
-            executable.outputData.push({thing:thingInfo,region,placeholder:context[outputData.placeholder_uuids[0]]})
+            executable.outputData.push({ thing: thingInfo, region, placeholder: context[outputData.placeholder_uuids[0]] })
         })
     })
 
@@ -338,14 +392,14 @@ function executablePrimitiveInner(primitiveId, state, context) {
                 return true
             } else {
                 executable = [...executable, ...inner.children]
-                full = {...full,...inner.all,[childId]:inner.children}
+                full = { ...full, ...inner.all, [childId]: inner.children }
                 return false
             }
         })) {
             // There was a null response
             return null
         } else {
-            return {children:executable,all:{...full,[primitive.uuid]:executable}}
+            return { children: executable, all: { ...full, [primitive.uuid]: executable } }
         }
     } else if (primitive.type.includes('skill-call')) {
         let innerContext = { ...context };
@@ -378,35 +432,35 @@ function executablePrimitiveInner(primitiveId, state, context) {
             // There was a null response
             return null
         } else {
-            return {children:executable,all:{[primitive.uuid]:executable}}
+            return { children: executable, all: { [primitive.uuid]: executable } }
         }
     } else if (primitive.type === 'node.primitive.breakpoint.' || primitive.type === 'node.primitive.delay.') {
-        return {children:[primitive],all:{[primitive.uuid]:primitive}}
+        return { children: [primitive], all: { [primitive.uuid]: primitive } }
     } else if (primitive.type === 'node.primitive.gripper.') {
         if (context[primitive.parameters.thing_uuid]) {
             const expanded = { ...primitive, parameters: { ...primitive.parameters, thing_uuid: context[primitive.parameters.thing_uuid] } }
-            return {children:[expanded],all:{[primitive.uuid]:expanded}}
+            return { children: [expanded], all: { [primitive.uuid]: expanded } }
         } else {
             return null
         }
     } else if (primitive.type.includes('machine-primitive')) {
         if (context[primitive.parameters.machine_uuid]) {
             const expanded = { ...primitive, parameters: { ...primitive.parameters, machine_uuid: context[primitive.parameters.machine_uuid] } }
-            return {children:[expanded],all:{[primitive.uuid]:expanded}}
+            return { children: [expanded], all: { [primitive.uuid]: expanded } }
         } else {
             return null
         }
     } else if (primitive.type === 'node.primitive.move-trajectory.') {
         if (primitive.parameters.trajectory_uuid && context[primitive.parameters.trajectory_uuid]) {
             const expanded = { ...primitive, parameters: { ...primitive.parameters, trajectory_uuid: context[primitive.parameters.trajectory_uuid] } }
-            return {children:[expanded],all:{[primitive.uuid]:expanded}}
+            return { children: [expanded], all: { [primitive.uuid]: expanded } }
         } else {
             return null
         }
     } else if (primitive.type === 'node.primitive.move-unplanned.') {
         if (context[primitive.parameters.location_uuid]) {
             const expanded = { ...primitive, parameters: { ...primitive.parameters, location_uuid: context[primitive.parameters.location_uuid] } }
-            return {children:[expanded],all:{[primitive.uuid]:expanded}}
+            return { children: [expanded], all: { [primitive.uuid]: expanded } }
         } else {
             return null
         }
@@ -416,23 +470,23 @@ function executablePrimitiveInner(primitiveId, state, context) {
 
 export function executablePrimitives(state) {
     let context = state.data;
-    Object.values(state.data).filter(v=>v.type === 'trajectory').forEach(trajectory => {
+    Object.values(state.data).filter(v => v.type === 'trajectory').forEach(trajectory => {
         context[trajectory.uuid] = executableTrajectory(trajectory, context)
     })
-    Object.values(state.data).filter(v=>v.type === 'machine').forEach(machine => {
+    Object.values(state.data).filter(v => v.type === 'machine').forEach(machine => {
         context[machine.uuid] = executableMachine(machine, context)
     })
     // this should return all the primitives that are run through with the actual program
     const inner = executablePrimitiveInner(state.uuid, state, context);
     let executables = {}
     if (inner) {
-        executables = {...inner.all};
+        executables = { ...inner.all };
     }
 
     // this should catch any primitives not called directly through the program that are valid
-    Object.values(state.data).filter(v=>PRIMITIVE_TYPES.includes(v.type)).forEach(primitive=>{
+    Object.values(state.data).filter(v => PRIMITIVE_TYPES.includes(v.type)).forEach(primitive => {
         if (!executables[primitive.uuid]) {
-            executables = {...executables, ...executablePrimitiveInner(primitive.uuid, state, context)}
+            executables = { ...executables, ...executablePrimitiveInner(primitive.uuid, state, context) }
         }
     })
     return executables
@@ -458,7 +512,7 @@ const gripperFramesFromValue = (distance) => {
     GRIPPER_FRAMES.forEach(frameName => {
         const rawFrame = GRIPPER_CONFIGURATIONS.capture[frameName][idx];
         frames[frameName] = {
-            frame:GRIPPER_PARENTS[frameName],
+            frame: GRIPPER_PARENTS[frameName],
             translation: {
                 x: rawFrame[0][0],
                 y: rawFrame[0][1],
@@ -478,9 +532,9 @@ const gripperFramesFromValue = (distance) => {
 export const robotFramesFromPose = (pose) => {
     let frames = {};
     console.log(pose.frames)
-    ROBOT_FRAMES.forEach(frame=>{
+    ROBOT_FRAMES.forEach(frame => {
         const rawFrame = pose.frames[frame];
-        frames['simulated_'+frame] = {
+        frames['simulated_' + frame] = {
             translation: {
                 x: rawFrame[0][0],
                 y: rawFrame[0][1],
@@ -513,11 +567,11 @@ const frameFromRegion = (region) => {
     }
 }
 
-const robotFramesFromIdx = (idx,trace) => {
+const robotFramesFromIdx = (idx, trace) => {
     let frames = {};
-    ROBOT_FRAMES.forEach(frame=>{
+    ROBOT_FRAMES.forEach(frame => {
         const rawFrame = trace.frames[frame][idx];
-        frames['simulated_'+frame] = {
+        frames['simulated_' + frame] = {
             translation: {
                 x: rawFrame[0][0],
                 y: rawFrame[0][1],
@@ -534,61 +588,61 @@ const robotFramesFromIdx = (idx,trace) => {
     return frames
 }
 
-const pinchColorFromMagnitude = (magnitude=0) => {
-    return {r:204+29*magnitude,g:121-68*magnitude,b:167-15*magnitude,a:0.3};
+const pinchColorFromMagnitude = (magnitude = 0) => {
+    return { r: 204 + 29 * magnitude, g: 121 - 68 * magnitude, b: 167 - 15 * magnitude, a: 0.3 };
 }
 
-const pinchPointVisualsByIdx = (idx,trace) => {
+const pinchPointVisualsByIdx = (idx, trace) => {
     let pinchPoints = {};
     console.log(trace.pinch_points)
-    Object.keys(trace.pinch_points).forEach(pinchPointPair=>{
+    Object.keys(trace.pinch_points).forEach(pinchPointPair => {
         if (trace.pinch_points[pinchPointPair][idx]) {
-            let errorMagnitude = 1/Math.pow(Math.E,trace.pinch_points[pinchPointPair][idx].gap);
+            let errorMagnitude = 1 / Math.pow(Math.E, trace.pinch_points[pinchPointPair][idx].gap);
             let errorPosition = trace.pinch_points[pinchPointPair][idx].position;
-            console.log({errorMagnitude,errorPosition})
+            console.log({ errorMagnitude, errorPosition })
             pinchPoints[pinchPointPair] = {
-                scale: {x:errorMagnitude*0.1,y:errorMagnitude*0.1,z:errorMagnitude*0.1}, 
+                scale: { x: errorMagnitude * 0.1, y: errorMagnitude * 0.1, z: errorMagnitude * 0.1 },
                 color: pinchColorFromMagnitude(errorMagnitude),
-                position: {x:errorPosition[0],y:errorPosition[1],z:errorPosition[2]}
+                position: { x: errorPosition[0], y: errorPosition[1], z: errorPosition[2] }
             }
         } else {
             pinchPoints[pinchPointPair] = {
-                scale: {x:0,y:0,z:0}, 
-                color: {r:0,g:0,b:0,a:0},
-                position: {x:0,y:0,z:0}
+                scale: { x: 0, y: 0, z: 0 },
+                color: { r: 0, g: 0, b: 0, a: 0 },
+                position: { x: 0, y: 0, z: 0 }
             }
         }
     })
     return pinchPoints
 }
 
-const poseDiff = (pose1,pose2) => {
-    console.log(pose1,pose2)
+const poseDiff = (pose1, pose2) => {
+    console.log(pose1, pose2)
     const translationDistance = Math.sqrt(
-        Math.pow(pose1.position.x-pose2.position.x,2) + 
-        Math.pow(pose1.position.y-pose2.position.y,2) + 
-        Math.pow(pose1.position.z-pose2.position.z,2)
+        Math.pow(pose1.position.x - pose2.position.x, 2) +
+        Math.pow(pose1.position.y - pose2.position.y, 2) +
+        Math.pow(pose1.position.z - pose2.position.z, 2)
     )
     console.log(translationDistance)
-    const quat1 = Quaternion(pose1.quaternion.x,pose1.quaternion.y,pose1.quaternion.z,pose1.quaternion.w)
-    const quat2 = Quaternion(pose2.quaternion.x,pose2.quaternion.y,pose2.quaternion.z,pose2.quaternion.w)
-    return {distance:translationDistance, angle:quat1.angleTo(quat2)}
+    const quat1 = Quaternion(pose1.quaternion.x, pose1.quaternion.y, pose1.quaternion.z, pose1.quaternion.w)
+    const quat2 = Quaternion(pose2.quaternion.x, pose2.quaternion.y, pose2.quaternion.z, pose2.quaternion.w)
+    return { distance: translationDistance, angle: quat1.angleTo(quat2) }
 }
 
 const stepsToAnimatedTfs = (steps) => {
     if (steps.length === 0) {
         return {}
     }
-    let tempAnimatedTfs = objectMap(steps[0].tfs,_=>({
-            translation:{x:[],y:[],z:[]},
-            rotation:{w:[],x:[],y:[],z:[]}
-        })
+    let tempAnimatedTfs = objectMap(steps[0].tfs, _ => ({
+        translation: { x: [], y: [], z: [] },
+        rotation: { w: [], x: [], y: [], z: [] }
+    })
     )
     const tfNames = Object.keys(tempAnimatedTfs);
     console.log(tfNames)
-    let timesteps = steps.map(step=>step.time)
-    steps.forEach(step=>{
-        tfNames.forEach(tfName=>{
+    let timesteps = steps.map(step => step.time)
+    steps.forEach(step => {
+        tfNames.forEach(tfName => {
             tempAnimatedTfs[tfName].translation.x.push(step.tfs[tfName].translation.x);
             tempAnimatedTfs[tfName].translation.y.push(step.tfs[tfName].translation.y);
             tempAnimatedTfs[tfName].translation.z.push(step.tfs[tfName].translation.z);
@@ -599,14 +653,14 @@ const stepsToAnimatedTfs = (steps) => {
         })
     })
     // console.log(tempAnimatedTfs)
-    const animatedTfs = objectMap(tempAnimatedTfs,(tf,key)=>({
-        frame:GRIPPER_PARENTS[key],
-        translation:{
+    const animatedTfs = objectMap(tempAnimatedTfs, (tf, key) => ({
+        frame: GRIPPER_PARENTS[key],
+        translation: {
             x: interpolateScalar(timesteps, tf.translation.x),
             y: interpolateScalar(timesteps, tf.translation.y),
             z: interpolateScalar(timesteps, tf.translation.z)
         },
-        rotation:{
+        rotation: {
             w: interpolateScalar(timesteps, tf.rotation.w),
             x: interpolateScalar(timesteps, tf.rotation.x),
             y: interpolateScalar(timesteps, tf.rotation.y),
@@ -624,17 +678,17 @@ const stepsToAnimatedPinchPoints = (steps) => {
     if (steps.length === 0) {
         return {}
     }
-    let tempAnimatedPinchPoints = objectMap(steps[0].pinchPoints,_=>({
-            position:{x:[],y:[],z:[]},
-            scale:{x:[],y:[],z:[]},
-            color:{r:[],g:[],b:[]}
-        })
+    let tempAnimatedPinchPoints = objectMap(steps[0].pinchPoints, _ => ({
+        position: { x: [], y: [], z: [] },
+        scale: { x: [], y: [], z: [] },
+        color: { r: [], g: [], b: [] }
+    })
     )
     const pinchPointPairs = Object.keys(tempAnimatedPinchPoints);
     // console.log(pinchPointPairs)
-    let timesteps = steps.map(step=>step.time)
-    steps.forEach(step=>{
-        pinchPointPairs.forEach(pairName=>{
+    let timesteps = steps.map(step => step.time)
+    steps.forEach(step => {
+        pinchPointPairs.forEach(pairName => {
             tempAnimatedPinchPoints[pairName].position.x.push(step.pinchPoints[pairName].position.x);
             tempAnimatedPinchPoints[pairName].position.y.push(step.pinchPoints[pairName].position.y);
             tempAnimatedPinchPoints[pairName].position.z.push(step.pinchPoints[pairName].position.z);
@@ -647,19 +701,19 @@ const stepsToAnimatedPinchPoints = (steps) => {
         })
     })
     console.log(tempAnimatedPinchPoints)
-    const animatedPinchPoints = objectMap(tempAnimatedPinchPoints,pinchPoint=>({
-        frame:'world',
-        position:{
+    const animatedPinchPoints = objectMap(tempAnimatedPinchPoints, pinchPoint => ({
+        frame: 'world',
+        position: {
             x: interpolateScalar(timesteps, pinchPoint.position.x),
             y: interpolateScalar(timesteps, pinchPoint.position.y),
             z: interpolateScalar(timesteps, pinchPoint.position.z)
         },
-        scale:{
+        scale: {
             x: interpolateScalar(timesteps, pinchPoint.scale.x),
             y: interpolateScalar(timesteps, pinchPoint.scale.y),
             z: interpolateScalar(timesteps, pinchPoint.scale.z)
         },
-        color:{
+        color: {
             r: interpolateScalar(timesteps, pinchPoint.color.r),
             g: interpolateScalar(timesteps, pinchPoint.color.g),
             b: interpolateScalar(timesteps, pinchPoint.color.b),
@@ -684,8 +738,8 @@ export function pinchpointAnimationFromExecutable(executable) {
                 const delta = chunk.parameters.position - gripperState;
                 duration = 1000 * Math.abs(delta) / chunk.parameters.speed;
 
-                for (let timeOffset of range(0,duration,100)) {
-                    prevStep.time = currentTime+timeOffset;
+                for (let timeOffset of range(0, duration, 100)) {
+                    prevStep.time = currentTime + timeOffset;
                     steps.push(prevStep)
                     prevStep = lodash.cloneDeep(steps[steps.length - 1]);
                 }
@@ -707,12 +761,12 @@ export function pinchpointAnimationFromExecutable(executable) {
             } else if (chunk.type === 'node.primitive.move-trajectory.') {
                 duration = chunk.parameters.trajectory_uuid.trace.duration * 1000;
                 if (chunk)
-                for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length-1; i++) {
-                    prevStep.pinchPoints = {...prevStep.pinchPoints,...pinchPointVisualsByIdx(i,chunk.parameters.trajectory_uuid.trace)};
-                    prevStep.time = currentTime+chunk.parameters.trajectory_uuid.trace.time_data[i]*1000;
-                    steps.push(prevStep)
-                    prevStep = lodash.cloneDeep(steps[steps.length - 1]);
-                }
+                    for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length - 1; i++) {
+                        prevStep.pinchPoints = { ...prevStep.pinchPoints, ...pinchPointVisualsByIdx(i, chunk.parameters.trajectory_uuid.trace) };
+                        prevStep.time = currentTime + chunk.parameters.trajectory_uuid.trace.time_data[i] * 1000;
+                        steps.push(prevStep)
+                        prevStep = lodash.cloneDeep(steps[steps.length - 1]);
+                    }
                 if (chunk.parameters.trajectory_uuid.trace.in_timeout) {
                     cancelled = true
                 }
@@ -732,7 +786,7 @@ export function pinchpointAnimationFromExecutable(executable) {
             };
         })
     })
-    steps.push({...lodash.cloneDeep(steps[steps.length - 1]),time:currentTime+1000})
+    steps.push({ ...lodash.cloneDeep(steps[steps.length - 1]), time: currentTime + 1000 })
     return stepsToAnimatedPinchPoints(steps)
 }
 
@@ -753,15 +807,15 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 const direction = delta >= 0 ? 1 : -1
                 duration = 1000 * Math.abs(delta) / chunk.parameters.speed;
 
-                for (let timeOffset of range(0,duration,100)) {
-                    const tempGripperState = gripperState + chunk.parameters.speed * timeOffset/1000 * direction;
-                    prevTfs.tfs = {...prevTfs.tfs,...gripperFramesFromValue(tempGripperState)};
-                    prevTfs.time = currentTime+timeOffset;
+                for (let timeOffset of range(0, duration, 100)) {
+                    const tempGripperState = gripperState + chunk.parameters.speed * timeOffset / 1000 * direction;
+                    prevTfs.tfs = { ...prevTfs.tfs, ...gripperFramesFromValue(tempGripperState) };
+                    prevTfs.time = currentTime + timeOffset;
                     steps.push(prevTfs)
                     prevTfs = lodash.cloneDeep(steps[steps.length - 1]);
                 }
                 if (direction === -1) {
-                    activePlaceholders.forEach(placeholder=>{
+                    activePlaceholders.forEach(placeholder => {
                         //const {distance, angle} = poseDiff(prevTfs[placeholder],prevTfs['simulated_tool0']);
                         const distance = 0;
                         const angle = 0.2;
@@ -784,7 +838,7 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 machineProcessing[chunk.parameters.machine_uuid.uuid] = chunk.parameters.machine_uuid.process_time;
             } else if (chunk.type === 'node.primitive.machine-primitive.machine-stop.') {
                 const machine = chunk.parameters.machine_uuid;
-                machine.outputData.forEach(outputObj=>{
+                machine.outputData.forEach(outputObj => {
                     prevTfs.tfs[outputObj.placeholder.uuid] = frameFromRegion(outputObj.region)
                     if (!activePlaceholders.includes(outputObj.placeholder.uuid)) {
                         activePlaceholders.push(outputObj.placeholder.uuid)
@@ -797,13 +851,13 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
                 steps.push(prevTfs)
             } else if (chunk.type === 'node.primitive.move-trajectory.') {
                 duration = chunk.parameters.trajectory_uuid.trace.duration * 1000;
-                for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length-1; i++) {
-                    prevTfs.tfs = {...prevTfs.tfs,...robotFramesFromIdx(i,chunk.parameters.trajectory_uuid.trace)};
+                for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length - 1; i++) {
+                    prevTfs.tfs = { ...prevTfs.tfs, ...robotFramesFromIdx(i, chunk.parameters.trajectory_uuid.trace) };
                     if (carriedPlaceholder) {
                         // Attach the carried object
                         prevTfs.tfs[carriedPlaceholder] = prevTfs.tfs.simulated_tool0
                     }
-                    prevTfs.time = currentTime+chunk.parameters.trajectory_uuid.trace.time_data[i]*1000;
+                    prevTfs.time = currentTime + chunk.parameters.trajectory_uuid.trace.time_data[i] * 1000;
                     steps.push(prevTfs)
                     prevTfs = lodash.cloneDeep(steps[steps.length - 1]);
                 }
@@ -813,7 +867,7 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
             } else if (chunk.type === 'node.primitive.move-unplanned.') {
                 duration = 100;
                 prevTfs.time = prevTfs.time + 100;
-                prevTfs.tfs = {...prevTfs.tfs,...robotFramesFromPose(chunk.parameters.location_uuid)}
+                prevTfs.tfs = { ...prevTfs.tfs, ...robotFramesFromPose(chunk.parameters.location_uuid) }
                 if (carriedPlaceholder) {
                     // Attach the carried object
                     prevTfs.tfs[carriedPlaceholder] = prevTfs.tfs.simulated_tool0
@@ -831,7 +885,7 @@ export function tfAnimationFromExecutable(executable, startingTfs) {
             };
         })
     })
-    steps.push({...lodash.cloneDeep(steps[steps.length - 1]),time:currentTime+1000})
+    steps.push({ ...lodash.cloneDeep(steps[steps.length - 1]), time: currentTime + 1000 })
     return stepsToAnimatedTfs(steps)
 }
 
@@ -841,7 +895,7 @@ function interpolateScalar(x, y) {
         return null
     }
     const interp = (v) => {
-        const val = v > x[x.length - 1] ? v % x[x.length-1] : v;
+        const val = v > x[x.length - 1] ? v % x[x.length - 1] : v;
         let lastIdx = 0;
         for (let i = 0; i < x.length; i++) {
             if (x[i] <= val) {
@@ -881,7 +935,7 @@ export function unFlattenProgramSkills(skills, primitives) {
 export function poseToColor(pose, frame, focused, occupancyZones) {
     let color = { r: 255, g: 255, b: 255, a: focused ? 1 : 0 };
     let pos = pose.refData ? pose.refData.properties.position : pose.properties.position;
-    if (frame === 'safety' && occupancyOverlap(pos,occupancyZones)) {
+    if (frame === 'safety' && occupancyOverlap(pos, occupancyZones)) {
         color.r = 233;
         color.g = 53;
         color.b = 152;
@@ -967,43 +1021,43 @@ export function trajectoryDataToLine(trajectory, locations, waypoints, frame, re
     }
 }
 
-export const machineDataToPlaceholderPreviews = (machine,things,regions) => {
+export const machineDataToPlaceholderPreviews = (machine, things, regions) => {
     let items = {};
-    Object.keys(machine.inputs).forEach(thingType=>{
+    Object.keys(machine.inputs).forEach(thingType => {
         const thingInfo = things[thingType];
-        machine.inputs[thingType].forEach(zoneInfo=>{
+        machine.inputs[thingType].forEach(zoneInfo => {
             const region = regions[zoneInfo.region_uuid];
-            items[thingType+region.uuid] = {
+            items[thingType + region.uuid] = {
                 shape: EVD_MESH_LOOKUP[thingInfo.mesh_id],
                 frame: region.uuid,
-                position: {x:0,y:0,z:0},
-                rotation: {w:1,x:0,y:0,z:0},
-                scale: {x:0.2,y:0.2,z:0.2},
+                position: { x: 0, y: 0, z: 0 },
+                rotation: { w: 1, x: 0, y: 0, z: 0 },
+                scale: { x: 0.2, y: 0.2, z: 0.2 },
                 transformMode: 'inactive',
-                color: {r:200,g:0,b:0,a:0.2},
+                color: { r: 200, g: 0, b: 0, a: 0.2 },
                 highlighted: false,
                 hidden: false,
-                onClick: (_)=>{}
+                onClick: (_) => { }
             }
 
         })
 
     })
-    Object.keys(machine.outputs).forEach(thingType=>{
+    Object.keys(machine.outputs).forEach(thingType => {
         const thingInfo = things[thingType];
-        machine.outputs[thingType].forEach(zoneInfo=>{
+        machine.outputs[thingType].forEach(zoneInfo => {
             const region = regions[zoneInfo.region_uuid];
-            items[thingType+region.uuid] = {
+            items[thingType + region.uuid] = {
                 shape: EVD_MESH_LOOKUP[thingInfo.mesh_id],
                 frame: region.uuid,
-                position: {x:0,y:0,z:0},
-                rotation: {w:1,x:0,y:0,z:0},
-                scale: {x:0.2,y:0.2,z:0.2},
+                position: { x: 0, y: 0, z: 0 },
+                rotation: { w: 1, x: 0, y: 0, z: 0 },
+                scale: { x: 0.2, y: 0.2, z: 0.2 },
                 transformMode: 'inactive',
-                color: {r:0,g:200,b:0,a:0.2},
+                color: { r: 0, g: 200, b: 0, a: 0.2 },
                 highlighted: false,
                 hidden: false,
-                onClick: (_)=>{}
+                onClick: (_) => { }
             }
         })
     })
@@ -1015,11 +1069,11 @@ export const traceToEEPoseScores = (trace) => {
     let scores = [0];
     for (let i = 1; i < trace.frames['tool0'].length; i++) {
         const p1 = trace.frames['tool0'][i][0];
-        const p0 = trace.frames['tool0'][i-1][0];
+        const p0 = trace.frames['tool0'][i - 1][0];
         const q1 = trace.frames['tool0_endpoint'][i][0];
-        const movementVec = new Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]);
-        const directionVec = new Vector3(q1[0]-p1[0],q1[1]-p1[1],q1[2]-p1[2]);
-        scores.push(1000*movementVec.manhattanLength()/Math.pow(Math.E,10*movementVec.angleTo(directionVec)))
+        const movementVec = new Vector3(p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]);
+        const directionVec = new Vector3(q1[0] - p1[0], q1[1] - p1[1], q1[2] - p1[2]);
+        scores.push(1000 * movementVec.manhattanLength() / Math.pow(Math.E, 10 * movementVec.angleTo(directionVec)))
 
     }
     return scores
@@ -1027,8 +1081,8 @@ export const traceToEEPoseScores = (trace) => {
 
 export const traceToVertices = (trace) => {
     let vertices = [];
-    ROBOT_FRAMES.forEach(frame=>{
-        for (let i = 0; i < trace.frames[frame].length; i+=10) {
+    ROBOT_FRAMES.forEach(frame => {
+        for (let i = 0; i < trace.frames[frame].length; i += 10) {
             vertices.push(new Vector3(...trace.frames[frame][i][0]))
         }
     })
@@ -1050,341 +1104,347 @@ https://discourse.threejs.org/t/volume-of-three-buffergeometry/5109
 */
 function getVolume(geometry) {
     if (!geometry.isBufferGeometry) {
-      console.log("'geometry' must be an indexed or non-indexed buffer geometry");
-      return 0;
+        console.log("'geometry' must be an indexed or non-indexed buffer geometry");
+        return 0;
     }
     var isIndexed = geometry.index !== null;
     let position = geometry.attributes.position;
     let sum = 0;
     let p1 = new Vector3(),
-      p2 = new Vector3(),
-      p3 = new Vector3();
+        p2 = new Vector3(),
+        p3 = new Vector3();
     if (!isIndexed) {
-      let faces = position.count / 3;
-      for (let i = 0; i < faces; i++) {
-        p1.fromBufferAttribute(position, i * 3 + 0);
-        p2.fromBufferAttribute(position, i * 3 + 1);
-        p3.fromBufferAttribute(position, i * 3 + 2);
-        sum += signedVolumeOfTriangle(p1, p2, p3);
-      }
+        let faces = position.count / 3;
+        for (let i = 0; i < faces; i++) {
+            p1.fromBufferAttribute(position, i * 3 + 0);
+            p2.fromBufferAttribute(position, i * 3 + 1);
+            p3.fromBufferAttribute(position, i * 3 + 2);
+            sum += signedVolumeOfTriangle(p1, p2, p3);
+        }
     }
     else {
-      let index = geometry.index;
-      let faces = index.count / 3;
-      for (let i = 0; i < faces; i++){
-        p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
-        p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
-        p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
-        sum += signedVolumeOfTriangle(p1, p2, p3);
-      }
+        let index = geometry.index;
+        let faces = index.count / 3;
+        for (let i = 0; i < faces; i++) {
+            p1.fromBufferAttribute(position, index.array[i * 3 + 0]);
+            p2.fromBufferAttribute(position, index.array[i * 3 + 1]);
+            p3.fromBufferAttribute(position, index.array[i * 3 + 2]);
+            sum += signedVolumeOfTriangle(p1, p2, p3);
+        }
     }
     return sum;
-  }
+}
 
-  function signedVolumeOfTriangle(p1, p2, p3) {
+function signedVolumeOfTriangle(p1, p2, p3) {
     return p1.dot(p2.cross(p3)) / 6.0;
-  }
+}
 
-  export function idleTimeEstimate(unrolled){
+export function idleTimeEstimate(unrolled) {
     let delay = 0;
     let gripperStart = 50;
     let gripperEnd = null;
     let first = true;
     let tasks = [];
-    if (unrolled === undefined || unrolled === null){
+    if (unrolled === undefined || unrolled === null) {
         return 0;
-    }else{
-        Object.values(unrolled).forEach(primitive=>{
+    } else {
+        Object.values(unrolled).forEach(primitive => {
             //console.log(primitive);
-            if (primitive.type === 'node.primitive.breakpoint.' ){
-               return delay;
+            if (primitive.type === 'node.primitive.breakpoint.') {
+                return delay;
 
-            }else if(primitive.type === 'node.primitive.delay.'){
-                if (tasks.length === 0){
-                    delay += primitive.parameters.duration ;
-                }else{
+            } else if (primitive.type === 'node.primitive.delay.') {
+                if (tasks.length === 0) {
+                    delay += primitive.parameters.duration;
+                } else {
                     let assigned = false;
                     let i = 0;
                     let waiting = false;
-                    while (assigned === false && i < tasks.length){
-                        if (tasks[i].status === 'started'){
-                            tasks[i].timeTaken += primitive.parameters.duration ;
-                            delay += primitive.parameters.duration ;
+                    while (assigned === false && i < tasks.length) {
+                        if (tasks[i].status === 'started') {
+                            tasks[i].timeTaken += primitive.parameters.duration;
+                            delay += primitive.parameters.duration;
                             assigned = true;
-                        }else if (tasks[i].status === 'waiting'){
+                        } else if (tasks[i].status === 'waiting') {
                             waiting = true;
                             assigned = true;
-                        }else{
+                        } else {
                             i += 1;
                         }
                     }
-                    if (i === tasks.length || waiting === false){                           
-                        delay += primitive.parameters.duration ;                            
+                    if (i === tasks.length || waiting === false) {
+                        delay += primitive.parameters.duration;
                     }
                 }
 
 
-            }else if (primitive.type ==='node.primitive.gripper.'){
-                if (tasks.length === 0){
-                    if (first === true){
+            } else if (primitive.type === 'node.primitive.gripper.') {
+                if (tasks.length === 0) {
+                    if (first === true) {
                         //gripperStart = initialTrajectory;
                         gripperEnd = primitive.parameters.position;
                         first = false;
                         //delay += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                         gripperStart = primitive.parameters.position;
-                        
-                    }else{
+
+                    } else {
                         gripperEnd = primitive.parameters.position;
                         //delay += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                         gripperStart = primitive.parameters.position;
-                    }  
-                }else{  
+                    }
+                } else {
                     let assigned = false;
                     let i = 0;
                     let waiting = false;
-                    while (assigned === false && i < tasks.length){
-                        if (tasks[i].status === 'started'){
-                            if (first === true){
+                    while (assigned === false && i < tasks.length) {
+                        if (tasks[i].status === 'started') {
+                            if (first === true) {
                                 //gripperStart = initialTrajectory;
                                 gripperEnd = primitive.parameters.position;
                                 first = false;
                                 //delay += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
-                                gripperStart = primitive.parameters.position; 
+                                gripperStart = primitive.parameters.position;
                                 tasks[i].timeTaken += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
-                                
-                            }else{
+
+                            } else {
                                 gripperEnd = primitive.parameters.position;
                                 //delay += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                                 gripperStart = primitive.parameters.position;
                                 tasks[i].timeTaken += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
-                            }  
+                            }
                             assigned = true;
-                        }else if (tasks[i].status === 'waiting'){
+                        } else if (tasks[i].status === 'waiting') {
                             waiting = true;
                             assigned = true;
-                        }else{
+                        } else {
                             i += 1;
                         }
                     }
-                    if (i === tasks.length || waiting === false){
+                    if (i === tasks.length || waiting === false) {
                         gripperEnd = primitive.parameters.position;
                         //delay += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                         gripperStart = primitive.parameters.position;
                     }
-                }           
-            }else if (primitive.type === 'node.primitive.move-trajectory.'){
-                if (primitive.trajectory_uuid === null){
+                }
+            } else if (primitive.type === 'node.primitive.move-trajectory.') {
+                if (primitive.trajectory_uuid === null) {
                     delay += 0;
-                }else {
-                    if (tasks.length === 0){
-                        delay += primitive.parameters.trajectory_uuid.trace.duration ;
-                    }else{
+                } else {
+                    if (tasks.length === 0) {
+                        delay += primitive.parameters.trajectory_uuid.trace.duration;
+                    } else {
                         let assigned = false;
                         let i = 0;
                         let waiting = true;
-                        while (assigned === false && i < tasks.length){
-                            if (tasks[i].status === 'started'){
-                                tasks[i].timeTaken += primitive.parameters.trajectory_uuid.trace.duration ;
+                        while (assigned === false && i < tasks.length) {
+                            if (tasks[i].status === 'started') {
+                                tasks[i].timeTaken += primitive.parameters.trajectory_uuid.trace.duration;
                                 //delay += primitive.parameters.trajectory_uuid.trace.duration ;
                                 assigned = true;
-                            }else if (tasks[i].status === 'waiting'){
+                            } else if (tasks[i].status === 'waiting') {
                                 waiting = true;
                                 assigned = true;
-                            }else{
+                            } else {
                                 i += 1;
                             }
                         }
-                        if (i === tasks.length || waiting === false){                           
-                           // delay += primitive.parameters.trajectory_uuid.trace.duration ;                            
+                        if (i === tasks.length || waiting === false) {
+                            // delay += primitive.parameters.trajectory_uuid.trace.duration ;                            
                         }
                     }
                 }
-                }else if (primitive.type === 'node.primitive.machine-primitive.machine-start.' ){
-                tasks.push({'machineUUID' : primitive.parameters.machine_uuid.uuid, 
-                           'status' : 'started', 'processTime' :primitive.parameters.machine_uuid.process_time, 'timeTaken': 0 });
-                
-            }else if(primitive.type === 'node.primitive.machine-primitive.machine-wait.'){
-                if (tasks.length === 0){
+            } else if (primitive.type === 'node.primitive.machine-primitive.machine-start.') {
+                tasks.push({
+                    'machineUUID': primitive.parameters.machine_uuid.uuid,
+                    'status': 'started', 'processTime': primitive.parameters.machine_uuid.process_time, 'timeTaken': 0
+                });
+
+            } else if (primitive.type === 'node.primitive.machine-primitive.machine-wait.') {
+                if (tasks.length === 0) {
                     // console.log("this might be an error");
-                }else{
-                   
-                    tasks.forEach((task) => 
-                    {   
-                        
-                        if (primitive.parameters.machine_uuid.uuid === task.machineUUID &&task.status === 'started') {
-                            delay +=  task.processTime - task.timeTaken;
+                } else {
+
+                    tasks.forEach((task) => {
+
+                        if (primitive.parameters.machine_uuid.uuid === task.machineUUID && task.status === 'started') {
+                            delay += task.processTime - task.timeTaken;
                             //console.log(duration);
                             task.timeTaken += task.processTime - task.timeTaken;
                             // console.log(task.timeTaken);    
                             task.status = 'waiting';
-                            
+
                         }
                     })
                 }
-            }else if (primitive.type ===  'node.primitive.machine-primitive.machine-stop.'){
-                tasks.forEach((task) => {if (primitive.parameters.machine_uuid.uuid === task.machineUUID) task.status = 'stopped'} ); 
+            } else if (primitive.type === 'node.primitive.machine-primitive.machine-stop.') {
+                tasks.forEach((task) => { if (primitive.parameters.machine_uuid.uuid === task.machineUUID) task.status = 'stopped' });
             }
         });
 
-        tasks.forEach((task) => {if (task.status === 'closed'){
+        tasks.forEach((task) => {
+            if (task.status === 'closed') {
 
-        }})
+            }
+        })
         return delay;
-    }   
+    }
 }
 
-export function durationEstimate(unrolled){
+export function durationEstimate(unrolled) {
     let duration = 0;
     let gripperStart = 50;
     let gripperEnd = null;
     let first = true;
     let tasks = [];
     // console.log("this is :" + unrolled);
-    if (unrolled === undefined || unrolled === null){
+    if (unrolled === undefined || unrolled === null) {
         return 0;
-    }else{
-        Object.values(unrolled).forEach(primitive=>{
+    } else {
+        Object.values(unrolled).forEach(primitive => {
             //console.log(primitive);
-            if (primitive.type === 'node.primitive.breakpoint.' ){
-               return duration;
+            if (primitive.type === 'node.primitive.breakpoint.') {
+                return duration;
 
-            }else if(primitive.type === 'node.primitive.delay.'){
-                if (tasks.length === 0){
-                    duration += primitive.parameters.duration ;
-                }else{
+            } else if (primitive.type === 'node.primitive.delay.') {
+                if (tasks.length === 0) {
+                    duration += primitive.parameters.duration;
+                } else {
                     let assigned = false;
                     let i = 0;
                     let waiting = false;
-                    while (assigned === false && i < tasks.length){
-                        if (tasks[i].status === 'started'){
-                            tasks[i].timeTaken += primitive.parameters.duration ;
-                            duration += primitive.parameters.duration ;
+                    while (assigned === false && i < tasks.length) {
+                        if (tasks[i].status === 'started') {
+                            tasks[i].timeTaken += primitive.parameters.duration;
+                            duration += primitive.parameters.duration;
                             assigned = true;
-                        }else if (tasks[i].status === 'waiting'){
+                        } else if (tasks[i].status === 'waiting') {
                             waiting = true;
                             assigned = true;
-                        }else{
+                        } else {
                             i += 1;
                         }
                     }
-                    if (i === tasks.length || waiting === false){                           
-                        duration += primitive.parameters.duration ;                            
+                    if (i === tasks.length || waiting === false) {
+                        duration += primitive.parameters.duration;
                     }
                 }
 
 
-            }else if (primitive.type ==='node.primitive.gripper.'){
-                if (tasks.length === 0){
-                    if (first === true){
+            } else if (primitive.type === 'node.primitive.gripper.') {
+                if (tasks.length === 0) {
+                    if (first === true) {
                         //gripperStart = initialTrajectory;
                         gripperEnd = primitive.parameters.position;
                         first = false;
                         duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                         gripperStart = primitive.parameters.position;
-                        
-                    }else{
+
+                    } else {
                         gripperEnd = primitive.parameters.position;
                         duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                         gripperStart = primitive.parameters.position;
-                    }  
-                }else{
+                    }
+                } else {
                     let assigned = false;
                     let i = 0;
                     let waiting = false;
-                    while (assigned === false && i < tasks.length){
-                        if (tasks[i].status === 'started'){
-                            if (first === true){
+                    while (assigned === false && i < tasks.length) {
+                        if (tasks[i].status === 'started') {
+                            if (first === true) {
                                 //gripperStart = initialTrajectory;
                                 gripperEnd = primitive.parameters.position;
                                 first = false;
                                 duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                                 gripperStart = primitive.parameters.position;
                                 tasks[i].timeTaken += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
-                                
-                            }else{
+
+                            } else {
                                 gripperEnd = primitive.parameters.position;
                                 duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                                 gripperStart = primitive.parameters.position;
                                 tasks[i].timeTaken += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
-                            }  
+                            }
                             assigned = true;
-                        }else if (tasks[i].status === 'waiting'){
+                        } else if (tasks[i].status === 'waiting') {
                             waiting = true;
                             assigned = true;
-                        }else{
+                        } else {
                             i += 1;
                         }
                     }
-                    if (i === tasks.length || waiting === false){
+                    if (i === tasks.length || waiting === false) {
                         gripperEnd = primitive.parameters.position;
                         duration += Math.abs((gripperEnd - gripperStart) / primitive.parameters.speed);
                         gripperStart = primitive.parameters.position;
                     }
-                }           
-            }else if (primitive.type === 'node.primitive.move-trajectory.'){
-                if (primitive.trajectory_uuid === null){
+                }
+            } else if (primitive.type === 'node.primitive.move-trajectory.') {
+                if (primitive.trajectory_uuid === null) {
                     duration += 0;
-                }else {
-                    if (tasks.length === 0){
-                        duration += primitive.parameters.trajectory_uuid.trace.duration ;
-                    }else{
+                } else {
+                    if (tasks.length === 0) {
+                        duration += primitive.parameters.trajectory_uuid.trace.duration;
+                    } else {
                         let assigned = false;
                         let i = 0;
                         let waiting = true;
-                        while (assigned === false && i < tasks.length){
-                            if (tasks[i].status === 'started'){
-                                tasks[i].timeTaken += primitive.parameters.trajectory_uuid.trace.duration ;
-                                duration += primitive.parameters.trajectory_uuid.trace.duration ;
+                        while (assigned === false && i < tasks.length) {
+                            if (tasks[i].status === 'started') {
+                                tasks[i].timeTaken += primitive.parameters.trajectory_uuid.trace.duration;
+                                duration += primitive.parameters.trajectory_uuid.trace.duration;
                                 assigned = true;
-                            }else if (tasks[i].status === 'waiting'){
+                            } else if (tasks[i].status === 'waiting') {
                                 waiting = true;
                                 assigned = true;
-                            }else{
+                            } else {
                                 i += 1;
                             }
                         }
-                        if (i === tasks.length || waiting === false){                           
-                            duration += primitive.parameters.trajectory_uuid.trace.duration ;                            
+                        if (i === tasks.length || waiting === false) {
+                            duration += primitive.parameters.trajectory_uuid.trace.duration;
                         }
                     }
                 }
-                }else if (primitive.type === 'node.primitive.machine-primitive.machine-start.' ){
-                tasks.push({'machineUUID' : primitive.parameters.machine_uuid.uuid, 
-                           'status' : 'started', 'processTime' :primitive.parameters.machine_uuid.process_time, 'timeTaken': 0 });
-                
-            }else if(primitive.type === 'node.primitive.machine-primitive.machine-wait.'){
-                if (tasks.length === 0){
+            } else if (primitive.type === 'node.primitive.machine-primitive.machine-start.') {
+                tasks.push({
+                    'machineUUID': primitive.parameters.machine_uuid.uuid,
+                    'status': 'started', 'processTime': primitive.parameters.machine_uuid.process_time, 'timeTaken': 0
+                });
+
+            } else if (primitive.type === 'node.primitive.machine-primitive.machine-wait.') {
+                if (tasks.length === 0) {
                     // console.log("this might be an error");
-                }else{
-                   
-                    tasks.forEach((task) => 
-                    {   
-                        
-                        if (primitive.parameters.machine_uuid.uuid === task.machineUUID &&task.status === 'started') {
-                            duration +=  task.processTime - task.timeTaken;
+                } else {
+
+                    tasks.forEach((task) => {
+
+                        if (primitive.parameters.machine_uuid.uuid === task.machineUUID && task.status === 'started') {
+                            duration += task.processTime - task.timeTaken;
                             // console.log(duration);
                             task.timeTaken += task.processTime - task.timeTaken;
                             // console.log(task.timeTaken);    
                             task.status = 'waiting';
-                            
+
                         }
                     })
                 }
-            }else if (primitive.type ===  'node.primitive.machine-primitive.machine-stop.'){
-                tasks.forEach((task) => {if (primitive.parameters.machine_uuid.uuid === task.machineUUID) task.status = 'stopped'} ); 
+            } else if (primitive.type === 'node.primitive.machine-primitive.machine-stop.') {
+                tasks.forEach((task) => { if (primitive.parameters.machine_uuid.uuid === task.machineUUID) task.status = 'stopped' });
             }
         });
 
-        tasks.forEach((task) => {if (task.status === 'closed'){
+        tasks.forEach((task) => {
+            if (task.status === 'closed') {
 
-        }})
+            }
+        })
         return duration;
     }
 }
 
 function distanceBetween(p1, p2) {
     return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-  }
+}
 
 function isViewRect(entry) {
     return 'top' in entry;
@@ -1395,26 +1455,26 @@ function cornersOfRectangle(
     left = rect.offsetLeft,
     top = rect.offsetTop,
     transform
-  ) {
+) {
     return [
-      {
-        x: left - (transform.x) / transform.zoom,
-        y: top - (transform.y) / transform.zoom,
-      },
-      {
-        x: left + (rect.width - transform.x) / transform.zoom,
-        y: top - (transform.y) / transform.zoom,
-      },
-      {
-        x: left - (transform.x) / transform.zoom,
-        y: top + (rect.height - transform.y) / transform.zoom,
-      },
-      {
-        x: left + (rect.width - transform.x) / transform.zoom,
-        y: top + (rect.height - transform.y) / transform.zoom,
-      },
+        {
+            x: left - (transform.x) / transform.zoom,
+            y: top - (transform.y) / transform.zoom,
+        },
+        {
+            x: left + (rect.width - transform.x) / transform.zoom,
+            y: top - (transform.y) / transform.zoom,
+        },
+        {
+            x: left - (transform.x) / transform.zoom,
+            y: top + (rect.height - transform.y) / transform.zoom,
+        },
+        {
+            x: left + (rect.width - transform.x) / transform.zoom,
+            y: top + (rect.height - transform.y) / transform.zoom,
+        },
     ];
-  }
+}
 
 
 
@@ -1422,39 +1482,39 @@ export const thresholdedClosestCorners = ({
     collisionRect,
     droppableContainers,
     editorTransform,
-  }) => {
+}) => {
     //console.log(editorTransform)
     let minDistanceToCorners = Infinity;
     let minDistanceContainer = null;
     const corners = cornersOfRectangle(
-      collisionRect,
-      collisionRect.left,
-      collisionRect.top,
-      editorTransform
+        collisionRect,
+        collisionRect.left,
+        collisionRect.top,
+        editorTransform
     );
-  
+
     for (const droppableContainer of droppableContainers) {
-      const {
-        rect: {current: rect},
-      } = droppableContainer;
-  
-      if (rect) {
-        const rectCorners = cornersOfRectangle(
-          rect,
-          isViewRect(rect) ? rect.left : undefined,
-          isViewRect(rect) ? rect.top : undefined,
-          {x:0,y:0,zoom:1}
-        );
-        const distances = corners.reduce((accumulator, corner, index) => {
-          return accumulator + distanceBetween(rectCorners[index], corner);
-        }, 0);
-        const effectiveDistance = Number((distances / 4).toFixed(4));
-  
-        if (effectiveDistance < minDistanceToCorners) {
-          minDistanceToCorners = effectiveDistance;
-          minDistanceContainer = droppableContainer.id;
+        const {
+            rect: { current: rect },
+        } = droppableContainer;
+
+        if (rect) {
+            const rectCorners = cornersOfRectangle(
+                rect,
+                isViewRect(rect) ? rect.left : undefined,
+                isViewRect(rect) ? rect.top : undefined,
+                { x: 0, y: 0, zoom: 1 }
+            );
+            const distances = corners.reduce((accumulator, corner, index) => {
+                return accumulator + distanceBetween(rectCorners[index], corner);
+            }, 0);
+            const effectiveDistance = Number((distances / 4).toFixed(4));
+
+            if (effectiveDistance < minDistanceToCorners) {
+                minDistanceToCorners = effectiveDistance;
+                minDistanceContainer = droppableContainer.id;
+            }
         }
-      }
     }
     return minDistanceContainer;
-  };
+};

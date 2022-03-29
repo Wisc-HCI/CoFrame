@@ -34,6 +34,6 @@ export const poseCompiler = ({data, properties, objectTypes, context, path, memo
         }
     }
 
-    const newCompiled = likStateToData(state);
-    return { newCompiled, status }
+    const newCompiled = {status};
+    return newCompiled
 }

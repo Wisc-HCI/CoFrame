@@ -2,6 +2,7 @@ import { STATUS, STEP_TYPE } from "../Constants";
 
 export const gripperMotionCompiler = ({data, path, memo}) => {
     const newCompiled = {
+        status: STATUS.VALID,
         steps: [
             {
                 stepType: STEP_TYPE.ACTION_START,
@@ -17,5 +18,5 @@ export const gripperMotionCompiler = ({data, path, memo}) => {
             }
         ]
     }
-    return { newCompiled, status: STATUS.VALID }
+    return newCompiled
 }
