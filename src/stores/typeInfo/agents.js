@@ -69,7 +69,7 @@ const robotAgentFeatures = {
         type: SIMPLE_PROPERTY_TYPES.STRING,
         default: `<?xml version="1.0" ?><robot name="default_robot"><link name="base_link"/><link name="link1"/><joint name="joint1" type="revolute"><parent link="base_link"/><child link="link1"/><origin rpy="0 0 0" xyz="-0.24365 0 0"/><axis xyz="0 0 1"/><limit effort="28.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="3.141592653589793"/></joint></robot>`
       },
-      compileFn: {default: COMPILE_FUNCTIONS.AGENT},
+      compileFn: {default: COMPILE_FUNCTIONS.ROBOT_AGENT},
       updateFields: {default: ['initialJointState','position','rotation','relativeTo','urdf']}
     }
 }
@@ -94,7 +94,7 @@ const gripperFeatures = {
         default: {}
       },
       compileFn: {default: COMPILE_FUNCTIONS.GRIPPER},
-      updateFields: {default: ['initialGripState','position','rotation','relativeTo']}
+      updateFields: {default: ['initialGripState','position','rotation','relativeTo','gripperIndex','gripperFrames']}
     }
 }
 
@@ -103,7 +103,7 @@ const humanAgentFeatures = {
     properties: {
       description: {default: 'Human Agent'},
       updateFields: {default: ['position','rotation','relativeTo']},
-      compileFn: {default: COMPILE_FUNCTIONS.AGENT},
+      compileFn: {default: COMPILE_FUNCTIONS.HUMAN_AGENT},
     }
 }
 

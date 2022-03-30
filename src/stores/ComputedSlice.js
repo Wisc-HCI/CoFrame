@@ -205,7 +205,7 @@ export const computedSlice = (state) => {
             }
 
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
-        } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType') {
+        } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType' || entry.type === 'gripperType') {
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,

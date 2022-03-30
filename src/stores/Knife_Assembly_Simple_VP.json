@@ -43,7 +43,7 @@
     "canEdit": true,
     "properties": {
       "description": "The gripper of the robot. This specific model is a Robotiq 2F-85, meaning it has two fingers and has a grip range of 0 and 85 mmm.",
-      "initialGripState": 50,
+      "initialGripState": 30,
       "gripperIndex": [
         85, 80.75, 76.5, 72.25, 68, 63.75, 59.5, 55.25, 51, 46.75, 42.5, 38.25,
         34, 29.75, 25.5, 21.25, 17, 12.75, 8.5, 4.25, 0
@@ -1735,7 +1735,7 @@
         "rotation",
         "relativeTo"
       ],
-      "position": { "x": 0, "y": 0, "z": 0.38 },
+      "position": { "x": 0, "y": 0, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "wrist_3_link",
       "status": 0,
@@ -2691,38 +2691,6 @@
       "highlighted": false
     }
   },
-  "simulatedTool0": {
-    "id": "simulatedTool0",
-    "name": "Simulated Tool 0",
-    "type": "linkType",
-    "dataType": 0,
-    "canDelete": false,
-    "canEdit": true,
-    "selected": false,
-    "editing": false,
-    "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
-      "collision": "",
-      "compileFn": 12,
-      "updateFields": ["position", "rotation", "relativeTo", "agent"],
-      "description": "",
-      "position": {
-        "x": 0.11666648089885712,
-        "y": 0.2694645017385483,
-        "z": 0.6366749751567841
-      },
-      "rotation": {
-        "w": -0.37005797028541565,
-        "x": 0.9280606508255005,
-        "y": -0.01538957841694355,
-        "z": 0.039035625755786896
-      },
-      "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
-      "mesh": null,
-      "status": 0,
-      "compiled": {}
-    }
-  },
   "base_link": {
     "id": "base_link",
     "name": "Robot Base",
@@ -2938,8 +2906,8 @@
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
   },
-  "gripperBaseLink": {
-    "id": "gripperBaseLink",
+  "robotiq_85_base_link": {
+    "id": "robotiq_85_base_link",
     "name": "Gripper Base",
     "type": "linkType",
     "dataType": 0,
@@ -2948,21 +2916,21 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": 0, "y": 0, "z": 0 },
       "rotation": { "w": 0.5, "x": 0.5, "y": -0.5, "z": 0.5 },
-      "relativeTo": "simulatedTool0",
+      "relativeTo": "gripper-robotiq",
       "mesh": "gripperBaseLinkMesh",
       "status": 0,
       "compiled": {}
     }
   },
-  "gripperLeftKnuckle": {
-    "id": "gripperLeftKnuckle",
+  "robotiq_85_left_knuckle_link": {
+    "id": "robotiq_85_left_knuckle_link",
     "name": "Gripper Left Knuckle",
     "type": "linkType",
     "dataType": 0,
@@ -2971,21 +2939,21 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": 0.05490451627, "y": 0.03060114443, "z": 0 },
       "rotation": { "w": 0, "x": 1, "y": 0, "z": 0 },
-      "relativeTo": "gripperBaseLink",
+      "relativeTo": "robotiq_85_base_link",
       "mesh": "gripperLeftKnuckleMesh",
       "status": 0,
       "compiled": {}
     }
   },
-  "gripperRightKnuckle": {
-    "id": "gripperRightKnuckle",
+  "robotiq_85_right_knuckle_link": {
+    "id": "robotiq_85_right_knuckle_link",
     "name": "Gripper Right Knuckle",
     "type": "linkType",
     "dataType": 0,
@@ -2994,21 +2962,21 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": 0.05490451627, "y": -0.03060114443, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
-      "relativeTo": "gripperBaseLink",
+      "relativeTo": "robotiq_85_base_link",
       "mesh": "gripperRightKnuckleMesh",
       "status": 0,
       "compiled": {}
     }
   },
-  "gripperLeftFinger": {
-    "id": "gripperLeftFinger",
+  "robotiq_85_left_finger_link": {
+    "id": "robotiq_85_left_finger_link",
     "name": "Gripper Left Finger",
     "type": "linkType",
     "dataType": 0,
@@ -3017,21 +2985,21 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": -0.00408552455, "y": -0.03148604435, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
-      "relativeTo": "gripperLeftKnuckle",
+      "relativeTo": "robotiq_85_left_knuckle_link",
       "mesh": "gripperLeftFingerMesh",
       "status": 0,
       "compiled": {}
     }
   },
-  "gripperRightFinger": {
-    "id": "gripperRightFinger",
+  "robotiq_85_right_finger_link": {
+    "id": "robotiq_85_right_finger_link",
     "name": "Gripper Right Finger",
     "type": "linkType",
     "dataType": 0,
@@ -3040,21 +3008,21 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": -0.00408552455, "y": -0.03148604435, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
-      "relativeTo": "gripperRightKnuckle",
+      "relativeTo": "robotiq_85_right_knuckle_link",
       "mesh": "gripperRightFingerMesh",
       "status": 0,
       "compiled": {}
     }
   },
-  "gripperLeftInnerKnuckle": {
-    "id": "gripperLeftInnerKnuckle",
+  "robotiq_85_left_inner_knuckle_link": {
+    "id": "robotiq_85_left_inner_knuckle_link",
     "name": "Gripper Left Inner Knuckle",
     "type": "linkType",
     "dataType": 0,
@@ -3063,21 +3031,21 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": 0.06142, "y": 0.0127, "z": 0 },
       "rotation": { "w": 0, "x": 1, "y": 0, "z": 0 },
-      "relativeTo": "gripperBaseLink",
+      "relativeTo": "robotiq_85_base_link",
       "mesh": "gripperLeftInnerKnuckleMesh",
       "status": 0,
       "compiled": {}
     }
   },
-  "gripperRightInnerKnuckle": {
-    "id": "gripperRightInnerKnuckle",
+  "robotiq_85_right_inner_knuckle_link": {
+    "id": "robotiq_85_right_inner_knuckle_link",
     "name": "Gripper Right Inner Knuckle",
     "type": "linkType",
     "dataType": 0,
@@ -3086,21 +3054,21 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": 0.06142, "y": -0.0127, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
-      "relativeTo": "gripperBaseLink",
+      "relativeTo": "robotiq_85_base_link",
       "mesh": "gripperRightInnerKnuckleMesh",
       "status": 0,
       "compiled": {}
     }
   },
-  "gripperLeftFingerTip": {
-    "id": "gripperLeftFingerTip",
+  "robotiq_85_left_finger_tip_link": {
+    "id": "robotiq_85_left_finger_tip_link",
     "name": "Gripper Left Finger Tip",
     "type": "linkType",
     "dataType": 0,
@@ -3109,21 +3077,21 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": 0.04303959807, "y": -0.03759940821, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
-      "relativeTo": "gripperLeftInnerKnuckle",
+      "relativeTo": "robotiq_85_left_inner_knuckle_link",
       "mesh": "gripperLeftFingerTipMesh",
       "status": 0,
       "compiled": {}
     }
   },
-  "gripperRightFingerTip": {
-    "id": "gripperRightFingerTip",
+  "robotiq_85_right_finger_tip_link": {
+    "id": "robotiq_85_right_finger_tip_link",
     "name": "Gripper Right Finger Tip",
     "type": "linkType",
     "dataType": 0,
@@ -3132,14 +3100,14 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "agent": "gripper-robotiq",
       "collision": "",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
       "position": { "x": 0.04303959807, "y": -0.03759940821, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
-      "relativeTo": "gripperRightInnerKnuckle",
+      "relativeTo": "robotiq_85_right_inner_knuckle_link",
       "mesh": "gripperRightFingerTipMesh",
       "status": 0,
       "compiled": {}

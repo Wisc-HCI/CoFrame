@@ -9,16 +9,17 @@ export const COMPILE_FUNCTIONS = {
     SIMPLE: 1,
     MACHINE: 2,
     DELAY: 3,
-    PROCESS: 4,
-    SKILL: 5,
-    POSE: 6,
-    GRIPPER_MOTION: 7,
+    BREAK: 4,
+    PROCESS: 5,
+    SKILL: 6,
+    POSE: 7,
     ROBOT_MOTION: 8,
-    BREAK: 9,
-    AGENT: 10,
-    GRIPPER: 11,
-    LINK: 12,
-    PROPERTY: 13
+    GRIPPER_MOTION: 9,
+    ROBOT_AGENT: 10,
+    HUMAN_AGENT: 11,
+    GRIPPER: 12,
+    LINK: 13,
+    PROPERTY: 14
 }
 
 export const STEP_TYPE = {
@@ -42,4 +43,4 @@ export const TIMELINE_TYPES = ['programType', 'skillType', 'hierarchicalType',
                         'processWaitType', 'processStopType', 'moveTrajectoryType',
                         'robotInitType'
                     ]
-export const REFERENCEABLE_OBJECTS = ["machineType", "fixtureType", "linkType", "toolType", "robotAgentType", "humanAgentType"];
+export const REFERENCEABLE_OBJECTS = ["machineType", "fixtureType", "linkType", "toolType", "robotAgentType", "humanAgentType", 'gripperType'];

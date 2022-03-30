@@ -11,10 +11,14 @@ const ROOT_BOUNDS = [
 ]
 
 const PREPROCESS_TYPES = [
+    'linkType',
+    'robotAgentType',
+    'gripperType'
+]
+
+const POSTPROCESS_TYPES = [
     'waypointType',
     'locationType',
-    'linkType',
-    'robotAgentType'
 ]
 
 const INITIAL_STATE = [
@@ -85,16 +89,7 @@ const performCompileProcess = async (data) => {
     })
 
     // TODO: define scene based on the scene item instances
-    const scene = {}
     const worldModel = createEnvironmentModel(programData)
-    console.log(worldModel)
-
-    // Create the solver
-    // const solver = new module.Solver(urdf,[
-    //     {type:'PositionMatch',name:"EE Position",link:"wrist_3_link",weight:50},
-    //     {type:'OrientationMatch',name:"EE Rotation",link:"wrist_3_link",weight:25},
-    //     {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
-    //   ],ROOT_BOUNDS, createStaticEnvironment(scene), null, false, 1, 450);
 
     // First, preprocess certain types:
     let memo = {};
@@ -102,7 +97,7 @@ const performCompileProcess = async (data) => {
     Object.values(programData)
         .filter(v=>PREPROCESS_TYPES.includes(v.type) && v.dataType === DATA_TYPES.INSTANCE)
         .forEach(data=>{
-            console.log('preprocessing',data)
+            // console.log('preprocessing',data)
             const computeProps = {
                 data,
                 objectTypes,
@@ -113,10 +108,9 @@ const performCompileProcess = async (data) => {
                 worldModel
             }
             const {memo:newMemo} = handleUpdate(computeProps)
+            // console.log(newMemo)
             memo = {...memo,...newMemo}
     })
-
-    console.log(memo)
 
     // This is recursive
     const computeProps = {
@@ -131,6 +125,23 @@ const performCompileProcess = async (data) => {
     const {memo:newMemo} = handleUpdate(computeProps)
 
     memo = {...memo,...newMemo}
+
+    // Snag any instances which were not directly accessible that may need to be processed.
+    Object.values(programData)
+        .filter(v=>POSTPROCESS_TYPES.includes(v.type) && v.dataType === DATA_TYPES.INSTANCE)
+        .forEach(data=>{
+            const computeProps = {
+                data,
+                objectTypes,
+                context:programData,
+                path:JSON.stringify(pathRoot),
+                memo,
+                module,
+                worldModel
+            }
+            const {memo:newMemo} = handleUpdate(computeProps)
+            memo = {...memo,...newMemo}
+    })
   
     return memo;
 }

@@ -86,7 +86,7 @@ export const PINCH_POINT_FIELDS = {
 
 export const queryWorldPose = (model, ref) => {
     const referenceFeature = model[ref];
-    console.log('REF FEATURE', { ref, referenceFeature });
+    // console.log('REF FEATURE', { ref, referenceFeature });
     const matrixWorld = referenceFeature.matrixWorld;
     let position = referenceFeature.getWorldPosition(new Vector3());
     let rotation = referenceFeature.getWorldQuaternion(new Quaternion());
@@ -162,7 +162,7 @@ export const createEnvironmentModel = (programData) => {
 
 export const likFramesToTransforms = (frames, model, frame) => {
     const relativeFrameId = frame ? frame : 'world';
-    console.log({frames,model,frame})
+    // console.log({frames,model,frame})
     const linkTransforms = lodash.mapValues(frames, (frameData) => {
         const poseWorld = {
             position: {
@@ -187,14 +187,14 @@ export const likFramesToTransforms = (frames, model, frame) => {
 }
 
 export const likStateToData = (state, model, frame) => {
-    console.log('PRE-PARSED STATE DATA',state);
-    console.log({frames:state.frames,model,frame})
+    // console.log('PRE-PARSED STATE DATA',state);
+    // console.log({frames:state.frames,model,frame})
     const data = {
         joints: state.joints,
         links: likFramesToTransforms(state.frames, model, frame),
         proximity: state.proximity,
     }
-    console.log('PARSED STATE DATA',data)
+    // console.log('PARSED STATE DATA',data)
     return data
 }
 
@@ -493,15 +493,16 @@ export function executablePrimitives(state) {
 
 }
 
-const findLastSatisfiedFromReference = (x, fn) => {
-    let lastIdx = 0;
-    for (let i = 0; i < x.length; i++) {
-        if (fn(x[i])) {
+export const findLastSatisfiedFromReference = (x, fn) => {
+    let lastIdx = x.length - 1;
+    x.some((v,i)=>{
+        if (fn(v)) {
             lastIdx = i
+            return false
         } else {
-            break
+            return true
         }
-    }
+    })
     return lastIdx
 }
 

@@ -1,7 +1,7 @@
 import { STATUS } from "../Constants";
 import { likStateToData, createStaticEnvironment, queryWorldPose, quaternionLog } from "../helpers";
 
-export const agentCompiler = ({data, properties, module, worldModel}) => {
+export const robotAgentCompiler = ({data, properties, module, worldModel}) => {
     const basePose = queryWorldPose(worldModel,data.id);
     const quatLog = quaternionLog(basePose.rotation)
     const rootBounds = [
@@ -12,7 +12,7 @@ export const agentCompiler = ({data, properties, module, worldModel}) => {
         translation:[basePose.position.x,basePose.position.y,basePose.position.z],
         rotation:[basePose.rotation.x,basePose.rotation.y,basePose.rotation.z,basePose.rotation.w]
     }
-    console.log(properties.urdf)
+    // console.log(properties.urdf)
     const fwdsolver = new module.Solver(properties.urdf,[],rootBounds, createStaticEnvironment(worldModel), {origin, joints:properties.initialJointState}, false, 1, 450);
     const newCompiled = likStateToData(fwdsolver.currentState,worldModel,data.id);
     return { ...newCompiled, status: STATUS.VALID }

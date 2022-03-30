@@ -61,9 +61,10 @@ export const EvdSlice = (set, get) => ({
     const newData = lodash.mapValues(data, d => {
       if (d.dataType === DATA_TYPES.INSTANCE) {
         const defaultv = instanceTemplateFromSpec(d.type, state.programSpec.objectTypes[d.type], false);
-        return {...d,properties:{...defaultv.properties,...d.properties}};
+        return {...d,properties:{...defaultv.properties,...lodash.omit(d.properties,['status','compiled','compileFn','updateFields'])}};
       } else { return d }
     })
+    console.log(newData)
     state.programData = newData
   }),
   // setData: (data) => set((_) => ({ programData: data})),

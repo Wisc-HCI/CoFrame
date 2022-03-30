@@ -8,27 +8,32 @@ import { robotMotionCompiler } from './robotMotion';
 import { simpleCompiler } from './simple';
 import { skillCompiler } from './skill';
 import { breakCompiler } from "./break";
-import { agentCompiler } from "./agent";
+import { robotAgentCompiler } from "./robotAgent";
+import { humanAgentCompiler } from "./humanAgent";
 import { linkCompiler } from "./link";
 import { propertyCompiler } from "./property";
 import lodash from 'lodash';
 import { COMPILE_FUNCTIONS, STATUS } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
+import { gripperCompiler } from "./gripper";
 
 const KEY_MAPPING = {
     NULL: nullCompiler,
     SIMPLE: simpleCompiler,
     MACHINE: machineCompiler,
     DELAY: delayCompiler,
+    BREAK: breakCompiler,
     PROCESS: processCompiler,
     SKILL: skillCompiler,
     POSE: poseCompiler,
-    GRIPPER: gripperMotionCompiler,
     ROBOT_MOTION: robotMotionCompiler,
-    BREAK: breakCompiler,
-    AGENT: agentCompiler,
+    GRIPPER_MOTION: gripperMotionCompiler,
+    ROBOT_AGENT: robotAgentCompiler,
+    HUMAN_AGENT: humanAgentCompiler,
+    GRIPPER: gripperCompiler,
     LINK: linkCompiler,
     PROPERTY: propertyCompiler
+
 }
 // Ordering corresponds to the values in the COMPILE_FUNCTIONS constant
 
@@ -130,7 +135,7 @@ export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 // Copies data from a memo into the specified node.
 // Returns standard changes, which will need to be propagated back up.
 const copyMemoizedData = (memoizedData, data, path) => {
-    console.warn('copying memoized version of ', data)
+    // console.warn('copying memoized version of ', data)
     return [
         memoizedData, // memoizedData
         memoizedData.properties.compiled[path].status, // status
@@ -142,10 +147,10 @@ const copyMemoizedData = (memoizedData, data, path) => {
 // Copies data into memoized data.
 // Returns standard changes, which will need to be propagated back up.
 const updateMemoizedData = (memoizedData, data, path) => {
-    console.warn('updating memoized version of ', data);
-    let newMemoizedData = lodash.merge({properties:{compiled:{[path]:{}}}},memoizedData);
+    // console.warn('updating memoized version of ', data);
+    let newMemoizedData = lodash.merge({ properties: { compiled: { [path]: {} } } }, memoizedData);
     const pastCompiled = data.properties.compiled[path];
-    newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path],pastCompiled)
+    newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path], pastCompiled)
     return [
         newMemoizedData, // memoizedData
         pastCompiled.status, // status
@@ -157,17 +162,17 @@ const updateMemoizedData = (memoizedData, data, path) => {
 // Computes a new node, given that children have been updated.
 // Returns standard changes, which will need to be propagated back up.
 const performUpdate = (memoizedData, data, properties, objectTypes, context, path, memo, module, worldModel, updateFn) => {
-    console.warn('updating version of ', data);
+    // console.warn('updating version of ', data);
     let newCompiled = updateFn({ data, properties, objectTypes, context, path, memo, module, worldModel });
     // console.log('status',newCompiled.status)
     // console.log('memoizedData',memoizedData)
     // console.log('newCompiled',newCompiled)
-    let newMemoizedData = lodash.merge({properties:{compiled:{[path]:{}}}},memoizedData);
-    newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path],newCompiled)
+    let newMemoizedData = lodash.merge({ properties: { compiled: { [path]: {} } } }, memoizedData);
+    newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path], newCompiled)
     if (newCompiled.otherPropertyUpdates) {
-        console.log('Has other properties, updating...')
+        // console.log('Has other properties, updating...')
         newMemoizedData = lodash.merge(newMemoizedData, { properties: newCompiled.otherPropertyUpdates });
-        console.log('New with updates:',newMemoizedData)
+        // console.log('New with updates:', newMemoizedData)
     }
     // console.log(newMemoizedData)
     return [
@@ -187,7 +192,7 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
     let status = STATUS.VALID;
     let updated = false;
     let shouldBreak = false
-    
+
     // First, if the field value is null, return null, with checkign for validity
     if (!fieldValue && !fieldInfo.nullValid) {
         status = STATUS.FAILED
@@ -234,7 +239,7 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
             shouldBreak = true;
         }
         memoizedData = innerMemoizedData;
-        newMemo = lodash.merge(newMemo,innerMemo);
+        newMemo = lodash.merge(newMemo, innerMemo);
     } else {
         memoizedData = fieldValue;
     }
@@ -254,7 +259,7 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
     let shouldBreak = false;
     if (memoizedData.properties?.compiled[path]) {
         // Use the version in the memo
-        [memoizedData, status, updated, shouldBreak] = copyMemoizedData(memoizedData,data,path);
+        [memoizedData, status, updated, shouldBreak] = copyMemoizedData(memoizedData, data, path);
     } else {
         // First, determine whether we need to compute. 
         // If the status is pending, recompute.
@@ -269,7 +274,7 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
             // console.log('checking field', field)
             if (objectTypes[data.type].properties[field].isList) {
                 properties[field] = [];
-                data.properties[field].some(fieldItem=>{
+                data.properties[field].some(fieldItem => {
                     const {
                         memoizedData: innerMemoizedData,
                         memo: innerMemo,
@@ -281,7 +286,7 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
                         objectTypes, context, path, memo, module, worldModel
                     )
                     properties[field].push(innerMemoizedData);
-                    newMemo = lodash.merge(newMemo,innerMemo);
+                    newMemo = lodash.merge(newMemo, innerMemo);
                     if (innerUpdated) {
                         updated = true;
                     };
@@ -306,7 +311,7 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
                     objectTypes, context, path, memo, module, worldModel
                 )
                 properties[field] = innerMemoizedData;
-                newMemo = lodash.merge(newMemo,innerMemo);
+                newMemo = lodash.merge(newMemo, innerMemo);
                 if (innerUpdated) {
                     updated = true
                 };
@@ -320,9 +325,9 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
             }
         })
 
-        if (recompute||updated) {
+        if (recompute || updated) {
             [memoizedData, status, updated, shouldBreak] = performUpdate(
-                memoizedData, data, properties, objectTypes, context, path, 
+                memoizedData, data, properties, objectTypes, context, path,
                 newMemo, module, worldModel, updateFn
             );
             updated = true;
@@ -330,8 +335,8 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
             [memoizedData, status, updated, shouldBreak] = updateMemoizedData(memoizedData, data, path);
         }
     }
-    
-    console.warn(`At the end of processing "${data.id}", status is "${status === STATUS.VALID ? 'VALID' : status === STATUS.PENDING ? 'PENDING' : 'FAILED'}"`)
+
+    // console.warn(`At the end of processing "${data.id}", status is "${status === STATUS.VALID ? 'VALID' : status === STATUS.PENDING ? 'PENDING' : 'FAILED'}"`)
     if (status === STATUS.VALID && (memoizedData.properties.status === undefined || memoizedData.properties.status !== STATUS.FAILED)) {
         // console.warn('SETTING STATUS VALID')
         memoizedData.properties.status = STATUS.VALID
