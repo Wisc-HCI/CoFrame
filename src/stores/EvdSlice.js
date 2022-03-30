@@ -1,6 +1,5 @@
 import { arrayMove, deleteAction } from './helpers';
 import lodash from 'lodash';
-import { urdf } from "./robot";
 // import { FiClipboard, FiBriefcase, FiGrid, FiBox, FiLogOut, FiMoreHorizontal, FiLayers, FiFeather } from "react-icons/fi";
 import { DATA_TYPES, TYPES, EXTRA_TYPES, SIMPLE_PROPERTY_TYPES } from 'simple-vp';
 
@@ -88,7 +87,7 @@ export const EvdSlice = (set, get) => ({
     const workerInstance = new Worker();
     get().updatePlanProcess(null, workerInstance);
     const workerLib = Comlink.wrap(workerInstance);
-    const result = await workerLib.performCompileProcess({ urdf, programData: get().programData, objectTypes: lodash.mapValues(get().programSpec.objectTypes, cleanedObjectType) });
+    const result = await workerLib.performCompileProcess({ programData: get().programData, objectTypes: lodash.mapValues(get().programSpec.objectTypes, cleanedObjectType) });
     console.log(result)
     get().updatePlanProcess(result, null);
   },

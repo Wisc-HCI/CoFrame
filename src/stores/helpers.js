@@ -107,13 +107,12 @@ export const queryWorldPose = (model, ref) => {
 
 export const queryLocalPose = (model, ref, localTransform) => {
     const referenceFeature = model[ref];
-    const matrixWorld = referenceFeature.matrixWorld;
     // create a temporary group to add to that reference;
     const worldPose = new Group();
     worldPose.position.set(localTransform.position.x, localTransform.position.y, localTransform.position.z);
     worldPose.quaternion.set(localTransform.rotation.x, localTransform.rotation.y, localTransform.rotation.z, localTransform.rotation.w)
     referenceFeature.attach(worldPose);
-    return {
+    const local = {
         position: {
             x: worldPose.position.x,
             y: worldPose.position.y,
@@ -127,6 +126,7 @@ export const queryLocalPose = (model, ref, localTransform) => {
         }
     }
     worldPose.removeFromParent();
+    return local
 }
 
 export const createStaticEnvironment = (model) => {

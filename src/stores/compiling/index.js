@@ -58,7 +58,7 @@ export const findInstance = (id, context) => {
 
 export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
-// export const leafLogic = ({ data, objectTypes, context, path, memo, solver, module, urdf, updateFn }) => {
+// export const leafLogic = ({ data, objectTypes, context, path, memo, module, updateFn }) => {
 //     let newCompiled = {};
 //     let updated = false;
 //     let status = STATUS.VALID;
@@ -130,7 +130,7 @@ export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 // Copies data from a memo into the specified node.
 // Returns standard changes, which will need to be propagated back up.
 const copyMemoizedData = (memoizedData, data, path) => {
-    // console.warn('copying memoized version of ', data)
+    console.warn('copying memoized version of ', data)
     return [
         memoizedData, // memoizedData
         memoizedData.properties.compiled[path].status, // status
@@ -142,7 +142,7 @@ const copyMemoizedData = (memoizedData, data, path) => {
 // Copies data into memoized data.
 // Returns standard changes, which will need to be propagated back up.
 const updateMemoizedData = (memoizedData, data, path) => {
-    //console.warn('updating memoized version of ', data.id);
+    console.warn('updating memoized version of ', data);
     let newMemoizedData = lodash.merge({properties:{compiled:{[path]:{}}}},memoizedData);
     const pastCompiled = data.properties.compiled[path];
     newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path],pastCompiled)
@@ -156,16 +156,18 @@ const updateMemoizedData = (memoizedData, data, path) => {
 
 // Computes a new node, given that children have been updated.
 // Returns standard changes, which will need to be propagated back up.
-const performUpdate = (memoizedData, data, properties, objectTypes, context, path, memo, solver, module, urdf, worldModel, updateFn) => {
-    // console.warn('updating version of ', data.id);
-    let newCompiled = updateFn({ data, properties, objectTypes, context, path, memo, solver, module, urdf, worldModel });
+const performUpdate = (memoizedData, data, properties, objectTypes, context, path, memo, module, worldModel, updateFn) => {
+    console.warn('updating version of ', data);
+    let newCompiled = updateFn({ data, properties, objectTypes, context, path, memo, module, worldModel });
     // console.log('status',newCompiled.status)
     // console.log('memoizedData',memoizedData)
     // console.log('newCompiled',newCompiled)
     let newMemoizedData = lodash.merge({properties:{compiled:{[path]:{}}}},memoizedData);
     newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path],newCompiled)
     if (newCompiled.otherPropertyUpdates) {
+        console.log('Has other properties, updating...')
         newMemoizedData = lodash.merge(newMemoizedData, { properties: newCompiled.otherPropertyUpdates });
+        console.log('New with updates:',newMemoizedData)
     }
     // console.log(newMemoizedData)
     return [
@@ -179,7 +181,7 @@ const performUpdate = (memoizedData, data, properties, objectTypes, context, pat
 // Computes a property of a parent given the field data and field info.
 // Can handle node-based and 'ignored' fields
 // Returns standard changes, which will need to be propagated back up.
-const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo, solver, module, urdf, worldModel) => {
+const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo, module, worldModel) => {
     let memoizedData = {};
     let newMemo = { ...memo };
     let status = STATUS.VALID;
@@ -210,9 +212,7 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
             context,
             path,
             memo: newMemo,
-            solver,
             module,
-            urdf,
             worldModel
         }
 
@@ -244,7 +244,7 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
 
 // Entry for recursive process of updating data. 
 // Returns standard changes, which will need to be propagated back up.
-export const handleUpdate = ({ data, objectTypes, context, path, memo, solver, module, urdf, worldModel }) => {
+export const handleUpdate = ({ data, objectTypes, context, path, memo, module, worldModel }) => {
     let newMemo = { ...memo };
     // console.warn('MEMO:',memo)
     const updateFn = compilers[objectTypes[data.type].properties.compileFn.default];
@@ -278,7 +278,7 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, solver, m
                         shouldBreak: innerShouldBreak
                     } = computeProperty(
                         fieldItem, objectTypes[data.type].properties[field],
-                        objectTypes, context, path, memo, solver, module, urdf, worldModel
+                        objectTypes, context, path, memo, module, worldModel
                     )
                     properties[field].push(innerMemoizedData);
                     newMemo = lodash.merge(newMemo,innerMemo);
@@ -303,7 +303,7 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, solver, m
                     shouldBreak: innerShouldBreak
                 } = computeProperty(
                     data.properties[field], objectTypes[data.type].properties[field],
-                    objectTypes, context, path, memo, solver, module, urdf, worldModel
+                    objectTypes, context, path, memo, module, worldModel
                 )
                 properties[field] = innerMemoizedData;
                 newMemo = lodash.merge(newMemo,innerMemo);
@@ -323,7 +323,7 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, solver, m
         if (recompute||updated) {
             [memoizedData, status, updated, shouldBreak] = performUpdate(
                 memoizedData, data, properties, objectTypes, context, path, 
-                newMemo, solver, module, urdf, worldModel, updateFn
+                newMemo, module, worldModel, updateFn
             );
             updated = true;
         } else {

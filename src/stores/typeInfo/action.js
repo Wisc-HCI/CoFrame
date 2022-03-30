@@ -111,7 +111,7 @@ const gripperFeatures = {
       min: 20,
       max: 150
     },
-    compileFn: {default:COMPILE_FUNCTIONS.GRIPPER},
+    compileFn: {default:COMPILE_FUNCTIONS.GRIPPER_MOTION},
     updateFields: {default: ['thing','positionStart','positionEnd','speed']}
   }
 }

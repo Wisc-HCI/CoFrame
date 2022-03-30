@@ -1,30 +1,30 @@
 export const GRIPPER_FRAMES = [
-    // "simulated_robotiq_85_base_link",
-    "simulated_robotiq_85_left_finger_link",
-    "simulated_robotiq_85_left_finger_tip_link",
-    "simulated_robotiq_85_left_inner_knuckle_link",
-    "simulated_robotiq_85_left_knuckle_link",
-    "simulated_robotiq_85_right_finger_link",
-    "simulated_robotiq_85_right_finger_tip_link",
-    "simulated_robotiq_85_right_inner_knuckle_link",
-    "simulated_robotiq_85_right_knuckle_link"
+    // "robotiq_85_base_link",
+    "robotiq_85_left_finger_link",
+    "robotiq_85_left_finger_tip_link",
+    "robotiq_85_left_inner_knuckle_link",
+    "robotiq_85_left_knuckle_link",
+    "robotiq_85_right_finger_link",
+    "robotiq_85_right_finger_tip_link",
+    "robotiq_85_right_inner_knuckle_link",
+    "robotiq_85_right_knuckle_link"
 ]
 
 export const GRIPPER_PARENTS = {
-    simulated_robotiq_85_base_link:'simulated_tool0',
-    simulated_robotiq_85_left_knuckle_link:"simulated_robotiq_85_base_link",
-    simulated_robotiq_85_right_knuckle_link: "simulated_robotiq_85_base_link",
-    simulated_robotiq_85_left_finger_link:"simulated_robotiq_85_left_knuckle_link",
-    simulated_robotiq_85_right_finger_link:"simulated_robotiq_85_right_knuckle_link",
-    simulated_robotiq_85_left_inner_knuckle_link:"simulated_robotiq_85_base_link",
-    simulated_robotiq_85_right_inner_knuckle_link:"simulated_robotiq_85_base_link",
-    simulated_robotiq_85_left_finger_tip_link:"simulated_robotiq_85_left_inner_knuckle_link",
-    simulated_robotiq_85_right_finger_tip_link:"simulated_robotiq_85_right_inner_knuckle_link"
+    robotiq_85_base_link:'tool0',
+    robotiq_85_left_knuckle_link:"robotiq_85_base_link",
+    robotiq_85_right_knuckle_link: "robotiq_85_base_link",
+    robotiq_85_left_finger_link:"robotiq_85_left_knuckle_link",
+    robotiq_85_right_finger_link:"robotiq_85_right_knuckle_link",
+    robotiq_85_left_inner_knuckle_link:"robotiq_85_base_link",
+    robotiq_85_right_inner_knuckle_link:"robotiq_85_base_link",
+    robotiq_85_left_finger_tip_link:"robotiq_85_left_inner_knuckle_link",
+    robotiq_85_right_finger_tip_link:"robotiq_85_right_inner_knuckle_link"
 }
 
 export const GRIPPER_CONFIGURATIONS = {
     "capture": {
-        "simulated_flange": [
+        "flange": [
             [
                 [
                     0.0,
@@ -299,7 +299,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_forearm_link": [
+        "forearm_link": [
             [
                 [
                     -0.24355,
@@ -574,7 +574,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_base_link": [
+        "robotiq_85_base_link": [
             [
                 [
                     0.0,
@@ -849,7 +849,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_left_finger_link": [
+        "robotiq_85_left_finger_link": [
             [
                 [
                     -0.00408552455,
@@ -1124,7 +1124,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_left_finger_tip_link": [
+        "robotiq_85_left_finger_tip_link": [
             [
                 [
                     0.04303959807,
@@ -1399,7 +1399,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_left_inner_knuckle_link": [
+        "robotiq_85_left_inner_knuckle_link": [
             [
                 [
                     0.06142,
@@ -1674,7 +1674,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_left_knuckle_link": [
+        "robotiq_85_left_knuckle_link": [
             [
                 [
                     0.05490451627,
@@ -1949,7 +1949,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_right_finger_link": [
+        "robotiq_85_right_finger_link": [
             [
                 [
                     -0.00408552455,
@@ -2224,7 +2224,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_right_finger_tip_link": [
+        "robotiq_85_right_finger_tip_link": [
             [
                 [
                     0.04303959807,
@@ -2499,7 +2499,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_right_inner_knuckle_link": [
+        "robotiq_85_right_inner_knuckle_link": [
             [
                 [
                     0.06142,
@@ -2774,7 +2774,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_robotiq_85_right_knuckle_link": [
+        "robotiq_85_right_knuckle_link": [
             [
                 [
                     0.05490451627,
@@ -3049,7 +3049,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_shoulder_link": [
+        "shoulder_link": [
             [
                 [
                     0.0,
@@ -3324,7 +3324,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_tool0": [
+        "tool0": [
             [
                 [
                     0.0,
@@ -3599,7 +3599,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_upper_arm_link": [
+        "upper_arm_link": [
             [
                 [
                     0.0,
@@ -3874,7 +3874,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_wrist_1_link": [
+        "wrist_1_link": [
             [
                 [
                     -0.2132,
@@ -4149,7 +4149,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_wrist_2_link": [
+        "wrist_2_link": [
             [
                 [
                     0.0,
@@ -4424,7 +4424,7 @@ export const GRIPPER_CONFIGURATIONS = {
                 ]
             ]
         ],
-        "simulated_wrist_3_link": [
+        "wrist_3_link": [
             [
                 [
                     0.0,
@@ -4725,72 +4725,72 @@ export const GRIPPER_CONFIGURATIONS = {
     ],
     "subtree": [
         [
-            "simulated_base_link",
-            "simulated_shoulder_link"
+            "base_link",
+            "shoulder_link"
         ],
         [
-            "simulated_shoulder_link",
-            "simulated_upper_arm_link"
+            "shoulder_link",
+            "upper_arm_link"
         ],
         [
-            "simulated_upper_arm_link",
-            "simulated_forearm_link"
+            "upper_arm_link",
+            "forearm_link"
         ],
         [
-            "simulated_forearm_link",
-            "simulated_wrist_1_link"
+            "forearm_link",
+            "wrist_1_link"
         ],
         [
-            "simulated_wrist_1_link",
-            "simulated_wrist_2_link"
+            "wrist_1_link",
+            "wrist_2_link"
         ],
         [
-            "simulated_wrist_2_link",
-            "simulated_wrist_3_link"
+            "wrist_2_link",
+            "wrist_3_link"
         ],
         [
-            "simulated_wrist_3_link",
-            "simulated_flange"
+            "wrist_3_link",
+            "flange"
         ],
         [
-            "simulated_flange",
-            "simulated_tool0"
+            "flange",
+            "tool0"
         ],
         [
-            "simulated_tool0",
-            "simulated_robotiq_85_base_link"
+            "tool0",
+            "robotiq_85_base_link"
         ],
         [
-            "simulated_robotiq_85_base_link",
-            "simulated_robotiq_85_left_knuckle_link"
+            "robotiq_85_base_link",
+            "robotiq_85_left_knuckle_link"
         ],
         [
-            "simulated_robotiq_85_base_link",
-            "simulated_robotiq_85_right_knuckle_link"
+            "robotiq_85_base_link",
+            "robotiq_85_right_knuckle_link"
         ],
         [
-            "simulated_robotiq_85_left_knuckle_link",
-            "simulated_robotiq_85_left_finger_link"
+            "robotiq_85_left_knuckle_link",
+            "robotiq_85_left_finger_link"
         ],
         [
-            "simulated_robotiq_85_right_knuckle_link",
-            "simulated_robotiq_85_right_finger_link"
+            "robotiq_85_right_knuckle_link",
+            "robotiq_85_right_finger_link"
         ],
         [
-            "simulated_robotiq_85_base_link",
-            "simulated_robotiq_85_left_inner_knuckle_link"
+            "robotiq_85_base_link",
+            "robotiq_85_left_inner_knuckle_link"
         ],
         [
-            "simulated_robotiq_85_base_link",
-            "simulated_robotiq_85_right_inner_knuckle_link"
+            "robotiq_85_base_link",
+            "robotiq_85_right_inner_knuckle_link"
         ],
         [
-            "simulated_robotiq_85_left_inner_knuckle_link",
-            "simulated_robotiq_85_left_finger_tip_link"
+            "robotiq_85_left_inner_knuckle_link",
+            "robotiq_85_left_finger_tip_link"
         ],
         [
-            "simulated_robotiq_85_right_inner_knuckle_link",
-            "simulated_robotiq_85_right_finger_tip_link"
+            "robotiq_85_right_inner_knuckle_link",
+            "robotiq_85_right_finger_tip_link"
         ]
     ]
 }

@@ -70,7 +70,7 @@ const loadModule = async () => {
 // }
 
 const performCompileProcess = async (data) => {
-    const { urdf, programData, objectTypes } = data;
+    const { programData, objectTypes } = data;
     // Process the data without stalling the UI
     const module = await loadModule();
 
@@ -90,11 +90,11 @@ const performCompileProcess = async (data) => {
     console.log(worldModel)
 
     // Create the solver
-    const solver = new module.Solver(urdf,[
-        {type:'PositionMatch',name:"EE Position",link:"wrist_3_link",weight:50},
-        {type:'OrientationMatch',name:"EE Rotation",link:"wrist_3_link",weight:25},
-        {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
-      ],ROOT_BOUNDS, createStaticEnvironment(scene), null, false, 1, 450);
+    // const solver = new module.Solver(urdf,[
+    //     {type:'PositionMatch',name:"EE Position",link:"wrist_3_link",weight:50},
+    //     {type:'OrientationMatch',name:"EE Rotation",link:"wrist_3_link",weight:25},
+    //     {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
+    //   ],ROOT_BOUNDS, createStaticEnvironment(scene), null, false, 1, 450);
 
     // First, preprocess certain types:
     let memo = {};
@@ -109,9 +109,7 @@ const performCompileProcess = async (data) => {
                 context:programData,
                 path:JSON.stringify(pathRoot),
                 memo,
-                solver,
                 module,
-                urdf,
                 worldModel
             }
             const {memo:newMemo} = handleUpdate(computeProps)
@@ -127,9 +125,7 @@ const performCompileProcess = async (data) => {
         context:programData,
         path:JSON.stringify(pathRoot),
         memo,
-        solver,
         module,
-        urdf,
         worldModel
     }
     const {memo:newMemo} = handleUpdate(computeProps)

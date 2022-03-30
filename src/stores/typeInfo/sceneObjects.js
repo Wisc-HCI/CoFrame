@@ -90,9 +90,9 @@ const link = {
         extras: []
     },
     properties: {
-        robot: {
-            name: 'Robot',
-            accepts: ['robotAgentType'],
+        agent: {
+            name: 'Agent',
+            accepts: ['robotAgentType','gripperType'],
             default: null,
             isList: false
         },
@@ -104,7 +104,7 @@ const link = {
             fullWidth: true
         },
         compileFn: {default: COMPILE_FUNCTIONS.LINK},
-        updateFields: {default: ['position','rotation','relativeTo','robot']}
+        updateFields: {default: ['position','rotation','relativeTo','agent']}
     }
 }
 

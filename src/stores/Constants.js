@@ -12,12 +12,13 @@ export const COMPILE_FUNCTIONS = {
     PROCESS: 4,
     SKILL: 5,
     POSE: 6,
-    GRIPPER: 7,
+    GRIPPER_MOTION: 7,
     ROBOT_MOTION: 8,
     BREAK: 9,
     AGENT: 10,
-    LINK: 11,
-    PROPERTY: 12
+    GRIPPER: 11,
+    LINK: 12,
+    PROPERTY: 13
 }
 
 export const STEP_TYPE = {
