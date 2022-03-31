@@ -104,8 +104,8 @@ export const GuiSlice = (set, get) => ({
   // activeDrawer: null,
   // setActiveDrawer: (drawer) => set(_ => ({ activeDrawer: drawer })),
   // the focusItem specifies the type and uuid of data to focus on
-  focus: [],
-  activeFocus: null,
+  focus: ["robot-agent-988926121c1911eccbe2600155d1a70a2"],
+  activeFocus: "robot-agent-988926121c1911eccbe2600155d1a70a2",
   setActiveFocus: (id) => set(state=>{state.activeFocus=id}),
   addFocusItem: (id, add) => set(state => {
     state = addFocus(state, id, add);

@@ -10,6 +10,7 @@ import shallow from 'zustand/shallow';
 import { FiTrash, FiX } from 'react-icons/fi';
 import { NumberInput } from '../NumberInput';
 import { DETAIL_TYPES } from '../../stores/Constants';
+import JointGripperInput from "./JointGripperInput";
 export const Detail = (_) => {
 
 
@@ -21,7 +22,7 @@ export const Detail = (_) => {
      console.log("state.focus:", state.focus) ;
     state.focus.slice().reverse().some(v => {
        console.log("v : ", v);
-      if (state.programData[v] && state.activeFocus === v && DETAIL_TYPES.includes(state.programData[v].type)) {
+      if (state.programData[v] && state.activeFocus === v &&  DETAIL_TYPES.includes(state.programData[v].type)) {
         item = state.programData[v];
 
         return true
@@ -120,6 +121,7 @@ export const Detail = (_) => {
               </Box>
             </Box>
           )}
+         
 
           {item.properties.position !== undefined && item.properties.rotation !== undefined && (
             <>
@@ -157,6 +159,22 @@ export const Detail = (_) => {
             
            </>
           )}
+          <br/>
+
+          {item.type === 'gripperType' && (
+            <>  
+              <JointGripperInput robotID = {item.id} isGripper = {true}/>
+            </>
+          )
+
+          }
+          {item.type === 'robotAgentType' &&(
+            <>
+              <JointGripperInput robotID={item.id} isGripper = {false}/>
+            </>
+          )
+
+          }
 
 
 
