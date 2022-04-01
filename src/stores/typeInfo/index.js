@@ -11,6 +11,7 @@ import {inputOutputType} from './inputOutput'
 import actionTypes from './action';
 import agentTypes from './agents';
 import sceneObjects from './sceneObjects';
+import collisionTypes from './collision';
 
 
 export default { 
@@ -26,5 +27,6 @@ export default {
     processType,
     ...actionTypes,
     ...agentTypes,
-    ...sceneObjects
+    ...sceneObjects,
+    ...collisionTypes
 }

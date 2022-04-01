@@ -42,6 +42,13 @@ const basicObject = {
             isList: false,
             nullValid: true
         },
+        collision: {
+            name: 'Collision',
+            accepts: ['collisionBodyType'],
+            default: null,
+            isList: false,
+            fullWidth: true
+        },
         status: {
             name: 'Status',
             type: SIMPLE_PROPERTY_TYPES.IGNORED,
@@ -96,13 +103,6 @@ const link = {
             default: null,
             isList: false
         },
-        collision: {
-            name: 'Collision',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: '',
-            isList: false,
-            fullWidth: true
-        },
         compileFn: {default: COMPILE_FUNCTIONS.LINK},
         updateFields: {default: ['position','rotation','relativeTo','agent']}
     }
@@ -130,13 +130,6 @@ const machine = {
         ]
     },
     properties: {
-        collisionMesh: {
-            name: 'Collision Mesh',
-            type: SIMPLE_PROPERTY_TYPES.IGNORED,
-            default: "",
-            isList: false,
-            fullWidth: true
-        },
         compileFn: {default: COMPILE_FUNCTIONS.PROPERTY},
         updateFields: {default: ['position','rotation','relativeTo']}
     }
@@ -205,13 +198,6 @@ const tool = {
             name: 'Weight',
             type: SIMPLE_PROPERTY_TYPES.IGNORED,
             default: 0,
-            isList: false,
-            fullWidth: true
-        },
-        collisionMesh: {
-            name: 'Collision Mesh',
-            accepts: ["meshType"],
-            default: null,
             isList: false,
             fullWidth: true
         },

@@ -12,15 +12,11 @@ import {
     pinchpointAnimationFromExecutable,
     itemTransformMethod
 } from './helpers';
-import lodash from 'lodash';
 // import throttle from 'lodash.throttle';
 import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp/dist/components';
 
 export const computedSlice = (state) => {
-    const ROBOT_PARTS = Object.keys(state.programData).filter(v => v.includes('robot'));
-    const GRIPPER_PARTS = Object.keys(state.programData).filter(v => v.includes('gripper'));
-
     let executablePrimitives = {};
 
     // ===================== TFs =====================
@@ -81,11 +77,9 @@ export const computedSlice = (state) => {
             let highlighted = false;
             let meshObject = state.programData[entry.properties.mesh];
             let collisionObject = entry.properties.collision ? state.programData[entry.properties.collision] : null;
-            if (lodash.intersection(ROBOT_PARTS,state.focus).length > 0 && ROBOT_PARTS.indexOf(itemKey) >= 0) {
+            if (entry.type === 'fixtureType' && state.focus.includes(entry.id)) {
                 highlighted = true
-            } else if (lodash.intersection(GRIPPER_PARTS,state.focus).length > 0 && GRIPPER_PARTS.includes(itemKey)) {
-                highlighted = true
-            } else if (entry.type === 'fixtureType' && state.focus.includes(entry.id)) {
+            } else if (entry.type === "linkType" && state.focus.includes(entry.properties.agent)) {
                 highlighted = true
             }
 
@@ -111,19 +105,22 @@ export const computedSlice = (state) => {
             }
 
             if (collisionObject) {
-                items[itemKey + '-collision'] = {
-                    shape: COLLISION_MESHES[collisionObject.properties.keyword] ? COLLISION_MESHES[collisionObject.properties.keyword] : collisionObject.properties.keyword,
-                    name: entry.name + ' Collision',
-                    frame: entry.id,
-                    position: collisionObject.properties.position,
-                    rotation: collisionObject.properties.rotation,
-                    scale: collisionObject.properties.scale,
-                    color: { r: 250, g: 0, b: 0, a: 0.6 },
-                    transformMode: "inactive",
-                    highlighted: false,
-                    wireframe: true,
-                    hidden: !state.collisionsVisible
-                };
+                collisionObject.properties.componentShapes.forEach((shape) => {
+                    let componentShape = state.programData[shape];
+                    items[entry.id + shape] = {
+                        shape: COLLISION_MESHES[componentShape.properties.keyword] ? COLLISION_MESHES[componentShape.properties.keyword] : componentShape.properties.keyword,
+                        name: componentShape.name,
+                        frame: entry.id,
+                        position: componentShape.properties.position,
+                        rotation: componentShape.properties.rotation,
+                        scale: componentShape.properties.scale,
+                        color: { r: 250, g: 0, b: 0, a: 0.6 },
+                        transformMode: "inactive",
+                        highlighted: false,
+                        wireframe: true,
+                        hidden: !state.collisionsVisible
+                    };
+                })
             }
         } else if (entry.type === 'zoneType' && state.programData[entry.properties.agent].type === 'humanAgentType') {
             items[entry.id] = {
@@ -172,7 +169,7 @@ export const computedSlice = (state) => {
         } else if (entry.type === 'machineType' || entry.type === 'toolType') {
             let entryProps = entry.properties;
             let meshObject = state.programData[entryProps.mesh];
-            let collisionObject = state.programData[entryProps.collisionMesh];
+            let collisionObject = state.programData[entryProps.collision];
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
@@ -190,19 +187,22 @@ export const computedSlice = (state) => {
                 highlighted: state.focus.includes(entry.id)
             }
             // Now add collisions
-            items[entry.id + '-collision'] = {
-                shape: collisionObject.properties.keyword,
-                name: entry.name + ' Collision',
-                frame: entry.id,
-                position: collisionObject.properties.position,
-                rotation: collisionObject.properties.rotation,
-                scale: collisionObject.properties.scale,
-                transformMode: 'inactive',
-                highlighted: false,
-                color: { r: 250, g: 0, b: 0, a: 0.6 },
-                wireframe: true,
-                hidden: !state.collisionsVisible
-            }
+            collisionObject?.properties.componentShapes.forEach((collisionShapeId) => {
+                let collisionShape = state.programData[collisionShapeId];
+                items[entry.id + collisionShapeId] = {
+                    shape: collisionShape.properties.keyword,
+                    name: collisionShape.id,
+                    frame: entry.id,
+                    position: collisionShape.properties.position,
+                    rotation: collisionShape.properties.rotation,
+                    scale: collisionShape.properties.scale,
+                    transformMode: 'inactive',
+                    highlighted: false,
+                    color: { r: 250, g: 0, b: 0, a: 0.6 },
+                    wireframe: true,
+                    hidden: !state.collisionsVisible
+                }
+            });
 
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType' || entry.type === 'gripperType') {
