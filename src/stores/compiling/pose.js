@@ -1,10 +1,73 @@
 import { STATUS, ROOT_BOUNDS } from "../Constants";
-import { Quaternion } from 'three';
-import { distance, likStateToData, createEnvironmentModel, createStaticEnvironment } from "../helpers";
+import { Quaternion, Matrix4 } from 'three';
+import { distance, likStateToData, createEnvironmentModel, queryWorldPose, quaternionLog, poseToGoalPosition } from "../helpers";
+import { DATA_TYPES } from "simple-vp";
 
 
 export const poseCompiler = ({data, properties, objectTypes, context, path, memo, module, worldModel}) => {
 
+    // Create a reachabilty object to indicate who can reach this pose;
+    let reachabilty = {};
+    let rootPath = JSON.stringify(['root']);
+    let goalPose = null;
+    
+    // Enumerate the robotTypes currently in the memo. This is technically unsafe, 
+    // but we pre-process them beforehand so it is fine. We also always assume root execution 
+    // (which is fine for robots/humans/grippers).
+
+    const grippers = Object.values(memo).filter(v=>v.type==='gripperType');
+
+    console.log({data,grippers})
+
+    Object.values(memo)
+        .filter(v=>v.type==='robotAgentType')
+        .forEach(robotInfo=>{
+            // Check to see if there are previously calculated joint values for this pose.
+            const initialJointState = data.properties.compiled[path] && data.properties.compiled[path][robotInfo.id]?.joints 
+                ? data.properties.compiled[path][robotInfo.id].joints 
+                : robotInfo.properties.initialJointState;
+
+            // Retrieve the robot's position/orientation
+            const basePose = queryWorldPose(worldModel,robotInfo.id);
+            const quatLog = quaternionLog(basePose.rotation);
+            const rootBounds = [
+                {value:basePose.position.x,delta:0.0},{value:basePose.position.y,delta:0.0},{value:basePose.position.z,delta:0.0}, // Translational
+                {value:quatLog[0],delta:0.0},{value:quatLog[1],delta:0.0},{value:quatLog[2],delta:0.0}  // Rotational  
+            ];
+            const origin = {
+                translation:[basePose.position.x,basePose.position.y,basePose.position.z],
+                rotation:[basePose.rotation.x,basePose.rotation.y,basePose.rotation.z,basePose.rotation.w]
+            };
+
+            // Get a list of links in the robot;
+            const robotLinks = robotInfo.properties.compiled[rootPath].linkInfo.map(link=>link.name);
+
+            // Enumerate grippers and search for ones that are based on this robot.
+            grippers.forEach(gripper=>{
+                if (robotLinks.includes(gripper.properties.relativeTo)) {
+
+                    // Set up the objectives based on the attachment link
+                    const attachmentLink = gripper.properties.relativeTo;
+                    const objectives = [
+                        {type:'PositionMatch',name:"EE Position",link:attachmentLink,weight:50},
+                        {type:'OrientationMatch',name:"EE Rotation",link:attachmentLink,weight:25},
+                        {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
+                    ];
+                    console.log('getting goal position...',{worldModel,gripperId:gripper.id,attachmentLink,props:data.properties})
+                    // console.log(worldModel)
+                    // Find the position we need in the attachment link to match the desired pose gripper position
+                    goalPose = poseToGoalPosition(worldModel,gripper.id,attachmentLink,data.properties);
+                    console.log('goal:',goalPose)
+                }
+            })
+
+            
+
+            
+            // 
+            // const newCompiled = likStateToData(fwdsolver.currentState,worldModel,data.id);
+        }
+    )
     // const solver = new module.Solver(properties.urdf,[
     //     {type:'PositionMatch',name:"EE Position",link:"wrist_3_link",weight:50},
     //     {type:'OrientationMatch',name:"EE Rotation",link:"wrist_3_link",weight:25},
@@ -34,6 +97,6 @@ export const poseCompiler = ({data, properties, objectTypes, context, path, memo
     //     }
     // }
 
-    const newCompiled = {status: STATUS.VALID};
+    const newCompiled = {goalPose, status: STATUS.VALID};
     return newCompiled
 }

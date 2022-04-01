@@ -43,6 +43,7 @@
     "canEdit": true,
     "properties": {
       "description": "The gripper of the robot. This specific model is a Robotiq 2F-85, meaning it has two fingers and has a grip range of 0 and 85 mmm.",
+      "gripOffset": { "x": 0, "y": 0, "z": 0.15 },
       "initialGripState": 30,
       "gripperIndex": [
         85, 80.75, 76.5, 72.25, 68, 63.75, 59.5, 55.25, 51, 46.75, 42.5, 38.25,

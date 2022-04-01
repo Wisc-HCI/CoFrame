@@ -212,6 +212,33 @@ export const computedSlice = (state) => {
                 rotation: entry.properties.rotation,
                 scale: {x:1,y:1,z:1}
             }
+            if (entry.type === 'gripperType') {
+                
+                items[entry.id+'-gripperOffset'] = {
+                    shape: 'arrow',
+                    name: `${entry.name} Gripper Position`,
+                    frame:entry.id,
+                    position: entry.properties.gripOffset,
+                    rotation: {x:0,y:0,z:0,w:1},
+                    scale: {x:0.07,y:0.07,z:0.05},
+                    color: { r: 250, g: 250, b: 0, a: 0.6 },
+                }
+                const baseGripPose =  entry.properties.compiled[JSON.stringify(['root'])]?.goalPose;
+                console.log(baseGripPose)
+                if (baseGripPose) {
+                    items[entry.id+'-gripperOffsetBase'] = {
+                        shape: 'sphere',
+                        name: `${entry.name} Gripper Position Goal`,
+                        frame:'world',
+                        position: baseGripPose.position,
+                        rotation: baseGripPose.rotation,
+                        scale: {x:0.07,y:0.07,z:0.07},
+                        color: { r: 250, g: 250, b: 0, a: 0.6 },
+                    }
+                }
+                
+                
+            }
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
             const focused = state.focus.includes(entry.id);
