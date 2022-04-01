@@ -1937,7 +1937,7 @@
     "canDelete": true,
     "canEdit": true,
     "properties": {
-      "collisionMesh": "mk2PrinterCollision",
+      "collision": "mk2PrinterCollision",
       "compileFn": 13,
       "updateFields": ["position", "rotation", "relativeTo"],
       "description": "Machine that prints handles.",
@@ -1961,7 +1961,7 @@
     "properties": {
       "safe": true,
       "weight": 0,
-      "collisionMesh": "assembly_jig_collision",
+      "collision": "assembly_jig_collision",
       "compileFn": 13,
       "description": "Machine that attaches handles to the blade.",
       "position": { "x": 0.2, "y": 0.28, "z": 0.14 },
@@ -1982,7 +1982,7 @@
     "canDelete": true,
     "canEdit": true,
     "properties": {
-      "collisionMesh": "conveyor_collision",
+      "collision": "conveyor_collision",
       "compileFn": 13,
       "updateFields": ["position", "rotation", "relativeTo"],
       "description": "Machine that produces blades",
@@ -2004,7 +2004,7 @@
     "canDelete": true,
     "canEdit": true,
     "properties": {
-      "collisionMesh": "conveyor_receiver_collision",
+      "collision": "conveyor_receiver_collision",
       "compileFn": 13,
       "updateFields": ["position", "rotation", "relativeTo"],
       "description": "Machine that accepts blades from the conveyor.",
@@ -2026,7 +2026,7 @@
     "canDelete": true,
     "canEdit": true,
     "properties": {
-      "collisionMesh": "conveyor_collision",
+      "collision": "conveyor_collision",
       "compileFn": 13,
       "updateFields": ["position", "rotation", "relativeTo"],
       "description": "Machine that moves finished knives to the next stage.",
@@ -2048,7 +2048,7 @@
     "canDelete": true,
     "canEdit": true,
     "properties": {
-      "collisionMesh": "conveyor_dispatcher_collision",
+      "collision": "conveyor_dispatcher_collision",
       "compileFn": 13,
       "updateFields": ["position", "rotation", "relativeTo"],
       "description": "Machine that dispatches blades to the knife conveyor.",
@@ -2132,7 +2132,7 @@
     "properties": {
       "safe": true,
       "weight": 0,
-      "collisionMesh": "transport_jig_collision",
+      "collision": "transport_jig_collision",
       "compileFn": 13,
       "description": "",
       "position": { "x": 0.3, "y": 0.28, "z": 0.14 },
@@ -2654,6 +2654,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "world",
       "mesh": "tableMesh",
+      "collision": "tableCollisionBody",
       "status": 0,
       "compiled": {},
       "showCollision": false,
@@ -2677,6 +2678,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "world",
       "mesh": "pedestalMesh",
+      "collision": "pedestalCollisionBody",
       "status": 0,
       "compiled": {
         "[\"root\"]": {
@@ -2701,7 +2703,7 @@
     "editing": false,
     "properties": {
       "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
-      "collision": "",
+      "collision": "robotBaseCollision",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
@@ -2725,7 +2727,7 @@
     "editing": false,
     "properties": {
       "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
-      "collision": "",
+      "collision": "robotShoulderCollision",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
@@ -3515,7 +3517,7 @@
     }
   },
   "mk2PrinterCollision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "mk2PrinterCollision",
     "name": "MK2 Printer Collision Mesh",
     "canDelete": true,
@@ -3524,11 +3526,90 @@
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": 0 },
+      "componentShapes": ["mk2CollisionShapeLeftVertical", "mk2CollisionShapeRightVertical", "mk2CollisionShapeBase", "mk2CollisionShapeSpool"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "mk2CollisionShapeLeftVertical": {
+    "type": "collisionShapeType",
+    "id": "mk2CollisionShapeLeftVertical",
+    "name": "MK2 Printer Left Vertical Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.18, "y": 0.1, "z": -0.075 },
       "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/collision_meshes/MK2-Printer.stl",
+      "scale": { "x": 0.125, "y": 0.185, "z": 0.4 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "mk2CollisionShapeRightVertical": {
+    "type": "collisionShapeType",
+    "id": "mk2CollisionShapeRightVertical",
+    "name": "MK2 Printer Right Vertical Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0.18, "y": 0.125, "z": -0.075 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.125, "y": 0.225, "z": 0.4 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "mk2CollisionShapeBase": {
+    "type": "collisionShapeType",
+    "id": "mk2CollisionShapeBase",
+    "name": "MK2 Printer Base Plate Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0, "z": -0.25 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.4, "y": 0.4, "z": 0.1 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "mk2CollisionShapeSpool": {
+    "type": "collisionShapeType",
+    "id": "mk2CollisionShapeSpool",
+    "name": "MK2 Printer Spool Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0.125, "z": 0.18 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.4, "y": 0.25, "z": 0.25 },
+      "keyword": "cube",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
@@ -3559,25 +3640,20 @@
     }
   },
   "transport_jig_collision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "transport_jig_collision",
-    "name": "Transport Jig Collision",
+    "name": "Transport Jig Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": 0 },
-      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "package://evd_ros_tasks/description/markers/tranport_jig.stl",
-      "extraParams": null,
+      "componentShapes": [],
       "status": 0,
       "compileFn": 0,
       "compiled": {},
-      "updateFields": ["position", "rotation", "scale"]
+      "updateFields": ["componentShapes"]
     }
   },
   "assembly_jig": {
@@ -3603,25 +3679,20 @@
     }
   },
   "assembly_jig_collision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "assembly_jig_collision",
-    "name": "Assembly Jig Collision",
+    "name": "Assembly Jig Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": 0 },
-      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
-      "scale": { "x": 0.2, "y": 0.2, "z": 0.2 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "assembly_jig_collision",
-      "extraParams": null,
+      "componentShapes": [],
       "status": 0,
       "compileFn": 0,
       "compiled": {},
-      "updateFields": ["position", "rotation", "scale"]
+      "updateFields": ["componentShapes"]
     }
   },
   "conveyor": {
@@ -3647,20 +3718,57 @@
     }
   },
   "conveyor_collision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "conveyor_collision",
-    "name": "Conveyor Collision",
+    "name": "Conveyor Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": 0 },
+      "componentShapes": ["conveyorCollisionShapeBase", "conveyorCollisionShapeBelt"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "conveyorCollisionShapeBase": {
+    "type": "collisionShapeType",
+    "id": "conveyorCollisionShapeBase",
+    "name": "Conveyor Base Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0.9, "z": 0.8},
       "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "conveyor_collision",
+      "scale": { "x": 1, "y": 1.1, "z": 1.7 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "conveyorCollisionShapeBelt": {
+    "type": "collisionShapeType",
+    "id": "conveyorCollisionShapeBelt",
+    "name": "Conveyor Base Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0.1, "z": 0.8},
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.75, "y": 0.65, "z": 0.25 },
+      "keyword": "cube",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
@@ -3691,20 +3799,78 @@
     }
   },
   "conveyor_receiver_collision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "conveyor_receiver_collision",
-    "name": "Conveyor Receiver Collision",
+    "name": "Conveyor Reciever Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": 0 },
+      "componentShapes": ["conveyorRecieverCollisionShapeBase", "conveyorRecieverCollisionShapeLeftSplit", "conveyorRecieverCollisionShapeRightSplit"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "conveyorRecieverCollisionShapeBase": {
+    "type": "collisionShapeType",
+    "id": "conveyorRecieverCollisionShapeBase",
+    "name": "Conveyor Reciever Base Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": -0.3, "z": 0.3},
       "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "conveyor_receiver_collision",
+      "scale": { "x": 0.75, "y": 0.25, "z": 0.7 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "conveyorRecieverCollisionShapeLeftSplit": {
+    "type": "collisionShapeType",
+    "id": "conveyorRecieverCollisionShapeLeftSplit",
+    "name": "Conveyor Reciever Left Split Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.175, "y": -0.26, "z": 0.725 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.3, "y": 0.155, "z": 0.165 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "conveyorRecieverCollisionShapeRightSplit": {
+    "type": "collisionShapeType",
+    "id": "conveyorRecieverCollisionShapeRightSplit",
+    "name": "Conveyor Reciever Right Split Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0.175, "y": -0.26, "z": 0.725 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.3, "y": 0.155, "z": 0.165 },
+      "keyword": "cube",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
@@ -3735,20 +3901,259 @@
     }
   },
   "conveyor_dispatcher_collision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "conveyor_dispatcher_collision",
-    "name": "Conveyor Dispatcher Collision",
+    "name": "Conveyor Dispatcher Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": 0 },
+      "componentShapes": ["conveyorDispatcherCollisionShapeBase", "conveyorDispatcherCollisionShapeLeftSplit", "conveyorDispatcherCollisionShapeRightSplit"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "conveyorDispatcherCollisionShapeBase": {
+    "type": "collisionShapeType",
+    "id": "conveyorDispatcherCollisionShapeBase",
+    "name": "Conveyor Dispatcher Base Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": -0.25, "z": 0.45},
       "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "conveyor_dispatcher_collision",
+      "scale": { "x": 0.75, "y": 0.35, "z": 0.9 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "conveyorDispatcherCollisionShapeLeftSplit": {
+    "type": "collisionShapeType",
+    "id": "conveyorDispatcherCollisionShapeLeftSplit",
+    "name": "Conveyor Dispatcher Base Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.175, "y": -0.2, "z": 0.975 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.255, "y": 0.275, "z": 0.175 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "conveyorDispatcherCollisionShapeRightSplit": {
+    "type": "collisionShapeType",
+    "id": "conveyorDispatcherCollisionShapeRightSplit",
+    "name": "Conveyor Dispatcher Base Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0.175, "y": -0.2, "z": 0.975 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.29, "y": 0.275, "z": 0.175 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "tableCollisionBody": {
+    "type": "collisionBodyType",
+    "id": "tableCollisionBody",
+    "name": "Table Collision Body",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "componentShapes": ["tableCollisionShapeTop", "tableCollisionShapeFrontLeftLeg", "tableCollisionShapeFrontRightLeg", "tableCollisionShapeRearLeftLeg", "tableCollisionShapeRearRightLeg"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "tableCollisionShapeTop": {
+    "type": "collisionShapeType",
+    "id": "tableCollisionShapeBase",
+    "name": "Table Top Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0, "z": 0.36 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 1.225, "y": 0.625, "z": 0.05 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "tableCollisionShapeFrontLeftLeg": {
+    "type": "collisionShapeType",
+    "id": "tableCollisionShapeFrontLeftLeg",
+    "name": "Table Front Left Leg Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.585, "y": -0.29, "z": -0.025 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.05, "y": 0.05, "z": 0.75 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "tableCollisionShapeFrontRightLeg": {
+    "type": "collisionShapeType",
+    "id": "tableCollisionShapeFrontRightLeg",
+    "name": "Table Front Right Leg Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0.585, "y": -0.29, "z": -0.025 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.05, "y": 0.05, "z": 0.75 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "tableCollisionShapeRearLeftLeg": {
+    "type": "collisionShapeType",
+    "id": "tableCollisionShapeRearLeftLeg",
+    "name": "Table Front Left Leg Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.585, "y": 0.29, "z": -0.025 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.05, "y": 0.05, "z": 0.75 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "tableCollisionShapeRearRightLeg": {
+    "type": "collisionShapeType",
+    "id": "tableCollisionShapeRearRightLeg",
+    "name": "Table Front Right Leg Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0.585, "y": 0.29, "z": -0.025 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.05, "y": 0.05, "z": 0.75 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "pedestalCollisionBody": {
+    "type": "collisionBodyType",
+    "id": "pedestalCollisionBody",
+    "name": "Robot Pedestal Collision Body",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "componentShapes": ["pedestalCollisionShapeBase", "pedestalCollisionShapeTower"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "pedestalCollisionShapeBase": {
+    "type": "collisionShapeType",
+    "id": "pedestalCollisionShapeBase",
+    "name": "Pedestal Base Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0, "z": -0.335 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.65, "y": 0.65, "z": 0.15 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "pedestalCollisionShapeTower": {
+    "type": "collisionShapeType",
+    "id": "pedestalCollisionShapeTower",
+    "name": "Pedestal Tower Collision Object",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0, "z": 0.05 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.1, "y": 0.1, "z": 0.7 },
+      "keyword": "cube",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
@@ -3757,20 +4162,78 @@
     }
   },
   "robotUpperArmLinkCollision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "robotUpperArmLinkCollision",
-    "name": "Robot Upper Arm Link Collision Mesh",
+    "name": "Robot Upper Arm Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": 0.12 },
+      "componentShapes": ["robotUpperArmCollisionShape0", "robotUpperArmCollisionShape1", "robotUpperArmCollisionShape2"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotUpperArmCollisionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotUpperArmCollisionShape0",
+    "name": "Robot Upper Arm Link Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.127, "y": 0, "z": 0.12 },
       "rotation": { "x": 0.5, "y": -0.5, "z": -0.5, "w": 0.5 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "package://ur_description/meshes/ur3/collision/upperarm.stl",
+      "scale": { "x": 0.05, "y": 0.05, "z": 0.145 },
+      "keyword": "cylinder",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "robotUpperArmCollisionShape1": {
+    "type": "collisionShapeType",
+    "id": "robotUpperArmCollisionShape1",
+    "name": "Robot Upper Arm Link Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0, "z": 0.125 },
+      "rotation": { "x": 0.0, "y": 0.0, "z": -0.7071067811865475, "w": 0.7071067811865476 },
+      "scale": { "x": 0.05, "y": 0.05, "z": 0.11 },
+      "keyword": "cylinder",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "robotUpperArmCollisionShape2": {
+    "type": "collisionShapeType",
+    "id": "robotUpperArmCollisionShape2",
+    "name": "Robot Upper Arm Link Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.245, "y": 0, "z": 0.125 },
+      "rotation": { "x": 0.0, "y": 0.0, "z": -0.7071067811865475, "w": 0.7071067811865476 },
+      "scale": { "x": 0.04, "y": 0.04, "z": 0.11 },
+      "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
@@ -3779,20 +4242,57 @@
     }
   },
   "robotForearmLinkCollision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "robotForearmLinkCollision",
-    "name": "Robot Forearm Link Collision Mesh",
+    "name": "Robot Forearm Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": 0.027 },
+      "componentShapes": ["robotForearmCollisionShape0", "robotForearmCollisionShape1"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotForearmCollisionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotForearmCollisionShape0",
+    "name": "Robot Forearm Link Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.07, "y": 0, "z": 0.027 },
       "rotation": { "x": 0.5, "y": -0.5, "z": -0.5, "w": 0.5 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "package://ur_description/meshes/ur3/collision/forearm.stl",
+      "scale": { "x": 0.04, "y": 0.04, "z": 0.2 },
+      "keyword": "cylinder",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "robotForearmCollisionShape1": {
+    "type": "collisionShapeType",
+    "id": "robotForearmCollisionShape1",
+    "name": "Robot Forearm Link Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": -0.215, "y": 0, "z": 0.027 },
+      "rotation": { "x": 0, "y": 0, "z": -0.7071067811865475, "w": 0.7071067811865476 },
+      "scale": { "x": 0.04, "y": 0.04, "z": 0.095 },
+      "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
@@ -3801,20 +4301,36 @@
     }
   },
   "robotWrist1Collision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "robotWrist1Collision",
-    "name": "Robot Wrist 1 Collision Mesh",
+    "name": "Robot Wrist 1 Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": -0.104 },
-      "rotation": { "x": 0.7071068, "y": 0, "z": 0, "w": 0.7071068 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "package://ur_description/meshes/ur3/collision/wrist1.stl",
+      "componentShapes": ["robotWrist1CollisionShape0"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotWrist1CollisionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotWrist1CollisionShape0",
+    "name": "Robot Wrist 1 Collision Shape 0",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 0.7071067811865475, "y": 0.0, "z": 0.0, "w": 0.7071067811865476 },
+      "scale": { "x": 0.035, "y": 0.035, "z": 0.095 },
+      "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
@@ -3823,20 +4339,36 @@
     }
   },
   "robotWrist2Collision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "robotWrist2Collision",
-    "name": "Robot Wrist 2 Collision Mesh",
+    "name": "Robot Wrist 2 Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": -0.08535 },
-      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "package://ur_description/meshes/ur3/collision/wrist2.stl",
+      "componentShapes": ["robotWrist2CollisionShape0"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotWrist2CollisionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotWrist2CollisionShape0",
+    "name": "Robot Wrist 2 Collision Shape 0",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": -0.008, "z": 0.01 },
+      "rotation": { "x": 0.7071067811865475, "y": 0.0, "z": 0.0, "w": 0.7071067811865476 },
+      "scale": { "x": 0.04, "y": 0.04, "z": 0.1 },
+      "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
@@ -3845,20 +4377,112 @@
     }
   },
   "robotWrist3Collision": {
-    "type": "meshType",
+    "type": "collisionBodyType",
     "id": "robotWrist3Collision",
-    "name": "Robot Wrist 3 Collision Mesh",
+    "name": "Robot Wrist 3 Collision Body",
     "canDelete": true,
     "canEdit": true,
     "dataType": 0,
     "selected": false,
     "editing": false,
     "properties": {
-      "position": { "x": 0, "y": 0, "z": -0.0921 },
-      "rotation": { "x": 0.7071068, "y": 0, "z": 0, "w": 0.7071068 },
-      "scale": { "x": 1, "y": 1, "z": 1 },
-      "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
-      "keyword": "package://ur_description/meshes/ur3/collision/wrist3.stl",
+      "componentShapes": ["robotWrist3CollisionShape0"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotWrist3CollisionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotWrist3CollisionShape0",
+    "name": "Robot Wrist 3 Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": -0.01, "z": -0.015 },
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0 },
+      "scale": { "x": 0.04, "y": 0.04, "z": 0.04 },
+      "keyword": "cylinder",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "robotShoulderCollision": {
+    "type": "collisionBodyType",
+    "id": "robotShoulderCollision",
+    "name": "Robot Shoulder Collision Body",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "componentShapes": ["robotShoulderCollisionShape0"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotShoulderCollisionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotShoulderCollisionShape0",
+    "name": "Robot Shoulder Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0, "z": 0 },
+      "rotation": { "x": 0.0, "y": 0.0, "z": 1.0, "w": 0 },
+      "scale": { "x": 0.065, "y": 0.065, "z": 0.11 },
+      "keyword": "cylinder",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "robotBaseCollision": {
+    "type": "collisionBodyType",
+    "id": "robotBaseCollision",
+    "name": "Robot Base Collision Body",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "componentShapes": ["robotBaseCollisionShape0"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotBaseCollisionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotBaseCollisionShape0",
+    "name": "Robot Base Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0, "y": 0, "z": 0.04 },
+      "rotation": { "x": 0.0, "y": 0.0, "z": 1.0, "w": 0 },
+      "scale": { "x": 0.065, "y": 0.065, "z": 0.09 },
+      "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,

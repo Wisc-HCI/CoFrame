@@ -233,7 +233,11 @@ export const GuiSlice = (set, get) => ({
         !state.focus.includes('rotate') && 
         !id.includes('-collision') && 
         !onClickIgnoredTypes.includes(state.programData[id]?.type)) {
-      state = addFocus(state, id, false);
+      if (state.programData[id].type === 'linkType') {
+        state = addFocus(state, state.programData[id].properties.agent, false);
+      } else {
+        state = addFocus(state, id, false);
+      }
       event.stopPropagation();
     }
   }),
