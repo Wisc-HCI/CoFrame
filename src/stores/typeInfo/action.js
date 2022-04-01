@@ -80,7 +80,7 @@ const breakpointFeatures = {
 }
 
 const gripperFeatures = {
-  name: 'Gripper',
+  name: 'Move Gripper',
   properties: {
     description: {default: 'Adjust the gripper position'},
     thing: {
@@ -241,7 +241,7 @@ const moveTrajectoryFeatures = {
 
 const actionTypes = {
   delayType: merge(delayFeatures,basicActionData),
-  gripperType: merge(gripperFeatures,basicActionData),
+  moveGripperType: merge(gripperFeatures,basicActionData),
   machineInitType: merge(machineInitFeatures,basicActionData),
   processStartType: merge(processStartFeatures,basicActionData),
   processStopType: merge(processStopFeatures,basicActionData),
