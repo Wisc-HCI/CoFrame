@@ -104,8 +104,8 @@ export const GuiSlice = (set, get) => ({
   // activeDrawer: null,
   // setActiveDrawer: (drawer) => set(_ => ({ activeDrawer: drawer })),
   // the focusItem specifies the type and uuid of data to focus on
-  focus: ['gripper-robotiq'],
-  activeFocus: 'gripper-robotiq',
+  focus: [],
+  activeFocus: null,
   setActiveFocus: (id) => set(state=>{state.activeFocus=id}),
   addFocusItem: (id, add) => set(state => {
     state = addFocus(state, id, add);
