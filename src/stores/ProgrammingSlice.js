@@ -3,6 +3,7 @@ import { remove, pickBy } from 'lodash';
 import { instanceTemplateFromSpec } from "simple-vp";
 import { generateUuid } from "./generateUuid";
 import { STATUS } from "./Constants";
+import { FiUnderline } from "react-icons/fi";
 
 // Credit: https://www.npmjs.com/package/lodash-move
 export function move(array, moveIndex, toIndex) {
@@ -330,10 +331,18 @@ export function move(array, moveIndex, toIndex) {
         })
       },
       updateItemSimpleProperty: (id, property, value) => {
-        set((state) => {
-          state.programData[id].properties[property] = value;
-          state.programData[id].properties.status = STATUS.PENDING
-        })
+        if (value === undefined){
+          set((state) => {
+            state.programData[id].properties.initialJointState = property;
+            state.programData[id].properties.status = STATUS.PENDING
+          })
+        }else{
+          set((state) => {
+            state.programData[id].properties[property] = value;
+            state.programData[id].properties.status = STATUS.PENDING
+          })
+        }
+        
       },
       updateItemPositionProperty: (id, property, value) => {
         set((state) => {
@@ -353,6 +362,11 @@ export function move(array, moveIndex, toIndex) {
       updateItemDescription: (id, value) => {
         set((state) => {
           state.programData[id].properties.description = value;
+        })
+      },
+      updateItemJoints: (id,joint,value) => {
+        set((state) => {
+          state.programData[id].properties.initialJointState[joint] = value;
         })
       }
 
