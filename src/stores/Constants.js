@@ -40,7 +40,7 @@ export const ROOT_BOUNDS = [
 export const DETAIL_TYPES = ['machineType', 'inputOutputType', 'processType', 'locationType', 'waypointType', 'thingType','fixtureType','toolType','robotAgentType','humanAgentType','gripperType']
 export const TIMELINE_TYPES = ['programType', 'skillType', 'hierarchicalType', 
                         'moveGripperType', 'machineInitType', 'processStartType', 
-                        'processWaitType', 'processStopType', 'moveTrajectoryType',
-                        'robotInitType'
+                        'processWaitType', 'processStopType', 'moveTrajectoryType'
                     ]
+export const PREVIEW_TYPES = [...TIMELINE_TYPES,'locationType','waypointType'];
 export const REFERENCEABLE_OBJECTS = ["machineType", "fixtureType", "linkType", "toolType", "robotAgentType", "humanAgentType", 'gripperType'];

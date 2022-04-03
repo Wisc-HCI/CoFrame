@@ -200,7 +200,12 @@ export const likFramesToTransforms = (frames, model, frame) => {
         const poseLocal = queryLocalPose(model, relativeFrameId, poseWorld)
         return {
             frame,
-            ...poseLocal
+            ...poseLocal,
+            scale: {
+                x: 1,
+                y: 1,
+                z: 1
+            }
         }
     })
     return linkTransforms

@@ -97,7 +97,7 @@ export const computedSlice = (state) => {
                     frame: entry.id,
                     position: meshObject.properties.position,
                     rotation: meshObject.properties.rotation,
-                    color: meshObject.properties.color,
+                    color: meshObject.properties.color,//{r:10,g:10,b:10,a:0.5},//
                     scale: meshObject.properties.scale,
                     transformMode: itemTransformMethod(state, entry.id),
                     highlighted
@@ -215,29 +215,23 @@ export const computedSlice = (state) => {
             if (entry.type === 'gripperType') {
                 
                 items[entry.id+'-gripperOffset'] = {
-                    shape: 'arrow',
+                    shape: 'flatarrow',
                     name: `${entry.name} Gripper Position`,
                     frame:entry.id,
                     position: entry.properties.gripOffset,
                     rotation: {x:0,y:0,z:0,w:1},
                     scale: {x:0.07,y:0.07,z:0.05},
-                    color: { r: 250, g: 250, b: 0, a: 0.6 },
+                    color: { r: 0, g: 250, b: 250, a: 0.9 },
                 }
-                const baseGripPose =  entry.properties.compiled[JSON.stringify(['root'])]?.goalPose;
-                console.log(baseGripPose)
-                if (baseGripPose) {
-                    items[entry.id+'-gripperOffsetBase'] = {
-                        shape: 'sphere',
-                        name: `${entry.name} Gripper Position Goal`,
-                        frame:'world',
-                        position: baseGripPose.position,
-                        rotation: baseGripPose.rotation,
-                        scale: {x:0.07,y:0.07,z:0.07},
-                        color: { r: 250, g: 250, b: 0, a: 0.6 },
-                    }
-                }
-                
-                
+                items[entry.id+'-gripperGoal'] = {
+                    shape: 'flatarrow',
+                    name: `${entry.name} Gripper Goal Position`,
+                    frame: entry.properties.relativeTo,
+                    position: {x:0,y:0,z:0},
+                    rotation: {x:0,y:0,z:0,w:1},
+                    scale: {x:.1,y:.1,z:.1},
+                    color: { r: 250, g: 250, b: 0, a: 0.9 },
+                }                       
             }
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
@@ -266,12 +260,37 @@ export const computedSlice = (state) => {
                 items[shape.uuid] = {
                     ...shape,
                     highlighted: focused,
-                    hidden: !focused && !trajectoryFocused,
+                    hidden: false,//!focused && !trajectoryFocused,
                     color,
                     transformMode: shape.uuid.includes('pointer') && focused ? transform : "inactive"
                 };
                 // e => setItemProperty('location', location_uuid, 'position', { ...state.data.locations[location_uuid].position, x: e[0], y: e[1], z: e[2] });
             })
+
+            
+            items[entry.id+'-poseRepresentation'] = {
+                shape: 'flatarrow',
+                name: `${entry.name} Gripper Position Goal`,
+                frame:'world',
+                position: entry.properties.position,
+                rotation: entry.properties.rotation,
+                scale: {x:0.07,y:0.07,z:0.07},
+                color: { r: 0, g: 250, b: 250, a: 0.6 },
+            }
+
+            const baseGripPose =  entry.properties.compiled[JSON.stringify(['root'])]?.goalPose;
+            console.log(baseGripPose)
+            if (baseGripPose) {
+                items[entry.id+'-gripperOffsetBase'] = {
+                    shape: 'flatarrow',
+                    name: `${entry.name} Gripper Position Goal`,
+                    frame:'world',
+                    position: baseGripPose.position,
+                    rotation: baseGripPose.rotation,
+                    scale: {x:0.07,y:0.07,z:0.07},
+                    color: { r: 250, g: 250, b: 0, a: 0.6 },
+                }
+            }
         }
     })
 
@@ -345,24 +364,43 @@ export const computedSlice = (state) => {
     // ===================== Hulls =====================
     let hulls = {}
 
-    Object.values(executablePrimitives).forEach(ePrim => {
-        if (ePrim) {
-            Object.values(ePrim).forEach(primitive => {
-                if (primitive.type === "node.primitive.move-trajectory.") {
-                    const hidden = !state.focus.includes(primitive.uuid);
-                    if (state.secondaryFocusItem.type === "issue") {
-                        const currentIssue = state.issues[state.secondaryFocusItem.uuid];
-                        if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.hulls) {
-                            let vertKeys = Object.keys(currentIssue.sceneData.hulls);
-                            for (let i = 0; i < vertKeys.length; i++) {
-                                hulls[primitive.uuid.concat(vertKeys[i])] = { name: vertKeys[i], vertices: currentIssue.sceneData.hulls[vertKeys[i]].vertices, color: currentIssue.sceneData.hulls[vertKeys[i]].color, frame: 'world', hidden, width: 2 };
-                            }
-                        }
-                    }
+    // Object.values(executablePrimitives).forEach(ePrim => {
+    //     if (ePrim) {
+    //         Object.values(ePrim).forEach(primitive => {
+    //             if (primitive.type === "node.primitive.move-trajectory.") {
+    //                 const hidden = !state.focus.includes(primitive.uuid);
+    //                 if (state.secondaryFocusItem.type === "issue") {
+    //                     const currentIssue = state.issues[state.secondaryFocusItem.uuid];
+    //                     if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.hulls) {
+    //                         let vertKeys = Object.keys(currentIssue.sceneData.hulls);
+    //                         for (let i = 0; i < vertKeys.length; i++) {
+    //                             hulls[primitive.uuid.concat(vertKeys[i])] = { name: vertKeys[i], vertices: currentIssue.sceneData.hulls[vertKeys[i]].vertices, color: currentIssue.sceneData.hulls[vertKeys[i]].color, frame: 'world', hidden, width: 2 };
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         });
+    //     }
+    // });
+
+    // Show preview of deepest preview type.
+    reversedFocus.some(focusId=>{
+        const item = state.programData[focusId];
+        if (!item) {
+            return false
+        } else if (item.type === 'waypointType' || item.type === 'locationType') {
+            Object.values(item.properties.states).forEach(robotGroup=>{
+                    Object.values(robotGroup).forEach(gripperGroup=>{
+                        console.log('CURRENT TFS', tfs)
+                        console.log('ADDED LINKS',gripperGroup.links)
+                        tfs = {...tfs, ...gripperGroup.links}
+                    })
                 }
-            });
+            )
+        } else {
+
         }
-    });
+    })
 
     return ({
         executablePrimitives,

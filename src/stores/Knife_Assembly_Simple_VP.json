@@ -1737,7 +1737,7 @@
       ],
       "position": { "x": 0, "y": 0, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
-      "relativeTo": "wrist_3_link",
+      "relativeTo": "tool0",
       "status": 0,
       "compiled": {}
     },
@@ -2903,6 +2903,72 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": "robotWrist3LinkMesh",
+      "status": 0,
+      "compiled": {},
+      "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
+    }
+  },
+  "flange": {
+    "id": "flange",
+    "name": "Flange",
+    "type": "linkType",
+    "dataType": 0,
+    "canDelete": false,
+    "canEdit": true,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "collision": null,
+      "compileFn": 12,
+      "updateFields": ["position", "rotation", "relativeTo", "agent"],
+      "description": "",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "w": 1,
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "mesh": null,
+      "status": 0,
+      "compiled": {},
+      "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
+    }
+  },
+  "tool0": {
+    "id": "tool0",
+    "name": "Tool Hookup",
+    "type": "linkType",
+    "dataType": 0,
+    "canDelete": false,
+    "canEdit": true,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "collision": null,
+      "compileFn": 12,
+      "updateFields": ["position", "rotation", "relativeTo", "agent"],
+      "description": "",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "w": 1,
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "mesh": null,
       "status": 0,
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
