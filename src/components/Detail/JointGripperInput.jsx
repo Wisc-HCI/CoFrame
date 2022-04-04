@@ -11,10 +11,8 @@ function JointGripperInput({ robotID, isGripper }) {
     let initialState = {};
     let initialStateValue;
     if (isGripper === true) {
-
-        initialStateValue = useStore(state =>
-            state.programData[robotID].properties.initialGripState
-        );
+       
+        initialStateValue = useStore(state =>state.programData[robotID].properties.initialGripState);
 
     } else {
         initialStateInfo = useStore(state => {
@@ -33,11 +31,7 @@ function JointGripperInput({ robotID, isGripper }) {
 
     }
 
-    console.log("initial", initialStateValue);
-
     const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty);
-
-
 
     if (isGripper) {
         return (
@@ -74,10 +68,12 @@ function JointGripperInput({ robotID, isGripper }) {
                     {initialStateInfo.map((io, i) => {
 
                         return (
+                            <>
+                            <div style ={{"paddingBottom" : "3%"}}>
                             <Box key={i} round="xsmall" background="rgba(100,100,100,0.3)" direction='row'
                                 elevation="none" pad="xsmall" justify='between'
-                                hoverIndicator={true}>
-                                <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {io.key} </b>
+                                hoverIndicator={true} > 
+                                <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {io.key.replace(/_/g,' ')} </b>
                                 <div >
                                     <NumberInput
                                         value={io.value}
@@ -86,8 +82,12 @@ function JointGripperInput({ robotID, isGripper }) {
                                         onChange={(value) => updateItemSimpleProperty(robotID, { ...initialState, [io.key]: value })}
                                     />
                                 </div>
-
+                                
                             </Box>
+                            </div>
+                            
+                            </>
+                            
                         )
                     })}
 

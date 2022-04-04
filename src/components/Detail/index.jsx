@@ -38,6 +38,7 @@ export const Detail = (_) => {
       objectTypeInfo: item?.type ? state.programSpec.objectTypes[state.programData[item?.id].type] : null
     }
   }, shallow);
+  console.log("objectTypeInfo", objectTypeInfo);
 
   //const addFocusItem = useStore(state => state.addFocusItem);
   const clearFocus = useStore(state => state.clearFocus);
