@@ -363,11 +363,7 @@ export function move(array, moveIndex, toIndex) {
         set((state) => {
           state.programData[id].properties.description = value;
         })
-      },
-      updateItemJoints: (id,joint,value) => {
-        set((state) => {
-          state.programData[id].properties.initialJointState[joint] = value;
-        })
       }
+    
 
     })

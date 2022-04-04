@@ -7,6 +7,32 @@
     "canEdit": true,
     "properties": {
       "description": "Robot Agent",
+      "jointLimit" : {
+        "elbow_joint" : {
+          "lower": -3.141592653589793,
+          "upper": 3.141592653589793
+        },
+        "shoulder_lift_joint" : {
+          "lower": -6.283185307179586,
+          "upper": 6.283185307179586
+        },
+        "shoulder_pan_joint" : {
+          "lower": -6.283185307179586,
+          "upper": 6.283185307179586
+        },
+        "wrist_1_joint":{
+          "lower": -6.283185307179586,
+          "upper": 6.283185307179586
+        },
+        "wrist_2_joint": {
+          "lower": -6.283185307179586,
+          "upper": 6.283185307179586
+        },
+        "wrist_3_joint" : {
+          "lower": -3.141592653589793,
+          "upper": 3.141592653589793
+        }   
+      }, 
       "initialJointState": {
         "elbow_joint": -1.57,
         "shoulder_lift_joint": -0.55,
