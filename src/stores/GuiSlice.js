@@ -1,5 +1,6 @@
 import frameStyles from '../frameStyles';
 import { DATA_TYPES } from 'simple-vp';
+import { remove } from 'lodash';
 // import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
 
 // const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
@@ -56,7 +57,33 @@ const addFocus = (state, id, add) => {
     }
   })
   return state;
-} 
+}
+
+const swapLocations = (state, id) => {
+  let  hasTrajectory = false;
+  let endingFocus = null;
+  
+  // Search for a trajectory and the location/waypoint that corresponds after it
+  state.focus.forEach(entry => {
+    if (!hasTrajectory && state.programData[entry]?.type === 'trajectoryType') {
+      hasTrajectory = true;
+    } else if (hasTrajectory && (state.programData[entry]?.type === 'locationType' || state.programData[entry]?.type === 'waypointType')) {
+      endingFocus = entry;
+    }
+  });
+
+  // If a location/waypoint has been found, deselect it and remove it from focus
+  if (endingFocus) {
+    state.programData[endingFocus].selected = false;
+    remove(state.focus, (entry) => entry === endingFocus);
+  }
+
+  // Add new location/waypoint to the focus
+  // Note: if a trajectory wasn't found, hasTrajectory will be false and will clear out the old focus
+  state = addFocus(state, id, hasTrajectory);
+
+  return state
+}
 
 export const GuiSlice = (set, get) => ({
   // EDITOR/SETUP/MAIN
@@ -235,6 +262,10 @@ export const GuiSlice = (set, get) => ({
         !onClickIgnoredTypes.includes(state.programData[id]?.type)) {
       if (state.programData[id]?.type === 'linkType') {
         state = addFocus(state, state.programData[id].properties.agent, false);
+      } else if (id.endsWith('-pointer')) {
+        state = swapLocations(state, id.replace('-pointer', ''));
+      } else if (id.endsWith('-tag')) {
+        state = swapLocations(state, id.replace('-tag', ''));
       } else {
         state = addFocus(state, id, false);
       }

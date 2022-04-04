@@ -68,7 +68,17 @@ export const computedSlice = (state) => {
     //     ...state.programData[state.focusItem.uuid].properties.waypoints,
     //     state.programData[state.focusItem.uuid].properties.endLocation,
     // ] : []
-    const focusedTrajectoryChildren = [];
+    let focusedTrajectoryChildren = [];
+    state.focus.forEach((entry) => {
+        if (state.programData[entry]?.type === "trajectoryType") {
+            let trajectory = state.programData[entry];
+            focusedTrajectoryChildren.push(state.programData[trajectory.properties.startLocation].ref);
+            trajectory.properties.waypoints.forEach((wp) => {
+                focusedTrajectoryChildren.push(state.programData[wp].ref);
+            });
+            focusedTrajectoryChildren.push(state.programData[trajectory.properties.endLocation].ref);
+        }
+    });
 
     // Add items from the initial static scene
     Object.values(state.programData).filter(v => v.dataType === DATA_TYPES.INSTANCE).forEach(entry => {
@@ -345,8 +355,8 @@ export const computedSlice = (state) => {
             poses.push(state.programData[trajectory.properties.endLocation])
         }
         const vertices = poses.map(pose => {
-            let pos = pose.refData ? pose.refData.properties.position : pose.properties.position;
-            let reachable = pose.refData ? pose.refData.properties.reachable : pose.properties.reachable;
+            let pos = pose.ref ? state.programData[pose.ref].properties.position : pose.properties.position;
+            let reachable = pose.ref ? state.programData[pose.ref].properties.reachable : pose.properties.reachable;
             let color = { ...DEFAULT_TRAJECTORY_COLOR };
             if (state.frame === 'performance' && !reachable) {//pose, frame, focused, locationOrWaypoint
                 color = { ...UNREACHABLE_COLOR };

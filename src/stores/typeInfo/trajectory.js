@@ -24,6 +24,24 @@ export const trajectoryType = {
         }
       ]
     },
+    referenceBlock: {
+      hideNewPrefix: true,
+      onCanvas: false,
+      color: '#c5329a',
+      icon: ContainerIconStyled,
+      extras: [
+        EXTRA_TYPES.LOCKED_INDICATOR,
+        {
+          icon: FiMoreHorizontal,
+          type: EXTRA_TYPES.DROPDOWN,
+          contents: [
+            EXTRA_TYPES.DELETE_BUTTON,
+            EXTRA_TYPES.DEBUG_TOGGLE,
+            EXTRA_TYPES.SELECTION_TOGGLE
+          ]
+        }
+      ]
+    },
     properties: {
       description: {
         name: 'Description',
