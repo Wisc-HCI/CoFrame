@@ -11,8 +11,8 @@ function JointGripperInput({ robotID, isGripper }) {
     let initialState = {};
     let initialStateValue;
     if (isGripper === true) {
-       
-        initialStateValue = useStore(state =>state.programData[robotID].properties.initialGripState);
+
+        initialStateValue = useStore(state => state.programData[robotID].properties.initialGripState);
 
     } else {
         initialStateInfo = useStore(state => {
@@ -21,21 +21,18 @@ function JointGripperInput({ robotID, isGripper }) {
                 const lower = state.programData[robotID].properties.jointLimit[key].lower;
                 const upper = state.programData[robotID].properties.jointLimit[key].upper;
 
-                list.push({ key, "value" : value, "lower" : lower, "upper" : upper});
+                list.push({ key, "value": value, "lower": lower, "upper": upper });
             }
             return list;
         })
         initialState = useStore(state =>
             state.programData[robotID].properties.initialJointState
         );
-
-
-
-
     }
 
-   
     const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty);
+
+
 
     if (isGripper) {
         return (
@@ -73,26 +70,26 @@ function JointGripperInput({ robotID, isGripper }) {
 
                         return (
                             <>
-                            <div key={i} style ={{"paddingBottom" : "3%"}}>
-                            <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='row'
-                                elevation="none" pad="xsmall" justify='between'
-                                hoverIndicator={true} > 
-                                <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {io.key.replace(/_/g,' ')} </b>
-                                <div >
-                                    <NumberInput
-                                        value={io.value}
-                                        min={io.lower}
-                                        max={io.upper}
-                                        onChange={ 
-                                            (value) => updateItemSimpleProperty(robotID, { ...initialState, [io.key]: value})}
-                                    />
+                                <div key={i} style={{ "paddingBottom": "3%" }}>
+                                    <Box key={i} round="xsmall" background="rgba(100,100,100,0.3)" direction='row'
+                                        elevation="none" pad="xsmall" justify='between'
+                                        hoverIndicator={true} >
+                                        <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {io.key.replace(/_/g, ' ')} </b>
+                                        <div key={i} >
+                                            <NumberInput
+                                                value={io.value}
+                                                min={io.lower}
+                                                max={io.upper}
+                                                onChange={
+                                                    (value) => updateItemSimpleProperty(robotID, { ...initialState, [io.key]: value })}
+                                            />
+                                        </div>
+
+                                    </Box>
                                 </div>
-                                
-                            </Box>
-                            </div>
-                            
+
                             </>
-                            
+
                         )
                     })}
 
