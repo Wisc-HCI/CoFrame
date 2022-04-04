@@ -18,7 +18,10 @@ function JointGripperInput({ robotID, isGripper }) {
         initialStateInfo = useStore(state => {
             let list = [];
             for (const [key, value] of Object.entries(state.programData[robotID].properties.initialJointState)) {
-                list.push({ key, value });
+                const lower = state.programData[robotID].properties.jointLimit[key].lower;
+                const upper = state.programData[robotID].properties.jointLimit[key].upper;
+
+                list.push({ key, "value" : value, "lower" : lower, "upper" : upper});
             }
             return list;
         })
@@ -31,6 +34,7 @@ function JointGripperInput({ robotID, isGripper }) {
 
     }
 
+   
     const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty);
 
     if (isGripper) {
@@ -69,17 +73,18 @@ function JointGripperInput({ robotID, isGripper }) {
 
                         return (
                             <>
-                            <div style ={{"paddingBottom" : "3%"}}>
-                            <Box key={i} round="xsmall" background="rgba(100,100,100,0.3)" direction='row'
+                            <div key={i} style ={{"paddingBottom" : "3%"}}>
+                            <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='row'
                                 elevation="none" pad="xsmall" justify='between'
                                 hoverIndicator={true} > 
                                 <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {io.key.replace(/_/g,' ')} </b>
                                 <div >
                                     <NumberInput
                                         value={io.value}
-                                        min={0}
-                                        max={Infinity}
-                                        onChange={(value) => updateItemSimpleProperty(robotID, { ...initialState, [io.key]: value })}
+                                        min={io.lower}
+                                        max={io.upper}
+                                        onChange={ 
+                                            (value) => updateItemSimpleProperty(robotID, { ...initialState, [io.key]: value})}
                                     />
                                 </div>
                                 
