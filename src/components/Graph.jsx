@@ -69,7 +69,7 @@ export default withTooltip(
                 if (state.programData[f]?.properties?.status === STATUS.VALID || state.programData[f]?.properties?.status === STATUS.PENDING) {
                     if (Object.keys(state.programData[f].properties?.compiled).length === 1) {
                         let currentTime = 0;
-                        const steps = state.programData[f].properties.compiled[Object.keys(state.programData[f].properties?.compiled)[0]]
+                        const steps = state.programData[f].properties.compiled[Object.keys(state.programData[f].properties?.compiled)[0]]?.steps;
                         if (steps) {
                             steps.forEach((step,i) => {
                                 if (step.stepType === STEP_TYPE.ACTION_START) {
