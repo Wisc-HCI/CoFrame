@@ -97,7 +97,7 @@ export const computedSlice = (state) => {
                     frame: entry.id,
                     position: meshObject.properties.position,
                     rotation: meshObject.properties.rotation,
-                    color: meshObject.properties.color,//{r:10,g:10,b:10,a:0.5},//
+                    color: meshObject.properties.color,//{r:10,g:10,b:10,a:0.35},//
                     scale: meshObject.properties.scale,
                     transformMode: itemTransformMethod(state, entry.id),
                     highlighted
@@ -212,27 +212,27 @@ export const computedSlice = (state) => {
                 rotation: entry.properties.rotation,
                 scale: {x:1,y:1,z:1}
             }
-            if (entry.type === 'gripperType') {
+            // if (entry.type === 'gripperType') {
                 
-                items[entry.id+'-gripperOffset'] = {
-                    shape: 'flatarrow',
-                    name: `${entry.name} Gripper Position`,
-                    frame:entry.id,
-                    position: entry.properties.gripOffset,
-                    rotation: {x:0,y:0,z:0,w:1},
-                    scale: {x:0.07,y:0.07,z:0.05},
-                    color: { r: 0, g: 250, b: 250, a: 0.9 },
-                }
-                items[entry.id+'-gripperGoal'] = {
-                    shape: 'flatarrow',
-                    name: `${entry.name} Gripper Goal Position`,
-                    frame: entry.properties.relativeTo,
-                    position: {x:0,y:0,z:0},
-                    rotation: {x:0,y:0,z:0,w:1},
-                    scale: {x:.1,y:.1,z:.1},
-                    color: { r: 250, g: 250, b: 0, a: 0.9 },
-                }                       
-            }
+            //     items[entry.id+'-gripperOffset'] = {
+            //         shape: 'arrow',
+            //         name: `${entry.name} Gripper Position`,
+            //         frame:entry.id,
+            //         position: entry.properties.gripPositionOffset,
+            //         rotation: entry.properties.gripRotationOffset,
+            //         scale: {x:0.14,y:0.07,z:0.05},
+            //         color: { r: 0, g: 250, b: 250, a: 0.9 },
+            //     }
+            //     items[entry.id+'-gripperGoal'] = {
+            //         shape: 'arrow',
+            //         name: `${entry.name} Gripper Goal Position`,
+            //         frame: entry.properties.relativeTo,
+            //         position: {x:0,y:0,z:0},
+            //         rotation: {x:0,y:0,z:0,w:1},
+            //         scale: {x:0.14,y:0.07,z:0.05},
+            //         color: { r: 250, g: 250, b: 0, a: 0.9 },
+            //     }                       
+            // }
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
             const focused = state.focus.includes(entry.id);
@@ -260,7 +260,7 @@ export const computedSlice = (state) => {
                 items[shape.uuid] = {
                     ...shape,
                     highlighted: focused,
-                    hidden: false,//!focused && !trajectoryFocused,
+                    hidden: !focused && !trajectoryFocused,
                     color,
                     transformMode: shape.uuid.includes('pointer') && focused ? transform : "inactive"
                 };
@@ -268,29 +268,29 @@ export const computedSlice = (state) => {
             })
 
             
-            items[entry.id+'-poseRepresentation'] = {
-                shape: 'flatarrow',
-                name: `${entry.name} Gripper Position Goal`,
-                frame:'world',
-                position: entry.properties.position,
-                rotation: entry.properties.rotation,
-                scale: {x:0.07,y:0.07,z:0.07},
-                color: { r: 0, g: 250, b: 250, a: 0.6 },
-            }
+            // items[entry.id+'-poseRepresentation'] = {
+            //     shape: 'arrow',
+            //     name: `${entry.name} Gripper Position Goal`,
+            //     frame:'world',
+            //     position: entry.properties.position,
+            //     rotation: entry.properties.rotation,
+            //     scale: {x:0.14,y:0.07,z:0.05},
+            //     color: { r: 0, g: 250, b: 250, a: 0.6 },
+            // }
 
-            const baseGripPose =  entry.properties.compiled[JSON.stringify(['root'])]?.goalPose;
-            console.log(baseGripPose)
-            if (baseGripPose) {
-                items[entry.id+'-gripperOffsetBase'] = {
-                    shape: 'flatarrow',
-                    name: `${entry.name} Gripper Position Goal`,
-                    frame:'world',
-                    position: baseGripPose.position,
-                    rotation: baseGripPose.rotation,
-                    scale: {x:0.07,y:0.07,z:0.07},
-                    color: { r: 250, g: 250, b: 0, a: 0.6 },
-                }
-            }
+            // const baseGripPose =  entry.properties.compiled[JSON.stringify(['root'])]?.goalPose;
+            // console.log(baseGripPose)
+            // if (baseGripPose) {
+            //     items[entry.id+'-gripperOffsetBase'] = {
+            //         shape: 'arrow',
+            //         name: `${entry.name} Gripper Position Goal`,
+            //         frame:'world',
+            //         position: baseGripPose.position,
+            //         rotation: baseGripPose.rotation,
+            //         scale:{x:0.14,y:0.07,z:0.05},
+            //         color: { r: 250, g: 250, b: 0, a: 0.6 },
+            //     }
+            // }
         }
     })
 

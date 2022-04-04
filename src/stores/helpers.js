@@ -95,7 +95,7 @@ export const updateWorldModelWithTransforms = (model, transforms) => {
 
 export const computeRelativePose = (model, referenceId, targetId) => {
     const targetPose = queryWorldPose(model, targetId);
-    console.log({referenceId,targetId,targetPose});
+    // console.log({referenceId,targetId,targetPose});
     return queryLocalPose(model,referenceId, targetPose);
 }
 
@@ -170,7 +170,8 @@ export const createEnvironmentModel = (programData) => {
                 if (item.properties.gripOffset) {
                     model[item.id+'-gripOffset'] = new Group();
                     model[item.id+'-gripOffset'].userData.parent = item.id;
-                    model[item.id+'-gripOffset'].position.set(item.properties.gripOffset.x, item.properties.gripOffset.y, item.properties.gripOffset.z);
+                    model[item.id+'-gripOffset'].position.set(item.properties.gripPositionOffset.x, item.properties.gripPositionOffset.y, item.properties.gripPositionOffset.z);
+                    model[item.id+'-gripOffset'].quaternion.set(item.properties.gripRotationOffset.x, item.properties.gripRotationOffset.y, item.properties.gripRotationOffset.z, item.properties.gripRotationOffset.w);
                     // For now, I am assuming no rotation
                     model[item.id].add(model[item.id+'-gripOffset']);
                 }
@@ -224,12 +225,14 @@ export const likStateToData = (state, model, frame) => {
 }
 
 export const poseToGoalPosition = (model,gripperId,attachmentLink,pose) => {
-    console.log({model,gripperId,attachmentLink,pose})
+    // console.log({model,gripperId,attachmentLink,pose})
     const poseOffset = computeRelativePose(model,gripperId+'-gripOffset',attachmentLink);
     const offsetMatrix = new Matrix4();
     const poseMatrix = new Matrix4();
     const positionVector = new Vector3(poseOffset.position.x,poseOffset.position.y,poseOffset.position.z);
     const rotationQuat = new Quaternion(poseOffset.rotation.x,poseOffset.rotation.y,poseOffset.rotation.z,poseOffset.rotation.w);
+    // const positionVector = new Vector3(0,0,0.15);
+    // const rotationQuat = new Quaternion(0.5,0.5,-0.5,0.5);
     const defaultScale = new Vector3(1,1,1);
     const goalPositionVector = new Vector3(pose.position.x,pose.position.y,pose.position.z);
     const goalRotationQuat = new Quaternion(pose.rotation.x,pose.rotation.y,pose.rotation.z,pose.rotation.w);

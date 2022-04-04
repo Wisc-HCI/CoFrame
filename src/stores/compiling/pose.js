@@ -4,7 +4,7 @@ import { distance, likStateToData, createStaticEnvironment, queryWorldPose, quat
 import { DATA_TYPES } from "simple-vp";
 
 
-export const poseCompiler = ({data, properties, objectTypes, context, path, memo, module, worldModel}) => {
+export const poseCompiler = ({data, properties, path, memo, module, worldModel}) => {
 
     // Create a reachabilty object to indicate who can reach this pose;
     let reachability = {};
@@ -53,8 +53,6 @@ export const poseCompiler = ({data, properties, objectTypes, context, path, memo
                         ? data.properties.compiled[path].states[robot.id][gripper.id].joints 
                         : robotInitialJointState;
 
-                    console.log(robot.properties)
-
                     // Set up the objectives based on the attachment link
                     const attachmentLink = gripper.properties.relativeTo;
                     const objectives = [
@@ -62,10 +60,9 @@ export const poseCompiler = ({data, properties, objectTypes, context, path, memo
                         {type:'OrientationMatch',name:"EE Rotation",link:attachmentLink,weight:25},
                         {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
                     ];
-                    console.log('getting goal position...',{worldModel,gripperId:gripper.id,attachmentLink,props:data.properties})
-                    // console.log(worldModel)
+                    
                     // Find the position we need in the attachment link to match the desired pose gripper position
-                    goalPose = poseToGoalPosition(worldModel,gripper.id,attachmentLink,data.properties);
+                    goalPose = poseToGoalPosition(worldModel,gripper.id,attachmentLink,properties); 
                     // console.log('goal:',goalPose)
 
                     // Construct the joint state information
@@ -73,7 +70,6 @@ export const poseCompiler = ({data, properties, objectTypes, context, path, memo
 
                     // Construct the solver
                     const initialState = {origin,joints:initialJointState};
-                    console.log(initialState);
                     const solver = new module.Solver(
                         urdf,
                         objectives,
@@ -90,10 +86,9 @@ export const poseCompiler = ({data, properties, objectTypes, context, path, memo
                     const rot = goalPose.rotation;
                     const goals = [
                         {Translation:[pos.x,pos.y,pos.z]},
-                        {Rotation:[rot.w,rot.x,rot.y,rot.z]},
+                        {Rotation:[rot.x,rot.y,rot.z,rot.w]},
                         null
                     ]
-                    console.log({links:solver.links,joints:solver.joints});
                     let goalAchieved = false;
                     let currentTime = Date.now();
 
