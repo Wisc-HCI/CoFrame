@@ -2918,7 +2918,7 @@
     "editing": false,
     "properties": {
       "agent": "gripper-robotiq",
-      "collision": "",
+      "collision": "robotiqBaseCollsion",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
@@ -3079,7 +3079,7 @@
     "editing": false,
     "properties": {
       "agent": "gripper-robotiq",
-      "collision": "",
+      "collision": "robotiqTipCollsion",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
@@ -3102,7 +3102,7 @@
     "editing": false,
     "properties": {
       "agent": "gripper-robotiq",
-      "collision": "",
+      "collision": "robotiqTipCollsion",
       "compileFn": 12,
       "updateFields": ["position", "rotation", "relativeTo", "agent"],
       "description": "",
@@ -4190,7 +4190,7 @@
     "properties": {
       "position": { "x": -0.127, "y": 0, "z": 0.12 },
       "rotation": { "x": 0.5, "y": -0.5, "z": -0.5, "w": 0.5 },
-      "scale": { "x": 0.05, "y": 0.05, "z": 0.145 },
+      "scale": { "x": 0.1, "y": 0.1, "z": 0.145 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4211,7 +4211,7 @@
     "properties": {
       "position": { "x": 0, "y": 0, "z": 0.125 },
       "rotation": { "x": 0.0, "y": 0.0, "z": -0.7071067811865475, "w": 0.7071067811865476 },
-      "scale": { "x": 0.05, "y": 0.05, "z": 0.11 },
+      "scale": { "x": 0.1, "y": 0.1, "z": 0.11 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4232,7 +4232,7 @@
     "properties": {
       "position": { "x": -0.245, "y": 0, "z": 0.125 },
       "rotation": { "x": 0.0, "y": 0.0, "z": -0.7071067811865475, "w": 0.7071067811865476 },
-      "scale": { "x": 0.04, "y": 0.04, "z": 0.11 },
+      "scale": { "x": 0.08, "y": 0.08, "z": 0.11 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4270,7 +4270,7 @@
     "properties": {
       "position": { "x": -0.07, "y": 0, "z": 0.027 },
       "rotation": { "x": 0.5, "y": -0.5, "z": -0.5, "w": 0.5 },
-      "scale": { "x": 0.04, "y": 0.04, "z": 0.2 },
+      "scale": { "x": 0.08, "y": 0.08, "z": 0.20 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4291,7 +4291,7 @@
     "properties": {
       "position": { "x": -0.215, "y": 0, "z": 0.027 },
       "rotation": { "x": 0, "y": 0, "z": -0.7071067811865475, "w": 0.7071067811865476 },
-      "scale": { "x": 0.04, "y": 0.04, "z": 0.095 },
+      "scale": { "x": 0.08, "y": 0.08, "z": 0.095 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4329,7 +4329,7 @@
     "properties": {
       "position": { "x": 0, "y": 0, "z": 0 },
       "rotation": { "x": 0.7071067811865475, "y": 0.0, "z": 0.0, "w": 0.7071067811865476 },
-      "scale": { "x": 0.035, "y": 0.035, "z": 0.095 },
+      "scale": { "x": 0.07, "y": 0.07, "z": 0.095 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4367,7 +4367,7 @@
     "properties": {
       "position": { "x": 0, "y": -0.008, "z": 0.01 },
       "rotation": { "x": 0.7071067811865475, "y": 0.0, "z": 0.0, "w": 0.7071067811865476 },
-      "scale": { "x": 0.04, "y": 0.04, "z": 0.1 },
+      "scale": { "x": 0.08, "y": 0.08, "z": 0.1 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4405,7 +4405,7 @@
     "properties": {
       "position": { "x": 0, "y": -0.01, "z": -0.015 },
       "rotation": { "x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0 },
-      "scale": { "x": 0.04, "y": 0.04, "z": 0.04 },
+      "scale": { "x": 0.08, "y": 0.08, "z": 0.04 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4443,7 +4443,7 @@
     "properties": {
       "position": { "x": 0, "y": 0, "z": 0 },
       "rotation": { "x": 0.0, "y": 0.0, "z": 1.0, "w": 0 },
-      "scale": { "x": 0.065, "y": 0.065, "z": 0.11 },
+      "scale": { "x": 0.13, "y": 0.13, "z": 0.11 },
       "keyword": "cylinder",
       "extraParams": null,
       "status": 0,
@@ -4481,8 +4481,84 @@
     "properties": {
       "position": { "x": 0, "y": 0, "z": 0.04 },
       "rotation": { "x": 0.0, "y": 0.0, "z": 1.0, "w": 0 },
-      "scale": { "x": 0.065, "y": 0.065, "z": 0.09 },
+      "scale": { "x": 0.13, "y": 0.13, "z": 0.09 },
       "keyword": "cylinder",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "robotiqBaseCollsion": {
+    "type": "collisionBodyType",
+    "id": "robotiqBaseCollsion",
+    "name": "Robot IQ 85 Base Gripper Collision Body",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "componentShapes": ["robotiqBaseCollisionShape0"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotiqBaseCollisionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotiqBaseCollisionShape0",
+    "name": "Robot Gripper Base Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0.045, "y": 0, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.09, "y": 0.09, "z": 0.07 },
+      "keyword": "cube",
+      "extraParams": null,
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["position", "rotation", "scale"]
+    }
+  },
+  "robotiqTipCollsion": {
+    "type": "collisionBodyType",
+    "id": "robotiqTipCollsion",
+    "name": "Robot IQ 85 Gripper Tip Collision Body",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "componentShapes": ["robotiqTipCollsionShape0"],
+      "status": 0,
+      "compileFn": 0,
+      "compiled": {},
+      "updateFields": ["componentShapes"]
+    }
+  },
+  "robotiqTipCollsionShape0": {
+    "type": "collisionShapeType",
+    "id": "robotiqTipCollsionShape0",
+    "name": "Robot Gripper Tip Collision Shape",
+    "canDelete": true,
+    "canEdit": true,
+    "dataType": 0,
+    "selected": false,
+    "editing": false,
+    "properties": {
+      "position": { "x": 0.01, "y": 0, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
+      "scale": { "x": 0.07, "y": 0.02, "z": 0.04 },
+      "keyword": "cube",
       "extraParams": null,
       "status": 0,
       "compileFn": 0,
