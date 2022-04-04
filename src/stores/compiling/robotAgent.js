@@ -15,5 +15,5 @@ export const robotAgentCompiler = ({data, properties, module, worldModel}) => {
     // console.log(properties.urdf)
     const fwdsolver = new module.Solver(properties.urdf,[],rootBounds, createStaticEnvironment(worldModel), {origin, joints:properties.initialJointState}, false, 1, 450);
     const newCompiled = likStateToData(fwdsolver.currentState,worldModel,data.id);
-    return { ...newCompiled, status: STATUS.VALID }
+    return { type: data.type, ...newCompiled, ...properties, linkInfo: fwdsolver.links, jointInfo: fwdsolver.joints, status: STATUS.VALID }
 }

@@ -93,8 +93,13 @@ const gripperFeatures = {
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {}
       },
+      gripOffset: {
+        name: 'Gripper Offset',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: {x: 0, y: 0, z: 0}
+      },
       compileFn: {default: COMPILE_FUNCTIONS.GRIPPER},
-      updateFields: {default: ['initialGripState','position','rotation','relativeTo','gripperIndex','gripperFrames']}
+      updateFields: {default: ['initialGripState','position','rotation','relativeTo','gripperIndex','gripperFrames','gripOffset']}
     }
 }
 

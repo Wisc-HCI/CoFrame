@@ -46,6 +46,16 @@ export const locationType = {
         isList: false,
         fullWidth: true
       },
+      states: {
+        name: 'States',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: {}
+      },
+      reachability: {
+        name: 'Reachability',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: {}
+      },
       status: {
         name: 'Status',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,

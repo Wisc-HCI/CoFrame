@@ -1,6 +1,6 @@
 import lodash from 'lodash';
 import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES, GRIPPER_PARENTS } from './gripper';
-import { Quaternion, Vector3, Group, Object3D } from 'three';
+import { Quaternion, Vector3, Group, Object3D, Matrix4 } from 'three';
 import { ConvexGeometry } from 'three-stdlib';
 import { EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp';
@@ -84,10 +84,23 @@ export const PINCH_POINT_FIELDS = {
     // wrist_2_link___gripper: {parent: 'wrist_2_link', frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
 }
 
+export const updateWorldModelWithTransforms = (model, transforms) => {
+    Object.keys(transforms).forEach(transformId=>{
+        const transform = transforms[transformId];
+        model[transformId].position.set(transform.position.x,transform.position.y,transform.position.z);
+        model[transformId].quaternion.set(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w)
+    })
+    return model
+}
+
+export const computeRelativePose = (model, referenceId, targetId) => {
+    const targetPose = queryWorldPose(model, targetId);
+    // console.log({referenceId,targetId,targetPose});
+    return queryLocalPose(model,referenceId, targetPose);
+}
+
 export const queryWorldPose = (model, ref) => {
     const referenceFeature = model[ref];
-    // console.log('REF FEATURE', { ref, referenceFeature });
-    const matrixWorld = referenceFeature.matrixWorld;
     let position = referenceFeature.getWorldPosition(new Vector3());
     let rotation = referenceFeature.getWorldQuaternion(new Quaternion());
     return {
@@ -154,6 +167,14 @@ export const createEnvironmentModel = (programData) => {
                 model[item.id].quaternion.set(item.properties.rotation.x, item.properties.rotation.y, item.properties.rotation.z, item.properties.rotation.w);
                 model[parentId].add(model[item.id]);
                 added = true;
+                if (item.properties.gripOffset) {
+                    model[item.id+'-gripOffset'] = new Group();
+                    model[item.id+'-gripOffset'].userData.parent = item.id;
+                    model[item.id+'-gripOffset'].position.set(item.properties.gripPositionOffset.x, item.properties.gripPositionOffset.y, item.properties.gripPositionOffset.z);
+                    model[item.id+'-gripOffset'].quaternion.set(item.properties.gripRotationOffset.x, item.properties.gripRotationOffset.y, item.properties.gripRotationOffset.z, item.properties.gripRotationOffset.w);
+                    // For now, I am assuming no rotation
+                    model[item.id].add(model[item.id+'-gripOffset']);
+                }
             }
         })
     }
@@ -180,7 +201,12 @@ export const likFramesToTransforms = (frames, model, frame) => {
         const poseLocal = queryLocalPose(model, relativeFrameId, poseWorld)
         return {
             frame,
-            ...poseLocal
+            ...poseLocal,
+            scale: {
+                x: 1,
+                y: 1,
+                z: 1
+            }
         }
     })
     return linkTransforms
@@ -196,6 +222,38 @@ export const likStateToData = (state, model, frame) => {
     }
     // console.log('PARSED STATE DATA',data)
     return data
+}
+
+export const poseToGoalPosition = (model,gripperId,attachmentLink,pose) => {
+    // console.log({model,gripperId,attachmentLink,pose})
+    const poseOffset = computeRelativePose(model,gripperId+'-gripOffset',attachmentLink);
+    const offsetMatrix = new Matrix4();
+    const poseMatrix = new Matrix4();
+    const positionVector = new Vector3(poseOffset.position.x,poseOffset.position.y,poseOffset.position.z);
+    const rotationQuat = new Quaternion(poseOffset.rotation.x,poseOffset.rotation.y,poseOffset.rotation.z,poseOffset.rotation.w);
+    // const positionVector = new Vector3(0,0,0.15);
+    // const rotationQuat = new Quaternion(0.5,0.5,-0.5,0.5);
+    const defaultScale = new Vector3(1,1,1);
+    const goalPositionVector = new Vector3(pose.position.x,pose.position.y,pose.position.z);
+    const goalRotationQuat = new Quaternion(pose.rotation.x,pose.rotation.y,pose.rotation.z,pose.rotation.w);
+    offsetMatrix.compose(positionVector,rotationQuat,defaultScale);
+    poseMatrix.compose(goalPositionVector,goalRotationQuat,defaultScale);
+    poseMatrix.multiply(offsetMatrix);
+    goalPositionVector.setFromMatrixPosition(poseMatrix);
+    goalRotationQuat.setFromRotationMatrix(poseMatrix);
+    return {
+        position: {
+            x: goalPositionVector.x,
+            y: goalPositionVector.y,
+            z: goalPositionVector.z
+        },
+        rotation: {
+            x: goalRotationQuat.x,
+            y: goalRotationQuat.y,
+            z: goalRotationQuat.z,
+            w: goalRotationQuat.w
+        }
+    }
 }
 
 export const typeToKey = (type) => {

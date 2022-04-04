@@ -251,7 +251,7 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
 // Returns standard changes, which will need to be propagated back up.
 export const handleUpdate = ({ data, objectTypes, context, path, memo, module, worldModel }) => {
     let newMemo = { ...memo };
-    // console.warn('MEMO:',memo)
+    // console.warn('DATA:',data.id)
     const updateFn = compilers[objectTypes[data.type].properties.compileFn.default];
     let memoizedData = memo[data.id] ? memo[data.id] : {};
     let updated = false;
@@ -345,6 +345,8 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
         memoizedData.properties.status = STATUS.FAILED
     }
     memoizedData.properties.compiled[path].break = shouldBreak
+    memoizedData.type = data.type;
+    memoizedData.id = data.id;
     // console.log(memoizedData)
 
     newMemo = { ...newMemo, [data.id]: memoizedData };

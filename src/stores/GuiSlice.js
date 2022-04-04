@@ -178,7 +178,7 @@ export const GuiSlice = (set, get) => ({
       const item = state.programData[id];
       const usedId = (item.dataType === DATA_TYPES.REFERENCE || item.dataType === DATA_TYPES.CALL) ? item.ref : id;
       
-      // Clear out current focus
+      // Clear out current selected
       state.focus.forEach(f => {
         if (state.programData[f]) {
           state.programData[f].selected = false
@@ -201,7 +201,7 @@ export const GuiSlice = (set, get) => ({
       }
       
 
-      // Clear out current focus
+      // Update the selected property for items in focus
       state.focus.forEach(f => {
         if (state.programData[f]) {
           state.programData[f].selected = true
@@ -233,7 +233,7 @@ export const GuiSlice = (set, get) => ({
         !state.focus.includes('rotate') && 
         !id.includes('-collision') && 
         !onClickIgnoredTypes.includes(state.programData[id]?.type)) {
-      if (state.programData[id].type === 'linkType') {
+      if (state.programData[id]?.type === 'linkType') {
         state = addFocus(state, state.programData[id].properties.agent, false);
       } else {
         state = addFocus(state, id, false);
