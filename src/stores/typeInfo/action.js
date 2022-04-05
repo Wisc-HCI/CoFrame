@@ -107,9 +107,9 @@ const gripperFeatures = {
     speed: {
       name: 'Speed',
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
-      default: 50,
-      min: 20,
-      max: 150
+      default: 20,
+      min: 1,
+      max: 50
     },
     compileFn: {default:COMPILE_FUNCTIONS.GRIPPER_MOTION},
     updateFields: {default: ['thing','positionStart','positionEnd','speed']}

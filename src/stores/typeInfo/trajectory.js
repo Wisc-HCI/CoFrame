@@ -76,7 +76,7 @@ export const trajectoryType = {
       compileFn: {
         name: 'Compile Function',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: COMPILE_FUNCTIONS.NULL
+        default: COMPILE_FUNCTIONS.PROPERTY
       },
       compiled: {
         name: 'Compiled',

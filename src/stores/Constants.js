@@ -25,11 +25,10 @@ export const COMPILE_FUNCTIONS = {
 export const STEP_TYPE = {
     LANDMARK: 0,
     SCENE_UPDATE: 1,
-    RAW_DATA: 2,
-    ACTION_START: 3,
-    ACTION_END: 4,
-    PROCESS_START: 5,
-    PROCESS_END: 6
+    ACTION_START: 2,
+    ACTION_END: 3,
+    PROCESS_START: 4,
+    PROCESS_END: 5
 }
 
 export const ROOT_BOUNDS = [

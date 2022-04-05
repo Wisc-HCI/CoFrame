@@ -85,7 +85,7 @@ export default withTooltip(
                                     const actionBlock = {
                                         group: 'Robot',
                                         event: 'action',
-                                        label: state.programData[step.source].name,
+                                        label: state.programData[step.source] ? state.programData[step.source].name : 'Updating...',
                                         start: currentTime,
                                         end: actionEnd?actionEnd.time:0
                                     }

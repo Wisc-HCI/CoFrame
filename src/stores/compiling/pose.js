@@ -12,7 +12,7 @@ export const poseCompiler = ({data, properties, path, memo, module, worldModel})
     let rootPath = JSON.stringify(['root']);
     let goalPose = null;
     
-    // Enumerate the robotTypes currently in the memo. This is technically unsafe, 
+    // Enumerate the robotAgentTypes/gripperTypes currently in the memo. This is technically unsafe, 
     // but we pre-process them beforehand so it is fine. We also always assume root execution 
     // (which is fine for robots/humans/grippers).
 

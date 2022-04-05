@@ -269,7 +269,6 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
 
         // No change detected at this level, but we should progress though `updateFields` to be sure.
         let properties = {};
-        // console.log(data)
         data.properties.updateFields.forEach(field => {
             // console.log('checking field', field)
             if (objectTypes[data.type].properties[field].isList) {

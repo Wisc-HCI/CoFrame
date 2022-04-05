@@ -2251,13 +2251,12 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "machine-ac5a063a-9ff9-4c0a-8fa6-81d3983f4a10",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "machine-ac5a063a-9ff9-4c0a-8fa6-81d3983f4a10"
     }
   },
   "inputOutput-mnpdm09-ty00-445md-yjg09-rnvor905mfi1203d": {
     "type": "inputOutputType",
+    "dataType": 0,
     "id": "inputOutput-mnpdm09-ty00-445md-yjg09-rnvor905mfi1203d",
     "name": "Right Handle",
     "canDelete": true,
@@ -2269,8 +2268,9 @@
       "rotation": { "x": 0.707, "y": 0, "z": 0, "w": 0.707 },
       "thing": "thingType-98892b3a1c1911ecbe2600155d1a70a2",
       "status": null,
-      "computeSteps": null,
-      "steps": null
+      "compileFn": 13,
+      "compiled": {},
+      "updateFields": ["relativeObject", "position", "rotation", "thing"]
     }
   },
   "process-b3d277ad-050f-44e1-b478-75fc33656f05": {
@@ -2314,9 +2314,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": null,
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": null
     }
   },
   "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b": {
@@ -2336,9 +2334,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "toolType-transport-jig",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "toolType-transport-jig"
     }
   },
   "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7": {
@@ -2358,9 +2354,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": null,
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": null
     }
   },
   "process-1d49b51a-de37-477e-ae56-e65ef6d0a8cf": {
@@ -2428,9 +2422,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "toolType-assembly-jig",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "toolType-assembly-jig"
     }
   },
   "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s": {
@@ -2450,9 +2442,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "toolType-assembly-jig",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "toolType-assembly-jig"
     }
   },
   "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9": {
@@ -2472,9 +2462,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "toolType-assembly-jig",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "toolType-assembly-jig"
     }
   },
   "inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s": {
@@ -2494,9 +2482,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "thingType-98892bd01c1911ecbe2600155d1a70a2",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "thingType-98892bd01c1911ecbe2600155d1a70a2"
     }
   },
   "process-7d5a12c0-b5da-4122-8c03-dec647ff6a94": {
@@ -2541,9 +2527,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "toolType-assembly-jig",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "toolType-assembly-jig"
     }
   },
   "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s": {
@@ -2563,9 +2547,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "toolType-assembly-jig",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "toolType-assembly-jig"
     }
   },
   "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0": {
@@ -2585,9 +2567,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "toolType-assembly-jig",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "toolType-assembly-jig"
     }
   },
   "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923": {
@@ -2607,9 +2587,7 @@
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["relativeObject", "position", "rotation", "thing"],
-      "relativeTo": "thingType-98892ce81c1911ecbe2600155d1a70a2",
-      "computeSteps": null,
-      "steps": null
+      "relativeTo": "thingType-98892ce81c1911ecbe2600155d1a70a2"
     }
   },
   "process-2f8b97ab-aa27-4e8d-8454-adfb7924ed98": {

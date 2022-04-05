@@ -1,49 +1,51 @@
 import { STATUS, STEP_TYPE } from "../Constants";
-import { findInstance, compilers } from './index';
-import { merge } from 'lodash';
 import { equals } from "./index";
 
 export const simpleCompiler = ({ data, properties, objectTypes, context, path, memo, solver, module, urdf, worldModel }) => {
 
-    let newCompiled = {steps: []};
-    let otherPropertyUpdates = null;
-    let status = STATUS.VALID;
-    let updated = false;
-    let shouldBreak = false;
+    let newCompiled = {
+        shouldBreak: false,
+        status: STATUS.VALID,
+        otherPropertyUpdates: {},
+        steps: []
+    };
     let lastUpdateTime = 0;
 
-    console.log('HANDLING SIMPLE COMPILER', status)
+    properties.children.some(child => {
+        const childData = child.properties.compiled[path];
+        if (childData.shouldBreak) {
+            newCompiled.shouldBreak = true;
+            return true
+        }
+        if (childData.status === STATUS.FAILED) {
+            newCompiled.status = STATUS.FAILED;
+        }
+        childData.steps.forEach(innerStep=>{
+            let stepTime = 0;
+            if (typeof innerStep.time === 'object') {
+                newCompiled.slice.reverse().some(previouslyProcessedStep=>{
+                    if (previouslyProcessedStep.stepType === STEP_TYPE.LANDMARK && equals(previouslyProcessedStep.data,innerStep.time)) {
+                        stepTime = previouslyProcessedStep.time;
+                        return false
+                    } else if (previouslyProcessedStep.time < lastUpdateTime) {
+                        return true
+                    } else {
+                        return false
+                    }
+                });
 
-    properties.children.forEach(child => {
-        let stepTime = 0;
-        const childSteps = null;
-        console.log(child)
-        // if (typeof v.time === "object") {
-        //     // encode the timing based on the landmark specified
-        //     const tempSteps = newCompiled[path].slice().reverse();
-        //     tempSteps.some(s => {
-        //         if (s.stepType === STEP_TYPE.LANDMARK && equals(s.data, v.time)) {
-        //             stepTime = s.time
-        //             return false
-        //         } else if (s.time < lastUpdateTime) {
-        //             return true
-        //         } else {
-        //             return false
-        //         }
-        //     })
-        // } else {
-        //     stepTime = v.time
-        // }
-        // if (v.stepType !== STEP_TYPE.LANDMARK) {
-        //     // Ignore landmarks
-        //     lastUpdateTime = stepTime
-        // }
-        // newCompiled[path].push({ ...v, time: stepTime + lastTime })
+            } else {
+                stepTime = innerStep.time
+            }
+            if (innerStep.stepType !== STEP_TYPE.LANDMARK) {
+                // Ignore landmarks
+                lastUpdateTime += stepTime
+            }
+            newCompiled.steps.push({...innerStep,time: lastUpdateTime})
+        })
+        return false
     })
-    // if (pathInnerSteps.length > 0) {
-    //     lastTime = lastTime + lastUpdateTime
-    // }
 
 
-    return { ...newCompiled, status, shouldBreak }
+    return newCompiled
 }
