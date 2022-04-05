@@ -11,6 +11,7 @@ import { FiTrash, FiX } from 'react-icons/fi';
 import { NumberInput } from '../NumberInput';
 import { DETAIL_TYPES } from '../../stores/Constants';
 import JointGripperInput from "./JointGripperInput";
+import LocationWaypointDetail from './LocationWaypointDetail';
 export const Detail = (_) => {
 
 
@@ -19,9 +20,9 @@ export const Detail = (_) => {
     objectTypeInfo
   } = useStore(state => {
     let item = null;
-     console.log("state.focus:", state.focus) ;
+     
     state.focus.slice().reverse().some(v => {
-       console.log("v : ", v);
+      
       if (state.programData[v] && state.activeFocus === v &&  DETAIL_TYPES.includes(state.programData[v].type)) {
         item = state.programData[v];
 
@@ -31,7 +32,7 @@ export const Detail = (_) => {
         return false
       }
     })
-    console.log("item: ", item);
+    
     // console.log("state:", state.activeFocus);
     return {
       item,
@@ -173,9 +174,12 @@ export const Detail = (_) => {
             <>
               <JointGripperInput robotID={item.id} isGripper = {false}/>
             </>
-          )
-
-          }
+          )}
+          {(item.type === 'locationType' || item.type === 'waypointType') &&(
+            <>  
+              <LocationWaypointDetail itemID ={item.id} />
+            </>
+          )}
 
 
 

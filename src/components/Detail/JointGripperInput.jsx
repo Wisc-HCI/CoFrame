@@ -31,9 +31,6 @@ function JointGripperInput({ robotID, isGripper }) {
     }
 
     const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty);
-
-
-
     if (isGripper) {
         return (
             <>
