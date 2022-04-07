@@ -2,6 +2,7 @@ import React from 'react';
 import useStore from '../../stores/Store';
 import { Box } from "grommet";
 import Collapse from '../Collapse';
+import {Toggle} from "../Toggle";
 
 
 function LocationWaypointDetail(props) {
@@ -11,7 +12,7 @@ function LocationWaypointDetail(props) {
    
     function displayList(){
         for (const [key, value] of Object.entries(item.properties.reachability[robotAgentKey])) {
-           console.log(value);
+    
            return (
             <>
                 <div key={key} style={{ "paddingBottom": "3%" }}>
@@ -20,8 +21,8 @@ function LocationWaypointDetail(props) {
                         hoverIndicator={true} >
                         <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {key} : </b>
                         <div>
-                            {value ?  <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> True</b> : 
-                            <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> False</b>}
+                            <Toggle selected = {value} disabled = {true}/>
+                            
                        
                         </div>
                     </Box>
