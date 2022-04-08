@@ -2,14 +2,14 @@ import { React } from 'react';
 import { MachineProcessList } from './MachineDetail';
 import { ProcessIOList } from './ProcessDetail';
 import PositionRotationTF from './PositionRotationTF';
-import { TextArea, Text, Box, TextInput, Button, Layer, DropButton } from 'grommet';
-import {FixtureItem} from './FixtureDetail'
+import { TextArea, Text, Box, TextInput, Button, Layer, DropButton, Spinner } from 'grommet';
+import { FixtureItem } from './FixtureDetail'
 
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 import { FiTrash, FiX } from 'react-icons/fi';
 import { NumberInput } from '../NumberInput';
-import { DETAIL_TYPES } from '../../stores/Constants';
+import { DETAIL_TYPES, STATUS } from '../../stores/Constants';
 import JointGripperInput from "./JointGripperInput";
 import LocationWaypointDetail from './LocationWaypointDetail';
 export const Detail = (_) => {
@@ -20,10 +20,10 @@ export const Detail = (_) => {
     objectTypeInfo
   } = useStore(state => {
     let item = null;
-     
+
     state.focus.slice().reverse().some(v => {
-      
-      if (state.programData[v] && state.activeFocus === v &&  DETAIL_TYPES.includes(state.programData[v].type)) {
+
+      if (state.programData[v] && state.activeFocus === v && DETAIL_TYPES.includes(state.programData[v].type)) {
         item = state.programData[v];
 
         return true
@@ -32,7 +32,7 @@ export const Detail = (_) => {
         return false
       }
     })
-    
+
     // console.log("state:", state.activeFocus);
     return {
       item,
@@ -56,10 +56,10 @@ export const Detail = (_) => {
 
   const deleteBlock = useStore(state => state.deleteBlock);
   console.log("item:", item);
-  
 
-  
-  
+
+
+
 
 
 
@@ -84,18 +84,18 @@ export const Detail = (_) => {
           <Text margin={{ left: 'small' }} size="xlarge" style={{ textTransform: 'capitalize', color: objectColor }}>
             {objectTypeInfo.name} Information
           </Text>
+          {item.properties.status === STATUS.PENDING && <Spinner/>}
           <Button icon={<FiX />} onClick={clearFocus} />
         </Box>
-        <Box flex overflow="auto" pad="xsmall" border={{ color: 'black', size: 'xxsmall' }}>
+        <Box flex overflow="auto" pad="xsmall" gap='small' border={{ color: 'black', size: 'xxsmall' }}>
           <TextInput
             placeholder="type here"
             value={item.name}
             disabled={!item.canEdit}
             onChange={e => updateItemName(item.id, e.target.value)}
           />
-          <br />
 
-          <Box round="xsmall" pad="small" background="#303030" wrap = {true} >
+          <Box round="xsmall" pad="small" background="#303030" wrap={true} >
             <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Description : </b>
             <Box>
               <TextArea
@@ -106,11 +106,10 @@ export const Detail = (_) => {
               />
             </Box>
           </Box>
-          <br />
 
           {item.properties.processTime !== undefined && (
-            <Box direction='row' background='#303030' round="xsmall" pad="small" style={{ marginBottom: 5 }} justify='between' wrap = {true}>
-               <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Time : </b>
+            <Box direction='row' background='#303030' round="xsmall" pad="small" style={{ marginBottom: 5 }} justify='between' wrap={true}>
+              <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Time : </b>
               <Box direction='row' >
                 <NumberInput
                   value={item.properties.processTime}
@@ -123,61 +122,58 @@ export const Detail = (_) => {
               </Box>
             </Box>
           )}
-         
+
 
           {item.properties.position !== undefined && item.properties.rotation !== undefined && (
             <>
-            <Box wrap = {true}>
-              <PositionRotationTF itemID={item.id} position={item.properties.position}
-                rotation={item.properties.rotation} /> 
-            </Box>
-             <br />
+              <Box wrap={true}>
+                <PositionRotationTF itemID={item.id} position={item.properties.position}
+                  rotation={item.properties.rotation} />
+              </Box>
             </>
           )}
 
           {item.type === 'machineType' && (
             <>
-            <MachineProcessList machineId={item.id} />
-            <br />
+              <MachineProcessList machineId={item.id} />
+              <br />
             </>
-            
+
           )}
 
           {item.type === 'processType' && (
             <>
               <ProcessIOList processId={item.id} isInput />
               <ProcessIOList processId={item.id} />
-              <br />
             </>
 
           )}
-          {item.properties.relativeTo !== undefined && item.properties.relativeTo !== "world" && 
-           item.properties.relativeTo !== null &&(
-            
-           <>
-           <Box>
-           <FixtureItem fixtureID = {item.properties.relativeTo} />
-           </Box>
-            
-           </>
-          )}
-          <br/>
+          {item.properties.relativeTo !== undefined && item.properties.relativeTo !== "world" &&
+            item.properties.relativeTo !== null && (
+
+              <>
+                <Box>
+                  <FixtureItem fixtureID={item.properties.relativeTo} />
+                </Box>
+
+              </>
+            )}
 
           {item.type === 'gripperType' && (
-            <>  
-              <JointGripperInput robotID = {item.id} isGripper = {true}/>
+            <>
+              <JointGripperInput robotID={item.id} isGripper={true} />
             </>
           )
 
           }
-          {item.type === 'robotAgentType' &&(
+          {item.type === 'robotAgentType' && (
             <>
-              <JointGripperInput robotID={item.id} isGripper = {false}/>
+              <JointGripperInput robotID={item.id} isGripper={false} />
             </>
           )}
-          {(item.type === 'locationType' || item.type === 'waypointType') &&(
-            <>  
-              <LocationWaypointDetail itemID ={item.id} />
+          {(item.type === 'locationType' || item.type === 'waypointType') && (
+            <>
+              <LocationWaypointDetail itemID={item.id} />
             </>
           )}
 

@@ -74,11 +74,11 @@ export const EvdSlice = (set, get) => ({
   }),
   updatePlanProcess: (newData, process) => set(state => {
     if (newData) {
-      state.programData = lodash.merge(state.programData, newData);
+      // state.programData = lodash.merge(state.programData, newData);
       Object.keys(newData).forEach(entry=>{
         Object.keys(newData[entry].properties).forEach(field=>{
           state.programData[entry].properties[field] = newData[entry].properties[field]
-          console.log(`setting ${entry}/${field} to ${newData[entry].properties[field]}`)
+          // console.log(`setting ${entry}/${field} to ${newData[entry].properties[field]}`)
         })
       })
     }

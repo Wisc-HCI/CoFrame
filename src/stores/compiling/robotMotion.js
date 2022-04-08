@@ -319,6 +319,8 @@ export const robotMotionCompiler = ({data, properties, context, path, memo, solv
                 
                 idx += 1;
 
+            } else {
+                status = STATUS.FAILED
             }
         })
     })

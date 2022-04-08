@@ -77,8 +77,8 @@ export const poseCompiler = ({data, properties, path, memo, module, worldModel})
                         staticEnvironment, 
                         initialState, 
                         false, 
-                        1, 
-                        450
+                        5, 
+                        50
                     );
 
                     // Construct the goals
@@ -92,8 +92,8 @@ export const poseCompiler = ({data, properties, path, memo, module, worldModel})
                     let goalAchieved = false;
                     let currentTime = Date.now();
 
-                    while (Date.now() - currentTime < 5000 && !goalAchieved) {
-                        state = solver.solve(goals, [50, 25, 2]);
+                    while (Date.now() - currentTime < 10000 && !goalAchieved) {
+                        state = solver.solve(goals, [50, 30, 2]);
                         const p = state.frames[attachmentLink].translation;
                         const r = state.frames[attachmentLink].rotation;
                         const achievedPos = {x:p[0],y:p[1],z:p[2]}
@@ -101,11 +101,16 @@ export const poseCompiler = ({data, properties, path, memo, module, worldModel})
                         const achievedQuat = new Quaternion(r[1],r[2],r[3],r[0])
                         const translationDistance = distance(achievedPos,pos);
                         const rotationalDistance = goalQuat.angleTo(achievedQuat);
-                        if (translationDistance < 0.01 && rotationalDistance < 0.005) {
+                        console.log({translationDistance,rotationalDistance})
+                        // if (translationDistance < 0.03 && rotationalDistance < 0.01) {
+                        //     goalAchieved = true
+                        // }
+                        if (translationDistance < 0.03) {
                             goalAchieved = true
                         }
+                        
                     }
-
+                    console.log(goalAchieved)
                     reachability[robot.id][gripper.id] = goalAchieved;
                     states[robot.id][gripper.id] = likStateToData(state, worldModel, robot.id)
 

@@ -6,7 +6,7 @@ import { config } from 'react-spring';
 import { Collapsible, Box } from 'grommet';
 import { ExpandCarrot } from './ExpandCarrot';
 
-export default function Collapse({openable, defaultOpen, extra, style, header, children, backgroundColor, borderWidth, internalPaddingWidth}) {
+export default function Collapse({defaultOpen, extra, style, header, children, backgroundColor, borderWidth, internalPaddingWidth}) {
 
     const [open, setOpen] = useState(defaultOpen)
 

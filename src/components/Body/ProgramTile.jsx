@@ -25,7 +25,7 @@ export const ProgramTile = ({ visible }) => {
         return null
     }
     return (
-        <Box ref={ref} animation='fadeIn' style={{ flex: 55 }} direction='column' width='100%' height='100vh' pad={{ right: '4pt', top: '4pt', bottom: '4pt', left: viewMode === 'default' ? '0pt' : '4pt' }}>
+        <Box ref={ref} animation='fadeIn' style={{ flex: 55 }} direction='column' width='100%' height='100%' pad={{ right: '4pt', top: '4pt', bottom: '4pt', left: viewMode === 'default' ? '0pt' : '4pt' }}>
             <Tile
                 style={{ height: bounds.height - 10 }}
                 borderWidth={3}

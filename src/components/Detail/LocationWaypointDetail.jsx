@@ -8,52 +8,49 @@ import {Toggle} from "../Toggle";
 function LocationWaypointDetail(props) {
    
     const item = useStore(state => state.programData[props.itemID]);
-    const robotAgentKey = Object.keys(item.properties.reachability)[0];
+    const robotAgents = useStore(state => Object.values(state.programData).filter(item=>item.type === 'robotAgentType'));
+    const grippers = useStore(state => Object.values(state.programData).filter(item=>item.type === 'gripperType'));
+    const primaryColor = useStore(state=>state.primaryColor);
    
-    function displayList(){
-        for (const [key, value] of Object.entries(item.properties.reachability[robotAgentKey])) {
-    
-           return (
-            <>
-                <div key={key} style={{ "paddingBottom": "3%" }}>
-                    <Box round="xsmall" background="rgba(100,100,100,0.3)" direction='row'
-                        elevation="none" pad="xsmall" justify='between'
-                        hoverIndicator={true} >
-                        <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {key} : </b>
-                        <div>
-                            <Toggle selected = {value} disabled = {true}/>
-                            
-                       
-                        </div>
-                    </Box>
-                </div>
-
-            </>
-
-        )
-        }
-         
-    }
-
     return (
-
-        <>
-            
-            <Collapse
-                openable={true}
-                borderWidth={3}
-                defaultOpen={true}
-                style={{ backgroundColor: '#303030', marginBottom: 5 }}
-                backgroundColor='#202020'
-                header={<Box direction='row' pad="10pt">
+        <Collapse
+            openable={true}
+            borderWidth={10}
+            defaultOpen={true}
+            style={{ backgroundColor: '#303030', marginBottom: 5 }}
+            backgroundColor='#202020'
+            header={
+                <Box direction='row'>
                     <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Reachability : </b> 
-                </Box>}
-            >
-                {displayList()}
+                </Box>
+            }
+        >
+            {Object.keys(item.properties.reachability).length===0 && (
+                <i>Reachability Loading...</i>
+            )}
+            {robotAgents.map(robotAgent=>{
+                if (item.properties.reachability[robotAgent.id]) {
+                    return (
+                        <Box key={robotAgent.id} background='black' round='xsmall' gap='xsmall' pad='xsmall'>
+                            {robotAgent.name}
+                            {grippers.map(gripper=>{
+                                if (item.properties.reachability[robotAgent.id][gripper.id] !== undefined) {
+                                    return (
+                                        <Box direction='row' justify='between' align='center' key={gripper.id} background='#333333' round='xsmall' gap='xsmall' pad='xsmall'>
+                                            {gripper.name}
+                                            <Toggle selected={item.properties.reachability[robotAgent.id][gripper.id]} disabled={true} backgroundColor={primaryColor} size='small'/>
+                                        </Box>
+                                    )
+                                    
+                                    
+                                }
+                            })}
+                        </Box>
+                    )
+                }
+            })}
 
-            </Collapse>
-
-        </>
+        </Collapse>
     )
 
 }

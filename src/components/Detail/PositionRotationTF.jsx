@@ -14,19 +14,16 @@ function PositionRotationTF(props) {
                 round="xsmall"
                 background="#303030"
                 pad="small" wrap = {true}>
-                <Box direction='column' >
-                    <b style={{ color: 'rgba(255, 255, 255, 0.85)', paddingBottom: '2%' }} >Placement : </b>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ paddingBottom: "4%" }}>
-                            <Box>
-                            <PositionInput itemID={props.itemID} position={props.position} prevID = {props.prevID} />
-                            </Box>
-                        </div>
-                        <Box>
+                <Box direction='column' gap='small' >
+                    <b style={{ color: 'rgba(255, 255, 255, 0.85)'}} >Placement : </b>
+                    
+                    <Box>
+                        <PositionInput itemID={props.itemID} position={props.position} prevID = {props.prevID} />
+                    </Box>
+                    <Box>
                         <RotationInput rotation={props.rotation} itemID={props.itemID} prevID = {props.prevID}/>
-                        </Box>
+                    </Box>
                         
-                    </div>
                 </Box>
             </Box>
         </>
