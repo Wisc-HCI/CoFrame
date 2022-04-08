@@ -4,7 +4,7 @@ import { Quaternion, Vector3, Group, Object3D, Matrix4 } from 'three';
 import { ConvexGeometry } from 'three-stdlib';
 import { EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp';
-import { REFERENCEABLE_OBJECTS } from './Constants';
+import { REFERENCEABLE_OBJECTS, STEP_TYPE } from './Constants';
 
 Object3D.DefaultUp.set(0, 0, 1);
 
@@ -803,6 +803,86 @@ const stepsToAnimatedPinchPoints = (steps) => {
     }))
     console.log(animatedPinchPoints)
     return animatedPinchPoints
+}
+
+export function stepsToAnimation(state, tfs) {
+    let dict = {};
+    let lastTimestamp = {};
+    let timesteps = [];
+    
+    // Determine all moving things first
+    state.programData[state.activeFocus]?.properties.compiled["[\"root\"]"].steps.forEach(step => {
+        if (step.stepType === STEP_TYPE.SCENE_UPDATE) {
+            Object.keys(step.data.links).forEach(link => {
+                if (!dict[link]) {
+                    dict[link] = {position: {x: [], y: [], z: []}, rotation: {x: [], y: [], z: [], w: []}}
+                    lastTimestamp[link] = 0;
+                }
+            });
+        }
+    });
+
+    // Build up the movements
+    state.programData[state.activeFocus]?.properties.compiled["[\"root\"]"].steps.forEach(step => {
+        if (step.stepType === STEP_TYPE.SCENE_UPDATE) {
+            
+            timesteps.push(step.time);
+
+            // Add link rotation/position
+            Object.keys(step.data.links).forEach(link => {
+                // If just encountering link (after t iterations) use first data piece to backfill information
+                if (lastTimestamp[link] === 0 && lastTimestamp[link]+1 !== timesteps.length) {
+                    for (let i = 0; i < timesteps.length; i++) {
+                        dict[link].position.x.push(step.data.links[link].position.x);
+                        dict[link].position.y.push(step.data.links[link].position.y);
+                        dict[link].position.z.push(step.data.links[link].position.z);
+                        dict[link].rotation.x.push(step.data.links[link].rotation.x);
+                        dict[link].rotation.y.push(step.data.links[link].rotation.y);
+                        dict[link].rotation.z.push(step.data.links[link].rotation.z);
+                        dict[link].rotation.w.push(step.data.links[link].rotation.w);
+                    }
+                // Use the old data to fill static position until current time
+                } else if (lastTimestamp[link] !== 0 && lastTimestamp[link]+1 !== timesteps.length) {
+                    for (let i = 0; i < timesteps.length - lastTimestamp[link]; i++) {
+                        dict[link].position.x.push(dict[link].position.x[lastTimestamp[link]]);
+                        dict[link].position.y.push(dict[link].position.x[lastTimestamp[link]]);
+                        dict[link].position.z.push(dict[link].position.x[lastTimestamp[link]]);
+                        dict[link].rotation.x.push(dict[link].position.x[lastTimestamp[link]]);
+                        dict[link].rotation.y.push(dict[link].position.x[lastTimestamp[link]]);
+                        dict[link].rotation.z.push(dict[link].position.x[lastTimestamp[link]]);
+                        dict[link].rotation.w.push(dict[link].position.x[lastTimestamp[link]]);
+                    }
+                }
+
+                // Add new time
+                lastTimestamp[link] = timesteps.length;
+                dict[link].position.x.push(step.data.links[link].position.x);
+                dict[link].position.y.push(step.data.links[link].position.y);
+                dict[link].position.z.push(step.data.links[link].position.z);
+                dict[link].rotation.x.push(step.data.links[link].rotation.x);
+                dict[link].rotation.y.push(step.data.links[link].rotation.y);
+                dict[link].rotation.z.push(step.data.links[link].rotation.z);
+                dict[link].rotation.w.push(step.data.links[link].rotation.w);
+            });
+        }
+    });
+
+    console.log(dict);
+
+    // Animate
+    Object.keys(dict).forEach(link => {
+        tfs[link].position = {
+            x: interpolateScalar(timesteps, dict[link].position.x),
+            y: interpolateScalar(timesteps, dict[link].position.y),
+            z: interpolateScalar(timesteps, dict[link].position.z),
+        }
+        tfs[link].rotation = {
+            x: interpolateScalar(timesteps, dict[link].rotation.x),
+            y: interpolateScalar(timesteps, dict[link].rotation.y),
+            z: interpolateScalar(timesteps, dict[link].rotation.z),
+            w: interpolateScalar(timesteps, dict[link].rotation.w)
+        }
+    })
 }
 
 export function pinchpointAnimationFromExecutable(executable) {

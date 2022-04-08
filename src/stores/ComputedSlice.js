@@ -10,7 +10,8 @@ import {
     tfAnimationFromExecutable,
     PINCH_POINT_FIELDS,
     pinchpointAnimationFromExecutable,
-    itemTransformMethod
+    itemTransformMethod,
+    stepsToAnimation
 } from './helpers';
 // import throttle from 'lodash.throttle';
 import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
@@ -411,6 +412,10 @@ export const computedSlice = (state) => {
 
         }
     })
+
+    // if (state.activeFocus === "moveGripperType-813df5f7-42c6-4536-be92-f5262efb74d8") {
+    stepsToAnimation(state, tfs);
+    // }
 
     return ({
         executablePrimitives,
