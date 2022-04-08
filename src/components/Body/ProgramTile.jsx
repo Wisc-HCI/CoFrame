@@ -5,20 +5,29 @@ import { Box, Spinner, Button } from 'grommet';
 import { Environment } from 'simple-vp';
 import Tile from '../Tile';
 import useStore from '../../stores/Store';
-import { FiSettings } from "react-icons/fi";
+import { FiSettings, FiMaximize, FiMinimize } from "react-icons/fi";
+import { TipContent } from '../TipContent';
 import useMeasure from 'react-use-measure';
+import { useSpring, animated } from '@react-spring/web';
+import { config } from 'react-spring';
 
-export const ProgramTile = (props) => {
+export const ProgramTile = ({ visible }) => {
 
     const highlightColor = useStore(state => state.primaryColor);
+    const setViewMode = useStore(state => state.setViewMode);
+    const viewMode = useStore(state => state.viewMode);
     const setActiveModal = useStore(state => state.setActiveModal);
     const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined);
-    const [ ref, bounds ] = useMeasure();
-    
+    const [ref, bounds] = useMeasure();
+
+    console.log(visible)
+    if (!visible) {
+        return null
+    }
     return (
-        <Box ref={ref} flex direction='column' width='45vw' pad={{right:'4pt',top:'4pt',bottom:'4pt'}}>
+        <Box ref={ref} animation='fadeIn' style={{ flex: 55 }} direction='column' width='100%' height='100vh' pad={{ right: '4pt', top: '4pt', bottom: '4pt', left: viewMode === 'default' ? '0pt' : '4pt' }}>
             <Tile
-                style={{ height:bounds.height-10}}
+                style={{ height: bounds.height - 10 }}
                 borderWidth={3}
                 internalPaddingWidth={0}
                 header={
@@ -30,20 +39,28 @@ export const ProgramTile = (props) => {
                             {isProcessing && (
                                 <Spinner />
                             )}
+                            <Button
+                                tip={{
+                                    content: <TipContent message={viewMode === 'default' ? 'Expand' : 'Shrink'} inverted />,
+                                    plain: true,
+                                    dropProps: {
+                                        align: { top: 'bottom' }
+                                    }
+                                }}
+                                icon={viewMode === 'default' ? <FiMaximize /> : <FiMinimize />}
+                                onClick={() => setViewMode(viewMode === 'default' ? 'program' : 'default')}
+                            />
                             <Button plain margin={{ right: 'medium' }} secondary icon={<FiSettings />} label='Settings' onClick={() => setActiveModal('settings')} />
                         </Box>
                     </Box>
 
                 }
             >
-                {/* <ProgramEditor/> */}
-                {/* <div style={{ display: 'contents', flex: 1, height: bounds.height-50, fontSize: 10, backgroundColor:'red' }}>
-                    
-                </div> */}
-                <Environment store={useStore} highlightColor={highlightColor} height={bounds.height-72} />
+                <Environment store={useStore} highlightColor={highlightColor} height={bounds.height - 72} />
 
             </Tile>
         </Box>
+
 
 
     )

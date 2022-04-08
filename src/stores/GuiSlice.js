@@ -178,8 +178,8 @@ export const GuiSlice = (set, get) => ({
   setSearchTerm: (term) => set(_ => ({ searchTerm: term })),
   clearSearchTerm: () => set(_ => ({ searchTerm: '' })),
   // whether the sim window is expanded to the whole width
-  simMode: 'default',
-  setSimMode: (mode) => set(_ => ({ simMode: mode })),
+  viewMode: 'default',
+  setViewMode: (mode) => set(_ => ({ viewMode: mode })),
   // secondaryFocusItem: { type: null, uuid: null },
   // setSecondaryFocusItem: (type, uuid, transformMode) => set(state=>{
   //   console.log('setSecondaryFocusItem')

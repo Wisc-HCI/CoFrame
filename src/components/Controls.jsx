@@ -14,11 +14,11 @@ export function Controls() {
 
   const [
     primaryColor,
-    simMode, setSimMode,
+    viewMode, setViewMode,
     collisionsVisible, setCollisionsVisible,
     occupancyVisible, setOccupancyVisible,
     tfVisible, setTfVisible
-  ] = useStore(state => ([state.primaryColor, state.simMode, state.setSimMode, state.collisionsVisible, state.setCollisionsVisible, state.occupancyVisible, state.setOccupancyVisible, state.tfVisible, state.setTfVisible]), shallow)
+  ] = useStore(state => ([state.primaryColor, state.viewMode, state.setViewMode, state.collisionsVisible, state.setCollisionsVisible, state.occupancyVisible, state.setOccupancyVisible, state.tfVisible, state.setTfVisible]), shallow)
 
   return (
 
@@ -26,14 +26,14 @@ export function Controls() {
 
       <Button
         tip={{
-          content: <TipContent message={simMode === 'default' ? 'Expand' : 'Shrink'} inverted />,
+          content: <TipContent message={viewMode === 'default' ? 'Expand' : 'Shrink'} inverted />,
           plain: true,
           dropProps: {
             align: { top: 'bottom' }
           }
         }}
-        icon={simMode === 'default' ? <FiMaximize /> : <FiMinimize />}
-        onClick={() => setSimMode(simMode === 'default' ? 'expanded' : 'default')}
+        icon={viewMode === 'default' ? <FiMaximize /> : <FiMinimize />}
+        onClick={() => setViewMode(viewMode === 'default' ? 'sim' : 'default')}
       />
 
 

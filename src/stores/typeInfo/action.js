@@ -208,6 +208,7 @@ const moveTrajectoryFeatures = {
       isList: false
     },
     velocity: {
+      // mm/ms or m/s
       name: 'Velocity',
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
       default: 1,

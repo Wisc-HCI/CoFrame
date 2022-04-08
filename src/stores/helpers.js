@@ -12,6 +12,28 @@ export const distance = (pos1, pos2) => {
     return Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2) + Math.pow(pos1.z - pos2.z, 2))
 }
 
+// https://www.desmos.com/calculator/0rd3tessqn
+/* 
+Computes a domed curve that has a fixed increase/decrease period and max value. 
+*/
+export const timeGradientFunction = (t,heightOffset,maxHeight,slope,windowLength) => {
+    return 2*maxHeight/(1+Math.exp(-1*t/slope)) + 2*maxHeight/(1+Math.exp((t-windowLength)/slope)) - 3*maxHeight + heightOffset
+}
+
+/* 
+Similar to above, but the minimum value occurs at the start, and maximizes forever after. 
+*/
+export const timeGradientFunctionOneTailStart = (t,heightOffset,maxHeight,slope) => {
+    return 2*(maxHeight-(heightOffset/slope))/(1+Math.exp(-1*t/slope)) - maxHeight + heightOffset
+}
+
+/* 
+Similar to above, but the minimum value occurs at the end, and maximizes beforehand. 
+*/
+export const timeGradientFunctionOneTailEnd = (t,heightOffset,maxHeight,slope,windowLength) => {
+    return 2*(maxHeight-(heightOffset/slope))/(1+Math.exp((t-windowLength)/slope)) - maxHeight + heightOffset
+}
+
 export const quaternionLog = (quaternion) => {
     let outVec = new Vector3(quaternion.x, quaternion.y, quaternion.z);
     if (Math.abs(quaternion.w) < 1.0) {

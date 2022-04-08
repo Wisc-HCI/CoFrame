@@ -10,6 +10,7 @@ import { TIMELINE_TYPES } from "./stores/Constants";
 import { Detail } from './components/Detail';
 import { SettingsModal } from "./components/Settings";
 import Graph from "./components/Graph";
+import useMeasure from 'react-use-measure';
 
 // import { CoFrameIcon } from "./components/Icon";
 
@@ -22,9 +23,12 @@ import { config } from 'react-spring';
 export default function App() {
 
     const primaryColor = useStore(state => state.primaryColor);
-    const simMode = useStore(state => state.simMode);
-    // const simStyle = useSpring({ width: simMode === 'default' ? '45%' : '100%', config: config.stiff });
-    // const editStyle = useSpring({ width: simMode === 'default' ? '55%' : '0%', config: config.stiff });
+    const viewMode = useStore(state => state.viewMode);
+    const simWidth = viewMode === 'default' ? 9 : viewMode === 'sim' ? 1 : 0;
+    const programWidth = viewMode === 'default' ? 11 : viewMode === 'program' ? 1 : 0;
+    console.log({simWidth,programWidth})
+    const simStyle = useSpring({ flex: simWidth, config: config.stiff });
+    const programStyle = useSpring({ flex: programWidth, config: config.stiff });
     const visibleSteps = useStore(state => state.focus.some(focusItem => TIMELINE_TYPES.includes(state.programData[focusItem]?.type)));
 
     const bodyStyle = useSpring({ width: '100vw', height: visibleSteps ? '80vh' : '100vh', config: config.stiff });
@@ -36,7 +40,7 @@ export default function App() {
         global: {
             colors: {
                 brand: primaryColor,
-                background: '#111111',
+                background: '#000000',
                 control: primaryColor
             },
             font: {
@@ -126,16 +130,8 @@ export default function App() {
                     </Box>
 
                     <Box fill direction='row'>
-                        {/* <animated.div style={{ ...simStyle, float: 'left' }}>
-                        
-                    </animated.div> */}
-                        <SimulatorTile />
-                        <Collapsible direction="horizontal" open={simMode === 'default'}>
-                            <ProgramTile />
-                        </Collapsible>
-                        {/* <animated.div style={{ ...editStyle, float: 'right' }}>
-                        
-                    </animated.div> */}
+                        <SimulatorTile visible={viewMode === 'default' || viewMode ==='sim'}/>
+                        <ProgramTile visible={viewMode === 'default' || viewMode ==='program'}/>
                     </Box>
                 </animated.div>
                 {visibleSteps && (
