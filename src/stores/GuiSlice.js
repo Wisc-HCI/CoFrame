@@ -273,19 +273,24 @@ export const GuiSlice = (set, get) => ({
     }
   }),
   onMove: (id, worldTransform, localTransform) => set(state => {
-    const focused = state.focus.includes(id);
+    const filteredId = 
+    id.includes('-pointer') ? id.replace('-pointer', '') : 
+    id.includes('-tag') ? id.replace('-tag', '') : id;
+    const focused = state.focus.includes(filteredId);
     const transform = state.focus.includes('translate') 
       ? 'translate' 
       : state.focus.includes('rotate')
       ? 'rotate'
       : 'inactive'
-    if (id.includes('pointer') && focused && transform !== 'inactive') {
-      state.setPoseTransform(id.replace('-pointer', ''), transform);
+    if (id.includes('-pointer') && focused && transform !== 'inactive') {
+      // state.setPoseTransform(filteredId, transform);
+      state.programData[filteredId].properties.position = localTransform.position;
+      state.programData[filteredId].properties.rotation = localTransform.quaternion;
     } else if (!id.includes('pointer') && !id.includes('-tag') && focused && transform !== 'inactive') {
      // This isn't correct, we'll want to offset by the object's tf (since we are technically moving the mesh)
      // Similarly, we'll want to compute the quaternion transformation
-      state.programData[id].properties.position = localTransform.position;
-      state.programData[id].properties.rotation = localTransform.quaternion;
+      state.programData[filteredId].properties.position = localTransform.position;
+      state.programData[filteredId].properties.rotation = localTransform.quaternion;
     }
   })
 });

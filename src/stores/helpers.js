@@ -811,7 +811,7 @@ export function stepsToAnimation(state, tfs) {
     let timesteps = [];
     
     // Determine all moving things first
-    state.programData[state.activeFocus]?.properties.compiled["[\"root\"]"].steps.forEach(step => {
+    state.programData[state.activeFocus]?.properties.compiled["[\"root\"]"]?.steps.forEach(step => {
         if (step.stepType === STEP_TYPE.SCENE_UPDATE) {
             Object.keys(step.data.links).forEach(link => {
                 if (!dict[link]) {
@@ -823,7 +823,7 @@ export function stepsToAnimation(state, tfs) {
     });
 
     // Build up the movements
-    state.programData[state.activeFocus]?.properties.compiled["[\"root\"]"].steps.forEach(step => {
+    state.programData[state.activeFocus]?.properties.compiled["[\"root\"]"]?.steps.forEach(step => {
         if (step.stepType === STEP_TYPE.SCENE_UPDATE) {
             
             timesteps.push(step.time);
