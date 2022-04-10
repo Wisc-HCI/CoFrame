@@ -2,7 +2,7 @@ import React from 'react';
 import { Blurb } from './Blurb';
 import { Glossary } from './Glossary';
 
-export function getThingInfo({editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}) {
+export function getThingInfo({frame,primaryColor,focusData,currentIssue,description}) {
     let tabs = [];
     if (currentIssue) {
         tabs.push(
@@ -31,7 +31,7 @@ export function getThingInfo({editorPane,setupTab,frame,primaryColor,focusData,s
                 {focusData && (
                     <Blurb highlight="rgb(50,50,50)">
                         <h3>About this Thing</h3>
-                        {focusData.description}
+                        {description}
                     </Blurb>
                 )}
                 <Blurb highlight="rgb(50,50,50)">

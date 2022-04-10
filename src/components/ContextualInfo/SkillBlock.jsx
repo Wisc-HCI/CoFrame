@@ -2,7 +2,7 @@ import React from 'react';
 import { Blurb } from './Blurb';
 import { Glossary } from './Glossary';
 
-export function getSkillInfo({editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}) {
+export function getSkillInfo({frame,primaryColor,focusData,currentIssue,description}) {
     let tabs = [];
     if (currentIssue) {
         tabs.push(
@@ -30,7 +30,7 @@ export function getSkillInfo({editorPane,setupTab,frame,primaryColor,focusData,s
                 {focusData && (
                     <Blurb highlight="rgb(50,50,50)">
                         <h3>About this Skill</h3>
-                        {focusData.description}
+                        {description}
                     </Blurb>
                 )}
                 <Blurb highlight="rgb(50,50,50)">
