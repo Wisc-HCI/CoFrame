@@ -2,13 +2,13 @@ import React from 'react';
 import { Glossary } from './Glossary';
 import { Blurb } from './Blurb';
 
-export function getPrimitiveInfo({ editorPane, setupTab, frame, primaryColor, focusData, secondaryFocusData, currentIssue }) {
+export function getPrimitiveInfo({ frame, primaryColor, focusData, description }) {
     return (
         <div>
             {focusData && (
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>About this Action</h3>
-                    {focusData.description}
+                    {description}
                 </Blurb>
             )}
             <Blurb highlight="rgb(50,50,50)">

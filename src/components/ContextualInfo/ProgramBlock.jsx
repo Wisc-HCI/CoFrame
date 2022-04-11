@@ -2,14 +2,14 @@ import React from 'react';
 import { Blurb } from './Blurb';
 import { Glossary } from './Glossary';
 
-export function getProgramInfo({ editorPane, setupTab, frame, primaryColor, focusData, secondaryFocusData, currentIssue }) {
-
+export function getProgramInfo({frame, primaryColor, focusData,description }) {
+    
     return (
         <div>
             {focusData && (
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>About the Program</h3>
-                    {focusData.properties.description}
+                    {description}
                 </Blurb>
             )}
             <Blurb highlight="rgb(50,50,50)">

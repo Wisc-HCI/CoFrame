@@ -2,20 +2,25 @@ import React, { useState } from 'react';
 import { Box, Button, Text } from 'grommet';
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
-import { FiChevronRight } from 'react-icons/fi';
-import { getSceneInfo } from '../ContextualInfo/Scene';
-import { getLocationInfo } from '../ContextualInfo/Locations';
-import { getWaypointInfo } from '../ContextualInfo/Waypoints';
-import { getMachineInfo } from '../ContextualInfo/Machines';
-import { getThingInfo } from '../ContextualInfo/Things';
+import { FiChevronRight, FiUnderline } from 'react-icons/fi';
+import { getLocationInfo } from '../ContextualInfo/LocationBlock';
+import {getRobotAgentInfo} from '../ContextualInfo/RobotAgentBlock';
+import { getToolInfo } from '../ContextualInfo/ToolBlock';
+import { getFixtureInfo } from '../ContextualInfo/FixtureBlock';
+import { getProcessInfo } from '../ContextualInfo/ProcessBlock';
+import { getWaypointInfo } from '../ContextualInfo/WaypointBlock';
+import { getMachineInfo } from '../ContextualInfo/MachineBlock';
+import { getThingInfo } from '../ContextualInfo/ThingBlock';
 import { getProgramInfo } from '../ContextualInfo/ProgramBlock';
 import { getSkillInfo } from '../ContextualInfo/SkillBlock';
 import { getPrimitiveInfo } from '../ContextualInfo/PrimitiveBlock';
 import { getTrajectoryInfo } from '../ContextualInfo/TrajectoryBlock';
+import { getInputOutputInfo } from '../ContextualInfo/InputOutputBlock';
 import { getPlotInfo } from '../ContextualInfo/Plots';
 import Tile from '../Tile';
 import { DATA_TYPES } from 'simple-vp';
 import actionTypes from '../../stores/typeInfo/action';
+import { DETAIL_TYPES, STATUS } from '../../stores/Constants';
 
 export function InfoTile({maxHeight}) {
 
@@ -38,6 +43,8 @@ export function InfoTile({maxHeight}) {
                 return null
             }
         }).filter(d=>d!==null);
+
+        
 
         let programData = null;
         Object.values(state.programData).some(d=>{
@@ -84,6 +91,8 @@ export function InfoTile({maxHeight}) {
         }
     })
 
+
+    
     let tabIdx = 0;
     tabs.some((tab,i)=>{
         if (tab.key === activeFocus) {
@@ -94,16 +103,34 @@ export function InfoTile({maxHeight}) {
         }
     })
 
-    // const issueParams = { activeDrawer, frame, primaryColor, focusData, secondaryFocusData, currentIssue }
-    // if (focusData?.type === 'scene') {
-    //     tabs = getSceneInfo(issueParams)
-    // } else if (focusData?.type === 'location' || (activeDrawer === 'locations')) {
-    //     tabs = getLocationInfo(issueParams)
-    // } else if (focusData?.type === 'waypoint' || (activeDrawer === 'waypoints')) {
-    //     tabs = getWaypointInfo(issueParams)
-    // } else if (focusData?.type === 'machine' || (activeDrawer === 'machines')) {
-    //     tabs = getMachineInfo(issueParams)
-    // } else if (focusData?.type === 'thing' || (activeDrawer === 'things')) {
+     const currentIssue = undefined;
+     const description = useStore(state => state.programData[focusData[focusData.length - 1].id].properties.description);
+     
+     const issueParams = {activeDrawer, frame, primaryColor, focusData, currentIssue,description }
+         if (focusData[focusData.length - 1].type === 'locationType'){  
+         tabs = getLocationInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'waypointType') {
+         tabs = getWaypointInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'machineType' ) {
+         tabs = getMachineInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'thingType') {
+         tabs = getThingInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'skillType') {
+         tabs = getSkillInfo(issueParams);
+        }  else if (focusData[focusData.length - 1].type === 'trajectoryType') {
+         tabs = getTrajectoryInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'processType') {
+         tabs = getProcessInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'fixtureType') {
+            tabs = getFixtureInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'toolType') {
+            tabs = getToolInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'robotAgentType') {
+            tabs = getRobotAgentInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'inputOutputType') {
+            tabs = getInputOutputInfo(issueParams);
+        } 
+
     //     tabs = getThingInfo(issueParams)
     // } else if (focusData?.type === 'program' || activeDrawer === null) {
     //     tabs = getProgramInfo(issueParams)
