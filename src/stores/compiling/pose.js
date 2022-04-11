@@ -69,7 +69,7 @@ export const poseCompiler = ({data, properties, path, memo, module, worldModel})
                     const objectives = [
                         {type:'PositionMatch',name:"EE Position",link:attachmentLink,weight:50},
                         {type:'OrientationMatch',name:"EE Rotation",link:attachmentLink,weight:25},
-                        {type:'CollisionAvoidance',name:"Collision Avoidance",weight:0}
+                        {type:'CollisionAvoidance',name:"Collision Avoidance",weight:2}
                     ];
                     
                     // Find the position we need in the attachment link to match the desired pose gripper position
@@ -109,7 +109,7 @@ export const poseCompiler = ({data, properties, path, memo, module, worldModel})
 
                     restarts.some(()=>{
                         // let currentTime = Date.now();
-                        state = solver.solve(goals, [50, 30, 0]);
+                        state = solver.solve(goals, [50, 30, 2]);
                         const p = state.frames[attachmentLink].translation;
                         const r = state.frames[attachmentLink].rotation;
                         const achievedPos = {x:p[0],y:p[1],z:p[2]};

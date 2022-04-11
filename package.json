@@ -29,7 +29,7 @@
     "react-spring": "^9.2.4",
     "react-use-measure": "^2.0.4",
     "recharts": "^2.1.4",
-    "robot-scene": "github:Wisc-HCI/robot-scene#v0.7.2",
+    "robot-scene": "github:Wisc-HCI/robot-scene#v0.7.3",
     "serve": "^11.3.2",
     "simple-vp": "github:Wisc-HCI/simple-vp#v0.1.17",
     "source-map-loader": "^3.0.0",
