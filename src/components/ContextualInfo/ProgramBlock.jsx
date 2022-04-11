@@ -14,10 +14,13 @@ export function getProgramInfo({frame, primaryColor, focusData,description }) {
             )}
             <Blurb highlight="rgb(50,50,50)">
                 <h3>What is the Program?</h3>
-                The Program is the main sequence of
+                The Program is the main sequence of {' '}
                 <Glossary.Actions primaryColor={primaryColor} />
+                {' '}
                 and
+                {' '}
                 <Glossary.SkillCalls primaryColor={primaryColor} />
+                {' '}
                 that are executed by the robot.
             </Blurb>
 

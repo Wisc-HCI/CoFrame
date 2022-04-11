@@ -16,6 +16,7 @@ import { getSkillInfo } from '../ContextualInfo/SkillBlock';
 import { getPrimitiveInfo } from '../ContextualInfo/PrimitiveBlock';
 import { getTrajectoryInfo } from '../ContextualInfo/TrajectoryBlock';
 import { getInputOutputInfo } from '../ContextualInfo/InputOutputBlock';
+import { getGripperInfo } from '../ContextualInfo/GripperBlock';
 import { getPlotInfo } from '../ContextualInfo/Plots';
 import Tile from '../Tile';
 import { DATA_TYPES } from 'simple-vp';
@@ -129,6 +130,8 @@ export function InfoTile({maxHeight}) {
             tabs = getRobotAgentInfo(issueParams);
         } else if (focusData[focusData.length - 1].type === 'inputOutputType') {
             tabs = getInputOutputInfo(issueParams);
+        } else if (focusData[focusData.length - 1].type === 'gripperType') {
+            tabs = getGripperInfo(issueParams);
         } 
 
     //     tabs = getThingInfo(issueParams)

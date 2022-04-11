@@ -25,7 +25,7 @@ export const TipContent = ({ message, color, width, inverted }) => (
     </Box>
 );
 
-export const TipText = ({ previewText, extraText, color }) => {
+export const TipText = ({ previewText, extraText, color}) => {
     return (
         <Text
             color={color}
@@ -37,7 +37,8 @@ export const TipText = ({ previewText, extraText, color }) => {
                 }
             }}
         >
-            {' '}{previewText}{' '}
+             {previewText}
+            
         </Text>
     )
 }

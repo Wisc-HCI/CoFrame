@@ -51,7 +51,7 @@ export function getLocationInfo({frame,primaryColor,focusData,currentIssue,descr
                 )}
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Locations?</h3>
-                    Locations are meaningful positions in the scene. For example, they can be used to define goals for placing or picking up 
+                    Locations are meaningful positions in the scene. For example, they can be used to define goals for placing or picking up {' '}
                     <Glossary.Things primaryColor={primaryColor}/>, or specifying starting or ending positions for the robot.
                 </Blurb>
                 

@@ -21,9 +21,17 @@ export function getToolInfo({frame,primaryColor,focusData,currentIssue,descripti
                 )}
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Tools?</h3>
+                    Tools are objects in the scene. Like 
+                    {' '}
+                    <Glossary.Tools primaryColor={primaryColor}/>
+                    {' '}
+                    they can be carried around (if light enough), but are not created or consumed by 
+                    {' '}
+                    <Glossary.Processes primaryColor={primaryColor}/>.
+
                 </Blurb>
                 
-                {frame === 'safety' && (
+                {/* {frame === 'safety' && (
                     <Blurb highlight={primaryColor}>
                         <h3 style={{color:primaryColor}}>Safety Concerns</h3>
                        
@@ -34,7 +42,7 @@ export function getToolInfo({frame,primaryColor,focusData,currentIssue,descripti
                         <h3 style={{color:primaryColor}}>Robot Performance</h3>
                         
                     </Blurb>
-                )}
+                )} */}
             </div>
         }
     )

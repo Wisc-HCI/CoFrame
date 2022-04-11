@@ -21,9 +21,23 @@ export function getFixtureInfo({frame,primaryColor,focusData,currentIssue,descri
                 )}
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Fixtures?</h3>
+                    Fixtures are static objects related to other components in the scene. For example, one could put a 
+                    {' '}
+                    <Glossary.Machines primaryColor={primaryColor}/>
+                    {' '}
+                    or 
+                    {' '}
+                    <Glossary.Tools primaryColor={primaryColor}/>
+                    {' '}
+                    on the surface of a table-like fixture. While the 
+                    {' '}
+                    <Glossary.RobotAgents primaryColor={primaryColor}/>
+                    {' '} 
+                    cannot directly interact with fixtures, they can nevertheless collide.
+
                 </Blurb>
                 
-                {frame === 'safety' && (
+                {/* {frame === 'safety' && (
                     <Blurb highlight={primaryColor}>
                         <h3 style={{color:primaryColor}}>Safety Concerns</h3>
                        
@@ -34,7 +48,7 @@ export function getFixtureInfo({frame,primaryColor,focusData,currentIssue,descri
                         <h3 style={{color:primaryColor}}>Robot Performance</h3>
                         
                     </Blurb>
-                )}
+                )} */}
             </div>
         }
     )
