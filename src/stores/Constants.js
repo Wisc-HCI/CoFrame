@@ -43,3 +43,5 @@ export const TIMELINE_TYPES = ['programType', 'skillType', 'hierarchicalType',
                     ]
 export const PREVIEW_TYPES = [...TIMELINE_TYPES,'locationType','waypointType'];
 export const REFERENCEABLE_OBJECTS = ["machineType", "fixtureType", "linkType", "toolType", "robotAgentType", "humanAgentType", 'gripperType'];
+
+export const ROOT_PATH = JSON.stringify(['root']);

@@ -260,6 +260,8 @@ export const computedSlice = (state) => {
             if (trajectoryFocused) {
                 const idx = focusedTrajectoryChildren.indexOf(entry.id);
                 color.a = (time) => 0.5 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
+            } else {
+                color.a = 0.7
             }
 
             poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
@@ -414,7 +416,7 @@ export const computedSlice = (state) => {
     })
 
     // if (state.activeFocus === "moveGripperType-813df5f7-42c6-4536-be92-f5262efb74d8") {
-    stepsToAnimation(state, tfs);
+    // stepsToAnimation(state, tfs);
     // }
 
     return ({

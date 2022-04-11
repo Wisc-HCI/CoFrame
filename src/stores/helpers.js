@@ -4,7 +4,7 @@ import { Quaternion, Vector3, Group, Object3D, Matrix4 } from 'three';
 import { ConvexGeometry } from 'three-stdlib';
 import { EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp';
-import { REFERENCEABLE_OBJECTS, STEP_TYPE } from './Constants';
+import { REFERENCEABLE_OBJECTS, ROOT_PATH, STEP_TYPE } from './Constants';
 
 Object3D.DefaultUp.set(0, 0, 1);
 

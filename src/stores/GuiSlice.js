@@ -1,6 +1,7 @@
 import frameStyles from '../frameStyles';
 import { DATA_TYPES } from 'simple-vp';
 import { remove } from 'lodash';
+import { STATUS } from './Constants';
 // import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
 
 // const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
@@ -272,7 +273,7 @@ export const GuiSlice = (set, get) => ({
       event.stopPropagation();
     }
   }),
-  onMove: (id, worldTransform, localTransform) => set(state => {
+  onMove: (id, source, worldTransform, localTransform) => set(state => {
     const filteredId = 
     id.includes('-pointer') ? id.replace('-pointer', '') : 
     id.includes('-tag') ? id.replace('-tag', '') : id;
@@ -286,11 +287,13 @@ export const GuiSlice = (set, get) => ({
       // state.setPoseTransform(filteredId, transform);
       state.programData[filteredId].properties.position = localTransform.position;
       state.programData[filteredId].properties.rotation = localTransform.quaternion;
+      state.programData[filteredId].properties.status = STATUS.PENDING;
     } else if (!id.includes('pointer') && !id.includes('-tag') && focused && transform !== 'inactive') {
      // This isn't correct, we'll want to offset by the object's tf (since we are technically moving the mesh)
      // Similarly, we'll want to compute the quaternion transformation
       state.programData[filteredId].properties.position = localTransform.position;
       state.programData[filteredId].properties.rotation = localTransform.quaternion;
+      state.programData[filteredId].properties.status = STATUS.PENDING;
     }
   })
 });
