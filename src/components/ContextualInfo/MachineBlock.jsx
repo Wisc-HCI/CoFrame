@@ -35,10 +35,14 @@ export function getMachineInfo({frame,primaryColor,focusData,currentIssue,descri
                 )}
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Machines?</h3>
-                    Machines are components that are able to perform create, consume, or modify 
+                    Machines are components that are able to perform create, consume, or modify
+                    {' '} 
                     <Glossary.Things primaryColor={primaryColor}/>
+                    {' '}
                     in the program. They define specific 
+                    {' '}
                     <Glossary.Regions primaryColor={primaryColor}/>
+                    {' '}
                     that are used for depositing or retrieving these things.
                 </Blurb>
                 

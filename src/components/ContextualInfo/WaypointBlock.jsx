@@ -44,7 +44,7 @@ export function getWaypointInfo({frame,primaryColor,focusData,currentIssue,descr
                 )}
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Waypoints?</h3>
-                    Waypoints are positions and orientations that are used as parts of
+                    Waypoints are positions and orientations that are used as parts of {' '}
                     <Glossary.Trajectories primaryColor={primaryColor}/>, and unlike Locations, do not have inherent meaning other than to allow greater specificity of the manner with which the robot moves between a pair of locations.
                 </Blurb>
                 

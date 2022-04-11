@@ -37,8 +37,10 @@ export function getThingInfo({frame,primaryColor,focusData,currentIssue,descript
                 <Blurb highlight="rgb(50,50,50)">
                     <h3>What are Things?</h3>
                     Things are the parts that are created, consumed, or modified through the course of the program through the use of
+                    {' '}
                     <Glossary.Machines primaryColor={primaryColor}/>, 
                     and moved around by the robot with 
+                    {' '}
                     <Glossary.MoveTrajectoryPrimitives primaryColor={primaryColor}/>.
                 </Blurb>
                 
@@ -52,6 +54,7 @@ export function getThingInfo({frame,primaryColor,focusData,currentIssue,descript
                     <Blurb highlight={primaryColor}>
                         <h3 style={{color:primaryColor}}>Robot Performance</h3>
                         In order to have correct robot movement, the robot's payload must be within the limits specified by the robot. This robot has a payload of 3kg, so any Thing greater than this weight cannot be carried in 
+                        {' '}
                         <Glossary.MoveTrajectoryPrimitives primaryColor={primaryColor}/>.
                     </Blurb>
                 )}
