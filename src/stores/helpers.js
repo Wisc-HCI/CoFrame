@@ -809,27 +809,30 @@ export function stepsToAnimation(state, tfs) {
     let dict = {};
     let lastTimestamp = {};
     let timesteps = [];
-    
-    // Determine all moving things first
-    state.programData[state.activeFocus]?.properties.compiled["[\"root\"]"]?.steps.forEach(step => {
-        if (step.stepType === STEP_TYPE.SCENE_UPDATE) {
-            Object.keys(step.data.links).forEach(link => {
-                if (!dict[link]) {
-                    dict[link] = {position: {x: [], y: [], z: []}, rotation: {x: [], y: [], z: [], w: []}}
-                    lastTimestamp[link] = 0;
-                }
-            });
-        }
-    });
+
+    let focusStub = state.programData[state.activeFocus]?.properties?.compiled;
+    const compileKeys = Object.keys(focusStub ? focusStub : {});
+
+    // If too many or too few keys, return
+    if (compileKeys.length != 1) {
+        return;
+    }
+
+    const compiledKey = compileKeys[0];
 
     // Build up the movements
-    state.programData[state.activeFocus]?.properties.compiled["[\"root\"]"]?.steps.forEach(step => {
+    focusStub[compiledKey]?.steps?.forEach(step => {
         if (step.stepType === STEP_TYPE.SCENE_UPDATE) {
             
             timesteps.push(step.time);
 
             // Add link rotation/position
             Object.keys(step.data.links).forEach(link => {
+                // Link didn't previously exist, so add it
+                if (!dict[link]) {
+                    dict[link] = {position: {x: [], y: [], z: []}, rotation: {x: [], y: [], z: [], w: []}}
+                    lastTimestamp[link] = 0;
+                }
                 // If just encountering link (after t iterations) use first data piece to backfill information
                 if (lastTimestamp[link] === 0 && lastTimestamp[link]+1 !== timesteps.length) {
                     for (let i = 0; i < timesteps.length; i++) {
