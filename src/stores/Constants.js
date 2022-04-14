@@ -28,7 +28,9 @@ export const STEP_TYPE = {
     ACTION_START: 2,
     ACTION_END: 3,
     PROCESS_START: 4,
-    PROCESS_END: 5
+    PROCESS_END: 5,
+    SPAWN_ITEM: 6,
+    DESTROY_ITEM: 7
 }
 
 export const ROOT_BOUNDS = [

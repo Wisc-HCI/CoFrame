@@ -1,5 +1,4 @@
 import { STATUS, STEP_TYPE } from "../Constants";
-import { findInstance } from './index';
 
 export const processCompiler = ({ data, properties, path, context, memo }) => {
     const process = properties.process;
@@ -47,6 +46,10 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
         id: data.id
     }
 
+    const processSpawnables = process.properties ? process.properties.compiled[path].outputs : [];
+    const processDestroyables = process.properties ? process.properties.compiled[path].inputs : [];
+    console.log({processSpawnables,processDestroyables})
+
     if (data.type === 'processStartType') {
         newCompiled.steps = [
             {
@@ -55,6 +58,21 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
                 source: data.id,
                 time: 0
             },
+            ...processDestroyables.map(destroyable=>{
+
+                return ({
+                    stepType: STEP_TYPE.DESTROY_ITEM,
+                    data: {
+                        thing: destroyable.properties.compiled[path].thing.id,
+                        inputOutput: destroyable.id,
+                        position: destroyable.properties.compiled[path].position,
+                        rotation: destroyable.properties.compiled[path].rotation,
+                        relativeTo: destroyable.properties.compiled[path].relativeObject.id ? destroyable.properties.compiled[path].relativeObject : null
+                    },
+                    source: data.id,
+                    time: 0
+                })
+            }),
             {
                 stepType: STEP_TYPE.LANDMARK,
                 data: processFinishStatus,
@@ -84,7 +102,22 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
                 data: stopStepData,
                 source: data.id,
                 time: 0
-            }
+            },
+            ...processSpawnables.map(spawnable=>{
+
+                return ({
+                    stepType: STEP_TYPE.SPAWN_ITEM,
+                    data: {
+                        thing: spawnable.properties.compiled[path].thing.id,
+                        inputOutput: spawnable.id,
+                        position: spawnable.properties.compiled[path].position,
+                        rotation: spawnable.properties.compiled[path].rotation,
+                        relativeTo: spawnable.properties.compiled[path].relativeObject.id ? spawnable.properties.compiled[path].relativeObject : null
+                    },
+                    source: data.id,
+                    time: 0
+                })
+            }),
         ]
     }
 

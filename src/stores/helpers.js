@@ -21,7 +21,7 @@ export const timeGradientFunction = (t,heightOffset,maxHeight,slope,windowLength
         timeGradientFunctionOneTailStart(t,heightOffset,maxHeight,slope),
         timeGradientFunctionOneTailEnd(t,heightOffset,maxHeight,slope,windowLength)
     )
-    console.log({val,t,heightOffset,maxHeight,slope,windowLength})
+    // console.log({val,t,heightOffset,maxHeight,slope,windowLength})
     return val
 }
 
