@@ -416,7 +416,7 @@ export const computedSlice = (state) => {
     })
 
     // if (state.activeFocus === "moveGripperType-813df5f7-42c6-4536-be92-f5262efb74d8") {
-    // stepsToAnimation(state, tfs);
+    stepsToAnimation(state, tfs);
     // }
 
     return ({
