@@ -151,6 +151,11 @@ const updateMemoizedData = (memoizedData, data, path) => {
     let newMemoizedData = lodash.merge({ properties: { compiled: { [path]: {} } } }, memoizedData);
     const pastCompiled = data.properties.compiled[path];
     newMemoizedData.properties.compiled[path] = lodash.merge(newMemoizedData.properties.compiled[path], pastCompiled)
+    if (newMemoizedData.properties.compiled[path].otherPropertyUpdates) {
+        // console.log('Has other properties, updating...')
+        newMemoizedData = lodash.merge(newMemoizedData, { properties: newMemoizedData.properties.compiled[path].otherPropertyUpdates });
+        // console.log('New with updates:', newMemoizedData)
+    }
     return [
         newMemoizedData, // memoizedData
         pastCompiled.status, // status

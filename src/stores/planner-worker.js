@@ -1,14 +1,9 @@
 import * as Comlink from 'comlink';
 import { Quaternion } from 'three';
-import { STATUS, STEP_CALCULATOR } from './Constants';
+import { ROOT_PATH, STATUS, STEP_CALCULATOR } from './Constants';
 import { compilers, handleUpdate } from './compiling';
 import { DATA_TYPES } from 'simple-vp';
 import { createEnvironmentModel, createStaticEnvironment } from './helpers';
-
-const ROOT_BOUNDS = [
-    {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}, // Translational
-    {value:0.0,delta:0.0},{value:0.0,delta:0.0},{value:0.0,delta:0.0}  // Rotational
-]
 
 const PREPROCESS_TYPES = [
     'linkType',
@@ -20,18 +15,6 @@ const POSTPROCESS_TYPES = [
     'waypointType',
     'locationType',
 ]
-
-const INITIAL_STATE = [
-    { 
-        origin: {translation:[0,0,0],rotation:[1,0,0,0]},
-        joints: {},
-        frames: {}
-    }
-]
-
-const distance = (pos1, pos2) => {
- return Math.sqrt(Math.pow(pos1.x-pos2.x,2)+Math.pow(pos1.y-pos2.y,2)+Math.pow(pos1.z-pos2.z,2))
-}
 
 const loadModule = async () => {
     const module = await import('@people_and_robots/lively_tk');
@@ -93,7 +76,6 @@ const performCompileProcess = async (data) => {
 
     // First, preprocess certain types:
     let memo = {};
-    const pathRoot = ['root']
     Object.values(programData)
         .filter(v=>PREPROCESS_TYPES.includes(v.type) && v.dataType === DATA_TYPES.INSTANCE)
         .forEach(data=>{
@@ -102,7 +84,7 @@ const performCompileProcess = async (data) => {
                 data,
                 objectTypes,
                 context:programData,
-                path:JSON.stringify(pathRoot),
+                path:ROOT_PATH,
                 memo,
                 module,
                 worldModel
@@ -117,7 +99,7 @@ const performCompileProcess = async (data) => {
         data:programData[root],
         objectTypes,
         context:programData,
-        path:JSON.stringify(pathRoot),
+        path:ROOT_PATH,
         memo,
         module,
         worldModel
@@ -134,7 +116,7 @@ const performCompileProcess = async (data) => {
                 data,
                 objectTypes,
                 context:programData,
-                path:JSON.stringify(pathRoot),
+                path:ROOT_PATH,
                 memo,
                 module,
                 worldModel

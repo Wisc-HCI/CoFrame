@@ -1,10 +1,9 @@
 // import create from 'zustand'
 import create from 'zustand';
 import shallow from 'zustand/shallow'
-import { subscribeWithSelector } from 'zustand/middleware'
+import { subscribeWithSelector, persist } from 'zustand/middleware'
 import { computed } from 'zustand-middleware-computed-state'
 import produce from "immer";
-// import { persist } from "zustand/middleware";
 import {GuiSlice} from './GuiSlice';
 import {ReviewSlice} from './ReviewSlice';
 import {EvdSlice} from './EvdSlice';

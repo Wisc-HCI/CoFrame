@@ -3,7 +3,7 @@ import { distance, likStateToData, createStaticEnvironment, queryWorldPose, quat
 import { merge } from 'lodash';
 import { Quaternion, Vector3 } from 'three';
 
-const FRAME_TIME = 20;
+const FRAME_TIME = 10;
 
 const addOrMergeAnimation = (animations,idx,newLinks,newJoints,newProximity,reached,robotId,gripperId,actionId) => {
     if (animations.length > idx) {
@@ -11,6 +11,7 @@ const addOrMergeAnimation = (animations,idx,newLinks,newJoints,newProximity,reac
         const currentJoints = animations[idx].data.joints;
         const currentProximity = animations[idx].data.proximity;
         const currentReachability = animations[idx].data.reachability;
+        console.log({currentProximity,newProximity,animation:animations[idx]})
         animations[idx].data = {
             links:{...currentLinks,...newLinks},
             joints:{...currentJoints,...newJoints},
@@ -28,7 +29,7 @@ const addOrMergeAnimation = (animations,idx,newLinks,newJoints,newProximity,reac
     return animations
 }
 
-const createIKGoals = (goalPose1,goalPose2,jointState1,jointState2,duration) => {
+const createIKGoals = (goalPose1,goalPose2,jointState1,jointState2,duration,jointNames) => {
     const numGoals = Math.ceil(duration / FRAME_TIME);
     let goals = [];
     let idx = 0;
@@ -41,9 +42,9 @@ const createIKGoals = (goalPose1,goalPose2,jointState1,jointState2,duration) => 
     let jointGoals = {...jointState1};
     while (idx <= numGoals) {
         const percent = idx/numGoals;
-        interpPos = interpPos.lerpVectors(goalPos1,goalPos2,percent);
-        interpQuat = interpQuat.slerpQuaternions(goalQuat1,goalQuat2,percent);
-        Object.keys(jointGoals).forEach(jointKey=>{
+        interpPos.lerpVectors(goalPos1,goalPos2,percent);
+        interpQuat.slerpQuaternions(goalQuat1,goalQuat2,percent);
+        jointNames.forEach(jointKey=>{
             jointGoals[jointKey] = percent * jointState2[jointKey] + (1-percent)*jointState1[jointKey]
         })
         goals.push({
@@ -54,35 +55,38 @@ const createIKGoals = (goalPose1,goalPose2,jointState1,jointState2,duration) => 
                 {Rotation:[interpQuat.x,interpQuat.y,interpQuat.z,interpQuat.w]},
                 ...Object.keys(jointState1).map(joint=>({Scalar:jointState2[joint]}))
             ],
-            weights:[10,5,50,25,...Object.keys(jointGoals).map(()=>timeGradientFunctionOneTailEnd(idx,10,-9,30,numGoals))],
+            weights:[10,5,50,25,...jointNames.map(()=>timeGradientFunctionOneTailEnd(idx,5,-10,Math.min(numGoals/5,30),numGoals))],
             joints:jointGoals,
             position:{x:interpPos.x,y:interpPos.y,z:interpPos.z},
             rotation:{x:interpQuat.x,y:interpQuat.y,z:interpQuat.z,w:interpQuat.w}
         })
+        idx += 1;
     }
-
+    return goals
 }
 
-const createJointGoals = (jointState1,jointState2,duration) => {
+const createJointGoals = (jointState1,jointState2,duration,jointNames) => {
     const numGoals = Math.ceil(duration / FRAME_TIME);
     let goals = [];
     let idx = 0;
     let jointGoals = {...jointState1};
     while (idx <= numGoals) {
         const percent = idx/numGoals;
-        Object.keys(jointGoals).forEach(jointKey=>{
+        jointNames.forEach(jointKey=>{
             jointGoals[jointKey] = percent * jointState2[jointKey] + (1-percent)*jointState1[jointKey]
         })
         goals.push({
             values:[
                 null,
                 null,
-                ...Object.keys(jointState1).map(joint=>({Scalar:jointGoals[joint]}))
+                ...jointNames.map(joint=>({Scalar:jointGoals[joint]}))
             ],
-            weights:[10,5,...Object.keys(jointGoals).map(()=>20)],
+            weights:[10,5,...jointNames.map(()=>20)],
             joints:jointGoals
         })
+        idx += 1;
     }
+    return goals
 }
 
 const createIKSensitivityTester = (attachmentLink,jointNames,endJoints,duration) => {
@@ -92,14 +96,18 @@ const createIKSensitivityTester = (attachmentLink,jointNames,endJoints,duration)
         const r = state.frames[attachmentLink].rotation;
         const achievedPos = {x:p[0],y:p[1],z:p[2]}
         const goalQuat = new Quaternion(goal.rotation.x,goal.rotation.y,goal.rotation.z,goal.rotation.w)
-        const achievedQuat = new Quaternion(r[1],r[2],r[3],r[0])
-        const translationDistance = distance(achievedPos,goal.position);
+        const achievedQuat = new Quaternion(r[0],r[1],r[2],r[3])
+        const translationalDistance = distance(achievedPos,goal.position);
         const rotationalDistance = goalQuat.angleTo(achievedQuat);
-        let passed = translationDistance <= timeGradientFunction(idx,0.01,0.2,30,duration) && rotationalDistance <= timeGradientFunction(idx,0.005,4,30,duration);
+        const translationalDistanceLimit = Math.max(0.01,timeGradientFunction(idx,0.01,0.2,30,duration));
+        const rotationalDistanceLimit = Math.max(0.01,timeGradientFunction(idx,0.01,4,30,duration));
+        let passed = translationalDistance <= translationalDistanceLimit && rotationalDistance <= rotationalDistanceLimit;
+        console.log({passed,translationalDistance,rotationalDistance,translationalDistanceLimit,rotationalDistanceLimit})
         if (!passed) {
             return false
         }
         return !jointNames.some(jointName=>{
+            console.log({jointName,dist:Math.abs(state.joints[jointName] - endJoints[jointName]),compjoint:timeGradientFunctionOneTailEnd(idx,0.05,2*Math.PI,30,duration)})
             return Math.abs(state.joints[jointName] - endJoints[jointName]) > timeGradientFunctionOneTailEnd(idx,0.05,2*Math.PI,30,duration)
         })
     }
@@ -108,7 +116,7 @@ const createIKSensitivityTester = (attachmentLink,jointNames,endJoints,duration)
 }
 
 const createJointSensitivityTester = (jointNames) => {
-    const tester = (state,goal,idx) => {
+    const tester = (state,goal,_) => {
         return !jointNames.some(jointName=>{
             return Math.abs(state.joints[jointName] - goal.joints[jointName]) > 0.03
         })
@@ -215,7 +223,7 @@ export const robotMotionCompiler = ({data, properties, context, path, memo, solv
             if (reachableChildren && robotLinks.includes(gripper.properties.relativeTo)) {
                 let firstLinks = poses[0].states[robot.id][gripper.id].links;
                 let firstJoints = poses[0].states[robot.id][gripper.id].joints;
-                let firstProximity = poses[0].states[robot.id][gripper.id].links
+                let firstProximity = poses[0].states[robot.id][gripper.id].proximity;
                 // load the first frame
                 innerAnimations = addOrMergeAnimation(innerAnimations,0,firstLinks,firstJoints,firstProximity,reached,robot.id,gripper.id,data.id);
 
@@ -258,6 +266,7 @@ export const robotMotionCompiler = ({data, properties, context, path, memo, solv
 
                 // Construct the solver
                 const initialState = {origin,joints:firstJoints};
+                console.log('initial state',initialState)
                 const solver = new module.Solver(
                     urdf,
                     objectives,
@@ -268,34 +277,39 @@ export const robotMotionCompiler = ({data, properties, context, path, memo, solv
                     1, 
                     450
                 );
-
+                console.log('constructed trajectory solver')
                 // Enumerate pairs of poses.
                 let poseStack = [...poses];
                 let idx = 0;
                 while (poseStack.length > 1 && reached) {
                     const pose1 = poseStack[0];
                     const pose2 = poseStack[1];
-
+                    console.log('pose stacks',{pose1,pose2});
                     const goalPose1 = pose1.goalPose; 
                     const goalPose2 = pose2.goalPose;
                     const jointState1 = pose1.states[robot.id][gripper.id].joints;
                     const jointState2 = pose2.states[robot.id][gripper.id].joints;
+                    const jointNames = Object.keys(jointState1);
 
                     const dist = distance(goalPose1.position,goalPose2.position);
                     const duration = 1000 * dist / velocity;
 
+                    console.log('creating goals');
                     let goals = motionType === 'IK' 
-                        ? createIKGoals(goalPose1,goalPose2,jointState1,jointState2,duration) 
-                        : createJointGoals(jointState1,jointState2,duration);
+                        ? createIKGoals(goalPose1,goalPose2,jointState1,jointState2,duration,jointNames) 
+                        : createJointGoals(jointState1,jointState2,duration,jointNames);
 
+                    console.log('creating sensitivity testers')
                     const sensitivityTester = motionType === 'IK' 
-                        ? createIKSensitivityTester(attachmentLink,Object.keys(firstJoints),goals.length) 
-                        : createJointSensitivityTester(Object.keys(firstJoints),goals.length);
+                        ? createIKSensitivityTester(attachmentLink,jointNames,jointState2,goals.length) 
+                        : createJointSensitivityTester(jointNames);
 
                     while (goals.length > 0 && reached) {
+                        console.log('goals: ',goals.length)
                         const goal = goals[0];
+                        console.log(goal)
                         state = solver.solve(goal.values, goal.weights);
-                        reached = sensitivityTester(state,goal);
+                        reached = sensitivityTester(state,goal,idx);
                         goals.slice(1)
                     }
 
