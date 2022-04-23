@@ -23,7 +23,7 @@ const tooltipStyles = {
     padding: 5
 };
 
-const pointSensitivity = 0.25;
+const pointSensitivity = 500;
 
 const round = (num) => Math.round(num * 10) / 10
 
@@ -236,7 +236,16 @@ export default withTooltip(
             (event) => {
                 const { x, y } = localPoint(event) || { x: -10, y: -10 };
                 const x0 = xScale.invert(x - defaultMargin.left);
-                const d = stepData.filter(e => e.time ? Math.abs(e.time - x0) < pointSensitivity : e.start <= x0 && e.end >= x0).map(e => ({ ...e, progress: x0 - e.start }))
+                const d = stepData
+                    .filter(e => {
+                        if (e.time) {
+                            console.log({e, time: e.time, x0, pointSensitivity})
+                            return Math.abs(e.time - x0) < pointSensitivity
+                        } else {
+                            return e.start <= x0 && e.end >= x0
+                        }
+                    })
+                    .map(e => ({ ...e, progress: x0 - e.start }))
                 showTooltip({
                     tooltipData: d,
                     tooltipLeft: x - defaultMargin.left,
@@ -434,8 +443,9 @@ export default withTooltip(
                                 {tooltipData.length > 0 && tooltipData.map((e, i) => (
                                     <div key={i}>
                                         <Box direction='row' alignContent='center' align='center' justify='start' gap='xsmall'>
-                                            {e.time !== undefined && (<div style={{ borderRadius: 100, width: 7, height: 7, backgroundColor: colorScale(e.event), boxShadow: '0 0 0 2px white' }}></div>)}
-                                            <Text color={colorScale(e.event)} >
+                                            {e.time !== undefined && (
+                                                <div style={{ borderRadius: 100, width: 7, height: 7, backgroundColor: colorScale(e.event), boxShadow: '0 0 0 2px white' }}></div>)}
+                                            <Text color={colorScale(e.event)} size={e.time === undefined ? 'medium' : 'small'}>
                                                 {e.label}
                                             </Text>
                                         </Box>
