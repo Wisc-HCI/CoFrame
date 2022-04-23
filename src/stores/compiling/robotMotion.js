@@ -2,6 +2,7 @@ import { STATUS, STEP_TYPE } from "../Constants";
 import { distance, likStateToData, createStaticEnvironment, queryWorldPose, quaternionLog, poseToGoalPosition, timeGradientFunction, timeGradientFunctionOneTailStart, timeGradientFunctionOneTailEnd } from "../helpers";
 import { merge } from 'lodash';
 import { Quaternion, Vector3 } from 'three';
+import { eventsToStates, statesToSteps } from ".";
 
 const FRAME_TIME = 10;
 
@@ -22,8 +23,9 @@ const addOrMergeAnimation = (animations, idx, newLinks, newJoints, newProximity,
         animations.push({
             stepType: STEP_TYPE.SCENE_UPDATE,
             data: { links: newLinks, joints: newJoints, proximity: newProximity, reachability: { [robotId]: { [gripperId]: reached } } },
+            effect: {},
             source: actionId,
-            time: idx * FRAME_TIME // We assume 50 frames / second
+            delay: idx * FRAME_TIME // We assume 50 frames / second
         })
     };
     return animations
@@ -174,6 +176,7 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
         return {
             status: STATUS.FAILED,
             shouldBreak: false,
+            events: [],
             steps: []
         }
     }
@@ -198,11 +201,11 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
 
     const grippers = Object.values(memo).filter(v => v.type === 'gripperType');
     const robots = Object.values(memo).filter(v => v.type === 'robotAgentType');
-
+    const robot = robots[0];
     const motionType = properties.motionType;
     const velocity = properties.velocity;
 
-    let innerAnimations = []
+    let innerSteps = []
 
     const poses = [
         trajectory.properties.compiled[path].startLocation.properties.compiled[path],
@@ -241,7 +244,7 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
                 let firstProximity = poses[0].states[robot.id][gripper.id].proximity;
                 const jointNames = Object.keys(firstJoints);
                 // load the first frame
-                innerAnimations = addOrMergeAnimation(innerAnimations, 0, firstLinks, firstJoints, firstProximity, reached, robot.id, gripper.id, data.id);
+                innerSteps = addOrMergeAnimation(innerSteps, 0, firstLinks, firstJoints, firstProximity, reached, robot.id, gripper.id, data.id);
 
                 let reached = true;
 
@@ -329,7 +332,7 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
                     let idx = 0;
 
                     while (goals.length > 0 && reached) {
-                        // console.log('animation frames: ', innerAnimations.length)
+                        // console.log('animation frames: ', innerSteps.length)
                         // console.log('goals: ', goals.length)
                         const goal = goals[0];
                         // console.log(goal)
@@ -340,8 +343,8 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
 
                         const stateData = likStateToData(state, worldModel, robot.id)
 
-                        innerAnimations = addOrMergeAnimation(
-                            innerAnimations,
+                        innerSteps = addOrMergeAnimation(
+                            innerSteps,
                             mainIdx,
                             stateData.links,
                             stateData.joints,
@@ -368,25 +371,39 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
 
     const initialStep = {
         stepType: STEP_TYPE.ACTION_START,
+        effect:{[robot.id]: { busy: true }},
         data: { agent: 'robot', id: data.id },
         source: data.id,
-        time: 0
+        delay: 0
     }
     const finalStep = {
         stepType: STEP_TYPE.ACTION_END,
+        effect:{[robot.id]: { busy: false }},
         data: { agent: 'robot', id: data.id },
         source: data.id,
-        time: innerAnimations.length > 0 ? innerAnimations[innerAnimations.length - 1].time : 0
+        delay: innerSteps.length > 0 ? innerSteps[innerSteps.length - 1].delay : 0
     }
+
+    const events = [
+        {
+            condition: {
+                [robot.id]: { busy: false }
+            },
+            onTrigger: [
+                initialStep,
+                ...innerSteps,
+                finalStep
+            ],
+            source: data.id
+        }
+    ]
 
     const newCompiled = {
         status,
         shouldBreak: false,
-        steps: [
-            initialStep,
-            ...innerAnimations,
-            finalStep
-        ]
+        events,
+        steps: statesToSteps(eventsToStates(events))
     }
+
     return newCompiled
 }

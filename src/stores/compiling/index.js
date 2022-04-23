@@ -13,7 +13,7 @@ import { humanAgentCompiler } from "./humanAgent";
 import { linkCompiler } from "./link";
 import { propertyCompiler } from "./property";
 import lodash from 'lodash';
-import { COMPILE_FUNCTIONS, STATUS } from "../Constants";
+import { COMPILE_FUNCTIONS, STATUS, TRIGGER_TYPE } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
 import { gripperCompiler } from "./gripper";
 
@@ -62,76 +62,6 @@ export const findInstance = (id, context) => {
 }
 
 export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-
-// export const leafLogic = ({ data, objectTypes, context, path, memo, module, updateFn }) => {
-//     let newCompiled = {};
-//     let updated = false;
-//     let status = STATUS.VALID;
-//     let shouldBreak = false;
-//     if (memo[data.id]?.properties.compiled[path]) {
-//         // Use the version in the memo
-//         console.log('using memoized version of ', data.id)
-//         newCompiled = memo[data.id].properties.compiled;
-//         status = memo[data.id].properties.status;
-//         newCompiled[path].some(step => {
-//             if (step.data.break) {
-//                 shouldBreak = true
-//                 return true
-//             } else {
-//                 return false
-//             }
-//         })
-//         // Record a change if the status was previously pending
-//         updated = data.properties.status === STATUS.PENDING;
-//     } else if ([STATUS.FAILED, STATUS.VALID].includes(data.properties.status) && data.properties.compiled[path]) {
-//         // Use the version calculated previously
-//         console.log('using cached version of ', data.id)
-//         const prevPath = data.properties.compiled[path]
-//         newCompiled = memo[data.id] === undefined
-//             ? { [path]: prevPath }
-//             : memo[data.id].properties.compiled[path]
-//                 ? memo[data.id].properties.compiled
-//                 : { ...memo[data.id].properties.compiled, [path]: prevPath }
-//         newCompiled[path].some(step => {
-//             if (step.data.break) {
-//                 shouldBreak = true
-//                 return true
-//             } else {
-//                 return false
-//             }
-//         })
-//         // Record a change if the status was previously pending
-//         status = data.properties.status;
-//         updated = data.properties.status === STATUS.PENDING;
-//     } else {
-//         console.log('updating version of ', data.id)
-//         let result = updateFn({ data, objectTypes, context, path, memo, solver, module, urdf, updateFn });
-//         const compiled = result.compiled;
-//         updated = true;
-//         status = result.status;
-//         shouldBreak = result.break;
-//         newCompiled = memo[data.id] ? { ...memo[data.id].properties.compiled, [path]: compiled } : { [path]: compiled };
-//     }
-//     // Pack the data/compiled into the memo
-//     const dataMemo = { ...data, properties: { ...data.properties, status, compiled: newCompiled } };
-//     const newMemo = { ...newMemo, [data.id]: dataMemo };
-//     console.log(newMemo)
-//     return { compiled: newCompiled, memo: newMemo, status, updated, break: shouldBreak }
-// }
-
-// const shouldBreak = (nodeData) => {
-//     let shouldBreak = false
-//     nodeData.properties.compiled[path].steps?.some(step => {
-//         if (step.data.break) {
-//             shouldBreak = true
-//             return true
-//         } else {
-//             return false
-//         }
-//     })
-//     return shouldBreak
-// }
-
 // Copies data from a memo into the specified node.
 // Returns standard changes, which will need to be propagated back up.
 const copyMemoizedData = (memoizedData, data, path) => {
@@ -356,3 +286,181 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
     newMemo = { ...newMemo, [data.id]: memoizedData };
     return { memoizedData, memo: newMemo, status, updated, shouldBreak }
 }
+
+const compileStates = (states, time) => {
+    let newState = {};
+    let cutoffTime = time ? time : Number.POSITIVE_INFINITY;
+    states.some(state=>{
+        if (state.time <= cutoffTime) {
+            newState = lodash.merge(newState,state.current)
+            return false
+        } else {
+            return true
+        }
+    })
+    return newState
+}
+
+const compileEffects = (steps) => {
+    let effects = {};
+    steps.forEach(step=>{
+        effects = lodash.merge(effects,step.effect);
+    })
+    return effects;
+}
+
+const compare = (baseline,test) => {
+    // let comp = lodash.cloneDeep(src);
+    // comp = lodash.merge(comp,obj);
+    // return lodash.isMatch(comp,src);
+    let matches = true;
+    let matchedKeys = [];
+    const allKeys = lodash.uniq([...Object.keys(baseline),...Object.keys(test)]);
+    allKeys.forEach(key=>{
+        // console.log({key,baseline:baseline[key],test:test[key]})
+        if (baseline[key] === undefined || test[key] === undefined) {
+            // console.log('found one undefined',{matches,matchCount})
+        } else if (typeof baseline[key] === 'object' && typeof test[key] === 'object') {
+            // console.log('both objects, inner compare...')
+            const [innerMatches, innerMatchedKeys] = compare(baseline[key],test[key])
+            if (innerMatches) {
+                matchedKeys.push(key)
+            } else {
+                matches = false
+            }
+            matchedKeys = [...matchedKeys,...innerMatchedKeys.map(ik=>`${key}/${ik}`)]
+            // console.log('both objects, inner compare...',{matches,matchCount})
+        } else if (typeof baseline[key] === 'object' || typeof test[key] === 'object') {
+            matches = false
+            // console.log('only one is object',{matches,matchCount})
+        } else {
+            const innerMatches = lodash.isEqual(baseline[key],test[key])
+            if (innerMatches) {
+                matchedKeys.push(key);
+            } else if (!innerMatches) {
+                matches = false
+            }
+            // console.log('neither is object',{key,matches,matchCount,innerMatches})
+        }
+        
+        
+    })
+
+    return [matches, matchedKeys]
+}
+
+const withRefreshedStates = (states) => {
+    // let currentState = {};
+    states.sort((a,b)=>a.time - b.time);
+    // states.forEach((state,i)=>{
+    //     currentState = lodash.merge(currentState,state.current);
+    //     states[i].current = lodash.cloneDeep(currentState);
+    // })
+    return states
+}
+
+const isSubset = (arr1,arr2) => {
+    const intersection = lodash.intersection(arr1,arr2);
+    return arr2.length === intersection.length;
+}
+
+const searchForTime = (states,condition,effects) => {
+    let time = 0;
+    let timeIdx = states.length;
+    let found = states.length === 0;
+    let savedMatches = [];
+    states.slice().reverse().some((state,idx)=>{
+        // console.log('considering state match for:',{condition,state,effects})
+        const prevState = idx === 0 ? {current:{}} : states[states.length-idx];
+        // console.log('prevState',prevState)
+        // console.log('state',state)
+        const [currentMatch, currentMatches] = compare(state.current,condition);
+        const [pastMatch, _ ] = compare(effects,prevState.current);
+        // console.log({currentMatch, currentMatches, pastMatch, savedMatches})
+        if (!pastMatch || !currentMatch) {
+            // console.log('cancelling search');
+            return true;
+        } else if (currentMatch && !isSubset(currentMatches,savedMatches) && found) {
+            // console.log('past match superior, cancelling');
+            return true;
+        } else if (currentMatch) {
+            // console.log('match found @',states.length-idx-1)
+            // console.log('match info:',{state:state.current,condition,prevState})
+            time = state.time;
+            timeIdx = states.length-idx;
+            found = true;
+            savedMatches = currentMatches;
+            return false
+        } else {
+            // console.log('some other condition',{currentMatch, currentMatches,pastMatch,found})
+        }
+    })
+    return [time, found, timeIdx];
+}
+
+const insertEventStepAtTime = (time,idx,states,eventStep,condition) => {
+    // Find state at time
+    let currentState = compileStates(states,time);
+    // Merge with new eventStep's effects
+    currentState = lodash.merge(currentState,eventStep.effect);
+    states.splice(idx, 0, {
+        time: time + eventStep.delay,
+        type: eventStep.stepType,
+        effect: eventStep.effect,
+        condition: condition,
+        data: eventStep.data,
+        source: eventStep.source,
+        current: eventStep.effect
+    });
+    return withRefreshedStates(states)
+}
+
+export const eventsToStates = (events) => {
+    let tempStates = [];
+    let pendingSet = [];
+    events.forEach((event,i) => {
+        const allEffects = compileEffects(event.onTrigger);
+        const [currentTime, found, timeIdx] = searchForTime(tempStates,event.condition,allEffects);
+        if (found || tempStates.length === 0) {
+            // If matching and found, add to the stack at that time.
+            event.onTrigger.forEach((eventStep,i)=>{
+                tempStates = insertEventStepAtTime(
+                    currentTime,
+                    timeIdx+i,
+                    tempStates,
+                    eventStep,
+                    event.condition
+                );
+            })
+            // Check pending for any events that can be added
+            pendingSet.forEach(pendingEvent=>{
+                const allPendingEffects = compileEffects(pendingEvent.onTrigger);
+                const [currentPendingTime, pendingFound, pendingTimeIdx] = 
+                    searchForTime(
+                        tempStates,
+                        pendingEvent.condition,
+                        allPendingEffects
+                    );
+                if (pendingFound) {
+                    // console.log('adding event from pending',event)
+                    pendingEvent.onTrigger.forEach((pendingEventStep,j)=>{
+                        tempStates = insertEventStepAtTime(
+                            currentPendingTime,
+                            pendingTimeIdx+j,
+                            tempStates,
+                            pendingEventStep,
+                            pendingEvent.condition
+                        );
+                        // tempStates.sort((a,b)=>a.time - b.time);
+                    })
+                }
+            })
+        } else {
+            // Event couldn't be resolved, so add to the pending
+            pendingSet.push(event)
+        }
+    })
+    return tempStates
+}
+
+export const statesToSteps = (states) => states.map(state=>({...lodash.omit(state,'delay','effect','current','condition')}))

@@ -1,9 +1,11 @@
 import { STATUS, STEP_TYPE } from "../Constants";
 import { range, mapValues } from 'lodash';
 import { findLastSatisfiedFromReference } from "../helpers";
+import { eventsToStates, statesToSteps } from ".";
 
 export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
     const rootPath = JSON.stringify(['root']);
+    const robot = Object.values(memo).filter(v => v.type === 'robotAgentType')[0];
     let status = STATUS.VALID;
     const delta = properties.positionEnd - properties.positionStart;
     if (properties.speed === 0) {
@@ -23,7 +25,7 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
 
     const grippers = Object.values(memo).filter(v => v.type === 'gripperType');
 
-    let innerAnimations = [
+    let innerSteps = [
 
     ]
 
@@ -38,35 +40,49 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
             frameData = { ...frameData, ...links };
             gripperValues[gripper.id] = gripperValue;
         })
-        innerAnimations.push({
+        innerSteps.push({
             stepType: STEP_TYPE.SCENE_UPDATE,
             data: { links: frameData, thing: properties.thing.id, gripperValues },
+            effect: {},
             source: data.id,
-            time
+            delay:time
         })
     })
 
     const initialStep = {
         stepType: STEP_TYPE.ACTION_START,
+        effect:{[robot.id]: { busy: true }},
         data: { agent: 'robot', id: data.id },
         source: data.id,
-        time: 0
+        delay: 0
     }
     const finalStep = {
         stepType: STEP_TYPE.ACTION_END,
+        effect:{[robot.id]: { busy: false }},
         data: { agent: 'robot', id: data.id },
         source: data.id,
-        time: duration
+        delay: duration
     }
+
+    const events = [
+        {
+            condition: {
+                [robot.id]: { busy: false }
+            },
+            onTrigger: [
+                initialStep,
+                ...innerSteps,
+                finalStep
+            ],
+            source: data.id
+        }
+    ]
 
     const newCompiled = {
         status,
         shouldBreak: false,
-        steps: [
-            initialStep,
-            ...innerAnimations,
-            finalStep
-        ]
+        events,
+        steps: statesToSteps(eventsToStates(events))
     }
     return newCompiled
 }

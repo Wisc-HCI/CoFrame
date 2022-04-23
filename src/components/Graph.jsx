@@ -28,9 +28,19 @@ const pointSensitivity = 0.25;
 const round = (num) => Math.round(num * 10) / 10
 
 const formatRow = (row) => row.charAt(0).toUpperCase() + row.slice(1);
-const formatCol = (row) => round(row/1000);
+// const formatCol = (row) => round(row / 1000);
 
-const getGroup = (d) => d.group;
+function formatTime(ms) {
+    const seconds = ms/1000;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.round(seconds % 60);
+    return [
+      h,
+      m > 9 ? m : (h ? '0' + m : m || '0'),
+      s > 9 ? s : '0' + s
+    ].filter(Boolean).join(':');
+  }
 
 const axisColor = 'white';
 
@@ -51,72 +61,17 @@ export default withTooltip(
         const xMax = width - margin.left - margin.right;
         const yMax = height - margin.top - margin.bottom;
 
-        const eventTypes = useStore(state=>({
-            action: {label: 'Robot Action', color: state.programSpec.objectTypes.delayType.instanceBlock.color},
-            process: {label: 'Process', color: state.programSpec.objectTypes.processType.referenceBlock.color},
-            machines: {label: 'Machines', color: state.programSpec.objectTypes.machineType.referenceBlock.color},
-            things: {label: 'Things', color: state.programSpec.objectTypes.thingType.referenceBlock.color}
-        }))
-
-        const clearFocus = useStore(state => state.clearFocus);
-        const primaryColor = useStore(state => state.primaryColor);
-
-        const [stepData, errorType] = useStore(state => {
-            let activeStep = [];
-            let groups = [];
+        const focus = useStore(state => state.focus);
+        const [focusSteps, errorType] = useStore(state => {
+            let steps = [];
             let errorType = null;
             state.focus.some(f => {
-                if (state.programData[f]?.properties?.status === STATUS.VALID || state.programData[f]?.properties?.status === STATUS.PENDING) {
-                    if (Object.keys(state.programData[f].properties?.compiled).length === 1) {
-                        let currentTime = 0;
-                        const steps = state.programData[f].properties.compiled[Object.keys(state.programData[f].properties?.compiled)[0]]?.steps;
-                        if (steps) {
-                            steps.forEach((step,i) => {
-                                if (step.stepType === STEP_TYPE.ACTION_START) {
-                                    let actionEnd = null;
-                                    steps.slice(i).some(afterStep=>{
-                                        if (afterStep.stepType === STEP_TYPE.ACTION_END && afterStep.data.id === step.data.id) {
-                                            actionEnd = afterStep;
-                                            return true
-                                        } else {
-                                            return false
-                                        }
-                                    })
-                                    const actionBlock = {
-                                        group: 'Robot',
-                                        event: 'action',
-                                        label: state.programData[step.source] ? state.programData[step.source].name : 'Updating...',
-                                        start: currentTime,
-                                        end: actionEnd?actionEnd.time:0
-                                    }
-                                    currentTime = actionEnd?actionEnd.time:currentTime
-                                    activeStep.push(actionBlock)
-                                } else if (step.stepType === STEP_TYPE.PROCESS_START) {
-                                    let processEnd = null;
-                                    steps.slice(i).some(afterStep=>{
-                                        if (afterStep.stepType === STEP_TYPE.LANDMARK && afterStep.source === step.source) {
-                                            processEnd = afterStep;
-                                            return true
-                                        } else {
-                                            return false
-                                        }
-                                    })
-                                    const group = step.data.machine ? state.programData[step.data.machine].name : 'Robot'
-                                    const process = state.programData[step.data.process] ? state.programData[step.data.process] : {name:'unknown'};
-                                    const processBlock = {
-                                        group,
-                                        event: 'process',
-                                        label: process.name,
-                                        start: currentTime,
-                                        end: processEnd?processEnd.time:0
-                                    }
-                                    currentTime = processEnd?processEnd.time:currentTime
-                                    activeStep.push(processBlock)
-                                }
-                            })
-                        }
+                const entry = state.programData[f];
+                if ([STATUS.VALID, STATUS.PENDING, STATUS.WARN].includes(entry?.properties?.status)) {
+                    if (Object.keys(entry.properties?.compiled).length === 1) {
+                        steps = entry.properties.compiled[Object.keys(entry.properties?.compiled)[0]]?.steps;
                         return true
-                    } else if (Object.keys(state.programData[f].properties?.compiled).length > 1) {
+                    } else {
                         errorType = 'traces'
                         return false
                     }
@@ -125,14 +80,137 @@ export default withTooltip(
                     return false
                 }
             })
-            return [activeStep, errorType]
+            return [steps, errorType]
         })
+
+        console.log('focusSteps', focusSteps)
+
+        const clearFocus = useStore(state => state.clearFocus);
+        const primaryColor = useStore(state => state.primaryColor);
+        const [stepData, trackTypes] = useStore(state => {
+            let robot = Object.values(state.programData).filter(v => v.type === 'robotAgentType')[0];
+            let trackTypes = { [robot.id]: { label: robot.name, color: state.programSpec.objectTypes.delayType.instanceBlock.color } };
+            let stepData = [];
+            let openSteps = {};
+            [...focusSteps, { type: null, time: Number.INFINITY }].forEach((step, i) => {
+
+                // Package up any statuses if they no longer match the current time;
+                if ([STEP_TYPE.ACTION_START, STEP_TYPE.PROCESS_START].includes(step.type)) {
+                    const track = step.type === STEP_TYPE.ACTION_START ? robot.id : step.data.machine ? step.data.machine : step.data.process;
+                    openSteps[step.source] = {
+                        track: track,
+                        event: step.type == STEP_TYPE.ACTION_START ? 'action' : 'process',
+                        label: state.programData[step.source] ? state.programData[step.source].name : 'Updating...',
+                        start: step.time,
+                        end: null
+                    }
+                } else if ([STEP_TYPE.ACTION_END, STEP_TYPE.PROCESS_END].includes(step.type)) {
+                    openSteps[step.source].end = step.time;
+                    stepData.push(openSteps[step.source]);
+                    delete openSteps[step.source];
+                } else if ([STEP_TYPE.SPAWN_ITEM, STEP_TYPE.DESTROY_ITEM].includes(step.type)) {
+                    const track = step.data.machine ? step.data.machine : step.data.process;
+                    if (!trackTypes[track]) {
+                        let objType = state.programData[track].type;
+                        trackTypes[track] = { label: state.programData[track].name, color: state.programSpec.objectTypes[objType].referenceBlock.color };
+                    }
+                    stepData.push({
+                        time: step.time,
+                        track,
+                        event: 'things',
+                        label: `${state.programData[step.data.thing] ? state.programData[step.data.thing].name : 'Thing'} ${step.type === STEP_TYPE.SPAWN_ITEM ? 'Spawned' : 'Consumed'}`
+                    })
+                } else if (step.type === STEP_TYPE.LANDMARK) {
+                    stepData.push({
+                        time: step.time,
+                        track: robot.id,
+                        event: 'action',
+                        label: step.data.label
+                    })
+                }
+            })
+            return [stepData, trackTypes]
+        });
+
+        const eventTypes = useStore(state=>({
+            action: {label: 'Robot Action', color: state.programSpec.objectTypes.delayType.instanceBlock.color},
+            process: {label: 'Process', color: state.programSpec.objectTypes.processType.referenceBlock.color},
+            machines: {label: 'Machines', color: state.programSpec.objectTypes.machineType.referenceBlock.color},
+            things: {label: 'Things', color: state.programSpec.objectTypes.thingType.referenceBlock.color}
+        }))
+
+        // const [stepData, errorType] = useStore(state => {
+        //     let activeStep = [];
+        //     let groups = [];
+        //     let errorType = null;
+        //     state.focus.some(f => {
+        //         if (state.programData[f]?.properties?.status === STATUS.VALID || state.programData[f]?.properties?.status === STATUS.PENDING) {
+        //             if (Object.keys(state.programData[f].properties?.compiled).length === 1) {
+        //                 let currentTime = 0;
+        //                 const steps = state.programData[f].properties.compiled[Object.keys(state.programData[f].properties?.compiled)[0]]?.steps;
+        //                 if (steps) {
+        //                     steps.forEach((step,i) => {
+        //                         if (step.stepType === STEP_TYPE.ACTION_START) {
+        //                             let actionEnd = null;
+        //                             steps.slice(i).some(afterStep=>{
+        //                                 if (afterStep.stepType === STEP_TYPE.ACTION_END && afterStep.data.id === step.data.id) {
+        //                                     actionEnd = afterStep;
+        //                                     return true
+        //                                 } else {
+        //                                     return false
+        //                                 }
+        //                             })
+        //                             const actionBlock = {
+        //                                 group: 'Robot',
+        //                                 event: 'action',
+        //                                 label: state.programData[step.source] ? state.programData[step.source].name : 'Updating...',
+        //                                 start: currentTime,
+        //                                 end: actionEnd?actionEnd.time:0
+        //                             }
+        //                             currentTime = actionEnd?actionEnd.time:currentTime
+        //                             activeStep.push(actionBlock)
+        //                         } else if (step.stepType === STEP_TYPE.PROCESS_START) {
+        //                             let processEnd = null;
+        //                             steps.slice(i).some(afterStep=>{
+        //                                 if (afterStep.stepType === STEP_TYPE.LANDMARK && afterStep.source === step.source) {
+        //                                     processEnd = afterStep;
+        //                                     return true
+        //                                 } else {
+        //                                     return false
+        //                                 }
+        //                             })
+        //                             const group = step.data.machine ? state.programData[step.data.machine].name : 'Robot'
+        //                             const process = state.programData[step.data.process] ? state.programData[step.data.process] : {name:'unknown'};
+        //                             const processBlock = {
+        //                                 group,
+        //                                 event: 'process',
+        //                                 label: process.name,
+        //                                 start: currentTime,
+        //                                 end: processEnd?processEnd.time:0
+        //                             }
+        //                             currentTime = processEnd?processEnd.time:currentTime
+        //                             activeStep.push(processBlock)
+        //                         }
+        //                     })
+        //                 }
+        //                 return true
+        //             } else if (Object.keys(state.programData[f].properties?.compiled).length > 1) {
+        //                 errorType = 'traces'
+        //                 return false
+        //             }
+        //         } else {
+        //             errorType = 'invalid'
+        //             return false
+        //         }
+        //     })
+        //     return [activeStep, errorType]
+        // })
         console.log({ stepData, errorType })
 
         const lastEnd = Math.max(...stepData.map((e) => e.time ? e.time : e.end));
 
         const yScale = scaleBand({
-            domain: stepData.map(getGroup),
+            domain: stepData.map(e=>e.track),
             padding: 0.2
         });
         const colorScale = scaleOrdinal({
@@ -140,12 +218,13 @@ export default withTooltip(
             range: Object.keys(eventTypes).map((e) => eventTypes[e].color)
         });
 
+        console.log('lastEnd', lastEnd)
         const xScale = scaleLinear({
             domain: [0, lastEnd],
             nice: true
         });
 
-        const barHeight = 0.8 * yMax / uniq(stepData.map(getGroup)).length
+        const barHeight = Math.max(0, 0.8 * yMax / uniq(stepData.map(e=>e.track)).length)
 
         xScale.rangeRound([0, xMax]);
         yScale.rangeRound([0, yMax]);
@@ -171,6 +250,7 @@ export default withTooltip(
             return (
                 <Box fill justifyContent='center' alignContent='center' width='100%'>
                     <Notification
+                        onClose={() => { }}
                         status='warning'
                         title={errorType === 'traces'
                             ? 'No single trace is available to display'
@@ -214,22 +294,22 @@ export default withTooltip(
                             <LinearGradient id="area-background-gradient" from='#55555555' to='#66666699' />
 
                             {stepData.filter(e => e.time === undefined).map((entry, i) => {
+                                console.log({track:entry.track,yscale:yScale(entry.track)})
                                 return (
                                     <g key={`${i}block`}>
                                         <rect
                                             rx={5}
                                             x={xScale(entry.start)}
-                                            y={yScale(entry.group)}
+                                            y={yScale(entry.track)}
                                             width={xScale(entry.end - entry.start)}
                                             height={barHeight}
                                             fill={colorScale(entry.event)}
-
                                         />
                                         <text
                                             fontSize={12}
                                             fill='white'
                                             x={xScale(entry.start) + 20}
-                                            y={yScale(entry.group) + 0.6 * barHeight}
+                                            y={yScale(entry.track) + 0.6 * barHeight}
                                         >
                                             {entry.label}
                                         </text>
@@ -238,12 +318,13 @@ export default withTooltip(
                                 );
                             })}
                             {stepData.filter(e => e.time !== undefined).map((entry, i) => {
+                                console.log({ cx: xScale(entry.time), cy: yScale(entry.track) + barHeight / 2, entry })
                                 return (
                                     <g key={`${i}spot`}>
                                         <circle
                                             cx={xScale(entry.time)}
-                                            cy={yScale(entry.group)+barHeight/2}
-                                            r={barHeight/5}
+                                            cy={yScale(entry.track) + barHeight / 2}
+                                            r={barHeight / 5}
                                             fill="black"
                                             fillOpacity={0.1}
                                             stroke="black"
@@ -253,8 +334,8 @@ export default withTooltip(
                                         />
                                         <circle
                                             cx={xScale(entry.time)}
-                                            cy={yScale(entry.group)+barHeight/2}
-                                            r={barHeight/5}
+                                            cy={yScale(entry.track) + barHeight / 2}
+                                            r={barHeight / 5}
                                             fill={colorScale(entry.event)}
                                             stroke="white"
                                             strokeWidth={2}
@@ -268,7 +349,7 @@ export default withTooltip(
                                 // hideAxisLine
                                 hideTicks
                                 scale={yScale}
-                                tickFormat={formatRow}
+                                tickFormat={(row)=>trackTypes[row].label}
                                 stroke={axisColor}
                                 tickStroke={axisColor}
                                 tickLabelProps={() => ({
@@ -276,13 +357,13 @@ export default withTooltip(
                                     fontSize: 11,
                                     textAnchor: "end",
                                     dy: "0.33em",
-                                    width: defaultMargin.left-10
+                                    width: defaultMargin.left - 10
                                 })}
                             />
                             <AxisBottom
                                 top={yMax}
                                 scale={xScale}
-                                tickFormat={formatCol}
+                                tickFormat={formatTime}
                                 stroke={axisColor}
                                 tickStroke={axisColor}
                                 tickLabelProps={() => ({
@@ -340,7 +421,7 @@ export default withTooltip(
                             scale={colorScale}
                             direction="row"
                             labelMargin="0 15px 0 0"
-                            labelFormat={(l) => eventTypes[l].label}
+                            labelFormat={(l) => {console.log({l,trackTypes}); return l}}
                         />
                     </div>
                     {tooltipOpen && tooltipData && (
@@ -353,14 +434,14 @@ export default withTooltip(
                                 {tooltipData.length > 0 && tooltipData.map((e, i) => (
                                     <div key={i}>
                                         <Box direction='row' alignContent='center' align='center' justify='start' gap='xsmall'>
-                                            {e.time !== undefined && (<div style={{borderRadius:100,width:7,height:7,backgroundColor:colorScale(e.event),boxShadow:'0 0 0 2px white'}}></div>)}
+                                            {e.time !== undefined && (<div style={{ borderRadius: 100, width: 7, height: 7, backgroundColor: colorScale(e.event), boxShadow: '0 0 0 2px white' }}></div>)}
                                             <Text color={colorScale(e.event)} >
                                                 {e.label}
                                             </Text>
                                         </Box>
-                                        
-                                        {e.time === undefined && (<div> {round(e.progress/1000)} / {round((e.end - e.start)/1000)} sec</div>)}
-                                        {e.time !== undefined && (<div>@ {round(e.time/1000)} sec</div>)}
+
+                                        {e.time === undefined && (<div> {round(e.progress / 1000)} / {round((e.end - e.start) / 1000)} sec</div>)}
+                                        {e.time !== undefined && (<div>@ {round(e.time / 1000)} sec</div>)}
 
                                     </div>
                                 ))}

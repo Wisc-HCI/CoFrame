@@ -1,17 +1,21 @@
 import { STATUS, STEP_TYPE } from "../Constants";
-import { equals } from "./index";
+import lodash from 'lodash';
+import { eventsToStates, statesToSteps } from ".";
 
-export const simpleCompiler = ({ data, properties, objectTypes, context, path, memo, solver, module, urdf, worldModel }) => {
+export const simpleCompiler = ({ data, properties, objectTypes, context, path, memo, module, urdf, worldModel }) => {
 
     let newCompiled = {
         shouldBreak: false,
         status: STATUS.VALID,
         otherPropertyUpdates: {},
+        events: [],
         steps: []
     };
-    let lastUpdateTime = 0;
+
+    console.log(newCompiled.steps)
 
     properties.children.some(child => {
+        // console.log({child,currentSteps:newCompiled.steps.length})
         const childData = child.properties.compiled[path];
         if (childData.shouldBreak) {
             newCompiled.shouldBreak = true;
@@ -20,32 +24,12 @@ export const simpleCompiler = ({ data, properties, objectTypes, context, path, m
         if (childData.status === STATUS.FAILED) {
             newCompiled.status = STATUS.FAILED;
         }
-        childData.steps.forEach(innerStep=>{
-            let stepTime = 0;
-            if (typeof innerStep.time === 'object') {
-                newCompiled.slice.reverse().some(previouslyProcessedStep=>{
-                    if (previouslyProcessedStep.stepType === STEP_TYPE.LANDMARK && equals(previouslyProcessedStep.data,innerStep.time)) {
-                        stepTime = previouslyProcessedStep.time;
-                        return false
-                    } else if (previouslyProcessedStep.time < lastUpdateTime) {
-                        return true
-                    } else {
-                        return false
-                    }
-                });
-
-            } else {
-                stepTime = innerStep.time
-            }
-            if (innerStep.stepType !== STEP_TYPE.LANDMARK) {
-                // Ignore landmarks
-                lastUpdateTime += stepTime
-            }
-            newCompiled.steps.push({...innerStep,time: lastUpdateTime})
-        })
+        newCompiled.events = lodash.concat(newCompiled.events,childData.events);
         return false
     })
-
+    const states = eventsToStates(newCompiled.events);
+    console.log({states,events:newCompiled.events})
+    newCompiled.steps = statesToSteps(eventsToStates(newCompiled.events))
 
     return newCompiled
 }

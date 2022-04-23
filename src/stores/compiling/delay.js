@@ -1,22 +1,41 @@
+import { eventsToStates, statesToSteps } from ".";
 import { STATUS, STEP_TYPE } from "../Constants";
 
-export const delayCompiler = ({data}) => {
+export const delayCompiler = ({data, memo}) => {
+
+    // Retrieve agent. For now, assume that this is always the first robotAgentType;
+    const robot = Object.values(memo).filter(v => v.type === 'robotAgentType')[0];
+
+    const events = [
+        {
+            condition: {
+                [robot.id]: { busy: false }
+            },
+            onTrigger: [
+                {
+                    stepType: STEP_TYPE.ACTION_START,
+                    data: {},
+                    effect: { [robot.id] : { busy: true } },
+                    source: data.id,
+                    delay: 0,
+                },
+                {
+                    stepType: STEP_TYPE.ACTION_END,
+                    data: {},
+                    effect: { 
+                        [robot.id] : { busy: false } },
+                    source: data.id,
+                    delay: data.properties.duration,
+                }
+            ],
+            source: data.id
+        }
+    ]
+
     const newCompiled = {
         status: STATUS.VALID,
-        steps: [
-            {
-                stepType: STEP_TYPE.ACTION_START,
-                data: {agent: 'robot',id:data.id},
-                source: data.id,
-                time: 0
-            },
-            {
-                stepType: STEP_TYPE.ACTION_END,
-                data: {agent: 'robot',id:data.id},
-                source: data.id,
-                time: data.properties.duration
-            }
-        ]
+        events,
+        steps: statesToSteps(eventsToStates(events))
     }
     return newCompiled
 }
