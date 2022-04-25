@@ -813,6 +813,7 @@ const stepsToAnimatedPinchPoints = (steps) => {
 export function stepsToAnimation(state, tfs) {
     let dict = {};
     let lastTimestamp = {};
+    let finalTime = 0;
     let timesteps = [];
 
     let focusStub = state.programData[state.activeFocus]?.properties?.compiled;
@@ -828,7 +829,10 @@ export function stepsToAnimation(state, tfs) {
     // Build up the movements
     focusStub[compiledKey]?.steps?.forEach(step => {
         if (step.type === STEP_TYPE.SCENE_UPDATE) {
-            
+            if (step.time > finalTime) {
+                finalTime = step.time;
+            }
+
             timesteps.push(step.time);
 
             // Add link rotation/position
@@ -874,6 +878,20 @@ export function stepsToAnimation(state, tfs) {
             });
         }
     });
+
+    // Buffer out final animation
+    finalTime += 500;
+    timesteps.push(finalTime);
+    Object.keys(dict).forEach(link => {
+        let posLength = dict[link].position.x.length;
+        dict[link].position.x.push(dict[link].position.x[posLength - 1]);
+        dict[link].position.y.push(dict[link].position.y[posLength - 1]);
+        dict[link].position.z.push(dict[link].position.z[posLength - 1]);
+        dict[link].rotation.x.push(dict[link].rotation.x[posLength - 1]);
+        dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
+        dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
+        dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
+    })
 
 
     // Animate
