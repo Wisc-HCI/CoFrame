@@ -63,16 +63,15 @@ export const computedSlice = (state) => {
     })
 
     // ===================== Items =====================
-
-    // const focusedTrajectoryChildren = state.focusItem.type === 'trajectory' ? [
-    //     state.programData[state.focusItem.uuid].properties.startLocation,
-    //     ...state.programData[state.focusItem.uuid].properties.waypoints,
-    //     state.programData[state.focusItem.uuid].properties.endLocation,
-    // ] : []
     let focusedTrajectoryChildren = [];
     state.focus.forEach((entry) => {
-        if (state.programData[entry]?.type === "trajectoryType") {
+        // let trajectory = null;
+        if (state.programData[entry]?.type === "moveTrajectoryType" || state.programData[entry]?.type === "trajectoryType") {
             let trajectory = state.programData[entry];
+            if (state.programData[entry]?.type === "moveTrajectoryType") {
+                trajectory = state.programData[state.programData[entry].properties.trajectory];
+            }
+            // let trajectory = state.programData[entry];
             if (state.programData[trajectory.properties.startLocation]?.ref && state.programData[trajectory.properties.endLocation]?.ref) {
                 focusedTrajectoryChildren.push(state.programData[trajectory.properties.startLocation].ref);
                 trajectory.properties.waypoints.forEach((wp) => {
@@ -348,7 +347,14 @@ export const computedSlice = (state) => {
     });
 
     Object.values(state.programData).filter(v => v.type === 'trajectoryType' && v.dataType === DATA_TYPES.INSTANCE).forEach(trajectory => {
-        const hidden = !state.focus.includes(trajectory.id);
+        let inMoveTrajectory = false;
+        state.focus.forEach(focusItem => {
+            let obj = state.programData[focusItem];
+            if (obj?.type === "moveTrajectoryType" && obj?.properties?.trajectory == trajectory.id) {
+                inMoveTrajectory = true;
+            }
+        })
+        const hidden = !state.focus.includes(trajectory.id) && !inMoveTrajectory;
         let poses = []
         if (trajectory.properties.startLocation) {
             poses.push(state.programData[trajectory.properties.startLocation])

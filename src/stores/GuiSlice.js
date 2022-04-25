@@ -66,7 +66,7 @@ const swapLocations = (state, id) => {
   
   // Search for a trajectory and the location/waypoint that corresponds after it
   state.focus.forEach(entry => {
-    if (!hasTrajectory && state.programData[entry]?.type === 'trajectoryType') {
+    if (!hasTrajectory && (state.programData[entry]?.type === 'trajectoryType' || state.programData[entry]?.type === 'moveTrajectoryType')) {
       hasTrajectory = true;
     } else if (hasTrajectory && (state.programData[entry]?.type === 'locationType' || state.programData[entry]?.type === 'waypointType')) {
       endingFocus = entry;
