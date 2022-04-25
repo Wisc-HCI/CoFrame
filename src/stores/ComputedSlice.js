@@ -73,11 +73,13 @@ export const computedSlice = (state) => {
     state.focus.forEach((entry) => {
         if (state.programData[entry]?.type === "trajectoryType") {
             let trajectory = state.programData[entry];
-            focusedTrajectoryChildren.push(state.programData[trajectory.properties.startLocation].ref);
-            trajectory.properties.waypoints.forEach((wp) => {
-                focusedTrajectoryChildren.push(state.programData[wp].ref);
-            });
-            focusedTrajectoryChildren.push(state.programData[trajectory.properties.endLocation].ref);
+            if (state.programData[trajectory.properties.startLocation]?.ref && state.programData[trajectory.properties.endLocation]?.ref) {
+                focusedTrajectoryChildren.push(state.programData[trajectory.properties.startLocation].ref);
+                trajectory.properties.waypoints.forEach((wp) => {
+                    focusedTrajectoryChildren.push(state.programData[wp].ref);
+                });
+                focusedTrajectoryChildren.push(state.programData[trajectory.properties.endLocation].ref);
+            }
         }
     });
 

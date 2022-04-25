@@ -827,7 +827,7 @@ export function stepsToAnimation(state, tfs) {
 
     // Build up the movements
     focusStub[compiledKey]?.steps?.forEach(step => {
-        if (step.stepType === STEP_TYPE.SCENE_UPDATE) {
+        if (step.type === STEP_TYPE.SCENE_UPDATE) {
             
             timesteps.push(step.time);
 
@@ -875,20 +875,21 @@ export function stepsToAnimation(state, tfs) {
         }
     });
 
-    console.log(dict);
 
     // Animate
     Object.keys(dict).forEach(link => {
-        tfs[link].position = {
-            x: interpolateScalar(timesteps, dict[link].position.x),
-            y: interpolateScalar(timesteps, dict[link].position.y),
-            z: interpolateScalar(timesteps, dict[link].position.z),
-        }
-        tfs[link].rotation = {
-            x: interpolateScalar(timesteps, dict[link].rotation.x),
-            y: interpolateScalar(timesteps, dict[link].rotation.y),
-            z: interpolateScalar(timesteps, dict[link].rotation.z),
-            w: interpolateScalar(timesteps, dict[link].rotation.w)
+        if (tfs[link]) {
+            tfs[link].position = {
+                x: interpolateScalar(timesteps, dict[link].position.x),
+                y: interpolateScalar(timesteps, dict[link].position.y),
+                z: interpolateScalar(timesteps, dict[link].position.z),
+            }
+            tfs[link].rotation = {
+                x: interpolateScalar(timesteps, dict[link].rotation.x),
+                y: interpolateScalar(timesteps, dict[link].rotation.y),
+                z: interpolateScalar(timesteps, dict[link].rotation.z),
+                w: interpolateScalar(timesteps, dict[link].rotation.w)
+            }
         }
     })
 }
