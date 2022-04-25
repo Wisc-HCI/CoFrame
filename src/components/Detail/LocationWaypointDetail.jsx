@@ -1,8 +1,9 @@
 import React from 'react';
 import useStore from '../../stores/Store';
-import { Box } from "grommet";
+import { Box, Button } from "grommet";
 import Collapse from '../Collapse';
 import {Toggle} from "../Toggle";
+import { FiRefreshCw } from 'react-icons/fi';
 
 
 function LocationWaypointDetail(props) {
@@ -11,6 +12,7 @@ function LocationWaypointDetail(props) {
     const robotAgents = useStore(state => Object.values(state.programData).filter(item=>item.type === 'robotAgentType'));
     const grippers = useStore(state => Object.values(state.programData).filter(item=>item.type === 'gripperType'));
     const primaryColor = useStore(state=>state.primaryColor);
+    const forceRefreshBlock = useStore(state=>state.forceRefreshBlock);
    
     return (
         <Collapse
@@ -23,6 +25,9 @@ function LocationWaypointDetail(props) {
                 <Box direction='row'>
                     <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Reachability : </b> 
                 </Box>
+            }
+            extra={
+                <Button secondary onClick={()=>forceRefreshBlock(item.id)} icon={<FiRefreshCw color={primaryColor}/>} margin={{right:'small'}}/>
             }
         >
             {Object.keys(item.properties.reachability).length===0 && (

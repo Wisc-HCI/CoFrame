@@ -221,6 +221,9 @@ export function move(array, moveIndex, toIndex) {
   }
   
   export const ProgrammingSliceOverride = (set,get) => ({
+      forceRefreshBlock: (id) => set(state=>{
+        state.programData[id].properties.status = STATUS.PENDING;
+      }),
       transferBlock: (data, sourceInfo, destInfo) => {
         set((state) => {
           let newSpawn = false;
