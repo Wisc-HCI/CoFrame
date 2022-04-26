@@ -238,7 +238,10 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
                     reachableChildren = false;
                 }
             })
-            if (reachableChildren && robotLinks.includes(gripper.properties.relativeTo)) {
+            if (!reachableChildren && status !== STATUS.FAILED) {
+                status = STATUS.WARN
+            }
+            if (robotLinks.includes(gripper.properties.relativeTo)) {
                 let firstLinks = poses[0].states[robot.id][gripper.id].links;
                 let firstJoints = poses[0].states[robot.id][gripper.id].joints;
                 let firstProximity = poses[0].states[robot.id][gripper.id].proximity;

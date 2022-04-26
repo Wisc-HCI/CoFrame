@@ -128,7 +128,7 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
     let updated = false;
     let shouldBreak = false
 
-    // First, if the field value is null, return null, with checkign for validity
+    // First, if the field value is null, return null, with checking for validity
     if (!fieldValue && !fieldInfo.nullValid) {
         status = STATUS.FAILED
     }
@@ -166,10 +166,10 @@ const computeProperty = (fieldValue, fieldInfo, objectTypes, context, path, memo
         if (innerUpdated) {
             updated = true
         };
-        if (innerStatus === STATUS.FAILED) {
-            // Status is failed, so the parent is also.
-            status = STATUS.FAILED;
-        }
+        if (innerStatus === STATUS.FAILED || innerStatus === STATUS.WARN && status !== STATUS.FAILED) {
+            // Status is failed/warned, so the parent is also.
+            status = innerStatus;
+        };
         if (innerShouldBreak) {
             shouldBreak = true;
         }
@@ -224,10 +224,10 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
                     if (innerUpdated) {
                         updated = true;
                     };
-                    if (innerStatus === STATUS.FAILED) {
-                        // Status is failed, so the parent is also.
-                        status = STATUS.FAILED;
-                    }
+                    if (innerStatus === STATUS.FAILED || innerStatus === STATUS.WARN && status !== STATUS.FAILED) {
+                        // Status is failed/warned, so the parent is also.
+                        status = innerStatus;
+                    };
                     if (innerShouldBreak) {
                         shouldBreak = true;
                     }
@@ -249,9 +249,9 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
                 if (innerUpdated) {
                     updated = true
                 };
-                if (innerStatus === STATUS.FAILED) {
-                    // Status is failed, so the parent is also.
-                    status = STATUS.FAILED;
+                if (innerStatus === STATUS.FAILED || innerStatus === STATUS.WARN && status !== STATUS.FAILED) {
+                    // Status is failed/warned, so the parent is also.
+                    status = innerStatus;
                 };
                 if (innerShouldBreak) {
                     shouldBreak = true;
@@ -271,13 +271,17 @@ export const handleUpdate = ({ data, objectTypes, context, path, memo, module, w
     }
 
     // console.warn(`At the end of processing "${data.id}", status is "${status === STATUS.VALID ? 'VALID' : status === STATUS.PENDING ? 'PENDING' : 'FAILED'}"`)
-    if (status === STATUS.VALID && (memoizedData.properties.status === undefined || memoizedData.properties.status !== STATUS.FAILED)) {
-        // console.warn('SETTING STATUS VALID')
-        memoizedData.properties.status = STATUS.VALID
-    } else if (status === STATUS.FAILED) {
-        // console.warn('SETTING STATUS FAILED')
-        memoizedData.properties.status = STATUS.FAILED
-    }
+    // if (status === STATUS.VALID && (memoizedData.properties.status === undefined || memoizedData.properties.status !== STATUS.FAILED)) {
+    //     // console.warn('SETTING STATUS VALID')
+    //     memoizedData.properties.status = STATUS.VALID
+    // } else if (status === STATUS.FAILED) {
+    //     // console.warn('SETTING STATUS FAILED')
+    //     memoizedData.properties.status = STATUS.FAILED
+    // } else if (status === STATUS.WARN) {
+    //     // console.warn('SETTING STATUS WARN')
+    //     memoizedData.properties.status = STATUS.WARN
+    // }
+    memoizedData.properties.status = status;
     memoizedData.properties.compiled[path].break = shouldBreak
     memoizedData.type = data.type;
     memoizedData.id = data.id;

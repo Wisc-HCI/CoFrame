@@ -21,9 +21,10 @@ export const simpleCompiler = ({ data, properties, objectTypes, context, path, m
             newCompiled.shouldBreak = true;
             return true
         }
-        if (childData.status === STATUS.FAILED) {
-            newCompiled.status = STATUS.FAILED;
-        }
+        if (childData.status === STATUS.FAILED || childData.status === STATUS.WARN && newCompiled.status !== STATUS.FAILED) {
+            // Status is failed/warned, so the parent is also.
+            newCompiled.status = childData.status;
+        };
         newCompiled.events = lodash.concat(newCompiled.events,childData.events);
         return false
     })

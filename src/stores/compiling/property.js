@@ -1,27 +1,36 @@
 import { STATUS } from "../Constants";
 import { equals } from "."; 
 
+const checkChild = (child,nullValid) => {
+    if ((equals(child,{})||child===null) && !nullValid) {
+        return STATUS.FAILED
+    } else if (child.properties) {
+        return child.properties.status
+    } else {
+        return STATUS.VALID
+    }
+}
+
 export const propertyCompiler = ({data,properties,objectTypes}) => {
     // console.log('propertyCompiler',properties)
     let status = STATUS.VALID;
     const objectSpec = objectTypes[data.type];
     Object.keys(properties).forEach(propKey=>{
         // console.log('considering ',propKey);
-        if ((equals(properties[propKey],{}) || properties[propKey]===null) && !objectSpec.properties[propKey].nullValid) {
-            // console.log('invalid/undefined prop',{propKey,value:properties[propKey]});
-            status = STATUS.FAILED
-        } else if (objectSpec.properties[propKey].isList) {
+        if (objectSpec.properties[propKey].isList) {
             properties[propKey].forEach(entry=>{
-                if (equals(entry,{}) || entry===null) {
-                    // console.log('invalid/undefined prop',{propKey,value:properties[propKey]});
-                    status = STATUS.FAILED
-                } else if (entry.properties && entry.properties.status === STATUS.FAILED) {
-                    status = STATUS.FAILED
-                }
+                let innerStatus = checkChild(entry,objectSpec.properties[propKey].nullValid);
+                if (innerStatus === STATUS.FAILED || innerStatus === STATUS.WARN && status !== STATUS.FAILED) {
+                    // Status is failed/warned, so the parent is also.
+                    status = innerStatus;
+                };
             })
-        } else if (properties[propKey].properties && properties[propKey].properties.status === STATUS.FAILED) {
-            // console.log('failed prop',{propKey,value:properties[propKey]});
-            status = STATUS.FAILED
+        } else {
+            let innerStatus = checkChild(properties[propKey],objectSpec.properties[propKey].nullValid);
+            if (innerStatus === STATUS.FAILED || innerStatus === STATUS.WARN && status !== STATUS.FAILED) {
+                // Status is failed/warned, so the parent is also.
+                status = innerStatus;
+            };
         }
     })
     return {...properties,status}

@@ -1,8 +1,9 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { PrimitiveIconStyled } from "./icons";
-import { FiMoreHorizontal } from "react-icons/fi";
+import { FiMoreHorizontal, FiAlertTriangle, FiAlertOctagon, FiRefreshCw, FiThumbsUp } from "react-icons/fi";
 import { merge } from 'lodash';
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import './rotate.css'
 
 const basicActionData = {
   type: TYPES.OBJECT,
@@ -19,7 +20,22 @@ const basicActionData = {
         contents: [
           EXTRA_TYPES.DELETE_BUTTON,
           EXTRA_TYPES.DEBUG_TOGGLE,
-          EXTRA_TYPES.SELECTION_TOGGLE
+          EXTRA_TYPES.SELECTION_TOGGLE,
+          { 
+            type: EXTRA_TYPES.INDICATOR_ICON,
+            accessor: (data)=>{
+              if (data.properties.status===STATUS.FAILED) {
+                return <FiAlertOctagon color='white' fill='red'/>
+              } else if (data.properties.status===STATUS.VALID) {
+                return <FiThumbsUp color='white'/>
+              } else if (data.properties.status===STATUS.WARN) {
+                return <FiAlertTriangle color='white' fill='#ff7300'/>
+              }else if (data.properties.status===STATUS.PENDING) {
+                return <FiRefreshCw className='rotate'/>
+              }
+            },
+            label: 'Status'
+          },
         ]
       }
     ]

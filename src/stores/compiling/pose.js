@@ -21,6 +21,7 @@ export const poseCompiler = ({ data, properties, path, memo, module, worldModel 
     let reachability = {};
     let states = {};
     let goalPose = null;
+    let status = STATUS.VALID;
 
     // Enumerate the robotAgentTypes/gripperTypes currently in the memo. This is technically unsafe, 
     // but we pre-process them beforehand so it is fine. We also always assume root execution 
@@ -139,7 +140,9 @@ export const poseCompiler = ({ data, properties, path, memo, module, worldModel 
                     })
 
 
-                    console.log(goalAchieved)
+                    if (!goalAchieved) {
+                        status = STATUS.WARN;
+                    }
                     reachability[robot.id][gripper.id] = goalAchieved;
                     states[robot.id][gripper.id] = likStateToData(state, worldModel, robot.id)
 
@@ -149,6 +152,6 @@ export const poseCompiler = ({ data, properties, path, memo, module, worldModel 
 
     console.log('pose recalculation: ',{data,reachability})
 
-    const newCompiled = { goalPose, states, reachability, status: STATUS.VALID, otherPropertyUpdates: { states, reachability } };
+    const newCompiled = { goalPose, states, reachability, status, otherPropertyUpdates: { states, reachability } };
     return newCompiled
 }

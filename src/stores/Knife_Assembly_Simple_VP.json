@@ -53,10 +53,10 @@
       "position": { "x": 0, "y": 0, "z": 0.38 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "pedestal",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1765,10 +1765,10 @@
       "position": { "x": 0, "y": 0, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "tool0",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1785,10 +1785,10 @@
       "position": { "x": 0, "y": 0, "z": 0 },
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": null,
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1808,10 +1808,10 @@
       "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
       "relativeTo": "world",
       "mesh": null,
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1831,10 +1831,10 @@
       "rotation": { "x": 0, "y": 0, "z": 0, "w": 1 },
       "relativeTo": "world",
       "mesh": null,
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1857,14 +1857,14 @@
         "z": 0.09904655133111745,
         "w": -0.10373034922947338
       },
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 6,
       "compiled": {},
       "updateFields": ["position", "rotation"],
       "reachable": false,
       "trace": null
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1894,7 +1894,7 @@
       "reachable": false,
       "trace": null
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1924,7 +1924,7 @@
       "reachable": false,
       "trace": null
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1947,14 +1947,14 @@
         "z": 0.9070358720467722,
         "w": 0.379766628391919
       },
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 6,
       "compiled": {},
       "updateFields": ["position", "rotation"],
       "reachable": false,
       "trace": null
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1973,10 +1973,10 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "table",
       "mesh": "mk2Printer",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -1996,10 +1996,10 @@
       "rotation": { "w": -0.5, "x": 0.5, "y": -0.5, "z": -0.5 },
       "relativeTo": "world",
       "mesh": "assembly_jig",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2018,10 +2018,10 @@
       "rotation": { "w": 0.707, "x": 0, "y": 0, "z": 0.707 },
       "relativeTo": "world",
       "mesh": "conveyor",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2040,10 +2040,10 @@
       "rotation": { "w": 0.707, "x": 0, "y": 0, "z": 0.707 },
       "relativeTo": "world",
       "mesh": "conveyor_receiver",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2062,10 +2062,10 @@
       "rotation": { "w": 0.707, "x": 0, "y": 0, "z": -0.707 },
       "relativeTo": "world",
       "mesh": "conveyor",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2084,10 +2084,10 @@
       "rotation": { "w": 0.707, "x": 0, "y": 0, "z": -0.707 },
       "relativeTo": "world",
       "mesh": "conveyor_dispatcher",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2102,12 +2102,12 @@
       "safe": true,
       "weight": 0,
       "mesh": "package://evd_ros_tasks/description/markers/left_handle.stl",
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["safe", "weight"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2122,12 +2122,12 @@
       "safe": true,
       "weight": 0,
       "mesh": "package://evd_ros_tasks/description/markers/right_handle.stl",
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["safe", "weight"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2142,12 +2142,12 @@
       "safe": false,
       "weight": 0,
       "mesh": "package://evd_ros_tasks/description/markers/blade.stl",
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["safe", "weight"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2167,10 +2167,10 @@
       "rotation": { "w": -0.5, "x": 0.5, "y": -0.5, "z": -0.5 },
       "relativeTo": "world",
       "mesh": "transport_jig",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2185,12 +2185,12 @@
       "safe": true,
       "weight": 0,
       "mesh": "package://evd_ros_tasks/description/markers/blade_with_transport_jig.stl",
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["safe", "weight"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2205,12 +2205,12 @@
       "safe": false,
       "weight": 0,
       "mesh": "knife",
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["safe", "weight"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2225,18 +2225,18 @@
       "safe": false,
       "weight": 0,
       "mesh": "package://evd_ros_tasks/description/markers/knife_with_transport_jig.stl",
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["safe", "weight"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
   "inputOutput-ridn023-dz00-445jk-we90-e69tffb00845": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-ridn023-dz00-445jk-we90-e69tffb00845",
     "name": "Left Handle",
     "canDelete": true,
@@ -2256,7 +2256,7 @@
   },
   "inputOutput-mnpdm09-ty00-445md-yjg09-rnvor905mfi1203d": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-mnpdm09-ty00-445md-yjg09-rnvor905mfi1203d",
     "name": "Right Handle",
     "canDelete": true,
@@ -2288,18 +2288,18 @@
         "inputOutput-ridn023-dz00-445jk-we90-e69tffb00845",
         "inputOutput-mnpdm09-ty00-445md-yjg09-rnvor905mfi1203d"
       ],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["machine", "processTime", "inputs", "outputs"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
   "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc",
     "name": "Blade",
     "canDelete": true,
@@ -2319,7 +2319,7 @@
   },
   "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b",
     "name": "Transport Jig",
     "canDelete": true,
@@ -2339,7 +2339,7 @@
   },
   "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7",
     "name": "Sheathed Blade",
     "canDelete": true,
@@ -2372,12 +2372,12 @@
         "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b"
       ],
       "outputs": ["inputOutput-sefse456-ty56-234g-gh67-fth4567hfth7"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["machine", "processTime", "inputs", "outputs"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2396,18 +2396,18 @@
         "inputOutput-2d49b51b-dz37-488e-we56-e55ef6a0a8fc",
         "inputOutput-3d50b62b-dz37-488e-we56-e65eo6f0a80b"
       ],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["machine", "processTime", "inputs", "outputs"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
   "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9s": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-tjgnk5suei9-oo90-ruti0-gte0-u8cns9nc9s",
     "name": "Left Blade Handle",
     "canDelete": true,
@@ -2427,7 +2427,7 @@
   },
   "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-tu8fnsiw0c-ie90-rcns89-tuy8-isnc9sa34s",
     "name": "Right Blade Handle",
     "canDelete": true,
@@ -2447,7 +2447,7 @@
   },
   "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9",
     "name": "Blade",
     "canDelete": true,
@@ -2467,7 +2467,7 @@
   },
   "inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s",
     "name": "Sheathed Blade",
     "canDelete": true,
@@ -2501,18 +2501,18 @@
         "inputOutput-eicns9ef9-sic9-eicns99-sey8-seo4s9dir9"
       ],
       "outputs": ["inputOutput-tidvi23-tbn9-cjzd99-if98-of9nsnrc0s"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["machine", "processTime", "inputs", "outputs"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
   "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-45fsoe9-tjfg9-gurd89-thf9-09ghnsn234d",
     "name": "Left Blade Handle",
     "canDelete": true,
@@ -2532,7 +2532,7 @@
   },
   "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-948fnsi23-odns9-fins89-irn1-fcnr94820s",
     "name": "Right Blade Handle",
     "canDelete": true,
@@ -2552,7 +2552,7 @@
   },
   "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0",
     "name": "Sheathed Blade",
     "canDelete": true,
@@ -2572,7 +2572,7 @@
   },
   "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923": {
     "type": "inputOutputType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "id": "inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923",
     "name": "Sheathed Knife",
     "canDelete": true,
@@ -2606,12 +2606,12 @@
         "inputOutput-asfsn90-vnxmo9-nmbj89-ii4w-vnlsf0sfkx0"
       ],
       "outputs": ["inputOutput-94nss89-8vnsk9-7hdn9-wy89-fhsne8923"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 13,
       "compiled": {},
       "updateFields": ["machine", "processTime", "inputs", "outputs"]
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false
   },
@@ -2624,12 +2624,12 @@
     "properties": {
       "description": "The top-level program",
       "children": [],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 1,
       "compiled": {
         "[\"root\"]": {
           "steps": [],
-          "status": 0,
+          "status": "PENDING",
           "shouldBreak": false,
           "break": false
         }
@@ -2637,7 +2637,7 @@
       "updateFields": ["children"],
       "parameters": {}
     },
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2647,7 +2647,7 @@
     "id": "table",
     "name": "Table",
     "type": "fixtureType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2661,7 +2661,7 @@
       "relativeTo": "world",
       "mesh": "tableMesh",
       "collision": "tableCollisionBody",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "showCollision": false,
       "highlighted": false
@@ -2671,7 +2671,7 @@
     "id": "pedestal",
     "name": "Pedestal",
     "type": "fixtureType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2685,7 +2685,7 @@
       "relativeTo": "world",
       "mesh": "pedestalMesh",
       "collision": "pedestalCollisionBody",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {
         "[\"root\"]": {
           "position": { "x": 0, "y": -0.15, "z": -0.38 },
@@ -2702,7 +2702,7 @@
     "id": "base_link",
     "name": "Robot Base",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2717,7 +2717,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": "robotBaseMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
@@ -2726,7 +2726,7 @@
     "id": "shoulder_link",
     "name": "Shoulder Link",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2746,7 +2746,7 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": "robotShoulderLinkMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
@@ -2755,7 +2755,7 @@
     "id": "upper_arm_link",
     "name": "Upper Arm Link",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2775,7 +2775,7 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": "robotUpperArmLinkMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
@@ -2784,7 +2784,7 @@
     "id": "forearm_link",
     "name": "Forearm Link",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2808,7 +2808,7 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": "robotForearmLinkMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "scale": { "x": 1, "y": 1, "z": 1 },
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
@@ -2818,7 +2818,7 @@
     "id": "wrist_1_link",
     "name": "Wrist 1 Link",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2842,7 +2842,7 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": "robotWrist1LinkMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
@@ -2851,7 +2851,7 @@
     "id": "wrist_2_link",
     "name": "Wrist 2 Link",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2875,7 +2875,7 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": "robotWrist2LinkMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
@@ -2884,7 +2884,7 @@
     "id": "wrist_3_link",
     "name": "Wrist 3 Link",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2908,7 +2908,7 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": "robotWrist3LinkMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
@@ -2917,7 +2917,7 @@
     "id": "flange",
     "name": "Flange",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2941,7 +2941,7 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": null,
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
@@ -2950,7 +2950,7 @@
     "id": "tool0",
     "name": "Tool Hookup",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2974,7 +2974,7 @@
       },
       "relativeTo": "robot-agent-988926121c1911eccbe2600155d1a70a2",
       "mesh": null,
-      "status": 0,
+      "status": "PENDING",
       "compiled": {},
       "frame": "robot-agent-988926121c1911eccbe2600155d1a70a2"
     }
@@ -2983,7 +2983,7 @@
     "id": "robotiq_85_base_link",
     "name": "Gripper Base",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -2998,7 +2998,7 @@
       "rotation": { "w": 0.5, "x": 0.5, "y": -0.5, "z": 0.5 },
       "relativeTo": "gripper-robotiq",
       "mesh": "gripperBaseLinkMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3006,7 +3006,7 @@
     "id": "robotiq_85_left_knuckle_link",
     "name": "Gripper Left Knuckle",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -3021,7 +3021,7 @@
       "rotation": { "w": 0, "x": 1, "y": 0, "z": 0 },
       "relativeTo": "robotiq_85_base_link",
       "mesh": "gripperLeftKnuckleMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3029,7 +3029,7 @@
     "id": "robotiq_85_right_knuckle_link",
     "name": "Gripper Right Knuckle",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -3044,7 +3044,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "robotiq_85_base_link",
       "mesh": "gripperRightKnuckleMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3052,7 +3052,7 @@
     "id": "robotiq_85_left_finger_link",
     "name": "Gripper Left Finger",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -3067,7 +3067,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "robotiq_85_left_knuckle_link",
       "mesh": "gripperLeftFingerMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3075,7 +3075,7 @@
     "id": "robotiq_85_right_finger_link",
     "name": "Gripper Right Finger",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -3090,7 +3090,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "robotiq_85_right_knuckle_link",
       "mesh": "gripperRightFingerMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3098,7 +3098,7 @@
     "id": "robotiq_85_left_inner_knuckle_link",
     "name": "Gripper Left Inner Knuckle",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -3113,7 +3113,7 @@
       "rotation": { "w": 0, "x": 1, "y": 0, "z": 0 },
       "relativeTo": "robotiq_85_base_link",
       "mesh": "gripperLeftInnerKnuckleMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3121,7 +3121,7 @@
     "id": "robotiq_85_right_inner_knuckle_link",
     "name": "Gripper Right Inner Knuckle",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -3136,7 +3136,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "robotiq_85_base_link",
       "mesh": "gripperRightInnerKnuckleMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3144,7 +3144,7 @@
     "id": "robotiq_85_left_finger_tip_link",
     "name": "Gripper Left Finger Tip",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -3159,7 +3159,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "robotiq_85_left_inner_knuckle_link",
       "mesh": "gripperLeftFingerTipMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3167,7 +3167,7 @@
     "id": "robotiq_85_right_finger_tip_link",
     "name": "Gripper Right Finger Tip",
     "type": "linkType",
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "canDelete": false,
     "canEdit": true,
     "selected": false,
@@ -3182,7 +3182,7 @@
       "rotation": { "w": 1, "x": 0, "y": 0, "z": 0 },
       "relativeTo": "robotiq_85_right_inner_knuckle_link",
       "mesh": "gripperRightFingerTipMesh",
-      "status": 0,
+      "status": "PENDING",
       "compiled": {}
     }
   },
@@ -3192,7 +3192,7 @@
     "name": "Table Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3202,7 +3202,7 @@
       "color": { "r": 10, "g": 10, "b": 10, "a": 1 },
       "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/Table/Table.stl",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3214,7 +3214,7 @@
     "name": "Pedestal Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3224,7 +3224,7 @@
       "color": { "r": 15, "g": 15, "b": 15, "a": 1 },
       "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/ur3e-Pedestal/Pedestal.stl",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3236,7 +3236,7 @@
     "name": "Robot Base Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3245,7 +3245,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://ur_description/meshes/ur3/visual/base.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3257,7 +3257,7 @@
     "name": "Robot Shoulder Link Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3266,7 +3266,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://ur_description/meshes/ur3/visual/shoulder.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3278,7 +3278,7 @@
     "name": "Robot Upper Arm Link Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3287,7 +3287,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://ur_description/meshes/ur3/visual/upperarm.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3299,7 +3299,7 @@
     "name": "Robot Forearm Link Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3308,7 +3308,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://ur_description/meshes/ur3/visual/forearm.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3320,7 +3320,7 @@
     "name": "Robot Wrist 1 Link Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3329,7 +3329,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://ur_description/meshes/ur3/visual/wrist1.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3341,7 +3341,7 @@
     "name": "Robot Wrist 2 Link Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3350,7 +3350,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://ur_description/meshes/ur3/visual/wrist2.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3362,7 +3362,7 @@
     "name": "Robot Wrist 3 Link Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3371,7 +3371,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://ur_description/meshes/ur3/visual/wrist3.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3383,7 +3383,7 @@
     "name": "Gripper Base Link Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3392,7 +3392,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_base_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3404,7 +3404,7 @@
     "name": "Gripper Left Knuckle Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3413,7 +3413,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3425,7 +3425,7 @@
     "name": "Gripper Right Knuckle Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3434,7 +3434,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3446,7 +3446,7 @@
     "name": "Gripper Left Finger Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3455,7 +3455,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3467,7 +3467,7 @@
     "name": "Gripper Right Finger Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3476,7 +3476,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3488,7 +3488,7 @@
     "name": "Gripper Left Inner Knuckle Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3497,7 +3497,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3509,7 +3509,7 @@
     "name": "Gripper Right Inner Knuckle Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3518,7 +3518,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3530,7 +3530,7 @@
     "name": "Gripper Left Finger Tip Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3539,7 +3539,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3551,7 +3551,7 @@
     "name": "Gripper Right Finger Tip Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3560,7 +3560,7 @@
       "scale": { "x": 1, "y": 1, "z": 1 },
       "keyword": "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3572,7 +3572,7 @@
     "name": "MK2 Printer",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3582,7 +3582,7 @@
       "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
       "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3594,12 +3594,12 @@
     "name": "MK2 Printer Collision Mesh",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["mk2CollisionShapeLeftVertical", "mk2CollisionShapeRightVertical", "mk2CollisionShapeBase", "mk2CollisionShapeSpool"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -3611,7 +3611,7 @@
     "name": "MK2 Printer Left Vertical Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3620,7 +3620,7 @@
       "scale": { "x": 0.125, "y": 0.185, "z": 0.4 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3632,7 +3632,7 @@
     "name": "MK2 Printer Right Vertical Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3641,7 +3641,7 @@
       "scale": { "x": 0.125, "y": 0.225, "z": 0.4 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3653,7 +3653,7 @@
     "name": "MK2 Printer Base Plate Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3662,7 +3662,7 @@
       "scale": { "x": 0.4, "y": 0.4, "z": 0.1 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3674,7 +3674,7 @@
     "name": "MK2 Printer Spool Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3683,7 +3683,7 @@
       "scale": { "x": 0.4, "y": 0.25, "z": 0.25 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3695,7 +3695,7 @@
     "name": "Transport Jig",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3705,7 +3705,7 @@
       "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
       "keyword": "transport_jig",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3717,12 +3717,12 @@
     "name": "Transport Jig Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": [],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -3734,7 +3734,7 @@
     "name": "Assembly Jig",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3744,7 +3744,7 @@
       "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
       "keyword": "assembly_jig",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3756,12 +3756,12 @@
     "name": "Assembly Jig Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": [],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -3773,7 +3773,7 @@
     "name": "Conveyor",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3783,7 +3783,7 @@
       "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
       "keyword": "conveyor",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3795,12 +3795,12 @@
     "name": "Conveyor Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["conveyorCollisionShapeBase", "conveyorCollisionShapeBelt"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -3812,7 +3812,7 @@
     "name": "Conveyor Base Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3821,7 +3821,7 @@
       "scale": { "x": 1, "y": 1.1, "z": 1.7 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3833,7 +3833,7 @@
     "name": "Conveyor Base Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3842,7 +3842,7 @@
       "scale": { "x": 0.75, "y": 0.65, "z": 0.25 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3854,7 +3854,7 @@
     "name": "Conveyor",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3864,7 +3864,7 @@
       "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
       "keyword": "conveyor_receiver",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3876,12 +3876,12 @@
     "name": "Conveyor Reciever Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["conveyorRecieverCollisionShapeBase", "conveyorRecieverCollisionShapeLeftSplit", "conveyorRecieverCollisionShapeRightSplit"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -3893,7 +3893,7 @@
     "name": "Conveyor Reciever Base Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3902,7 +3902,7 @@
       "scale": { "x": 0.75, "y": 0.25, "z": 0.7 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3914,7 +3914,7 @@
     "name": "Conveyor Reciever Left Split Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3923,7 +3923,7 @@
       "scale": { "x": 0.3, "y": 0.155, "z": 0.165 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3935,7 +3935,7 @@
     "name": "Conveyor Reciever Right Split Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3944,7 +3944,7 @@
       "scale": { "x": 0.3, "y": 0.155, "z": 0.165 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3956,7 +3956,7 @@
     "name": "Conveyor",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -3966,7 +3966,7 @@
       "color": { "r": 0, "g": 0, "b": 0, "a": 1 },
       "keyword": "conveyor_dispatcher",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -3978,12 +3978,12 @@
     "name": "Conveyor Dispatcher Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["conveyorDispatcherCollisionShapeBase", "conveyorDispatcherCollisionShapeLeftSplit", "conveyorDispatcherCollisionShapeRightSplit"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -3995,7 +3995,7 @@
     "name": "Conveyor Dispatcher Base Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4004,7 +4004,7 @@
       "scale": { "x": 0.75, "y": 0.35, "z": 0.9 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4016,7 +4016,7 @@
     "name": "Conveyor Dispatcher Base Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4025,7 +4025,7 @@
       "scale": { "x": 0.255, "y": 0.275, "z": 0.175 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4037,7 +4037,7 @@
     "name": "Conveyor Dispatcher Base Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4046,7 +4046,7 @@
       "scale": { "x": 0.29, "y": 0.275, "z": 0.175 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4058,12 +4058,12 @@
     "name": "Table Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["tableCollisionShapeTop", "tableCollisionShapeFrontLeftLeg", "tableCollisionShapeFrontRightLeg", "tableCollisionShapeRearLeftLeg", "tableCollisionShapeRearRightLeg"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4075,7 +4075,7 @@
     "name": "Table Top Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4084,7 +4084,7 @@
       "scale": { "x": 1.225, "y": 0.625, "z": 0.05 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4096,7 +4096,7 @@
     "name": "Table Front Left Leg Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4105,7 +4105,7 @@
       "scale": { "x": 0.05, "y": 0.05, "z": 0.75 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4117,7 +4117,7 @@
     "name": "Table Front Right Leg Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4126,7 +4126,7 @@
       "scale": { "x": 0.05, "y": 0.05, "z": 0.75 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4138,7 +4138,7 @@
     "name": "Table Front Left Leg Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4147,7 +4147,7 @@
       "scale": { "x": 0.05, "y": 0.05, "z": 0.75 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4159,7 +4159,7 @@
     "name": "Table Front Right Leg Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4168,7 +4168,7 @@
       "scale": { "x": 0.05, "y": 0.05, "z": 0.75 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4180,12 +4180,12 @@
     "name": "Robot Pedestal Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["pedestalCollisionShapeBase", "pedestalCollisionShapeTower"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4197,7 +4197,7 @@
     "name": "Pedestal Base Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4206,7 +4206,7 @@
       "scale": { "x": 0.65, "y": 0.65, "z": 0.15 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4218,7 +4218,7 @@
     "name": "Pedestal Tower Collision Object",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4227,7 +4227,7 @@
       "scale": { "x": 0.1, "y": 0.1, "z": 0.7 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4239,12 +4239,12 @@
     "name": "Robot Upper Arm Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotUpperArmCollisionShape0", "robotUpperArmCollisionShape1", "robotUpperArmCollisionShape2"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4256,7 +4256,7 @@
     "name": "Robot Upper Arm Link Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4265,7 +4265,7 @@
       "scale": { "x": 0.1, "y": 0.1, "z": 0.145 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4277,7 +4277,7 @@
     "name": "Robot Upper Arm Link Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4286,7 +4286,7 @@
       "scale": { "x": 0.1, "y": 0.1, "z": 0.11 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4298,7 +4298,7 @@
     "name": "Robot Upper Arm Link Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4307,7 +4307,7 @@
       "scale": { "x": 0.08, "y": 0.08, "z": 0.11 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4319,12 +4319,12 @@
     "name": "Robot Forearm Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotForearmCollisionShape0", "robotForearmCollisionShape1"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4336,7 +4336,7 @@
     "name": "Robot Forearm Link Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4345,7 +4345,7 @@
       "scale": { "x": 0.08, "y": 0.08, "z": 0.20 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4357,7 +4357,7 @@
     "name": "Robot Forearm Link Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4366,7 +4366,7 @@
       "scale": { "x": 0.08, "y": 0.08, "z": 0.095 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4378,12 +4378,12 @@
     "name": "Robot Wrist 1 Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotWrist1CollisionShape0"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4395,7 +4395,7 @@
     "name": "Robot Wrist 1 Collision Shape 0",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4404,7 +4404,7 @@
       "scale": { "x": 0.07, "y": 0.07, "z": 0.095 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4416,12 +4416,12 @@
     "name": "Robot Wrist 2 Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotWrist2CollisionShape0"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4433,7 +4433,7 @@
     "name": "Robot Wrist 2 Collision Shape 0",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4442,7 +4442,7 @@
       "scale": { "x": 0.08, "y": 0.08, "z": 0.1 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4454,12 +4454,12 @@
     "name": "Robot Wrist 3 Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotWrist3CollisionShape0"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4471,7 +4471,7 @@
     "name": "Robot Wrist 3 Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4480,7 +4480,7 @@
       "scale": { "x": 0.08, "y": 0.08, "z": 0.04 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4492,12 +4492,12 @@
     "name": "Robot Shoulder Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotShoulderCollisionShape0"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4509,7 +4509,7 @@
     "name": "Robot Shoulder Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4518,7 +4518,7 @@
       "scale": { "x": 0.13, "y": 0.13, "z": 0.11 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4530,12 +4530,12 @@
     "name": "Robot Base Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotBaseCollisionShape0"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4547,7 +4547,7 @@
     "name": "Robot Base Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4556,7 +4556,7 @@
       "scale": { "x": 0.13, "y": 0.13, "z": 0.09 },
       "keyword": "cylinder",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4568,12 +4568,12 @@
     "name": "Robot IQ 85 Base Gripper Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotiqBaseCollisionShape0"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4585,7 +4585,7 @@
     "name": "Robot Gripper Base Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4594,7 +4594,7 @@
       "scale": { "x": 0.09, "y": 0.09, "z": 0.07 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]
@@ -4606,12 +4606,12 @@
     "name": "Robot IQ 85 Gripper Tip Collision Body",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
       "componentShapes": ["robotiqTipCollsionShape0"],
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["componentShapes"]
@@ -4623,7 +4623,7 @@
     "name": "Robot Gripper Tip Collision Shape",
     "canDelete": true,
     "canEdit": true,
-    "dataType": 0,
+    "dataType": "INSTANCE",
     "selected": false,
     "editing": false,
     "properties": {
@@ -4632,7 +4632,7 @@
       "scale": { "x": 0.07, "y": 0.02, "z": 0.04 },
       "keyword": "cube",
       "extraParams": null,
-      "status": 0,
+      "status": "PENDING",
       "compileFn": 0,
       "compiled": {},
       "updateFields": ["position", "rotation", "scale"]

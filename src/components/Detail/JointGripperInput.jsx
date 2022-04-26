@@ -66,11 +66,11 @@ function JointGripperInput({ robotID, isGripper }) {
                     {initialStateInfo.map((io, i) => {
 
                         return (
-                            <>
-                                <div key={i} style={{ "paddingBottom": "3%" }}>
+                            
+                                
                                     <Box key={i} round="xsmall" background="rgba(100,100,100,0.3)" direction='row'
                                         elevation="none" pad="xsmall" justify='between'
-                                        hoverIndicator={true} >
+                                        hoverIndicator={true} margin={{bottom:i===initialStateInfo.length-1?'0pt':'4pt'}}>
                                         <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {io.key.replace(/_/g, ' ')} </b>
                                         <div key={i} >
                                             <NumberInput
@@ -83,9 +83,6 @@ function JointGripperInput({ robotID, isGripper }) {
                                         </div>
 
                                     </Box>
-                                </div>
-
-                            </>
 
                         )
                     })}

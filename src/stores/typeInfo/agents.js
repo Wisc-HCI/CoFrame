@@ -4,7 +4,9 @@ import { STATUS, COMPILE_FUNCTIONS, REFERENCEABLE_OBJECTS } from "../Constants";
 
 const basicAgentData = {
     type: TYPES.OBJECT,
-    instanceBlock: null,
+    instanceBlock: {
+      color: "#629e6c",
+    },
     referenceBlock: null,
     properties: {
       description: {
