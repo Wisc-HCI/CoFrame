@@ -29,6 +29,23 @@ import { STATUS } from './Constants';
 // import {buffer} from "@people_and_robots/lively_tk";
 // import {greet} from './hello_wasm'
 // import { primitiveTypes } from './templates';
+//import { useYDoc } from 'zustand-yjs'
+import * as Y from "yjs";
+import { WebrtcProvider } from "y-webrtc";
+import yjs from 'zustand-middleware-yjs';
+
+
+window.localStorage.setItem("log", "y-webrtc");
+
+const doc = new Y.Doc();
+new WebrtcProvider("CoFrame-AR", doc);
+
+// const connectDoc = (doc) => {
+//   console.log('connect to a provider with room', doc.guid)
+//   return () => console.log('disconnect', doc.guid)
+// }
+
+// const yDoc = useYDoc('myDocGuid', connectDoc);
 
 const immer = (config) => (set, get, api) =>
   config(
@@ -51,10 +68,23 @@ const store = (set, get) => ({
     ...RosSlice(set,get),
 })
 
-const useStore = create(subscribeWithSelector(computed(immer(store),computedSlice)));
+//const useStore = create(subscribeWithSelector(computed(immer(store),computedSlice)));
+
+const useStore = create(
+  yjs(doc,"shared",
+  subscribeWithSelector(
+    computed(
+      immer(store),computedSlice)
+      )
+    ));
+
+console.log("getState: ", useStore.getState());
+
+//console.log("tempStore:", tempStore.getState());
 
 
 useStore.getState().setData(KnifeAssembly);
+//tempStore.getState().setData(KnifeAssembly);
 
 useStore.subscribe(store=>
   lodash.mapValues(store.programData,(value)=>{
