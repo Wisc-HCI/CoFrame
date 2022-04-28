@@ -48,8 +48,7 @@
     "yjs": "^13.5.35",
     "zustand": "^4.0.0-beta.0",
     "zustand-middleware-computed-state": "^0.1.0",
-    "zustand-middleware-yjs": "^1.2.7",
-    "zustand-yjs": "^0.0.14"
+    "zustand-middleware-yjs": "^1.2.7"
   },
   "scripts": {
     "start": "webpack serve --open --mode development",

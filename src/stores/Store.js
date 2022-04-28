@@ -70,13 +70,15 @@ const store = (set, get) => ({
 
 //const useStore = create(subscribeWithSelector(computed(immer(store),computedSlice)));
 
-const useStore = create(
-  yjs(doc,"shared",
-  subscribeWithSelector(
-    computed(
-      immer(store),computedSlice)
-      )
-    ));
+
+const immerStore = immer(store);
+
+
+const computedStore = computed(immerStore,computedSlice);
+const subscribeStore = subscribeWithSelector(computedStore);
+const useStore = create(subscribeStore);
+
+const useSyncStore = create(yjs(doc,"shared",immer(store)))
 
 console.log("getState: ", useStore.getState());
 
@@ -86,8 +88,8 @@ console.log("getState: ", useStore.getState());
 useStore.getState().setData(KnifeAssembly);
 //tempStore.getState().setData(KnifeAssembly);
 
-useStore.subscribe(store=>
-  lodash.mapValues(store.programData,(value)=>{
+useStore.subscribe(state=>
+  lodash.mapValues(state.programData,(value)=>{
     return value?.properties?.status ? value.properties.status : STATUS.PENDING
   }),
   ()=>{
@@ -97,12 +99,27 @@ useStore.subscribe(store=>
   {equalityFn:shallow}
 )
 
+useStore.subscribe(
+  state=>([state.items,state.tfs,state.lines,state.hulls,state.texts,state.focus,state.activeFocus]),
+  ()=>{
+    useSyncStore.setState(useStore.getState())
+  }
+)
+
+useSyncStore.subscribe(
+  state=>[state.programData,state.focus,state.activeFocus],
+  ()=>{
+    const remoteData = lodash.pick(useSyncStore.getState(),['programData','focus','activeFocus']);
+    useStore.setState(remoteData)
+  }
+)
+
 useStore.getState().performCompileProcess()
 
 // useStore.getState().loadSolver();
 // useStore.getState().setSolver()
 console.log(useStore.getState())
 // console.log(KNIFE_TASK.environment.trajectories[0])
-useStore.getState().setUrl('ws://localhost:9090');
+// useStore.getState().setUrl('ws://localhost:9090');
 
 export default useStore;
