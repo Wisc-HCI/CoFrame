@@ -29,6 +29,23 @@ import { STATUS } from './Constants';
 // import {buffer} from "@people_and_robots/lively_tk";
 // import {greet} from './hello_wasm'
 // import { primitiveTypes } from './templates';
+//import { useYDoc } from 'zustand-yjs'
+import * as Y from "yjs";
+import { WebrtcProvider } from "y-webrtc";
+import yjs from 'zustand-middleware-yjs';
+
+
+window.localStorage.setItem("log", "y-webrtc");
+
+const doc = new Y.Doc();
+new WebrtcProvider("CoFrame-AR", doc);
+
+// const connectDoc = (doc) => {
+//   console.log('connect to a provider with room', doc.guid)
+//   return () => console.log('disconnect', doc.guid)
+// }
+
+// const yDoc = useYDoc('myDocGuid', connectDoc);
 
 const immer = (config) => (set, get, api) =>
   config(
@@ -51,13 +68,28 @@ const store = (set, get) => ({
     ...RosSlice(set,get),
 })
 
-const useStore = create(subscribeWithSelector(computed(immer(store),computedSlice)));
+//const useStore = create(subscribeWithSelector(computed(immer(store),computedSlice)));
+
+
+const immerStore = immer(store);
+
+
+const computedStore = computed(immerStore,computedSlice);
+const subscribeStore = subscribeWithSelector(computedStore);
+const useStore = create(subscribeStore);
+
+const useSyncStore = create(yjs(doc,"shared",immer(store)))
+
+console.log("getState: ", useStore.getState());
+
+//console.log("tempStore:", tempStore.getState());
 
 
 useStore.getState().setData(KnifeAssembly);
+//tempStore.getState().setData(KnifeAssembly);
 
-useStore.subscribe(store=>
-  lodash.mapValues(store.programData,(value)=>{
+useStore.subscribe(state=>
+  lodash.mapValues(state.programData,(value)=>{
     return value?.properties?.status ? value.properties.status : STATUS.PENDING
   }),
   ()=>{
@@ -67,12 +99,27 @@ useStore.subscribe(store=>
   {equalityFn:shallow}
 )
 
+useStore.subscribe(
+  state=>([state.items,state.tfs,state.lines,state.hulls,state.texts,state.focus,state.activeFocus]),
+  ()=>{
+    useSyncStore.setState(useStore.getState())
+  }
+)
+
+useSyncStore.subscribe(
+  state=>[state.programData,state.focus,state.activeFocus],
+  ()=>{
+    const remoteData = lodash.pick(useSyncStore.getState(),['programData','focus','activeFocus']);
+    useStore.setState(remoteData)
+  }
+)
+
 useStore.getState().performCompileProcess()
 
 // useStore.getState().loadSolver();
 // useStore.getState().setSolver()
 console.log(useStore.getState())
 // console.log(KNIFE_TASK.environment.trajectories[0])
-useStore.getState().setUrl('ws://localhost:9090');
+// useStore.getState().setUrl('ws://localhost:9090');
 
 export default useStore;

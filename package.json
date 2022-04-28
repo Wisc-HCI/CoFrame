@@ -20,7 +20,9 @@
     "file-saver": "^2.0.2",
     "grommet": "^2.20.1",
     "html-webpack-plugin": "^5.5.0",
+    "i": "^0.3.7",
     "immer": "^9.0.2",
+    "npm": "^8.8.0",
     "react": "^18.0.0",
     "react-dnd": "^14.0.4",
     "react-dom": "^18.0.0",
@@ -42,8 +44,11 @@
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.5.0",
     "worker-loader": "^3.0.8",
+    "y-webrtc": "^10.2.3",
+    "yjs": "^13.5.35",
     "zustand": "^4.0.0-beta.0",
-    "zustand-middleware-computed-state": "^0.1.0"
+    "zustand-middleware-computed-state": "^0.1.0",
+    "zustand-middleware-yjs": "^1.2.7"
   },
   "scripts": {
     "start": "webpack serve --open --mode development",

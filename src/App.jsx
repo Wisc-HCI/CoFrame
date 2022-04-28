@@ -4,12 +4,12 @@ import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
 import { Grommet, Header, Heading, Box, Button, Collapsible, Spinner } from 'grommet';
-import ParentSize from "@visx/responsive/lib/components/ParentSize";
+//import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import { TIMELINE_TYPES } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
 import { Detail } from './components/Detail';
 import { SettingsModal } from "./components/Settings";
-import Graph from "./components/Graph";
+//import Graph from "./components/Graph";
 import useMeasure from 'react-use-measure';
 
 // import { CoFrameIcon } from "./components/Icon";
@@ -136,9 +136,11 @@ export default function App() {
                 </animated.div>
                 {visibleSteps && (
                     <Box direction='row' height={visibleSteps ? '20vh' : '0vh'} width='100vw' background='#444444' border={{ side: 'top', color: primaryColor, size: 'medium' }}>
-                        <ParentSize>
-                            {({ width, height }) => <Graph width={width} height={height - 10} />}
-                        </ParentSize>
+                        {/* <ParentSize>
+                            {({ width, height }) =>
+                             <Graph width={width} height={height - 10} />
+                             }
+                        </ParentSize> */}
                     </Box>
                 )}
 

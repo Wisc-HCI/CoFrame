@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 // import { Card } from 'antd';
 import { Box, Spinner, Button } from 'grommet';
 // import { ProgramEditor } from '../ProgramEditor';
@@ -55,9 +55,8 @@ export const ProgramTile = ({ visible }) => {
                     </Box>
 
                 }
-            >
+            >   
                 <Environment store={useStore} highlightColor={highlightColor} height={bounds.height - 72} />
-
             </Tile>
         </Box>
 
