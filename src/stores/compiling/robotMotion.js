@@ -4,7 +4,7 @@ import { merge } from 'lodash';
 import { Quaternion, Vector3 } from 'three';
 import { eventsToStates, statesToSteps } from ".";
 
-const FRAME_TIME = 10;
+const FRAME_TIME = 20;
 
 const addOrMergeAnimation = (animations, idx, newLinks, newJoints, newProximity, reached, robotId, gripperId, actionId) => {
     if (animations.length > idx) {
@@ -50,7 +50,7 @@ const createIKGoals = (goalPose1, goalPose2, jointState1, jointState2, duration,
             jointGoals[jointKey] = percent * jointState2[jointKey] + (1 - percent) * jointState1[jointKey]
         })
         const startJointGoalWeight = timeGradientFunctionOneTailStart(idx, 10, -20, Math.min(numGoals / 5, 30));
-        const endJointGoalWeight = timeGradientFunctionOneTailEnd(idx, 5, -10, Math.min(numGoals / 5, 30), numGoals)
+        const endJointGoalWeight = timeGradientFunctionOneTailEnd(idx, 10, -20, Math.min(numGoals / 5, 30), numGoals)
         goals.push({
             values: [
                 null,
@@ -111,20 +111,24 @@ const createIKSensitivityTester = (attachmentLink, jointNames, startJoints, endJ
         const achievedQuat = new Quaternion(r[0], r[1], r[2], r[3])
         const translationalDistance = distance(achievedPos, goal.position);
         const rotationalDistance = goalQuat.angleTo(achievedQuat);
-        const translationalDistanceLimit = Math.max(0.01, timeGradientFunction(idx, 0.01, 0.5, Math.min(duration / 10, 30), duration));
+        const translationalDistanceLimit = Math.max(0.01, timeGradientFunction(idx, 0.01, 0.6, Math.min(duration / 10, 30), duration));
         const rotationalDistanceLimit = Math.max(0.01, timeGradientFunction(idx, 0.01, 4, Math.min(duration / 10, 30), duration));
         let passed = translationalDistance <= translationalDistanceLimit && rotationalDistance <= rotationalDistanceLimit;
-        // console.log({ passed, translationalDistance, rotationalDistance, translationalDistanceLimit, rotationalDistanceLimit })
+        // console.log()
         if (!passed) {
+            console.log('POS NOT PASSED',{ passed, translationalDistance, rotationalDistance, translationalDistanceLimit, rotationalDistanceLimit })
             return false
         }
+        return true;
         return !jointNames.some(jointName => {
             const jointDistanceStart = Math.abs(state.joints[jointName] - startJoints[jointName]);
             const jointDistanceEnd = Math.abs(state.joints[jointName] - endJoints[jointName]);
             const jointDistanceLimitStart = timeGradientFunctionOneTailStart(idx, 0.05, 4 * Math.PI, Math.min(duration / 10, 30));
             const jointDistanceLimitEnd = timeGradientFunctionOneTailEnd(idx, 0.05, 4 * Math.PI, Math.min(duration / 10, 30), duration);
             const jointPassed = jointDistanceStart < jointDistanceLimitStart && jointDistanceEnd < jointDistanceLimitEnd;
-            // console.log({ jointName, passed: jointPassed, jointDistanceStart, jointDistanceLimitStart, jointDistanceEnd, jointDistanceLimitEnd });
+            if (!jointPassed) {
+                console.log('JOINT NOT PASSED',{ jointName, passed: jointPassed, jointDistanceStart, jointDistanceLimitStart, jointDistanceEnd, jointDistanceLimitEnd });
+            }
             return !jointPassed
         })
     }
@@ -345,7 +349,9 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
 
 
                         const stateData = likStateToData(state, worldModel, robot.id)
-
+                        if (!reached && status !== STATUS.FAILED) {
+                            status = STATUS.WARN
+                        }
                         innerSteps = addOrMergeAnimation(
                             innerSteps,
                             mainIdx,
