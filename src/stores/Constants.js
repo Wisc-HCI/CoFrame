@@ -56,14 +56,15 @@ export const PREPROCESS_TYPES = [
     'linkType',
     'robotAgentType',
     'gripperType',
-    'machineType',
-    'fixtureType',
+    
     // 'toolType'
 ]
 
 export const POSTPROCESS_TYPES = [
     'waypointType',
     'locationType',
+    'machineType',
+    'fixtureType'
 ]
 
 export const ROOT_PATH = JSON.stringify(['root']);

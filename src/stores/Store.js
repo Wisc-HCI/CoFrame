@@ -72,13 +72,11 @@ const store = (set, get) => ({
 
 
 const immerStore = immer(store);
-
-
 const computedStore = computed(immerStore,computedSlice);
 const subscribeStore = subscribeWithSelector(computedStore);
-const useStore = create(subscribeStore);
 
-const useSyncStore = create(yjs(doc,"shared",immer(store)))
+const useStore = create(subscribeStore);
+const useSyncStore = create(yjs(doc,"shared",subscribeStore))
 
 console.log("getState: ", useStore.getState());
 
