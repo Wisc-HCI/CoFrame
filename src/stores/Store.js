@@ -35,10 +35,10 @@ import { WebrtcProvider } from "y-webrtc";
 import yjs from 'zustand-middleware-yjs';
 
 
-window.localStorage.setItem("log", "y-webrtc");
+// window.localStorage.setItem("log", "y-webrtc");
 
-const doc = new Y.Doc();
-new WebrtcProvider("CoFrame-AR", doc);
+// const doc = new Y.Doc();
+// new WebrtcProvider("CoFrame-AR", doc);
 
 // const connectDoc = (doc) => {
 //   console.log('connect to a provider with room', doc.guid)
@@ -76,15 +76,9 @@ const computedStore = computed(immerStore,computedSlice);
 const subscribeStore = subscribeWithSelector(computedStore);
 
 const useStore = create(subscribeStore);
-const useSyncStore = create(yjs(doc,"shared",subscribeStore))
+// const useSyncStore = create(yjs(doc,"shared",subscribeStore))
 
 console.log("getState: ", useStore.getState());
-
-//console.log("tempStore:", tempStore.getState());
-
-
-useStore.getState().setData(KnifeAssembly);
-//tempStore.getState().setData(KnifeAssembly);
 
 useStore.subscribe(state=>
   lodash.mapValues(state.programData,(value)=>{
@@ -97,26 +91,31 @@ useStore.subscribe(state=>
   {equalityFn:shallow}
 )
 
-useStore.subscribe(
-  state=>([state.items,state.tfs,state.lines,state.hulls,state.texts,state.focus,state.activeFocus]),
-  ()=>{
-    useSyncStore.setState(useStore.getState())
-  }
-)
+// useStore.subscribe(
+//   state=>([state.items,state.tfs,state.lines,state.hulls,state.texts,state.focus,state.activeFocus]),
+//   ()=>{
+//     useSyncStore.setState(useStore.getState())
+//   }
+// )
 
-useSyncStore.subscribe(
-  state=>[state.programData,state.focus,state.activeFocus],
-  ()=>{
-    const remoteData = lodash.pick(useSyncStore.getState(),['programData','focus','activeFocus']);
-    useStore.setState(remoteData)
-  }
-)
+// useSyncStore.subscribe(
+//   state=>[state.programData,state.focus,state.activeFocus],
+//   ()=>{
+//     const remoteData = lodash.pick(useSyncStore.getState(),['programData','focus','activeFocus']);
+//     useStore.setState(remoteData)
+//   }
+// )
 
-useStore.getState().performCompileProcess()
+if (Object.keys(useStore.getState().programData).length === 0) {
+  useStore.getState().setData(KnifeAssembly);
+}
+// 
+
+// useStore.getState().performCompileProcess()
 
 // useStore.getState().loadSolver();
 // useStore.getState().setSolver()
-console.log(useStore.getState())
+// console.log(useStore.getState())
 // console.log(KNIFE_TASK.environment.trajectories[0])
 // useStore.getState().setUrl('ws://localhost:9090');
 

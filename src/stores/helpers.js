@@ -1,8 +1,8 @@
 import lodash from 'lodash';
-import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES, GRIPPER_PARENTS } from './gripper';
+// import { GRIPPER_CONFIGURATIONS, GRIPPER_FRAMES, GRIPPER_PARENTS } from './gripper';
 import { Quaternion, Vector3, Group, Object3D, Matrix4 } from 'three';
 import { ConvexGeometry } from 'three-stdlib';
-import { EVD_MESH_LOOKUP } from './initialSim';
+// import { EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp';
 import { REFERENCEABLE_OBJECTS, ROOT_PATH, STEP_TYPE } from './Constants';
 

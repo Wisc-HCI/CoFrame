@@ -6,8 +6,8 @@ import useStore from '../../stores/Store';
 import { Controls } from '../Controls';
 import { InfoTile } from './InfoTile';
 import useMeasure from 'react-use-measure';
-import { useSpring, animated } from '@react-spring/web';
-import { config } from 'react-spring';
+// import { useSpring, animated } from '@react-spring/web';
+// import { config } from 'react-spring';
 
 
 export const SimulatorTile = ({ visible }) => {
@@ -17,7 +17,7 @@ export const SimulatorTile = ({ visible }) => {
     const tfVisible = useStore(state => state.tfVisible);
     const paused = useStore(state => state.focus === []);
     const [ref, bounds] = useMeasure();
-    const containerStyle = useSpring({ flex: visible ? 11 : 0, config: config.stiff });
+    // const containerStyle = useSpring({ flex: visible ? 11 : 0, config: config.stiff });
     
     if (!visible) {
         return null

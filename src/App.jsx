@@ -1,37 +1,31 @@
 import React from "react";
-import { FiSettings } from "react-icons/fi";
+// import { FiSettings } from "react-icons/fi";
 import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
-import { Grommet, Header, Heading, Box, Button, Collapsible, Spinner } from 'grommet';
-//import ParentSize from "@visx/responsive/lib/components/ParentSize";
+import { Grommet, Box } from 'grommet';
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import { TIMELINE_TYPES } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
 import { Detail } from './components/Detail';
 import { SettingsModal } from "./components/Settings";
-//import Graph from "./components/Graph";
-import useMeasure from 'react-use-measure';
+import Graph from "./components/Graph";
+// import useMeasure from 'react-use-measure';
 
 // import { CoFrameIcon } from "./components/Icon";
 
 import useStore from "./stores/Store";
 
 import { useSpring, animated } from '@react-spring/web';
-import { config } from 'react-spring';
-// import { Timeline } from "./components/Timeline";
 
 export default function App() {
 
     const primaryColor = useStore(state => state.primaryColor);
     const viewMode = useStore(state => state.viewMode);
-    const simWidth = viewMode === 'default' ? 9 : viewMode === 'sim' ? 1 : 0;
-    const programWidth = viewMode === 'default' ? 11 : viewMode === 'program' ? 1 : 0;
-    console.log({simWidth,programWidth})
-    const simStyle = useSpring({ flex: simWidth, config: config.stiff });
-    const programStyle = useSpring({ flex: programWidth, config: config.stiff });
     const visibleSteps = useStore(state => state.focus.some(focusItem => TIMELINE_TYPES.includes(state.programData[focusItem]?.type)));
-
-    const bodyStyle = useSpring({ width: '100vw', height: visibleSteps ? '80vh' : '100vh', config: config.stiff });
+    console.warn('visibleSteps',visibleSteps)
+    const bodyStyle = useSpring({ height: visibleSteps ? '80vh' : '100vh'});
+    console.warn('bodyStyle',{bodyStyle,size:visibleSteps ? '80vh' : '100vh'})
 
     const theme = {
         name: 'CoFrame',
@@ -136,14 +130,13 @@ export default function App() {
                 </animated.div>
                 {visibleSteps && (
                     <Box direction='row' height={visibleSteps ? '20vh' : '0vh'} width='100vw' background='#444444' border={{ side: 'top', color: primaryColor, size: 'medium' }}>
-                        {/* <ParentSize>
+                        <ParentSize>
                             {({ width, height }) =>
                              <Graph width={width} height={height - 10} />
                              }
-                        </ParentSize> */}
+                        </ParentSize>
                     </Box>
                 )}
-
             </Box>
             <SettingsModal />
             <Detail />

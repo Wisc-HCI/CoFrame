@@ -139,7 +139,7 @@ export const GuiSlice = (set, get) => ({
     state = addFocus(state, id, add);
   }),
   clearFocus: () => set(state => {
-    console.log('clearing focus')
+    // console.log('clearing focus')
     state.focus.forEach(f => {
       if (state.programData[f]) {
         state.programData[f].selected = false
@@ -148,58 +148,12 @@ export const GuiSlice = (set, get) => ({
     state.focus = []
     state.activeFocus = null
   }),
-  // setFocusItem: (type, uuid, transformMode) => set(state=>{
-  //   console.log('setFocusItem')
-  //   // Clear out previous focusItem highlighting
-  //   if (state.focusItem.uuid && state.programData[state.focusItem.uuid]) {
-  //     state.programData[state.focusItem.uuid].selected = false
-  //   };
-  //   // Clear out previous secondaryFocusItem highlighting
-  //   if (state.secondaryFocusItem.uuid && state.programData[state.secondaryFocusItem.uuid]) {
-  //     state.programData[state.secondaryFocusItem.uuid].selected = false
-  //   }
-  //   if (uuid && state.programData[uuid]) {
-  //     state.programData[uuid].selected = true
-  //   };
-  //   state.focusItem = { type, uuid, transformMode }
-  // }),
-  // clearFocusItem: () => set(state => {
-  //   console.log('clearFocusItem')
-  //   if (state.focusItem.uuid && state.programData[state.focusItem.uuid]) {
-  //     state.programData[state.focusItem.uuid].selected = false
-  //   }
-  //   if (state.secondaryFocusItem.uuid && state.programData[state.secondaryFocusItem.uuid]) {
-  //     state.programData[state.secondaryFocusItem.uuid].selected = false
-  //   }
-  //   state.focusItem = { type: null, uuid: null, transformMode: null };
-  //   state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
-  // }),
-  // the search terms they have entered
   searchTerm: '',
   setSearchTerm: (term) => set(_ => ({ searchTerm: term })),
   clearSearchTerm: () => set(_ => ({ searchTerm: '' })),
   // whether the sim window is expanded to the whole width
   viewMode: 'default',
   setViewMode: (mode) => set(_ => ({ viewMode: mode })),
-  // secondaryFocusItem: { type: null, uuid: null },
-  // setSecondaryFocusItem: (type, uuid, transformMode) => set(state=>{
-  //   console.log('setSecondaryFocusItem')
-  //   // Clear out previous secondaryFocusItem highlighting
-  //   if (state.secondaryFocusItem.uuid && state.programData[state.secondaryFocusItem.uuid]) {
-  //     state.programData[state.secondaryFocusItem.uuid].selected = false
-  //   }
-  //   if (uuid && state.programData[uuid]) {
-  //     state.programData[uuid].selected = true
-  //   };
-  //   state.secondaryFocusItem = { type, uuid, transformMode }
-  // }),
-  // clearSecondaryFocusItem: () => set(state=>{
-  //   console.log('clearSecondaryFocusItem')
-  //   if (state.secondaryFocusItem.uuid && state.programData[state.secondaryFocusItem.uuid]) {
-  //     state.programData[state.secondaryFocusItem.uuid].selected = false
-  //   }
-  //   state.secondaryFocusItem = { type: null, uuid: null, transformMode: null };
-  // }),
   updateItemSelected: (id, value) => {
     set((state) => {
       console.log({id,value})
@@ -274,6 +228,7 @@ export const GuiSlice = (set, get) => ({
     }
   }),
   onMove: (id, source, worldTransform, localTransform) => set(state => {
+    console.log('ON MOVE',{id,source,worldTransform,localTransform})
     const filteredId = 
     id.includes('-pointer') ? id.replace('-pointer', '') : 
     id.includes('-tag') ? id.replace('-tag', '') : id;

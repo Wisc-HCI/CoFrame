@@ -44,17 +44,17 @@ export const EvdSlice = (set, get) => ({
   },
   programData: {},
   // All the old stuff below
-  data: {
-    "program-484de43e-adaa-4801-a23b-bca38e211365": {
-      "name": "Knife Assembly",
-      "editable": true,
-      "deleteable": false,
-      "description": "The top-level program",
-      "parameters": {},
-      "children": [],
-      "transform": { "x": 0, "y": 0 }
-    }
-  },
+  // data: {
+  //   "program-484de43e-adaa-4801-a23b-bca38e211365": {
+  //     "name": "Knife Assembly",
+  //     "editable": true,
+  //     "deleteable": false,
+  //     "description": "The top-level program",
+  //     "parameters": {},
+  //     "children": [],
+  //     "transform": { "x": 0, "y": 0 }
+  //   }
+  // },
   // A macro for updating the entire program from raw data
   setData: (data) => set((state) => {
 

@@ -74,12 +74,15 @@ const delayFeatures = {
   properties: {
     description: {default: 'Delay action for a specified amount of time'},
     duration: {
-      name: 'Duration (sec)',
+      name: 'Duration',
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
       default: 1000,
       min: 0,
-      max: Infinity,
-      visualScaling: 1/1000
+      max: 3600000,
+      step: 100,
+      visualScaling: 1/1000,
+      visualPrecision: 1,
+      units: 'sec'
     },
     compileFn: {default:COMPILE_FUNCTIONS.DELAY},
     updateFields: {default: ['duration']}
@@ -125,7 +128,11 @@ const gripperFeatures = {
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
       default: 20,
       min: 1,
-      max: 50
+      max: 50,
+      step: 1,
+      visualScaling: 1,
+      visualPrecision: 0,
+      units: 'mm/sec'
     },
     compileFn: {default:COMPILE_FUNCTIONS.GRIPPER_MOTION},
     updateFields: {default: ['thing','positionStart','positionEnd','speed']}
@@ -227,9 +234,13 @@ const moveTrajectoryFeatures = {
       // mm/ms or m/s
       name: 'Velocity',
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
-      default: 1,
+      default: 0.5,
       min: 0.01,
-      max: 5
+      max: 5,
+      step: 0.01,
+      visualScaling: 1,
+      visualPrecision: 2,
+      units: 'm/sec'
     },
     motionType: {
       name: 'Motion Type',

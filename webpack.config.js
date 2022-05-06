@@ -4,10 +4,12 @@ const webpack = require("webpack")
 
 module.exports = {
     entry: path.resolve(__dirname, "./src/index.js"),
+    target: 'web',
     devServer: {
         static: path.join(__dirname, "dist"),
         compress: true,
-        port: 8080
+        port: 8080,
+        hot: true
     },
     output: {
         publicPath: "auto",
@@ -36,6 +38,7 @@ module.exports = {
         ],
     },
     plugins: [
+        // new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
             manifest: "./public/manifest.json",
             favicon: "./public/favicon.ico",

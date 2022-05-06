@@ -14,7 +14,7 @@ import {
     stepsToAnimation
 } from './helpers';
 // import throttle from 'lodash.throttle';
-import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
+// import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp/dist/components';
 
 export const computedSlice = (state) => {
@@ -99,6 +99,7 @@ export const computedSlice = (state) => {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
                 rotation: entry.properties.rotation,
+                transformMode: itemTransformMethod(state, entry.id),
                 scale: {x:1,y:1,z:1}
             }
 
@@ -111,7 +112,6 @@ export const computedSlice = (state) => {
                     rotation: meshObject.properties.rotation,
                     color: meshObject.properties.color,//{r:10,g:10,b:10,a:0.35},//
                     scale: meshObject.properties.scale,
-                    transformMode: itemTransformMethod(state, entry.id),
                     highlighted
                 }
             }
@@ -120,7 +120,7 @@ export const computedSlice = (state) => {
                 collisionObject.properties.componentShapes.forEach((shape) => {
                     let componentShape = state.programData[shape];
                     items[entry.id + shape] = {
-                        shape: COLLISION_MESHES[componentShape.properties.keyword] ? COLLISION_MESHES[componentShape.properties.keyword] : componentShape.properties.keyword,
+                        shape: componentShape.properties.keyword,
                         name: componentShape.name,
                         frame: entry.id,
                         position: componentShape.properties.position,
@@ -152,7 +152,7 @@ export const computedSlice = (state) => {
                 let inputObj = state.programData[input];
                 let thing = state.programData[inputObj.properties.thing];
                 items[input] = {
-                    shape: EVD_MESH_LOOKUP[thing.properties.mesh] ? EVD_MESH_LOOKUP[thing.properties.mesh] : thing.properties.mesh,
+                    shape: thing.properties.mesh,
                     frame: inputObj.properties.relativeTo ? inputObj.properties.relativeTo : "world",
                     position: inputObj.properties.position,
                     rotation: inputObj.properties.rotation,
@@ -167,7 +167,7 @@ export const computedSlice = (state) => {
                 let outputObj = state.programData[output];
                 let thing = state.programData[outputObj.properties.thing];
                 items[output] = {
-                    shape: EVD_MESH_LOOKUP[thing.properties.mesh] ? EVD_MESH_LOOKUP[thing.properties.mesh] : thing.properties.mesh,
+                    shape: thing.properties.mesh,
                     frame: outputObj.properties.relativeTo ? outputObj.properties.relativeTo : "world",
                     position: outputObj.properties.position,
                     rotation: outputObj.properties.rotation,
@@ -186,6 +186,7 @@ export const computedSlice = (state) => {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
                 rotation: entry.properties.rotation,
+                transformMode: itemTransformMethod(state, entry.id),
                 scale: {x:1,y:1,z:1}
             }
             items[entry.id] = {
@@ -195,7 +196,6 @@ export const computedSlice = (state) => {
                 position: meshObject.properties.position,
                 rotation: meshObject.properties.rotation,
                 scale: meshObject.properties.scale,
-                transformMode: itemTransformMethod(state, entry.id),
                 highlighted: state.focus.includes(entry.id)
             }
             // Now add collisions

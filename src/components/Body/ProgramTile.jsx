@@ -56,7 +56,7 @@ export const ProgramTile = ({ visible }) => {
 
                 }
             >   
-                <Environment store={useStore} highlightColor={highlightColor} height={bounds.height - 72} />
+                <Environment store={useStore} highlightColor={highlightColor} height={bounds.height - 72} snapToGrid={false}/>
             </Tile>
         </Box>
 
