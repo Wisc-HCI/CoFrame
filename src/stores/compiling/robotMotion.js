@@ -1,4 +1,4 @@
-import { STATUS, STEP_TYPE } from "../Constants";
+import { STATUS, STEP_TYPE, ROOT_PATH } from "../Constants";
 import { distance, likStateToData, createStaticEnvironment, queryWorldPose, quaternionLog, poseToGoalPosition, timeGradientFunction, timeGradientFunctionOneTailStart, timeGradientFunctionOneTailEnd } from "../helpers";
 import { merge } from 'lodash';
 import { Quaternion, Vector3 } from 'three';
@@ -147,7 +147,7 @@ const createJointSensitivityTester = (jointNames) => {
 }
 
 export const robotMotionCompiler = ({ data, properties, context, path, memo, solver, module, worldModel, urdf }) => {
-    const rootPath = JSON.stringify(['root']);
+    
     const trajectory = properties.trajectory;
     /* 
     trajectory: {
@@ -233,8 +233,8 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
         };
 
         // Get a list of links in the robot;
-        const robotLinks = robot.properties.compiled[rootPath].linkInfo.map(link => link.name);
-        const urdf = robot.properties.compiled[rootPath].urdf;
+        const robotLinks = robot.properties.compiled[ROOT_PATH].linkInfo.map(link => link.name);
+        const urdf = robot.properties.compiled[ROOT_PATH].urdf;
         grippers.forEach(gripper => {
             let reachableChildren = true;
             poses.forEach(pose => {

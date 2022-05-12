@@ -67,4 +67,4 @@ export const POSTPROCESS_TYPES = [
     'fixtureType'
 ]
 
-export const ROOT_PATH = JSON.stringify(['root']);
+export const ROOT_PATH = JSON.stringify({});

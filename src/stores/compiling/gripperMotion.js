@@ -1,10 +1,10 @@
-import { STATUS, STEP_TYPE } from "../Constants";
+import { STATUS, STEP_TYPE, ROOT_PATH } from "../Constants";
 import { range, mapValues } from 'lodash';
 import { findLastSatisfiedFromReference } from "../helpers";
 import { eventsToStates, statesToSteps } from ".";
 
 export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
-    const rootPath = JSON.stringify(['root']);
+    
     const robot = Object.values(memo).filter(v => v.type === 'robotAgentType')[0];
     let status = STATUS.VALID;
     const delta = properties.positionEnd - properties.positionStart;
@@ -35,8 +35,8 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
         grippers.forEach(gripper => {
             console.log(gripper)
             const gripperValue = time * changePerTime + properties.positionStart;
-            const idx = findLastSatisfiedFromReference(gripper.properties.compiled[rootPath].gripperIndex, v => v >= gripperValue);
-            const links = mapValues(gripper.properties.compiled[rootPath].gripperFrames, frameSet => frameSet[idx]);
+            const idx = findLastSatisfiedFromReference(gripper.properties.compiled[ROOT_PATH].gripperIndex, v => v >= gripperValue);
+            const links = mapValues(gripper.properties.compiled[ROOT_PATH].gripperFrames, frameSet => frameSet[idx]);
             frameData = { ...frameData, ...links };
             gripperValues[gripper.id] = gripperValue;
         })

@@ -20,7 +20,7 @@ export const ProgramTile = ({ visible }) => {
     const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined);
     const [ref, bounds] = useMeasure();
 
-    console.log(visible)
+    // console.log(visible)
     if (!visible) {
         return null
     }

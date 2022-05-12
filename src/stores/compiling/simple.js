@@ -11,11 +11,10 @@ export const simpleCompiler = ({ data, properties, objectTypes, context, path, m
         events: [],
         steps: []
     };
-
-    console.log(newCompiled.steps)
-
+    console.log('data (simple)',{data,properties})
     properties.children.some(child => {
         // console.log({child,currentSteps:newCompiled.steps.length})
+        console.log(child)
         const childData = child.properties.compiled[path];
         if (childData.shouldBreak) {
             newCompiled.shouldBreak = true;

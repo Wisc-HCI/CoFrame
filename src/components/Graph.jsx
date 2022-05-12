@@ -371,6 +371,10 @@ const InnerGraph = withTooltip(
                       width={xScale(entry.end - entry.start)}
                       height={barHeight}
                       fill={colorScale(entry.event)}
+                      fillOpacity={0.6}
+                      stroke={colorScale(entry.event)}
+                      strokeOpacity={1}
+                      strokeWidth={1}
                     />
                     <text
                       fontSize={12}

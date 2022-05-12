@@ -3,11 +3,11 @@ import React from "react";
 import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
-import { Grommet, Box } from 'grommet';
+import { Grommet, Box } from "grommet";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import { TIMELINE_TYPES } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
-import { Detail } from './components/Detail';
+import { Detail } from "./components/Detail";
 import { SettingsModal } from "./components/Settings";
 import Graph from "./components/Graph";
 // import useMeasure from 'react-use-measure';
@@ -16,132 +16,86 @@ import Graph from "./components/Graph";
 
 import useStore from "./stores/Store";
 
-import { useSpring, animated } from '@react-spring/web';
+import { useSpring, animated } from "@react-spring/web";
+import { getTheme } from "./theme";
 
 export default function App() {
-
-    const primaryColor = useStore(state => state.primaryColor);
-    const viewMode = useStore(state => state.viewMode);
-    const visibleSteps = useStore(state => state.focus.some(focusItem => TIMELINE_TYPES.includes(state.programData[focusItem]?.type)));
-    console.warn('visibleSteps',visibleSteps)
-    const bodyStyle = useSpring({ height: visibleSteps ? '80vh' : '100vh'});
-    console.warn('bodyStyle',{bodyStyle,size:visibleSteps ? '80vh' : '100vh'})
-
-    const theme = {
-        name: 'CoFrame',
-        rounding: 4,
-        defaultMode: 'dark',
-        global: {
-            colors: {
-                brand: primaryColor,
-                background: '#000000',
-                control: primaryColor
-            },
-            font: {
-                family: "Helvetica"
-            },
-            focus: {
-                border: {
-                    color: primaryColor
-                }
-            },
-            input: {
-                padding: 4,
-                extend: { backgroundColor: '#FFFFFF55' }
-            },
-            // edgeSize: {large: 50, small: 10, medium: 15}
-        },
-        button: {
-            border: {
-                radius: "4px"
-            }
-        },
-        radioButton: {
-            size: "16px",
-            border: { color: '#00000088' }
-        },
-        checkBox: {
-            size: "20px",
-            border: { color: '#00000088' },
-            color: primaryColor,
-            hover: { border: { color: '#00000088' }, }
-        },
-        textInput: {
-            disabled: { opacity: 1 }
-        },
-        notification: {
-            toast: {
-                container: {
-                    elevation: 'none'
-                }
-            },
-            container: {
-                border: { color: 'lightgrey' },
-                background: {
-                    color: 'background-front',
-                }
-            }
-        },
-        tab: {
-            active: {
-                background: primaryColor,
-                color: 'dark-1'
-            },
-            background: 'dark-3',
-            border: undefined,
-            color: 'white',
-            hover: {
-                 background: '#444444',
-                 color: 'white'
-            },
-            margin: undefined,
-            pad: {
-                bottom: undefined,
-                horizontal: 'small',
-            },
-            extend: {
-                borderRadius: 4,
-                padding: 6
-            }
-        },
-        tabs: {
-            gap: 'medium',
-            header: {
-                extend: {padding: 10}
-            },
-            panel: { padding: 10 },
-            extend: {padding: 10}
-        }
-    }
-
-    return (
-        <Grommet full theme={theme}>
-            {/* Main container */}
-            <Box direction="column" height='100vh' width='100vw'>
-                <animated.div style={{ ...bodyStyle, width: '100vw', display: 'flex', flexDirection: 'row' }}>
-                    <Box width='350pt'>
-                        <ReviewTile />
-                    </Box>
-
-                    <Box fill direction='row'>
-                        <SimulatorTile visible={viewMode === 'default' || viewMode ==='sim'}/>
-                        <ProgramTile visible={viewMode === 'default' || viewMode ==='program'}/>
-                    </Box>
-                </animated.div>
-                {visibleSteps && (
-                    <Box direction='row' height={visibleSteps ? '20vh' : '0vh'} width='100vw' background='#444444' border={{ side: 'top', color: primaryColor, size: 'medium' }}>
-                        <ParentSize>
-                            {({ width, height }) =>
-                             <Graph width={width} height={height - 10} />
-                             }
-                        </ParentSize>
-                    </Box>
-                )}
-            </Box>
-            <SettingsModal />
-            <Detail />
-            {/* <Modals /> */}
-        </Grommet >
-
+  const primaryColor = useStore((state) => state.primaryColor);
+  const viewMode = useStore((state) => state.viewMode);
+  const visibleSteps = useStore((state) =>
+    state.focus.some((focusItem) =>
+      TIMELINE_TYPES.includes(state.programData[focusItem]?.type)
     )
+  );
+  //   console.warn("visibleSteps", visibleSteps);
+  //   const bodyStyle = useSpring({ height: visibleSteps ? "80vh" : "100vh" });
+  const mainStyle = useSpring({ height: visibleSteps ? "80vh" : "100vh" });
+  const drawerStyle = useSpring({ height: visibleSteps ? "20vh" : "0vh" });
+  const leftStyle = useSpring({
+    flex: viewMode === "default" || viewMode === "sim" ? 45 : 0,
+  });
+  const rightStyle = useSpring({
+    flex: viewMode === "default" || viewMode === "program" ? 55 : 0,
+  });
+
+  const theme = getTheme(primaryColor);
+
+  return (
+    <Grommet full theme={theme}>
+      {/* Main container */}
+      <div
+        style={{
+          backgroundColor: "black",
+          height: "100vh",
+          width: "100vw",
+          position: "fixed",
+        }}
+      >
+        <animated.div
+          style={{
+            ...mainStyle,
+            flexDirection: "row",
+            display: "flex",
+          }}
+        >
+          <div
+            style={{ width: 350, height: "100%"}}
+          >
+            <ReviewTile />
+          </div>
+
+          <animated.div
+            style={{
+              ...leftStyle,
+              overflow: "hidden",
+            }}
+          >
+            <SimulatorTile
+              visible
+            />
+          </animated.div>
+          <animated.div
+            style={{
+              ...rightStyle,
+              overflow: "hidden",
+            }}
+          >
+            <ProgramTile
+              visible
+            />
+          </animated.div>
+        </animated.div>
+        <animated.div style={{ ...drawerStyle, backgroundColor:"#444444", borderTop: `5px solid ${primaryColor}` }}>
+          <ParentSize>
+            {({ width, height }) => (
+              <Graph width={width} height={height - 10} />
+            )}
+          </ParentSize>
+        </animated.div>
+      </div>
+      <SettingsModal />
+      <Detail />
+      {/* <Modals /> */}
+    </Grommet>
+  );
 }
