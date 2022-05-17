@@ -879,23 +879,23 @@ export function stepsToAnimation(state, tfs) {
         }
     });
 
-    // Buffer out final animation
+    // Iterate through final objects and buffer out times (add additional 500ms)
+    // Animate
     finalTime += 500;
     timesteps.push(finalTime);
     Object.keys(dict).forEach(link => {
         let posLength = dict[link].position.x.length;
-        dict[link].position.x.push(dict[link].position.x[posLength - 1]);
-        dict[link].position.y.push(dict[link].position.y[posLength - 1]);
-        dict[link].position.z.push(dict[link].position.z[posLength - 1]);
-        dict[link].rotation.x.push(dict[link].rotation.x[posLength - 1]);
-        dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
-        dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
-        dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
-    })
+        
+        for (let tmpLength = posLength; tmpLength < timesteps.length; tmpLength++) {
+            dict[link].position.x.push(dict[link].position.x[posLength - 1]);
+            dict[link].position.y.push(dict[link].position.y[posLength - 1]);
+            dict[link].position.z.push(dict[link].position.z[posLength - 1]);
+            dict[link].rotation.x.push(dict[link].rotation.x[posLength - 1]);
+            dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
+            dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
+            dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
+        }
 
-
-    // Animate
-    Object.keys(dict).forEach(link => {
         if (tfs[link]) {
             tfs[link].position = {
                 x: interpolateScalar(timesteps, dict[link].position.x),
@@ -909,7 +909,7 @@ export function stepsToAnimation(state, tfs) {
                 w: interpolateScalar(timesteps, dict[link].rotation.w)
             }
         }
-    })
+    });
 }
 
 export function pinchpointAnimationFromExecutable(executable) {
