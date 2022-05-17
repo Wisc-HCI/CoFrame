@@ -82,6 +82,11 @@ export const processType = {
         name: 'Update Fields',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: ['machine','processTime','inputs','outputs']
+      },
+      singleton: {
+        name: 'singleton',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: true
       }
     }
   }

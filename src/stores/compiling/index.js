@@ -13,7 +13,7 @@ import { humanAgentCompiler } from "./humanAgent";
 import { linkCompiler } from "./link";
 import { propertyCompiler } from "./property";
 import lodash from "lodash";
-import { COMPILE_FUNCTIONS, STATUS, TRIGGER_TYPE } from "../Constants";
+import { COMPILE_FUNCTIONS, ROOT_PATH, STATUS, TRIGGER_TYPE } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
 import { gripperCompiler } from "./gripper";
 
@@ -65,25 +65,41 @@ export const findInstance = (id, context) => {
 export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 // Copies data from a memo into the specified node.
 // Returns standard changes, which will need to be propagated back up.
-const copyMemoizedData = (memoizedData, data, path) => {
+const copyMemoizedData = (memoizedData, data, path, singleton) => {
   // console.warn('copying memoized version of ', data)
-  return [
-    memoizedData, // memoizedData
-    memoizedData.properties.compiled[path].status, // status
-    data.properties ? data.properties.status === STATUS.PENDING : true, // updated
-    memoizedData.properties.compiled[path].break, // shouldBreak
-  ];
+  const usedPath = singleton ? ROOT_PATH : path;
+
+  if (memoizedData.properties.compiled[path]) {
+    return [
+      memoizedData, // memoizedData
+      memoizedData.properties.compiled[path].status, // status
+      data.properties ? data.properties.status === STATUS.PENDING : true, // updated
+      memoizedData.properties.compiled[path].break, // shouldBreak
+    ];
+  } else if (singleton && memoizedData.properties.compiled[ROOT_PATH]) {
+    return [
+      memoizedData, // memoizedData
+      memoizedData.properties.compiled[ROOT_PATH].status, // status
+      data.properties ? data.properties.status === STATUS.PENDING : true, // updated
+      memoizedData.properties.compiled[ROOT_PATH].break, // shouldBreak
+    ];
+  }
+  
 };
 
 // Copies data into memoized data.
 // Returns standard changes, which will need to be propagated back up.
-const updateMemoizedData = (memoizedData, data, path) => {
+const updateMemoizedData = (memoizedData, data, path, singleton) => {
+  // console.log("updateMemoizedData", { memoizedData, path, data, singleton });
   // console.warn('updating memoized version of ', data);
   let newMemoizedData = lodash.merge(
     { properties: { compiled: { [path]: {} } } },
     memoizedData
   );
-  const pastCompiled = data.properties.compiled[path];
+  let pastCompiled = data.properties.compiled[path];
+  if (!pastCompiled && singleton && data.properties.compiled[ROOT_PATH]) {
+    pastCompiled = data.properties.compiled[ROOT_PATH];
+  }
   newMemoizedData.properties.compiled[path] = lodash.merge(
     newMemoizedData.properties.compiled[path],
     pastCompiled
@@ -110,6 +126,7 @@ const performUpdate = (
   memoizedData,
   data,
   properties,
+  routes,
   objectTypes,
   context,
   path,
@@ -122,6 +139,7 @@ const performUpdate = (
   let newCompiled = updateFn({
     data,
     properties,
+    routes,
     objectTypes,
     context,
     path,
@@ -197,6 +215,7 @@ const computeProperty = (
   let status = STATUS.VALID;
   let updated = false;
   let shouldBreak = false;
+  let exportPath = path;
 
   // First, if the field value is null, return null, with checking for validity
   if (!fieldValue && !fieldInfo.nullValid) {
@@ -213,77 +232,7 @@ const computeProperty = (
       return { memoizedData, memo: newMemo, status, updated, shouldBreak };
     } else if (!propData) {
       status = STATUS.FAILED;
-    }
-    // else if (propData.dataType === DATA_TYPES.CALL) {
-    //   const fnInstance = findInstance(propData.ref, context);
-    //   console.log("found fn", fnInstance);
-    //   const [newContext, newPath, innerValid] = newContextAndPathFromCallFn(
-    //     context,
-    //     path,
-    //     propData,
-    //     fnInstance
-    //   );
-
-    //   if (!innerValid) {
-    //     status = STATUS.FAILED;
-    //     memoizedData = {
-    //         properties:{
-    //             compiled:{
-    //                 [path]:{
-    //                     shouldBreak: false,
-    //                     status:STATUS.FAILED,
-    //                     events: [],
-    //                     steps: []
-    //                 }
-    //             },
-    //             status:STATUS.FAILED,
-
-    //         }
-    //     }
-    //     return { memoizedData, memo: newMemo, status, updated, shouldBreak };
-    //   }
-
-    //   const computeProps = {
-    //     data: fnInstance,
-    //     objectTypes,
-    //     context: newContext,
-    //     path: newPath,
-    //     memo,
-    //     module,
-    //     worldModel,
-    //   };
-
-    //   console.log('handling fn instance',computeProps)
-    //   const {
-    //     memoizedData: innerMemoizedData,
-    //     memo: innerMemo,
-    //     status: innerStatus,
-    //     updated: innerUpdated,
-    //     shouldBreak: innerShouldBreak,
-    //   } = handleUpdate(computeProps);
-
-    //   if (innerUpdated) {
-    //     updated = true;
-    //   }
-    //   if (
-    //     innerStatus === STATUS.FAILED ||
-    //     (innerStatus === STATUS.WARN && status !== STATUS.FAILED)
-    //   ) {
-    //     // Status is failed/warned, so the parent is also.
-    //     status = innerStatus;
-    //   }
-    //   if (innerShouldBreak) {
-    //     shouldBreak = true;
-    //   }
-    //   memoizedData = {...innerMemoizedData,id:propData.id};
-    //   memoizedData.properties.compiled[path] = memoizedData.properties.compiled[newPath];
-    //   innerMemo[propData.id].properties.compiled[path] = innerMemo[propData.id].properties.compiled[newPath];
-    // //   delete memoizedData.properties.compiled[newPath];
-    // //   delete innerMemo[propData.id].properties.compiled[newPath]
-    //   newMemo = lodash.merge(newMemo, innerMemo);
-    //   console.log('fn output',{ memoizedData, memo: newMemo, status, updated, shouldBreak })
-    // }
-    else {
+    } else {
       // Since the prop is valid, continue
       const computeProps = {
         data: propData,
@@ -301,6 +250,7 @@ const computeProperty = (
         status: innerStatus,
         updated: innerUpdated,
         shouldBreak: innerShouldBreak,
+        exportPath: innerExportPath,
       } = handleUpdate(computeProps);
       if (innerUpdated) {
         updated = true;
@@ -315,6 +265,7 @@ const computeProperty = (
       if (innerShouldBreak) {
         shouldBreak = true;
       }
+      exportPath = innerExportPath;
       memoizedData = innerMemoizedData;
       newMemo = lodash.merge(newMemo, innerMemo);
     }
@@ -322,7 +273,14 @@ const computeProperty = (
     memoizedData = fieldValue;
   }
   //   console.log('full output',{ memoizedData, memo: newMemo, status, updated, shouldBreak })
-  return { memoizedData, memo: newMemo, status, updated, shouldBreak };
+  return {
+    memoizedData,
+    memo: newMemo,
+    status,
+    updated,
+    shouldBreak,
+    exportPath,
+  };
 };
 
 // Entry for recursive process of updating data.
@@ -335,37 +293,46 @@ export const handleUpdate = ({
   memo,
   module,
   worldModel,
+  force,
 }) => {
   let newMemo = { ...memo };
-  // console.warn('DATA:',data.id)
+  // console.warn('DATA:',{data,path,context,memo})
   const updateFn =
     compilers[objectTypes[data.type].properties.compileFn.default];
   let memoizedData = memo[data.id] ? memo[data.id] : {};
-  let updated = data.properties.status === STATUS.PENDING;
+  let updated = data.properties.status === STATUS.PENDING || force;
+  if (force) {
+    // console.log("forcing update for ", data);
+  }
   let status = STATUS.VALID;
   let shouldBreak = false;
+  let exportPath = path;
 
-  if (memoizedData.properties?.compiled[path]) {
-    // Use the version in the memo
-    [memoizedData, status, updated, shouldBreak] = copyMemoizedData(
-      memoizedData,
-      data,
-      path
-    );
-  } else {
-    // First, determine whether we need to compute.
-    // If the status is pending, recompute.
-    // If not pending, check the `updateFields` for node-based updates.
-    // If any of those have updates, recompute.
+  // First, determine whether we need to compute.
+  // If the status is pending, recompute.
+  // If not pending, check the `updateFields` for node-based updates.
+  // If any of those have updates, recompute.
 
-    // No change detected at this level, but we should progress though `updateFields` to be sure.
-    let properties = {};
-    if (data.dataType !== DATA_TYPES.CALL) {
-      // HANDLE NON-CALL LOGIC (MOST THINGS) //
+  // No change detected at this level, but we should progress though `updateFields` to be sure.
+  let properties = {};
+  let routes = {};
+  if (data.dataType !== DATA_TYPES.CALL) {
+    // HANDLE NON-CALL LOGIC (MOST THINGS) //
+
+    if (memoizedData.properties?.compiled[path] || (memoizedData.properties?.singleton && memoizedData.properties?.compiled[ROOT_PATH])) {
+      // Use the version in the memo
+      [memoizedData, status, updated, shouldBreak] = copyMemoizedData(
+        memoizedData,
+        data,
+        path,
+        data.properties?.singleton
+      );
+    } else {
       data.properties.updateFields.forEach((field) => {
         // console.log('checking field', field)
         if (objectTypes[data.type].properties[field].isList) {
           properties[field] = [];
+          routes[field] = [];
           data.properties[field].some((fieldItem) => {
             const {
               memoizedData: innerMemoizedData,
@@ -373,6 +340,7 @@ export const handleUpdate = ({
               status: innerStatus,
               updated: innerUpdated,
               shouldBreak: innerShouldBreak,
+              exportPath: innerExportPath,
             } = computeProperty(
               fieldItem,
               objectTypes[data.type].properties[field],
@@ -384,6 +352,7 @@ export const handleUpdate = ({
               worldModel
             );
             properties[field].push(innerMemoizedData);
+            routes[field].push(innerExportPath);
             newMemo = lodash.merge(newMemo, innerMemo);
             if (innerUpdated) {
               updated = true;
@@ -407,6 +376,7 @@ export const handleUpdate = ({
             status: innerStatus,
             updated: innerUpdated,
             shouldBreak: innerShouldBreak,
+            exportPath: innerExportPath,
           } = computeProperty(
             data.properties[field],
             objectTypes[data.type].properties[field],
@@ -418,6 +388,7 @@ export const handleUpdate = ({
             worldModel
           );
           properties[field] = innerMemoizedData;
+          routes[field] = innerExportPath;
           newMemo = lodash.merge(newMemo, innerMemo);
           if (innerUpdated) {
             updated = true;
@@ -439,6 +410,7 @@ export const handleUpdate = ({
           memoizedData,
           data,
           properties,
+          routes,
           objectTypes,
           context,
           path,
@@ -452,133 +424,161 @@ export const handleUpdate = ({
         [memoizedData, status, updated, shouldBreak] = updateMemoizedData(
           memoizedData,
           data,
-          path
+          path,
+          data.properties?.singleton
         );
       }
-    } else {
-      // HANDLE CALL LOGIC //
-      console.log("call found",data);
-      const fnInstance = findInstance(data.ref, context);
+    }
+  } else {
+    // HANDLE CALL LOGIC //
+    // console.log("call found", data);
+    const fnInstance = findInstance(data.ref, context);
 
+    // Treat the function instance like it is a property, but swap in the new contexts.
+
+    const [fnContext, fnPath] = newContextAndPathFromCallFn(
+      context,
+      path,
+      data,
+      fnInstance
+    );
+    exportPath = fnPath;
+
+    if (memoizedData.properties?.compiled[exportPath] || (memoizedData.properties?.singleton && memoizedData.properties?.compiled[ROOT_PATH])) {
+      // Use the version in the memo
+      [memoizedData, status, updated, shouldBreak] = copyMemoizedData(
+        memoizedData,
+        data,
+        exportPath,
+        memoizedData.properties?.singleton
+      );
+    } else {
       fnInstance.arguments.forEach((argument) => {
-        const argData = findInstance(argument,context);
-        if (!argData) {
+        const argData = findInstance(argument, fnContext);
+        // console.log({ argument, context, argData });
+        if (!argData || argData.dataType === DATA_TYPES.ARGUMENT) {
           status = STATUS.FAILED;
           memoizedData = {
-              properties:{
-                  compiled:{
-                      [path]:{
-                          shouldBreak: false,
-                          status:STATUS.FAILED,
-                          events: [],
-                          steps: []
-                      }
-                  },
-                  status:STATUS.FAILED,
-  
-              }
+            properties: {
+              compiled: {
+                [exportPath]: {
+                  shouldBreak: false,
+                  status: STATUS.FAILED,
+                  events: [],
+                  steps: [],
+                },
+              },
+              status: STATUS.FAILED,
+            },
+          };
+          // console.log("failed arg check", { argument, context });
+          // return { memoizedData, memo: newMemo, status, updated, shouldBreak, exportPath };
+        }
+
+        if (status !== STATUS.FAILED) {
+          // console.log("passed arg check");
+          const argType = argData.type;
+          const fieldInfo = {
+            accepts: [argType],
+            isList: false,
+            nullValid: false,
+          };
+          const {
+            memoizedData: innerMemoizedData,
+            memo: innerMemo,
+            status: innerStatus,
+            updated: innerUpdated,
+            shouldBreak: innerShouldBreak,
+          } = computeProperty(
+            argument,
+            fieldInfo,
+            objectTypes,
+            fnContext,
+            exportPath,
+            memo,
+            module,
+            worldModel
+          );
+          properties[argument] = innerMemoizedData;
+          newMemo = lodash.merge(newMemo, innerMemo);
+          if (innerUpdated) {
+            updated = true;
           }
-          return { memoizedData, memo: newMemo, status, updated, shouldBreak }
-        }
-        const argType = argData.type;
-        const fieldInfo = {accepts:[argType],isList:false,nullValid:false};
-        const {
-          memoizedData: innerMemoizedData,
-          memo: innerMemo,
-          status: innerStatus,
-          updated: innerUpdated,
-          shouldBreak: innerShouldBreak,
-        } = computeProperty(
-          data.properties[field],
-          fieldInfo,
-          objectTypes,
-          context,
-          path,
-          memo,
-          module,
-          worldModel
-        );
-        properties[field] = innerMemoizedData;
-        newMemo = lodash.merge(newMemo, innerMemo);
-        if (innerUpdated) {
-          updated = true;
-        }
-        if (
-          innerStatus === STATUS.FAILED ||
-          (innerStatus === STATUS.WARN && status !== STATUS.FAILED)
-        ) {
-          // Status is failed/warned, so the parent is also.
-          status = innerStatus;
-        }
-        if (innerShouldBreak) {
-          shouldBreak = true;
+          if (
+            innerStatus === STATUS.FAILED ||
+            (innerStatus === STATUS.WARN && status !== STATUS.FAILED)
+          ) {
+            // Status is failed/warned, so the parent is also.
+            status = innerStatus;
+          }
+          if (innerShouldBreak) {
+            shouldBreak = true;
+          }
         }
       });
 
-      // Treat the function instance like it is a property, but swap in the new contexts.
+      // console.log("Computing called instance");
 
-      const [fnContext, fnPath] = newContextAndPathFromCallFn(context,path,data,fnInstance);
-
-      const { 
-        memoizedData: fnMemoizedData, 
-        memo: fnMemo, 
-        status: fnStatus,
-        shouldBreak: fnShouldBreak,
-        updated: fnUpdated 
-      } = handleUpdate({
-        data:fnInstance,
-        objectTypes,
-        context:fnContext,
-        path:fnPath,
-        memo:newMemo,
-        module,
-        worldModel
-      })
-
-      memoizedData = {...fnMemoizedData,id:data.id};
-      newMemo = lodash.merge(newMemo, fnMemo);
-      if (
-        fnStatus === STATUS.FAILED ||
-        (fnStatus === STATUS.WARN && status !== STATUS.FAILED)
-      ) {
-        // Status is failed/warned, so the parent is also.
-        status = fnStatus;
+      if (status !== STATUS.FAILED) {
+        const {
+          memoizedData: fnMemoizedData,
+          memo: fnMemo,
+          status: fnStatus,
+          shouldBreak: fnShouldBreak,
+          updated: fnUpdated,
+        } = handleUpdate({
+          data: fnInstance,
+          objectTypes,
+          context: fnContext,
+          path: fnPath,
+          memo: newMemo,
+          module,
+          worldModel,
+          force: true,
+        });
+  
+        memoizedData = { ...fnMemoizedData, id: data.id };
+        newMemo = lodash.merge(newMemo, fnMemo);
+        if (
+          fnStatus === STATUS.FAILED ||
+          (fnStatus === STATUS.WARN && status !== STATUS.FAILED)
+        ) {
+          // Status is failed/warned, so the parent is also.
+          status = fnStatus;
+        }
+        if (fnShouldBreak) {
+          shouldBreak = true;
+        }
+        if (fnUpdated) {
+          updated = true;
+        }
       }
-      if (fnShouldBreak) {
-        shouldBreak = true;
-      }
-      if (fnUpdated) {
-        updated = true;
-      }
-
-      console.log('fn memozizedData')
-      
+      // console.log("fn memozizedData");
     }
-
-    
-
-    
   }
 
-  // console.warn(`At the end of processing "${data.id}", status is "${status === STATUS.VALID ? 'VALID' : status === STATUS.PENDING ? 'PENDING' : 'FAILED'}"`)
-  // if (status === STATUS.VALID && (memoizedData.properties.status === undefined || memoizedData.properties.status !== STATUS.FAILED)) {
-  //     // console.warn('SETTING STATUS VALID')
-  //     memoizedData.properties.status = STATUS.VALID
-  // } else if (status === STATUS.FAILED) {
-  //     // console.warn('SETTING STATUS FAILED')
-  //     memoizedData.properties.status = STATUS.FAILED
-  // } else if (status === STATUS.WARN) {
-  //     // console.warn('SETTING STATUS WARN')
-  //     memoizedData.properties.status = STATUS.WARN
-  // }
   memoizedData.properties.status = status;
-  memoizedData.properties.compiled[path].break = shouldBreak;
+  if (memoizedData.properties.compiled[exportPath]) {
+    memoizedData.properties.compiled[exportPath].break = shouldBreak;
+  } else {
+    console.warn("SHOULDBREAK ERROR: ", {
+      memoizedData,
+      exportPath,
+    });
+  }
+  memoizedData.properties.compiled[exportPath].break = shouldBreak;
   memoizedData.type = data.type;
   memoizedData.id = data.id;
-  // console.log(memoizedData)
 
   newMemo = { ...newMemo, [data.id]: memoizedData };
-  return { memoizedData, memo: newMemo, status, updated, shouldBreak };
+  return {
+    memoizedData,
+    memo: newMemo,
+    status,
+    updated,
+    shouldBreak,
+    exportPath,
+  };
 };
 
 const compileStates = (states, time) => {

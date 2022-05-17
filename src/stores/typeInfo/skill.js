@@ -1,6 +1,12 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { SkillIconStyled } from "./icons";
-import { FiMoreHorizontal } from "react-icons/fi";
+import {
+  FiMoreHorizontal,
+  FiAlertOctagon,
+  FiThumbsUp,
+  FiAlertTriangle,
+  FiRefreshCw,
+} from "react-icons/fi";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 
 export const skillType = {
@@ -44,7 +50,27 @@ export const skillType = {
       {
         icon: FiMoreHorizontal,
         type: EXTRA_TYPES.DROPDOWN,
-        contents: [EXTRA_TYPES.SELECTION_TOGGLE, EXTRA_TYPES.DELETE_BUTTON],
+        contents: [
+          {
+            type: EXTRA_TYPES.INDICATOR_ICON,
+            accessor: (data) => {
+              if (data.properties.status === STATUS.FAILED) {
+                return <FiAlertOctagon color="white" fill="red" />;
+              } else if (data.properties.status === STATUS.VALID) {
+                return <FiThumbsUp color="white" />;
+              } else if (data.properties.status === STATUS.WARN) {
+                return <FiAlertTriangle color="white" fill="#ff7300" />;
+              } else if (data.properties.status === STATUS.PENDING) {
+                return <FiRefreshCw className="rotate" />;
+              } else {
+                return <FiRefreshCw className="rotate" />;
+              }
+            },
+            label: "Status",
+          },
+          EXTRA_TYPES.SELECTION_TOGGLE,
+          EXTRA_TYPES.DELETE_BUTTON,
+        ],
       },
     ],
   },
@@ -95,6 +121,11 @@ export const skillType = {
       name: "Update Fields",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: ["children"],
+    },
+    singleton: {
+      name: "singleton",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: false,
     },
   },
 };

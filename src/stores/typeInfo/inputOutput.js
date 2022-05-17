@@ -4,11 +4,11 @@ import { InputOutputIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
 
 export const inputOutputType = {
-  name: 'Input / Output',
+  name: "Input / Output",
   type: TYPES.OBJECT,
   referenceBlock: {
     onCanvas: false,
-    color: '#0072b2',
+    color: "#0072b2",
     icon: InputOutputIconStyled,
     extras: [
       EXTRA_TYPES.LOCKED_INDICATOR,
@@ -18,65 +18,70 @@ export const inputOutputType = {
         contents: [
           EXTRA_TYPES.DELETE_BUTTON,
           EXTRA_TYPES.DEBUG_TOGGLE,
-          EXTRA_TYPES.SELECTION_TOGGLE
-        ]
-      }
-    ]
+          EXTRA_TYPES.SELECTION_TOGGLE,
+        ],
+      },
+    ],
   },
   properties: {
     description: {
-      name: 'Description',
+      name: "Description",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: "",
       isList: false,
-      fullWidth: true
+      fullWidth: true,
     },
     relativeObject: {
-      name: 'Relative to',
+      name: "Relative to",
       accepts: ["thingType", "machineType", "toolType"],
       default: null,
-      isList: false
-    },   
+      isList: false,
+    },
     position: {
-      name: 'Position',
+      name: "Position",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: { x: 0, y: 0, z: 0 },
       isList: false,
-      fullWidth: true
+      fullWidth: true,
     },
     rotation: {
-      name: 'Rotation',
+      name: "Rotation",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: { x: 0, y: 0, z: 0, w: 0 },
       isList: false,
-      fullWidth: true
+      fullWidth: true,
     },
     thing: {
       name: "Thing",
       accepts: ["thingType", "toolType"],
       default: null,
       isList: false,
-      nullValid: true
+      nullValid: true,
     },
     status: {
-      name: 'Status',
+      name: "Status",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING
+      default: STATUS.PENDING,
     },
     compileFn: {
-      name: 'Compile Function',
+      name: "Compile Function",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: COMPILE_FUNCTIONS.PROPERTY
+      default: COMPILE_FUNCTIONS.PROPERTY,
     },
     compiled: {
-      name: 'Compiled',
+      name: "Compiled",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {}
+      default: {},
     },
     updateFields: {
-      name: 'Update Fields',
+      name: "Update Fields",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: ['relativeObject','position','rotation','thing']
-    }
-  }
-}
+      default: ["relativeObject", "position", "rotation", "thing"],
+    },
+    singleton: {
+      name: "singleton",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: true,
+    },
+  },
+};

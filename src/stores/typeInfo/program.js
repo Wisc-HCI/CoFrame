@@ -101,5 +101,10 @@ export const programType = {
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: ["children"],
     },
+    singleton: {
+      name: "singleton",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: false,
+    },
   },
 };

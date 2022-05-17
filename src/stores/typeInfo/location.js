@@ -91,6 +91,11 @@ export const locationType = {
         name: 'Update Fields',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: ['position','rotation']
+      },
+      singleton: {
+        name: 'singleton',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: true
       }
     }
   }

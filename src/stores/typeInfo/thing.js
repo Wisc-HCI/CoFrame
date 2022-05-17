@@ -72,6 +72,11 @@ export const thingType = {
         name: 'Update Fields',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: ['safe','weight']
+      },
+      singleton: {
+        name: 'singleton',
+        type: SIMPLE_PROPERTY_TYPES.IGNORED,
+        default: true
       }
     }
   }

@@ -42,8 +42,12 @@ function formatTime(ms) {
 
 const axisColor = "white";
 
-export default ({ width, height, margin = defaultMargin }) => {
+export default ({ width, height, margin = defaultMargin, visible }) => {
   // bounds
+
+  if (!visible) {
+    return null
+  }
 
   const focus = useStore((state) => state.focus);
   //   const [pause, play, reset] = useStore((state) => [

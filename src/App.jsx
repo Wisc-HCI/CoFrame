@@ -88,7 +88,7 @@ export default function App() {
         <animated.div style={{ ...drawerStyle, backgroundColor:"#444444", borderTop: `5px solid ${primaryColor}` }}>
           <ParentSize>
             {({ width, height }) => (
-              <Graph width={width} height={height - 10} />
+              <Graph width={width} height={height - 10} visible={visibleSteps}/>
             )}
           </ParentSize>
         </animated.div>
