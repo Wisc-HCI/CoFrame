@@ -1,15 +1,16 @@
+import { STATUS, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import {idleTimeEstimate, durationEstimate} from "../helpers"
 
 // Requires trace timing + delay and machine wait primitives (start computation after move_unplanned in initialize)
-export const findCycleTimeIssues = ({program, unrolled, stats}) => {
+export const findCycleTimeIssues = ({program, stats}) => {
     let issues = {};
 
-    if (!unrolled) {
+    if (!program || program.properties.status !== STATUS.VALID) {
         return [issues, {}];
     }
 
-    const estimate = durationEstimate(unrolled);
+    const estimate = durationEstimate(program.properties.compiled["{}"].steps);
 
     // get prior values
     let priorData = [];
@@ -24,12 +25,12 @@ export const findCycleTimeIssues = ({program, unrolled, stats}) => {
     // build cycle time issue
     let uuid = generateUuid('issue');
     issues[uuid] = {
-        uuid: uuid,
+        id: uuid,
         requiresChanges: false,
         title: 'Robot Cycle Time',
         description: 'Robot Cycle Time',
         complete: false,
-        focus: {uuid:program.uuid, type:'program'},
+        focus: {id:program.id, type:'program'},
         graphData: {
             series: priorData,
             lineColors: ["#009e73"],
@@ -38,18 +39,18 @@ export const findCycleTimeIssues = ({program, unrolled, stats}) => {
             title: '',
         }
     }
-    console.log('cycle time')
+
     return [issues, {cycleTime: estimate}];
 }
 // Use delay and machine wait primitives (delays can be tweaked if application acceptable)
-export const findIdleTimeIssues = ({program, unrolled, stats}) => {
+export const findIdleTimeIssues = ({state, program, stats}) => {
     let issues = {};
 
-    if (!unrolled) {
+    if (!program || program.properties.status !== STATUS.VALID) {
         return [issues, {}];
     }
 
-    const estimate = idleTimeEstimate(unrolled);
+    const estimate = idleTimeEstimate(state, program.properties.compiled["{}"].steps);
 
     // get prior values
     let priorData = [];
@@ -64,12 +65,12 @@ export const findIdleTimeIssues = ({program, unrolled, stats}) => {
     // build idle time issue
     let uuid = generateUuid('issue');
     issues[uuid] = {
-        uuid: uuid,
+        id: uuid,
         requiresChanges: false,
         title: 'Robot Idle Time',
         description: 'Robot Idle Time',
         complete: false,
-        focus: {uuid:program.uuid, type:'program'},
+        focus: {id:program.id, type:'program'},
         graphData: {
             series: priorData,
             lineColors: ["#009e73"],
@@ -78,19 +79,17 @@ export const findIdleTimeIssues = ({program, unrolled, stats}) => {
             title: '',
         }
     }
-    console.log('idle time')
+
     return [issues, {idleTime: estimate}];
 }
 // Retrun on Investment
-export const findReturnOnInvestmentIssues = ({program, unrolled, stats, settings}) => { 
+export const findReturnOnInvestmentIssues = ({state, program, stats, settings}) => {
     let issues = {};
     let newStats = {}
 
-    if (!unrolled) {
+    if (!program || program.properties.status !== STATUS.VALID) {
         return [issues, {}];
     }
-
-    const jointNames = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'];
 
     // get prior values
     let priorData = [];
@@ -115,24 +114,42 @@ export const findReturnOnInvestmentIssues = ({program, unrolled, stats, settings
         return (Math.abs(acceleration) / errorAccelLevel) * 0.0001;
     }
 
-    Object.values(unrolled).forEach(primitive=>{
-        if (primitive.type === 'node.primitive.move-trajectory.' ){
-            
-            let trajectory = primitive.parameters.trajectory_uuid;
-            let jointData = trajectory.trace.joint_data;
-            let timeData = trajectory.trace.time_data;
+    let trajectoryUpdate = false;
+    let previousJoints = {};
+    let previousVelocity = {};
+    let previousTimeStep = 0;
+    program.properties.compiled["{}"].steps.forEach(step => {
+        // If the next action is a move trajectory, start evaluating the wear and tear on the moving joints
+        if(step.type === STEP_TYPE.ACTION_START && "moveTrajectoryType" === state[step.source].type) {
+            trajectoryUpdate = true;
+        // Move trajectory ends, reset variables
+        } else if(step.type === STEP_TYPE.ACTION_END && "moveTrajectoryType" === state[step.source].type) {
+            previousJoints = {};
+            trajectoryUpdate = false;
+        }
+        // Compute the wear and tear on the joints
+        if(trajectoryUpdate && step.type === STEP_TYPE.SCENE_UPDATE) {
+            // Setup the initial values for the movement
+            if (Object.keys(previousJoints).length === 0) {
+                previousTimeStep = step.time;
+                Object.keys(step.data.joints).forEach(joint => {
+                    previousJoints[joint] = step.data.joints[joint];
+                    previousVelocity[joint] = 0;
+                });
+            } else {
+                // Calculate wear and tear for the given movement
+                Object.keys(step.data.joints).forEach(joint => {
+                    let jointValue = step.data.joints[joint];
+                    let timeDelta = (step.time - previousTimeStep) / 1000;
+                    let jointVelocity = (jointValue - previousJoints[joint]) / timeDelta;
+                    let jointAcceleration = (jointVelocity - previousVelocity[joint]) / timeDelta;
+                    wearTearCost = wearTearCost + wearAndTear(jointAcceleration);
 
-            let jointDataLength = jointData[jointNames[0]].length;
+                    previousVelocity[joint] = jointVelocity;
+                    previousJoints[joint] = jointValue;
+                });
 
-            // Calculate the acceleration and determine the cost from the acceleration
-            for (let i = 0; i < jointNames.length; i++) {
-                let prevVel = 0;
-                for (let j = 1; j < jointDataLength; j++) {
-                    let nextVel = (jointData[jointNames[i]][j] - jointData[jointNames[i]][j-1]) / (timeData[j] - timeData[j-1]);
-                    let accel = (nextVel - prevVel) / (timeData[j] - timeData[j-1]);
-                    wearTearCost = wearTearCost + wearAndTear(accel);
-                    prevVel = nextVel;
-                }
+                previousTimeStep = step.time;
             }
         }
     });
@@ -147,12 +164,12 @@ export const findReturnOnInvestmentIssues = ({program, unrolled, stats, settings
         newStats = {roi: roi};
         let uuid = generateUuid('issue');
         issues[uuid] = {
-            uuid: uuid,
+            id: uuid,
             requiresChanges: false,
             title: 'Return on Investment',
             description: 'Return on Investment',
             complete: false,
-            focus: {uuid:program.uuid, type:'program'},
+            focus: {id:program.id, type:'program'},
             graphData: {
                 series: priorData,
                 lineColors: ["#009e73"],
@@ -163,6 +180,6 @@ export const findReturnOnInvestmentIssues = ({program, unrolled, stats, settings
         }
 
     }
-    console.log('roi')
+
     return [issues, newStats];
 }
