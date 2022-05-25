@@ -1,6 +1,6 @@
 import { STATUS, STEP_TYPE, ROOT_PATH } from "../Constants";
 import { distance, likStateToData, createStaticEnvironment, queryWorldPose, quaternionLog, poseToGoalPosition, timeGradientFunction, timeGradientFunctionOneTailStart, timeGradientFunctionOneTailEnd } from "../helpers";
-import { merge } from 'lodash';
+import { merge, cloneDeep } from 'lodash';
 import { Quaternion, Vector3 } from 'three';
 import { eventsToStates, statesToSteps } from ".";
 
@@ -81,23 +81,30 @@ const createJointGoals = (jointState1, jointState2, duration, jointNames) => {
     const numGoals = Math.ceil(duration / FRAME_TIME);
     let goals = [];
     let idx = 0;
-    let jointGoals = { ...jointState1 };
+    let tmpJointGoals = {};
+    console.log("createJointGoals",{tmpJointGoals,jointState1,jointState2})
     while (idx <= numGoals) {
         const percent = idx / numGoals;
+        console.log('percent',percent)
         jointNames.forEach(jointKey => {
-            jointGoals[jointKey] = percent * jointState2[jointKey] + (1 - percent) * jointState1[jointKey]
+            tmpJointGoals[jointKey] = (1 - percent) * jointState1[jointKey] + percent * jointState2[jointKey]
+            if (jointKey === 'wrist_2_joint') { 
+                console.log("createJointGoalsInner",{percent,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
+            }
+            // console.log("createJointGoalsInner",{tmpJointGoals,jointState1,jointState2,percent,jointKey,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
         })
         goals.push({
             values: [
                 null,
                 null,
-                ...jointNames.map(joint => ({ Scalar: jointGoals[joint] }))
+                ...jointNames.map(joint => ({ Scalar: tmpJointGoals[joint] }))
             ],
             weights: [10, 5, ...jointNames.map(() => 20)],
-            joints: jointGoals
+            joints: cloneDeep(tmpJointGoals)
         })
         idx += 1;
     }
+    console.log('GOALS',goals)
     return goals
 }
 
@@ -116,7 +123,7 @@ const createIKSensitivityTester = (attachmentLink, jointNames, startJoints, endJ
         let passed = translationalDistance <= translationalDistanceLimit && rotationalDistance <= rotationalDistanceLimit;
         // console.log()
         if (!passed) {
-            console.log('POS NOT PASSED',{ passed, translationalDistance, rotationalDistance, translationalDistanceLimit, rotationalDistanceLimit })
+            // console.log('POS NOT PASSED',{ passed, translationalDistance, rotationalDistance, translationalDistanceLimit, rotationalDistanceLimit })
             return false
         }
         return true;
@@ -139,7 +146,9 @@ const createIKSensitivityTester = (attachmentLink, jointNames, startJoints, endJ
 const createJointSensitivityTester = (jointNames) => {
     const tester = (state, goal, _) => {
         return !jointNames.some(jointName => {
-            return Math.abs(state.joints[jointName] - goal.joints[jointName]) > 0.03
+            const passed = Math.abs(state.joints[jointName] - goal.joints[jointName]) < 0.1;
+            // if (!passed) {console.log('NOT PASSED',{jointName, dist: Math.abs(state.joints[jointName] - goal.joints[jointName]) , state: state.joints[jointName], goal: goal.joints[jointName]})}
+            return !passed
         })
     }
 
@@ -217,7 +226,7 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
         trajectory.properties.compiled[path].endLocation.properties.compiled[path],
     ]
 
-    console.log(poses);
+    // console.log(poses);
 
 
     robots.forEach(robot => {
@@ -248,6 +257,7 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
             if (robotLinks.includes(gripper.properties.relativeTo)) {
                 let firstLinks = poses[0].states[robot.id][gripper.id].links;
                 let firstJoints = poses[0].states[robot.id][gripper.id].joints;
+                // console.log('firstJoints',firstJoints);
                 let firstProximity = poses[0].states[robot.id][gripper.id].proximity;
                 const jointNames = Object.keys(firstJoints);
                 // load the first frame
@@ -322,11 +332,12 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
                     const goalPose2 = pose2.goalPose;
                     const jointState1 = pose1.states[robot.id][gripper.id].joints;
                     const jointState2 = pose2.states[robot.id][gripper.id].joints;
+                    // console.log({jointState1,jointState2})
 
                     const dist = distance(goalPose1.position, goalPose2.position);
                     const duration = 1000 * dist / velocity;
 
-                    console.log('creating goals');
+                    // console.log('creating goals');
                     let goals = motionType === 'IK'
                         ? createIKGoals(goalPose1, goalPose2, jointState1, jointState2, duration, jointNames)
                         : createJointGoals(jointState1, jointState2, duration, jointNames);
