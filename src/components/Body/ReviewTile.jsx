@@ -9,6 +9,7 @@ import shallow from 'zustand/shallow';
 import { ReviewSection } from '../Review/ReviewSection';
 // import { animated } from '@react-spring/web';
 import useMeasure from 'react-use-measure';
+import { FrameTabBar } from '../FrameTabBar';
 
 const isComplete = (state, sectionId) => (state.sections[sectionId].issues.map(issueId => state.issues[issueId]).filter(issue => !issue.complete).length === 0);
 const isBlocked = (state, sectionId) => (state.sections[sectionId].dependencies.filter(dep => !isComplete(state, dep)).length > 0)
@@ -41,7 +42,7 @@ export const ReviewTile = (_) => {
             backgroundColor='black'
             header={
                 <Box direction='column'>
-                    <Box direction='row' gap='xsmall' margin={{ bottom: 'xsmall' }}>
+                    {/* <Box direction='row' gap='xsmall' margin={{ bottom: 'xsmall' }}>
                         {FRAMES.map(frame => (
                             <FrameButton
                                 key={frame.key}
@@ -50,7 +51,8 @@ export const ReviewTile = (_) => {
                                 active={frameId === frame.key}
                                 text={frame.title} />
                         ))}
-                    </Box>
+                    </Box> */}
+                    <FrameTabBar active={frameId} onChange={setFrame}/>
                     <Box direction='row' width='100%' justify='between' align='center'>
                         <h3 style={{ margin: '10pt' }}>
                             Review

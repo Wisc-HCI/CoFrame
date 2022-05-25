@@ -143,7 +143,7 @@ const gripperFeatures = {
       step: 1,
       visualScaling: 1,
       visualPrecision: 0,
-      units: "mm/sec",
+      units: "mm/s",
     },
     compileFn: { default: COMPILE_FUNCTIONS.GRIPPER_MOTION },
     updateFields: {
@@ -260,7 +260,7 @@ const moveTrajectoryFeatures = {
       step: 0.01,
       visualScaling: 1,
       visualPrecision: 2,
-      units: "m/sec",
+      units: "m/s",
     },
     motionType: {
       name: "Motion Type",
