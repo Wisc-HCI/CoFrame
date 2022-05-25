@@ -164,12 +164,17 @@ export const ReviewSlice = (set, get) => ({
     }),
     refresh: () => set(state=>{
         let newIssues = {};
-        let unrolledProgram = _.filter(get().programData, function (v) {return v.type === "programType"})[0];
+        let program = _.filter(get().programData, function (v) {return v.type === "programType"})[0];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
-            if (["returnOnInvestment", "idleTime", "cycleTime"].includes(sectionKey)) {
+            if (["returnOnInvestment", "idleTime", "cycleTime", "pinchPoints"].includes(sectionKey)) {
                 // Use the predefined updater to get the new issues
-                let [newSectionIssues, newStats] = state.sections[sectionKey].updater({state: get().programData, program:unrolledProgram,stats:state.stats,settings:state.issueSettings});
+                let [newSectionIssues, newStats] = state.sections[sectionKey].updater({
+                    state: get().programData, 
+                    program: program, 
+                    stats: state.stats,
+                    settings: state.issueSettings
+                });
                 // Augment allNewStats with the new incoming stats.
                 allNewStats = {...allNewStats,...newStats};
                 // Enumerate the existing issues

@@ -61,6 +61,20 @@ const collisionShape = {
       isList: false,
       fullWidth: true,
     },
+    radius: {
+      name: "Radius",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: 0,
+      isList: false,
+      fullWidth: true,
+    },
+    length: {
+      name: "Length",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: 0,
+      isList: false,
+      fullWidth: true,
+    },
     extraParams: {
       name: "Simple Shape Paramaters",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,

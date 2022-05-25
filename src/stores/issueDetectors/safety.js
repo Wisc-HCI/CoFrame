@@ -1,5 +1,6 @@
+import { STATUS } from "../Constants";
 import { generateUuid } from "../generateUuid";
-import { PINCH_POINT_FIELDS, objectMap } from "../helpers";
+import { checkHandThresholds } from "../helpers";
 
 const linkNames = ['shoulder_link', 'upper_arm_link', 'forearm_link', 'wrist_1_link', 'wrist_2_link', 'wrist_3_link'];
 const linkNameMap = {
@@ -38,7 +39,7 @@ export const findEndEffectorPoseIssues = ({program, settings}) => { // Requires 
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {
             Object.values(ePrim).forEach(primitive=>{
-                if (primitive.type === "node.primitive.move-trajectory." && !addressed.includes(primitive.uuid)) {
+                if (primitive.type === "node.primitive.move-trajectory." && !addressed.includes(primitive.id)) {
                     let trajectory = primitive.parameters.trajectory_uuid;
                     let frames = trajectory.trace.frames.tool0;
                     let scores = primitive.parameters.trajectory_uuid.eePoseScores;
@@ -62,12 +63,12 @@ export const findEndEffectorPoseIssues = ({program, settings}) => { // Requires 
 
                     const uuid = generateUuid('issue');
                     issues[uuid] = {
-                        uuid: uuid,
+                        id: uuid,
                         requiresChanges: hasError,
                         title: `End effector pose is poor`,
                         description: `End effector pose is poor`,
                         complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
+                        focus: {id:primitive.id, type:'primitive'},
                         graphData: {
                             series: graphData,
                             lineColors: ["#CC79A7"],
@@ -77,7 +78,7 @@ export const findEndEffectorPoseIssues = ({program, settings}) => { // Requires 
                         },
                         sceneData: {vertices: {endEffectorPose: endEffectorScores}}
                     }
-                    addressed.push(primitive.uuid)
+                    addressed.push(primitive.id)
                 }
             });
         }
@@ -97,7 +98,7 @@ export const findCollisionIssues = ({program, settings}) => {
     Object.values(program.executablePrimitives).forEach(ePrim => {
         if (ePrim) {
             Object.values(ePrim).forEach(primitive=>{
-                if (primitive.type === "node.primitive.move-trajectory." && !addressed.includes(primitive.uuid)) {
+                if (primitive.type === "node.primitive.move-trajectory." && !addressed.includes(primitive.id)) {
                     let trajectory = primitive.parameters.trajectory_uuid;
                     let timeData = trajectory.trace.time_data;
                     let sCol = trajectory.trace.self_collisions;
@@ -192,12 +193,12 @@ export const findCollisionIssues = ({program, settings}) => {
                     if (graphData[selfIndex].length > 0) {
                         const uuid = generateUuid('issue');
                         issues[uuid] = {
-                            uuid: uuid,
+                            id: uuid,
                             requiresChanges: collisionErrors[selfIndex],
                             title: collisionErrors[selfIndex] ? `Robot collides with self` : `Robot is in near collision with self`,
                             description: `Robot collides with self`,
                             complete: false,
-                            focus: {uuid:primitive.uuid, type:'primitive'},
+                            focus: {id:primitive.id, type:'primitive'},
                             graphData: {
                                 series: graphData[selfIndex],
                                 lineColors: linkColors[selfIndex],
@@ -206,19 +207,19 @@ export const findCollisionIssues = ({program, settings}) => {
                                 title: ''},
                             sceneData: {vertices: collisionData[selfIndex]}
                         }
-                        addressed.push(primitive.uuid)
+                        addressed.push(primitive.id)
                     }
     
                     // Build issue for environmental collisions
                     if (graphData[envIndex].length > 0) {
                         const uuid = generateUuid('issue');
                         issues[uuid] = {
-                            uuid: uuid,
+                            id: uuid,
                             requiresChanges: collisionErrors[selfIndex],
                             title: collisionErrors[selfIndex] ? `Robot collides with environment` : `Robot is in near collision with environment`,
                             description: `Robot collides with the environment`,
                             complete: false,
-                            focus: {uuid:primitive.uuid, type:'primitive'},
+                            focus: {id:primitive.id, type:'primitive'},
                             graphData: {
                                 series: graphData[envIndex],
                                 lineColors: linkColors[envIndex],
@@ -227,7 +228,7 @@ export const findCollisionIssues = ({program, settings}) => {
                                 title: ''},
                             sceneData: {vertices: collisionData[envIndex]}
                         }
-                        addressed.push(primitive.uuid)
+                        addressed.push(primitive.id)
                     }
                 }
             });
@@ -307,12 +308,12 @@ export const findOccupancyIssues = ({program, settings}) => {
                 if (filteredGraphData.length > 0) {
                     const uuid = generateUuid('issue');
                     issues[uuid] = {
-                        uuid: uuid,
+                        id: uuid,
                         requiresChanges: false,
                         title: enteredZone ? `Entered Occupancy Zone`: `Close to Occupancy Zone`,
                         description: enteredZone ? `Robot trajectory entered occupancy zone`: `Robot trajectory results in close proximity to the occupancy zone`,
                         complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
+                        focus: {id:primitive.id, type:'primitive'},
                         graphData: {
                             series: filteredGraphData,
                             lineColors: linkColors,
@@ -329,34 +330,41 @@ export const findOccupancyIssues = ({program, settings}) => {
     return [issues, {}];
 }
 
-export const findPinchPointIssues = ({unrolled}) => { // Requires pinch-point graders
+export const findPinchPointIssues = ({state, program}) => { // Requires pinch-point graders
     
     let issues = {};
     let addressed = [];
 
-    // cancel if the unrolled program is invalid
-    if (!unrolled) {return [issues, {}];}
+    // cancel if the program is invalid
+    if (!program || program.properties.status !== STATUS.VALID) {
+        return [issues, {}];
+    }
 
-    Object.values(unrolled).forEach(primitive => {
-        if (primitive.type === "node.primitive.move-trajectory." && !addressed.includes(primitive.uuid)) {
-            let trajectory = primitive.parameters.trajectory_uuid;
-            // let timeData = trajectory.trace.time_data;
-            console.log(trajectory.trace)
-            const hasError = objectMap(PINCH_POINT_FIELDS,(_,field)=>trajectory.trace.pinch_points[field].some(val=>val!==null));
-            console.log(hasError)
-            if (Object.values(hasError).includes(true)) {
+    Object.values(program.properties.children).forEach(key => {
+        let primitive = state[key];
+        if (primitive.type === "moveTrajectoryType" && !addressed.includes(primitive.id)) {
+            let hasError = false;
+            primitive.properties.compiled["{}"].steps.forEach((step) => {
+                let proxData = step.data?.proximity;
+                if (proxData) {
+                    proxData.forEach(entry => {
+                        hasError = hasError || (entry.distance !== null && checkHandThresholds(entry.distance));
+                    });
+                }
+            });
+            if (hasError) {
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
-                    uuid: uuid,
+                    id: uuid,
                     requiresChanges: true,
                     title: `Likely pinch points`,
                     description: `Robot trajectory includes likely pinch points`,
                     complete: false,
-                    focus: {uuid:primitive.uuid, type:'primitive'},
+                    focus: {id:primitive.id, type:'primitive'},
                     graphData: null,
                     sceneData: null
                 }
-                addressed.push(primitive.uuid)
+                addressed.push(primitive.id)
             }
         }
     });
@@ -375,25 +383,25 @@ export const findThingMovementIssues = ({program,unrolled}) => { // May require 
         
        // console.log(primitive.type);
         if (primitive.type === 'node.primitive.gripper.' && primitive.parameters.semantic === 'grasping'){
-            const thingUUID = primitive.parameters.thing_uuid.uuid;
+            const thingUUID = primitive.parameters.thing_uuid.id;
             //console.log(thingUUID + "  123" );
             Object.values(program.data.placeholders).forEach(placeholder => {
-                //console.log(placeholder.uuid );
-                if (placeholder.uuid === thingUUID){
+                //console.log(placeholder.id );
+                if (placeholder.id === thingUUID){
                   const thingTypeUUID = placeholder.pending_node.thing_type_uuid;
                   //console.log("true");
                   Object.values(program.data.thingTypes).forEach(thingType => {
-                    //console.log(thingType.uuid + "   " + thingTypeUUID);
-                      if(thingType.uuid === thingTypeUUID && thingType.is_safe === false){
+                    //console.log(thingType.id + "   " + thingTypeUUID);
+                      if(thingType.id === thingTypeUUID && thingType.is_safe === false){
                         
                         const uuid = generateUuid('issue');
                         issues[uuid] = {
-                        uuid: uuid,
+                        id: uuid,
                         requiresChanges: true,
                         title: `Grasping on unsafe object`, // might need some changes
                         description: `The robot is grasping on a dangerous item`,// might need some changes
                         complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
+                        focus: {id:primitive.id, type:'primitive'},
                         graphData: null
             }
                       }else{

@@ -8,7 +8,6 @@ import {
     occupancyOverlap,
     DEFAULT_TRAJECTORY_COLOR,
     tfAnimationFromExecutable,
-    PINCH_POINT_FIELDS,
     pinchpointAnimationFromExecutable,
     itemTransformMethod,
     stepsToAnimation
@@ -16,6 +15,7 @@ import {
 // import throttle from 'lodash.throttle';
 // import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp/dist/components';
+import { filter } from "lodash";
 
 export const computedSlice = (state) => {
     let executablePrimitives = {};
@@ -309,19 +309,16 @@ export const computedSlice = (state) => {
     })
 
     // Pinch Point visualizations
-    if (deepestIssue && deepestIssue.code === 'pinchPoints' && executablePrimitives[deepestIssue.focus.uuid]) {
+    if (deepestIssue && deepestIssue.code === 'pinchPoints' && state.programData[deepestIssue.focus.id]) {
         console.log('---------show pinchpoints---------')
-        const pinchPointAnimations = pinchpointAnimationFromExecutable(executablePrimitives[deepestIssue.focus.uuid])
-        Object.keys(PINCH_POINT_FIELDS).forEach(field => {
+        const pinchPointAnimations = pinchpointAnimationFromExecutable(Object.values(state.programData).filter(v => v.type === "robotAgentType")[0], state.programData[deepestIssue.focus.id].properties.compiled["{}"].steps)
+        Object.keys(pinchPointAnimations).forEach(field => {
             items[field] = {
                 shape: 'sphere',
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
-                ...pinchPointAnimations[field],
-                frame: null//'simulated_'+PINCH_POINT_FIELDS[field].parent
+                ...pinchPointAnimations[field]
             }
-            console.log(field)
-            console.log(items[field])
-        })
+        });
     }
 
     // ===================== Lines =====================
@@ -423,9 +420,7 @@ export const computedSlice = (state) => {
         }
     })
 
-    // if (state.activeFocus === "moveGripperType-813df5f7-42c6-4536-be92-f5262efb74d8") {
     stepsToAnimation(state, tfs);
-    // }
 
     return ({
         executablePrimitives,

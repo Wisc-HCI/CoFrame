@@ -132,7 +132,7 @@ export function InfoTile({maxHeight}) {
             tabs = getInputOutputInfo(issueParams);
         } else if (focusData[focusData.length - 1].type === 'gripperType') {
             tabs = getGripperInfo(issueParams);
-        } else if (!focusData[focusData.length - 1].type) {
+        } else if (!focusData[focusData.length - 1].type && focusData[focusData.length - 1].graphData) {
             tabs = getPlotInfo({currentIssue: focusData[focusData.length - 1]});
         }
 

@@ -4,7 +4,8 @@ import { Quaternion, Vector3, Group, Object3D, Matrix4 } from 'three';
 import { ConvexGeometry } from 'three-stdlib';
 // import { EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp';
-import { REFERENCEABLE_OBJECTS, ROOT_PATH, STEP_TYPE } from './Constants';
+import { HAND_PINCH_MAX_DISTANCE, HAND_PINCH_MIN_DISTANCE, REFERENCEABLE_OBJECTS, ROOT_PATH, STEP_TYPE } from './Constants';
+import { merge } from "lodash";
 
 Object3D.DefaultUp.set(0, 0, 1);
 
@@ -82,35 +83,6 @@ export const UNREACHABLE_COLOR = { r: 204, g: 75, b: 10, a: 1 };
 
 export const OCCUPANCY_ERROR_COLOR = { r: 233, g: 53, b: 152, a: 1 };
 
-export const PINCH_POINT_FIELDS = {
-    base_link_inertia___forearm_link: { parent: 'base_link', frame1: 'Base', frame2: 'Forearm', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    base_link_inertia___gripper: { parent: 'base_link', frame1: 'Base', frame2: 'Gripper', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    base_link_inertia___upper_arm_link: { parent: 'base_link', frame1: 'Base', frame2: 'Upper Arm', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    base_link_inertia___wrist_1_link: { parent: 'base_link', frame1: 'Base', frame2: 'Wrist 1', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    base_link_inertia___wrist_2_link: { parent: 'base_link', frame1: 'Base', frame2: 'Wrist 2', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    base_link_inertia___wrist_3_link: { parent: 'base_link', frame1: 'Base', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-
-    shoulder_link___forearm_link: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Forearm', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    shoulder_link___gripper: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Gripper', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    shoulder_link___wrist_1_link: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 1', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    shoulder_link___wrist_2_link: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 2', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    shoulder_link___wrist_3_link: { parent: 'shoulder_link', frame1: 'Shoulder', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-
-    upper_arm_link___gripper: { parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Gripper', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    upper_arm_link___wrist_1_link: { parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 1', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    upper_arm_link___wrist_2_link: { parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 2', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    upper_arm_link___wrist_3_link: { parent: 'upper_arm_link', frame1: 'Upper Arm', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-
-    forearm_link___gripper: { parent: 'forearm_link', frame1: 'Forearm', frame2: 'Gripper', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    forearm_link___wrist_2_link: { parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 2', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-    forearm_link___wrist_3_link: { parent: 'forearm_link', frame1: 'Forearm', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-
-    // wrist_1_link___gripper: {parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-    wrist_1_link___wrist_3_link: { parent: 'wrist_1_link', frame1: 'Wrist 1', frame2: 'Wrist 3', scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 } },
-
-    // wrist_2_link___gripper: {parent: 'wrist_2_link', frame1: 'Wrist 2', frame2: 'Gripper', scale: {x:0,y:0,z:0}, position: {x:0,y:0,z:0}, color: {r:0,g:0,b:0,a:0}},
-}
-
 export const updateWorldModelWithTransforms = (model, transforms) => {
     Object.keys(transforms).forEach(transformId=>{
         const transform = transforms[transformId];
@@ -170,9 +142,41 @@ export const queryLocalPose = (model, ref, localTransform) => {
 }
 
 export const createStaticEnvironment = (model) => {
-    return Object.values(model).filter(item => item.userData.parent !== 'world' && item.userData.collisionInfo).map(item => {
-        // TODO: Create static collision info here
-    })
+    return Object.values(model).filter(item => item.userData.isCollisionObj).map(item => {
+        // Convert position to world frame
+        // let {position, rotation} = queryWorldPose(model, item.uuid);
+
+        // let partialObject = {
+        //     name: item.uuid,
+        //     frame: 'world',
+        //     physical: item.userData.physical,
+        //     localTransform: {
+        //         translation: [position.x, position.y, position.z],
+        //         rotation: [rotation.x, rotation.y, rotation.z, rotation.w]
+        //     }
+        // };
+
+        // // Create appropriate object
+        // if (item.userData.collisionType === "cube") {
+        //     return merge(partialObject, {
+        //         type: 'Box',
+        //         x: item.scale.x,
+        //         y: item.scale.y,
+        //         z: item.scale.z,
+        //     })
+        // } else if (item.userData.collisionType === "sphere") {
+        //     return merge(partialObject, {
+        //         type:'Sphere',
+        //         radius: item.userData.radius,
+        //     })
+        // } else if (["capsule", "cylinder"].includes(item.userData.collisionType)) {
+        //     return merge(partialObject, {
+        //         type: item.userData.collisionType === "capsule" ? 'Capsule' : 'Cylinder',
+        //         length: item.userData.length,
+        //         radius: item.userData.radius,
+        //     })
+        // } 
+    }).filter(item => item !== null);
 }
 
 export const createEnvironmentModel = (programData) => {
@@ -186,12 +190,36 @@ export const createEnvironmentModel = (programData) => {
             if (model[parentId]) {
                 model[item.id] = new Group();
                 model[item.id].userData.parent = parentId;
-                // TODO: rework collisions to have intelligble data here
-                if (false) {
-                    model[item.id].userData.collisionInfo = true;
+                
+                // Only create collisions for non-link objects, as they are handled in the URDF
+                if (false && item.properties.collision && item.type !== "linkType") {
+                    let collisionObjects = programData[item.properties.collision].properties.componentShapes;
+                    collisionObjects.forEach(collisionObjKey => {
+                        model[collisionObjKey] = new Group();
+                        model[collisionObjKey].userData.parent = item.id;
+                        let collisionObj = programData[collisionObjKey];
+                        model[collisionObjKey].position.set(collisionObj.properties.position.x, collisionObj.properties.position.y, collisionObj.properties.position.z);
+                        model[collisionObjKey].quaternion.set(collisionObj.properties.rotation.x, collisionObj.properties.rotation.y, collisionObj.properties.rotation.z, collisionObj.properties.rotation.w);
+                        if (collisionObj.properties.keyword === "cube") {
+                            model[collisionObjKey].scale.set(collisionObj.properties.scale.x, collisionObj.properties.scale.y, collisionObj.properties.scale.z);
+                        } else if (collisionObj.properties.keyword === "sphere") {
+                            model[collisionObjKey].userData.radius = collisionObj.properties.radius;
+                        } else if (["capsule", "cylinder"].includes(collisionObj.properties.keyword)) {
+                            model[collisionObjKey].userData.radius = collisionObj.properties.radius;
+                            model[collisionObjKey].userData.length = collisionObj.properties.length;
+                        } 
+                        
+                        model[collisionObjKey].userData.collisionType = collisionObj.properties.keyword;
+                        model[collisionObjKey].userData.isCollisionObj = true;
+                        model[collisionObjKey].userData.physical = !(item.type === "zoneType");
+                        model[collisionObjKey].uuid = collisionObjKey;
+                        model[item.id].add(model[collisionObjKey]);
+                    });
+                    
                 }
                 model[item.id].position.set(item.properties.position.x, item.properties.position.y, item.properties.position.z);
                 model[item.id].quaternion.set(item.properties.rotation.x, item.properties.rotation.y, item.properties.rotation.z, item.properties.rotation.w);
+                model[item.id].uuid = item.id;
                 model[parentId].add(model[item.id]);
                 added = true;
                 if (item.properties.gripOffset) {
@@ -206,6 +234,31 @@ export const createEnvironmentModel = (programData) => {
         })
     }
     return model
+}
+
+export const checkHandThresholds = (pinchDistance) => {
+    return pinchDistance >= HAND_PINCH_MIN_DISTANCE && pinchDistance <= HAND_PINCH_MAX_DISTANCE;
+}
+
+export const likProximityAdjustment = (robotAgent, proximity) => {
+    let trackedPinchPoints = robotAgent.properties.pinchPointPairLinks;
+    let proximityModel = {}
+
+    if (!proximity) {
+        return proximityModel;
+    }
+    proximity.forEach(({shape1, shape2, distance, points, physical}) => {
+        trackedPinchPoints.forEach(({link1, link2}) => {
+            if ((link1 === shape1 && link2 === shape2) || (link2 === shape1 && link1 === shape2)) {
+                if (!proximityModel[link1]) {
+                    proximityModel[link1] = {};
+                }
+                proximityModel[link1][link2] = {distance: distance, physical: physical, points: points};
+            }
+        });
+    });
+    
+    return proximityModel;
 }
 
 export const likFramesToTransforms = (frames, model, frame) => {
@@ -678,27 +731,47 @@ const pinchColorFromMagnitude = (magnitude = 0) => {
     return { r: 204 + 29 * magnitude, g: 121 - 68 * magnitude, b: 167 - 15 * magnitude, a: 0.3 };
 }
 
-const pinchPointVisualsByIdx = (idx, trace) => {
+const centerPoint = (point1, point2) => {
+    return [(point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2,(point1[2] + point2[2]) / 2]
+}
+
+const pinchPointVisualsByStep = (pairedLinks, proximity, previousDistances) => {
     let pinchPoints = {};
-    console.log(trace.pinch_points)
-    Object.keys(trace.pinch_points).forEach(pinchPointPair => {
-        if (trace.pinch_points[pinchPointPair][idx]) {
-            let errorMagnitude = 1 / Math.pow(Math.E, trace.pinch_points[pinchPointPair][idx].gap);
-            let errorPosition = trace.pinch_points[pinchPointPair][idx].position;
-            console.log({ errorMagnitude, errorPosition })
-            pinchPoints[pinchPointPair] = {
+
+    if (!proximity) {
+        return pinchPoints;
+    }
+    
+    pairedLinks.forEach(pair => {
+        let link1 = pair["link1"];
+        let link2 = pair["link2"];
+
+        if (!pinchPoints[link1]) {
+            pinchPoints[link1] = {}
+        }
+        
+        if (proximity[link1] && 
+            proximity[link1][link2] &&
+            checkHandThresholds(proximity[link1][link2].distance) &&
+            previousDistances[link1] && 
+            previousDistances[link1][link2] && 
+            ((previousDistances[link1][link2].distance - proximity[link1][link2].distance) > 0)) {
+            let errorMagnitude = 1 / Math.pow(Math.E, proximity[link1][link2].distance);
+            let errorPosition = proximity[link1][link2]?.points?.length > 0 ? centerPoint(proximity[link1][link2].points[0], proximity[link1][link2].points[1]) : [0,0,0];
+
+            pinchPoints[link1][link2] = {
                 scale: { x: errorMagnitude * 0.1, y: errorMagnitude * 0.1, z: errorMagnitude * 0.1 },
                 color: pinchColorFromMagnitude(errorMagnitude),
                 position: { x: errorPosition[0], y: errorPosition[1], z: errorPosition[2] }
             }
         } else {
-            pinchPoints[pinchPointPair] = {
+            pinchPoints[link1][link2] = {
                 scale: { x: 0, y: 0, z: 0 },
                 color: { r: 0, g: 0, b: 0, a: 0 },
                 position: { x: 0, y: 0, z: 0 }
             }
         }
-    })
+    });
     return pinchPoints
 }
 
@@ -764,29 +837,44 @@ const stepsToAnimatedPinchPoints = (steps) => {
     if (steps.length === 0) {
         return {}
     }
-    let tempAnimatedPinchPoints = objectMap(steps[0].pinchPoints, _ => ({
-        position: { x: [], y: [], z: [] },
-        scale: { x: [], y: [], z: [] },
-        color: { r: [], g: [], b: [] }
-    })
-    )
-    const pinchPointPairs = Object.keys(tempAnimatedPinchPoints);
-    // console.log(pinchPointPairs)
+
+    let tempAnimatedPinchPoints = {}
+    let structure = {}
+
+    Object.keys(steps[0].pinchPoints).forEach(link1 => {
+        if (!structure[link1]) {
+            structure[link1] = {}
+        }
+
+        Object.keys(steps[0].pinchPoints[link1]).forEach(link2 => {    
+            structure[link1][link2] = 0
+            tempAnimatedPinchPoints[link1 + "___" + link2] = {
+                position: { x: [], y: [], z: [] },
+                scale: { x: [], y: [], z: [] },
+                color: { r: [], g: [], b: [] }
+            }
+        });
+    });
+
+    console.log(tempAnimatedPinchPoints);
+
     let timesteps = steps.map(step => step.time)
     steps.forEach(step => {
-        pinchPointPairs.forEach(pairName => {
-            tempAnimatedPinchPoints[pairName].position.x.push(step.pinchPoints[pairName].position.x);
-            tempAnimatedPinchPoints[pairName].position.y.push(step.pinchPoints[pairName].position.y);
-            tempAnimatedPinchPoints[pairName].position.z.push(step.pinchPoints[pairName].position.z);
-            tempAnimatedPinchPoints[pairName].scale.x.push(step.pinchPoints[pairName].scale.x);
-            tempAnimatedPinchPoints[pairName].scale.y.push(step.pinchPoints[pairName].scale.y);
-            tempAnimatedPinchPoints[pairName].scale.z.push(step.pinchPoints[pairName].scale.z);
-            tempAnimatedPinchPoints[pairName].color.r.push(step.pinchPoints[pairName].color.r);
-            tempAnimatedPinchPoints[pairName].color.g.push(step.pinchPoints[pairName].color.g);
-            tempAnimatedPinchPoints[pairName].color.b.push(step.pinchPoints[pairName].color.b);
-        })
-    })
-    console.log(tempAnimatedPinchPoints)
+        Object.keys(step.pinchPoints).forEach(link1 => {
+            Object.keys(step.pinchPoints[link1]).forEach(link2 => {
+                tempAnimatedPinchPoints[link1 + "___" + link2].position.x.push(step.pinchPoints[link1][link2].position.x);
+                tempAnimatedPinchPoints[link1 + "___" + link2].position.y.push(step.pinchPoints[link1][link2].position.y);
+                tempAnimatedPinchPoints[link1 + "___" + link2].position.z.push(step.pinchPoints[link1][link2].position.z);
+                tempAnimatedPinchPoints[link1 + "___" + link2].scale.x.push(step.pinchPoints[link1][link2].scale.x);
+                tempAnimatedPinchPoints[link1 + "___" + link2].scale.y.push(step.pinchPoints[link1][link2].scale.y);
+                tempAnimatedPinchPoints[link1 + "___" + link2].scale.z.push(step.pinchPoints[link1][link2].scale.z);
+                tempAnimatedPinchPoints[link1 + "___" + link2].color.r.push(step.pinchPoints[link1][link2].color.r);
+                tempAnimatedPinchPoints[link1 + "___" + link2].color.g.push(step.pinchPoints[link1][link2].color.g);
+                tempAnimatedPinchPoints[link1 + "___" + link2].color.b.push(step.pinchPoints[link1][link2].color.b);
+            });
+        });
+    });
+
     const animatedPinchPoints = objectMap(tempAnimatedPinchPoints, pinchPoint => ({
         frame: 'world',
         position: {
@@ -805,8 +893,9 @@ const stepsToAnimatedPinchPoints = (steps) => {
             b: interpolateScalar(timesteps, pinchPoint.color.b),
             a: 0.3
         }
-    }))
-    console.log(animatedPinchPoints)
+    }));
+
+    console.log(animatedPinchPoints);
     return animatedPinchPoints
 }
 
@@ -816,7 +905,13 @@ export function stepsToAnimation(state, tfs) {
     let finalTime = 0;
     let timesteps = [];
 
-    let focusStub = state.programData[state.activeFocus]?.properties?.compiled;
+    let focusStub = null;
+    // Only back up to once for the animation correlating to the issue (if applicable)
+    if (!state.programData[state.activeFocus]) {
+        focusStub = state.programData[state.focus[state.focus.length - 2]]?.properties?.compiled;
+    } else {
+        focusStub = state.programData[state.activeFocus]?.properties?.compiled;
+    }
     const compileKeys = Object.keys(focusStub ? focusStub : {});
 
     // If too many or too few keys, return
@@ -912,69 +1007,33 @@ export function stepsToAnimation(state, tfs) {
     });
 }
 
-export function pinchpointAnimationFromExecutable(executable) {
-    let steps = [{ time: 0, pinchPoints: PINCH_POINT_FIELDS }]
-    let machineProcessing = {};
-    let cancelled = false;
-    let currentTime = 0;
-    let gripperState = 55;
-    executable.forEach(chunk => {
-        let prevStep = lodash.cloneDeep(steps[steps.length - 1]);
-        let duration = 0;
-        if (!cancelled) {
-            if (chunk.type === 'node.primitive.gripper.') {
-                const delta = chunk.parameters.position - gripperState;
-                duration = 1000 * Math.abs(delta) / chunk.parameters.speed;
-
-                for (let timeOffset of range(0, duration, 100)) {
-                    prevStep.time = currentTime + timeOffset;
-                    steps.push(prevStep)
-                    prevStep = lodash.cloneDeep(steps[steps.length - 1]);
-                }
-            } else if (chunk.type === 'node.primitive.delay.') {
-                duration = chunk.parameters.duration * 1000;
-                steps.push({ ...prevStep, time: currentTime + duration })
-            } else if (chunk.type === 'node.primitive.breakpoint.') {
-                cancelled = true;
-            } else if (chunk.type === 'node.primitive.machine-primitive.machine-initialize.') {
-                // Ignore
-            } else if (chunk.type === 'node.primitive.machine-primitive.machine-start.') {
-                machineProcessing[chunk.parameters.machine_uuid.uuid] = chunk.parameters.machine_uuid.process_time;
-            } else if (chunk.type === 'node.primitive.machine-primitive.machine-stop.') {
-                // Ignore
-            } else if (chunk.type === 'node.primitive.machine-primitive.machine-wait.') {
-                if (machineProcessing[chunk.parameters.machine_uuid.uuid]) {
-                    duration = machineProcessing[chunk.parameters.machine_uuid.uuid]
-                }
-            } else if (chunk.type === 'node.primitive.move-trajectory.') {
-                duration = chunk.parameters.trajectory_uuid.trace.duration * 1000;
-                if (chunk)
-                    for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length - 1; i++) {
-                        prevStep.pinchPoints = { ...prevStep.pinchPoints, ...pinchPointVisualsByIdx(i, chunk.parameters.trajectory_uuid.trace) };
-                        prevStep.time = currentTime + chunk.parameters.trajectory_uuid.trace.time_data[i] * 1000;
-                        steps.push(prevStep)
-                        prevStep = lodash.cloneDeep(steps[steps.length - 1]);
-                    }
-                if (chunk.parameters.trajectory_uuid.trace.in_timeout) {
-                    cancelled = true
-                }
-            } else if (chunk.type === 'node.primitive.move-unplanned.') {
-                duration = 100;
-                prevStep.time = prevStep.time + 100;
-                steps.push(prevStep)
-                prevStep = lodash.cloneDeep(steps[steps.length - 1]);
-            }
+export function pinchpointAnimationFromExecutable(robotAgent, stepData) {
+    let pairedLinks = robotAgent.properties.pinchPointPairLinks;
+    
+    
+    let steps = [{ time: 0, pinchPoints: {}}]
+    pairedLinks.forEach(pair => {
+        if (!steps[0].pinchPoints[pair["link1"]]) {
+            steps[0].pinchPoints[pair["link1"]] = {}
         }
-        currentTime += duration;
-        machineProcessing = objectMap(machineProcessing, val => {
-            if (val - duration < 0) {
-                return 0
-            } else {
-                return val - duration
-            };
-        })
+        steps[0].pinchPoints[pair["link1"]][pair["link2"]] = {scale: { x: 0, y: 0, z: 0 }, position: { x: 0, y: 0, z: 0 }, color: { r: 0, g: 0, b: 0, a: 0 }}
+    });
+
+    let currentTime = 0;
+    let prevStep = lodash.cloneDeep(steps[steps.length - 1]);
+    let previousDistances = {};
+
+    stepData.forEach(step => {
+        let formattedProxData = likProximityAdjustment(robotAgent, step.data?.proximity);
+        prevStep.pinchPoints = { ...prevStep.pinchPoints, ...pinchPointVisualsByStep(pairedLinks, formattedProxData, previousDistances) };
+        prevStep.time = step.time;
+        steps.push(prevStep);
+        previousDistances = lodash.cloneDeep(formattedProxData);
+        prevStep = lodash.cloneDeep(steps[steps.length - 1]);
+        currentTime = step.time;
     })
-    steps.push({ ...lodash.cloneDeep(steps[steps.length - 1]), time: currentTime + 1000 })
+    steps.push({ ...lodash.cloneDeep(steps[steps.length - 1]), time: currentTime + 500 })
+
     return stepsToAnimatedPinchPoints(steps)
 }
 
