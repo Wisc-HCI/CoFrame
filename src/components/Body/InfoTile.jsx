@@ -105,7 +105,7 @@ export function InfoTile({maxHeight}) {
     })
 
      const currentIssue = undefined;
-     const description = useStore(state => state.programData[focusData[focusData.length - 1].id].properties.description);
+     const description = useStore(state => state.programData[focusData[focusData.length - 1].id]?.properties.description);
      
      const issueParams = {activeDrawer, frame, primaryColor, focusData, currentIssue,description }
          if (focusData[focusData.length - 1].type === 'locationType'){  
@@ -132,7 +132,9 @@ export function InfoTile({maxHeight}) {
             tabs = getInputOutputInfo(issueParams);
         } else if (focusData[focusData.length - 1].type === 'gripperType') {
             tabs = getGripperInfo(issueParams);
-        } 
+        } else if (!focusData[focusData.length - 1].type) {
+            tabs = getPlotInfo({currentIssue: focusData[focusData.length - 1]});
+        }
 
     //     tabs = getThingInfo(issueParams)
     // } else if (focusData?.type === 'program' || activeDrawer === null) {

@@ -3,7 +3,6 @@ import React, {useCallback} from 'react';
 // import { List, Switch, Row, Space } from 'antd';
 // import { CaretRightOutlined } from '@ant-design/icons';
 import { Box, List } from 'grommet';
-import { Toggle } from '../Toggle';
 
 import { ReviewIssue } from './ReviewIssue';
 import useStore from '../../stores/Store';
@@ -13,6 +12,8 @@ import { FrameButton } from '../FrameButton';
 import frameStyles from '../../frameStyles';
 
 import Collapse from '../Collapse';
+
+import { Switch } from '../Switch';
 
 // import './custom.css'
 
@@ -74,13 +75,12 @@ export function ReviewSection({sectionId, blocked, initialBlocked}) {
                 header={<Box direction='row' pad="10pt">{name}</Box>}
                 style={{marginBottom:5}}
                 extra={
-                <Toggle 
-                    selectedText="Done!"
-                    deselectedText=""
-                    backgroundColor={primaryColor}
-                    selected={complete} 
+                <Switch 
+                    label="Done" 
                     disabled
-                />}
+                    value={complete}
+                    highlightColor={primaryColor}/>
+                }
             >
                 {issueIds.length > 0 ? <List
                     split={false}

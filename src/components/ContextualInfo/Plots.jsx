@@ -1,7 +1,7 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 
-export function getPlotInfo({editorPane,setupTab,frame,primaryColor,focusData,secondaryFocusData,currentIssue}) {
+export function getPlotInfo({currentIssue}) {
     let tabs = [];
     const colors = currentIssue.graphData.lineColors;
     const showLegend = Object.keys(currentIssue.graphData.series[0]).length > 2;
