@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { config } from 'react-spring';
-import useStore from '../stores/Store';
+import useStore from '../../stores/Store';
 
 export const CoFrameIcon = () => {
 

@@ -30,17 +30,33 @@ export const ReviewSlice = (set, get) => ({
         /* 
         Each issue has the following structure:
         {
-            uuid: str (unique uuid for this issue)
+            id: str (unique uuid for this issue)
             requiresChanges: bool (whether the issue is one that requires changes to the program and a refresh. Similar to warning vs. error)
             title: str (short title for issue)
             description: str (text string for error information, displayed in issue)
             complete: bool (mainly for issues that don't require changes, whether it has been marked as complete)
-            focus: {uuid:str, type:str} (what type of item to focus on in the gui when issue is selected)
+            focus: {id:str, type:str} (what type of item to focus on in the gui when issue is selected)
             graphData: {series : [{x: ..., '...': ..., ....},...], lineColors: ['#00000', ...],  xAxisLabel: '', yAxisLabel: '', title: ''}
             sceneData: 🤷
             code: str (whatever we want)
         }
         */
+       1:{
+           id: 1,
+           requiresChanges: false,
+           title: 'Test Issue 1',
+           description: 'Test Issue 1 Description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+           complete: false,
+           focus: {id: 'program-484de43e-adaa-4801-a23b-bca38e211365'},
+       },
+       2:{
+        id: 2,
+        requiresChanges: true,
+        title: 'Test Issue 2',
+        description: 'Test Issue 2 Description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        complete: false,
+        focus: {id: 'program-484de43e-adaa-4801-a23b-bca38e211365'},
+    }
     },
     sections: {
         endEffectorPoses:{
@@ -48,7 +64,7 @@ export const ReviewSlice = (set, get) => ({
             updater:findEndEffectorPoseIssues,
             dependencies:['reachability'],
             // dependencies:[],
-            issues:[]
+            issues:[1,2]
         },
         pinchPoints:{
             name:'Pinch Points',

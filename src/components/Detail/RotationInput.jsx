@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NumberInput } from '../NumberInput';
+import { NumberInput } from '../Elements/NumberInput';
 import { Box, DropButton, Text,Button } from "grommet";
 import { FormEdit } from "grommet-icons";
 import { eulerFromQuaternion, quaternionFromEuler } from './Geometry';

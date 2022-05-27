@@ -8,7 +8,7 @@ import { FixtureItem } from './FixtureDetail'
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 import { FiTrash, FiX } from 'react-icons/fi';
-import { NumberInput } from '../NumberInput';
+import { NumberInput } from '../Elements/NumberInput';
 import { DETAIL_TYPES, STATUS } from '../../stores/Constants';
 import JointGripperInput from "./JointGripperInput";
 import LocationWaypointDetail from './LocationWaypointDetail';

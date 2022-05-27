@@ -1,15 +1,11 @@
-import React, { Suspense } from 'react';
-// import { Card } from 'antd';
+import React from 'react';
 import { Box, Spinner, Button } from 'grommet';
-// import { ProgramEditor } from '../ProgramEditor';
 import { Environment } from 'simple-vp';
-import Tile from '../Tile';
+import Tile from '../Elements/Tile';
 import useStore from '../../stores/Store';
 import { FiSettings, FiMaximize, FiMinimize } from "react-icons/fi";
-import { TipContent } from '../TipContent';
+import { TipContent } from '../Elements/TipContent';
 import useMeasure from 'react-use-measure';
-import { useSpring, animated } from '@react-spring/web';
-import { config } from 'react-spring';
 
 export const ProgramTile = ({ visible }) => {
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import useStore from '../../stores/Store';
 import { Box, Button } from "grommet";
-import Collapse from '../Collapse';
-import {Toggle} from "../Toggle";
+import Collapse from '../Elements/Collapse';
+import {Toggle} from "../Elements/Toggle";
 import { FiRefreshCw } from 'react-icons/fi';
 
 

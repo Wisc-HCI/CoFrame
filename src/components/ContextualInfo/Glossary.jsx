@@ -1,4 +1,4 @@
-import { TipText } from "../TipContent";
+import { TipText } from "../Elements/TipContent";
 
 export const Glossary = {
     Program: ({primaryColor})=> <TipText color={primaryColor} previewText='Program' extraText="Entire sequence of Actions and Skills that are executed by the robot."/>,

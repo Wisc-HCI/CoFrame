@@ -4,10 +4,10 @@ import React from 'react';
 import { FiMinimize, FiMaximize, FiMoreHorizontal } from 'react-icons/fi';
 import { Toggle } from './Toggle';
 // import { Button, Space, Tooltip, Popover, Checkbox, Col, Row } from 'antd';
-import { Box, DropButton, Button, Text } from "grommet";
+import { Box, DropButton, Button } from "grommet";
 import { TipContent } from './TipContent';
 
-import useStore from '../stores/Store';
+import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
 
 export function Controls() {

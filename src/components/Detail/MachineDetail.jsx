@@ -2,7 +2,7 @@ import React from 'react';
 import useStore from '../../stores/Store';
 import { Box, Text } from 'grommet';
 import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
-import Collapse from '../Collapse';
+import Collapse from '../Elements/Collapse';
 
 export const MachineProcessList = ({ machineId }) => {
 

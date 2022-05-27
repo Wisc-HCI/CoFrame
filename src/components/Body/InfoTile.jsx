@@ -18,10 +18,9 @@ import { getTrajectoryInfo } from '../ContextualInfo/TrajectoryBlock';
 import { getInputOutputInfo } from '../ContextualInfo/InputOutputBlock';
 import { getGripperInfo } from '../ContextualInfo/GripperBlock';
 import { getPlotInfo } from '../ContextualInfo/Plots';
-import Tile from '../Tile';
+import Tile from '../Elements/Tile';
 import { DATA_TYPES } from 'simple-vp';
 import actionTypes from '../../stores/typeInfo/action';
-import { DETAIL_TYPES, STATUS } from '../../stores/Constants';
 
 export function InfoTile({maxHeight}) {
 

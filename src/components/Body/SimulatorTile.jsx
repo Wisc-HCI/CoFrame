@@ -1,14 +1,13 @@
 import React from 'react';
-import Tile from '../Tile';
 import { Box } from 'grommet';
 import { Scene } from 'robot-scene';
 import useStore from '../../stores/Store';
-import { Controls } from '../Controls';
+import { Controls } from '../Elements/Controls';
 import { InfoTile } from './InfoTile';
 import useMeasure from 'react-use-measure';
 // import { useSpring, animated } from '@react-spring/web';
 // import { config } from 'react-spring';
-
+import Tile from '../Elements/Tile';
 
 export const SimulatorTile = ({ visible }) => {
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import useStore from '../../stores/Store';
-import {Text, Box, TextInput} from 'grommet';
+import {Text, Box} from 'grommet';
 import {ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
-import Collapse from '../Collapse';
+import Collapse from '../Elements/Collapse';
 
 export const ProcessIOList = ({ processId, isInput }) => {
 
