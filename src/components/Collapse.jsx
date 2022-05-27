@@ -18,9 +18,9 @@ export default function Collapse({defaultOpen, extra, style, header, children, b
     return (
         <div style={{backgroundColor:'rgba(100,100,100,0.3)', padding: borderWidth, borderRadius: 3, ...style}}>
             {header && (
-                <Box direction='row' style={{paddingBottom:borderWidth,width:'100%'}} justify='between' align='center'>
+                <Box direction='row' onClick={()=>setOpen(!open)} focusIndicator={false}  style={{paddingBottom:borderWidth,width:'100%'}} justify='between' align='center'>
                     {header}
-                    <Box direction='row' justify='end' align='center'>
+                    <Box direction='row' justify='end' align='center' pad={{right:'small'}}>
                         {extra}
                         <ExpandCarrot expanded={open} onClick={()=>setOpen(!open)}/>
                     </Box>

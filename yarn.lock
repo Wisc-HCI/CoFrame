@@ -2148,10 +2148,10 @@
     node-gyp "^9.0.0"
     read-package-json-fast "^2.0.3"
 
-"@people_and_robots/lively_tk@0.9.27":
-  version "0.9.27"
-  resolved "https://registry.yarnpkg.com/@people_and_robots/lively_tk/-/lively_tk-0.9.27.tgz#8acc77cbae5cd503df500942b4d8cf1024d18feb"
-  integrity sha512-e2hNxGFqAblCplUOElQwOMFkEizllcNliw0DZ9f6JwoC7T+UsZKIAeNBFqmCLKksayJ5WFKMgP2fXDF7OWoSQQ==
+"@people_and_robots/lively_tk@0.9.31":
+  version "0.9.31"
+  resolved "https://registry.yarnpkg.com/@people_and_robots/lively_tk/-/lively_tk-0.9.31.tgz#5263dce8cc43790c09f110740bf24a59aba06677"
+  integrity sha512-X6eUDeGa9Z8OYowgDmdVN02Or7rtA3//GEXB2W4whqkpIfcB4/ULQYlJpXUQZaAux/Ob3arMW4xIXQ54tdY7IA==
 
 "@pmmmwh/react-refresh-webpack-plugin@0.4.3":
   version "0.4.3"

@@ -8,9 +8,9 @@ import { createRoot } from 'react-dom/client';
 const container = document.getElementById('root');
 
 // temporarily use old react 17-style rendering
-// const root = createRoot(container);
-// root.render(<App/>);
-render(<App/>,container)
+const root = createRoot(container);
+root.render(<App/>);
+// render(<App/>,container)
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
