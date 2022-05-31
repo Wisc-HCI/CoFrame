@@ -7,16 +7,6 @@ import { STATUS } from './Constants';
 // const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
 // const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('gripper'));
 
-const ACTIVE_TFS = [
-  'simulated_base_link',
-  'simulated_shoulder_link',
-  'simulated_upper_arm_link',
-  'simulated_forearm_link',
-  'simulated_wrist_1_link',
-  'simulated_wrist_2_link',
-  'simulated_wrist_3_link'
-]
-
 const onClickIgnoredTypes = [
   "meshType",
   "zoneType",

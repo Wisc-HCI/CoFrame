@@ -7,28 +7,22 @@ import { NumberInput } from '../Elements/NumberInput';
 
 
 function JointGripperInput({ robotID, isGripper }) {
-    let initialStateInfo = [];
-    let initialState = {};
-    let initialStateValue;
-    if (isGripper === true) {
 
-        initialStateValue = useStore(state => state.programData[robotID].properties.initialGripState);
-
-    } else {
-        initialStateInfo = useStore(state => {
-            let list = [];
+    const [initialStateInfo,initialState,initialStateValue] = useStore(state=>{
+        if (isGripper) {
+            return [[],{},state.programData[robotID].properties.initialGripState]
+        } else {
+            let initialStateInfo = [];
             for (const [key, value] of Object.entries(state.programData[robotID].properties.initialJointState)) {
                 const lower = state.programData[robotID].properties.jointLimit[key].lower;
                 const upper = state.programData[robotID].properties.jointLimit[key].upper;
 
-                list.push({ key, "value": value, "lower": lower, "upper": upper });
+                initialStateInfo.push({ key, "value": value, "lower": lower, "upper": upper });
             }
-            return list;
-        })
-        initialState = useStore(state =>
-            state.programData[robotID].properties.initialJointState
-        );
-    }
+            const initialState = state.programData[robotID].properties.initialJointState;
+            return [initialStateInfo,initialState,null]
+        }
+    })
 
     const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty);
     if (isGripper) {

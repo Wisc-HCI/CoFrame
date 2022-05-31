@@ -1,7 +1,7 @@
-import { arrayMove, deleteAction } from './helpers';
+// import { arrayMove, deleteAction } from './helpers';
 import lodash from 'lodash';
 // import { FiClipboard, FiBriefcase, FiGrid, FiBox, FiLogOut, FiMoreHorizontal, FiLayers, FiFeather } from "react-icons/fi";
-import { DATA_TYPES, TYPES, EXTRA_TYPES, SIMPLE_PROPERTY_TYPES } from 'simple-vp';
+import { DATA_TYPES } from 'simple-vp';
 
 import typeInfo from './typeInfo';
 // import { performPoseProcess } from './planner-worker';
@@ -10,8 +10,6 @@ import { instanceTemplateFromSpec } from 'simple-vp/dist/components';
 import * as Comlink from 'comlink';
 /* eslint-disable import/no-webpack-loader-syntax */
 import Worker from 'worker-loader!./planner-worker';
-
-const cleanedObjectType = (objectType) => lodash.pick(objectType, ['name', 'properties', 'type']);
 
 import {
   LocationIconStyled,
@@ -24,6 +22,8 @@ import {
   ContainerIconStyled,
   ToolIconStyled
 } from './typeInfo/icons';
+
+const cleanedObjectType = (objectType) => lodash.pick(objectType, ['name', 'properties', 'type']);
 
 export const EvdSlice = (set, get) => ({
   solver: null,

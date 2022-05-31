@@ -7,7 +7,7 @@ import {
     OCCUPANCY_ERROR_COLOR,
     occupancyOverlap,
     DEFAULT_TRAJECTORY_COLOR,
-    tfAnimationFromExecutable,
+    // tfAnimationFromExecutable,
     pinchpointAnimationFromExecutable,
     itemTransformMethod,
     stepsToAnimation
@@ -15,7 +15,7 @@ import {
 // import throttle from 'lodash.throttle';
 // import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
 import { DATA_TYPES } from 'simple-vp/dist/components';
-import { filter } from "lodash";
+// import { filter } from "lodash";
 
 export const computedSlice = (state) => {
     let executablePrimitives = {};
@@ -44,7 +44,8 @@ export const computedSlice = (state) => {
     // Show the tf animation of the farthest-down focus
     reversedFocus.some(f=>{
         if (executablePrimitives[f]) {
-            tfs = tfAnimationFromExecutable(executable, tfs)
+            // TODO: FIX
+            // tfs = tfAnimationFromExecutable(executable, tfs)
             return true
         } else {
             return false
@@ -347,7 +348,7 @@ export const computedSlice = (state) => {
         let inMoveTrajectory = false;
         state.focus.forEach(focusItem => {
             let obj = state.programData[focusItem];
-            if (obj?.type === "moveTrajectoryType" && obj?.properties?.trajectory == trajectory.id) {
+            if (obj?.type === "moveTrajectoryType" && obj?.properties?.trajectory === trajectory.id) {
                 inMoveTrajectory = true;
             }
         })
@@ -415,8 +416,9 @@ export const computedSlice = (state) => {
                     })
                 }
             )
+            return true
         } else {
-
+            return false
         }
     })
 

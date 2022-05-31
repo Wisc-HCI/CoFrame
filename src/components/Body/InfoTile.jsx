@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Box, Button, Text } from 'grommet';
+import React from 'react';
+import { Box, Button } from 'grommet';
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
-import { FiChevronRight, FiUnderline } from 'react-icons/fi';
+import { FiChevronRight } from 'react-icons/fi';
 import { getLocationInfo } from '../ContextualInfo/LocationBlock';
 import {getRobotAgentInfo} from '../ContextualInfo/RobotAgentBlock';
 import { getToolInfo } from '../ContextualInfo/ToolBlock';

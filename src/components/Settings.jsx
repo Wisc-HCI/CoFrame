@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Layer, Box, Card, CardBody, Button, CardHeader, Notification, TextInput, List, Tabs, Tab } from 'grommet';
+import { Layer, Box, Card, Button, Notification, TextInput, List, Tabs, Tab } from 'grommet';
 import { FiRotateCw, FiDownload, FiUpload } from 'react-icons/fi';
 import useStore from '../stores/Store';
 import { saveAs } from 'file-saver';
@@ -42,8 +42,8 @@ export const SettingsModal = () => {
         const fileUploaded = event.target.files[0];
         if (fileUploaded) {
             const reader = new FileReader();
-            reader.onabort = () => { message.error('Upload Aborted') }
-            reader.onerror = () => { message.error('Upload Error') }
+            reader.onabort = () => { /* message.error('Upload Aborted') */}
+            reader.onerror = () => { /* message.error('Upload Error') */ }
             reader.onload = () => {
 
                 let data = YAML.parse(reader.result);
@@ -139,9 +139,9 @@ export const SettingsModal = () => {
                                     )}
                                 </List>
                             </Box>
-                            {issueSettings && Object.values(issueSettings).map((entry) => {
+                            {/* {issueSettings && Object.values(issueSettings).map((entry) => {
                                 return
-                            })}
+                            })} */}
                         </Tab>
                         <Tab title='Debug'>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import useStore from '../../stores/Store';
+// import useStore from '../../stores/Store';
 import { Box } from "grommet";
 import PositionInput from './PositionInput';
 import RotationInput from './RotationInput';

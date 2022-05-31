@@ -14,7 +14,7 @@ import sceneObjects from './sceneObjects';
 import collisionTypes from './collision';
 
 
-export default { 
+const mod = { 
     inputOutputType,
     programType,
     locationType,
@@ -30,3 +30,5 @@ export default {
     ...sceneObjects,
     ...collisionTypes
 }
+
+export default mod;

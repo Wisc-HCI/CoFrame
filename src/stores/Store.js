@@ -1,7 +1,7 @@
 // import create from 'zustand'
 import create from 'zustand';
 import shallow from 'zustand/shallow'
-import { subscribeWithSelector, persist } from 'zustand/middleware'
+import { subscribeWithSelector } from 'zustand/middleware'
 import { computed } from 'zustand-middleware-computed-state'
 import produce from "immer";
 import {GuiSlice} from './GuiSlice';
@@ -30,9 +30,9 @@ import { STATUS } from './Constants';
 // import {greet} from './hello_wasm'
 // import { primitiveTypes } from './templates';
 //import { useYDoc } from 'zustand-yjs'
-import * as Y from "yjs";
-import { WebrtcProvider } from "y-webrtc";
-import yjs from 'zustand-middleware-yjs';
+// import * as Y from "yjs";
+// import { WebrtcProvider } from "y-webrtc";
+// import yjs from 'zustand-middleware-yjs';
 
 
 // window.localStorage.setItem("log", "y-webrtc");

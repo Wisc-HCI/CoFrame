@@ -3,7 +3,7 @@ import React from "react";
 import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
-import { Grommet, Box } from "grommet";
+import { Grommet } from "grommet";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import { TIMELINE_TYPES } from "./stores/Constants";
 // import { Modals } from "./components/Modals";

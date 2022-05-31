@@ -1,9 +1,8 @@
 import * as Comlink from 'comlink';
-import { Quaternion } from 'three';
-import { ROOT_PATH, STATUS, STEP_CALCULATOR, PREPROCESS_TYPES, POSTPROCESS_TYPES } from './Constants';
-import { compilers, handleUpdate } from './compiling';
+import { ROOT_PATH, PREPROCESS_TYPES, POSTPROCESS_TYPES } from './Constants';
+import { handleUpdate } from './compiling';
 import { DATA_TYPES } from 'simple-vp';
-import { createEnvironmentModel, createStaticEnvironment } from './helpers';
+import { createEnvironmentModel } from './helpers';
 
 const loadModule = async () => {
     const module = await import('@people_and_robots/lively_tk');

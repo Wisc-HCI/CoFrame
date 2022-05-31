@@ -1,7 +1,7 @@
 import React from 'react';
 import useStore from '../../stores/Store';
-import { Box, Text } from 'grommet';
-import { ExternalBlock, referenceTemplateFromSpec, instanceTemplateFromSpec } from "simple-vp";
+import { Box } from 'grommet';
+import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 
 
 export const FixtureItem = ({ fixtureID }) => {

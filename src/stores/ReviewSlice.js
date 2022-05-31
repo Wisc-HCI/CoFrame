@@ -3,6 +3,7 @@ import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssue
 import { findEndEffectorSpeedIssues, findJointSpeedIssues, findPayloadIssues, findReachabilityIssues, findSpaceUsageIssues } from "./issueDetectors/performance";
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
 import { objectMap } from "./helpers";
+import lodash from 'lodash';
 
 export const ReviewSlice = (set, get) => ({
     // Issues are stored in a flat lookup
@@ -164,7 +165,7 @@ export const ReviewSlice = (set, get) => ({
     }),
     refresh: () => set(state=>{
         let newIssues = {};
-        let program = _.filter(get().programData, function (v) {return v.type === "programType"})[0];
+        let program = lodash.filter(get().programData, function (v) {return v.type === "programType"})[0];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             if (["returnOnInvestment", "idleTime", "cycleTime", "pinchPoints"].includes(sectionKey)) {

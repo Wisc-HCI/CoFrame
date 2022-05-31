@@ -3,7 +3,7 @@ import { remove, pickBy } from 'lodash';
 import { instanceTemplateFromSpec } from "simple-vp";
 import { generateUuid } from "./generateUuid";
 import { STATUS } from "./Constants";
-import { FiUnderline } from "react-icons/fi";
+// import { FiUnderline } from "react-icons/fi";
 
 // Credit: https://www.npmjs.com/package/lodash-move
 export function move(array, moveIndex, toIndex) {
@@ -67,14 +67,13 @@ export function move(array, moveIndex, toIndex) {
               parentData.properties[propName].forEach((child) => {
                 state = deleteFromChildren(state, idsToDelete, state.programData[child]);
               })
-  
-              for (let i = 0; i < idsToDelete.length; i++) {
-                let removed_elems = remove(state.programData[parentData.id].properties[propName], (field) => state.programData[field]?.ref === idsToDelete[i]);
-                // Only update if elements were removed
-                if (removed_elems.length > 0) {
+              idsToDelete.forEach(idToDelete=>{
+                const newList = state.programData[parentData.id].properties[propName].filter((field) => state.programData[field]?.ref !== idToDelete)
+                if (newList.length !== state.programData[parentData.id].properties[propName]) {
                   state.programData[parentData.id].properties.status = STATUS.PENDING;
                 }
-              }
+                state.programData[parentData.id].properties[propName] = newList
+              })
             } else if (property && parentData.properties[propName] && idsToDelete.includes(state.programData[parentData.properties[propName]]?.ref)) {
               // Delete Reference to Child
               delete state.programData[parentData.properties[propName]];

@@ -40,8 +40,7 @@ export const processType = {
         fullWidth: false,
         nullValid: true
       },
-      processTime: { 
-        name: 'Process Time',
+      processTime: {
         name: 'Duration',
         type: SIMPLE_PROPERTY_TYPES.NUMBER,
         default: 0,

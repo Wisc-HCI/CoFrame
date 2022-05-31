@@ -42,14 +42,10 @@ function formatTime(ms) {
 
 const axisColor = "white";
 
-export default ({ width, height, margin = defaultMargin, visible }) => {
+const Graph = ({ width, height, margin = defaultMargin, visible }) => {
   // bounds
 
-  if (!visible) {
-    return null
-  }
-
-  const focus = useStore((state) => state.focus);
+  // const focus = useStore((state) => state.focus);
   //   const [pause, play, reset] = useStore((state) => [
   //     state.pause,
   //     state.play,
@@ -113,7 +109,7 @@ export default ({ width, height, margin = defaultMargin, visible }) => {
               : step.data.process;
           openSteps[step.source] = {
             track: track,
-            event: step.type == STEP_TYPE.ACTION_START ? "action" : "process",
+            event: step.type === STEP_TYPE.ACTION_START ? "action" : "process",
             label: state.programData[step.source]
               ? state.programData[step.source].name
               : "Updating...",
@@ -184,6 +180,9 @@ export default ({ width, height, margin = defaultMargin, visible }) => {
     },
   }));
 
+  if (!visible) {
+    return null
+  }
   if (errorType) {
     return (
       <Box fill justifyContent="center" alignContent="center" width="100%">
@@ -278,6 +277,12 @@ const InnerGraph = withTooltip(
     xScale.rangeRound([0, xMax]);
     yScale.rangeRound([0, yMax]);
 
+    const [pause, play, reset] = useStore((state) => [
+      state.pause,
+      state.play,
+      state.reset,
+    ]);
+
     const handleTooltip = useCallback(
       (event, paused) => {
         const { x, y } = localPoint(event) || { x: -10, y: -10 };
@@ -306,15 +311,11 @@ const InnerGraph = withTooltip(
         }
         
       },
-      [showTooltip, yScale, xScale, stepData]
+      [showTooltip, xScale, stepData, hideTooltip, pause, play, reset]
     );
 
     const clock = useStore((state) => state.clock);
-    const [pause, play, reset] = useStore((state) => [
-      state.pause,
-      state.play,
-      state.reset,
-    ]);
+    
 
     const [visualTime, setVisualTime] = useState(0);
 
@@ -577,3 +578,5 @@ const InnerGraph = withTooltip(
     );
   }
 );
+
+export default Graph
