@@ -23,6 +23,7 @@ import lodash from 'lodash';
 // import KnifeAssembly from './Knife_Assembly.json';
 // import KnifeAssembly from './Knife_Assembly_Refactor.json';
 import KnifeAssembly from './Knife_Assembly_Simple_VP.json';
+// import KnifeAssembly from './Knife_Assembly_TEST.json';
 import { STATUS } from './Constants';
 // import { Solver } from '@people_and_robots/lively_tk';
 // import {ur3e} from './ur3e.xml';

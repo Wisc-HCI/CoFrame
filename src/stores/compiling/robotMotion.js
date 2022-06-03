@@ -82,15 +82,15 @@ const createJointGoals = (jointState1, jointState2, duration, jointNames) => {
     let goals = [];
     let idx = 0;
     let tmpJointGoals = {};
-    console.log("createJointGoals",{tmpJointGoals,jointState1,jointState2})
+    // console.log("createJointGoals",{tmpJointGoals,jointState1,jointState2})
     while (idx <= numGoals) {
         const percent = idx / numGoals;
-        console.log('percent',percent)
+        // console.log('percent',percent)
         jointNames.forEach(jointKey => {
             tmpJointGoals[jointKey] = (1 - percent) * jointState1[jointKey] + percent * jointState2[jointKey]
-            if (jointKey === 'wrist_2_joint') { 
-                console.log("createJointGoalsInner",{percent,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
-            }
+            // if (jointKey === 'wrist_2_joint') { 
+                // console.log("createJointGoalsInner",{percent,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
+            // }
             // console.log("createJointGoalsInner",{tmpJointGoals,jointState1,jointState2,percent,jointKey,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
         })
         goals.push({
@@ -104,7 +104,7 @@ const createJointGoals = (jointState1, jointState2, duration, jointNames) => {
         })
         idx += 1;
     }
-    console.log('GOALS',goals)
+    // console.log('GOALS',goals)
     return goals
 }
 
@@ -342,7 +342,7 @@ export const robotMotionCompiler = ({ data, properties, context, path, memo, sol
                         ? createIKGoals(goalPose1, goalPose2, jointState1, jointState2, duration, jointNames)
                         : createJointGoals(jointState1, jointState2, duration, jointNames);
 
-                    console.log('creating sensitivity testers')
+                    // console.log('creating sensitivity testers')
                     const sensitivityTester = motionType === 'IK'
                         ? createIKSensitivityTester(attachmentLink, jointNames, jointState1, jointState2, goals.length)
                         : createJointSensitivityTester(jointNames);

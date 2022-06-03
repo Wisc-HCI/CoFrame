@@ -4,8 +4,13 @@ import { handleUpdate } from './compiling';
 import { DATA_TYPES } from 'simple-vp';
 import { createEnvironmentModel } from './helpers';
 
-const loadModule = async () => {
+const loadLikModule = async () => {
     const module = await import('@people_and_robots/lively_tk');
+    return module;
+}
+
+const loadCompilerModule = async () => {
+    const module = await import('../../build/coframe');
     return module;
 }
 
@@ -47,7 +52,12 @@ const loadModule = async () => {
 const performCompileProcess = async (data) => {
     const { programData, objectTypes } = data;
     // Process the data without stalling the UI
-    const module = await loadModule();
+    const module = await loadLikModule();
+
+    // const compModule = await loadCompilerModule();
+    // console.warn(compModule.welcome("Harry"));
+    // const poses = Object.values(programData).filter(d=>(d.type==='waypointType'||d.type==='locationType')&&d.dataType===DATA_TYPES.INSTANCE)
+    // console.warn({input:poses,output:compModule.compile(poses)});
 
     let root = null;
     Object.values(programData).some(v=>{

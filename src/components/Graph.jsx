@@ -159,7 +159,7 @@ const Graph = ({ width, height, margin = defaultMargin, visible }) => {
     return [stepData, trackTypes];
   });
 
-  console.warn("STEP DATA", stepData);
+  // console.warn("STEP DATA", stepData);
 
   const eventTypes = useStore((state) => ({
     action: {

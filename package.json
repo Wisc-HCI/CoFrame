@@ -53,9 +53,13 @@
   },
   "scripts": {
     "start": "webpack serve --open --mode development",
-    "build": "webpack --mode production",
+    "build": "npm run build:compiler && webpack --mode production",
     "serve": "serve dist -p 3001",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "install-bindgen": "cargo install -f wasm-bindgen-cli",
+    "build:wasm": "cargo build --target wasm32-unknown-unknown",
+    "build:bindgen": "wasm-bindgen target/wasm32-unknown-unknown/debug/coframe.wasm --out-dir build",
+    "build:compiler": "npm run build:wasm && npm run build:bindgen"
   },
   "eslintConfig": {
     "extends": "react-app"

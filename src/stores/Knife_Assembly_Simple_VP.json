@@ -1882,8 +1882,7 @@
       "compileFn": 6,
       "compiled": {},
       "updateFields": ["position", "rotation"],
-      "reachable": false,
-      "trace": null
+      "reachable": false
     },
     "dataType": "INSTANCE",
     "selected": false,
@@ -1912,8 +1911,7 @@
       "compileFn": 6,
       "compiled": { "[\"root\"]": { "status": 2 } },
       "updateFields": ["position", "rotation"],
-      "reachable": false,
-      "trace": null
+      "reachable": false
     },
     "dataType": "INSTANCE",
     "selected": false,
@@ -1942,8 +1940,7 @@
       "compileFn": 6,
       "compiled": { "[\"root\"]": { "status": 2 } },
       "updateFields": ["position", "rotation"],
-      "reachable": false,
-      "trace": null
+      "reachable": false
     },
     "dataType": "INSTANCE",
     "selected": false,
@@ -1972,8 +1969,7 @@
       "compileFn": 6,
       "compiled": {},
       "updateFields": ["position", "rotation"],
-      "reachable": false,
-      "trace": null
+      "reachable": false
     },
     "dataType": "INSTANCE",
     "selected": false,
@@ -2004,7 +2000,7 @@
   "toolType-assembly-jig": {
     "type": "toolType",
     "id": "toolType-assembly-jig",
-    "name": "Assembly Jig Machine",
+    "name": "Assembly Jig",
     "canDelete": true,
     "canEdit": true,
     "properties": {
@@ -2012,7 +2008,7 @@
       "weight": 0,
       "collision": "assembly_jig_collision",
       "compileFn": 13,
-      "description": "Machine that attaches handles to the blade.",
+      "description": "Tool that attaches handles to the blade.",
       "position": { "x": 0.2, "y": 0.28, "z": 0.14 },
       "rotation": { "w": -0.5, "x": 0.5, "y": -0.5, "z": -0.5 },
       "relativeTo": "world",
@@ -2183,7 +2179,7 @@
       "weight": 0,
       "collision": "transport_jig_collision",
       "compileFn": 13,
-      "description": "",
+      "description": "Tool that can serve as a sheath that makes the blade or knife safe to carry.",
       "position": { "x": 0.3, "y": 0.28, "z": 0.14 },
       "rotation": { "w": -0.5, "x": 0.5, "y": -0.5, "z": -0.5 },
       "relativeTo": "world",

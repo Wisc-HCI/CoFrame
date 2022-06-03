@@ -292,7 +292,7 @@ const actionTypes = {
   moveGripperType: merge(gripperFeatures, basicActionData),
   machineInitType: merge(machineInitFeatures, basicActionData),
   processStartType: merge(processStartFeatures, basicActionData),
-  processStopType: merge(processStopFeatures, basicActionData),
+  // processStopType: merge(processStopFeatures, basicActionData),
   processWaitType: merge(processWaitFeatures, basicActionData),
   moveTrajectoryType: merge(moveTrajectoryFeatures, basicActionData),
   // moveUnplannedType: merge(moveUnplannedFeatures,basicActionData),

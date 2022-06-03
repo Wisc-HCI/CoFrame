@@ -604,9 +604,6 @@ const compileEffects = (steps) => {
 };
 
 const compare = (baseline, test) => {
-  // let comp = lodash.cloneDeep(src);
-  // comp = lodash.merge(comp,obj);
-  // return lodash.isMatch(comp,src);
   let matches = true;
   let matchedKeys = [];
   const allKeys = lodash.uniq([...Object.keys(baseline), ...Object.keys(test)]);

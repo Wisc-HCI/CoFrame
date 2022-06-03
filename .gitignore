@@ -2,3 +2,8 @@ node_modules
 dist
 .DS_Store
 package-lock.json
+
+# Added by cargo
+
+/target
+/Cargo.lock

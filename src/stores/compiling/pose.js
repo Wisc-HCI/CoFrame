@@ -1,7 +1,7 @@
 import { STATUS, ROOT_BOUNDS, ROOT_PATH } from "../Constants";
 import { Quaternion, Matrix4 } from 'three';
 import { distance, likStateToData, createStaticEnvironment, queryWorldPose, quaternionLog, poseToGoalPosition } from "../helpers";
-import { DATA_TYPES } from "simple-vp";
+// import { DATA_TYPES } from "simple-vp";
 import { range, random } from 'lodash';
 
 const sampleJoints = (joints) => {

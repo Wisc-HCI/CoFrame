@@ -1,0 +1,12 @@
+[package]
+name = "coframe"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+lively_tk = {git = "https://github.com/Wisc-HCI/lively_tk"}
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+serde = { version = "1.0", features = ["derive"]}
