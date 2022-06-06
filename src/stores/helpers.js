@@ -202,46 +202,45 @@ export const queryLocalPose = (model, ref, localTransform) => {
 };
 
 export const createStaticEnvironment = (model) => {
-  return Object.values(model)
-    .filter((item) => item.userData.isCollisionObj)
-    .map((item) => {
-      // Convert position to world frame
-      // let {position, rotation} = queryWorldPose(model, item.uuid);
+    return Object.values(model).filter(item => item.userData.parent !== 'world' && item.userData.collisionInfo).map(item => {});
+    // let retVal = [];
+    // return Object.values(model).filter(item => item.userData.isCollisionObj).map(item => {
+    //     // Convert position to world frame
+    //     let {position, rotation} = queryWorldPose(model, item.uuid);
 
-      // let partialObject = {
-      //     name: item.uuid,
-      //     frame: 'world',
-      //     physical: item.userData.physical,
-      //     localTransform: {
-      //         translation: [position.x, position.y, position.z],
-      //         rotation: [rotation.x, rotation.y, rotation.z, rotation.w]
-      //     }
-      // };
+    //     let partialObject = {
+    //         name: item.uuid,
+    //         frame: 'world',
+    //         physical: item.userData.physical,
+    //         localTransform: {
+    //             translation: [position.x, position.y, position.z],
+    //             rotation: [rotation.x, rotation.y, rotation.z, rotation.w]
+    //         }
+    //     };
 
-      // // Create appropriate object
-      // if (item.userData.collisionType === "cube") {
-      //     return merge(partialObject, {
-      //         type: 'Box',
-      //         x: item.scale.x,
-      //         y: item.scale.y,
-      //         z: item.scale.z,
-      //     })
-      // } else if (item.userData.collisionType === "sphere") {
-      //     return merge(partialObject, {
-      //         type:'Sphere',
-      //         radius: item.userData.radius,
-      //     })
-      // } else if (["capsule", "cylinder"].includes(item.userData.collisionType)) {
-      //     return merge(partialObject, {
-      //         type: item.userData.collisionType === "capsule" ? 'Capsule' : 'Cylinder',
-      //         length: item.userData.length,
-      //         radius: item.userData.radius,
-      //     })
-      // }
-      return null;
-    })
-    .filter((item) => item !== null);
-};
+    //     // Create appropriate object
+    //     if (item.userData.collisionType === "cube") {
+    //         retVal.push(merge(partialObject, {
+    //             type: 'Box',
+    //             x: item.scale.x,
+    //             y: item.scale.y,
+    //             z: item.scale.z,
+    //         }))
+    //     } else if (item.userData.collisionType === "sphere") {
+    //         retVal.push(merge(partialObject, {
+    //             type:'Sphere',
+    //             radius: item.userData.radius,
+    //         }))
+    //     } else if (["capsule", "cylinder"].includes(item.userData.collisionType)) {
+    //         retVal.push(merge(partialObject, {
+    //             type: item.userData.collisionType === "capsule" ? 'Capsule' : 'Cylinder',
+    //             length: item.userData.length,
+    //             radius: item.userData.radius,
+    //         }))
+    //     } 
+    // }).filter(item => item !== null);
+    // return retVal;
+}
 
 export const createEnvironmentModel = (programData) => {
   let added = true;
@@ -351,6 +350,17 @@ export const createEnvironmentModel = (programData) => {
   return model;
 };
 
+export const anyReachable = (pose) => {
+  let agents = Object.values(pose.properties.reachability);
+  let reachable = false;
+  agents.forEach(agent => {
+      Object.values(agent).forEach(entry => {
+          reachable = reachable || entry;
+      });
+  });
+  return reachable;
+}
+
 export const checkHandThresholds = (pinchDistance) => {
   return (
     pinchDistance >= HAND_PINCH_MIN_DISTANCE &&
@@ -359,28 +369,48 @@ export const checkHandThresholds = (pinchDistance) => {
 };
 
 export const likProximityAdjustment = (robotAgent, proximity) => {
-  let trackedPinchPoints = robotAgent.properties.pinchPointPairLinks;
+  let trackedPinchPoints = robotAgent ? robotAgent.properties.pinchPointPairLinks : [];
   let proximityModel = {};
 
   if (!proximity) {
     return proximityModel;
   }
   proximity.forEach(({ shape1, shape2, distance, points, physical }) => {
-    trackedPinchPoints.forEach(({ link1, link2 }) => {
-      if (
-        (link1 === shape1 && link2 === shape2) ||
-        (link2 === shape1 && link1 === shape2)
-      ) {
-        if (!proximityModel[link1]) {
-          proximityModel[link1] = {};
+    if (trackedPinchPoints !== []) { 
+      trackedPinchPoints.forEach(({ link1, link2 }) => {
+        if (
+          (link1 === shape1 && link2 === shape2) ||
+          (link2 === shape1 && link1 === shape2)
+        ) {
+          if (!proximityModel[link1]) {
+            proximityModel[link1] = {};
+          }
+          proximityModel[link1][link2] = {
+            distance: distance,
+            physical: physical,
+            points: points,
+          };
         }
-        proximityModel[link1][link2] = {
-          distance: distance,
-          physical: physical,
-          points: points,
-        };
+      });
+    } else {
+      if (!proximityModel[link1]) {
+        proximityModel[link1] = {};
       }
-    });
+      if (!proximityModel[link2]) {
+        proximityModel[link2] = {};
+      }
+      proximityModel[link1][link2] = {
+        distance: distance,
+        physical: physical,
+        points: points,
+      };
+      proximityModel[link2][link1] = {
+        distance: distance,
+        physical: physical,
+        points: points,
+      };
+    }
+      
   });
 
   return proximityModel;
@@ -1624,6 +1654,32 @@ export function trajectoryDataToLine(
 //     return items
 // }
 
+export const framesToEEPoseScores = (frames) => {
+  let scores = [0];
+
+  for (let i = 1; i < frames["tool0"].length; i++) {
+    const p1 = [frames["tool0"][i].x, frames["tool0"][i].y, frames["tool0"][i].z];
+    const p0 = [frames["tool0"][i-1].x, frames["tool0"][i-1].y, frames["tool0"][i-1].z];
+    const q1 = [frames["tool0_endpoint"][i].x, frames["tool0_endpoint"][i].y, frames["tool0_endpoint"][i].z];
+    const movementVec = new Vector3(
+      p1[0] - p0[0],
+      p1[1] - p0[1],
+      p1[2] - p0[2]
+    );
+    const directionVec = new Vector3(
+      q1[0] - p1[0],
+      q1[1] - p1[1],
+      q1[2] - p1[2]
+    );
+    scores.push(
+      (1000 * movementVec.manhattanLength()) /
+        Math.pow(Math.E, 10 * movementVec.angleTo(directionVec))
+    );
+  }
+
+  return scores;
+}
+
 export const traceToEEPoseScores = (trace) => {
   let scores = [0];
   for (let i = 1; i < trace.frames["tool0"].length; i++) {
@@ -1647,6 +1703,20 @@ export const traceToEEPoseScores = (trace) => {
   }
   return scores;
 };
+
+export const stepsToVertices = (steps) => {
+  let verts = [];
+  steps.forEach(step => {
+      Object.keys(step.data.links).forEach(link => {
+          verts.push(new Vector3 (
+            step.data.links[link].position.x,
+            step.data.links[link].position.y,
+            step.data.links[link].position.z
+          ))
+      })
+  })
+  return verts;
+}
 
 export const traceToVertices = (trace) => {
   let vertices = [];
@@ -1735,6 +1805,9 @@ export function idleTimeEstimate(state, programSteps) {
 
 export function durationEstimate(programSteps) {
   // Return the time from the last element and convert from milliseconds to seconds
+  if (programSteps.length === 0) {
+    return 0;
+  }
   return programSteps[programSteps.length - 1].time / 1000;
 }
 

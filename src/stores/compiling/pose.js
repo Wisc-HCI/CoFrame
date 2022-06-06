@@ -29,7 +29,7 @@ export const poseCompiler = ({ data, properties, path, memo, module, worldModel 
 
     const grippers = Object.values(memo).filter(v => v.type === 'gripperType');
 
-    const staticEnvironment = createStaticEnvironment(worldModel);
+    const staticEnvironment = [] // createStaticEnvironment(worldModel);
 
     Object.values(memo)
         .filter(v => v.type === 'robotAgentType')

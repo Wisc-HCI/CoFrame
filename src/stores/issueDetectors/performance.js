@@ -1,4 +1,7 @@
+import { DATA_TYPES } from "simple-vp";
+import { STATUS, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
+import { anyReachable, distance, stepsToVertices, verticesToVolume } from "../helpers";
 
 const jointNames = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'];
 const jointNameMap = {
@@ -33,90 +36,88 @@ const ERROR_COLOR = {r: 204, g: 75, b: 10};
 // Used for adjusting the x axes time data
 const precision = 1000;
 
-export const findReachabilityIssues = ({program}) => { // requires joint_processor to produce joints for each waypoint/location
+export const findReachabilityIssues = ({programData}) => { // requires joint_processor to produce joints for each waypoint/location
     let issues = {};
     let usedPoses = [];
     // First check through the trajectories that are used.
-    Object.values(program.data.trajectories).forEach(trajectory=>{
+    Object.values(programData).filter(v => v.type === "trajectoryType").forEach(trajectory=>{
         // Check through the start locations. If not defined, this is resolved in program quality.
-        if (trajectory.start_location_uuid) {
-            const startLocation = program.data.locations[trajectory.start_location_uuid];
-            if (!startLocation.joints.reachable && usedPoses.indexOf(trajectory.start_location_uuid) < 0) {
-                usedPoses.push(trajectory.start_location_uuid)
+        if (trajectory.properties.startLocation) {
+            const startLocation = programData[programData[trajectory.properties.startLocation].ref];
+            if (!anyReachable(startLocation) && usedPoses.indexOf(startLocation.id) < 0) {
+                usedPoses.push(startLocation.id)
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
-                    uuid: uuid,
+                    id: uuid,
                     requiresChanges: true,
                     title: `Location "${startLocation.name}" not reachable`,
                     description: `Location "${startLocation.name}" is not reachable by the robot, but is used in the program.`,
                     complete: false,
-                    focus: {uuid:trajectory.start_location_uuid, type:'location'},
+                    focus: [startLocation.id],
                     graphData: null
                 }
             }
         };
         // Check through the end locations. If not defined, this is resolved in program quality.
-        if (trajectory.end_location_uuid) {
-            const endLocation = program.data.locations[trajectory.end_location_uuid];
-            if (!endLocation.joints.reachable && usedPoses.indexOf(trajectory.end_location_uuid) < 0) {
-                usedPoses.push(trajectory.end_location_uuid)
+        if (trajectory.properties.endLocation) {
+            const endLocation = programData[programData[trajectory.properties.endLocation].ref];
+            if (!anyReachable(endLocation) && usedPoses.indexOf(endLocation.id) < 0) {
+                usedPoses.push(endLocation.id)
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
-                    uuid: uuid,
+                    id: uuid,
                     requiresChanges: true,
                     title: `Location "${endLocation.name}" not reachable`,
                     description: `Location "${endLocation.name}" is not reachable by the robot, but is used in the program.`,
                     complete: false,
-                    focus: {uuid:trajectory.end_location_uuid, type:'location'},
+                    focus: [endLocation.id],
                     graphData: null
                 }
             }
         }
         // Now go through the waypoints of the trajectory
-        trajectory.waypoint_uuids.forEach(waypoint_uuid=>{
-            const waypoint = program.data.waypoints[waypoint_uuid];
-            if (!waypoint.joints.reachable && usedPoses.indexOf(waypoint_uuid) < 0) {
-                usedPoses.push(waypoint_uuid)
+        trajectory.properties.waypoints.forEach(waypoint_uuid=>{
+            const waypoint = programData[programData[waypoint_uuid].ref];
+            if (!anyReachable(waypoint)  && usedPoses.indexOf(waypoint.id) < 0) {
+                usedPoses.push(waypoint.id)
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
-                    uuid: uuid,
+                    id: uuid,
                     requiresChanges: true,
                     title: `Waypoint "${waypoint.name}" not reachable`,
                     description: `Waypoint "${waypoint.name}" is not reachable by the robot, but is used in the program.`,
                     complete: false,
-                    focus: {uuid:waypoint_uuid, type:'waypoint'},
+                    focus: [waypoint.id],
                     graphData: null
                 }
             }
-        })
-    })
+        });
+    });
 
     // The initialize skill takes in a location parameter, so check for calls that use it.
-    Object.values(program.data.primitives).forEach(primitive=>{
-        if (primitive.type === 'node.primitive.skill-call.') {
-            Object.keys(primitive.parameters).filter(key=>key.includes('location')).forEach(key=>{
-                const location_uuid = primitive.parameters[key];
-                console.log(location_uuid);
-                if (location_uuid && program.data.locations[location_uuid].joints && !program.data.locations[location_uuid].joints.reachable) {
-                    const uuid = generateUuid('issue');
-                    issues[uuid] = {
-                        uuid: uuid,
-                        requiresChanges: true,
-                        title: `Initial robot Location "${program.data.locations[location_uuid].name}" not reachable`,
-                        description: `Location "${program.data.locations[location_uuid].name}" is used for initialization but is not reachable.`,
-                        complete: false,
-                        focus: {uuid:location_uuid, type:'location'},
-                        graphData: null
-                    }
+    Object.values(programData).filter(v => v.dataType === DATA_TYPES.CALL).forEach(primitive=>{
+        Object.keys(primitive.properties).filter(key=>key.includes('location')).forEach(key=>{
+            const location_uuid = primitive.properties[key];
+            let location = location_uuid ? programData[programData[location_uuid].ref] : null;
+            if (location && location.properties.reachability && !anyReachable(location)) {
+                const uuid = generateUuid('issue');
+                issues[uuid] = {
+                    id: uuid,
+                    requiresChanges: true,
+                    title: `Initial robot Location "${location.name}" not reachable`,
+                    description: `Location "${location.name}" is used for initialization but is not reachable.`,
+                    complete: false,
+                    focus: [location.id],
+                    graphData: null
                 }
-            })
-        }
-    })
+            }
+        });
+    });
 
     // Enumerate locations and add warnings for those not used in the program.
-    Object.values(program.data.locations).forEach(location=>{
-        if (!location.joints.reachable && usedPoses.indexOf(location.uuid) < 0) {
-            usedPoses.push(location.uuid)
+    Object.values(programData).filter(v => v.type === 'locationType' && v.dataType === DATA_TYPES.INSTANCE).forEach(location=>{
+        if (!anyReachable(location) && usedPoses.indexOf(location.id) < 0) {
+            usedPoses.push(location.id)
             const uuid = generateUuid('issue');
             issues[uuid] = {
                 uuid: uuid,
@@ -124,23 +125,24 @@ export const findReachabilityIssues = ({program}) => { // requires joint_process
                 title: `Unused Location "${location.name}" not reachable`,
                 description: `Location "${location.name}" is not reachable by the robot, but isn't used in the program.`,
                 complete: false,
-                focus: {uuid:location.uuid, type:'location'},
+                focus: [location.id],
                 graphData: null
             }
         }
-    })
+    });
+
     // Enumerate waypoints and add warnings for those not used in the program.
-    Object.values(program.data.waypoints).forEach(waypoint=>{
-        if (!waypoint.joints.reachable && usedPoses.indexOf(waypoint.uuid) < 0) {
-            usedPoses.push(waypoint.uuid)
+    Object.values(programData).filter(v => v.type === 'waypointType' && v.dataType === DATA_TYPES.INSTANCE).forEach(waypoint=>{
+        if (!anyReachable(waypoint) && usedPoses.indexOf(waypoint.id) < 0) {
+            usedPoses.push(waypoint.id)
             const uuid = generateUuid('issue');
             issues[uuid] = {
-                uuid: uuid,
+                id: uuid,
                 requiresChanges: false,
                 title: `Unused Waypoint "${waypoint.name}" not reachable`,
                 description: `Waypoint "${waypoint.name}" is not reachable by the robot, but isn't used in the program.`,
                 complete: false,
-                focus: {uuid:waypoint.uuid, type:'waypoint'},
+                focus: [waypoint.id],
                 graphData: null
             }
         }
@@ -149,177 +151,198 @@ export const findReachabilityIssues = ({program}) => { // requires joint_process
 }
 
 // requires trace processor, joint speed grader (can also use intermediate type)
-export const findJointSpeedIssues = ({program, settings}) => {
+export const findJointSpeedIssues = ({program, programData, settings}) => {
     let issues = {};
+
+    if (program.properties.status === STATUS.FAILED || program.properties.status === STATUS.PENDING) {
+        return [issues, {}];
+    }
 
     const warningLevel = settings["jointSpeedWarn"].value * settings['jointMaxSpeed'].value;
     const errorLevel = settings["jointSpeedErr"].value * settings['jointMaxSpeed'].value;
 
-    Object.values(program.executablePrimitives).forEach(ePrim => {
-        Object.values(ePrim).forEach(primitive=>{
-            if (primitive.type === "node.primitive.move-trajectory.") {
-                let trajectory = primitive.parameters.trajectory_uuid;
-
-                let sceneData = {};
-                let jointVelocities = {};
-                let jointGraphData = [];
-                let timeData = trajectory.trace.time_data;
-                let allJointData = trajectory.trace.joint_data;
-
-                let jointDataLength = trajectory.trace.joint_data[jointNames[0]].length;
-
-                let hasWarningVelocity = false;
-                let hasErrorVelocity = false;
-                let shouldGraphJoint = [];
-
-                for (let i = 0; i < jointNames.length; i++) {
-                    jointVelocities[jointNames[i]] = [0];
-                    sceneData[jointNames[i]] = [];
-                    shouldGraphJoint.push(false);
+    Object.values(programData).filter(v => v.type === 'moveTrajectoryType').forEach(moveTrajectory => {
+        // Filter to just steps that affect the joint motions
+        let steps = moveTrajectory.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+        
+        // Build the arrays for time, joint values (according to time), and link positions (according to time)
+        let timeData = [];
+        let allJointData = {};
+        let positionData = {};
+        for (let i = 0; i < steps.length; i++) {
+            timeData.push(steps[i].time);
+            Object.keys(steps[i].data.joints).forEach(key => {
+                if (!(key in allJointData)) {
+                    allJointData[key] = [];
+                    positionData[key] = [];
                 }
+                allJointData[key].push(steps[i].data.joints[key]);
+                positionData[key].push(steps[i].data.links[jointLinkMap[key]]);
+            })
+        }
+        let jointDataLength = allJointData[jointNames[0]].length;
 
-                // Calculate velocites and determine which to graph
-                for (let i = 0; i < jointNames.length; i++) {
-                    for (let j = 1; j < jointDataLength; j++) {
-                        let calcVel = Math.abs((allJointData[jointNames[i]][j] - allJointData[jointNames[i]][j-1]) / (timeData[j] - timeData[j-1]));
-                        let curFrame = trajectory.trace.frames[jointLinkMap[jointNames[i]]][j][0];
+        let sceneData = {};
+        let jointVelocities = {};
+        let jointGraphData = [];
 
-                        if (calcVel > errorLevel) {
-                            if (!hasErrorVelocity) {
-                                hasErrorVelocity = true;
-                            }
-                            if (!hasWarningVelocity) {
-                                hasWarningVelocity = true;
-                            }
-                            if (!shouldGraphJoint[i]) {
-                                shouldGraphJoint[i] = true;
-                            }
-                            sceneData[jointNames[i]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
-                        } else if (calcVel > warningLevel) {
-                            if (!hasWarningVelocity) {
-                                hasWarningVelocity = true;
-                            }
-                            if (!shouldGraphJoint[i]) {
-                                shouldGraphJoint[i] = true;
-                            }
-                            sceneData[jointNames[i]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
-                        } else {
-                            sceneData[jointNames[i]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
-                        }
-                        jointVelocities[jointNames[i]].push(calcVel);
+        let hasWarningVelocity = false;
+        let hasErrorVelocity = false;
+        let shouldGraphJoint = [];
+
+        for (let i = 0; i < jointNames.length; i++) {
+            jointVelocities[jointNames[i]] = [0];
+            sceneData[jointNames[i]] = [];
+            shouldGraphJoint.push(false);
+        }
+
+        // Calculate velocites and determine which to graph
+        for (let i = 0; i < jointNames.length; i++) {
+            for (let j = 1; j < jointDataLength; j++) {
+                // Adjust the time from milliseconds to seconds to calculate the velocity correctly
+                let calcVel = Math.abs((allJointData[jointNames[i]][j] - allJointData[jointNames[i]][j-1]) / ((timeData[j] - timeData[j-1]) / 1000));
+                let curFrame = positionData[jointNames[i]][j].position;
+
+                if (calcVel > errorLevel) {
+                    if (!hasErrorVelocity) {
+                        hasErrorVelocity = true;
+                        hasWarningVelocity = true;
+                        shouldGraphJoint[i] = true;
                     }
+                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                } else if (calcVel > warningLevel) {
+                    if (!hasWarningVelocity) {
+                        hasWarningVelocity = true;
+                        shouldGraphJoint[i] = true;
+                    }
+                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
+                } else {
+                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
                 }
+                jointVelocities[jointNames[i]].push(calcVel);
+            }
+        }
 
-                // Filter and format graph data
-                for (let i = 1; i < jointDataLength; i++) {
-                    let graphDataPoint = {x: Math.floor(timeData[i] * precision) / precision};
-                    for (let j = 0; j < jointNames.length; j++) {
-                        if (shouldGraphJoint[j]) {
-                            graphDataPoint[jointNameMap[jointNames[j]]] = jointVelocities[jointNames[j]][i];
-                        }
-                    }
-                    jointGraphData.push(graphDataPoint);
-                }
-
-                // Get associated colors
-                let jointColors = [];
-                for (let i = 0; i < jointNames.length; i++) {
-                    if (shouldGraphJoint[i]) {
-                        jointColors.push(jointColorMap[jointNames[i]]);
-                    }
-                }
-
-                // Build issue
-                if (hasWarningVelocity) {
-                    const uuid = generateUuid('issue');
-                    issues[uuid] = {
-                        uuid: uuid,
-                        requiresChanges: hasErrorVelocity,
-                        title: `Robot joint(s) move too fast`,
-                        description: `The robot's joint speeds are too fast`,
-                        complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
-                        graphData: {
-                            series: jointGraphData,
-                            lineColors: jointColors,
-                            xAxisLabel: 'Timestamp',
-                            yAxisLabel: 'Velocity',
-                            title: ''
-                        },
-                        sceneData: {vertices: sceneData}
-                    }
+        // Filter and format graph data
+        for (let i = 1; i < jointDataLength; i++) {
+            let graphDataPoint = {x: timeData[i]};
+            for (let j = 0; j < jointNames.length; j++) {
+                if (shouldGraphJoint[j]) {
+                    graphDataPoint[jointNameMap[jointNames[j]]] = jointVelocities[jointNames[j]][i];
                 }
             }
-        })
+            jointGraphData.push(graphDataPoint);
+        }
+
+        // Get associated colors
+        let jointColors = [];
+        for (let i = 0; i < jointNames.length; i++) {
+            if (shouldGraphJoint[i]) {
+                jointColors.push(jointColorMap[jointNames[i]]);
+            }
+        }
+
+        // Build issue
+        if (hasWarningVelocity || hasErrorVelocity) {
+            const uuid = generateUuid('issue');
+            issues[uuid] = {
+                id: uuid,
+                requiresChanges: hasErrorVelocity,
+                title: `Robot joint(s) move too fast`,
+                description: `The robot's joint speeds are too fast`,
+                complete: false,
+                focus: [moveTrajectory.id],
+                graphData: {
+                    series: jointGraphData,
+                    lineColors: jointColors,
+                    xAxisLabel: 'Timestamp',
+                    yAxisLabel: 'Velocity',
+                    title: '',
+                    isTimeseries: true
+                },
+                sceneData: {vertices: sceneData}
+            }
+        }
     });
 
     return [issues, {}];
 }
 
 // requires trace processor, end effector grader + intermediate end effector speed interediate type
-export const findEndEffectorSpeedIssues = ({program, settings}) => {
+export const findEndEffectorSpeedIssues = ({program, programData, settings}) => {
     let issues = {};
+
+    if (program.properties.status === STATUS.FAILED || program.properties.status === STATUS.PENDING) {
+        return [issues, {}];
+    }
 
     const warningLevel = settings['eeSpeedWarn'].value;
     const errorLevel = settings['eeSpeedErr'].value;
     
-    Object.values(program.executablePrimitives).forEach(ePrim => {
-        Object.values(ePrim).forEach(primitive=>{
-            if (primitive.type === "node.primitive.move-trajectory.") {
-                let trajectory = primitive.parameters.trajectory_uuid;
-                let endEffectorVelocities = [];
-                let endEffectorGraphData = [];
-                let timeData = trajectory.trace.time_data;
-                let frames = trajectory.trace.frames.tool0;
+    Object.values(programData).filter(v => v.type === "moveTrajectoryType").forEach(primitive=>{
+        // Filter to just steps that affect the joint motions
+        let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+        
+        // Build the arrays for time, joint values (according to time), and link positions (according to time)
+        let timeData = [];
+        let frames = [];
+        for (let i = 0; i < steps.length; i++) {
+            timeData.push(steps[i].time);
+            frames.push(steps[i].data.links.tool0.position)
+        }
 
-                let hasErrorVelocity = false;
-                let hasWarningVelocity = false;
+        let endEffectorVelocities = [];
+        let endEffectorGraphData = [];
 
-                for (let i = 1; i < frames.length; i++) {
-                    let calcVel = Math.sqrt(Math.pow(frames[i][0][0] - frames[i-1][0][0], 2) + Math.pow(frames[i][0][1] - frames[i-1][0][1], 2) + Math.pow(frames[i][0][2] - frames[i-1][0][2], 2)) / (timeData[i] - timeData[i-1]);
+        let hasErrorVelocity = false;
+        let hasWarningVelocity = false;
 
-                    if (calcVel > errorLevel) {
-                        if (!hasErrorVelocity) {
-                            hasErrorVelocity = true;
-                        }
-                        if (!hasWarningVelocity) {
-                            hasWarningVelocity = true;
-                        }
-                        endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: ERROR_COLOR});
-                    } else if (calcVel > warningLevel) {
-                        if (!hasWarningVelocity) {
-                            hasWarningVelocity = true;
-                        }
-                        endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: WARNING_COLOR});
-                    } else {
-                        endEffectorVelocities.push({position: {x: frames[i][0][0], y: frames[i][0][1], z: frames[i][0][2]}, color: NO_ERROR_COLOR});
-                    }
+        for (let i = 1; i < frames.length; i++) {
+            // Adjust the time from milliseconds to seconds to calculate the velocity correctly
+            let calcVel = distance(frames[i], frames[i-1]) / ((timeData[i] - timeData[i-1]) / 1000);
 
-                    endEffectorGraphData.push({x: Math.floor(timeData[i] * precision) / precision, 'End Effector Velocity': calcVel});
-                    
+
+            if (calcVel > errorLevel) {
+                if (!hasErrorVelocity) {
+                    hasErrorVelocity = true;
                 }
-
-                if (hasErrorVelocity) {
-                    const uuid = generateUuid('issue');
-                    issues[uuid] = {
-                        uuid: uuid,
-                        requiresChanges: hasErrorVelocity,
-                        title: `End effector moves too fast`,
-                        description: `The end effector moves too fast for Trajectory "${trajectory.name}"`,
-                        complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
-                        graphData: {
-                            series: endEffectorGraphData,
-                            lineColors: ["#E69F00"],
-                            xAxisLabel: 'Timestamp',
-                            yAxisLabel: 'Velocity',
-                            title: ''
-                        },
-                        sceneData: {vertices: {endEffector: endEffectorVelocities}}
-                    }
+                if (!hasWarningVelocity) {
+                    hasWarningVelocity = true;
                 }
+                endEffectorVelocities.push({position: {x: frames[i].x, y: frames[i].y, z: frames[i].z}, color: ERROR_COLOR});
+            } else if (calcVel > warningLevel) {
+                if (!hasWarningVelocity) {
+                    hasWarningVelocity = true;
+                }
+                endEffectorVelocities.push({position: {x: frames[i].x, y: frames[i].y, z: frames[i].z}, color: WARNING_COLOR});
+            } else {
+                endEffectorVelocities.push({position: {x: frames[i].x, y: frames[i].y, z: frames[i].z}, color: NO_ERROR_COLOR});
             }
-        })
+
+            endEffectorGraphData.push({x: timeData[i], 'End Effector Velocity': calcVel});
+            
+        }
+
+        if (hasErrorVelocity) {
+            const uuid = generateUuid('issue');
+            issues[uuid] = {
+                uuid: uuid,
+                requiresChanges: hasErrorVelocity,
+                title: `End effector moves too fast`,
+                description: `The end effector moves too fast for Trajectory "${primitive.name}"`,
+                complete: false,
+                focus: [primitive.id],
+                graphData: {
+                    series: endEffectorGraphData,
+                    lineColors: ["#E69F00"],
+                    xAxisLabel: 'Timestamp',
+                    yAxisLabel: 'Velocity',
+                    title: '',
+                    isTimeseries: false
+                },
+                sceneData: {vertices: {endEffector: endEffectorVelocities}}
+            }
+        }
     });
 
     return [issues, {}];
@@ -332,65 +355,65 @@ export const findPayloadIssues = (_) => { // Shouldn't change during a trajector
 }
 
 // Requires a convex hall operation on joint frames in traces. This volume can be compared against whole workcell (fraction) and can be used for intersection with extruded human occupancy zones 
-export const findSpaceUsageIssues = ({program, stats, settings}) => {
+export const findSpaceUsageIssues = ({program, programData, stats, settings}) => {
     let issues = {};
     let addStats = {};
+
+    if (program.properties.status === STATUS.FAILED || program.properties.status === STATUS.PENDING) {
+        return [issues, {}];
+    }
 
     const warningLevel = settings['spaceUsageWarn'].value;
     const errorLevel = settings['spaceUsageErr'].value;
     
-    Object.values(program.executablePrimitives).forEach(ePrim => {
-        if (ePrim) {
-            Object.values(ePrim).forEach(primitive=>{
-                if (primitive.type === "node.primitive.move-trajectory.") {
-                    let trajectory = primitive.parameters.trajectory_uuid;
-                    let spaceUtilization = trajectory.vertices;
-                    
-                    let isError = false;
+    Object.values(programData).filter(v => v.type === "moveTrajectoryType").forEach(primitive=>{
+        let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+        let verticies = stepsToVertices(steps);
+        let volume = verticesToVolume(verticies);
+        let trajectory = primitive.properties.trajectory;
+        
+        let isError = false;
 
-                    // get prior values
-                    let priorData = [];
-                    let i = 0;
-                    for (i = 0; i < stats.length; i++) {
-                        if (stats[i][trajectory.uuid] && stats[i][trajectory.uuid].volume) {
-                            priorData.push({x:i, spaceUsage:stats[i][trajectory.uuid].volume});
-                        }
-                    }
-                    // add new one
-                    let newData = {x:i, spaceUsage:trajectory.volume}
-                    priorData.push(newData);
+        // get prior values
+        let priorData = [];
+        let i = 0;
+        for (i = 0; i < stats.length; i++) {
+            if (stats[i][trajectory] && stats[i][trajectory].volume) {
+                priorData.push({x: i, spaceUsage: stats[i][trajectory].volume});
+            }
+        }
+        // add new one
+        let newData = {x:i, spaceUsage: volume}
+        priorData.push(newData);
 
-                    // Adjust color of hull
-                    let hullColor = {...NO_ERROR_COLOR, a: 0.5};
-                    if (trajectory.volume > errorLevel) {
-                        isError = true;
-                        hullColor = {...ERROR_COLOR, a: 0.5}
-                    } else if (trajectory.volume > warningLevel) {
-                        hullColor = {...WARNING_COLOR, a: 0.5}
-                    }
+        // Adjust color of hull
+        let hullColor = {...NO_ERROR_COLOR, a: 0.5};
+        if (volume > errorLevel) {
+            isError = true;
+            hullColor = {...ERROR_COLOR, a: 0.5}
+        } else if (volume > warningLevel) {
+            hullColor = {...WARNING_COLOR, a: 0.5}
+        }
 
-                    // Keep track of specfic trajectory changes
-                    addStats[trajectory.uuid] = {volume: trajectory.volume};
+        // Keep track of specfic trajectory changes
+        addStats[trajectory] = {volume: volume};
 
-                    const uuid = generateUuid('issue');
-                    issues[uuid] = {
-                        uuid: uuid,
-                        requiresChanges: isError,
-                        title: `Robot Space Utilization`,
-                        description: `Robot Space Utilization`,
-                        complete: false,
-                        focus: {uuid:primitive.uuid, type:'primitive'},
-                        graphData: {
-                            series: priorData,
-                            lineColors: ["#E69F00"],
-                            xAxisLabel: 'Program Iteration',
-                            yAxisLabel: 'Space Usage',
-                            title: ''
-                        },
-                        sceneData: {hulls: {spaceUsage: {vertices: spaceUtilization, color: hullColor}}}
-                    }
-                }
-            });
+        const uuid = generateUuid('issue');
+        issues[uuid] = {
+            id: uuid,
+            requiresChanges: isError,
+            title: `Robot Space Utilization`,
+            description: `Robot Space Utilization`,
+            complete: false,
+            focus: [primitive.id],
+            graphData: {
+                series: priorData,
+                lineColors: ["#E69F00"],
+                xAxisLabel: 'Program Iteration',
+                yAxisLabel: 'Space Usage',
+                title: ''
+            },
+            sceneData: {hulls: {spaceUsage: {vertices: verticies, color: hullColor}}}
         }
     });
 

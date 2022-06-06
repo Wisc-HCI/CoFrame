@@ -73,7 +73,7 @@ export const computedSlice = (state) => {
                 trajectory = state.programData[state.programData[entry].properties.trajectory];
             }
             // let trajectory = state.programData[entry];
-            if (state.programData[trajectory.properties.startLocation]?.ref && state.programData[trajectory.properties.endLocation]?.ref) {
+            if (trajectory && state.programData[trajectory.properties.startLocation]?.ref && state.programData[trajectory.properties.endLocation]?.ref) {
                 focusedTrajectoryChildren.push(state.programData[trajectory.properties.startLocation].ref);
                 trajectory.properties.waypoints.forEach((wp) => {
                     focusedTrajectoryChildren.push(state.programData[wp].ref);
@@ -325,22 +325,17 @@ export const computedSlice = (state) => {
     // ===================== Lines =====================
     let lines = {};
 
-    Object.values(executablePrimitives).forEach(ePrim => {
-        if (ePrim) {
-            Object.values(ePrim).forEach(primitive => {
-                if (primitive.type === "move-trajectory") {
-                    const hidden = !state.focus.includes(primitive.uuid);
-                    if (state.secondaryFocusItem.type === "issue") {
-                        const currentIssue = state.issues[state.secondaryFocusItem.uuid];
-                        if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.vertices) {
-                            let vertKeys = Object.keys(currentIssue.sceneData.vertices);
-                            for (let i = 0; i < vertKeys.length; i++) {
-                                lines[primitive.uuid.concat(vertKeys[i])] = { name: vertKeys[i], vertices: currentIssue.sceneData.vertices[vertKeys[i]], frame: 'world', hidden, width: 4 };
-                            }
-                        }
-                    }
-                }
-            });
+    Object.values(state.programData).filter(v => v.type === 'moveTrajectoryType').forEach(primitive => {
+        const hidden = !state.focus.includes(primitive.id);
+        if (deepestIssue &&
+            state.programData[deepestIssue.focus[0]] &&
+            deepestIssue.sceneData &&
+            deepestIssue.sceneData.vertices) {
+
+            let vertKeys = Object.keys(deepestIssue.sceneData.vertices);
+            for (let i = 0; i < vertKeys.length; i++) {
+                lines[primitive.id.concat(vertKeys[i])] = { name: vertKeys[i], vertices: deepestIssue.sceneData.vertices[vertKeys[i]], frame: 'base_link', hidden, width: 4 };
+            }
         }
     });
 
@@ -383,24 +378,19 @@ export const computedSlice = (state) => {
     // ===================== Hulls =====================
     let hulls = {}
 
-    // Object.values(executablePrimitives).forEach(ePrim => {
-    //     if (ePrim) {
-    //         Object.values(ePrim).forEach(primitive => {
-    //             if (primitive.type === "node.primitive.move-trajectory.") {
-    //                 const hidden = !state.focus.includes(primitive.uuid);
-    //                 if (state.secondaryFocusItem.type === "issue") {
-    //                     const currentIssue = state.issues[state.secondaryFocusItem.uuid];
-    //                     if (currentIssue && currentIssue.sceneData && currentIssue.sceneData.hulls) {
-    //                         let vertKeys = Object.keys(currentIssue.sceneData.hulls);
-    //                         for (let i = 0; i < vertKeys.length; i++) {
-    //                             hulls[primitive.uuid.concat(vertKeys[i])] = { name: vertKeys[i], vertices: currentIssue.sceneData.hulls[vertKeys[i]].vertices, color: currentIssue.sceneData.hulls[vertKeys[i]].color, frame: 'world', hidden, width: 2 };
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         });
-    //     }
-    // });
+    Object.values(state.programData).filter(v => v.type === 'moveTrajectoryType').forEach(primitive => {
+        const hidden = !state.focus.includes(primitive.id);
+        if (deepestIssue &&
+            state.programData[deepestIssue.focus[0]] &&
+            deepestIssue.sceneData &&
+            deepestIssue.sceneData.hulls) {
+
+            let vertKeys = Object.keys(deepestIssue.sceneData.hulls);
+            for (let i = 0; i < vertKeys.length; i++) {
+                hulls[primitive.id.concat(vertKeys[i])] = { name: vertKeys[i], vertices: deepestIssue.sceneData.hulls[vertKeys[i]].vertices, color: deepestIssue.sceneData.hulls[vertKeys[i]].color, frame: 'base_link', hidden, width: 2 };
+            }
+        }
+    });
 
     // Show preview of deepest preview type.
     reversedFocus.some(focusId=>{

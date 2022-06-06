@@ -37,7 +37,14 @@ export const ReviewSlice = (set, get) => ({
             description: str (text string for error information, displayed in issue)
             complete: bool (mainly for issues that don't require changes, whether it has been marked as complete)
             focus: {id:str, type:str} (what type of item to focus on in the gui when issue is selected)
-            graphData: {series : [{x: ..., '...': ..., ....},...], lineColors: ['#00000', ...],  xAxisLabel: '', yAxisLabel: '', title: ''}
+            graphData: {
+                series : [{x: ..., '...': ..., ....},...],
+                lineColors: ['#00000', ...],
+                xAxisLabel: '',
+                yAxisLabel: '',
+                title: '',
+                isTimeseries: true/false
+            }
             sceneData: 🤷
             code: str (whatever we want)
         }
@@ -168,10 +175,11 @@ export const ReviewSlice = (set, get) => ({
         let program = lodash.filter(get().programData, function (v) {return v.type === "programType"})[0];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
-            if (["returnOnInvestment", "idleTime", "cycleTime", "pinchPoints"].includes(sectionKey)) {
+            if (!["machineLogic", "collisions", "endEffectorPoses"].includes(sectionKey)) {
                 // Use the predefined updater to get the new issues
                 let [newSectionIssues, newStats] = state.sections[sectionKey].updater({
-                    state: get().programData, 
+                    programData: get().programData, 
+                    programSpec: get().programSpec, 
                     program: program, 
                     stats: state.stats,
                     settings: state.issueSettings

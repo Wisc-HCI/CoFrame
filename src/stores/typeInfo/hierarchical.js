@@ -1,6 +1,7 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled } from "./icons";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import { FiMoreHorizontal } from "react-icons/fi";
 
 export const hierarchicalType = {
     name: "Hierarchical",
@@ -12,6 +13,14 @@ export const hierarchicalType = {
       icon: ContainerIconStyled,
       extras: [
         EXTRA_TYPES.COLLAPSE_TOGGLE,
+        {
+          icon: FiMoreHorizontal,
+          type: EXTRA_TYPES.DROPDOWN,
+          contents: [
+            EXTRA_TYPES.DELETE_BUTTON,
+            EXTRA_TYPES.SELECTION_TOGGLE
+          ],
+        },
         { 
           type: EXTRA_TYPES.INDICATOR,
           accessor: (data)=>data.properties.children.length,

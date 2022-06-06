@@ -6,10 +6,6 @@ import {idleTimeEstimate, durationEstimate} from "../helpers"
 export const findCycleTimeIssues = ({program, stats}) => {
     let issues = {};
 
-    if (!program || program.properties.status !== STATUS.VALID) {
-        return [issues, {}];
-    }
-
     const estimate = durationEstimate(program.properties.compiled["{}"].steps);
 
     // get prior values
@@ -30,27 +26,24 @@ export const findCycleTimeIssues = ({program, stats}) => {
         title: 'Robot Cycle Time',
         description: 'Robot Cycle Time',
         complete: false,
-        focus: {id:program.id, type:'program'},
+        focus: [program.id],
         graphData: {
             series: priorData,
             lineColors: ["#009e73"],
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'Cycle Time',
             title: '',
+            isTimeseries: false
         }
     }
 
     return [issues, {cycleTime: estimate}];
 }
 // Use delay and machine wait primitives (delays can be tweaked if application acceptable)
-export const findIdleTimeIssues = ({state, program, stats}) => {
+export const findIdleTimeIssues = ({programData, program, stats}) => {
     let issues = {};
 
-    if (!program || program.properties.status !== STATUS.VALID) {
-        return [issues, {}];
-    }
-
-    const estimate = idleTimeEstimate(state, program.properties.compiled["{}"].steps);
+    const estimate = idleTimeEstimate(programData, program.properties.compiled["{}"].steps);
 
     // get prior values
     let priorData = [];
@@ -70,26 +63,23 @@ export const findIdleTimeIssues = ({state, program, stats}) => {
         title: 'Robot Idle Time',
         description: 'Robot Idle Time',
         complete: false,
-        focus: {id:program.id, type:'program'},
+        focus: [program.id],
         graphData: {
             series: priorData,
             lineColors: ["#009e73"],
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'Idle Time',
             title: '',
+            isTimeseries: false
         }
     }
 
     return [issues, {idleTime: estimate}];
 }
 // Retrun on Investment
-export const findReturnOnInvestmentIssues = ({state, program, stats, settings}) => {
+export const findReturnOnInvestmentIssues = ({programData, program, stats, settings}) => {
     let issues = {};
     let newStats = {}
-
-    if (!program || program.properties.status !== STATUS.VALID) {
-        return [issues, {}];
-    }
 
     // get prior values
     let priorData = [];
@@ -120,10 +110,10 @@ export const findReturnOnInvestmentIssues = ({state, program, stats, settings}) 
     let previousTimeStep = 0;
     program.properties.compiled["{}"].steps.forEach(step => {
         // If the next action is a move trajectory, start evaluating the wear and tear on the moving joints
-        if(step.type === STEP_TYPE.ACTION_START && "moveTrajectoryType" === state[step.source].type) {
+        if(step.type === STEP_TYPE.ACTION_START && "moveTrajectoryType" === programData[step.source].type) {
             trajectoryUpdate = true;
         // Move trajectory ends, reset variables
-        } else if(step.type === STEP_TYPE.ACTION_END && "moveTrajectoryType" === state[step.source].type) {
+        } else if(step.type === STEP_TYPE.ACTION_END && "moveTrajectoryType" === programData[step.source].type) {
             previousJoints = {};
             trajectoryUpdate = false;
         }
@@ -169,13 +159,14 @@ export const findReturnOnInvestmentIssues = ({state, program, stats, settings}) 
             title: 'Return on Investment',
             description: 'Return on Investment',
             complete: false,
-            focus: {id:program.id, type:'program'},
+            focus: [program.id],
             graphData: {
                 series: priorData,
                 lineColors: ["#009e73"],
                 xAxisLabel: 'Program Iteration',
                 yAxisLabel: 'ROI (%)',
                 title: '',
+                isTimeseries: false
             }
         }
 

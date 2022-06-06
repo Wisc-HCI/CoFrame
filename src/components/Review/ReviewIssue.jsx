@@ -31,7 +31,13 @@ export const ReviewIssue = ({ issueId }) => {
   return (
     <Box
       onClick={() => {
-        addFocusItem(issue.focus.id, true);
+        let first = false;
+        issue.focus.forEach(item => {
+          addFocusItem(item, first);
+          if (!first) {
+            first = true;
+          }
+        })
         addFocusItem(issueId, true);
       }}
       focusIndicator={false}
