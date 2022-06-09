@@ -10,6 +10,12 @@ const frameStyles = {
         quality: 'Program Quality',
         performance: 'Robot Performance',
         business: 'Business Objectives'
+    },
+    errorColors: {
+        safety: '#ce3b8c',
+        quality: '#1964e5',
+        performance: '#e58200',
+        business: '#006349'
     }
 };
 

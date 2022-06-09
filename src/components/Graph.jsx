@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, memo } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
-import { Line } from "@visx/shape";
 import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
 import { withTooltip, Tooltip, defaultStyles } from "@visx/tooltip";
 import { LinearGradient } from "@visx/gradient";
@@ -11,6 +10,8 @@ import useStore from "../stores/Store";
 import { uniq } from "lodash";
 import { Box, Button, Notification, Text } from "grommet";
 import { STATUS, STEP_TYPE, TIMELINE_TYPES } from "../stores/Constants";
+import { useSpring, animated } from "@react-spring/web";
+import { useTime } from "./useTime";
 
 export const background = "#eaedff";
 const defaultMargin = { top: 40, left: 80, right: 40, bottom: 50 };
@@ -253,6 +254,8 @@ const InnerGraph = withTooltip(
 
     const lastEnd =
       Math.max(...stepData.map((e) => (e.time ? e.time : e.end))) + 500;
+    
+    // console.log(stepData.map((e) => (e.time ? e.time : e.end)))
 
     const yScale = scaleBand({
       domain: stepData.map((e) => e.track),
@@ -317,15 +320,15 @@ const InnerGraph = withTooltip(
     const clock = useStore((state) => state.clock);
     
 
-    const [visualTime, setVisualTime] = useState(0);
+    // const [visualTime, setVisualTime] = useState(0);
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        const time = (clock.getElapsed() * 1000) % lastEnd;
-        setVisualTime(time);
-      }, lastEnd / 200);
-      return () => clearInterval(interval);
-    });
+    // useEffect(() => {
+    //   const interval = setInterval(() => {
+    //     const time = (clock.getElapsed() * 1000) % lastEnd;
+    //     setVisualTime(time);
+    //   }, lastEnd / 150);
+    //   return () => clearInterval(interval);
+    // });
 
     return (
       <div>
@@ -448,26 +451,17 @@ const InnerGraph = withTooltip(
                 textAnchor: "middle",
               })}
             />
-            {visualTime && !tooltipData && (
-              <Line
-                from={{ x: xScale(visualTime), y: 0 }}
-                to={{ x: xScale(visualTime), y: yMax }}
-                stroke={"lightgrey"}
-                strokeWidth={2}
-                pointerEvents="none"
-                strokeDasharray="5,2"
-              />
-            )}
+            <CurrentTimeIndicator xScale={xScale} lastEnd={lastEnd} yMax={yMax}/>
             {tooltipData && (
               <g>
-                <Line
+                {/* <Line
                   from={{ x: tooltipLeft, y: 0 }}
                   to={{ x: tooltipLeft, y: yMax }}
                   stroke={"lightgrey"}
                   strokeWidth={2}
                   pointerEvents="none"
                   strokeDasharray="5,2"
-                />
+                /> */}
 
                 <circle
                   cx={tooltipLeft}
@@ -578,5 +572,45 @@ const InnerGraph = withTooltip(
     );
   }
 );
+
+const CurrentTimeIndicator = memo(({xScale, lastEnd, yMax}) =>  {
+    // const clock = useStore((state) => state.clock);
+    
+    // const [visualTime, setVisualTime] = useState(0);
+    
+    const visualTime = useTime(lastEnd);
+    const x = xScale(visualTime);
+
+    const timeIndicatorLineStyle = useSpring({
+      x1: x,
+      x2: x,
+      y1: 0,
+      y2: yMax,
+      config: {mass:0.25, tension:250, friction:10},
+    });
+
+    
+
+    // useEffect(() => {
+    //   const interval = setInterval(() => {
+    //     const time = (clock.getElapsed() * 1000) % lastEnd;
+    //     setVisualTime(time);
+    //   }, 25);
+    //   return () => clearInterval(interval);
+    // });
+
+    return (
+      <animated.line
+        stroke='lightgrey'
+        strokeWidth={2}
+        strokeDasharray="5,2"
+        // x1={x}
+        // x2={x}
+        // y1={0}
+        // y2={yMax}
+        {...timeIndicatorLineStyle}
+      />
+    )
+})
 
 export default Graph
