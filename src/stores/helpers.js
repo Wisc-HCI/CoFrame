@@ -1221,28 +1221,16 @@ export function stepsToAnimation(state, tfs) {
           lastTimestamp[link] !== 0 &&
           lastTimestamp[link] + 1 !== timesteps.length
         ) {
-          for (let i = 0; i < timesteps.length - lastTimestamp[link]; i++) {
-            dict[link].position.x.push(
-              dict[link].position.x[lastTimestamp[link]]
-            );
-            dict[link].position.y.push(
-              dict[link].position.x[lastTimestamp[link]]
-            );
-            dict[link].position.z.push(
-              dict[link].position.x[lastTimestamp[link]]
-            );
-            dict[link].rotation.x.push(
-              dict[link].position.x[lastTimestamp[link]]
-            );
-            dict[link].rotation.y.push(
-              dict[link].position.x[lastTimestamp[link]]
-            );
-            dict[link].rotation.z.push(
-              dict[link].position.x[lastTimestamp[link]]
-            );
-            dict[link].rotation.w.push(
-              dict[link].position.x[lastTimestamp[link]]
-            );
+          let posLength = dict[link].position.x.length;
+    
+          for (let tmpLength = posLength; tmpLength < timesteps.length; tmpLength++) {
+            dict[link].position.x.push(dict[link].position.x[posLength - 1]);
+            dict[link].position.y.push(dict[link].position.y[posLength - 1]);
+            dict[link].position.z.push(dict[link].position.z[posLength - 1]);
+            dict[link].rotation.x.push(dict[link].rotation.x[posLength - 1]);
+            dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
+            dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
+            dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
           }
         }
 
@@ -1255,6 +1243,27 @@ export function stepsToAnimation(state, tfs) {
         dict[link].rotation.y.push(step.data.links[link].rotation.y);
         dict[link].rotation.z.push(step.data.links[link].rotation.z);
         dict[link].rotation.w.push(step.data.links[link].rotation.w);
+      });
+    } else if (timesteps.length > 0) {
+      timesteps.push(step.time);
+      if (step.time > finalTime) {
+        finalTime = step.time;
+      }
+
+      Object.keys(dict).forEach((link) => {
+        let posLength = dict[link].position.x.length;
+    
+        for (let tmpLength = posLength; tmpLength < timesteps.length; tmpLength++) {
+          dict[link].position.x.push(dict[link].position.x[posLength - 1]);
+          dict[link].position.y.push(dict[link].position.y[posLength - 1]);
+          dict[link].position.z.push(dict[link].position.z[posLength - 1]);
+          dict[link].rotation.x.push(dict[link].rotation.x[posLength - 1]);
+          dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
+          dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
+          dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
+        }
+
+        lastTimestamp[link] = timesteps.length;
       });
     }
   });
