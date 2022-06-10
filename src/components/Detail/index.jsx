@@ -48,7 +48,9 @@ export const Detail = (_) => {
     })
 
     if (item === null && focusData.length > 0) {
-      item = state.programData[focusData[0].id];
+      if (state.programData[focusData[0].id] && DETAIL_TYPES.includes(state.programData[focusData[0].id].type)) {
+        item = state.programData[focusData[0].id];
+      }
     }
 
 
