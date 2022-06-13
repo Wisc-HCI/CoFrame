@@ -157,13 +157,13 @@ export const computedSlice = (state) => {
                     frame: inputObj.properties.relativeTo ? inputObj.properties.relativeTo : "world",
                     position: inputObj.properties.position,
                     rotation: inputObj.properties.rotation,
-                    scale: {x:0.2,y:0.2,z:0.2},
+                    scale: { x: 0.2, y: 0.2, z: 0.2 },
                     transformMode: itemTransformMethod(state, input),
-                    color: {r:0,g:200,b:0,a:0.2},
+                    color: { r: 0, g: 200, b: 0, a: 0.2 },
                     highlighted: false,
                     hidden: !state.focus.includes(entry.id)
                 }
-            });   
+            });
             entry.properties.outputs.forEach(output => {
                 let outputObj = state.programData[output];
                 let thing = state.programData[outputObj.properties.thing];
@@ -172,13 +172,13 @@ export const computedSlice = (state) => {
                     frame: outputObj.properties.relativeTo ? outputObj.properties.relativeTo : "world",
                     position: outputObj.properties.position,
                     rotation: outputObj.properties.rotation,
-                    scale: {x:0.2,y:0.2,z:0.2},
+                    scale: { x: 0.2, y: 0.2, z: 0.2},
                     transformMode: itemTransformMethod(state, output),
-                    color: {r:0,g:200,b:0,a:0.2},
+                    color: { r: 0, g: 200, b: 0, a: 0.2 },
                     highlighted: false,
                     hidden: !state.focus.includes(entry.id)
                 }
-            });            
+            });
         } else if (entry.type === 'machineType' || entry.type === 'toolType') {
             let entryProps = entry.properties;
             let meshObject = state.programData[entryProps.mesh];
