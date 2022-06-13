@@ -19,8 +19,10 @@ export const trajectoryType = {
     color: "#c5329a",
     icon: ContainerIconStyled,
     extras: [
+      
       {
         type: EXTRA_TYPES.INDICATOR_ICON,
+        
         accessor: (data) => {
           if (data.properties.status === STATUS.FAILED) {
             return <FiAlertOctagon color="white" fill="red" />;
@@ -35,6 +37,7 @@ export const trajectoryType = {
         label: "Status",
       },
       EXTRA_TYPES.LOCKED_INDICATOR,
+      EXTRA_TYPES.NAME_EDIT_TOGGLE,
       {
         icon: FiMoreHorizontal,
         type: EXTRA_TYPES.DROPDOWN,

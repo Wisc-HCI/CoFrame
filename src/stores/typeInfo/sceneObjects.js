@@ -129,6 +129,7 @@ const machine = {
     icon: MachineIconStyled,
     extras: [
       EXTRA_TYPES.LOCKED_INDICATOR,
+      EXTRA_TYPES.NAME_EDIT_TOGGLE,
       {
         icon: FiMoreHorizontal,
         type: EXTRA_TYPES.DROPDOWN,

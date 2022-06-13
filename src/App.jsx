@@ -9,7 +9,7 @@ import { TIMELINE_TYPES } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
 import { Detail } from "./components/Detail";
 import { SettingsModal } from "./components/Settings";
-import Graph from "./components/Graph";
+import TimelineGraph from "./components/TimelineGraph";
 // import useMeasure from 'react-use-measure';
 
 // import { CoFrameIcon } from "./components/Icon";
@@ -88,7 +88,7 @@ export default function App() {
         <animated.div style={{ ...drawerStyle, backgroundColor:"#444444", borderTop: `5px solid ${primaryColor}` }}>
           <ParentSize>
             {({ width, height }) => (
-              <Graph width={width} height={height - 10} visible={visibleSteps}/>
+              <TimelineGraph width={width} height={height - 10} visible={visibleSteps}/>
             )}
           </ParentSize>
         </animated.div>

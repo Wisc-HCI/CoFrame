@@ -111,6 +111,8 @@ export const ReviewTile = (_) => {
     shallow
   );
 
+  const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined);
+
   const frameIdx = FRAMES.map((frame) => frame.key).indexOf(frameId);
 
   const [ref, bounds] = useMeasure();
@@ -128,6 +130,7 @@ export const ReviewTile = (_) => {
             icon={<FiRefreshCw />}
             onClick={refresh}
             label="Refresh"
+            disabled={isProcessing}
           ></Button>
         </Box>
       <StyledScrollArea css={{ height: bounds.height - 125, width: "100%"}}>

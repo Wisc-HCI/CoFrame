@@ -20,6 +20,7 @@ const basicActionData = {
     icon: PrimitiveIconStyled,
     extras: [
       EXTRA_TYPES.LOCKED_INDICATOR,
+      EXTRA_TYPES.NAME_EDIT_TOGGLE,
       {
         icon: FiMoreHorizontal,
         type: EXTRA_TYPES.DROPDOWN,
@@ -90,7 +91,7 @@ const delayFeatures = {
       default: 1000,
       min: 0,
       max: 3600000,
-      step: 100,
+      step: 10,
       visualScaling: 1 / 1000,
       visualPrecision: 1,
       units: "sec",

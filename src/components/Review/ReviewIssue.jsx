@@ -62,7 +62,7 @@ export const ReviewIssue = ({ issueId }) => {
         >
           <Icon style={{ color: "white" }} />
         </Avatar>
-        <Box direction="column" style={{maxWidth:200}}>
+        <Box direction="column" style={{maxWidth:200}} pad="xsmall">
           <Text>{issue.title}</Text>
           <Text size="small">
             {issue.requiresChanges
