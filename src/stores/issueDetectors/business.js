@@ -1,3 +1,4 @@
+import frameStyles from "../../frameStyles";
 import { STATUS, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import {idleTimeEstimate, durationEstimate} from "../helpers"
@@ -11,10 +12,18 @@ export const findCycleTimeIssues = ({program, stats}) => {
     // get prior values
     let priorData = [];
     let i = 0;
+    let peak = 0;
     for (i = 0; i < stats.length; i++) {
         if (stats[i].cycleTime !== null) {
+            if (stats[i].cycleTime > peak) {
+                peak = stats[i].cycleTime;
+            }
+
             priorData.push({x:i, cycleTime:stats[i].cycleTime});
         }
+    }
+    if (estimate > peak) {
+        peak = estimate;
     }
     priorData.push({x:i, cycleTime:estimate});
 
@@ -29,9 +38,11 @@ export const findCycleTimeIssues = ({program, stats}) => {
         focus: [program.id],
         graphData: {
             series: priorData,
-            lineColors: ["#009e73"],
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'Cycle Time',
+            warningThreshold: 0,
+            errorThreshold: peak+1,
+            warningColor: frameStyles.colors["business"],
             title: '',
             isTimeseries: false
         }
@@ -48,10 +59,18 @@ export const findIdleTimeIssues = ({programData, program, stats}) => {
     // get prior values
     let priorData = [];
     let i = 0;
+    let peak = 0;
     for (i = 0; i < stats.length; i++) {
         if (stats[i].idleTime !== null) {
+            if (stats[i].idleTime > peak) {
+                peak = stats[i].idleTime;
+            }
             priorData.push({x:i, idleTime:stats[i].idleTime});
         }
+    }
+
+    if (estimate > peak) {
+        peak = estimate;
     }
     priorData.push({x:i, idleTime:estimate});
 
@@ -66,9 +85,11 @@ export const findIdleTimeIssues = ({programData, program, stats}) => {
         focus: [program.id],
         graphData: {
             series: priorData,
-            lineColors: ["#009e73"],
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'Idle Time',
+            warningThreshold: 0,
+            errorThreshold: peak+1,
+            warningColor: frameStyles.colors["business"],
             title: '',
             isTimeseries: false
         }
@@ -84,8 +105,13 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     // get prior values
     let priorData = [];
     let i = 0;
+    let peak = 0;
     for (i = 0; i < stats.length; i++) {
         if (stats[i].roi !== null) {
+            if (stats[i].roi > peak) {
+                peak = stats[i].roi;
+            }
+
             priorData.push({x:i, ROI:stats[i].roi});
         }
     }
@@ -147,6 +173,9 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     // roi = (net return / net cost) * 100%
     let roi = productValue / (productCost + wearTearCost) * 100;
 
+    if (roi > peak) {
+        peak = roi;
+    }
     priorData.push({x:i, ROI:roi});
 
     // build roi issue
@@ -162,9 +191,11 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
             focus: [program.id],
             graphData: {
                 series: priorData,
-                lineColors: ["#009e73"],
                 xAxisLabel: 'Program Iteration',
                 yAxisLabel: 'ROI (%)',
+                warningThreshold: 0,
+                errorThreshold: peak+1,
+                warningColor: frameStyles.colors["business"],
                 title: '',
                 isTimeseries: false
             }

@@ -368,8 +368,8 @@ export const checkHandThresholds = (pinchDistance) => {
   );
 };
 
-export const likProximityAdjustment = (robotAgent, proximity) => {
-  let trackedPinchPoints = robotAgent ? robotAgent.properties.pinchPointPairLinks : [];
+export const likProximityAdjustment = (trackedPoints, proximity) => {
+  let trackedPinchPoints = trackedPoints ? trackedPoints : [];
   let proximityModel = {};
 
   if (!proximity) {
@@ -1322,7 +1322,7 @@ export function pinchpointAnimationFromExecutable(robotAgent, stepData) {
 
   stepData.forEach((step) => {
     let formattedProxData = likProximityAdjustment(
-      robotAgent,
+      robotAgent ? robotAgent.properties.pinchPointPairLinks : [],
       step.data?.proximity
     );
     prevStep.pinchPoints = {

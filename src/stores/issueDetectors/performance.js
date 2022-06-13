@@ -1,4 +1,5 @@
 import { DATA_TYPES } from "simple-vp";
+import frameStyles from "../../frameStyles";
 import { STATUS, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import { anyReachable, distance, stepsToVertices, verticesToVolume } from "../helpers";
@@ -224,12 +225,21 @@ export const findJointSpeedIssues = ({program, programData, settings}) => {
         }
 
         // Filter and format graph data
-        for (let i = 1; i < jointDataLength; i++) {
+        for (let i = 0; i < jointDataLength; i++) {
             let graphDataPoint = {x: timeData[i]};
             for (let j = 0; j < jointNames.length; j++) {
                 if (shouldGraphJoint[j]) {
                     graphDataPoint[jointNameMap[jointNames[j]]] = jointVelocities[jointNames[j]][i];
                 }
+            }
+            jointGraphData.push(graphDataPoint);
+        }
+
+        // Adding ending 0 velocity
+        for (let j = 0; j < jointNames.length; j++) {
+            let graphDataPoint = {x: timeData[timeData.length-1]+1};
+            if (shouldGraphJoint[j]) {
+                graphDataPoint[jointNameMap[jointNames[j]]] = 0;
             }
             jointGraphData.push(graphDataPoint);
         }
@@ -254,9 +264,12 @@ export const findJointSpeedIssues = ({program, programData, settings}) => {
                 focus: [moveTrajectory.id],
                 graphData: {
                     series: jointGraphData,
-                    lineColors: jointColors,
                     xAxisLabel: 'Timestamp',
                     yAxisLabel: 'Velocity',
+                    warningThreshold: warningLevel,
+                    errorThreshold: errorLevel,
+                    warningColor: frameStyles.colors["performance"],
+                    errorColor: frameStyles.errorColors["performance"],
                     title: '',
                     isTimeseries: true
                 },
@@ -334,11 +347,14 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings}) => 
                 focus: [primitive.id],
                 graphData: {
                     series: endEffectorGraphData,
-                    lineColors: ["#E69F00"],
                     xAxisLabel: 'Timestamp',
                     yAxisLabel: 'Velocity',
+                    warningThreshold: warningLevel,
+                    errorThreshold: errorLevel,
+                    warningColor: frameStyles.colors["performance"],
+                    errorColor: frameStyles.errorColors["performance"],
                     title: '',
-                    isTimeseries: false
+                    isTimeseries: true
                 },
                 sceneData: {vertices: {endEffector: endEffectorVelocities}}
             }
@@ -408,10 +424,14 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings}) =>
             focus: [primitive.id],
             graphData: {
                 series: priorData,
-                lineColors: ["#E69F00"],
                 xAxisLabel: 'Program Iteration',
                 yAxisLabel: 'Space Usage',
-                title: ''
+                warningThreshold: warningLevel,
+                errorThreshold: errorLevel,
+                warningColor: frameStyles.colors["performance"],
+                errorColor: frameStyles.errorColors["performance"],
+                title: '',
+                isTimeseries: true
             },
             sceneData: {hulls: {spaceUsage: {vertices: verticies, color: hullColor}}}
         }

@@ -13,7 +13,7 @@ export const ReviewSlice = (set, get) => ({
         'eePoseWarn': {uuid: 'eePoseWarn', name: "End Effector Pose Warning Level", value: 2, min: 0},
         'eePoseErr': {uuid: 'eePoseErr', name: "End Effector Pose Error Level", value: 5, min: 0},
         'collisionWarn': {uuid: 'collisionWarn', name: "Collision Warning Level", value: 0.1, min: 0, max: 1},
-        'collisionErr': {uuid: 'collisionErr', name: "Collision Error Level", value: 1, min: 0, max: 1},
+        'collisionErr': {uuid: 'collisionErr', name: "Collision Error Level", value: 0, min: 0, max: 1},
         'occupancyWarn': {uuid: 'occupancyWarn', name: "Occupancy Warning Level", value: 0.8, min: 0, max: 1},
         'occupancyErr': {uuid: 'occupancyErr', name: "Occupancy Error Level", value: 1, min: 0, max: 1},
         'jointMaxSpeed': {uuid: 'jointMaxSpeed', name: "Max Joint Speed", value: 10, min: 0},
@@ -39,10 +39,13 @@ export const ReviewSlice = (set, get) => ({
             focus: {id:str, type:str} (what type of item to focus on in the gui when issue is selected)
             graphData: {
                 series : [{x: ..., '...': ..., ....},...],
-                lineColors: ['#00000', ...],
                 xAxisLabel: '',
                 yAxisLabel: '',
                 title: '',
+                warningThreshold: 0,
+                errorThreshold: 0,
+                warningColor: '',
+                errorColor: '',
                 isTimeseries: true/false
             }
             sceneData: 🤷
@@ -175,6 +178,7 @@ export const ReviewSlice = (set, get) => ({
         let program = lodash.filter(state.programData, function (v) {return v.type === "programType"})[0];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
+            // if (["collisions"].includes(sectionKey)) {
             if (!["machineLogic", "collisions", "endEffectorPoses"].includes(sectionKey)) {
                 // Use the predefined updater to get the new issues
                 let [newSectionIssues, newStats] = state.sections[sectionKey].updater({
@@ -204,6 +208,7 @@ export const ReviewSlice = (set, get) => ({
                 newIssues = {...newIssues, ...objectMap(newSectionIssues,(issue)=>({...issue,code:sectionKey}))};
             }
         })
+        console.log(allNewStats);
         // Update the issues set.
         state.issues = newIssues;
         // Update the stats set.
