@@ -13,6 +13,7 @@ export const thingType = {
       icon: ThingIconStyled,
       extras: [
         EXTRA_TYPES.LOCKED_INDICATOR,
+        EXTRA_TYPES.NAME_EDIT_TOGGLE,
         {
           icon: FiMoreHorizontal,
           type: EXTRA_TYPES.DROPDOWN,
