@@ -1,7 +1,7 @@
 import frameStyles from "../../frameStyles";
 import { STATUS, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid";
-import { checkHandThresholds, framesToEEPoseScores, likProximityAdjustment } from "../helpers";
+import { checkHandThresholds, stepsToEEPoseScores, likProximityAdjustment } from "../helpers";
 import lodash from 'lodash';
 
 const linkNames = ['shoulder_link', 'upper_arm_link', 'forearm_link', 'wrist_1_link', 'wrist_2_link', 'wrist_3_link'];
@@ -39,32 +39,34 @@ export const findEndEffectorPoseIssues = ({programData, settings}) => { // Requi
 
     Object.values(programData).filter(v => v.type === 'moveTrajectoryType').forEach(primitive => {
         if (!addressed.includes(primitive.id)) {
-            let trajectory = primitive.properties.trajectory;
+            // let trajectory = primitive.properties.trajectory;
 
             let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
-            let toolFrames = steps.map(step => { return step.data.links.tool0.position });
-            let frames = trajectory.trace.frames.tool0;
+            let toolFrames = [];
+            let timeData = [];
+            for (let i = 0; i < steps.length; i++) {
+                toolFrames.push(step.data.links.tool0.position);
+                timeData.push(step.time);
+            }
 
-            // let scores = primitive.parameters.trajectory_uuid.eePoseScores;
-            let scores = framesToEEPoseScores(toolFrames);
-
-            let timeData = primitive.parameters.trajectory_uuid.trace.time_data;
+            let gripper = lodash.filter(programData, function (v) { return v.type === 'gripperType'})[0];
+            let scores = stepsToEEPoseScores(toolFrames, gripper);
 
             let endEffectorScores = [];
             let graphData = [];
             let hasError = false;
 
-            for (let i = 0; i < frames.length; i++) {
-                let curFrame = frames[i][0]
+            for (let i = 0; i < toolFrames.length; i++) {
+                let curFrame = toolFrames[i]
                 if (scores[i] >= errorLevel) {
                     hasError = true;
-                    endEffectorScores.push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
+                    endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
                 } else if (scores[i] >= warningLevel) {
-                    endEffectorScores.push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
+                    endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
                 } else {
-                    endEffectorScores.push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
+                    endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
                 }
-                graphData.push({x: Math.floor(timeData[i] * precision) / precision, endEffectorScore: scores[i]});
+                graphData.push({x: timeData[i] / 1000, endEffectorScore: scores[i]});
             }
 
             const uuid = generateUuid('issue');

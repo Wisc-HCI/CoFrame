@@ -1674,13 +1674,18 @@ export function trajectoryDataToLine(
 //     return items
 // }
 
-export const framesToEEPoseScores = (frames) => {
+export const stepsToEEPoseScores = (frames, gripper) => {
   let scores = [0];
 
-  for (let i = 1; i < frames["tool0"].length; i++) {
-    const p1 = [frames["tool0"][i].x, frames["tool0"][i].y, frames["tool0"][i].z];
-    const p0 = [frames["tool0"][i-1].x, frames["tool0"][i-1].y, frames["tool0"][i-1].z];
-    const q1 = [frames["tool0_endpoint"][i].x, frames["tool0_endpoint"][i].y, frames["tool0_endpoint"][i].z];
+  for (let i = 1; i < frames.length; i++) {
+    const p1 = [frames[i].x, frames[i].y, frames[i].z];
+    const p0 = [frames[i-1].x, frames[i-1].y, frames[i-1].z];
+    let gripperOffsetRotation = gripper.properties.gripRotationOffset;
+    let gripperOffsetPosition = gripper.properties.gripPositionOffset;
+    let offsetQuat = new Quaternion(gripperOffsetRotation.x, gripperOffsetRotation.y, gripperOffsetRotation.z, gripperOffsetRotation.w);
+    let rotatedPoint = (new Vector3(frames[i].x, frames[i].y, frames[i].z)).applyQuaternion(offsetQuat);
+    let tool0Endpoint = rotatedPoint.add(new Vector3(gripperOffsetPosition.x, gripperOffsetPosition.y, gripperOffsetPosition.z));
+    const q1 = [tool0Endpoint.x, tool0Endpoint.y, tool0Endpoint.z];
     const movementVec = new Vector3(
       p1[0] - p0[0],
       p1[1] - p0[1],
