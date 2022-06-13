@@ -172,14 +172,14 @@ export const ReviewSlice = (set, get) => ({
     }),
     refresh: () => set(state=>{
         let newIssues = {};
-        let program = lodash.filter(get().programData, function (v) {return v.type === "programType"})[0];
+        let program = lodash.filter(state.programData, function (v) {return v.type === "programType"})[0];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             if (!["machineLogic", "collisions", "endEffectorPoses"].includes(sectionKey)) {
                 // Use the predefined updater to get the new issues
                 let [newSectionIssues, newStats] = state.sections[sectionKey].updater({
-                    programData: get().programData, 
-                    programSpec: get().programSpec, 
+                    programData: state.programData, 
+                    programSpec: state.programSpec, 
                     program: program, 
                     stats: state.stats,
                     settings: state.issueSettings

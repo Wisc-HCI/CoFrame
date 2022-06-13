@@ -12,7 +12,7 @@ export const findCycleTimeIssues = ({program, stats}) => {
     let priorData = [];
     let i = 0;
     for (i = 0; i < stats.length; i++) {
-        if (stats[i].cycleTime) {
+        if (stats[i].cycleTime !== null) {
             priorData.push({x:i, cycleTime:stats[i].cycleTime});
         }
     }
@@ -49,7 +49,7 @@ export const findIdleTimeIssues = ({programData, program, stats}) => {
     let priorData = [];
     let i = 0;
     for (i = 0; i < stats.length; i++) {
-        if (stats[i].idleTime) {
+        if (stats[i].idleTime !== null) {
             priorData.push({x:i, idleTime:stats[i].idleTime});
         }
     }
@@ -85,7 +85,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     let priorData = [];
     let i = 0;
     for (i = 0; i < stats.length; i++) {
-        if (stats[i].roi) {
+        if (stats[i].roi !== null) {
             priorData.push({x:i, ROI:stats[i].roi});
         }
     }
