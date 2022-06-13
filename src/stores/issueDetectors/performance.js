@@ -152,12 +152,8 @@ export const findReachabilityIssues = ({programData}) => { // requires joint_pro
 }
 
 // requires trace processor, joint speed grader (can also use intermediate type)
-export const findJointSpeedIssues = ({program, programData, settings}) => {
+export const findJointSpeedIssues = ({programData, settings}) => {
     let issues = {};
-
-    if (program.properties.status === STATUS.FAILED || program.properties.status === STATUS.PENDING) {
-        return [issues, {}];
-    }
 
     const warningLevel = settings["jointSpeedWarn"].value * settings['jointMaxSpeed'].value;
     const errorLevel = settings["jointSpeedErr"].value * settings['jointMaxSpeed'].value;
@@ -282,12 +278,8 @@ export const findJointSpeedIssues = ({program, programData, settings}) => {
 }
 
 // requires trace processor, end effector grader + intermediate end effector speed interediate type
-export const findEndEffectorSpeedIssues = ({program, programData, settings}) => {
+export const findEndEffectorSpeedIssues = ({programData, settings}) => {
     let issues = {};
-
-    if (program.properties.status === STATUS.FAILED || program.properties.status === STATUS.PENDING) {
-        return [issues, {}];
-    }
 
     const warningLevel = settings['eeSpeedWarn'].value;
     const errorLevel = settings['eeSpeedErr'].value;
@@ -371,13 +363,9 @@ export const findPayloadIssues = (_) => { // Shouldn't change during a trajector
 }
 
 // Requires a convex hall operation on joint frames in traces. This volume can be compared against whole workcell (fraction) and can be used for intersection with extruded human occupancy zones 
-export const findSpaceUsageIssues = ({program, programData, stats, settings}) => {
+export const findSpaceUsageIssues = ({programData, stats, settings}) => {
     let issues = {};
     let addStats = {};
-
-    if (program.properties.status === STATUS.FAILED || program.properties.status === STATUS.PENDING) {
-        return [issues, {}];
-    }
 
     const warningLevel = settings['spaceUsageWarn'].value;
     const errorLevel = settings['spaceUsageErr'].value;
