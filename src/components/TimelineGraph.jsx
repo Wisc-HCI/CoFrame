@@ -2,7 +2,7 @@ import React, { useCallback, memo } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
-import { withTooltip, Tooltip, defaultStyles } from "@visx/tooltip";
+import { withTooltip, TooltipWithBounds, defaultStyles } from "@visx/tooltip";
 import { LinearGradient } from "@visx/gradient";
 import { localPoint } from "@visx/event";
 import { LegendOrdinal } from "@visx/legend";
@@ -43,7 +43,7 @@ function formatTime(ms) {
 
 const axisColor = "white";
 
-const Graph = ({ width, height, margin = defaultMargin, visible }) => {
+const TimelineGraph = ({ width, height, margin = defaultMargin, visible }) => {
   // bounds
 
   // const focus = useStore((state) => state.focus);
@@ -317,7 +317,7 @@ const InnerGraph = withTooltip(
       [showTooltip, xScale, stepData, hideTooltip, pause, play, reset]
     );
 
-    const clock = useStore((state) => state.clock);
+    // const clock = useStore((state) => state.clock);
     
 
     // const [visualTime, setVisualTime] = useState(0);
@@ -451,7 +451,7 @@ const InnerGraph = withTooltip(
                 textAnchor: "middle",
               })}
             />
-            <CurrentTimeIndicator xScale={xScale} lastEnd={lastEnd} yMax={yMax}/>
+            {lastEnd && yMax && <CurrentTimeIndicator xScale={xScale} lastEnd={lastEnd} yMax={yMax}/>}
             {tooltipData && (
               <g>
                 {/* <Line
@@ -505,11 +505,9 @@ const InnerGraph = withTooltip(
           />
         </div>
         {tooltipOpen && tooltipData && (
-          <Tooltip
+          <TooltipWithBounds
             top={tooltipTop}
-            left={
-              tooltipLeft > 0.8 * xMax ? tooltipLeft - 75 : tooltipLeft + 75
-            }
+            left={tooltipLeft-20}
             style={tooltipStyles}
           >
             <Box gap="xsmall">
@@ -566,7 +564,7 @@ const InnerGraph = withTooltip(
                             <div>
                                 <small>{capitalize(tooltipData.group)}</small>
                             </div> */}
-          </Tooltip>
+          </TooltipWithBounds>
         )}
       </div>
     );
@@ -582,23 +580,14 @@ const CurrentTimeIndicator = memo(({xScale, lastEnd, yMax}) =>  {
     const x = xScale(visualTime);
 
     const timeIndicatorLineStyle = useSpring({
-      x1: x,
-      x2: x,
+      x1: x ? x : 0,
+      x2: x ? x : 0,
       y1: 0,
       y2: yMax,
       config: {mass:0.25, tension:250, friction:10},
     });
 
     
-
-    // useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     const time = (clock.getElapsed() * 1000) % lastEnd;
-    //     setVisualTime(time);
-    //   }, 25);
-    //   return () => clearInterval(interval);
-    // });
-
     return (
       <animated.line
         stroke='lightgrey'
@@ -613,4 +602,4 @@ const CurrentTimeIndicator = memo(({xScale, lastEnd, yMax}) =>  {
     )
 })
 
-export default Graph
+export default TimelineGraph
