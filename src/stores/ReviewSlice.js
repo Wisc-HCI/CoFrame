@@ -178,8 +178,7 @@ export const ReviewSlice = (set, get) => ({
         let program = lodash.filter(state.programData, function (v) {return v.type === "programType"})[0];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
-            // if (["collisions"].includes(sectionKey)) {
-            if (!["machineLogic", "collisions", "endEffectorPoses"].includes(sectionKey)) {
+            if (!["machineLogic", "endEffectorPoses"].includes(sectionKey)) {
                 // Use the predefined updater to get the new issues
                 let [newSectionIssues, newStats] = state.sections[sectionKey].updater({
                     programData: state.programData, 
@@ -207,8 +206,7 @@ export const ReviewSlice = (set, get) => ({
                 state.sections[sectionKey].issues = Object.keys(newSectionIssues);
                 newIssues = {...newIssues, ...objectMap(newSectionIssues,(issue)=>({...issue,code:sectionKey}))};
             }
-        })
-        console.log(allNewStats);
+        });
         // Update the issues set.
         state.issues = newIssues;
         // Update the stats set.

@@ -2,6 +2,7 @@ import frameStyles from "../../frameStyles";
 import { STATUS, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid";
 import { checkHandThresholds, framesToEEPoseScores, likProximityAdjustment } from "../helpers";
+import lodash from 'lodash';
 
 const linkNames = ['shoulder_link', 'upper_arm_link', 'forearm_link', 'wrist_1_link', 'wrist_2_link', 'wrist_3_link'];
 const linkNameMap = {
@@ -104,7 +105,7 @@ export const findCollisionIssues = ({programData, settings}) => {
     Object.values(programData).filter(v => v.type === 'moveTrajectoryType').forEach(primitive => {
         if (!addressed.includes(primitive.id)) {
             let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
-            let robotAgent = programData.filter(v => v.type === 'robotAgentType')[0];
+            let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType'})[0];
             let robotPoints = robotAgent ? robotAgent.properties.pinchPointPairLinks : [];
             
             // Build the arrays for time
@@ -114,7 +115,7 @@ export const findCollisionIssues = ({programData, settings}) => {
 
 
             // Build pairing for environment tracking
-            let fixtureIDs = programData.filter(v => v.type === 'fixtureType').map(fixture => { return fixture.id });
+            let fixtureIDs = lodash.filter(programData, function (v) { return v.type === 'fixtureType'}).map(fixture => { return fixture.id });
             let robotJointIDs = [];
             robotPoints.forEach(pair => {
                 if (!(robotJointIDs.includes[pair.link1])) {
@@ -135,104 +136,115 @@ export const findCollisionIssues = ({programData, settings}) => {
                 timeData.push(steps[i].time);
 
                 // Self Collisions
-                sCol.push(likProximityAdjustment(robotPoints, steps[i].data.proximity));
+                let sColTmp = likProximityAdjustment(robotPoints, steps[i].data.proximity, true);
+                let sColAdjusted = {}
+                // For each joint, assign it the minimum proximity value
+                Object.keys(sColTmp).forEach(key => {
+                    if (linkNames.includes(key)) {
+                        sColAdjusted[key] = Math.min(...Object.values(sColTmp[key]).map(v => {return v.distance}));
+                    }
+                })
+                sCol.push(sColAdjusted);
 
                 // Environment Collisions
-                eCol.push(likProximityAdjustment(envrionTracker, steps[i].data.proximity));
+                let eColTmp = likProximityAdjustment(envrionTracker, steps[i].data.proximity, true);
+                let eColAdjusted = {}
+                // For each joint, assign it the minimum proximity value
+                Object.keys(eColTmp).forEach(key => {
+                    if (linkNames.includes(key)) {
+                        eColAdjusted[key] = Math.min(...Object.values(eColTmp[key]).map(v => {return v.distance}));
+                    }
+                })
+                eCol.push(eColAdjusted);
             }
 
 
             const selfIndex = 0;
             const envIndex = 1;
-            let collisionData = [{}, {}];
-            let graphData = [[], []];
             let collisionErrors = [false, false];
 
-            let allSelfCollisions = {};
-            let allEnvCollisions = {};
-            for (let i = 0; i < linkNames.length; i++) {
-                collisionData[selfIndex][linkNames[i]] = [];
-                collisionData[envIndex][linkNames[i]] = [];
-                allSelfCollisions[linkNames[i]] = Object.values(sCol[linkNames[i]]);
-                allEnvCollisions[linkNames[i]] = Object.values(eCol[linkNames[i]]);
+            // Iteratively build the graph and scene data
+            let graphData = [[], []];
+            let collisionData = [{}, {}];
+            let shouldGraphSet = [false, false];
+            let shouldGraphJoint = [{}, {}];
+
+            // For each joint (at each timestep), determine if it's within the warning threshold
+            for (let i = 0; i < timeData.length; i++) {
+                Object.keys(sCol[i]).forEach(rLink => {
+                    if (!(rLink in shouldGraphJoint[selfIndex])) {
+                        shouldGraphJoint[selfIndex][rLink] = false;
+                    }
+
+                    if (sCol[i][rLink] <= warningLevel) {
+                        shouldGraphJoint[selfIndex][rLink] = true;
+                    }
+                });
+
+                Object.keys(eCol[i]).forEach(rLink => {
+                    if (!(rLink in shouldGraphJoint[envIndex])) {
+                        shouldGraphJoint[envIndex][rLink] = {};
+                    }
+
+                    if (eCol[i][rLink] <= warningLevel) {
+                        shouldGraphJoint[envIndex][rLink] = true;
+                    }
+                });
             }
 
 
-            let shouldGraphlink = [{}, {}];
-            // Determine what to graph/render in scene
-            Object.keys(sCol[0]).forEach(rLink => {
-                Object.keys(sCol[0][rLink]).forEach(obj => {
-                    if (sCol[0][rLink][obj] <= warningLevel) {
-                        if (!shouldGraphlink[selfIndex][rLink]) {
-                            shouldGraphlink[selfIndex][rLink] = {};
-                        }
-                        shouldGraphlink[selfIndex][rLink][obj] = true;
-                    }
-                })
-            });
-
-            Object.keys(eCol[0]).forEach(rLink => {
-                Object.keys(eCol[0][rLink]).forEach(obj => {
-                    if (eCol[0][rLink][obj] <= warningLevel) {
-                        if (!shouldGraphlink[envIndex][rLink]) {
-                            shouldGraphlink[envIndex][rLink] = {};
-                        }
-                        shouldGraphlink[envIndex][rLink][obj] = true;
-                        shouldGraphlink[envIndex][rLink][obj] = true;
-                    }
-                })
-            });
-
-            // Iteratively build the graph and scene data
+            // Build the graph and collision data
+            // If a joint should be graphed, add it's data points to the respective array
             for (let i = 0; i < timeData.length; i++) {
                 let timestamp = timeData[i] / 1000;
                 graphData[selfIndex].push({x: timestamp});
                 graphData[envIndex].push({x: timestamp});
-                for (let j = 0; j < linkNames.length; j++) {
-                    if (shouldGraphlink[selfIndex][j]) {
-                        let curFrame = trajectory.trace.frames[linkNames[j]][i][0];
 
-                        if (allSelfCollisions[linkNames[j]][i] >= errorLevel) {
+                Object.keys(sCol[i]).forEach(rLink => {
+                    if (shouldGraphJoint[selfIndex][rLink]) {
+                        let curFrame = steps[i].data.links[rLink].position;
+                        shouldGraphSet[selfIndex] = true;
+
+                        if (!collisionData[selfIndex][rLink]) {
+                            collisionData[selfIndex][rLink] = [];
+                        }
+
+                        if (sCol[i][rLink] <= errorLevel) {
                             collisionErrors[selfIndex] = true;
-                            console.log({value:allSelfCollisions[linkNames[j]][i],link:linkNames[j]})
-                            collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
-                        } else if (allSelfCollisions[linkNames[j]][i] >= warningLevel) {
-                            collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
+                            collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                        } else if (sCol[i][rLink] <= warningLevel) {
+                            collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
                         } else {
-                            collisionData[selfIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
+                            collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
                         }
-                        graphData[selfIndex][i][linkNameMap[linkNames[j]]] = allSelfCollisions[linkNames[j]][i];
+                        graphData[selfIndex][i][linkNameMap[rLink]] = sCol[i][rLink];
                     }
+                });
 
-                    if (shouldGraphlink[envIndex][j]) {
-                        let curFrame = trajectory.trace.frames[linkNames[j]][i][0];
+                Object.keys(eCol[i]).forEach(rLink => {
+                    if (shouldGraphJoint[envIndex][rLink]) {
+                        let curFrame = steps[i].data.links[rLink].position;
+                        shouldGraphSet[envIndex] = true;
 
-                        if (allEnvCollisions[linkNames[j]][i] >= errorLevel) {
+                        if (!collisionData[envIndex][rLink]) {
+                            collisionData[envIndex][rLink] = [];
+                        }
+
+                        if (eCol[i][rLink] <= errorLevel) {
                             collisionErrors[envIndex] = true;
-                            collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: ERROR_COLOR});
-                        } else if (allSelfCollisions[linkNames[j]][i] >= warningLevel) {
-                            collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: WARNING_COLOR});
+                            collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                        } else if (eCol[i][rLink] <= warningLevel) {
+                            collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
                         } else {
-                            collisionData[envIndex][linkNames[j]].push({position: {x: curFrame[0], y: curFrame[1], z: curFrame[2]}, color: NO_ERROR_COLOR});
+                            collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
                         }
-                        graphData[envIndex][i][linkNameMap[linkNames[j]]] = allEnvCollisions[linkNames[j]][i];
+                        graphData[envIndex][i][linkNameMap[rLink]] = eCol[i][rLink];
                     }
-                }
-            }
-
-            // Build colors for the graph
-            let linkColors = [[], []];
-            for (let i = 0; i < linkNames.length; i++) {
-                if (shouldGraphlink[selfIndex][i]) {
-                    linkColors[selfIndex].push(linkColorMap[linkNames[i]]);
-                }
-                if (shouldGraphlink[envIndex][i]) {
-                    linkColors[envIndex].push(linkColorMap[linkNames[i]]);
-                }
+                });
             }
 
             // Build issue for self collisions
-            if (graphData[selfIndex].length > 0) {
+            if (shouldGraphSet[selfIndex]) {
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
                     id: uuid,
@@ -258,7 +270,7 @@ export const findCollisionIssues = ({programData, settings}) => {
             }
 
             // Build issue for environmental collisions
-            if (graphData[envIndex].length > 0) {
+            if (shouldGraphSet[envIndex]) {
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
                     id: uuid,
@@ -303,7 +315,7 @@ export const findOccupancyIssues = ({programData, settings}) => {
         let proximityData = [];
         for (let i = 0; i < steps.length; i++) {
             timeData.push(steps[i].time);
-            proximityData.push(likProximityAdjustment([], steps[i].data.proximity.filter(v => !v.physical)));
+            proximityData.push(likProximityAdjustment([], steps[i].data.proximity.filter(v => !v.physical, false)));
         }
 
         let occupancyValues = {};
