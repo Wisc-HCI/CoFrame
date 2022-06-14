@@ -1754,8 +1754,12 @@ export const traceToVertices = (trace) => {
 };
 
 export const verticesToVolume = (vertices) => {
-  let geometry = new ConvexGeometry(vertices);
-  return getVolume(geometry);
+  if (vertices.length > 0) {
+    let geometry = new ConvexGeometry(vertices);
+    return getVolume(geometry);
+  }
+  
+  return 0;
 };
 
 export const spaceEstimate = (trace) => {

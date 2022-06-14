@@ -96,7 +96,7 @@ export const findMissingParameterIssues = ({programData, programSpec}) => {
         }
     })
 
-    Object.values(programData).filter(v => v.type === "trajectoryType").forEach(trajectory=>{
+    Object.values(programData).filter(v => v.type === "trajectoryType" && v.dataType === DATA_TYPES.INSTANCE).forEach(trajectory=>{
         if (!trajectory.properties.startLocation) {
             const uuid = generateUuid('issue');
                 issues[uuid] = {
@@ -378,7 +378,7 @@ export const findEmptyBlockIssues = ({programData, program}) => {
     return [issues, {}];
 }
 
-export const findMachineLogicIssues = ({program}) => { //init , started, waiting, stopped
+export const findMachineLogicIssues = ({programData}) => { //init , started, waiting, stopped
     let issues = {};
     let machineState = [];
     let first = true;
@@ -386,23 +386,19 @@ export const findMachineLogicIssues = ({program}) => { //init , started, waiting
     let gripperEnd = 0;
     let duration = 0;
 
-    if (!unrolled) {
-        return [issues, {}];
-    }
-    //console.log(JSON.stringify(unrolled));
-    unrolled.forEach(primitive=>{
-        if (primitive.type === 'node.primitive.delay.') {
+    programData.forEach(primitive=>{
+        if (primitive.type === 'delayType') {
             let i = machineState.length-1;
             let found = false;
             while (i > -1 && found === false){
                 if (machineState[i].state === 'started'){
-                    machineState[i].timer += 1;
+                    machineState[i].timer += primitive.properties.duration;
                     found = true;
                 }else{
                     i -= 1;
                 }
             }
-        }else if (primitive.type ==='node.primitive.gripper.'){
+        } else if (primitive.type ==='gripperType') {
             let i = machineState.length-1;
             let found = false;
             
@@ -427,7 +423,7 @@ export const findMachineLogicIssues = ({program}) => { //init , started, waiting
                 }
             }
 
-        }else if(primitive.type === 'node.primitive.move-trajectory.'){
+        } else if(primitive.type === 'moveTrajectoryType') {
             let i = machineState.length-1;
             let found = false;
             if (primitive.parameters.trajectory_uuid === undefined || primitive.parameters.trajectory_uuid === null){
@@ -444,9 +440,9 @@ export const findMachineLogicIssues = ({program}) => { //init , started, waiting
             }
         }
 
-        }else if (primitive.type === 'node.primitive.machine-primitive.machine-initialize.'){
-            machineState.push({'primitiveUUID': primitive.uuid , 'machineUUID': primitive.parameters.machine_uuid.uuid,'processTime':0, 'timer': 0 ,'state' : 'init'});
-        }else if (primitive.type === 'node.primitive.machine-primitive.machine-start.'){
+        } else if (primitive.type === 'machineInitType') {
+            machineState.push({'primitiveUUID': primitive.id , 'machineID': primitive.properties.machine,'processTime':0, 'timer': 0 ,'state' : 'init'});
+        } else if (primitive.type === 'processStartType') {
             let i = 0;
             let found = false;
             if (primitive.parameters.machine_uuid === null ||primitive.parameters.machine_uuid === undefined ){
@@ -465,12 +461,12 @@ export const findMachineLogicIssues = ({program}) => { //init , started, waiting
             }
             while (i < machineState.length && found === false){
                
-                if (machineState[i].machineUUID === primitive.parameters.machine_uuid.uuid && machineState[i].state === 'init'){
+                if (machineState[i].machineID === primitive.parameters.machine_uuid.uuid && machineState[i].state === 'init'){
                     
                     machineState[i].state = 'started';
                     machineState[i].processTime = primitive.parameters.machine_uuid.process_time;
                     found = true;
-                } else if (machineState[i].machineUUID === primitive.parameters.machine_uuid.uuid && machineState[i].state === 'started'){
+                } else if (machineState[i].machineID === primitive.parameters.machine_uuid.uuid && machineState[i].state === 'started'){
                     const uuid = generateUuid('issue');
                     issues[uuid] = {
                     uuid: uuid,
@@ -508,12 +504,12 @@ export const findMachineLogicIssues = ({program}) => { //init , started, waiting
                // machineState[i].state = 'error'; 
             }
 
-        }else if (primitive.type === 'node.primitive.machine-primitive.machine-wait.'){
+        } else if (primitive.type === 'processWaitType') {
             let i = 0;
             let found = false;
             while (i < machineState.length && found === false){
 
-                if (machineState[i].machineUUID === primitive.parameters.machine_uuid.uuid 
+                if (machineState[i].machineID === primitive.parameters.machine_uuid.uuid 
                     && machineState[i].state === 'started'){
                     
                     machineState[i].state = 'waiting';
@@ -521,7 +517,7 @@ export const findMachineLogicIssues = ({program}) => { //init , started, waiting
                     found = true;
 
 
-                }else if (machineState[i].machineUUID === primitive.parameters.machine_uuid.uuid 
+                }else if (machineState[i].machineID === primitive.parameters.machine_uuid.uuid 
                     && machineState[i].state === 'init'){
 
                     machineState[i].state = 'waiting';
@@ -564,64 +560,65 @@ export const findMachineLogicIssues = ({program}) => { //init , started, waiting
             }
             
 
-        }else if (primitive.type === 'node.primitive.machine-primitive.machine-stop.'){
-            let i = 0;
-            let found = false;
+        }
+        // else if (primitive.type === 'node.primitive.machine-primitive.machine-stop.') {
+        //     let i = 0;
+        //     let found = false;
             
-            while (i < machineState.length && found === false){
-                if (machineState[i].machineUUID === primitive.parameters.machine_uuid.uuid 
-                    && machineState[i].state === 'started'){
+        //     while (i < machineState.length && found === false){
+        //         if (machineState[i].machineID === primitive.parameters.machine_uuid.uuid 
+        //             && machineState[i].state === 'started'){
                         
                     
-                    if(machineState[i].timer < machineState[i].processTime){
+        //             if(machineState[i].timer < machineState[i].processTime){
     
-                        const uuid = generateUuid('issue');
-                        issues[uuid] = {
-                            id: uuid,
-                            requiresChanges: true,
-                            title: `Process stopped before the timer has completed`,
-                            description: `Process-stop is running on a process that has not completed its timer`,
-                            complete: false,
-                            focus: [primitive.id],
-                            graphData: null,
-                            sceneData : null,
-                            code : null
-                        }  
-                        found = true;   
-                        machineState[i].state = 'error';        
-                    }else{
-                        machineState[i].state = 'stopped';
-                        found = true; 
-                    }
-                    found = true;
-                }else if (machineState[i].machineUUID === primitive.parameters.machine_uuid.uuid 
-                    && machineState[i].state === 'waiting'){
-                        machineState[i].state = 'stopped'; 
-                        found = true; 
+        //                 const uuid = generateUuid('issue');
+        //                 issues[uuid] = {
+        //                     id: uuid,
+        //                     requiresChanges: true,
+        //                     title: `Process stopped before the timer has completed`,
+        //                     description: `Process-stop is running on a process that has not completed its timer`,
+        //                     complete: false,
+        //                     focus: [primitive.id],
+        //                     graphData: null,
+        //                     sceneData : null,
+        //                     code : null
+        //                 }  
+        //                 found = true;   
+        //                 machineState[i].state = 'error';        
+        //             }else{
+        //                 machineState[i].state = 'stopped';
+        //                 found = true; 
+        //             }
+        //             found = true;
+        //         }else if (machineState[i].machineID === primitive.parameters.machine_uuid.uuid 
+        //             && machineState[i].state === 'waiting'){
+        //                 machineState[i].state = 'stopped'; 
+        //                 found = true; 
 
-                }
+        //         }
                 
-                else {
-                    i += 1;
-                }
+        //         else {
+        //             i += 1;
+        //         }
 
-            }
-            if (found === false){
-                const uuid = generateUuid('issue');
-                issues[uuid] = {
-                    id: uuid,
-                    requiresChanges: true,
-                    title: `Machine has to be started`,
-                    description: `Machine-stop is running on a machine that has not been started`,
-                    complete: false,
-                    focus: [primitive.uuid],
-                    graphData: null,
-                    sceneData : null,
-                    code : null
-                }    
-                //machineState[i].state = 'error';           
-            }
-        }
+        //     }
+        //     if (found === false){
+        //         const uuid = generateUuid('issue');
+        //         issues[uuid] = {
+        //             id: uuid,
+        //             requiresChanges: true,
+        //             title: `Machine has to be started`,
+        //             description: `Machine-stop is running on a machine that has not been started`,
+        //             complete: false,
+        //             focus: [primitive.uuid],
+        //             graphData: null,
+        //             sceneData : null,
+        //             code : null
+        //         }    
+        //         //machineState[i].state = 'error';           
+        //     }
+        // }
     })
 
     machineState.forEach(machine => {
@@ -629,7 +626,7 @@ export const findMachineLogicIssues = ({program}) => { //init , started, waiting
         if (machine.state !== 'stop' && (machine.state === 'started'|| machine.state === 'waiting')){
             const uuid = generateUuid('issue');
             issues[uuid] = {
-            uuid: uuid,
+            id: uuid,
             requiresChanges: true,
             title: `Machine never stopped`,
             description: `A machine needs to be ended by running a machine-stop`,

@@ -41,7 +41,7 @@ export const findReachabilityIssues = ({programData}) => { // requires joint_pro
     let issues = {};
     let usedPoses = [];
     // First check through the trajectories that are used.
-    Object.values(programData).filter(v => v.type === "trajectoryType").forEach(trajectory=>{
+    Object.values(programData).filter(v => v.type === "trajectoryType" && v.dataType === DATA_TYPES.INSTANCE).forEach(trajectory=>{
         // Check through the start locations. If not defined, this is resolved in program quality.
         if (trajectory.properties.startLocation) {
             const startLocation = programData[programData[trajectory.properties.startLocation].ref];
@@ -160,7 +160,7 @@ export const findJointSpeedIssues = ({programData, settings}) => {
 
     Object.values(programData).filter(v => v.type === 'moveTrajectoryType').forEach(moveTrajectory => {
         // Filter to just steps that affect the joint motions
-        let steps = moveTrajectory.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+        let steps = moveTrajectory.properties.compiled["{}"] ? moveTrajectory.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE) : [];
         
         // Build the arrays for time, joint values (according to time), and link positions (according to time)
         let timeData = [];
@@ -177,7 +177,7 @@ export const findJointSpeedIssues = ({programData, settings}) => {
                 positionData[key].push(steps[i].data.links[jointLinkMap[key]]);
             })
         }
-        let jointDataLength = allJointData[jointNames[0]].length;
+        let jointDataLength = allJointData[jointNames[0]] ? allJointData[jointNames[0]].length : 0;
 
         let sceneData = {};
         let jointVelocities = {};
@@ -286,7 +286,7 @@ export const findEndEffectorSpeedIssues = ({programData, settings}) => {
     
     Object.values(programData).filter(v => v.type === "moveTrajectoryType").forEach(primitive=>{
         // Filter to just steps that affect the joint motions
-        let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+        let steps = primitive.properties.compiled["{}"] ? primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE) : [];
         
         // Build the arrays for time, joint values (according to time), and link positions (according to time)
         let timeData = [];
@@ -371,7 +371,7 @@ export const findSpaceUsageIssues = ({programData, stats, settings}) => {
     const errorLevel = settings['spaceUsageErr'].value;
     
     Object.values(programData).filter(v => v.type === "moveTrajectoryType").forEach(primitive=>{
-        let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+        let steps = primitive.properties.compiled["{}"] ? primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE) : [];
         let verticies = stepsToVertices(steps);
         let volume = verticesToVolume(verticies);
         let trajectory = primitive.properties.trajectory;

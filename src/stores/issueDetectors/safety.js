@@ -41,12 +41,12 @@ export const findEndEffectorPoseIssues = ({programData, settings}) => { // Requi
         if (!addressed.includes(primitive.id)) {
             // let trajectory = primitive.properties.trajectory;
 
-            let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+            let steps = primitive.properties.compiled["{}"] ? primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE) : [];
             let toolFrames = [];
             let timeData = [];
             for (let i = 0; i < steps.length; i++) {
-                toolFrames.push(step.data.links.tool0.position);
-                timeData.push(step.time);
+                toolFrames.push(steps[i].data.links.tool0.position);
+                timeData.push(steps[i].time);
             }
 
             let gripper = lodash.filter(programData, function (v) { return v.type === 'gripperType'})[0];
@@ -106,7 +106,7 @@ export const findCollisionIssues = ({programData, settings}) => {
     
     Object.values(programData).filter(v => v.type === 'moveTrajectoryType').forEach(primitive => {
         if (!addressed.includes(primitive.id)) {
-            let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+            let steps = primitive.properties.compiled["{}"] ? primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE) : [];
             let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType'})[0];
             let robotPoints = robotAgent ? robotAgent.properties.pinchPointPairLinks : [];
             
@@ -310,7 +310,7 @@ export const findOccupancyIssues = ({programData, settings}) => {
     const errorLevel = settings['occupancyErr'].value;
 
     Object.values(programData).filter(v => v.type === "moveTrajectoryType").forEach(primitive => {
-        let steps = primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE);
+        let steps = primitive.properties.compiled["{}"] ? primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE) : [];
         
         // Build the arrays for time
         let timeData = [];
