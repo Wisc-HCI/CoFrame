@@ -1,4 +1,5 @@
 import { STATUS, STEP_TYPE } from "../Constants";
+import { eventsToStates, statesToSteps } from ".";
 
 export const machineCompiler = ({data, properties, memo}) => {
     const machine = properties.machine;
