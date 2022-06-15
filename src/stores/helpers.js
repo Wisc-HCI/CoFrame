@@ -1674,18 +1674,13 @@ export function trajectoryDataToLine(
 //     return items
 // }
 
-export const stepsToEEPoseScores = (frames, gripper) => {
+export const stepsToEEPoseScores = (frames, endPointFrames) => {
   let scores = [0];
 
   for (let i = 1; i < frames.length; i++) {
     const p1 = [frames[i].x, frames[i].y, frames[i].z];
     const p0 = [frames[i-1].x, frames[i-1].y, frames[i-1].z];
-    let gripperOffsetRotation = gripper.properties.gripRotationOffset;
-    let gripperOffsetPosition = gripper.properties.gripPositionOffset;
-    let offsetQuat = new Quaternion(gripperOffsetRotation.x, gripperOffsetRotation.y, gripperOffsetRotation.z, gripperOffsetRotation.w);
-    let rotatedPoint = (new Vector3(frames[i].x, frames[i].y, frames[i].z)).applyQuaternion(offsetQuat);
-    let tool0Endpoint = rotatedPoint.add(new Vector3(gripperOffsetPosition.x, gripperOffsetPosition.y, gripperOffsetPosition.z));
-    const q1 = [tool0Endpoint.x, tool0Endpoint.y, tool0Endpoint.z];
+    const q1 = [endPointFrames[i].x, endPointFrames[i].y, endPointFrames[i].z];
     const movementVec = new Vector3(
       p1[0] - p0[0],
       p1[1] - p0[1],

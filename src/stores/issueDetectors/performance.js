@@ -390,38 +390,44 @@ export const findSpaceUsageIssues = ({programData, stats, settings}) => {
         let newData = {x:i, spaceUsage: volume}
         priorData.push(newData);
 
+        let shouldGenIssue = false;
+
         // Adjust color of hull
         let hullColor = {...NO_ERROR_COLOR, a: 0.5};
         if (volume > errorLevel) {
             isError = true;
+            shouldGenIssue = true;
             hullColor = {...ERROR_COLOR, a: 0.5}
         } else if (volume > warningLevel) {
+            shouldGenIssue = true;
             hullColor = {...WARNING_COLOR, a: 0.5}
         }
 
-        // Keep track of specfic trajectory changes
-        addStats[trajectory] = {volume: volume};
+        if (shouldGenIssue) {
+            // Keep track of specfic trajectory changes
+            addStats[trajectory] = {volume: volume};
 
-        const uuid = generateUuid('issue');
-        issues[uuid] = {
-            id: uuid,
-            requiresChanges: isError,
-            title: `Robot Space Utilization`,
-            description: `Robot Space Utilization`,
-            complete: false,
-            focus: [primitive.id],
-            graphData: {
-                series: priorData,
-                xAxisLabel: 'Program Iteration',
-                yAxisLabel: 'Space Usage',
-                warningThreshold: warningLevel,
-                errorThreshold: errorLevel,
-                warningColor: frameStyles.colors["performance"],
-                errorColor: frameStyles.errorColors["performance"],
-                title: '',
-                isTimeseries: true
-            },
-            sceneData: {hulls: {spaceUsage: {vertices: verticies, color: hullColor}}}
+            const uuid = generateUuid('issue');
+            issues[uuid] = {
+                id: uuid,
+                requiresChanges: isError,
+                title: `Robot Space Utilization`,
+                description: `Robot Space Utilization`,
+                complete: false,
+                focus: [primitive.id],
+                graphData: {
+                    series: priorData,
+                    xAxisLabel: 'Program Iteration',
+                    yAxisLabel: 'Space Usage',
+                    warningThreshold: warningLevel,
+                    errorThreshold: errorLevel,
+                    warningColor: frameStyles.colors["performance"],
+                    errorColor: frameStyles.errorColors["performance"],
+                    title: '',
+                    isTimeseries: true
+                },
+                sceneData: {hulls: {spaceUsage: {vertices: verticies, color: hullColor}}}
+            }
         }
     });
 

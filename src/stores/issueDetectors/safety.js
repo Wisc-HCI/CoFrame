@@ -3,6 +3,7 @@ import { STATUS, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid";
 import { checkHandThresholds, stepsToEEPoseScores, likProximityAdjustment } from "../helpers";
 import lodash from 'lodash';
+import { DATA_TYPES } from "simple-vp";
 
 const linkNames = ['shoulder_link', 'upper_arm_link', 'forearm_link', 'wrist_1_link', 'wrist_2_link', 'wrist_3_link'];
 const linkNameMap = {
@@ -26,49 +27,54 @@ const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
 const WARNING_COLOR = {r: 204, g: 121, b: 167};
 const ERROR_COLOR = {r: 233, g: 53, b: 152};
 
-// Used for adjusting the x axes time data
-const precision = 1000;
-
 export const findEndEffectorPoseIssues = ({programData, settings}) => { // Requires trace pose information
     let issues = {};
-
-    let addressed = [];
 
     let warningLevel = settings['eePoseWarn'].value;
     let errorLevel = settings['eePoseErr'].value;
 
+    // TODO: these should be arrays
+    let gripper = lodash.filter(programData, function (v) { return v.type === 'gripperType'})[0];
+    let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType'})[0];
+
     Object.values(programData).filter(v => v.type === 'moveTrajectoryType').forEach(primitive => {
-        if (!addressed.includes(primitive.id)) {
-            // let trajectory = primitive.properties.trajectory;
+        let steps = primitive.properties.compiled["{}"] ? primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE) : [];
+        let toolFrames = [];
+        let endPointFrames = [];
+        let timeData = [];
 
-            let steps = primitive.properties.compiled["{}"] ? primitive.properties.compiled["{}"].steps.filter(v => v.type === STEP_TYPE.SCENE_UPDATE) : [];
-            let toolFrames = [];
-            let timeData = [];
-            for (let i = 0; i < steps.length; i++) {
-                toolFrames.push(steps[i].data.links.tool0.position);
-                timeData.push(steps[i].time);
+        for (let i = 0; i < steps.length; i++) {
+            toolFrames.push(steps[i].data.links.tool0.position);
+            // TODO: iterate over robots and tools
+            endPointFrames.push(steps[i].data.goalPoses[robotAgent.id][gripper.id].position)
+            timeData.push(steps[i].time);
+        }
+
+        // TODO: score each robot/tool combination
+
+        let scores = stepsToEEPoseScores(toolFrames, endPointFrames);
+
+        let endEffectorScores = [];
+        let graphData = [];
+        let hasError = false;
+        let shouldReportIssue = false;
+
+        for (let i = 0; i < toolFrames.length; i++) {
+            let curFrame = toolFrames[i]
+            if (scores[i] >= errorLevel) {
+                hasError = true;
+                shouldReportIssue = true;
+                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+            } else if (scores[i] >= warningLevel) {
+                shouldReportIssue = true;
+                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
+            } else {
+                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
             }
+            graphData.push({x: timeData[i] / 1000, endEffectorScore: scores[i]});
+        }
 
-            let gripper = lodash.filter(programData, function (v) { return v.type === 'gripperType'})[0];
-            let scores = stepsToEEPoseScores(toolFrames, gripper);
-
-            let endEffectorScores = [];
-            let graphData = [];
-            let hasError = false;
-
-            for (let i = 0; i < toolFrames.length; i++) {
-                let curFrame = toolFrames[i]
-                if (scores[i] >= errorLevel) {
-                    hasError = true;
-                    endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
-                } else if (scores[i] >= warningLevel) {
-                    endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
-                } else {
-                    endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
-                }
-                graphData.push({x: timeData[i] / 1000, endEffectorScore: scores[i]});
-            }
-
+        if (shouldReportIssue) {
             const uuid = generateUuid('issue');
             issues[uuid] = {
                 id: uuid,
@@ -90,7 +96,6 @@ export const findEndEffectorPoseIssues = ({programData, settings}) => { // Requi
                 },
                 sceneData: {vertices: {endEffectorPose: endEffectorScores}}
             }
-            addressed.push(primitive.id)
         }
     });
 

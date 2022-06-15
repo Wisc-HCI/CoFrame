@@ -55,7 +55,7 @@ export const findMissingParameterIssues = ({programData, programSpec}) => {
                             graphData: null
                         }
                     }
-                    if (parameterName === 'startLocation' || parameterName === 'endLocation') {
+                    if (primitive.dataType === DATA_TYPES.INSTANCE && (parameterName === 'startLocation' || parameterName === 'endLocation')) {
                         const uuid = generateUuid('issue');
                         issues[uuid] = {
                             id: uuid,

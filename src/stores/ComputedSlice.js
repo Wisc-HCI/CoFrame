@@ -68,11 +68,16 @@ export const computedSlice = (state) => {
     state.focus.forEach((entry) => {
         // let trajectory = null;
         if (state.programData[entry]?.type === "moveTrajectoryType" || state.programData[entry]?.type === "trajectoryType") {
-            let trajectory = state.programData[entry];
+            let trajectoryTmp = null;
+
             if (state.programData[entry]?.type === "moveTrajectoryType") {
-                trajectory = state.programData[state.programData[entry].properties.trajectory];
+                trajectoryTmp = state.programData[state.programData[entry].properties.trajectory];
+            } else {
+                trajectoryTmp = state.programData[entry]
             }
-            // let trajectory = state.programData[entry];
+
+            let trajectory = trajectoryTmp?.ref ? state.programData[trajectoryTmp.ref] : trajectoryTmp;
+
             if (trajectory && state.programData[trajectory.properties.startLocation]?.ref && state.programData[trajectory.properties.endLocation]?.ref) {
                 focusedTrajectoryChildren.push(state.programData[trajectory.properties.startLocation].ref);
                 trajectory.properties.waypoints.forEach((wp) => {
@@ -310,9 +315,8 @@ export const computedSlice = (state) => {
     })
 
     // Pinch Point visualizations
-    if (deepestIssue && deepestIssue.code === 'pinchPoints' && state.programData[deepestIssue.focus.id]) {
-        console.log('---------show pinchpoints---------')
-        const pinchPointAnimations = pinchpointAnimationFromExecutable(Object.values(state.programData).filter(v => v.type === "robotAgentType")[0], state.programData[deepestIssue.focus.id].properties.compiled["{}"].steps)
+    if (deepestIssue && deepestIssue.code === 'pinchPoints' && state.programData[deepestIssue.focus[0]]) {
+        const pinchPointAnimations = pinchpointAnimationFromExecutable(Object.values(state.programData).filter(v => v.type === "robotAgentType")[0], state.programData[deepestIssue.focus[0]].properties.compiled["{}"].steps)
         Object.keys(pinchPointAnimations).forEach(field => {
             items[field] = {
                 shape: 'sphere',
