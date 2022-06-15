@@ -25,19 +25,15 @@ const tooltipStyles = {
 
 const getColor = (
   value,
-  warningThreshold,
-  errorThreshold,
-  normalColor,
-  warningColor,
-  errorColor
+  thresholds
 ) => {
-  if (value >= errorThreshold) {
-    return errorColor;
-  } else if (value < warningThreshold) {
-    return normalColor;
-  } else {
-    return warningColor;
-  }
+  let color = 'Label';
+  thresholds.forEach(t=>{
+    if (value >= t.range[0] && value < t.range[1]) {
+      color = t.color;
+    }
+  })
+  return color
 };
 
 const findClosestData = (series, x) => {
@@ -103,46 +99,39 @@ const IssueGraph = withTooltip(
     tooltipData,
     hideTooltip,
     showTooltip,
-    warningThreshold = 1,
-    errorThreshold = 3,
-    normalColor = "grey",
-    warningColor = "orange",
-    errorColor = "red",
+    thresholds = [{range: ["MIN","MAX"],color:'grey',label:'Label'}],
   }) => {
+
+    console.log('ISSUE GRAPH DATA',data);
+
     const primaryColor = useStore((state) => state.primaryColor);
     const keys = Object.keys(data[0]).filter((k) => k !== "x");
     const xMaxValue = Math.max(...data.map((s) => s.x));
     const yMaxValue = Math.max(
       ...data.map((s) => Math.max(...keys.map((k) => s[k])))
     );
-
-    console.log("Data", data);
-
-    const normThresholdUsed = warningThreshold > 0;
-    const warningThresholdUsed = thresholdUsed(
-      data,
-      keys,
-      (d) => d >= warningThreshold && d < errorThreshold
+    const yMinValue = Math.min(
+      ...data.map((s) => Math.min(...keys.map((k) => s[k])))
     );
-    const errorThresholdUsed = thresholdUsed(
-      data,
-      keys,
-      (d) => d >= errorThreshold
-    );
-    let colorDomain = [];
-    let colorRange = [];
-    if (normThresholdUsed) {
-      colorDomain.push(0);
-      colorRange.push(normalColor);
-    }
-    if (warningThresholdUsed) {
-      colorDomain.push(warningThreshold);
-      colorRange.push(warningColor);
-    }
-    if (errorThresholdUsed) {
-      colorDomain.push(errorThreshold);
-      colorRange.push(errorColor);
-    }
+
+    const filledThresholds = thresholds.map((t) => ({
+      range: [
+        t.range[0] === "MIN"
+          ? yMinValue
+          : t.range[0] === "MAX"
+          ? yMaxValue
+          : t.range[0],
+        t.range[1] === "MIN"
+          ? yMinValue
+          : t.range[1] === "MAX"
+          ? yMaxValue
+          : t.range[1],
+      ],
+      color: t.color,
+    }));
+
+    const colorDomain = filledThresholds.map((t) => t.range[0]);
+    const colorRange = filledThresholds.map((t) => t.color);
 
     const xMax = width - margin.left - margin.right;
     const yMax = height - margin.top - margin.bottom;
@@ -152,7 +141,7 @@ const IssueGraph = withTooltip(
     });
 
     const yScale = scaleLinear({
-      domain: [yMaxValue, 0],
+      domain: [yMaxValue, yMinValue],
     });
 
     const colorScale = scaleOrdinal({
@@ -184,6 +173,29 @@ const IssueGraph = withTooltip(
       },
       [showTooltip, hideTooltip, xScale, data]
     );
+
+    const getStops = (maxValue) => {
+      let stops = [];
+      filledThresholds
+        .slice()
+        .reverse()
+        .forEach((t) => {
+          const o1 = 1 - t.range[0] / maxValue;
+          const o2 = 1 - t.range[1] / maxValue;
+
+          if (o2 >= 0) {
+            stops.push(
+              <stop key={`${t.color}-stop`} offset={o2} stopColor={t.color} />
+            );
+          }
+          if (o1 >= 0) {
+            stops.push(
+              <stop key={`${t.color}-start`} offset={o1} stopColor={t.color} />
+            );
+          }
+        });
+      return stops;
+    };
 
     return width < 10 && height < 40 && data.length > 0 ? null : (
       <div>
@@ -233,63 +245,7 @@ const IssueGraph = withTooltip(
                     y1="0"
                     y2="1"
                   >
-                    {colorDomain
-                      .slice()
-                      .reverse()
-                      .map((v, i) => (
-                        <React.Fragment key={"color" + colorRange[i]}>
-                          {console.log({
-                            start: {
-                              color: i > 0 ? colorRange[i - 1] : colorRange[i],
-                              offset:
-                                i > 0
-                                  ? 1 -
-                                    colorDomain[i - 1] /
-                                      getMaxForSeries(data, k)
-                                  : 0,
-                            },
-                            stop: {
-                                color: colorRange[i],
-                                offset: 1 - v / getMaxForSeries(data, k)
-                            },
-                          })}
-                          <stop
-                            key={"color-start" + colorRange[i]}
-                            offset={
-                              i > 0
-                                ? 1 -
-                                  colorDomain[i - 1] / getMaxForSeries(data, k)
-                                : 0
-                            }
-                            stopColor={
-                              i > 0 ? colorRange[i - 1] : colorRange[i]
-                            }
-                          />
-                          <stop
-                            key={"color-stop" + colorRange[i]}
-                            offset={1 - v / getMaxForSeries(data, k)}
-                            stopColor={colorRange[i]}
-                          />
-                        </React.Fragment>
-                      ))}
-                    {/* <stop offset={0} stopColor={errorColor} />
-                    <stop
-                      offset={1 - errorThreshold / getMaxForSeries(data, k)}
-                      stopColor={errorColor}
-                    />
-                    <stop
-                      offset={1 - errorThreshold / getMaxForSeries(data, k)}
-                      stopColor={warningColor}
-                    />
-                    <stop
-                      offset={1 - warningThreshold / getMaxForSeries(data, k)}
-                      stopColor={warningColor}
-                    />
-                    <stop
-                      offset={1 - warningThreshold / getMaxForSeries(data, k)}
-                      stopColor={normalColor}
-                    />
-                    <stop offset={1} stopColor={normalColor} /> */}
+                    {getStops(getMaxForSeries(data, k))}
                   </linearGradient>
                 </defs>
                 <AreaClosed
@@ -297,7 +253,7 @@ const IssueGraph = withTooltip(
                   x={(d) => xScale(d.x)}
                   y={(d) => yScale(d[k])}
                   x0={xScale(0)}
-                  y0={yScale(0)}
+                  y0={yScale(yMinValue)}
                   strokeWidth={2}
                   stroke={`url(#area-gradient-issue-${formatKey(k)})`}
                   fill={`url(#area-gradient-issue-${formatKey(k)})`}
@@ -310,7 +266,7 @@ const IssueGraph = withTooltip(
                   label={yAxisLabel}
                   // tickFormat={(row) => trackTypes[row].label}
                   stroke={axisColor}
-                  numTicks={10}
+                  // numTicks={10}
                   tickStroke={axisColor}
                   tickLabelProps={() => ({
                     fill: axisColor,
@@ -322,8 +278,8 @@ const IssueGraph = withTooltip(
                 <AxisBottom
                   top={yMax}
                   scale={xScale}
-                  numTicks={10}
-                  label={"Time"}
+                  // numTicks={10}
+                  label={xAxisLabel}
                   stroke={axisColor}
                   tickStroke={axisColor}
                   tickLabelProps={() => ({
@@ -334,22 +290,15 @@ const IssueGraph = withTooltip(
                 />
               </Group>
             ))}
-            {errorThresholdUsed && (
+            {filledThresholds.map((t) => (
               <Line
-                from={{ x: xScale(0), y: yScale(errorThreshold) }}
-                to={{ x: xScale(xMaxValue), y: yScale(errorThreshold) }}
+                key={`${t.color}-line`}
+                from={{ x: xScale(0), y: yScale(t.range[0]) }}
+                to={{ x: xScale(xMaxValue), y: yScale(t.range[0]) }}
                 strokeWidth={1}
-                stroke={errorColor}
+                stroke={t.color}
               />
-            )}
-            {(warningThresholdUsed || errorThresholdUsed) && (
-              <Line
-                from={{ x: xScale(0), y: yScale(warningThreshold) }}
-                to={{ x: xScale(xMaxValue), y: yScale(warningThreshold) }}
-                strokeWidth={1}
-                stroke={warningColor}
-              />
-            )}
+            ))}
 
             {tooltipData && (
               <g>
@@ -398,13 +347,15 @@ const IssueGraph = withTooltip(
         >
           {colorRange.length > 1 && (
             <LegendOrdinal
-              labelFormat={(l) =>
-                l === errorThreshold
-                  ? "Error"
-                  : l === warningThreshold
-                  ? "Warning"
-                  : "Ok"
-              }
+              labelFormat={(l) => {
+                let label = 'Label';
+                filledThresholds.forEach(t=>{
+                  if (l >= t.range[0] && l < t.range[1]) {
+                    label = t.label;
+                  }
+                })
+                return label
+              }}
               scale={colorScale}
               direction="row"
               labelMargin="0 15px 0 0"
@@ -433,26 +384,12 @@ const IssueGraph = withTooltip(
                       borderRadius: 100,
                       width: 7,
                       height: 7,
-                      backgroundColor: getColor(
-                        tooltipData[key],
-                        warningThreshold,
-                        errorThreshold,
-                        normalColor,
-                        warningColor,
-                        errorColor
-                      ),
+                      backgroundColor: getColor(tooltipData[key],filledThresholds),
                       boxShadow: "0 0 0 2px white",
                     }}
                   ></div>
                   <Text
-                    color={getColor(
-                      tooltipData[key],
-                      warningThreshold,
-                      errorThreshold,
-                      normalColor,
-                      warningColor,
-                      errorColor
-                    )}
+                    color={getColor(tooltipData[key],filledThresholds)}
                     size="small"
                   >
                     {camelCaseToWords(key)}
