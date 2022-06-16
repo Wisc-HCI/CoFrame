@@ -6,12 +6,21 @@ import Collapse from '../Elements/Collapse';
 
 export const MachineProcessList = ({ machineId }) => {
 
+  
   const processTypeInfo = useStore(state => state.programSpec.objectTypes.processType)
 
   const addFocusItem = useStore(state => state.addFocusItem);
 
-  const processList = useStore(state => Object.values(state.programData)
-       .filter(value => value.type === 'processType' && value.properties.machine === machineId));
+  const processList = useStore(state => {
+    console.log("state.programData" , state.programData);
+    Object.values(state.programData).filter(value => value && value.properties && value.type === 'processType' && 
+    value.properties.machine === machineId
+    )
+
+  } );
+
+
+ 
 
   
 
@@ -27,7 +36,7 @@ export const MachineProcessList = ({ machineId }) => {
       </Box>}
     >
 
-      {processList.length > 0 ? processList.map(process => {
+      {processList ? processList.map(process => {
         const processRef = referenceTemplateFromSpec('processType', process, processTypeInfo);
         return (
           <Box key={process.id} round="xsmall" background="rgba(100,100,100,0.3)" direction='column'

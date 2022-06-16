@@ -4,7 +4,6 @@ import { ProcessIOList } from './ProcessDetail';
 import PositionRotationTF from './PositionRotationTF';
 import { TextArea, Text, Box, TextInput, Button, Layer, DropButton, Spinner } from 'grommet';
 import { FixtureItem } from './FixtureDetail'
-import { DATA_TYPES } from "simple-vp";
 
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
@@ -75,7 +74,7 @@ export const Detail = (_) => {
 
 
   const deleteBlock = useStore(state => state.deleteBlock);
-  // console.log("item:", item);
+  //console.log("item:", item);
   // console.log("objectTypeInfo", objectTypeInfo);
   // console.log("focusData", focusData);
   if (!item) {
