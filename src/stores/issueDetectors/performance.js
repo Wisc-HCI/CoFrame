@@ -4,6 +4,7 @@ import { STATUS, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import { anyReachable, distance, getIDsAndStepsFromCompiled, verticesToVolume } from "../helpers";
 import { Vector3} from "three";
+import lodash from 'lodash';
 
 const jointNames = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'];
 const jointNameMap = {
@@ -317,6 +318,11 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings}) =>
     const warningLevel = settings['spaceUsageWarn'].value;
     const errorLevel = settings['spaceUsageErr'].value;
 
+    let robotWorkZone = lodash.filter(programData, function (v) { 
+            return v.type === 'zoneType' && programData[v.properties.agent].type === "robotAgentType"
+        })[0];
+    let robotWorkZoneVolume = robotWorkZone.properties.scale.x * robotWorkZone.properties.scale.y * robotWorkZone.properties.scale.z;
+
     let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
     let moveTrajectoryIDs = res[0];
     let sceneUpdates = res[1];
@@ -339,6 +345,7 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings}) =>
 
     moveTrajectoryIDs.forEach(moveID => {
         let volume = verticesToVolume(vertices[moveID]);
+        let volumePercentage = (volume / robotWorkZoneVolume) * 100;
         let trajectory = programData[moveID].properties.trajectory;
 
         let isError = false;
@@ -353,25 +360,25 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings}) =>
         }
 
         // add new one
-        let newData = {x:i, spaceUsage: volume}
+        let newData = {x:i, spaceUsage: volumePercentage}
         priorData.push(newData);
 
         // determine whether issue should be generated
         let shouldGenIssue = false;
         // Adjust color of hull
         let hullColor = {...NO_ERROR_COLOR, a: 0.5};
-        if (volume >= errorLevel) {
+        if (volumePercentage >= errorLevel) {
             isError = true;
             shouldGenIssue = true;
             hullColor = {...ERROR_COLOR, a: 0.5}
-        } else if (volume >= warningLevel) {
+        } else if (volumePercentage >= warningLevel) {
             shouldGenIssue = true;
             hullColor = {...WARNING_COLOR, a: 0.5}
         }
 
         if (shouldGenIssue) {
             // Keep track of specfic trajectory changes
-            addStats[trajectory] = {volume: volume};
+            addStats[trajectory] = {volume: volumePercentage};
 
             const uuid = generateUuid('issue');
             issues[uuid] = {
@@ -390,7 +397,7 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings}) =>
                         {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
-                    units: 'm/s',
+                    units: '%',
                     decimal: 5,
                     title: '',
                     isTimeseries: true

@@ -2926,6 +2926,50 @@
     "selected": false,
     "editing": false
   },
+  "robotWorkZone": {
+    "type": "zoneType",
+    "name": "Robot Workspace",
+    "id": "robotWorkZone",
+    "canEdit": true,
+    "canDelete": true,
+    "properties": {
+      "agent": "robot-agent-988926121c1911eccbe2600155d1a70a2",
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "compileFn": 14,
+      "updateFields": [
+        "position",
+        "rotation",
+        "relativeTo",
+        "scale",
+        "agent"
+      ],
+      "description": "A place for the robot to conduct its work.",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0.5
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "relativeTo": "pedestal",
+      "mesh": null,
+      "collision": null,
+      "status": "PENDING",
+      "compiled": {},
+      "singleton": true
+    },
+    "dataType": "INSTANCE",
+    "selected": false,
+    "editing": false
+  },
   "zone-988926121c1911ecbe2600155d1a70a2": {
     "type": "zoneType",
     "name": "Human Workspace Occupancy Zone",
