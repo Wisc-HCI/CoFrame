@@ -13959,9 +13959,9 @@
     "properties": {
       "description": "Adjust the gripper position",
       "thing": "thingType-4476b77f-1499-4e12-982b-f7b0f8a34ebb",
-      "positionStart": 50,
-      "positionEnd": 50,
-      "speed": 20,
+      "positionStart": 30,
+      "positionEnd": 60,
+      "speed": 15,
       "compileFn": 9,
       "updateFields": [
         "thing",

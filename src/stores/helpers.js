@@ -91,30 +91,6 @@ export const quaternionLog = (quaternion) => {
   return [outVec.x, outVec.y, outVec.z];
 };
 
-const ROBOT_FRAMES = [
-  "base_link",
-  "shoulder_link",
-  "upper_arm_link",
-  "forearm_link",
-  "wrist_1_link",
-  "wrist_2_link",
-  "wrist_3_link",
-  "flange",
-  "tool0",
-  "tool0_endpoint",
-];
-
-// export const PRIMITIVE_TYPES = [
-//     'delay', 'gripper', 'machine-initialize', 'process-start', 'process-stop',
-//     'process-wait', 'move-trajectory', 'move-unplanned', 'breakpoint', 'skill-call'
-// ]
-
-export const HUMAN_ZONE = {
-  radius: 2,
-  height: 3,
-  position: { x: 0, y: -1, z: 1 },
-};
-
 export const DEFAULT_LOCATION_COLOR = { r: 62, g: 16, b: 102, a: 1 };
 
 export const DEFAULT_WAYPOINT_COLOR = { r: 100, g: 18, b: 128, a: 1 };
@@ -678,170 +654,6 @@ export function flattenProgram(primitives, skills, parentData) {
   return [flattenedPrimitives, flattenedSkills];
 }
 
-// function executableTrajectory(trajectory, context) {
-//   let executable = { uuid: trajectory.uuid, sequence: [], trace: null };
-//   if (
-//     !trajectory.start_location_uuid ||
-//     !trajectory.end_location_uuid ||
-//     !trajectory.trace
-//   ) {
-//     console.log("no start or end");
-//     return null;
-//   }
-//   executable.sequence.push(context[trajectory.start_location_uuid]);
-//   trajectory.waypoint_uuids.forEach((waypoint_uuid) => {
-//     executable.sequence.push(context[waypoint_uuid]);
-//   });
-//   executable.sequence.push(context[trajectory.end_location_uuid]);
-//   executable.trace = trajectory.trace;
-//   executable.vertices = traceToVertices(trajectory.trace);
-//   executable.volume = verticesToVolume(executable.vertices);
-//   executable.eePoseScores = traceToEEPoseScores(trajectory.trace);
-//   // console.log(executable)
-//   return executable;
-// }
-
-export function executableMachine(machine, context) {
-  let executable = { ...machine, inputData: [], outputData: [] };
-  Object.keys(machine.inputs).forEach((thingType) => {
-    const thingInfo = context[thingType];
-    machine.inputs[thingType].forEach((outputData) => {
-      const region = context[outputData.region_uuid];
-      // For now, assume only one is created
-      executable.inputData.push({ thing: thingInfo, region });
-    });
-  });
-  Object.keys(machine.outputs).forEach((thingType) => {
-    const thingInfo = context[thingType];
-    machine.outputs[thingType].forEach((outputData) => {
-      const region = context[outputData.region_uuid];
-      // For now, assume only one is created
-      executable.outputData.push({
-        thing: thingInfo,
-        region,
-        placeholder: context[outputData.placeholder_uuids[0]],
-      });
-    });
-  });
-
-  return executable;
-}
-
-// function executablePrimitiveInner(primitiveId, state, context) {
-//     let full = {};
-//     let executable = [];
-//     const primitive = state.data[primitiveId];
-//     if (!primitive) {
-//         return null
-//     }
-//     if (primitive.children) {
-//         if (primitive.children.some(childId => {
-//             const inner = executablePrimitiveInner(childId, state, context);
-//             if (inner === null || inner.children.includes(null)) {
-//                 return true
-//             } else {
-//                 executable = [...executable, ...inner.children]
-//                 full = { ...full, ...inner.all, [childId]: inner.children }
-//                 return false
-//             }
-//         })) {
-//             // There was a null response
-//             return null
-//         } else {
-//             return { children: executable, all: { ...full, [primitive.uuid]: executable } }
-//         }
-//     } else if (primitive.type.includes('skill-call')) {
-//         let innerContext = { ...context };
-//         if (Object.keys(primitive.parameters).some(parameterKey => {
-//             const value = primitive.parameters[parameterKey];
-//             if (parameterKey !== 'skill_uuid' && context[value]) {
-//                 innerContext[parameterKey] = context[value]
-//                 return false
-//             } else if (parameterKey !== 'skill_uuid') {
-//                 return true
-//             }
-//             return false
-//         })) {
-//             // There was a null param
-//             return null
-//         }
-//         const calledSkill = state.data.skills[primitive.parameters.skill_uuid];
-//         if (!calledSkill) {
-//             return null
-//         }
-//         if (calledSkill.children.some(childId => {
-//             const inner = executablePrimitiveInner(childId, state, innerContext);
-//             if (inner === null || inner.children.includes(null)) {
-//                 return true
-//             } else {
-//                 executable = [...executable, ...inner.children]
-//                 return false
-//             }
-//         })) {
-//             // There was a null response
-//             return null
-//         } else {
-//             return { children: executable, all: { [primitive.uuid]: executable } }
-//         }
-//     } else if (primitive.type === 'node.primitive.breakpoint.' || primitive.type === 'node.primitive.delay.') {
-//         return { children: [primitive], all: { [primitive.uuid]: primitive } }
-//     } else if (primitive.type === 'node.primitive.gripper.') {
-//         if (context[primitive.parameters.thing_uuid]) {
-//             const expanded = { ...primitive, parameters: { ...primitive.parameters, thing_uuid: context[primitive.parameters.thing_uuid] } }
-//             return { children: [expanded], all: { [primitive.uuid]: expanded } }
-//         } else {
-//             return null
-//         }
-//     } else if (primitive.type.includes('machine-primitive')) {
-//         if (context[primitive.parameters.machine_uuid]) {
-//             const expanded = { ...primitive, parameters: { ...primitive.parameters, machine_uuid: context[primitive.parameters.machine_uuid] } }
-//             return { children: [expanded], all: { [primitive.uuid]: expanded } }
-//         } else {
-//             return null
-//         }
-//     } else if (primitive.type === 'node.primitive.move-trajectory.') {
-//         if (primitive.parameters.trajectory_uuid && context[primitive.parameters.trajectory_uuid]) {
-//             const expanded = { ...primitive, parameters: { ...primitive.parameters, trajectory_uuid: context[primitive.parameters.trajectory_uuid] } }
-//             return { children: [expanded], all: { [primitive.uuid]: expanded } }
-//         } else {
-//             return null
-//         }
-//     } else if (primitive.type === 'node.primitive.move-unplanned.') {
-//         if (context[primitive.parameters.location_uuid]) {
-//             const expanded = { ...primitive, parameters: { ...primitive.parameters, location_uuid: context[primitive.parameters.location_uuid] } }
-//             return { children: [expanded], all: { [primitive.uuid]: expanded } }
-//         } else {
-//             return null
-//         }
-//     }
-//     return null
-// }
-
-// export function executablePrimitives(state) {
-//     let context = state.data;
-//     Object.values(state.data).filter(v => v.type === 'trajectory').forEach(trajectory => {
-//         context[trajectory.uuid] = executableTrajectory(trajectory, context)
-//     })
-//     Object.values(state.data).filter(v => v.type === 'machine').forEach(machine => {
-//         context[machine.uuid] = executableMachine(machine, context)
-//     })
-//     // this should return all the primitives that are run through with the actual program
-//     const inner = executablePrimitiveInner(state.uuid, state, context);
-//     let executables = {}
-//     if (inner) {
-//         executables = { ...inner.all };
-//     }
-
-//     // this should catch any primitives not called directly through the program that are valid
-//     Object.values(state.data).filter(v => PRIMITIVE_TYPES.includes(v.type)).forEach(primitive => {
-//         if (!executables[primitive.uuid]) {
-//             executables = { ...executables, ...executablePrimitiveInner(primitive.uuid, state, context) }
-//         }
-//     })
-//     return executables
-
-// }
-
 export const findLastSatisfiedFromReference = (x, fn) => {
   let lastIdx = x.length - 1;
   x.some((v, i) => {
@@ -854,89 +666,6 @@ export const findLastSatisfiedFromReference = (x, fn) => {
   });
   return lastIdx;
 };
-
-// const gripperFramesFromValue = (distance) => {
-//     const idx = findLastSatisfiedFromReference(GRIPPER_CONFIGURATIONS.cmd, v => v > distance);
-//     console.log(idx)
-//     let frames = {};
-//     GRIPPER_FRAMES.forEach(frameName => {
-//         const rawFrame = GRIPPER_CONFIGURATIONS.capture[frameName][idx];
-//         frames[frameName] = {
-//             frame: GRIPPER_PARENTS[frameName],
-//             translation: {
-//                 x: rawFrame[0][0],
-//                 y: rawFrame[0][1],
-//                 z: rawFrame[0][2]
-//             },
-//             rotation: {
-//                 x: rawFrame[1][0],
-//                 y: rawFrame[1][1],
-//                 z: rawFrame[1][2],
-//                 w: rawFrame[1][3]
-//             }
-//         }
-//     })
-//     return frames
-// }
-
-// export const robotFramesFromPose = (pose) => {
-//     let frames = {};
-//     console.log(pose.frames)
-//     ROBOT_FRAMES.forEach(frame => {
-//         const rawFrame = pose.frames[frame];
-//         frames['simulated_' + frame] = {
-//             translation: {
-//                 x: rawFrame[0][0],
-//                 y: rawFrame[0][1],
-//                 z: rawFrame[0][2]
-//             },
-//             rotation: {
-//                 x: rawFrame[1][0],
-//                 y: rawFrame[1][1],
-//                 z: rawFrame[1][2],
-//                 w: rawFrame[1][3]
-//             }
-//         }
-//     })
-//     return frames
-// }
-
-// const frameFromRegion = (region) => {
-//     return {
-//         translation: {
-//             x: region.center_position.x,
-//             y: region.center_position.y,
-//             z: region.center_position.z
-//         },
-//         rotation: {
-//             x: region.center_orientation.x,
-//             y: region.center_orientation.y,
-//             z: region.center_orientation.z,
-//             w: region.center_orientation.w,
-//         }
-//     }
-// }
-
-// const robotFramesFromIdx = (idx, trace) => {
-//     let frames = {};
-//     ROBOT_FRAMES.forEach(frame => {
-//         const rawFrame = trace.frames[frame][idx];
-//         frames['simulated_' + frame] = {
-//             translation: {
-//                 x: rawFrame[0][0],
-//                 y: rawFrame[0][1],
-//                 z: rawFrame[0][2]
-//             },
-//             rotation: {
-//                 x: rawFrame[1][0],
-//                 y: rawFrame[1][1],
-//                 z: rawFrame[1][2],
-//                 w: rawFrame[1][3]
-//             }
-//         }
-//     })
-//     return frames
-// }
 
 const pinchColorFromMagnitude = (magnitude = 0) => {
   return {
@@ -1013,74 +742,6 @@ const pinchPointVisualsByStep = (pairedLinks, proximity, previousDistances) => {
   });
   return pinchPoints;
 };
-
-// const poseDiff = (pose1, pose2) => {
-//   console.log(pose1, pose2);
-//   const translationDistance = Math.sqrt(
-//     Math.pow(pose1.position.x - pose2.position.x, 2) +
-//       Math.pow(pose1.position.y - pose2.position.y, 2) +
-//       Math.pow(pose1.position.z - pose2.position.z, 2)
-//   );
-//   console.log(translationDistance);
-//   const quat1 = Quaternion(
-//     pose1.quaternion.x,
-//     pose1.quaternion.y,
-//     pose1.quaternion.z,
-//     pose1.quaternion.w
-//   );
-//   const quat2 = Quaternion(
-//     pose2.quaternion.x,
-//     pose2.quaternion.y,
-//     pose2.quaternion.z,
-//     pose2.quaternion.w
-//   );
-//   return { distance: translationDistance, angle: quat1.angleTo(quat2) };
-// };
-
-// const stepsToAnimatedTfs = (steps) => {
-//     if (steps.length === 0) {
-//         return {}
-//     }
-//     let tempAnimatedTfs = objectMap(steps[0].tfs, _ => ({
-//         translation: { x: [], y: [], z: [] },
-//         rotation: { w: [], x: [], y: [], z: [] }
-//     })
-//     )
-//     const tfNames = Object.keys(tempAnimatedTfs);
-//     console.log(tfNames)
-//     let timesteps = steps.map(step => step.time)
-//     steps.forEach(step => {
-//         tfNames.forEach(tfName => {
-//             tempAnimatedTfs[tfName].translation.x.push(step.tfs[tfName].translation.x);
-//             tempAnimatedTfs[tfName].translation.y.push(step.tfs[tfName].translation.y);
-//             tempAnimatedTfs[tfName].translation.z.push(step.tfs[tfName].translation.z);
-//             tempAnimatedTfs[tfName].rotation.w.push(step.tfs[tfName].rotation.w);
-//             tempAnimatedTfs[tfName].rotation.x.push(step.tfs[tfName].rotation.x);
-//             tempAnimatedTfs[tfName].rotation.y.push(step.tfs[tfName].rotation.y);
-//             tempAnimatedTfs[tfName].rotation.z.push(step.tfs[tfName].rotation.z);
-//         })
-//     })
-//     // console.log(tempAnimatedTfs)
-//     const animatedTfs = objectMap(tempAnimatedTfs, (tf, key) => ({
-//         frame: GRIPPER_PARENTS[key],
-//         translation: {
-//             x: interpolateScalar(timesteps, tf.translation.x),
-//             y: interpolateScalar(timesteps, tf.translation.y),
-//             z: interpolateScalar(timesteps, tf.translation.z)
-//         },
-//         rotation: {
-//             w: interpolateScalar(timesteps, tf.rotation.w),
-//             x: interpolateScalar(timesteps, tf.rotation.x),
-//             y: interpolateScalar(timesteps, tf.rotation.y),
-//             z: interpolateScalar(timesteps, tf.rotation.z)
-//         }
-//     }))
-//     // for (let timestep of timesteps) {
-//     //     console.log(animatedTfs['simulated_tool0'].translation.x(timestep))
-//     // }
-
-//     return animatedTfs
-// }
 
 const stepsToAnimatedPinchPoints = (steps) => {
   if (steps.length === 0) {
@@ -1358,105 +1019,6 @@ export function pinchpointAnimationFromExecutable(robotAgent, stepData) {
   return stepsToAnimatedPinchPoints(steps);
 }
 
-// export function tfAnimationFromExecutable(executable, startingTfs) {
-//     let steps = [{ time: 0, tfs: startingTfs }]
-//     let machineProcessing = {};
-//     let cancelled = false;
-//     let currentTime = 0;
-//     let gripperState = 55;
-//     let activePlaceholders = [];
-//     let carriedPlaceholder = null;
-//     executable.forEach(chunk => {
-//         let prevTfs = lodash.cloneDeep(steps[steps.length - 1]);
-//         let duration = 0;
-//         if (!cancelled) {
-//             if (chunk.type === 'node.primitive.gripper.') {
-//                 const delta = chunk.parameters.position - gripperState;
-//                 const direction = delta >= 0 ? 1 : -1
-//                 duration = 1000 * Math.abs(delta) / chunk.parameters.speed;
-
-//                 for (let timeOffset of range(0, duration, 100)) {
-//                     const tempGripperState = gripperState + chunk.parameters.speed * timeOffset / 1000 * direction;
-//                     prevTfs.tfs = { ...prevTfs.tfs, ...gripperFramesFromValue(tempGripperState) };
-//                     prevTfs.time = currentTime + timeOffset;
-//                     steps.push(prevTfs)
-//                     prevTfs = lodash.cloneDeep(steps[steps.length - 1]);
-//                 }
-//                 if (direction === -1) {
-//                     activePlaceholders.forEach(placeholder => {
-//                         //const {distance, angle} = poseDiff(prevTfs[placeholder],prevTfs['simulated_tool0']);
-//                         const distance = 0;
-//                         const angle = 0.2;
-//                         if (distance < 0.01 && angle < 0.35) {
-//                             carriedPlaceholder = placeholder
-//                         }
-//                     })
-//                 }
-//                 if (direction === 1 && carriedPlaceholder) {
-//                     carriedPlaceholder = null
-//                 }
-//             } else if (chunk.type === 'node.primitive.delay.') {
-//                 duration = chunk.parameters.duration * 1000;
-//                 steps.push({ ...prevTfs, time: currentTime + duration })
-//             } else if (chunk.type === 'node.primitive.breakpoint.') {
-//                 cancelled = true;
-//             } else if (chunk.type === 'node.primitive.machine-primitive.machine-initialize.') {
-//                 // Ignore
-//             } else if (chunk.type === 'node.primitive.machine-primitive.machine-start.') {
-//                 machineProcessing[chunk.parameters.machine_uuid.uuid] = chunk.parameters.machine_uuid.process_time;
-//             } else if (chunk.type === 'node.primitive.machine-primitive.machine-stop.') {
-//                 const machine = chunk.parameters.machine_uuid;
-//                 machine.outputData.forEach(outputObj => {
-//                     prevTfs.tfs[outputObj.placeholder.uuid] = frameFromRegion(outputObj.region)
-//                     if (!activePlaceholders.includes(outputObj.placeholder.uuid)) {
-//                         activePlaceholders.push(outputObj.placeholder.uuid)
-//                     }
-//                 })
-//             } else if (chunk.type === 'node.primitive.machine-primitive.machine-wait.') {
-//                 if (machineProcessing[chunk.parameters.machine_uuid.uuid]) {
-//                     duration = machineProcessing[chunk.parameters.machine_uuid.uuid]
-//                 }
-//                 steps.push(prevTfs)
-//             } else if (chunk.type === 'node.primitive.move-trajectory.') {
-//                 duration = chunk.parameters.trajectory_uuid.trace.duration * 1000;
-//                 for (let i = 0; i < chunk.parameters.trajectory_uuid.trace.time_data.length - 1; i++) {
-//                     prevTfs.tfs = { ...prevTfs.tfs, ...robotFramesFromIdx(i, chunk.parameters.trajectory_uuid.trace) };
-//                     if (carriedPlaceholder) {
-//                         // Attach the carried object
-//                         prevTfs.tfs[carriedPlaceholder] = prevTfs.tfs.simulated_tool0
-//                     }
-//                     prevTfs.time = currentTime + chunk.parameters.trajectory_uuid.trace.time_data[i] * 1000;
-//                     steps.push(prevTfs)
-//                     prevTfs = lodash.cloneDeep(steps[steps.length - 1]);
-//                 }
-//                 if (chunk.parameters.trajectory_uuid.trace.in_timeout) {
-//                     cancelled = true
-//                 }
-//             } else if (chunk.type === 'node.primitive.move-unplanned.') {
-//                 duration = 100;
-//                 prevTfs.time = prevTfs.time + 100;
-//                 prevTfs.tfs = { ...prevTfs.tfs, ...robotFramesFromPose(chunk.parameters.location_uuid) }
-//                 if (carriedPlaceholder) {
-//                     // Attach the carried object
-//                     prevTfs.tfs[carriedPlaceholder] = prevTfs.tfs.simulated_tool0
-//                 }
-//                 steps.push(prevTfs)
-//                 prevTfs = lodash.cloneDeep(steps[steps.length - 1]);
-//             }
-//         }
-//         currentTime += duration;
-//         machineProcessing = objectMap(machineProcessing, val => {
-//             if (val - duration < 0) {
-//                 return 0
-//             } else {
-//                 return val - duration
-//             };
-//         })
-//     })
-//     steps.push({ ...lodash.cloneDeep(steps[steps.length - 1]), time: currentTime + 1000 })
-//     return stepsToAnimatedTfs(steps)
-// }
-
 function interpolateScalar(x, y) {
   //const defaultFn = (v) => 0;
   if (x.length <= 0) {
@@ -1630,50 +1192,6 @@ export function trajectoryDataToLine(
   };
 }
 
-// export const machineDataToPlaceholderPreviews = (machine, things, regions) => {
-//     let items = {};
-//     Object.keys(machine.inputs).forEach(thingType => {
-//         const thingInfo = things[thingType];
-//         machine.inputs[thingType].forEach(zoneInfo => {
-//             const region = regions[zoneInfo.region_uuid];
-//             items[thingType + region.uuid] = {
-//                 shape: EVD_MESH_LOOKUP[thingInfo.mesh_id],
-//                 frame: region.uuid,
-//                 position: { x: 0, y: 0, z: 0 },
-//                 rotation: { w: 1, x: 0, y: 0, z: 0 },
-//                 scale: { x: 0.2, y: 0.2, z: 0.2 },
-//                 transformMode: 'inactive',
-//                 color: { r: 200, g: 0, b: 0, a: 0.2 },
-//                 highlighted: false,
-//                 hidden: false,
-//                 onClick: (_) => { }
-//             }
-
-//         })
-
-//     })
-//     Object.keys(machine.outputs).forEach(thingType => {
-//         const thingInfo = things[thingType];
-//         machine.outputs[thingType].forEach(zoneInfo => {
-//             const region = regions[zoneInfo.region_uuid];
-//             items[thingType + region.uuid] = {
-//                 shape: EVD_MESH_LOOKUP[thingInfo.mesh_id],
-//                 frame: region.uuid,
-//                 position: { x: 0, y: 0, z: 0 },
-//                 rotation: { w: 1, x: 0, y: 0, z: 0 },
-//                 scale: { x: 0.2, y: 0.2, z: 0.2 },
-//                 transformMode: 'inactive',
-//                 color: { r: 0, g: 200, b: 0, a: 0.2 },
-//                 highlighted: false,
-//                 hidden: false,
-//                 onClick: (_) => { }
-//             }
-//         })
-//     })
-
-//     return items
-// }
-
 export const stepsToEEPoseScores = (frames, endPointFrames) => {
   let scores = [0];
 
@@ -1700,30 +1218,6 @@ export const stepsToEEPoseScores = (frames, endPointFrames) => {
   return scores;
 }
 
-export const traceToEEPoseScores = (trace) => {
-  let scores = [0];
-  for (let i = 1; i < trace.frames["tool0"].length; i++) {
-    const p1 = trace.frames["tool0"][i][0];
-    const p0 = trace.frames["tool0"][i - 1][0];
-    const q1 = trace.frames["tool0_endpoint"][i][0];
-    const movementVec = new Vector3(
-      p1[0] - p0[0],
-      p1[1] - p0[1],
-      p1[2] - p0[2]
-    );
-    const directionVec = new Vector3(
-      q1[0] - p1[0],
-      q1[1] - p1[1],
-      q1[2] - p1[2]
-    );
-    scores.push(
-      (1000 * movementVec.manhattanLength()) /
-        Math.pow(Math.E, 10 * movementVec.angleTo(directionVec))
-    );
-  }
-  return scores;
-};
-
 export const stepsToVertices = (steps) => {
   let verts = [];
   steps.forEach(step => {
@@ -1738,15 +1232,15 @@ export const stepsToVertices = (steps) => {
   return verts;
 }
 
-export const traceToVertices = (trace) => {
-  let vertices = [];
-  ROBOT_FRAMES.forEach((frame) => {
-    for (let i = 0; i < trace.frames[frame].length; i += 10) {
-      vertices.push(new Vector3(...trace.frames[frame][i][0]));
-    }
-  });
-  return vertices;
-};
+// export const traceToVertices = (trace) => {
+//   let vertices = [];
+//   ROBOT_FRAMES.forEach((frame) => {
+//     for (let i = 0; i < trace.frames[frame].length; i += 10) {
+//       vertices.push(new Vector3(...trace.frames[frame][i][0]));
+//     }
+//   });
+//   return vertices;
+// };
 
 export const verticesToVolume = (vertices) => {
   if (vertices.length > 0) {
@@ -1757,10 +1251,10 @@ export const verticesToVolume = (vertices) => {
   return 0;
 };
 
-export const spaceEstimate = (trace) => {
-  let geometry = new ConvexGeometry(traceToVertices(trace));
-  return getVolume(geometry);
-};
+// export const spaceEstimate = (trace) => {
+//   let geometry = new ConvexGeometry(traceToVertices(trace));
+//   return getVolume(geometry);
+// };
 
 /*
 https://discourse.threejs.org/t/volume-of-three-buffergeometry/5109
