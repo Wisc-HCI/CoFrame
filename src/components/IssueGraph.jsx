@@ -1,15 +1,15 @@
-import React, { useCallback, memo } from "react";
+import React, { useCallback } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
-import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
+import { scaleLinear, scaleOrdinal } from "@visx/scale";
 import { withTooltip, TooltipWithBounds, defaultStyles } from "@visx/tooltip";
 import { AreaClosed, Line } from "@visx/shape";
 import { LinearGradient } from "@visx/gradient";
 import { localPoint } from "@visx/event";
 import { LegendOrdinal } from "@visx/legend";
 import useStore from "../stores/Store";
-import { uniq } from "lodash";
-import { Box, Button, Text } from "grommet";
+// import { uniq } from "lodash";
+import { Box, Text } from "grommet";
 import { strip } from "number-precision";
 
 export const background = "#eaedff";

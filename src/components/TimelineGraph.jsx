@@ -55,6 +55,7 @@ const TimelineGraph = ({ width, height, margin = defaultMargin, visible }) => {
   const [focusSteps, errorType] = useStore((state) => {
     let steps = [];
     let errorType = null;
+    console.log("STUFF",{programData:state.programData,focus:state.focus,programSpec:state.programSpec})
     state.focus.some((f) => {
       const entry = state.programData[f];
       if (
