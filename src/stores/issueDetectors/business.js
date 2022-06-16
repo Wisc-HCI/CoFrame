@@ -40,9 +40,11 @@ export const findCycleTimeIssues = ({program, stats}) => {
             series: priorData,
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'Cycle Time',
-            warningThreshold: 0,
-            errorThreshold: peak+1,
-            warningColor: frameStyles.colors["business"],
+            thresholds: [
+                {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
+            ],
+            units: 's',
+            decimal: 5,
             title: '',
             isTimeseries: false
         }
@@ -87,9 +89,11 @@ export const findIdleTimeIssues = ({programData, program, stats}) => {
             series: priorData,
             xAxisLabel: 'Program Iteration',
             yAxisLabel: 'Idle Time',
-            warningThreshold: 0,
-            errorThreshold: peak+1,
-            warningColor: frameStyles.colors["business"],
+            thresholds: [
+                {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
+            ],
+            units: 's',
+            decimal: 5,
             title: '',
             isTimeseries: false
         }
@@ -192,10 +196,12 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
             graphData: {
                 series: priorData,
                 xAxisLabel: 'Program Iteration',
-                yAxisLabel: 'ROI (%)',
-                warningThreshold: 0,
-                errorThreshold: peak+1,
-                warningColor: frameStyles.colors["business"],
+                yAxisLabel: 'ROI',
+                thresholds: [
+                    {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
+                ],
+                units: '%',
+                decimal: 5,
                 title: '',
                 isTimeseries: false
             }

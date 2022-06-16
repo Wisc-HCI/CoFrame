@@ -21,8 +21,8 @@ export const ReviewSlice = (set, get) => ({
         'jointSpeedErr': {uuid: 'jointSpeedErr', name: "Joint Speed Error Level (% of max speed)", value: 0.5, min: 0, max: 1},
         'eeSpeedWarn': {uuid: 'eeSpeedWarn', name: "End Effector Speed Warning Level", value: 0.3, min: 0, max: 1},
         'eeSpeedErr': {uuid: 'eeSpeedErr', name: "End Effector Speed Error Level", value: 0.45, min: 0, max: 1},
-        'spaceUsageWarn': {uuid: 'spaceUsageWarn', name: "Space Usage Warning Level", value: 0.01, min: 0, max: 1},
-        'spaceUsageErr': {uuid: 'spaceUsageErr', name: "Space Usage Error Level", value: 0.2, min: 0, max: 1},
+        'spaceUsageWarn': {uuid: 'spaceUsageWarn', name: "Space Usage (%) Warning Level", value: 1, min: 0, max: 100},
+        'spaceUsageErr': {uuid: 'spaceUsageErr', name: "Space Usage (%) Error Level", value: 20, min: 0, max: 100},
         'productValue': {uuid: 'productValue', name: "Product Value", value: 10, min: 0},
         'productCost': {uuid: 'productCost', name: "Product Cost", value: 5, min: 0},
         'roiAccelError': {uuid: 'roiAccelError', name: "ROI Acceleration Error Level", value: 10, min: 0},
@@ -42,10 +42,9 @@ export const ReviewSlice = (set, get) => ({
                 xAxisLabel: '',
                 yAxisLabel: '',
                 title: '',
-                warningThreshold: 0,
-                errorThreshold: 0,
-                warningColor: '',
-                errorColor: '',
+                thresholds : [{range: [0, 1], color: '', label: ''}],
+                units: '',
+                decimal: 0,
                 isTimeseries: true/false
             }
             sceneData: 🤷

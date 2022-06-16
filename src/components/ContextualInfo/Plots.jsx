@@ -14,7 +14,7 @@ import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import IssueGraph from "../IssueGraph";
 
 export function getPlotInfo({ focusItem }) {
-  if (graphData.graphData.isTimeseries) {
+  if (focusItem.graphData.isTimeseries) {
     return null;
   }
 

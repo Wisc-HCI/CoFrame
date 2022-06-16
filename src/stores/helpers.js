@@ -1218,30 +1218,6 @@ export const stepsToEEPoseScores = (frames, endPointFrames) => {
   return scores;
 }
 
-export const stepsToVertices = (steps) => {
-  let verts = [];
-  steps.forEach(step => {
-      Object.keys(step.data.links).forEach(link => {
-          verts.push(new Vector3 (
-            step.data.links[link].position.x,
-            step.data.links[link].position.y,
-            step.data.links[link].position.z
-          ))
-      })
-  })
-  return verts;
-}
-
-// export const traceToVertices = (trace) => {
-//   let vertices = [];
-//   ROBOT_FRAMES.forEach((frame) => {
-//     for (let i = 0; i < trace.frames[frame].length; i += 10) {
-//       vertices.push(new Vector3(...trace.frames[frame][i][0]));
-//     }
-//   });
-//   return vertices;
-// };
-
 export const verticesToVolume = (vertices) => {
   if (vertices.length > 0) {
     let geometry = new ConvexGeometry(vertices);
@@ -1327,6 +1303,18 @@ export function durationEstimate(programSteps) {
     return 0;
   }
   return programSteps[programSteps.length - 1].time / 1000;
+}
+
+export function getIDsAndStepsFromCompiled(program, programData, stepType, blockType) {
+  let ids = []
+  let steps = program.properties.compiled["{}"] ? program.properties.compiled["{}"].steps.filter(v => v.type === stepType) : [];
+  steps.forEach((step) => {
+      if (step.source && programData[step.source].type === blockType && !ids.includes(step.source)) {
+        ids.push(step.source);
+      }
+  });
+
+  return [ids, steps];
 }
 
 function distanceBetween(p1, p2) {
