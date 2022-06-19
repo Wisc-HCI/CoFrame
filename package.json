@@ -52,7 +52,7 @@
   },
   "scripts": {
     "start": "webpack serve --open --mode development",
-    "build": "npm run build:compiler && webpack --mode production && node ./publish.js",
+    "build": "npm run build:compiler && webpack --mode production && npm run deploy",
     "serve": "serve dist -p 3001",
     "clean": "rm -rf dist",
     "deploy": "gh-pages -d dist",
