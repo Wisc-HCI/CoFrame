@@ -12,7 +12,7 @@ export function getIssueInfo({ frame, primaryColor, focusItem }) {
         <h3>{focusItem.title}</h3>
         {focusItem.description}
       </Blurb>
-      {focusItem.graphData && <Blurb highlight="rgb(50,50,50)">{getPlotInfo({focusItem})}</Blurb>}
+      {focusItem.graphData && !focusItem.graphData.isTimeseries && <Blurb highlight="rgb(50,50,50)">{getPlotInfo({focusItem})}</Blurb>}
     </div>
   );
 }

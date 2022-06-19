@@ -14,11 +14,8 @@ import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import IssueGraph from "../IssueGraph";
 
 export function getPlotInfo({ focusItem }) {
-  if (focusItem.graphData.isTimeseries) {
-    return null;
-  }
-
-  return (
+  
+    return (
     <div
       style={{
         width: "100%",
@@ -38,6 +35,8 @@ export function getPlotInfo({ focusItem }) {
             xAxisLabel={focusItem.graphData.xAxisLabel}
             yAxisLabel={focusItem.graphData.yAxisLabel}
             thesholds={focusItem.graphData.thresholds}
+            units={focusItem.graphData.units}
+            decimals={focusItem.graphData.decimals}
             //   warningThreshold={focusItem.graphData.warningThreshold}
             //   errorThreshold={focusItem.graphData.errorThreshold}
             //   warningColor={focusItem.graphData.warningColor}

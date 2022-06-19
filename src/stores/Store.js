@@ -1,4 +1,3 @@
-// import create from 'zustand'
 import create from 'zustand';
 import shallow from 'zustand/shallow'
 import { subscribeWithSelector } from 'zustand/middleware'
@@ -10,43 +9,11 @@ import {EvdSlice} from './EvdSlice';
 import {RosSlice} from './RosSlice';
 import {ProgrammingSlice} from 'simple-vp';
 import { ProgrammingSliceOverride } from './ProgrammingSlice';
-// import {SceneSlice} from 'robot-scene';
 import {computedSlice} from './ComputedSlice';
-// import {WatchedSlice} from './WatchedSlice';
-// import { computed } from 'zustand-middleware-computed-state';
-// import {SimSlice} from './SimSlice';
 import { SceneSlice } from 'robot-scene';
 import lodash from 'lodash';
-// import { INITIAL_SIM } from "./initialSim";
-// import fakeEvdData from './fakeEvdData';
-// import KNIFE_TASK from './knifeTask';
-// import KnifeAssembly from './Knife_Assembly.json';
-// import KnifeAssembly from './Knife_Assembly_Refactor.json';
 import KnifeAssembly from './Knife_Assembly_Simple_VP.json';
-// import KnifeAssembly from './Knife_Assembly_TEST.json';
 import { STATUS } from './Constants';
-// import { Solver } from '@people_and_robots/lively_tk';
-// import {ur3e} from './ur3e.xml';
-// import {buffer} from "@people_and_robots/lively_tk";
-// import {greet} from './hello_wasm'
-// import { primitiveTypes } from './templates';
-//import { useYDoc } from 'zustand-yjs'
-// import * as Y from "yjs";
-// import { WebrtcProvider } from "y-webrtc";
-// import yjs from 'zustand-middleware-yjs';
-
-
-// window.localStorage.setItem("log", "y-webrtc");
-
-// const doc = new Y.Doc();
-// new WebrtcProvider("CoFrame-AR", doc);
-
-// const connectDoc = (doc) => {
-//   console.log('connect to a provider with room', doc.guid)
-//   return () => console.log('disconnect', doc.guid)
-// }
-
-// const yDoc = useYDoc('myDocGuid', connectDoc);
 
 const immer = (config) => (set, get, api) =>
   config(
@@ -69,9 +36,6 @@ const store = (set, get) => ({
     ...RosSlice(set,get),
 })
 
-//const useStore = create(subscribeWithSelector(computed(immer(store),computedSlice)));
-
-
 const immerStore = immer(store);
 const computedStore = computed(immerStore,computedSlice);
 const subscribeStore = subscribeWithSelector(computedStore);
@@ -79,7 +43,7 @@ const subscribeStore = subscribeWithSelector(computedStore);
 const useStore = create(subscribeStore);
 // const useSyncStore = create(yjs(doc,"shared",subscribeStore))
 
-console.log("getState: ", useStore.getState());
+// console.log("getState: ", useStore.getState());
 
 useStore.subscribe(state=>
   lodash.mapValues(state.programData,(value)=>{
@@ -92,32 +56,8 @@ useStore.subscribe(state=>
   {equalityFn:shallow}
 )
 
-// useStore.subscribe(
-//   state=>([state.items,state.tfs,state.lines,state.hulls,state.texts,state.focus,state.activeFocus]),
-//   ()=>{
-//     useSyncStore.setState(useStore.getState())
-//   }
-// )
-
-// useSyncStore.subscribe(
-//   state=>[state.programData,state.focus,state.activeFocus],
-//   ()=>{
-//     const remoteData = lodash.pick(useSyncStore.getState(),['programData','focus','activeFocus']);
-//     useStore.setState(remoteData)
-//   }
-// )
-
 if (Object.keys(useStore.getState().programData).length === 0) {
   useStore.getState().setData(KnifeAssembly);
 }
-// 
-
-// useStore.getState().performCompileProcess()
-
-// useStore.getState().loadSolver();
-// useStore.getState().setSolver()
-// console.log(useStore.getState())
-// console.log(KNIFE_TASK.environment.trajectories[0])
-// useStore.getState().setUrl('ws://localhost:9090');
 
 export default useStore;

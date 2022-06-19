@@ -180,7 +180,6 @@ const InnerGraph = withTooltip(
     eventData,
     eventTypes,
     trackTypes,
-    events = false,
     margin = defaultMargin,
     tooltipOpen,
     tooltipLeft,
