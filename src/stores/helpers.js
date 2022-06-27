@@ -10,7 +10,7 @@ import {
   REFERENCEABLE_OBJECTS,
   STEP_TYPE,
 } from "./Constants";
-// import { merge } from "lodash";
+import { merge } from "lodash";
 
 Object3D.DefaultUp.set(0, 0, 1);
 
@@ -180,7 +180,7 @@ export const queryLocalPose = (model, ref, localTransform) => {
 export const createStaticEnvironment = (model) => {
     return Object.values(model).filter(item => item.userData.parent !== 'world' && item.userData.collisionInfo).map(item => {});
     // let retVal = [];
-    // return Object.values(model).filter(item => item.userData.isCollisionObj).map(item => {
+    // Object.values(model).filter(item => item.userData.isCollisionObj).forEach(item => {
     //     // Convert position to world frame
     //     let {position, rotation} = queryWorldPose(model, item.uuid);
 
@@ -214,7 +214,7 @@ export const createStaticEnvironment = (model) => {
     //             radius: item.userData.radius,
     //         }))
     //     } 
-    // }).filter(item => item !== null);
+    // })
     // return retVal;
 }
 

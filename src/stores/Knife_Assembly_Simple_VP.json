@@ -7916,7 +7916,6 @@
     "editing": false,
     "properties": {
       "componentShapes": [
-        "conveyorCollisionShapeBase",
         "conveyorCollisionShapeBelt"
       ],
       "updateFields": [
@@ -8405,11 +8404,7 @@
     "editing": false,
     "properties": {
       "componentShapes": [
-        "tableCollisionShapeTop",
-        "tableCollisionShapeFrontLeftLeg",
-        "tableCollisionShapeFrontRightLeg",
-        "tableCollisionShapeRearLeftLeg",
-        "tableCollisionShapeRearRightLeg"
+        "tableCollisionShapeTop"
       ],
       "updateFields": [
         "componentShapes"
@@ -8433,7 +8428,7 @@
       "position": {
         "x": 0,
         "y": 0,
-        "z": 0.36
+        "z": 0
       },
       "rotation": {
         "x": 0,
@@ -8444,7 +8439,7 @@
       "scale": {
         "x": 1.225,
         "y": 0.625,
-        "z": 0.05
+        "z": 0.775
       },
       "keyword": "cube",
       "radius": 0,
