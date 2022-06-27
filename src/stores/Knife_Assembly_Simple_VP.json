@@ -7,6 +7,14 @@
     "canEdit": true,
     "properties": {
       "description": "Robot Agent",
+      "jointLinkMap": {
+        "elbow_joint": "forearm_link",
+        "shoulder_lift_joint": "upper_arm_link",
+        "shoulder_pan_joint": "shoulder_link",
+        "wrist_1_joint": "wrist_1_link",
+        "wrist_2_joint": "wrist_2_link",
+        "wrist_3_joint": "wrist_3_link"
+      },
       "initialJointState": {
         "elbow_joint": -1.57,
         "shoulder_lift_joint": -0.55,

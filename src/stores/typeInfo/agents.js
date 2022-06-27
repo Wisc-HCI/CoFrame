@@ -71,6 +71,11 @@ const robotAgentFeatures = {
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: {},
     },
+    jointLinkMap: {
+      name: "List of joint names mapping to link names",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: [],
+    },
     pinchPointPairLinks: {
       name: "Tuple Pairs of Links for Pinch Points",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,

@@ -1,27 +1,8 @@
 import frameStyles from "../../frameStyles";
-import { STATUS, STEP_TYPE } from "../Constants";
+import { STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid";
 import { checkHandThresholds, stepsToEEPoseScores, likProximityAdjustment, getIDsAndStepsFromCompiled } from "../helpers";
 import lodash from 'lodash';
-import { DATA_TYPES } from "simple-vp";
-
-const linkNames = ['shoulder_link', 'upper_arm_link', 'forearm_link', 'wrist_1_link', 'wrist_2_link', 'wrist_3_link'];
-const linkNameMap = {
-    'shoulder_link': 'Shoulder Link',
-    'upper_arm_link': 'Upper Arm Link',
-    'forearm_link': 'Forearm Link',
-    'wrist_1_link': 'Wrist 1 Link',
-    'wrist_2_link': 'Wrist 2 Link',
-    'wrist_3_link': 'Wrist 3 Link'
-};
-const linkColorMap = {
-    'shoulder_link': '#009e9e',
-    'upper_arm_link': '#9e0000',
-    'forearm_link': '#9e0078',
-    'wrist_1_link': '#9c9e00',
-    'wrist_2_link': '#9e7100',
-    'wrist_3_link': '#0b9e00'
-};
 
 const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
 const WARNING_COLOR = {r: 204, g: 121, b: 167};
@@ -126,6 +107,12 @@ export const findCollisionIssues = ({program, programData, settings}) => {
     let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType'})[0];
     let robotPoints = robotAgent ? robotAgent.properties.pinchPointPairLinks : [];
     let fixtureIDs = lodash.filter(programData, function (v) { return v.type === 'fixtureType'}).map(fixture => { return fixture.id });
+
+    let linkNames = Object.values(robotAgent.properties.jointLinkMap);
+    let linkNameMap = {}
+    linkNames.forEach(name => {
+        linkNameMap[name] = name.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+    });
 
     // Build pairing for environment tracking
     let robotJointIDs = [];
@@ -337,6 +324,13 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
     let moveTrajectoryIDs = res[0];
     let sceneUpdates = res[1];
 
+    let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType' })[0];
+    let linkNames = Object.values(robotAgent.properties.jointLinkMap);
+    let linkNameMap = {}
+    linkNames.forEach(name => {
+        linkNameMap[name] = name.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+    });
+
     let timeData = {};
     let proximityData = {};
     let positionData = {};
@@ -409,13 +403,6 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
 
             if (Object.keys(dataPoint).length > 1) {
                 filteredGraphData.push(dataPoint);
-            }
-        }
-
-        let linkColors = [];
-        for (let i = 0; i < linkNames.length; i++) {
-            if (shouldGraphlink[moveID][i]) {
-                linkColors.push(linkColorMap[linkNames[i]]);
             }
         }
 

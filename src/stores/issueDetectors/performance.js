@@ -1,36 +1,10 @@
 import { DATA_TYPES } from "simple-vp";
 import frameStyles from "../../frameStyles";
-import { STATUS, STEP_TYPE } from "../Constants";
+import { STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import { anyReachable, distance, getIDsAndStepsFromCompiled, verticesToVolume } from "../helpers";
-import { Vector3} from "three";
+import { Vector3 } from "three";
 import lodash from 'lodash';
-
-const jointNames = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'];
-const jointNameMap = {
-    'shoulder_pan_joint': 'Shoulder Pan Joint',
-    'shoulder_lift_joint': 'Shoulder Lift Joint',
-    'elbow_joint': 'Elbow Joint',
-    'wrist_1_joint': 'Wrist 1 Joint',
-    'wrist_2_joint': 'Wrist 2 Joint',
-    'wrist_3_joint': 'Wrist 3 Joint'
-};
-const jointLinkMap = {
-    'shoulder_pan_joint': 'shoulder_link',
-    'shoulder_lift_joint': 'upper_arm_link',
-    'elbow_joint': 'forearm_link',
-    'wrist_1_joint': 'wrist_1_link',
-    'wrist_2_joint': 'wrist_2_link',
-    'wrist_3_joint': 'wrist_3_link'
-};
-const jointColorMap = {
-    'shoulder_pan_joint': '#009e9e',
-    'shoulder_lift_joint': '#9e0000',
-    'elbow_joint': '#9e0078',
-    'wrist_1_joint': '#9c9e00',
-    'wrist_2_joint': '#9e7100',
-    'wrist_3_joint': '#0b9e00'
-};
 
 const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
 const WARNING_COLOR = {r: 230, g: 159, b: 0};
@@ -86,6 +60,14 @@ export const findJointSpeedIssues = ({program, programData, settings}) => {
     let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
     let moveTrajectoryIDs = res[0];
     let sceneUpdates = res[1];
+
+    let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType' })[0];
+    let jointLinkMap = robotAgent.properties.jointLinkMap;
+    let jointNames = Object.keys(jointLinkMap);
+    let jointNameMap = {}
+    jointNames.forEach(name => {
+        jointNameMap[name] = name.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+    });
 
     let timeData = {};
     let allJointData = {};
@@ -172,14 +154,6 @@ export const findJointSpeedIssues = ({program, programData, settings}) => {
             }
         }
         jointGraphData.push(graphDataPoint);
-
-        // Get associated colors
-        let jointColors = [];
-        for (let i = 0; i < jointNames.length; i++) {
-            if (shouldGraphJoint[i]) {
-                jointColors.push(jointColorMap[jointNames[i]]);
-            }
-        }
 
         // Build issue
         if (hasWarningVelocity || hasErrorVelocity) {
