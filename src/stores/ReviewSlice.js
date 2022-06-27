@@ -10,22 +10,22 @@ export const ReviewSlice = (set, get) => ({
     stats: [],
     // Settings for the issue detectors
     issueSettings: {
-        'eePoseWarn': {uuid: 'eePoseWarn', name: "End Effector Pose Warning Level", value: 2, min: 0},
-        'eePoseErr': {uuid: 'eePoseErr', name: "End Effector Pose Error Level", value: 5, min: 0},
-        'collisionWarn': {uuid: 'collisionWarn', name: "Collision Warning Level", value: 0.1, min: 0, max: 1},
-        'collisionErr': {uuid: 'collisionErr', name: "Collision Error Level", value: 0, min: 0, max: 1},
-        'occupancyWarn': {uuid: 'occupancyWarn', name: "Occupancy Warning Level", value: 0.8, min: 0, max: 1},
-        'occupancyErr': {uuid: 'occupancyErr', name: "Occupancy Error Level", value: 1, min: 0, max: 1},
-        'jointMaxSpeed': {uuid: 'jointMaxSpeed', name: "Max Joint Speed", value: 10, min: 0},
-        'jointSpeedWarn': {uuid: 'jointSpeedWarn', name: "Joint Speed Warning Level (% of max speed)", value: 0.1, min: 0, max: 1},
-        'jointSpeedErr': {uuid: 'jointSpeedErr', name: "Joint Speed Error Level (% of max speed)", value: 0.5, min: 0, max: 1},
-        'eeSpeedWarn': {uuid: 'eeSpeedWarn', name: "End Effector Speed Warning Level", value: 0.3, min: 0, max: 1},
-        'eeSpeedErr': {uuid: 'eeSpeedErr', name: "End Effector Speed Error Level", value: 0.45, min: 0, max: 1},
-        'spaceUsageWarn': {uuid: 'spaceUsageWarn', name: "Space Usage (%) Warning Level", value: 1, min: 0, max: 100},
-        'spaceUsageErr': {uuid: 'spaceUsageErr', name: "Space Usage (%) Error Level", value: 20, min: 0, max: 100},
-        'productValue': {uuid: 'productValue', name: "Product Value", value: 10, min: 0},
-        'productCost': {uuid: 'productCost', name: "Product Cost", value: 5, min: 0},
-        'roiAccelError': {uuid: 'roiAccelError', name: "ROI Acceleration Error Level", value: 10, min: 0},
+        'eePoseWarn': {id: 'eePoseWarn', frame: 'safety', name: "End Effector Pose Warning Level", value: 2, min: 0},
+        'eePoseErr': {id: 'eePoseErr', frame: 'safety', name: "End Effector Pose Error Level", value: 5, min: 0},
+        'collisionWarn': {id: 'collisionWarn', frame: 'safety', name: "Collision Warning Level", value: 0.1, min: 0, max: 1},
+        'collisionErr': {id: 'collisionErr', frame: 'safety', name: "Collision Error Level", value: 0, min: 0, max: 1},
+        'occupancyWarn': {id: 'occupancyWarn', frame: 'safety', name: "Occupancy Warning Level", value: 0.8, min: 0, max: 1},
+        'occupancyErr': {id: 'occupancyErr', frame: 'safety', name: "Occupancy Error Level", value: 1, min: 0, max: 1},
+        'jointMaxSpeed': {id: 'jointMaxSpeed', frame: 'performance', name: "Max Joint Speed", value: 10, min: 0},
+        'jointSpeedWarn': {id: 'jointSpeedWarn', frame: 'performance', name: "Joint Speed Warning Level (% of max speed)", value: 0.1, min: 0, max: 1},
+        'jointSpeedErr': {id: 'jointSpeedErr', frame: 'performance', name: "Joint Speed Error Level (% of max speed)", value: 0.5, min: 0, max: 1},
+        'eeSpeedWarn': {id: 'eeSpeedWarn', frame: 'performance', name: "End Effector Speed Warning Level", value: 0.3, min: 0, max: 1},
+        'eeSpeedErr': {id: 'eeSpeedErr', frame: 'performance', name: "End Effector Speed Error Level", value: 0.45, min: 0, max: 1},
+        'spaceUsageWarn': {id: 'spaceUsageWarn', frame: 'performance', name: "Space Usage (%) Warning Level", value: 1, min: 0, max: 100},
+        'spaceUsageErr': {id: 'spaceUsageErr', frame: 'performance', name: "Space Usage (%) Error Level", value: 20, min: 0, max: 100},
+        'productValue': {id: 'productValue', frame: 'business', name: "Product Value", value: 10, min: 0},
+        'productCost': {id: 'productCost', frame: 'business', name: "Product Cost", value: 5, min: 0},
+        'roiAccelError': {id: 'roiAccelError', frame: 'business', name: "ROI Acceleration Error Level", value: 10, min: 0},
     },
     issues: {
         /* 
@@ -212,6 +212,6 @@ export const ReviewSlice = (set, get) => ({
         state.stats.push(allNewStats);
     }),
     updateIssueSetting: (newIssueSetting) => set(state => {
-        state.issueSettings[newIssueSetting.uuid] = newIssueSetting;
+        state.issueSettings[newIssueSetting.id] = newIssueSetting;
     })
 });

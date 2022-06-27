@@ -76,7 +76,7 @@ const Icon = ({ onChange, active, frame, width }) => {
   );
 };
 
-export const FrameTabBar = ({ active, onChange, width=340 }) => {
+export const FrameTabBar = ({ active, onChange, width=340, backgroundColor="black"}) => {
   // const inactiveIconStyle
 
   const trackerStyle = useSpring({
@@ -93,7 +93,7 @@ export const FrameTabBar = ({ active, onChange, width=340 }) => {
         flexDirection: "row",
         height: 55,
         width,
-        backgroundColor: "black",
+        backgroundColor,
         position: "relative",
       }}
     >

@@ -5,6 +5,7 @@ import useStore from '../stores/Store';
 import { saveAs } from 'file-saver';
 import YAML from 'yaml';
 import ReactJson from 'react-json-view'
+import { FrameTabBar } from "./FrameTabBar";
 
 export const SettingsModal = () => {
 
@@ -18,6 +19,8 @@ export const SettingsModal = () => {
     const updateIssueSetting = useStore(store => store.updateIssueSetting);
     const setData = useStore(store => store.setData);
     const data = useStore(store => store.programData);
+    const frameId = useStore(store => store.frame);
+    const setFrame = useStore(store => store.setFrame);
 
     const fileInputRef = useRef();
 
@@ -61,7 +64,7 @@ export const SettingsModal = () => {
     };
 
     const updateIssue = (value, issue) => {
-        const item = { uuid: issue.uuid, name: issue.name, value: value };
+        const item = { id: issue.id, name: issue.name, frame: issue.frame, value: parseFloat(value) };
         updateIssueSetting(item);
     }
 
@@ -115,8 +118,11 @@ export const SettingsModal = () => {
                             </Box>
 
                             {/* Expert Settings */}
+                            <Box  direction='column'  align='center' alignContent='center' justify='center' margin={{ top: 'small' }}>
+                                <FrameTabBar active={frameId} onChange={setFrame} backgroundColor={'inherit'}/>
+                            </Box>
                             <Box height='40vh' background='#252525' style={{ overflowY: 'scroll' }} margin={{ top: 'small' }} round='xsmall'>
-                                <List data={Object.values(issueSettings)} style={{ padding: 5 }} margin='none' pad='none'>
+                                <List data={Object.values(issueSettings).filter(v => v.frame === frameId)} style={{ padding: 5 }} margin='none' pad='none'>
                                     {(entry, idx) => (
                                         <Box animation={{ type: 'fadeIn', delay: idx * 100 }} direction='row' key={entry.name.concat('div')} margin='small' pad='xsmall'>
                                             {entry.name}
@@ -125,7 +131,7 @@ export const SettingsModal = () => {
                                                 key={entry.name.concat('input')}
                                                 min={entry.min}
                                                 defaultValue={entry.value}
-                                                onChange={(e) => updateIssue(e, entry)} />
+                                                onChange={(e) => updateIssue(e.target.value, entry)} />
                                             }
                                             {entry.max && <TextInput
                                                 type='number'
@@ -133,15 +139,12 @@ export const SettingsModal = () => {
                                                 min={entry.min}
                                                 max={entry.max}
                                                 defaultValue={entry.value}
-                                                onChange={(e) => updateIssue(e, entry)} />
+                                                onChange={(e) => updateIssue(e.target.value, entry)} />
                                             }
                                         </Box>
                                     )}
                                 </List>
                             </Box>
-                            {/* {issueSettings && Object.values(issueSettings).map((entry) => {
-                                return
-                            })} */}
                         </Tab>
                         <Tab title='Debug'>
 
@@ -150,7 +153,6 @@ export const SettingsModal = () => {
                             </Box>
                         </Tab>
                     </Tabs>
-                    {/* <CardFooter>footer</CardFooter> */}
                 </Card>
             </Layer>
         )
