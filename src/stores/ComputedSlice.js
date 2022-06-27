@@ -424,6 +424,12 @@ export const computedSlice = (state) => {
 
     stepsToAnimation(state, tfs);
 
+    
+
+    console.log("items:" , Object.entries(items).map(([key,value],_)=>({...value,id:key})));
+    console.log("tfs" , Object.entries(tfs).map(([key,value],_)=>({...value,id:key})));
+
+
     return ({
         executablePrimitives,
         tfs,
