@@ -10,16 +10,10 @@ import { FiMoreHorizontal } from "react-icons/fi";
 import { merge } from "lodash";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import { REFERENCEABLE_OBJECTS } from "../Constants";
+import { baseTypeData } from "./baseType";
 
 const basicObject = {
   properties: {
-    description: {
-      name: "Description",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: "",
-      isList: false,
-      fullWidth: true,
-    },
     position: {
       name: "Position",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
@@ -55,27 +49,7 @@ const basicObject = {
       isList: false,
       fullWidth: true,
     },
-    status: {
-      name: "Status",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING,
-    },
-    compileFn: {
-      name: "Compile Function",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-    },
-    compiled: {
-      name: "Compiled",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {},
-    },
-    updateFields: {
-      name: "Update Fields",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-    },
     singleton: {
-      name: "singleton",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: true,
     },
   },
@@ -220,11 +194,11 @@ const tool = {
 };
 
 const sceneObjects = {
-  machineType: merge(machine, basicObject),
-  fixtureType: merge(fixture, basicObject),
-  linkType: merge(link, basicObject),
-  zoneType: merge(zone, basicObject),
-  toolType: merge(tool, basicObject),
+  machineType: merge(machine, basicObject, baseTypeData),
+  fixtureType: merge(fixture, basicObject, baseTypeData),
+  linkType: merge(link, basicObject, baseTypeData),
+  zoneType: merge(zone, basicObject, baseTypeData),
+  toolType: merge(tool, basicObject, baseTypeData),
 };
 
 export default sceneObjects;

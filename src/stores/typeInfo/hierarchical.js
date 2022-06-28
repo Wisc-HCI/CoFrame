@@ -2,8 +2,10 @@ import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled } from "./icons";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import { FiMoreHorizontal } from "react-icons/fi";
+import { baseTypeData } from "./baseType";
+import { merge } from "lodash";
 
-export const hierarchicalType = {
+const hierarchicalFeatures = {
     name: "Hierarchical",
     type: TYPES.OBJECT,
     instanceBlock: {
@@ -31,13 +33,6 @@ export const hierarchicalType = {
     },
     referenceBlock: null,
     properties: {
-      description: {
-        name: 'Description',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: "",
-        isList: false,
-        fullWidth: true
-      },
       children: {
         name: 'Children',
         accepts: ['hierarchicalType', 'skillType', 'delayType', 'breakpointType', 'moveGripperType', 'machineInitType', 'processStartType', 'processStopType', 'processWaitType', 'moveTrajectoryType', 'moveUnplannedType','robotInitType'],
@@ -45,30 +40,13 @@ export const hierarchicalType = {
         isList: true,
         fullWidth: true
       },
-      status: {
-        name: 'Status',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: STATUS.PENDING
-      },
       compileFn: {
-        name: 'Compile Function',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: COMPILE_FUNCTIONS.SIMPLE
       },
-      compiled: {
-        name: 'Compiled',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: {}
-      },
       updateFields: {
-        name: 'Update Fields',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: ['children']
-      },
-      singleton: {
-        name: 'singleton',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: false
       }
     }
   }
+
+  export const hierarchicalType = merge(hierarchicalFeatures, baseTypeData);

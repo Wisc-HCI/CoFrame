@@ -10,6 +10,7 @@ import {
 import { merge } from "lodash";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import "./rotate.css";
+import { baseTypeData } from "./baseType";
 
 const basicActionData = {
   type: TYPES.OBJECT,
@@ -62,37 +63,7 @@ const basicActionData = {
     ],
   },
   referenceBlock: null,
-  properties: {
-    description: {
-      name: "Description",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      isList: false,
-      fullWidth: true,
-    },
-    status: {
-      name: "Status",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING,
-    },
-    compileFn: {
-      name: "Compile Function",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-    },
-    compiled: {
-      name: "Compiled",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {},
-    },
-    updateFields: {
-      name: "Update Fields",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-    },
-    singleton: {
-      name: "singleton",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: false,
-    },
-  },
+  ...baseTypeData
 };
 
 const delayFeatures = {

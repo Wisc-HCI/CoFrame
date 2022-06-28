@@ -9,8 +9,10 @@ import {
 } from "react-icons/fi";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import "./rotate.css";
+import { baseTypeData } from "./baseType";
+import { merge } from "lodash";
 
-export const trajectoryType = {
+const trajectoryFeatures = {
   name: "Trajectory",
   type: TYPES.OBJECT,
   instanceBlock: {
@@ -68,13 +70,6 @@ export const trajectoryType = {
     ],
   },
   properties: {
-    description: {
-      name: "Description",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: "",
-      isList: false,
-      fullWidth: true,
-    },
     startLocation: {
       name: "Start Location",
       accepts: ["locationType"],
@@ -93,30 +88,13 @@ export const trajectoryType = {
       default: null,
       isList: false,
     },
-    status: {
-      name: "Status",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING,
-    },
     compileFn: {
-      name: "Compile Function",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: COMPILE_FUNCTIONS.PROPERTY,
     },
-    compiled: {
-      name: "Compiled",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {},
-    },
     updateFields: {
-      name: "Update Fields",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: ["startLocation", "waypoints", "endLocation"],
-    },
-    singleton: {
-      name: "singleton",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: false,
     },
   },
 };
+
+export const trajectoryType = merge(trajectoryFeatures, baseTypeData);

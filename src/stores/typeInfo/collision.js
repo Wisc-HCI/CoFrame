@@ -1,30 +1,17 @@
 import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
-import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import { merge } from "lodash";
+import { baseTypeData } from "./baseType";
+import { COMPILE_FUNCTIONS } from "../Constants";
 
 const baseCollision = {
   type: TYPES.OBJECT,
   instanceBlock: null,
   referenceBlock: null,
   properties: {
-    status: {
-      name: "Status",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING,
-    },
     compileFn: {
-      name: "Compile Function",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: COMPILE_FUNCTIONS.NULL,
     },
-    compiled: {
-      name: "Compiled",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {},
-    },
     singleton: {
-      name: "singleton",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: true,
     },
   },
@@ -109,8 +96,8 @@ const collisionBody = {
 };
 
 const collisionTypes = {
-  collisionBodyType: merge(collisionBody, baseCollision),
-  collisionShapeType: merge(collisionShape, baseCollision),
+  collisionBodyType: merge(collisionBody, baseCollision, baseTypeData),
+  collisionShapeType: merge(collisionShape, baseCollision, baseTypeData),
 };
 
 export default collisionTypes;

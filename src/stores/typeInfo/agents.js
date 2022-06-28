@@ -1,6 +1,7 @@
 import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { merge } from "lodash";
-import { STATUS, COMPILE_FUNCTIONS, REFERENCEABLE_OBJECTS } from "../Constants";
+import { COMPILE_FUNCTIONS, REFERENCEABLE_OBJECTS } from "../Constants";
+import { baseTypeData } from "./baseType";
 
 const basicAgentData = {
   type: TYPES.OBJECT,
@@ -9,12 +10,6 @@ const basicAgentData = {
   },
   referenceBlock: null,
   properties: {
-    description: {
-      name: "Description",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      isList: false,
-      fullWidth: true,
-    },
     position: {
       name: "Position",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
@@ -36,27 +31,7 @@ const basicAgentData = {
       isList: false,
       nullValid: true,
     },
-    status: {
-      name: "Status",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING,
-    },
-    compileFn: {
-      name: "Compile Function",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-    },
-    compiled: {
-      name: "Compiled",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {},
-    },
-    updateFields: {
-      name: "Update Fields",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-    },
     singleton: {
-      name: "singleton",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: true,
     },
   },
@@ -148,9 +123,9 @@ const humanAgentFeatures = {
 };
 
 const agentTypes = {
-  robotAgentType: merge(robotAgentFeatures, basicAgentData),
-  humanAgentType: merge(humanAgentFeatures, basicAgentData),
-  gripperType: merge(gripperFeatures, basicAgentData),
+  robotAgentType: merge(robotAgentFeatures, basicAgentData, baseTypeData),
+  humanAgentType: merge(humanAgentFeatures, basicAgentData, baseTypeData),
+  gripperType: merge(gripperFeatures, basicAgentData, baseTypeData),
 };
 
 export default agentTypes;

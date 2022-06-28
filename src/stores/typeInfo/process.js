@@ -2,8 +2,10 @@ import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import { ProcessIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
+import { baseTypeData } from "./baseType";
+import { merge } from "lodash";
 
-export const processType = {
+const processFeatures = {
     name: 'Process',
     type: TYPES.OBJECT,
     instanceBlock: null,
@@ -25,13 +27,6 @@ export const processType = {
       ]
     },
     properties: {
-      description: {
-        name: 'Description',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: "",
-        isList: false,
-        fullWidth: true
-      },
       gizmo: {
         name: 'Gizmo',
         accepts: ['machineType','toolType'],
@@ -62,30 +57,16 @@ export const processType = {
         isList: true,
         fullWidth: false
       },
-      status: {
-        name: 'Status',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: STATUS.PENDING
-      },
       compileFn: {
-        name: 'Compile Function',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: COMPILE_FUNCTIONS.PROPERTY
       },
-      compiled: {
-        name: 'Compiled',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: {}
-      },
       updateFields: {
-        name: 'Update Fields',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: ['gizmo','processTime','inputs','outputs']
       },
       singleton: {
-        name: 'singleton',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: true
       }
     }
   }
+
+export const processType = merge(processFeatures, baseTypeData);
