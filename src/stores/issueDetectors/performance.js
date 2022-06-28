@@ -207,6 +207,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings}) => 
                 frames[step.source] = [];
             }
             timeData[step.source].push(step.time);
+            // TODO use eePose
             frames[step.source].push(step.data.links.tool0.position)
         }
     });

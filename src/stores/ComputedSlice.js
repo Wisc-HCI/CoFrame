@@ -1,21 +1,20 @@
-// import { objectMap } from "./helpers";
 import {
-    poseDataToShapes,
     DEFAULT_WAYPOINT_COLOR,
     DEFAULT_LOCATION_COLOR,
     UNREACHABLE_COLOR,
     OCCUPANCY_ERROR_COLOR,
-    occupancyOverlap,
-    DEFAULT_TRAJECTORY_COLOR,
-    // tfAnimationFromExecutable,
-    pinchpointAnimationFromExecutable,
-    itemTransformMethod,
-    stepsToAnimation
+    DEFAULT_TRAJECTORY_COLOR
 } from './helpers';
-// import throttle from 'lodash.throttle';
-// import { COLLISION_MESHES, EVD_MESH_LOOKUP } from './initialSim';
+import {
+    poseDataToShapes,
+    occupancyOverlap,
+    itemTransformMethod,
+    stepsToAnimation,
+    pinchpointAnimationFromExecutable
+} from '../helpers/computedSlice';
 import { DATA_TYPES } from 'simple-vp/dist/components';
-// import { filter } from "lodash";
+import { STEP_TYPE } from './Constants';
+import { filter } from "lodash";
 
 export const computedSlice = (state) => {
     let executablePrimitives = {};
@@ -382,6 +381,21 @@ export const computedSlice = (state) => {
                 color
             }
         })
+
+        let program = filter(state.programData, function (v) { return v.type === 'programType' && v.dataType === DATA_TYPES.INSTANCE})[0];
+        let gripper = filter(state.programData, function (v) { return v.type === 'gripperType'})[0];
+        let robotAgent = filter(state.programData, function (v) { return v.type === 'robotAgentType'})[0];
+        let steps = program.properties.compiled["{}"]?.steps;
+        let sceneTmp = (steps && moveTrajectoryId) ? steps.filter(step => step.type === STEP_TYPE.SCENE_UPDATE && step.source === moveTrajectoryId) : [];
+        let eePoseVerts = sceneTmp.map(sceneUpdate => {
+            return {
+                // TODO: update goalPoses to eePose
+                position: sceneUpdate.data.goalPoses[robotAgent.id][gripper.id].position,
+                color: { ...DEFAULT_LOCATION_COLOR }
+            }
+        });
+        lines[trajectory.id.concat('-eePose')] = { name: trajectory.name.concat('-eePose'), vertices: eePoseVerts, frame: 'base_link', hidden, width: 2 };
+
         lines[trajectory.id] = { name: trajectory.name, vertices, frame: 'world', hidden, width: 2 }
     })
 
@@ -423,12 +437,6 @@ export const computedSlice = (state) => {
     })
 
     stepsToAnimation(state, tfs);
-
-    
-
-    console.log("items:" , Object.entries(items).map(([key,value],_)=>({...value,id:key})));
-    console.log("tfs" , Object.entries(tfs).map(([key,value],_)=>({...value,id:key})));
-
 
     return ({
         executablePrimitives,
