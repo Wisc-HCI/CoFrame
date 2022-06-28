@@ -2,8 +2,10 @@ import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ThingIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import { baseTypeData } from "./baseType";
+import { merge } from "lodash";
 
-export const thingType = {
+const thingFeatures = {
     name: 'Thing',
     type: TYPES.OBJECT,
     instanceBlock: null,
@@ -26,13 +28,6 @@ export const thingType = {
       ]
     },
     properties: {
-      description: {
-        name: 'Description',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: "",
-        isList: false,
-        fullWidth: true
-      },
       safe: {
         name: 'Safe',
         type: SIMPLE_PROPERTY_TYPES.IGNORED, 
@@ -54,30 +49,16 @@ export const thingType = {
         isList: false,
         fullWidth: true
       },
-      status: {
-        name: 'Status',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: STATUS.PENDING
-      },
       compileFn: {
-        name: 'Compile Function',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: COMPILE_FUNCTIONS.PROPERTY
       },
-      compiled: {
-        name: 'Compiled',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: {}
-      },
       updateFields: {
-        name: 'Update Fields',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: ['safe','weight']
       },
       singleton: {
-        name: 'singleton',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: true
       }
     }
   }
+
+export const thingType = merge(thingFeatures, baseTypeData);

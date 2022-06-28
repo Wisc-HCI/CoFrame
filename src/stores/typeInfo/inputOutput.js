@@ -2,8 +2,10 @@ import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import { InputOutputIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
+import { baseTypeData } from "./baseType";
+import { merge } from "lodash";
 
-export const inputOutputType = {
+const inputOutputFeatures = {
   name: "Input / Output",
   type: TYPES.OBJECT,
   referenceBlock: {
@@ -24,13 +26,6 @@ export const inputOutputType = {
     ],
   },
   properties: {
-    description: {
-      name: "Description",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: "",
-      isList: false,
-      fullWidth: true,
-    },
     relativeTo: {
       name: "Relative to",
       accepts: ["thingType", "machineType", "toolType"],
@@ -58,30 +53,16 @@ export const inputOutputType = {
       isList: false,
       nullValid: true,
     },
-    status: {
-      name: "Status",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING,
-    },
     compileFn: {
-      name: "Compile Function",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: COMPILE_FUNCTIONS.PROPERTY,
     },
-    compiled: {
-      name: "Compiled",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {},
-    },
     updateFields: {
-      name: "Update Fields",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: ["relativeTo", "position", "rotation", "thing"],
     },
     singleton: {
-      name: "singleton",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: true,
     },
   },
 };
+
+export const inputOutputType = merge(inputOutputFeatures, baseTypeData);

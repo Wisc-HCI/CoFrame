@@ -1,7 +1,9 @@
 import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import { baseTypeData } from "./baseType";
+import { merge } from "lodash";
 
-export const meshType = {
+const meshFeatures = {
   name: "Mesh",
   type: TYPES.OBJECT,
   instanceBlock: null,
@@ -49,30 +51,16 @@ export const meshType = {
       isList: false,
       fullWidth: true,
     },
-    status: {
-      name: "Status",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING,
-    },
     compileFn: {
-      name: "Compile Function",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: COMPILE_FUNCTIONS.NULL,
     },
-    compiled: {
-      name: "Compiled",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {},
-    },
     updateFields: {
-      name: "Update Fields",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: ["position", "rotation", "scale"],
     },
     singleton: {
-      name: "singleton",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: true,
     },
   },
 };
+
+export const meshType = merge(meshFeatures, baseTypeData);

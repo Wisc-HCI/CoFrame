@@ -3,8 +3,10 @@ import { WaypointIconStyled } from "./icons";
 import { FiMoreHorizontal, FiAlertTriangle, FiAlertOctagon, FiRefreshCw, FiThumbsUp } from "react-icons/fi";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import './rotate.css'
+import { baseTypeData } from "./baseType";
+import { merge } from "lodash";
 
-export const waypointType = {
+const waypointFeatures = {
     name: 'Waypoint',
     type: TYPES.OBJECT,
     instanceBlock: null,
@@ -42,13 +44,6 @@ export const waypointType = {
       ]
     },
     properties: {
-      description: {
-        name: 'Description',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED, 
-        default: "",
-        isList: false,
-        fullWidth: true
-      },
       position: {
         name: 'Position',
         type: SIMPLE_PROPERTY_TYPES.IGNORED, 
@@ -73,30 +68,16 @@ export const waypointType = {
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: {}
       },
-      status: {
-        name: 'Status',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: STATUS.PENDING
-      },
       compileFn: {
-        name: 'Compile Function',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: COMPILE_FUNCTIONS.POSE
       },
-      compiled: {
-        name: 'Compiled',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: {}
-      },
       updateFields: {
-        name: 'Update Fields',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: ['position','rotation']
       },
       singleton: {
-        name: 'singleton',
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
         default: true
       }
     }
   }
+
+export const waypointType = merge(waypointFeatures, baseTypeData);

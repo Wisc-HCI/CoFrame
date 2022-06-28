@@ -9,8 +9,10 @@ import {
 } from "react-icons/fi";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import "./rotate.css";
+import { baseTypeData } from "./baseType";
+import { merge } from "lodash";
 
-export const programType = {
+const programFeatures = {
   name: "Program",
   type: TYPES.OBJECT,
   instanceBlock: {
@@ -81,30 +83,13 @@ export const programType = {
       isList: true,
       fullWidth: true,
     },
-    status: {
-      name: "Status",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: STATUS.PENDING,
-    },
     compileFn: {
-      name: "Compile Function",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: COMPILE_FUNCTIONS.SIMPLE,
     },
-    compiled: {
-      name: "Compiled",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {},
-    },
     updateFields: {
-      name: "Update Fields",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: ["children"],
-    },
-    singleton: {
-      name: "singleton",
-      type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: false,
-    },
+    }
   },
 };
+
+export const programType = merge(programFeatures, baseTypeData);
