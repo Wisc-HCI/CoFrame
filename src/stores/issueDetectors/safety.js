@@ -476,7 +476,7 @@ export const findPinchPointIssues = ({program, programData}) => { // Requires pi
     return [issues, {}];
 }
 
-export const findThingMovementIssues = ({programData}) => { // May require trace pose information
+export const findThingSafetyIssues = ({programData}) => { // May require trace pose information
     let issues = {};
 
     Object.values(programData).filter(v => v.type === 'moveGripperType').forEach(primitive=>{

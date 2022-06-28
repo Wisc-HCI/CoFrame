@@ -1,5 +1,5 @@
-import { findCollisionIssues, findEndEffectorPoseIssues, findOccupancyIssues, findPinchPointIssues, findThingMovementIssues } from "./issueDetectors/safety";
-import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues, findMachineLogicIssues } from "./issueDetectors/quality";
+import { findCollisionIssues, findEndEffectorPoseIssues, findOccupancyIssues, findPinchPointIssues, findThingSafetyIssues } from "./issueDetectors/safety";
+import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues, findProcessLogicIssues } from "./issueDetectors/quality";
 import { findEndEffectorSpeedIssues, findJointSpeedIssues, findPayloadIssues, findReachabilityIssues, findSpaceUsageIssues } from "./issueDetectors/performance";
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
 import { objectMap } from "./helpers";
@@ -78,9 +78,9 @@ export const ReviewSlice = (set, get) => ({
             dependencies:['spaceUsage'],
             issues:[]
         },
-        thingMovement:{
-            name:'Thing Movement',
-            updater:findThingMovementIssues,
+        thingSafety:{
+            name:'Thing Safety',
+            updater:findThingSafetyIssues,
             dependencies:['endEffectorPoses'],
             issues:[]
         },
@@ -96,9 +96,9 @@ export const ReviewSlice = (set, get) => ({
             dependencies:[],
             issues:[]
         },
-        machineLogic:{
-            name:'Machine Logic',
-            updater:findMachineLogicIssues,
+        processLogic:{
+            name:'Process Logic',
+            updater:findProcessLogicIssues,
             dependencies:['missingBlocks','missingParameters'],
             issues:[]
         },
@@ -141,7 +141,7 @@ export const ReviewSlice = (set, get) => ({
         payload:{
             name:'Payload',
             updater:findPayloadIssues,
-            dependencies:['thingMovement'],
+            dependencies:['thingSafety'],
             issues:[]
         },
         spaceUsage:{
@@ -153,7 +153,7 @@ export const ReviewSlice = (set, get) => ({
         cycleTime:{
             name:'Cycle Time',
             updater:findCycleTimeIssues,
-            dependencies:['machineLogic'],
+            dependencies:['processLogic'],
             issues:[]
         },
         idleTime:{
@@ -177,34 +177,32 @@ export const ReviewSlice = (set, get) => ({
         let program = lodash.filter(state.programData, function (v) {return v.type === "programType"})[0];
         let allNewStats = {};
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
-            if (!["machineLogic"].includes(sectionKey)) {
-                // Use the predefined updater to get the new issues
-                let [newSectionIssues, newStats] = state.sections[sectionKey].updater({
-                    programData: state.programData, 
-                    programSpec: state.programSpec, 
-                    program: program, 
-                    stats: state.stats,
-                    settings: state.issueSettings
-                });
-                // Augment allNewStats with the new incoming stats.
-                allNewStats = {...allNewStats,...newStats};
-                // Enumerate the existing issues
-                // For any issues that are already completed, exist in the new set, 
-                // and don't now require changes, set them as complete.
-                section.issues.forEach(issueKey=>{
-                    let existingIssue = state.issues[issueKey];
-                    if (existingIssue.complete) {
-                        Object.entries(newSectionIssues).forEach(([newIssueKey,newIssue])=>{
-                            if (newIssue.focus.id === existingIssue.focus.id && !newIssue.requiresChanges) {
-                                newSectionIssues[newIssueKey].complete = true;
-                            }
-                        })
-                    };
-                })
-                // Set the new issues for that section
-                state.sections[sectionKey].issues = Object.keys(newSectionIssues);
-                newIssues = {...newIssues, ...objectMap(newSectionIssues,(issue)=>({...issue,code:sectionKey}))};
-            }
+            // Use the predefined updater to get the new issues
+            let [newSectionIssues, newStats] = state.sections[sectionKey].updater({
+                programData: state.programData, 
+                programSpec: state.programSpec, 
+                program: program, 
+                stats: state.stats,
+                settings: state.issueSettings
+            });
+            // Augment allNewStats with the new incoming stats.
+            allNewStats = {...allNewStats,...newStats};
+            // Enumerate the existing issues
+            // For any issues that are already completed, exist in the new set, 
+            // and don't now require changes, set them as complete.
+            section.issues.forEach(issueKey=>{
+                let existingIssue = state.issues[issueKey];
+                if (existingIssue.complete) {
+                    Object.entries(newSectionIssues).forEach(([newIssueKey,newIssue])=>{
+                        if (newIssue.focus.id === existingIssue.focus.id && !newIssue.requiresChanges) {
+                            newSectionIssues[newIssueKey].complete = true;
+                        }
+                    })
+                };
+            })
+            // Set the new issues for that section
+            state.sections[sectionKey].issues = Object.keys(newSectionIssues);
+            newIssues = {...newIssues, ...objectMap(newSectionIssues,(issue)=>({...issue,code:sectionKey}))};
         });
         // Update the issues set.
         state.issues = newIssues;

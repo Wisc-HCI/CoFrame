@@ -58,7 +58,7 @@ const FRAMES = [
     title: "Safety Concerns",
     sections: [
       "endEffectorPoses",
-      "thingMovement",
+      "thingSafety",
       "collisions",
       "pinchPoints",
       "occupancy",
@@ -70,7 +70,7 @@ const FRAMES = [
     sections: [
       "missingBlocks",
       "missingParameters",
-      "machineLogic",
+      "processLogic",
       "unusedSkills",
       "unusedFeatures",
       "emptyBlocks",
