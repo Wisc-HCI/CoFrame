@@ -31,7 +31,7 @@ export const inputOutputType = {
       isList: false,
       fullWidth: true,
     },
-    relativeObject: {
+    relativeTo: {
       name: "Relative to",
       accepts: ["thingType", "machineType", "toolType"],
       default: null,
@@ -76,7 +76,7 @@ export const inputOutputType = {
     updateFields: {
       name: "Update Fields",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: ["relativeObject", "position", "rotation", "thing"],
+      default: ["relativeTo", "position", "rotation", "thing"],
     },
     singleton: {
       name: "singleton",

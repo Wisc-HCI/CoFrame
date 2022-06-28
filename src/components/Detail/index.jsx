@@ -4,6 +4,7 @@ import { ProcessIOList } from './ProcessDetail';
 import PositionRotationTF from './PositionRotationTF';
 import { TextArea, Text, Box, TextInput, Button, Layer, DropButton, Spinner } from 'grommet';
 import { FixtureItem } from './FixtureDetail'
+import { GizmoDetail } from './GizmoDetail';
 
 import useStore from '../../stores/Store';
 import shallow from 'zustand/shallow';
@@ -12,6 +13,7 @@ import { NumberInput } from '../Elements/NumberInput';
 import { DETAIL_TYPES, STATUS } from '../../stores/Constants';
 import JointGripperInput from "./JointGripperInput";
 import LocationWaypointDetail from './LocationWaypointDetail';
+
 export const Detail = (_) => {
 
 
@@ -154,6 +156,7 @@ export const Detail = (_) => {
             {item.type === 'processType' && (
               <>
                 <ProcessIOList processId={item.id} isInput />
+                <div style={{marginBottom: 10}}></div>
                 <ProcessIOList processId={item.id} />
               </>
 
@@ -184,6 +187,11 @@ export const Detail = (_) => {
             {(item.type === 'locationType' || item.type === 'waypointType') && (
               <>
                 <LocationWaypointDetail itemID={item.id} />
+              </>
+            )}
+            {item.properties.gizmo && (
+              <>
+                <GizmoDetail gizmoId={item.properties.gizmo}/>
               </>
             )}
 

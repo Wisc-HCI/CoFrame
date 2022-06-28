@@ -18,6 +18,7 @@ export const ProcessIOList = ({ processId, isInput }) => {
     });
   
     return (
+      
       <Collapse
         openable={true}
         borderWidth={3}
@@ -50,6 +51,7 @@ export const ProcessIOList = ({ processId, isInput }) => {
             <Text alignSelf='center'>{isInput ? 'No Inputs' : 'No Outputs'}</Text>
         )}
       </Collapse>
+      
     )
   }
 
