@@ -32,9 +32,9 @@ export const processType = {
         isList: false,
         fullWidth: true
       },
-      machine: {
-        name: 'Machine',
-        accepts: ['machineType'],
+      gizmo: {
+        name: 'Gizmo',
+        accepts: ['machineType','toolType'],
         default: null,
         isList: false,
         fullWidth: false,
@@ -80,7 +80,7 @@ export const processType = {
       updateFields: {
         name: 'Update Fields',
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: ['machine','processTime','inputs','outputs']
+        default: ['gizmo','processTime','inputs','outputs']
       },
       singleton: {
         name: 'singleton',

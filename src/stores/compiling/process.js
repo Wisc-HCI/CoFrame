@@ -3,36 +3,37 @@ import { STATUS, STEP_TYPE, TRIGGER_TYPE } from "../Constants";
 
 export const processCompiler = ({ data, properties, path, context, memo }) => {
     const process = properties.process;
-    const machine = properties.machine;
-    const processMachine = process.id ? properties.process?.properties?.compiled?.[path]?.machine : {};
-    // console.log({process, machine, processMachine});
+    const gizmo = properties.gizmo;
+    console.log('process',process)
+    const processGizmo = process.id && process?.properties?.compiled?.[path]?.gizmo ? process.properties.compiled[path].gizmo : {};
+    console.log({process, gizmo, processGizmo});
 
     // Retrieve agent. For now, assume that this is always the first robotAgentType;
     const robot = Object.values(memo).filter(v => v.type === 'robotAgentType')[0];
 
     let newCompiled = {
         shouldBreak: false,
-        // Process always required, and if there is a machine, needs to match the machine corresponding to the process
-        status: machine.id === processMachine.id && process.id ? STATUS.VALID : STATUS.FAILED,
+        // Process always required, and if there is a gizmo, needs to match the gizmo corresponding to the process
+        status: gizmo.id === processGizmo.id && process.id ? STATUS.VALID : STATUS.FAILED,
         otherPropertyUpdates: {},
         steps: [],
         events: []
     };
 
     // Define some statuses that are relevant
-    // const machineStartStatus = status === STATUS.VALID && machine ? {[machine.id]:{running:true}} : {};
-    // const processStartStatus = status === STATUS.VALID && process ? {[process.id]:{running:true},...machineStartStatus} : {};
+    // const gizmoStartStatus = status === STATUS.VALID && gizmo ? {[gizmo.id]:{running:true}} : {};
+    // const processStartStatus = status === STATUS.VALID && process ? {[process.id]:{running:true},...gizmoStartStatus} : {};
 
     
     const stepData = {
-        machine: machine.id ? machine.id : null,
+        gizmo: gizmo.id ? gizmo.id : null,
         process: process.id ? process.id : null
     }
 
-    const machineIdleState = newCompiled.status === STATUS.VALID && machine.id ? { [machine.id]: {busy: false} } : {};
-    const processIdleState = newCompiled.status === STATUS.VALID && process.id ? { [process.id]: {busy: false}, ...machineIdleState } : {};
-    const machineBusyState = newCompiled.status === STATUS.VALID && machine.id ? { [machine.id]: {busy: true} } : {};
-    const processBusyState = newCompiled.status === STATUS.VALID && process.id ? { [process.id]: {busy: true}, ...machineBusyState } : {};
+    const gizmoIdleState = newCompiled.status === STATUS.VALID && gizmo.id ? { [gizmo.id]: {busy: false} } : {};
+    const processIdleState = newCompiled.status === STATUS.VALID && process.id ? { [process.id]: {busy: false}, ...gizmoIdleState } : {};
+    const gizmoBusyState = newCompiled.status === STATUS.VALID && gizmo.id ? { [gizmo.id]: {busy: true} } : {};
+    const processBusyState = newCompiled.status === STATUS.VALID && process.id ? { [process.id]: {busy: true}, ...gizmoBusyState } : {};
     const robotIdleState = {[robot.id]: {busy: false}};
     const robotBusyState = {[robot.id]: {busy: true}}
 

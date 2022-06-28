@@ -36,7 +36,7 @@ export const trajectoryType = {
         },
         label: "Status",
       },
-      EXTRA_TYPES.LOCKED_INDICATOR,
+      // EXTRA_TYPES.LOCKED_INDICATOR,
       EXTRA_TYPES.NAME_EDIT_TOGGLE,
       {
         icon: FiMoreHorizontal,

@@ -19,8 +19,22 @@ const basicActionData = {
     color: "#629e6c",
     icon: PrimitiveIconStyled,
     extras: [
-      EXTRA_TYPES.LOCKED_INDICATOR,
-      EXTRA_TYPES.NAME_EDIT_TOGGLE,
+      // EXTRA_TYPES.LOCKED_INDICATOR,
+      {
+        type: EXTRA_TYPES.INDICATOR_ICON,
+        accessor: (data) => {
+          if (data.properties.status === STATUS.FAILED) {
+            return <FiAlertOctagon color="white" fill="red" />;
+          } else if (data.properties.status === STATUS.VALID) {
+            return <FiThumbsUp color="white" />;
+          } else if (data.properties.status === STATUS.WARN) {
+            return <FiAlertTriangle color="white" fill="#ff7300" />;
+          } else if (data.properties.status === STATUS.PENDING) {
+            return <FiRefreshCw className="rotate" />;
+          }
+        },
+        label: "Status",
+      },
       {
         icon: FiMoreHorizontal,
         type: EXTRA_TYPES.DROPDOWN,
@@ -178,15 +192,15 @@ const processStartFeatures = {
       default: null,
       isList: false,
     },
-    machine: {
-      name: "Machine",
-      accepts: ["machineType"],
+    gizmo: {
+      name: "Gizmo",
+      accepts: ["machineType","toolType"],
       default: null,
       isList: false,
       nullValid: true,
     },
     compileFn: { default: COMPILE_FUNCTIONS.PROCESS },
-    updateFields: { default: ["process", "machine"] },
+    updateFields: { default: ["process", "gizmo"] },
   },
 };
 
@@ -202,15 +216,15 @@ const processStopFeatures = {
       default: null,
       isList: false,
     },
-    machine: {
-      name: "Machine",
-      accepts: ["machineType"],
+    gizmo: {
+      name: "Gizmo",
+      accepts: ["machineType","toolType"],
       default: null,
       isList: false,
       nullValid: true,
     },
     compileFn: { default: COMPILE_FUNCTIONS.PROCESS },
-    updateFields: { default: ["process", "machine"] },
+    updateFields: { default: ["process", "gizmo"] },
   },
 };
 
@@ -227,15 +241,15 @@ const processWaitFeatures = {
       default: null,
       isList: false,
     },
-    machine: {
-      name: "Machine",
-      accepts: ["machineType"],
+    gizmo: {
+      name: "Gizmo",
+      accepts: ["machineType","toolType"],
       default: null,
       isList: false,
       nullValid: true,
     },
     compileFn: { default: COMPILE_FUNCTIONS.PROCESS },
-    updateFields: { default: ["process", "machine"] },
+    updateFields: { default: ["process", "gizmo"] },
   },
 };
 
@@ -298,7 +312,7 @@ const actionTypes = {
   moveTrajectoryType: merge(moveTrajectoryFeatures, basicActionData),
   // moveUnplannedType: merge(moveUnplannedFeatures,basicActionData),
   breakpointType: merge(breakpointFeatures, basicActionData, {
-    instanceBlock: { color: "#3a5e40" },
+  instanceBlock: { color: "#3a5e40" },
   }),
 };
 
