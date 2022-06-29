@@ -71,7 +71,7 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
                             inputOutput: destroyable.id,
                             position: destroyable.properties.compiled[path].position,
                             rotation: destroyable.properties.compiled[path].rotation,
-                            relativeTo: destroyable.properties.compiled[path].relativeObject.id ? destroyable.properties.compiled[path].relativeObject : null
+                            relativeTo: destroyable.properties.compiled[path].relativeTo ? destroyable.properties.compiled[path].relativeTo : null
                         },
                         source: data.id,
                         effect: { [destroyable.id]: 'destroyed' },
@@ -92,7 +92,7 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
                             inputOutput: spawnable.id,
                             position: spawnable.properties.compiled[path].position,
                             rotation: spawnable.properties.compiled[path].rotation,
-                            relativeTo: spawnable.properties.compiled[path].relativeObject.id ? spawnable.properties.compiled[path].relativeObject : null
+                            relativeTo: spawnable.properties.compiled[path].relativeTo ? spawnable.properties.compiled[path].relativeTo : null
                         },
                         source: data.id,
                         effect: { [spawnable.id]: 'spawned' },
