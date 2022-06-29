@@ -1,4 +1,4 @@
-import { STATUS, STEP_TYPE, ROOT_PATH } from "../Constants";
+import { STATUS, ERROR, STEP_TYPE, ROOT_PATH } from "../Constants";
 import { range, mapValues } from 'lodash';
 import { findLastSatisfiedFromReference } from "../helpers";
 import { eventsToStates, statesToSteps } from ".";
@@ -9,15 +9,16 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
     let status = STATUS.VALID;
     const delta = properties.positionEnd - properties.positionStart;
     if (properties.speed === 0) {
-        status = STATUS.FAILED;
         return {
-            status,
+            status: STATUS.FAILED,
+            errorCode: ERROR.DOES_NOTHING,
             shouldBreak: false,
             steps: []
         }
     }
     const duration = 1000 * Math.abs(delta) / properties.speed;
     const changePerTime = delta / duration;
+    const closing = properties.positionEnd < properties.positionStart;
 
     // Enumerate the robotAgentTypes/gripperTypes currently in the memo. This is technically unsafe, 
     // but we pre-process them beforehand so it is fine. We also always assume root execution 
@@ -25,9 +26,7 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
 
     const grippers = Object.values(memo).filter(v => v.type === 'gripperType');
 
-    let innerSteps = [
-
-    ]
+    let innerSteps = [];
 
     range(0, duration, 100).map(time => {
         let frameData = {};
@@ -42,7 +41,7 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
         })
         innerSteps.push({
             stepType: STEP_TYPE.SCENE_UPDATE,
-            data: { links: frameData, thing: properties.thing.id, gripperValues },
+            data: { links: frameData, thing: properties.thing.id, gripperValues, closing },
             effect: {},
             source: data.id,
             delay:time
@@ -52,14 +51,14 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
     const initialStep = {
         stepType: STEP_TYPE.ACTION_START,
         effect:{[robot.id]: { busy: true }},
-        data: { agent: 'robot', id: data.id },
+        data: { agent: 'robot', id: data.id, closing },
         source: data.id,
         delay: 0
     }
     const finalStep = {
         stepType: STEP_TYPE.ACTION_END,
         effect:{[robot.id]: { busy: false }},
-        data: { agent: 'robot', id: data.id },
+        data: { agent: 'robot', id: data.id, closing },
         source: data.id,
         delay: duration
     }

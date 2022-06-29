@@ -1,4 +1,4 @@
-import { STATUS, ROOT_PATH } from "../Constants";
+import { STATUS, ROOT_PATH, ERROR } from "../Constants";
 import { Quaternion } from "three";
 import { likStateToData } from "../../helpers/conversion";
 import {
@@ -34,6 +34,7 @@ export const poseCompiler = ({
   let states = {};
   let goalPose = null;
   let status = STATUS.VALID;
+  let errorCode = null;
 
   // Enumerate the robotAgentTypes/gripperTypes currently in the memo. This is technically unsafe,
   // but we pre-process them beforehand so it is fine. We also always assume root execution
@@ -191,6 +192,7 @@ export const poseCompiler = ({
 
           if (!goalAchieved) {
             status = STATUS.WARN;
+            errorCode = ERROR.UNREACHABLE_POSE;
           }
           reachability[robot.id][gripper.id] = goalAchieved;
           states[robot.id][gripper.id] = likStateToData(
@@ -209,6 +211,7 @@ export const poseCompiler = ({
     states,
     reachability,
     status,
+    errorCode,
     otherPropertyUpdates: { states, reachability },
   };
   return newCompiled;

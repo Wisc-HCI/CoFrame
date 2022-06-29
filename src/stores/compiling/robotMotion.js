@@ -1,4 +1,4 @@
-import { STATUS, STEP_TYPE, ROOT_PATH } from "../Constants";
+import { STATUS, STEP_TYPE, ROOT_PATH, ERROR } from "../Constants";
 import {
   timeGradientFunction,
   timeGradientFunctionOneTailStart,
@@ -326,13 +326,28 @@ export const robotMotionCompiler = ({
     */
 
   let status = STATUS.VALID;
-  if (
-    !trajectory.id ||
-    properties.velocity < 0.01 ||
-    (trajectory.properties && trajectory.properties.status === STATUS.FAILED)
-  ) {
+  let errorCode = null;
+  
+  if (!trajectory.id) {
     return {
       status: STATUS.FAILED,
+      errorCode: ERROR.MISSING_PARAMETER,
+      shouldBreak: false,
+      events: [],
+      steps: [],
+    };
+  } else if (properties.velocity < 0.01) {
+    return {
+      status: STATUS.FAILED,
+      errorCode: ERROR.INVALID_PARAMETER,
+      shouldBreak: false,
+      events: [],
+      steps: [],
+    };
+  } else if (trajectory.properties && trajectory.properties.status === STATUS.FAILED) {
+    return {
+      status: STATUS.FAILED,
+      errorCode: ERROR.CHILD_FAILED,
       shouldBreak: false,
       events: [],
       steps: [],
@@ -423,6 +438,7 @@ export const robotMotionCompiler = ({
         });
         if (!reachableChildren && status !== STATUS.FAILED) {
           status = STATUS.WARN;
+          errorCode = ERROR.UNREACHABLE_POSE;
         }
 
         let firstLinks = poses[0].states[robot.id][gripper.id].links;
@@ -582,6 +598,7 @@ export const robotMotionCompiler = ({
             const stateData = likStateToData(state, worldModel, robot.id);
             if (!reached && status !== STATUS.FAILED) {
               status = STATUS.WARN;
+              errorCode = ERROR.TRAJECTORY_PROGRESS;
             }
 
             // Calculate the eePose of the gripper
@@ -637,6 +654,7 @@ export const robotMotionCompiler = ({
 
   const newCompiled = {
     status,
+    errorCode,
     shouldBreak: false,
     events,
     steps: statesToSteps(eventsToStates(events)),

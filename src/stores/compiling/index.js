@@ -12,7 +12,7 @@ import { humanAgentCompiler } from "./humanAgent";
 import { linkCompiler } from "./link";
 import { propertyCompiler } from "./property";
 import lodash from "lodash";
-import { COMPILE_FUNCTIONS, ROOT_PATH, STATUS } from "../Constants";
+import { COMPILE_FUNCTIONS, ERROR, ROOT_PATH, STATUS } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
 import { gripperCompiler } from "./gripper";
 
@@ -61,16 +61,16 @@ export const findInstance = (id, context) => {
 };
 
 export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
 // Copies data from a memo into the specified node.
 // Returns standard changes, which will need to be propagated back up.
 const copyMemoizedData = (memoizedData, data, path, singleton) => {
-  // console.warn('copying memoized version of ', data)
-  const usedPath = singleton ? ROOT_PATH : path;
 
   if (memoizedData.properties.compiled[path]) {
     return [
       memoizedData, // memoizedData
       memoizedData.properties.compiled[path].status, // status
+      memoizedData.properties.compiled[path].errorCode, // errorCode
       data.properties ? data.properties.status === STATUS.PENDING : true, // updated
       memoizedData.properties.compiled[path].break, // shouldBreak
     ];
@@ -78,6 +78,7 @@ const copyMemoizedData = (memoizedData, data, path, singleton) => {
     return [
       memoizedData, // memoizedData
       memoizedData.properties.compiled[ROOT_PATH].status, // status
+      memoizedData.properties.compiled[ROOT_PATH].errorCode, // errorCode
       data.properties ? data.properties.status === STATUS.PENDING : true, // updated
       memoizedData.properties.compiled[ROOT_PATH].break, // shouldBreak
     ];
@@ -113,6 +114,7 @@ const updateMemoizedData = (memoizedData, data, path, singleton) => {
   return [
     newMemoizedData, // memoizedData
     pastCompiled.status, // status
+    pastCompiled.errorCode, // errorCode
     data.properties ? data.properties.status === STATUS.PENDING : true, // updated
     pastCompiled.break, // shouldBreak
   ];
@@ -167,6 +169,7 @@ const performUpdate = (
   return [
     newMemoizedData, // memoizedData
     newCompiled.status, // status
+    newCompiled.errorCode, // errorCode
     data.properties ? data.properties.status === STATUS.PENDING : true, // updated
     newCompiled.shouldBreak, // shouldBreak
   ];
@@ -305,6 +308,7 @@ export const handleUpdate = ({
   let status = STATUS.VALID;
   let shouldBreak = false;
   let exportPath = path;
+  let errorCode = null;
 
   // First, determine whether we need to compute.
   // If the status is pending, recompute.
@@ -319,7 +323,7 @@ export const handleUpdate = ({
 
     if (memoizedData.properties?.compiled[path] || (memoizedData.properties?.singleton && memoizedData.properties?.compiled[ROOT_PATH])) {
       // Use the version in the memo
-      [memoizedData, status, updated, shouldBreak] = copyMemoizedData(
+      [memoizedData, status, errorCode, updated, shouldBreak] = copyMemoizedData(
         memoizedData,
         data,
         path,
@@ -361,6 +365,7 @@ export const handleUpdate = ({
             ) {
               // Status is failed/warned, so the parent is also.
               status = innerStatus;
+              errorCode = ERROR.CHILD_FAILED;
             }
             if (innerShouldBreak) {
               shouldBreak = true;
@@ -397,14 +402,16 @@ export const handleUpdate = ({
           ) {
             // Status is failed/warned, so the parent is also.
             status = innerStatus;
+            errorCode = ERROR.CHILD_FAILED;
           }
           if (innerShouldBreak) {
             shouldBreak = true;
           }
         }
       });
+      let newErrorCode = null;
       if (updated) {
-        [memoizedData, status, updated, shouldBreak] = performUpdate(
+        [memoizedData, status, newErrorCode, updated, shouldBreak] = performUpdate(
           memoizedData,
           data,
           properties,
@@ -419,12 +426,15 @@ export const handleUpdate = ({
         );
         updated = true;
       } else {
-        [memoizedData, status, updated, shouldBreak] = updateMemoizedData(
+        [memoizedData, status, newErrorCode, updated, shouldBreak] = updateMemoizedData(
           memoizedData,
           data,
           path,
           data.properties?.singleton
         );
+      }
+      if (newErrorCode) {
+        errorCode = newErrorCode;
       }
     }
   } else {
@@ -441,15 +451,19 @@ export const handleUpdate = ({
       fnInstance
     );
     exportPath = fnPath;
+    let newErrorCode = null;
 
     if (memoizedData.properties?.compiled[exportPath] || (memoizedData.properties?.singleton && memoizedData.properties?.compiled[ROOT_PATH])) {
       // Use the version in the memo
-      [memoizedData, status, updated, shouldBreak] = copyMemoizedData(
+      [memoizedData, status, newErrorCode, updated, shouldBreak] = copyMemoizedData(
         memoizedData,
         data,
         exportPath,
         memoizedData.properties?.singleton
       );
+      if (newErrorCode) {
+        errorCode = newErrorCode;
+      }
     } else {
       fnInstance.arguments.forEach((argument) => {
         const argData = findInstance(argument, fnContext);
@@ -508,6 +522,7 @@ export const handleUpdate = ({
           ) {
             // Status is failed/warned, so the parent is also.
             status = innerStatus;
+            errorCode = ERROR.CHILD_FAILED;
           }
           if (innerShouldBreak) {
             shouldBreak = true;
@@ -543,6 +558,7 @@ export const handleUpdate = ({
         ) {
           // Status is failed/warned, so the parent is also.
           status = fnStatus;
+          errorCode = ERROR.CHILD_FAILED;
         }
         if (fnShouldBreak) {
           shouldBreak = true;
@@ -556,6 +572,7 @@ export const handleUpdate = ({
   }
 
   memoizedData.properties.status = status;
+  memoizedData.properties.errorCode = errorCode;
   if (memoizedData.properties.compiled[exportPath]) {
     memoizedData.properties.compiled[exportPath].break = shouldBreak;
   } else {

@@ -19,7 +19,8 @@ export const baseTypeData = {
       errorCode: {
         name: "Error Code",
         type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: ''
+        nullValid: true,
+        default: null
       },
       compileFn: {
         name: "Compile Function",

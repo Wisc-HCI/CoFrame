@@ -1,12 +1,19 @@
 import { eventsToStates, statesToSteps } from ".";
-import { STATUS, STEP_TYPE } from "../Constants";
+import { ERROR, STATUS, STEP_TYPE } from "../Constants";
 
 export const processCompiler = ({ data, properties, path, context, memo }) => {
     const process = properties.process;
     const gizmo = properties.gizmo;
-    console.log('process',process)
+    // console.log('process',process)
     const processGizmo = process.id && process?.properties?.compiled?.[path]?.gizmo ? process.properties.compiled[path].gizmo : {};
-    console.log({process, gizmo, processGizmo});
+    // console.log({process, gizmo, processGizmo});
+    let errorCode = null;
+
+    if (!process.id) {
+        errorCode = ERROR.MISSING_PARAMETER
+    } else if (gizmo.id !== processGizmo.id) {
+        errorCode = ERROR.MISMATCHED_GIZMO
+    }
 
     // Retrieve agent. For now, assume that this is always the first robotAgentType;
     const robot = Object.values(memo).filter(v => v.type === 'robotAgentType')[0];
@@ -15,6 +22,7 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
         shouldBreak: false,
         // Process always required, and if there is a gizmo, needs to match the gizmo corresponding to the process
         status: gizmo.id === processGizmo.id && process.id ? STATUS.VALID : STATUS.FAILED,
+        errorCode,
         otherPropertyUpdates: {},
         steps: [],
         events: []

@@ -1,4 +1,4 @@
-import { STATUS, STEP_TYPE } from "../Constants";
+import { ERROR, STATUS, STEP_TYPE } from "../Constants";
 import { eventsToStates, statesToSteps } from ".";
 
 export const machineCompiler = ({data, properties, memo}) => {
@@ -6,6 +6,7 @@ export const machineCompiler = ({data, properties, memo}) => {
     const robot = Object.values(memo).filter(v => v.type === 'robotAgentType')[0];
     
     const status = machine.id ? STATUS.VALID : STATUS.FAILED;
+    const errorCode = machine.id ? null : ERROR.MISSING_PARAMETER;
 
     const events = status === STATUS.VALID ? [
         {
@@ -27,6 +28,7 @@ export const machineCompiler = ({data, properties, memo}) => {
 
     const newCompiled = {
         status,
+        errorCode,
         events,
         steps: statesToSteps(eventsToStates(events))
     }

@@ -1,4 +1,4 @@
-import { STATUS, STEP_TYPE } from "../Constants";
+import { ERROR, STATUS } from "../Constants";
 import lodash from 'lodash';
 import { eventsToStates, statesToSteps } from ".";
 
@@ -7,6 +7,7 @@ export const simpleCompiler = ({ data, properties, routes, objectTypes, context,
     let newCompiled = {
         shouldBreak: false,
         status: STATUS.VALID,
+        errorCode: null,
         otherPropertyUpdates: {},
         events: [],
         steps: []
@@ -24,6 +25,7 @@ export const simpleCompiler = ({ data, properties, routes, objectTypes, context,
         if (childData.status === STATUS.FAILED || childData.status === STATUS.WARN && newCompiled.status !== STATUS.FAILED) {
             // Status is failed/warned, so the parent is also.
             newCompiled.status = childData.status;
+            newCompiled.errorCode = ERROR.CHILD_FAILED
         };
         newCompiled.events = lodash.concat(newCompiled.events,childData.events);
         return false
