@@ -2,6 +2,7 @@ import lodash from "lodash";
 import {
     STEP_TYPE,
 } from "../stores/Constants";
+import { generateUuid } from "../stores/generateUuid";
 import {
     interpolateScalar,
     checkHandThresholds
@@ -107,8 +108,6 @@ const stepsToAnimatedPinchPoints = (steps) => {
         });
     });
 
-    console.log(tempAnimatedPinchPoints);
-
     let timesteps = steps.map((step) => step.time);
     steps.forEach((step) => {
         Object.keys(step.pinchPoints).forEach((link1) => {
@@ -166,8 +165,6 @@ const stepsToAnimatedPinchPoints = (steps) => {
             },
         })
     );
-
-    console.log(animatedPinchPoints);
     return animatedPinchPoints;
 };
 
@@ -334,12 +331,13 @@ export function itemTransformMethod(state, id) {
     return transformMethod;
 }
 
-export function stepsToAnimation(state, tfs) {
+export function stepsToAnimation(state, tfs, items) {
     let dict = {};
     let lastTimestamp = {};
     let finalTime = 0;
     let timesteps = [];
     let trackedThings = [];
+    let thingList = [];
     let currentGraspedThing = '';
 
     let focusStub = null;
@@ -364,8 +362,56 @@ export function stepsToAnimation(state, tfs) {
     let steps = focusStub[compiledKey]?.steps ? focusStub[compiledKey]?.steps : [];
     steps.forEach((step) => {
         if (step.type === STEP_TYPE.SPAWN_ITEM) {
+            if (step.time > finalTime) {
+                finalTime = step.time;
+            }
 
+            timesteps.push(step.time);
+
+            // begin tracking thing
+            let id = generateUuid('thing');
+            thingList.push(id);
+            trackedThings.push({
+                id: id,
+                position: {...step.data.position},
+                rotation: {...step.data.rotation},
+                relativeTo: step.data.relativeTo?.id,
+                type: step.data.thing 
+            });
+
+            // create object
+            dict[id] = {
+                position: { x: [], y: [], z: [] },
+                rotation: { x: [], y: [], z: [], w: [] },
+                hidden: [],
+                mesh: state.programData[step.data.thing]?.properties?.mesh,
+                relativeTo: step.data.relativeTo?.id,
+            }
+
+            // backfill data
+            for (let i = 0; i < timesteps.length; i++) {
+                dict[id].position.x.push(step.data.position.x);
+                dict[id].position.y.push(step.data.position.y);
+                dict[id].position.z.push(step.data.position.z);
+                dict[id].rotation.x.push(step.data.rotation.x);
+                dict[id].rotation.y.push(step.data.rotation.y);
+                dict[id].rotation.z.push(step.data.rotation.z);
+                dict[id].rotation.w.push(step.data.rotation.w);
+                dict[id].hidden.push(true);
+            }
+
+            // push latest data
+            lastTimestamp[id] = timesteps.length;
+            dict[id].position.x.push(step.data.position.x);
+            dict[id].position.y.push(step.data.position.y);
+            dict[id].position.z.push(step.data.position.z);
+            dict[id].rotation.x.push(step.data.rotation.x);
+            dict[id].rotation.y.push(step.data.rotation.y);
+            dict[id].rotation.z.push(step.data.rotation.z);
+            dict[id].rotation.w.push(step.data.rotation.w);
+            dict[id].hidden.push(false);
         }
+
         if (step.type === STEP_TYPE.SCENE_UPDATE) {
             if (step.time > finalTime) {
                 finalTime = step.time;
@@ -412,6 +458,9 @@ export function stepsToAnimation(state, tfs) {
                         dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
                         dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
                         dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
+                        if (thingList.includes(link)) {
+                            dict[link].hidden.push(dict[link].hidden[posLength-1]);
+                        }
                     }
                 }
 
@@ -442,6 +491,9 @@ export function stepsToAnimation(state, tfs) {
                     dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
                     dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
                     dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
+                    if (thingList.includes(link)) {
+                        dict[link].hidden.push(dict[link].hidden[posLength-1]);
+                    }
                 }
 
                 lastTimestamp[link] = timesteps.length;
@@ -464,9 +516,12 @@ export function stepsToAnimation(state, tfs) {
             dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
             dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
             dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
+            if (thingList.includes(link)) {
+                dict[link].hidden.push(dict[link].hidden[posLength-1]);
+            }
         }
 
-        if (tfs[link]) {
+        if (link in tfs) {
             tfs[link].position = {
                 x: interpolateScalar(timesteps, dict[link].position.x),
                 y: interpolateScalar(timesteps, dict[link].position.y),
@@ -478,6 +533,33 @@ export function stepsToAnimation(state, tfs) {
                 z: interpolateScalar(timesteps, dict[link].rotation.z),
                 w: interpolateScalar(timesteps, dict[link].rotation.w),
             };
+        } else if (thingList.includes(link)) {
+            tfs[link] = {
+                frame: dict[link].relativeTo ? dict[link].relativeTo : 'world',
+                position: {
+                    x: interpolateScalar(timesteps, dict[link].position.x),
+                    y: interpolateScalar(timesteps, dict[link].position.y),
+                    z: interpolateScalar(timesteps, dict[link].position.z),
+                },
+                rotation: {
+                    x: interpolateScalar(timesteps, dict[link].rotation.x),
+                    y: interpolateScalar(timesteps, dict[link].rotation.y),
+                    z: interpolateScalar(timesteps, dict[link].rotation.z),
+                    w: interpolateScalar(timesteps, dict[link].rotation.w),
+                },
+                scale: { x:1, y:1, z:1 }
+            }
+            items[link] = {
+                shape: dict[link].mesh,
+                frame: link,
+                position: { x: 0, y: 0, z: 0 },
+                rotation: { w: 1, x: 0, y: 0, z: 0 },
+                scale: { x: 0.2, y: 0.2, z: 0.2 },
+                transformMode: "inactive",
+                color: { r: 0, g: 200, b: 0, a: 0.2 },
+                highlighted: false,
+                hidden: interpolateScalar(timesteps, dict[link].hidden)
+            }
         }
     });
 }

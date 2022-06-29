@@ -24,17 +24,6 @@ export const computedSlice = (state) => {
     let items = {};
     let texts = {};
 
-    Object.values(state.programData).filter(v => v.type === 'thingType' && v.dataType === DATA_TYPES.INSTANCE).forEach(thing => {
-        // for now, place the things at origin. 
-        // console.log(thing)
-        tfs[thing.id] = {
-            frame: 'world',
-            position: { x: 0, y: 0, z: 0 },
-            rotation: { w: 1, x: 0, y: 0, z: 0 },
-            scale: {x:1,y:1,z:1}
-        }
-    })
-
     let reversedFocus = [];
     for (var i = state.focus.length - 1; i >= 0; i--) {
         reversedFocus.push(state.focus[i]);
@@ -391,7 +380,7 @@ export const computedSlice = (state) => {
             return {
                 // TODO: update goalPoses to eePose
                 position: sceneUpdate.data.eePoses[robotAgent.id][gripper.id].position,
-                color: { ...DEFAULT_LOCATION_COLOR }
+                color: { ...DEFAULT_TRAJECTORY_COLOR }
             }
         });
         lines[trajectory.id.concat('-eePose')] = { name: trajectory.name.concat('-eePose'), vertices: eePoseVerts, frame: 'base_link', hidden, width: 2 };
@@ -436,7 +425,7 @@ export const computedSlice = (state) => {
         }
     })
 
-    stepsToAnimation(state, tfs);
+    stepsToAnimation(state, tfs, items);
 
     return ({
         executablePrimitives,
