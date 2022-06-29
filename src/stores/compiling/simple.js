@@ -12,10 +12,7 @@ export const simpleCompiler = ({ data, properties, routes, objectTypes, context,
         events: [],
         steps: []
     };
-    // console.log('data (simple)',{data,properties,routes})
     properties.children.some((child,idx) => {
-        // console.log({child,currentSteps:newCompiled.steps.length})
-        // console.log(child);
         let childPath = routes.children[idx];
         const childData = child.properties.compiled[childPath];
         if (childData.shouldBreak) {

@@ -1,7 +1,7 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ThingIconStyled } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
-import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import { COMPILE_FUNCTIONS } from "../Constants";
 import { baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
@@ -28,6 +28,12 @@ const thingFeatures = {
       ]
     },
     properties: {
+      graspPoints: {
+        name: 'Grasp Points',
+        accepts: ['graspPointType'],
+        default: [],
+        isList: true
+      },
       safe: {
         name: 'Safe',
         type: SIMPLE_PROPERTY_TYPES.IGNORED, 
@@ -53,7 +59,7 @@ const thingFeatures = {
         default: COMPILE_FUNCTIONS.PROPERTY
       },
       updateFields: {
-        default: ['safe','weight']
+        default: ['safe','weight','graspPoints']
       },
       singleton: {
         default: true

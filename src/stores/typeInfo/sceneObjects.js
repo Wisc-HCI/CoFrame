@@ -8,7 +8,7 @@ import {
 } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { merge } from "lodash";
-import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import { COMPILE_FUNCTIONS } from "../Constants";
 import { REFERENCEABLE_OBJECTS } from "../Constants";
 import { baseTypeData } from "./baseType";
 
