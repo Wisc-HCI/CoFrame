@@ -1,5 +1,5 @@
 import { eventsToStates, statesToSteps } from ".";
-import { STATUS, STEP_TYPE, TRIGGER_TYPE } from "../Constants";
+import { STATUS, STEP_TYPE } from "../Constants";
 
 export const processCompiler = ({ data, properties, path, context, memo }) => {
     const process = properties.process;

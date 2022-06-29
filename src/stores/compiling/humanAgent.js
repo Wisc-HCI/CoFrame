@@ -1,5 +1,6 @@
 import { STATUS } from "../Constants";
-import { likStateToData, createStaticEnvironment, queryWorldPose, quaternionLog } from "../helpers";
+import { likStateToData } from "../../helpers/conversion";
+import { createStaticEnvironment, queryWorldPose, quaternionLog } from "../../helpers/geometry";
 
 export const humanAgentCompiler = ({data, properties, module, worldModel}) => {
     const basePose = queryWorldPose(worldModel,data.id);

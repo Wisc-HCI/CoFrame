@@ -1,15 +1,17 @@
 import { STATUS, STEP_TYPE, ROOT_PATH } from "../Constants";
 import {
-  distance,
-  likStateToData,
-  createStaticEnvironment,
-  queryWorldPose,
-  quaternionLog,
-  poseToGoalPosition,
   timeGradientFunction,
   timeGradientFunctionOneTailStart,
   timeGradientFunctionOneTailEnd,
 } from "../helpers";
+import { likStateToData } from "../../helpers/conversion";
+import {
+  createStaticEnvironment,
+  queryWorldPose,
+  quaternionLog,
+  distance,
+  attachmentToEEPose,
+} from "../../helpers/geometry";
 import { merge, cloneDeep } from "lodash";
 import { Quaternion, Vector3 } from "three";
 import { eventsToStates, statesToSteps } from ".";
@@ -26,15 +28,16 @@ const addOrMergeAnimation = (
   robotId,
   gripperId,
   actionId,
-  attachmentLink
+  attachmentLink,
+  eePose
 ) => {
   if (animations.length > idx) {
     const currentLinks = animations[idx].data.links;
     const currentJoints = animations[idx].data.joints;
     const currentProximity = animations[idx].data.proximity;
     const currentReachability = animations[idx].data.reachability;
-    const currentGoalPoses = animations[idx].data.goalPoses;
-    // console.log({ currentProximity, newProximity, animation: animations[idx] })
+    const currentAttachmentPoses = animations[idx].data.attachmentPoses;
+    const currentEEPoses = animations[idx].data.eePoses;
     animations[idx].data = {
       links: { ...currentLinks, ...newLinks },
       joints: { ...currentJoints, ...newJoints },
@@ -42,8 +45,11 @@ const addOrMergeAnimation = (
       reachability: merge(currentReachability, {
         [robotId]: { [gripperId]: reached },
       }),
-      goalPoses: merge(currentGoalPoses, {
+      attachmentPoses: merge(currentAttachmentPoses, {
         [robotId]: { [gripperId]: newLinks[attachmentLink] },
+      }),
+      eePoses: merge(currentEEPoses, {
+        [robotId]: { [gripperId]: eePose },
       }),
     };
   } else {
@@ -54,7 +60,12 @@ const addOrMergeAnimation = (
         joints: newJoints,
         proximity: newProximity,
         reachability: { [robotId]: { [gripperId]: reached } },
-        goalPoses: {[robotId]: { [gripperId]: newLinks[attachmentLink] }}
+        attachmentPoses: {
+          [robotId]: { [gripperId]: newLinks[attachmentLink] },
+        },
+        eePoses: {
+          [robotId]: { [gripperId]: eePose },
+        },
       },
       effect: {},
       source: actionId,
@@ -283,13 +294,13 @@ const createJointSensitivityTester = (jointNames) => {
 export const robotMotionCompiler = ({
   data,
   properties,
-  context,
+  // context,
   path,
   memo,
-  solver,
+  // solver,
   module,
   worldModel,
-  urdf,
+  // urdf,
 }) => {
   const trajectory = properties.trajectory;
   /* 
@@ -395,24 +406,34 @@ export const robotMotionCompiler = ({
     const robotLinks = robot.properties.compiled[ROOT_PATH].linkInfo.map(
       (link) => link.name
     );
+    // Get the urdf of the robot (for livelyTK)
     const urdf = robot.properties.compiled[ROOT_PATH].urdf;
-    grippers.forEach((gripper) => {
-      let reachableChildren = true;
-      poses.forEach((pose) => {
-        if (!pose.reachability[robot.id][gripper.id]) {
-          reachableChildren = false;
+
+    // Consider each gripper/robot combo.
+    // We filter those combos by the ones that actually feature linkages
+    grippers
+      .filter((gripper) => robotLinks.includes(gripper.properties.relativeTo))
+      .forEach((gripper) => {
+        let reachableChildren = true;
+        // Confirm that the poses are all valid
+        poses.forEach((pose) => {
+          if (!pose.reachability[robot.id][gripper.id]) {
+            reachableChildren = false;
+          }
+        });
+        if (!reachableChildren && status !== STATUS.FAILED) {
+          status = STATUS.WARN;
         }
-      });
-      if (!reachableChildren && status !== STATUS.FAILED) {
-        status = STATUS.WARN;
-      }
-      if (robotLinks.includes(gripper.properties.relativeTo)) {
+
         let firstLinks = poses[0].states[robot.id][gripper.id].links;
         let firstJoints = poses[0].states[robot.id][gripper.id].joints;
         // console.log('firstJoints',firstJoints);
         let firstProximity = poses[0].states[robot.id][gripper.id].proximity;
         const attachmentLink = gripper.properties.relativeTo;
         const jointNames = Object.keys(firstJoints);
+
+        const eePose = attachmentToEEPose(worldModel,gripper.id,attachmentLink,firstLinks[attachmentLink])
+
         // load the first frame
         innerSteps = addOrMergeAnimation(
           innerSteps,
@@ -424,7 +445,8 @@ export const robotMotionCompiler = ({
           robot.id,
           gripper.id,
           data.id,
-          attachmentLink
+          attachmentLink,
+          eePose
         );
 
         let reached = true;
@@ -561,6 +583,10 @@ export const robotMotionCompiler = ({
             if (!reached && status !== STATUS.FAILED) {
               status = STATUS.WARN;
             }
+
+            // Calculate the eePose of the gripper
+            const eePose = attachmentToEEPose(worldModel,gripper.id,attachmentLink,stateData.links[attachmentLink])
+
             innerSteps = addOrMergeAnimation(
               innerSteps,
               mainIdx,
@@ -571,7 +597,8 @@ export const robotMotionCompiler = ({
               robot.id,
               gripper.id,
               data.id,
-              attachmentLink
+              attachmentLink,
+              eePose
             );
             idx += 1;
             mainIdx += 1;
@@ -580,10 +607,7 @@ export const robotMotionCompiler = ({
           // Pop off the first item in the poseStack
           poseStack.shift();
         }
-      } else {
-        status = STATUS.FAILED;
-      }
-    });
+      });
   });
 
   const initialStep = {

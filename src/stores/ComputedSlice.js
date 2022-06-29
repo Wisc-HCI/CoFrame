@@ -390,7 +390,7 @@ export const computedSlice = (state) => {
         let eePoseVerts = sceneTmp.map(sceneUpdate => {
             return {
                 // TODO: update goalPoses to eePose
-                position: sceneUpdate.data.goalPoses[robotAgent.id][gripper.id].position,
+                position: sceneUpdate.data.eePoses[robotAgent.id][gripper.id].position,
                 color: { ...DEFAULT_LOCATION_COLOR }
             }
         });

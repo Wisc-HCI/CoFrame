@@ -2,7 +2,8 @@ import { DATA_TYPES } from "simple-vp";
 import frameStyles from "../../frameStyles";
 import { STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
-import { anyReachable, distance, getIDsAndStepsFromCompiled, verticesToVolume } from "../helpers";
+import { anyReachable, getIDsAndStepsFromCompiled, verticesToVolume } from "../helpers";
+import { distance } from "../../helpers/geometry";
 import { Vector3 } from "three";
 import lodash from 'lodash';
 

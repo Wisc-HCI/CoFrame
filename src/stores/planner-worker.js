@@ -2,7 +2,7 @@ import * as Comlink from 'comlink';
 import { ROOT_PATH, PREPROCESS_TYPES, POSTPROCESS_TYPES } from './Constants';
 import { handleUpdate } from './compiling';
 import { DATA_TYPES } from 'simple-vp';
-import { createEnvironmentModel } from './helpers';
+import { createEnvironmentModel } from '../helpers/geometry';
 
 const loadLikModule = async () => {
     const module = await import('@people_and_robots/lively_tk');

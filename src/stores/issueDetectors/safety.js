@@ -1,7 +1,8 @@
 import frameStyles from "../../frameStyles";
 import { STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid";
-import { checkHandThresholds, stepsToEEPoseScores, likProximityAdjustment, getIDsAndStepsFromCompiled } from "../helpers";
+import { checkHandThresholds, stepsToEEPoseScores, getIDsAndStepsFromCompiled } from "../helpers";
+import { likProximityAdjustment } from "../../helpers/conversion";
 import lodash from 'lodash';
 
 const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
@@ -36,7 +37,7 @@ export const findEndEffectorPoseIssues = ({program, programData, settings}) => {
             timeData[step.source].push(step.time);
             toolFrames[step.source].push(step.data.links.tool0.position);
             // TODO: iterate over robots and tools
-            endPointFrames[step.source].push(step.data.goalPoses[robotAgent.id][gripper.id].position);
+            endPointFrames[step.source].push(step.data.attachmentPoses[robotAgent.id][gripper.id].position);
         }
     });
 

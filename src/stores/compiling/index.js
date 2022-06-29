@@ -6,14 +6,13 @@ import { poseCompiler } from "./pose";
 import { processCompiler } from "./process";
 import { robotMotionCompiler } from "./robotMotion";
 import { simpleCompiler } from "./simple";
-import { skillCompiler } from "./skill";
 import { breakCompiler } from "./break";
 import { robotAgentCompiler } from "./robotAgent";
 import { humanAgentCompiler } from "./humanAgent";
 import { linkCompiler } from "./link";
 import { propertyCompiler } from "./property";
 import lodash from "lodash";
-import { COMPILE_FUNCTIONS, ROOT_PATH, STATUS, TRIGGER_TYPE } from "../Constants";
+import { COMPILE_FUNCTIONS, ROOT_PATH, STATUS } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
 import { gripperCompiler } from "./gripper";
 
@@ -24,7 +23,6 @@ const KEY_MAPPING = {
   DELAY: delayCompiler,
   BREAK: breakCompiler,
   PROCESS: processCompiler,
-  SKILL: skillCompiler,
   POSE: poseCompiler,
   ROBOT_MOTION: robotMotionCompiler,
   GRIPPER_MOTION: gripperMotionCompiler,
