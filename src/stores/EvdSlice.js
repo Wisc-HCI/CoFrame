@@ -5,11 +5,15 @@ import { DATA_TYPES } from 'simple-vp';
 
 import typeInfo from './typeInfo';
 // import { performPoseProcess } from './planner-worker';
-import { instanceTemplateFromSpec } from 'simple-vp/dist/components';
+import { instanceTemplateFromSpec } from 'simple-vp';
 
 import * as Comlink from 'comlink';
 /* eslint-disable import/no-webpack-loader-syntax */
-import Worker from 'worker-loader!./planner-worker';
+import PlannerWorker from './planner-worker?worker';
+
+// const plannerWorkerUrl = new URL('./planner-worker.js',import.meta.url);
+// const workerInstance = new ComlinkWorker(plannerWorkerUrl,{});
+// console.warn('workerInstance',workerInstance)
 
 import {
   LocationIconStyled,
@@ -85,17 +89,21 @@ export const EvdSlice = (set, get) => ({
     state.processes.planProcess = process
   }),
   performCompileProcess: async () => {
-    console.log('starting plan processing')
+    // console.log('starting plan processing')
     const currentProcess = get().processes.planProcess;
     if (currentProcess) {
-      console.log('terminating current plan process')
+      // console.log('terminating current plan process')
       currentProcess.terminate();
     }
-    const workerInstance = new Worker();
-    get().updatePlanProcess(null, workerInstance);
-    const workerLib = Comlink.wrap(workerInstance);
-    const result = await workerLib.performCompileProcess({ programData: get().programData, objectTypes: lodash.mapValues(get().programSpec.objectTypes, cleanedObjectType) });
-    console.log(result)
+    // const workerInstance = new ComlinkWorker(plannerWorkerUrl,{});
+    const plannerWorker = new PlannerWorker();
+    // console.log('plannerWorker',plannerWorker)
+    // console.log(workerInstance)
+    get().updatePlanProcess(null, plannerWorker);
+    const { performCompileProcess } = Comlink.wrap(plannerWorker);
+    // console.warn('performCompileProcess',performCompileProcess);
+    const result = await performCompileProcess({ programData: get().programData, objectTypes: lodash.mapValues(get().programSpec.objectTypes, cleanedObjectType) });
+    // console.log(result)
     get().updatePlanProcess(result, null);
   },
   processes: {}

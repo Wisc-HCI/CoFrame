@@ -3,16 +3,31 @@ import { ROOT_PATH, PREPROCESS_TYPES, POSTPROCESS_TYPES } from './Constants';
 import { handleUpdate } from './compiling';
 import { DATA_TYPES } from 'simple-vp';
 import { createEnvironmentModel } from '../helpers/geometry';
+// import init from '@people_and_robots/lively_tk';
+import init, { Solver } from 'coframe-rust';
 
-const loadLikModule = async () => {
-    const module = await import('@people_and_robots/lively_tk');
-    return module;
-}
+// console.log('lik',livelyTK)
+// import livelyTk from '@people_and_robots/lively_tik'
+// import init from '@people_and_robots/lively_tk';
+// const likURL = new URL('@people_and_robots/lively_tk',import.meta.url)
 
-const loadCompilerModule = async () => {
-    const module = await import('../../build/coframe');
-    return module;
-}
+
+// console.log( init )
+// const loadLikModule = async () => {
+//     const module = await import('@people_and_robots/lively_tk');
+//     // const module = await init('/node_modules/@people_and_robots/lively_tk/lively_tk_lib_bg.wasm');
+//     // const module = await init(likURL);
+//     // const inited = init();
+//     // console.log(module.init())
+//     //return ({})
+//     console.log('load',module)
+//     return module;
+// }
+
+// const loadCompilerModule = async () => {
+//     const module = await import('../../build/coframe');
+//     return module;
+// }
 
 // export const performPoseProcess = async (data) => {
 //     const { urdf, pose, scene } = data;
@@ -50,9 +65,15 @@ const loadCompilerModule = async () => {
 // }
 
 const performCompileProcess = async (data) => {
+    // console.log('performCompilerProcess--inworker')
     const { programData, objectTypes } = data;
     // Process the data without stalling the UI
-    const module = await loadLikModule();
+    // const module = await loadLikModule();
+    await init();
+    // console.warn(welcome('Harry'));
+    const module = {Solver};
+    // console.log(module)
+
 
     // const compModule = await loadCompilerModule();
     // console.warn(compModule.welcome("Harry"));
@@ -126,4 +147,5 @@ const performCompileProcess = async (data) => {
     return memo;
 }
 
-Comlink.expose({performCompileProcess})
+Comlink.expose({performCompileProcess,test:()=>'Hi'})
+// export const performCompileProcess

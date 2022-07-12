@@ -24,7 +24,7 @@ const hierarchicalFeatures = {
           ],
         },
         { 
-          type: EXTRA_TYPES.INDICATOR,
+          type: EXTRA_TYPES.INDICATOR_TEXT,
           accessor: (data)=>data.properties.children.length,
           label: 'Size'
         },

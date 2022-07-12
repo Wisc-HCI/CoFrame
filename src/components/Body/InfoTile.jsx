@@ -24,7 +24,6 @@ import actionTypes from "../../stores/typeInfo/action";
 
 export function InfoTile({ maxHeight }) {
   const [
-    activeDrawer,
     frame,
     primaryColor,
     focusData,
@@ -58,9 +57,6 @@ export function InfoTile({ maxHeight }) {
     }
 
     return [
-      state.activeDrawer !== null
-        ? state.programSpec.drawers[state.activeDrawer].title
-        : null,
       state.frame,
       state.primaryColor,
       focusData,
@@ -74,7 +70,6 @@ export function InfoTile({ maxHeight }) {
   let tabs = focusData.map((focusItem, i) => {
     if (focusItem.code) {
       // Is an issue
-      let contents = <div>ISSUE CONTENT</div>;
       return { title: focusItem.title, key: focusItem.id, contents: getIssueInfo({frame, primaryColor, focusItem}) };
     } else if (focusItem.type !== undefined) {
       let contents = <div>DATA CONTENT</div>;

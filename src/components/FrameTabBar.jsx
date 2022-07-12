@@ -1,7 +1,9 @@
 import React from "react";
-import { useSpring, animated } from "@react-spring/web";
-import { config } from "react-spring";
+// import { useSpring, animated } from "@react-spring/web";
+import { motion } from "framer-motion";
+// import { config, FrameValue } from "react-spring";
 import frameStyles from "../frameStyles";
+import { mapValues } from "lodash";
 
 const FRAMES = Object.keys(frameStyles.labels);
 
@@ -28,30 +30,47 @@ const GROUPS = {
 };
 
 const Icon = ({ onChange, active, frame, width }) => {
-  const svgStyle = useSpring({
-    fill: active ? "black" : frameStyles.colors[frame],
-    color: active ? "black" : frameStyles.colors[frame],
-    config: config.molasses,
-  });
+  // const svgStyle = useSpring({
+  //   fill: active ? "black" : frameStyles.colors[frame],
+  //   color: active ? "black" : frameStyles.colors[frame],
+  //   // config: config.molasses,
+  // });
+  const variants = {
+    inactive: {backgroundColor:frameStyles.colors[frame],fill:frameStyles.colors[frame]},
+    active: {backgroundColor:'#000000',fill:'#000000'},
+  }
+
+  const textVariants = {
+    inactive: {color:frameStyles.colors[frame],fill:frameStyles.colors[frame]},
+    active: {color:'#000000',fill:'#000000'},
+  }
+
+  // const spring = useSpring(active ? 0 : 1);
+  // const color = useTransform(
+  //   spring,
+  //   [0, 1],
+  //   ["black", frameStyles.colors[frame]]
+  // );
 
   return (
     <div
       onClick={() => onChange(frame)}
       style={{
-        unset: 'all',
+        unset: "all",
         zIndex: 100,
         display: "flex",
         flexDirection: "column",
-        width
+        width,
       }}
     >
-      <animated.svg
+      <motion.svg
+        variants={variants}
+        animate={active ? 'active':'inactive'}
         width="100%"
         height="100%"
         viewBox="10 10 800 800"
         style={{
-            unset:'all',
-          ...svgStyle,
+          unset: "all",
           fillRule: "evenodd",
           clipRule: "evenodd",
           strokeLinejoin: "round",
@@ -60,30 +79,59 @@ const Icon = ({ onChange, active, frame, width }) => {
         }}
       >
         {GROUPS[frame]}
-      </animated.svg>
-      <animated.b
+      </motion.svg>
+      <motion.b
+        variants={textVariants}
+        animate={active ? 'active':'inactive'}
         style={{
-          unset: 'all',
-          ...svgStyle,
+          unset: "all",
           fontSize: 8,
           fontStyle: "bold",
           textAlign: "center",
         }}
       >
         {frameStyles.labels[frame]}
-      </animated.b>
+      </motion.b>
     </div>
   );
 };
 
-export const FrameTabBar = ({ active, onChange, width=340, backgroundColor="black"}) => {
+export const FrameTabBar = ({
+  active,
+  onChange,
+  width = 340,
+  backgroundColor = "black",
+}) => {
   // const inactiveIconStyle
 
-  const trackerStyle = useSpring({
-    backgroundColor: frameStyles.colors[active],
-    translateX: FRAMES.indexOf(active) * width/4,
-    config: config.stiff,
-  });
+  const keys = Object.keys(frameStyles.colors);
+  const variants = mapValues(frameStyles.colors, (v,k) => ({
+    backgroundColor: v,
+    x: keys.indexOf(k)*width/4,
+  }));
+
+  console.log(variants)
+
+  // const spring = useSpring(0);
+  // const bcolor = useTransform(
+  //   spring,
+  //   [0, 1, 2, 3],
+  //   ["safety", "quality", "performance", "business"].map(
+  //     (v) => frameStyles.colors[v]
+  //   )
+  // );
+  // const transformX = useTransform(
+  //   spring,
+  //   [0, 1, 2, 3],
+  //   [0, 1, 2, 3].map((v) => (v * width) / 4)
+  // );
+
+  // console.log(transformX);
+  // {
+  //   backgroundColor: frameStyles.colors[active],
+  //   translateX: FRAMES.indexOf(active) * width/4,
+  //   // config: config.stiff,
+  // });
 
   return (
     <div
@@ -97,31 +145,44 @@ export const FrameTabBar = ({ active, onChange, width=340, backgroundColor="blac
         position: "relative",
       }}
     >
-      <animated.div
+      <motion.div
+        variants={variants}
+        animate={active}
         style={{
-          ...trackerStyle,
-          width: width/4,
+          // x: transformX,
+          // backgroundColor: bcolor,
+          width: width / 4,
           position: "absolute",
           height: "calc(100% - 4pt)",
           borderRadius: 4,
         }}
-      ></animated.div>
-      <Icon frame="safety" active={active === "safety"} onChange={onChange} width={width/4}/>
+      ></motion.div>
+      <Icon
+        frame="safety"
+        active={active === "safety"}
+        onChange={onChange}
+        width={width / 4}
+      />
 
-      <Icon frame="quality" active={active === "quality"} onChange={onChange} width={width/4}/>
+      <Icon
+        frame="quality"
+        active={active === "quality"}
+        onChange={onChange}
+        width={width / 4}
+      />
 
       <Icon
         frame="performance"
         active={active === "performance"}
         onChange={onChange}
-        width={width/4}
+        width={width / 4}
       />
 
       <Icon
         frame="business"
         active={active === "business"}
         onChange={onChange}
-        width={width/4}
+        width={width / 4}
       />
     </div>
   );

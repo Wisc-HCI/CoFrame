@@ -1,5 +1,5 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
-import { PrimitiveIconStyled } from "./icons";
+import { PrimitiveIconStyled, statusIcon } from "./icons";
 import {
   FiMoreHorizontal,
   FiAlertTriangle,
@@ -23,17 +23,7 @@ const basicActionData = {
       // EXTRA_TYPES.LOCKED_INDICATOR,
       {
         type: EXTRA_TYPES.INDICATOR_ICON,
-        accessor: (data) => {
-          if (data.properties.status === STATUS.FAILED) {
-            return <FiAlertOctagon color="white" fill="red" />;
-          } else if (data.properties.status === STATUS.VALID) {
-            return <FiThumbsUp color="white" />;
-          } else if (data.properties.status === STATUS.WARN) {
-            return <FiAlertTriangle color="white" fill="#ff7300" />;
-          } else if (data.properties.status === STATUS.PENDING) {
-            return <FiRefreshCw className="rotate" />;
-          }
-        },
+        accessor: statusIcon,
         label: "Status",
       },
       {
@@ -45,17 +35,7 @@ const basicActionData = {
           EXTRA_TYPES.SELECTION_TOGGLE,
           {
             type: EXTRA_TYPES.INDICATOR_ICON,
-            accessor: (data) => {
-              if (data.properties.status === STATUS.FAILED) {
-                return <FiAlertOctagon color="white" fill="red" />;
-              } else if (data.properties.status === STATUS.VALID) {
-                return <FiThumbsUp color="white" />;
-              } else if (data.properties.status === STATUS.WARN) {
-                return <FiAlertTriangle color="white" fill="#ff7300" />;
-              } else if (data.properties.status === STATUS.PENDING) {
-                return <FiRefreshCw className="rotate" />;
-              }
-            },
+            accessor: statusIcon,
             label: "Status",
           },
         ],
@@ -251,7 +231,7 @@ const moveTrajectoryFeatures = {
     motionType: {
       name: "Motion Type",
       type: SIMPLE_PROPERTY_TYPES.OPTIONS,
-      options: ["IK", "Joint"],
+      options: [{value: "IK", label: "IK"}, {value: "Joint", label:'Joint'}],
       default: "IK",
     },
     compileFn: { default: COMPILE_FUNCTIONS.ROBOT_MOTION },

@@ -12,7 +12,7 @@ import {
     stepsToAnimation,
     pinchpointAnimationFromExecutable
 } from '../helpers/computedSlice';
-import { DATA_TYPES } from 'simple-vp/dist/components';
+import { DATA_TYPES } from 'simple-vp';
 import { STEP_TYPE } from './Constants';
 import { filter } from "lodash";
 

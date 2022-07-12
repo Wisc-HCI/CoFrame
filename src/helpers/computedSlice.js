@@ -7,8 +7,8 @@ import {
     interpolateScalar,
     checkHandThresholds
 } from '../stores/helpers';
-
-
+import { map } from 'lodash';
+import { likProximityAdjustment } from "./conversion";
 
 const pinchColorFromMagnitude = (magnitude = 0) => {
     return {
@@ -143,7 +143,7 @@ const stepsToAnimatedPinchPoints = (steps) => {
         });
     });
 
-    const animatedPinchPoints = objectMap(
+    const animatedPinchPoints = map(
         tempAnimatedPinchPoints,
         (pinchPoint) => ({
             frame: "world",
@@ -338,7 +338,7 @@ export function stepsToAnimation(state, tfs, items) {
     let timesteps = [];
     let trackedThings = [];
     let thingList = [];
-    let currentGraspedThing = '';
+    // let currentGraspedThing = '';
 
     let focusStub = null;
     // Only back up to once for the animation correlating to the issue (if applicable)

@@ -5,5 +5,7 @@ package-lock.json
 
 # Added by cargo
 
+coframe-rust/target
+coframe-rust/Cargo.lock
 /target
 /Cargo.lock

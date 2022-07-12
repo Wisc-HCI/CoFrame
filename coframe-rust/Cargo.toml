@@ -1,0 +1,17 @@
+[package]
+name = "coframe-rust"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib","rlib"]
+
+[dependencies]
+console_error_panic_hook = { version = "0.1.7" }
+lively_tk = {git = "https://github.com/Wisc-HCI/lively_tk"}
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+serde = { version = "1.0", features = ["derive"]}
+
+[profile.release]
+opt-level = 3
+codegen-units = 1

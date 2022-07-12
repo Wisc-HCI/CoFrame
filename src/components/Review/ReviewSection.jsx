@@ -5,8 +5,10 @@ import useStore from "../../stores/Store";
 import { FrameButton } from "../FrameButton";
 import frameStyles from "../../frameStyles";
 import Collapse from "../Elements/Collapse";
-import { Switch } from "../Elements/Switch";
-import { FancyText } from "../Elements/FancyText";
+// import { Switch } from "../Elements/Switch";
+// import { FancyText } from "../Elements/FancyText";
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 // import './custom.css'
 
@@ -68,10 +70,9 @@ const sectionFrame = (sectionId) =>
   FRAMES.filter((filter) => filter.sections.indexOf(sectionId) > -1)[0].key;
 
 export function ReviewSection({ sectionId, blocked, initialBlocked }) {
-  const [frame, setFrame, primaryColor] = useStore((state) => [
+  const [frame, setFrame] = useStore((state) => [
     state.frame,
-    state.setFrame,
-    state.primaryColor,
+    state.setFrame
   ]);
   const [name, issueIds, complete, dependencies, depNames, depFrames] =
     useStore(
@@ -135,12 +136,25 @@ export function ReviewSection({ sectionId, blocked, initialBlocked }) {
           }
           //   style={{ marginBottom: 5 }}
           extra={
-            <Switch
-              label={complete ? <FancyText css={{ color: primaryColor, fontSize:10 }}>Done!</FancyText> : null}
-              disabled
-              value={complete}
-              highlightColor={primaryColor}
-            />
+            <FormControlLabel
+            value={complete}
+            control={
+              <Switch
+                color="primaryColor"
+                disabled
+                value={complete}
+                onChange={()=>{}}
+              />
+            }
+            label={complete ? 'Done!' : ""}
+            labelPlacement="start"
+          />
+            // <Switch
+            //   label={complete ? <FancyText css={{ color: primaryColor, fontSize:10 }}>Done!</FancyText> : null}
+            //   disabled
+            //   value={complete}
+            //   highlightColor={primaryColor}
+            // />
           }
         >
           {issueIds.length > 0 ? (

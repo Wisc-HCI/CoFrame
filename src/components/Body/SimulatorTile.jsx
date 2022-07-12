@@ -8,13 +8,14 @@ import useMeasure from 'react-use-measure';
 // import { useSpring, animated } from '@react-spring/web';
 // import { config } from 'react-spring';
 import Tile from '../Elements/Tile';
+import MeshLookupTable from '../../meshes';
 
 export const SimulatorTile = ({ visible }) => {
 
     const primaryColor = useStore(state => state.primaryColor);
     const clearFocus = useStore(state => state.clearFocus);
     const tfVisible = useStore(state => state.tfVisible);
-    const paused = useStore(state => state.focus === []);
+    const paused = useStore(state => state.focus.length === 0);
     const [ref, bounds] = useMeasure();
     // const containerStyle = useSpring({ flex: visible ? 11 : 0, config: config.stiff });
     
@@ -50,6 +51,7 @@ export const SimulatorTile = ({ visible }) => {
                         store={useStore}
                         onPointerMissed={clearFocus}
                         paused={paused}
+                        meshLookup={MeshLookupTable}
                     />
                 </div>
 

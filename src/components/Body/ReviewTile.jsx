@@ -6,42 +6,43 @@ import shallow from "zustand/shallow";
 import { ReviewSection } from "../Review/ReviewSection";
 import useMeasure from "react-use-measure";
 import { FrameTabBar } from "../FrameTabBar";
-import * as ScrollArea from "@radix-ui/react-scroll-area";
-import { styled } from "@stitches/react";
+import { ScrollRegion } from "../Elements/ScrollRegion";
+// import * as ScrollArea from "@radix-ui/react-scroll-area";
+// import { styled } from "@stitches/react";
 
-const StyledScrollArea = styled(ScrollArea.Root, {
-  overflow: "hidden",
-});
+// const StyledScrollArea = styled(ScrollArea.Root, {
+//   overflow: "hidden",
+// });
 
-const StyledViewport = styled(ScrollArea.Viewport, {
-  width: "100%",
-  height: "100%",
-  borderRadius: "inherit",
-  padding: "4pt",
-});
+// const StyledViewport = styled(ScrollArea.Viewport, {
+//   width: "100%",
+//   height: "100%",
+//   borderRadius: "inherit",
+//   padding: "4pt",
+// });
 
-const StyledScrollbar = styled(ScrollArea.Scrollbar, {
-  display: "flex",
-  // ensures no selection
-  userSelect: "none",
-  // disable browser handling of all panning and zooming gestures on touch devices
-  touchAction: "none",
-  padding: 2,
-  background: "#55555525",
-  transition: "background 160ms ease-out",
-  "&:hover": { background: "#45454540" },
-  '&[data-orientation="vertical"]': { width: 8 },
-  '&[data-orientation="horizontal"]': {
-    flexDirection: "column",
-    height: 8,
-  },
-});
+// const StyledScrollbar = styled(ScrollArea.Scrollbar, {
+//   display: "flex",
+//   // ensures no selection
+//   userSelect: "none",
+//   // disable browser handling of all panning and zooming gestures on touch devices
+//   touchAction: "none",
+//   padding: 2,
+//   background: "#55555525",
+//   transition: "background 160ms ease-out",
+//   "&:hover": { background: "#45454540" },
+//   '&[data-orientation="vertical"]': { width: 8 },
+//   '&[data-orientation="horizontal"]': {
+//     flexDirection: "column",
+//     height: 8,
+//   },
+// });
 
-const StyledThumb = styled(ScrollArea.Thumb, {
-  flex: 1,
-  background: "#eeeeee66",
-  borderRadius: 8,
-});
+// const StyledThumb = styled(ScrollArea.Thumb, {
+//   flex: 1,
+//   background: "#eeeeee66",
+//   borderRadius: 8,
+// });
 
 const isComplete = (state, sectionId) =>
   state.sections[sectionId].issues
@@ -133,8 +134,7 @@ export const ReviewTile = (_) => {
             disabled={isProcessing}
           ></Button>
         </Box>
-      <StyledScrollArea css={{ height: bounds.height - 125, width: "100%"}}>
-        <StyledViewport css={{padding:0}}>
+        <ScrollRegion vertical height={bounds.height - 125} width='100%'>
           <Box direction='column' round='small'>
               {FRAMES[frameIdx].sections.map((section, idx) => (
                 <Box
@@ -150,15 +150,7 @@ export const ReviewTile = (_) => {
                 </Box>
               ))}
             </Box>
-        </StyledViewport>
-        <StyledScrollbar orientation="horizontal">
-          <StyledThumb />
-        </StyledScrollbar>
-        <StyledScrollbar orientation="vertical">
-          <StyledThumb />
-        </StyledScrollbar>
-        <ScrollArea.Corner />
-      </StyledScrollArea>
+        </ScrollRegion>
     </Box>
   );
 };

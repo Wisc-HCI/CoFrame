@@ -1,5 +1,6 @@
 import { DATA_TYPES } from "simple-vp";
-import { generateUuid } from "../generateUuid"
+import { generateUuid } from "../generateUuid";
+import { pickBy } from 'lodash';
 
 export const findMissingBlockIssues = ({programData}) => {
     let issues = {};
@@ -163,12 +164,12 @@ export const findUnusedFeatureIssues = ({programData}) => {
     // This could be improved in the future.
 
     let issues = {};
-    const allLocations = Object.keys(_.pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'locationType' }));
-    const allWaypoints = Object.keys(_.pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'waypointType'}));
-    const allMachines = Object.keys(_.pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'machineType'}));
-    const allThingPlaceholders = Object.keys(_.pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'thingType'}));
-    const allTrajectories = Object.keys(_.pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'trajectoryType'}));
-    const allProcesses = Object.keys(_.pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'processType'}));
+    const allLocations = Object.keys(pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'locationType' }));
+    const allWaypoints = Object.keys(pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'waypointType'}));
+    const allMachines = Object.keys(pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'machineType'}));
+    const allThingPlaceholders = Object.keys(pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'thingType'}));
+    const allTrajectories = Object.keys(pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'trajectoryType'}));
+    const allProcesses = Object.keys(pickBy(programData, function (v) { return (v.dataType === DATA_TYPES.INSTANCE || v.dataType === DATA_TYPES.ARGUMENT) && v.type === 'processType'}));
 
     let usedLocations = [];
     let usedWaypoints = [];

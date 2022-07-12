@@ -457,7 +457,7 @@ export const robotMotionCompiler = ({
           firstLinks,
           firstJoints,
           firstProximity,
-          reached,
+          poses[0].reachability[robot.id][gripper.id],
           robot.id,
           gripper.id,
           data.id,

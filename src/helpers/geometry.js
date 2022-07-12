@@ -300,9 +300,9 @@ export const createEnvironmentModel = (programData) => {
 export const createStaticEnvironment = (model) => {
   return Object.values(model)
     .filter(
-      (item) => item.userData.parent !== "world" && item.userData.collisionInfo
+      (item) => false && item.userData.parent !== "world" ? item.userData.collisionInfo : null
     )
-    .map((item) => {});
+    .map((item) => ({}));
   // let retVal = [];
   // Object.values(model).filter(item => item.userData.isCollisionObj).forEach(item => {
   //     // Convert position to world frame

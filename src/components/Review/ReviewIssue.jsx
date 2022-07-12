@@ -4,8 +4,10 @@ import { Box, Avatar, Text } from "grommet";
 // import { EllipsisOutlined, StopOutlined, ExclamationOutlined } from '@ant-design/icons';
 import { FiSlash, FiAlertCircle } from "react-icons/fi";
 import useStore from "../../stores/Store";
-import { Switch } from "../Elements/Switch";
-import { FancyText } from "../Elements/FancyText";
+// import { Switch } from "../Elements/Switch";
+// import { FancyText } from "../Elements/FancyText";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 export const ReviewIssue = ({ issueId }) => {
   const issue = useStore(
@@ -32,12 +34,12 @@ export const ReviewIssue = ({ issueId }) => {
     <Box
       onClick={() => {
         let first = false;
-        issue.focus.forEach(item => {
+        issue.focus.forEach((item) => {
           addFocusItem(item, first);
           if (!first) {
             first = true;
           }
-        })
+        });
         addFocusItem(issueId, true);
       }}
       focusIndicator={false}
@@ -55,14 +57,14 @@ export const ReviewIssue = ({ issueId }) => {
           : null,
       }}
     >
-      <Box direction='row' align='center' gap='small' flex>
+      <Box direction="row" align="center" gap="small" flex>
         <Avatar
           size="small"
           background={issue.requiresChanges ? "#a61d24" : "grey"}
         >
           <Icon style={{ color: "white" }} />
         </Avatar>
-        <Box direction="column" style={{maxWidth:200}} pad="xsmall">
+        <Box direction="column" style={{ maxWidth: 200 }} pad="xsmall">
           <Text>{issue.title}</Text>
           <Text size="small">
             {issue.requiresChanges
@@ -79,17 +81,31 @@ export const ReviewIssue = ({ issueId }) => {
         focusIndicator={false}
       >
         {!issue.requiresChanges && (
-          <Switch
-            label={
-              issue.complete ? (
-                <FancyText css={{ color: primaryColor, fontSize:10 }}>Done!</FancyText>
-              ) : null
-            }
-            disabled={issue.requiresChanges}
+          <FormControlLabel
             value={issue.complete}
-            onCheckedChange={onCheckedChange}
-            highlightColor={primaryColor}
+            control={
+              <Switch
+                size="small"
+                color="primaryColor"
+                disabled={issue.requiresChanges}
+                value={issue.complete}
+                onChange={onCheckedChange}
+              />
+            }
+            label={issue.complete ? 'Done!' : ""}
+            labelPlacement="start"
           />
+          // <Switch
+          //   label={
+          //     issue.complete ? (
+          //       <FancyText css={{ color: primaryColor, fontSize:10 }}>Done!</FancyText>
+          //     ) : null
+          //   }
+          //   disabled={issue.requiresChanges}
+          //   value={issue.complete}
+          //   onCheckedChange={onCheckedChange}
+          //   highlightColor={primaryColor}
+          // />
         )}
         {/* {issue.focus && <Button onClick={()=>{addFocusItem(issue.focus.id, true);addFocusItem(issueId, true)}} icon={<FiMoreHorizontal/>}/>} */}
       </Box>

@@ -90,27 +90,26 @@ export const likProximityAdjustment = (trackedPoints, proximity, mirrorTrackedPo
                 points: points,
               };
             }
+          } else {
+            if (!proximityModel[link1]) {
+              proximityModel[link1] = {};
+            }
+            if (!proximityModel[link2]) {
+              proximityModel[link2] = {};
+            }
+            proximityModel[link1][link2] = {
+              distance: distance,
+              physical: physical,
+              points: points,
+            };
+            proximityModel[link2][link1] = {
+              distance: distance,
+              physical: physical,
+              points: points,
+            };
           }
         });
-      } else {
-        if (!proximityModel[link1]) {
-          proximityModel[link1] = {};
-        }
-        if (!proximityModel[link2]) {
-          proximityModel[link2] = {};
-        }
-        proximityModel[link1][link2] = {
-          distance: distance,
-          physical: physical,
-          points: points,
-        };
-        proximityModel[link2][link1] = {
-          distance: distance,
-          physical: physical,
-          points: points,
-        };
       }
-        
     });
   
     return proximityModel;

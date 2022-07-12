@@ -3,14 +3,14 @@ import lodash from "lodash";
 import { Vector3 } from "three";
 import { ConvexGeometry } from "three-stdlib";
 // import { EVD_MESH_LOOKUP } from './initialSim';
-import { DATA_TYPES } from "simple-vp";
+// import { DATA_TYPES } from "simple-vp";
 import {
   HAND_PINCH_MAX_DISTANCE,
   HAND_PINCH_MIN_DISTANCE,
-  REFERENCEABLE_OBJECTS,
+  // REFERENCEABLE_OBJECTS,
   STEP_TYPE,
 } from "./Constants";
-import { merge } from "lodash";
+// import { merge } from "lodash";
 
 
 // https://www.desmos.com/calculator/0rd3tessqn

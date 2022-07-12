@@ -37,6 +37,7 @@ export const robotAgentCompiler = ({
     ],
   };
   // console.log(properties.urdf)
+  // console.log(module.solver_new)
   const fwdsolver = new module.Solver(
     properties.urdf,
     [],

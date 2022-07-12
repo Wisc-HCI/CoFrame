@@ -1,5 +1,5 @@
 import frameStyles from "../../frameStyles";
-import { STATUS, STEP_TYPE } from "../Constants";
+import { STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import {idleTimeEstimate, durationEstimate} from "../helpers"
 
