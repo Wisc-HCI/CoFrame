@@ -474,27 +474,34 @@ export const findPinchPointIssues = ({program, programData}) => { // Requires pi
     return [issues, {}];
 }
 
-export const findThingSafetyIssues = ({programData}) => { // May require trace pose information
+export const findThingSafetyIssues = ({program, programData}) => { // May require trace pose information
     let issues = {};
+    let trackedIds = [];
 
-    Object.values(programData).filter(v => v.type === 'moveGripperType').forEach(primitive=>{
-        if (primitive.properties.thing && primitive.properties.positionEnd < primitive.properties.positionStart) {
-            const thing = programData[programData[primitive.properties.thing].ref];
-            if (!thing.properties.safe) {
-                const uuid = generateUuid('issue');
-                issues[uuid] = {
-                    id: uuid,
-                    requiresChanges: true,
-                    title: `Grasping on unsafe object`, // might need some changes
-                    description: `The robot is grasping on a dangerous item`,// might need some changes
-                    complete: false,
-                    focus: [primitive.id],
-                    graphData: null
+    program.properties.compiled["{}"].steps.forEach(step => {
+        let source = programData[step.source];
+
+        if (!trackedIds.includes(step.source) &&
+            step.type === STEP_TYPE.SCENE_UPDATE &&
+            source.type === 'moveGripperType' &&
+            source.properties.thing &&
+            source.properties.positionEnd < source.properties.positionStart) {
+                trackedIds.push(step.source);
+                let thing = programData[step.data.thing];
+                if (!thing.properties.safe) {
+                    const uuid = generateUuid('issue');
+                    issues[uuid] = {
+                        id: uuid,
+                        requiresChanges: true,
+                        title: `Grasping on unsafe object`, // might need some changes
+                        description: `The robot is grasping on a dangerous item`,// might need some changes
+                        complete: false,
+                        focus: [source.id],
+                        graphData: null
+                    }
                 }
-            }
         }
     });
-
 
     return [issues, {}];
 }

@@ -1,6 +1,7 @@
 import { DATA_TYPES } from "simple-vp";
 import { generateUuid } from "../generateUuid";
 import { pickBy } from 'lodash';
+import { ERROR, STATUS, STEP_TYPE } from "../Constants";
 
 export const findMissingBlockIssues = ({programData}) => {
     let issues = {};
@@ -123,6 +124,21 @@ export const findMissingParameterIssues = ({programData, programSpec}) => {
                 }
         }
     })
+
+    Object.values(programData).filter(v => ['processStartType', 'processWaitType'].includes(v.type) && v.properties.status === STATUS.FAILED && v.properties.errorCode === ERROR.MISMATCHED_GIZMO).forEach(failed => {
+        const uuid = generateUuid('issue');
+        issues[uuid] = {
+            id: uuid,
+            requiresChanges: true,
+            title: failed.type === 'processStartType' ? `Missing Gizmo in Process-Start` : `Missing Gizmo in Process-Wait`,
+            description: failed.type === 'processStartType' ? `Missing required gizmo for process-start` : `Missing required gizmo for process-wait`,
+            complete: false,
+            focus: [failed.id],
+            graphData: null,
+            sceneData : null,
+            code : null
+        }
+    });
 
     return [issues, {}];
 }
@@ -383,14 +399,38 @@ export const findProcessLogicIssues = ({program, programData}) => { //init , sta
     let issues = {};
     let machineState = [];
     let trackedActions = [];
+    let initMachines = [];
+
+    // "Initialize" tools for tracking.
+    Object.values(programData).filter(v => v.type === 'toolType').forEach(tool => {
+        machineState[tool.id] = 'init';
+    })
 
     program.properties.compiled["{}"].steps.forEach(step => {
         let source = programData[step.source];
 
-        if (source.type === 'machineInitType') {
-            machineState[source.properties.machine] = 'init';
-        } else if (source.type === 'processStartType') {
-            if (!trackedActions.includes(source.id) && !(source.properties.machine in machineState)) {
+        if (step.type === STEP_TYPE.LANDMARK && source.type === 'machineInitType') {
+            // TODO: need reference to top level machine
+            machineState[step.data.machine] = 'init';
+            if (initMachines.includes(step.data.machine)) {
+                const uuid = generateUuid('issue');
+                issues[uuid] = {
+                    id: uuid,
+                    requiresChanges: false,
+                    title: `Machine is already initialized`,
+                    description: `Machine has already been initialized`,
+                    complete: false,
+                    focus: [source.id],
+                    graphData: null,
+                    sceneData : null,
+                    code : null
+                }
+            } else {
+                initMachines.push(step.data.machine);
+            }
+        } else if (step.type === STEP_TYPE.PROCESS_START && source.type === 'processStartType') {
+            // TODO: need reference to top level machine
+            if (!trackedActions.includes(source.id) && !(step.data.gizmo in machineState)) {
                 trackedActions.push(source.id);
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
@@ -404,9 +444,10 @@ export const findProcessLogicIssues = ({program, programData}) => { //init , sta
                     sceneData : null,
                     code : null
                 }
-            } else if (machineState[source.properties.machine] === 'init') {
-                machineState[source.properties.machine] = 'started';
-            } else if (!trackedActions.includes(source.id) && machineState[source.properties.machine] === 'started') {
+            } else if (machineState[step.data.gizmo] === 'init') {
+                machineState[step.data.gizmo] = 'started';
+                trackedActions.includes(source.id);
+            } else if (!trackedActions.includes(source.id) && machineState[step.data.gizmo] === 'started') {
                 trackedActions.push(source.id);
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
@@ -421,8 +462,8 @@ export const findProcessLogicIssues = ({program, programData}) => { //init , sta
                     code : null
                 }
             }
-        } else if (source.type === 'processWaitType') {
-            if (!trackedActions.includes(source.id) && !(source.properties.machine in machineState)) {
+        } else if (step.type === STEP_TYPE.ACTION_START && source.type === 'processWaitType') {
+            if (!trackedActions.includes(source.id) && !(step.data.gizmo in machineState)) {
                 trackedActions.push(source.id);
                 const uuid = generateUuid('issue');
                 issues[uuid] = {
@@ -436,10 +477,11 @@ export const findProcessLogicIssues = ({program, programData}) => { //init , sta
                     sceneData : null,
                     code : null
                 }
-            } else if (machineState[source.properties.machine] === 'started') {
-                machineState[source.properties.machine] = 'waiting';
-            } else if (machineState[source.properties.machine] === 'init') {
-                machineState[source.properties.machine] = 'waiting';
+            } else if (machineState[step.data.gizmo] === 'started') {
+                machineState[step.data.gizmo] = 'waiting';
+                trackedActions.includes(source.id);
+            } else if (machineState[step.data.gizmo] === 'init') {
+                machineState[step.data.gizmo] = 'waiting';
                 if (!trackedActions.includes(source.id)) {
                     trackedActions.push(source.id)
                     const uuid = generateUuid('issue');
@@ -458,23 +500,12 @@ export const findProcessLogicIssues = ({program, programData}) => { //init , sta
             }
         }
     })
+    
+    return [issues, {}];
+}
 
-    // machineState.forEach(machine => {
-    //     if (machine.state !== 'stop' && (machine.state === 'started'|| machine.state === 'waiting')){
-    //         const uuid = generateUuid('issue');
-    //         issues[uuid] = {
-    //         id: uuid,
-    //         requiresChanges: true,
-    //         title: `Machine never stopped`,
-    //         description: `A machine needs to be ended by running a machine-stop`,
-    //         complete: false,
-    //         focus: [machine.primitiveUUID], // ask 
-    //         graphData: null,
-    //         sceneData : null,
-    //         code : null
-    //         }          
-    //     }
+export const findThingFlowIssues = ({program, programData}) => {
+    let issues = {};
 
-    // })
     return [issues, {}];
 }
