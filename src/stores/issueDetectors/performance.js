@@ -6,10 +6,7 @@ import { anyReachable, getIDsAndStepsFromCompiled, verticesToVolume } from "../h
 import { distance } from "../../helpers/geometry";
 import { Vector3 } from "three";
 import lodash from 'lodash';
-
-const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
-const WARNING_COLOR = {r: 230, g: 159, b: 0};
-const ERROR_COLOR = {r: 204, g: 75, b: 10};
+import { hexToRgb } from "../../helpers/colors";
 
 export const findReachabilityIssues = ({programData}) => { // requires joint_processor to produce joints for each waypoint/location
     let issues = {};
@@ -122,15 +119,15 @@ export const findJointSpeedIssues = ({program, programData, settings}) => {
                         hasWarningVelocity = true;
                         shouldGraphJoint[i] = true;
                     }
-                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["performance"])});
                 } else if (calcVel >= warningLevel) {
                     if (!hasWarningVelocity) {
                         hasWarningVelocity = true;
                         shouldGraphJoint[i] = true;
                     }
-                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
+                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["performance"])});
                 } else {
-                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
+                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
                 }
                 jointVelocities[jointNames[i]].push(calcVel);
             }
@@ -172,8 +169,8 @@ export const findJointSpeedIssues = ({program, programData, settings}) => {
                     yAxisLabel: 'Velocity',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
                     ],
                     units: 'm/s',
                     decimal: 5,
@@ -235,14 +232,14 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings}) => 
                 if (!hasWarningVelocity) {
                     hasWarningVelocity = true;
                 }
-                endEffectorVelocities.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                endEffectorVelocities.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["performance"])});
             } else if (calcVel >= warningLevel) {
                 if (!hasWarningVelocity) {
                     hasWarningVelocity = true;
                 }
-                endEffectorVelocities.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
+                endEffectorVelocities.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["performance"])});
             } else {
-                endEffectorVelocities.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
+                endEffectorVelocities.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
             }
 
             endEffectorGraphData.push({x: timeData[moveID][i], 'End Effector Velocity': calcVel});
@@ -264,8 +261,8 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings}) => 
                     yAxisLabel: 'Velocity',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
                     ],
                     units: 'm/s',
                     decimal: 5,
@@ -342,14 +339,14 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings}) =>
         // determine whether issue should be generated
         let shouldGenIssue = false;
         // Adjust color of hull
-        let hullColor = {...NO_ERROR_COLOR, a: 0.5};
+        let hullColor = {...hexToRgb(frameStyles.colors['default']), a: 0.5};
         if (volumePercentage >= errorLevel) {
             isError = true;
             shouldGenIssue = true;
-            hullColor = {...ERROR_COLOR, a: 0.5}
+            hullColor = {...hexToRgb(frameStyles.errorColors['performance']), a: 0.5}
         } else if (volumePercentage >= warningLevel) {
             shouldGenIssue = true;
-            hullColor = {...WARNING_COLOR, a: 0.5}
+            hullColor = {...hexToRgb(frameStyles.colors['performance']), a: 0.5}
         }
 
         if (shouldGenIssue) {
@@ -370,8 +367,8 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings}) =>
                     yAxisLabel: 'Space Usage',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
                     ],
                     units: '%',
                     decimal: 5,

@@ -4,10 +4,7 @@ import { generateUuid } from "../generateUuid";
 import { checkHandThresholds, stepsToEEPoseScores, getIDsAndStepsFromCompiled } from "../helpers";
 import { likProximityAdjustment } from "../../helpers/conversion";
 import lodash from 'lodash';
-
-const NO_ERROR_COLOR = {r: 255, g: 255, b: 255};
-const WARNING_COLOR = {r: 204, g: 121, b: 167};
-const ERROR_COLOR = {r: 233, g: 53, b: 152};
+import { hexToRgb } from "../../helpers/colors";
 
 export const findEndEffectorPoseIssues = ({program, programData, settings}) => { // Requires trace pose information
     let issues = {};
@@ -54,12 +51,12 @@ export const findEndEffectorPoseIssues = ({program, programData, settings}) => {
             if (scores[i] >= errorLevel) {
                 hasError = true;
                 shouldReportIssue = true;
-                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["safety"])});
             } else if (scores[i] >= warningLevel) {
                 shouldReportIssue = true;
-                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
+                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["safety"])});
             } else {
-                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
+                endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
             }
             graphData.push({x: timeData[moveID][i] / 1000, endEffectorScore: scores[i]});
         }
@@ -80,8 +77,8 @@ export const findEndEffectorPoseIssues = ({program, programData, settings}) => {
                     title: '',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: frameStyles.colors["safety"], label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["safety"]), label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'},
                     ],
                     units: '',
                     decimal: 5,
@@ -222,11 +219,11 @@ export const findCollisionIssues = ({program, programData, settings}) => {
 
                     if (sCol[moveID][i][rLink] <= errorLevel) {
                         collisionErrors[selfIndex] = true;
-                        collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                        collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["safety"])});
                     } else if (sCol[moveID][i][rLink] <= warningLevel) {
-                        collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
+                        collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["safety"])});
                     } else {
-                        collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
+                        collisionData[selfIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
                     }
                     graphData[selfIndex][i][linkNameMap[rLink]] = sCol[moveID][i][rLink];
                 }
@@ -243,11 +240,11 @@ export const findCollisionIssues = ({program, programData, settings}) => {
 
                     if (eCol[moveID][i][rLink] <= errorLevel) {
                         collisionErrors[envIndex] = true;
-                        collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                        collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["safety"])});
                     } else if (eCol[moveID][i][rLink] <= warningLevel) {
-                        collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
+                        collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["safety"])});
                     } else {
-                        collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
+                        collisionData[envIndex][rLink].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
                     }
                     graphData[envIndex][i][linkNameMap[rLink]] = eCol[moveID][i][rLink];
                 }
@@ -271,8 +268,8 @@ export const findCollisionIssues = ({program, programData, settings}) => {
                     title: '',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: frameStyles.colors["safety"], label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["safety"]), label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'},
                     ],
                     units: 'm',
                     decimal: 5,
@@ -299,8 +296,8 @@ export const findCollisionIssues = ({program, programData, settings}) => {
                     title: '',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: frameStyles.colors["safety"], label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["safety"]), label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'},
                     ],
                     units: 'm',
                     decimal: 5,
@@ -386,11 +383,11 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
                     Object.values(proximityData[moveID][j][linkNames[i]]).forEach(obj => {
                         if (obj.distance <= errorLevel) {
                             enteredZone = true;
-                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: ERROR_COLOR});
+                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["safety"])});
                         } else if (obj.distance <= warningLevel) {
-                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: WARNING_COLOR});
+                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["safety"])});
                         } else {
-                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: NO_ERROR_COLOR});
+                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
                         }
                         point = obj.distance;
                     });
@@ -422,8 +419,8 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
                     yAxisLabel: 'Proximity',
                     title: '',
                     thresholds: [
-                        {range: ["MIN", errorLevel], color: frameStyles.errorColors["safety"], label: 'Error'},
-                        {range: [errorLevel, warningLevel], color: frameStyles.colors["safety"], label: 'Warning'},
+                        {range: ["MIN", errorLevel], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'},
+                        {range: [errorLevel, warningLevel], color: hexToRgb(frameStyles.colors["safety"]), label: 'Warning'},
                         {range: [warningLevel, "MAX"], color: 'grey', label: 'OK'},
                     ],
                     units: 'm',

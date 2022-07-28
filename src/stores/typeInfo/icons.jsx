@@ -1,17 +1,17 @@
 // These icons need to be readjusted for Simple-VP
-import { ReactComponent as LocationIcon } from '../../components/CustomIcons/Location.svg';
-import { ReactComponent as PrimitiveIcon } from '../../components/CustomIcons/Primitive.svg';
-import { ReactComponent as MachineIcon } from '../../components/CustomIcons/Machine.svg';
-import { ReactComponent as SkillIcon } from '../../components/CustomIcons/Skill.svg';
-import { ReactComponent as ThingIcon } from '../../components/CustomIcons/Thing.svg';
-import { ReactComponent as WaypointIcon } from '../../components/CustomIcons/Waypoint.svg';
-import { ReactComponent as ContainerIcon } from '../../components/CustomIcons/Container.svg';
-import { ReactComponent as ProcessIcon } from '../../components/CustomIcons/Process.svg';
-import { ReactComponent as InputOutputIcon } from '../../components/CustomIcons/InputOutput.svg';
-import { ReactComponent as ToolIcon } from '../../components/CustomIcons/Tool.svg';
-import { ReactComponent as FixtureIcon } from '../../components/CustomIcons/Fixture.svg';
-import { ReactComponent as ZoneIcon } from '../../components/CustomIcons/Zone.svg';
-import { ReactComponent as LinkIcon } from '../../components/CustomIcons/Link.svg';
+import { LocationIcon } from '../../components/CustomIcons/Location';
+import { PrimitiveIcon } from '../../components/CustomIcons/Primitive';
+import { MachineIcon } from '../../components/CustomIcons/Machine';
+import { SkillIcon } from '../../components/CustomIcons/Skill';
+import { ThingIcon } from '../../components/CustomIcons/Thing';
+import { WaypointIcon } from '../../components/CustomIcons/Waypoint';
+import { ContainerIcon } from '../../components/CustomIcons/Container';
+import { ProcessIcon } from '../../components/CustomIcons/Process';
+import { InputOutputIcon } from '../../components/CustomIcons/InputOutput';
+import { ToolIcon } from '../../components/CustomIcons/Tool';
+import { FixtureIcon } from '../../components/CustomIcons/Fixture';
+import { ZoneIcon } from '../../components/CustomIcons/Zone';
+import { LinkIcon } from '../../components/CustomIcons/Link';
 import {
     FiAlertTriangle,
     FiAlertOctagon,
@@ -20,19 +20,19 @@ import {
   } from "react-icons/fi";
 import { STATUS } from '../Constants';
 
-export const LocationIconStyled = ()=><LocationIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
-export const PrimitiveIconStyled = ()=><PrimitiveIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
-export const MachineIconStyled = ()=><MachineIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
-export const SkillIconStyled = ()=><SkillIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
-export const ThingIconStyled = ()=><ThingIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
-export const WaypointIconStyled = ()=><WaypointIcon style={{color:'white',width:18,height:18,fill:'white'}}/>
-export const ContainerIconStyled = ()=><ContainerIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
-export const ProcessIconStyled = ()=><ProcessIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
-export const InputOutputIconStyled = ()=><InputOutputIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
-export const ToolIconStyled = ()=><ToolIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
-export const FixtureIconStyled = ()=><FixtureIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
-export const ZoneIconStyled = ()=><ZoneIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
-export const LinkIconStyled = ()=><LinkIcon style={{color:'white',width:18,height:17,fill:'white'}}/>
+export const LocationIconStyled = LocationIcon;
+export const PrimitiveIconStyled = PrimitiveIcon;
+export const MachineIconStyled = MachineIcon;
+export const SkillIconStyled = SkillIcon;
+export const ThingIconStyled = ThingIcon;
+export const WaypointIconStyled = WaypointIcon;
+export const ContainerIconStyled = ContainerIcon;
+export const ProcessIconStyled = ProcessIcon;
+export const InputOutputIconStyled = InputOutputIcon;
+export const ToolIconStyled = ToolIcon;
+export const FixtureIconStyled = FixtureIcon;
+export const ZoneIconStyled = ZoneIcon;
+export const LinkIconStyled = LinkIcon;
 
 export const statusIcon = (data) => {
     if ([data.properties?.status,data.refData?.properties?.status].includes(STATUS.FAILED)) {
