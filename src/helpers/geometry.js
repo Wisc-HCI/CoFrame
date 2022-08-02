@@ -2,6 +2,7 @@ import { Quaternion, Vector3, Group, Object3D, Matrix4 } from "three";
 import { DATA_TYPES } from "simple-vp";
 import { REFERENCEABLE_OBJECTS } from "../stores/Constants";
 import { transformToThreeMatrix } from "./conversion";
+import { strip } from "number-precision";
 
 Object3D.DefaultUp.set(0, 0, 1);
 
@@ -51,10 +52,10 @@ const dot = (a, b) => a.map((x, i) => a[i] * b[i]).reduce((m, n) => m + n);
 const outer = (a, b) => a.map((x) => b.map((y) => x * y));
 
 export const quaternionVecToObject = (vec4) => ({
-  w: vec4[0],
-  x: vec4[1],
-  y: vec4[2],
-  z: vec4[3],
+  w: strip(vec4[0]),
+  x: strip(vec4[1]),
+  y: strip(vec4[2]),
+  z: strip(vec4[3]),
 });
 
 export const quaternionFromEuler = (vec3, axes = "szxy") => {

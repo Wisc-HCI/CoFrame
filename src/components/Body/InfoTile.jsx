@@ -22,6 +22,7 @@ import Tile from "../Elements/Tile";
 import { DATA_TYPES } from "simple-vp";
 import actionTypes from "../../stores/typeInfo/action";
 import { stringEquality } from "../../helpers/performance";
+import { Breadcrumbs } from "@mui/material";
 
 export function InfoTile({ maxHeight }) {
   const [frame, primaryColor, focusData, activeFocus, setActiveFocus] =
@@ -197,10 +198,11 @@ export function InfoTile({ maxHeight }) {
       borderWidth={4}
       internalPaddingWidth={10}
       header={
-        <Box direction="row">
+        <Breadcrumbs separator={<FiChevronRight/>}>
           {tabs.map((tab, i) => (
-            <Box key={i} direction="row" align="center" alignContent="center">
+            // <Box key={i} direction="row" align="center" alignContent="center">
               <Button
+              key={i}
                 plain
                 label={tab.title}
                 onClick={() => setActiveFocus(tab.key)}
@@ -214,10 +216,10 @@ export function InfoTile({ maxHeight }) {
                   color: tab.key === activeFocus ? primaryColor : "white",
                 }}
               />
-              {i < tabs.length - 1 && <FiChevronRight />}
-            </Box>
+              // {i < tabs.length - 1 && <FiChevronRight />}
+            // </Box>
           ))}
-        </Box>
+        </Breadcrumbs>
       }
     >
       <div style={{ height: maxHeight - 68, overflowY: "scroll" }}>

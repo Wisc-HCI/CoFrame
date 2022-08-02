@@ -166,7 +166,10 @@ export const Detail = (_) => {
           <Box direction="row" flex />
           <IconButton onClick={clearFocus}><FiX/></IconButton>
         </Box>
-        {item.properties.status === STATUS.PENDING && <LinearProgress variant="indeterminate" color="primaryColor" />}
+        <Box height='5px'>
+          {item.properties.status === STATUS.PENDING && <LinearProgress variant="indeterminate" color="primaryColor" />}
+        </Box>
+        
         <Box
           flex
           overflow="auto"

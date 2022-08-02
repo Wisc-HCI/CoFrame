@@ -12,62 +12,101 @@ import {
   OutlinedInput,
   InputLabel,
   FormControl,
+  Stack,
+  Divider,
+  Input
 } from "@mui/material";
-import { IMaskInput } from "react-imask";
+// import { IMaskInput } from "react-imask";
 import shallow from "zustand/shallow";
+import { strip } from "number-precision";
 
-const EulerMaskInput = forwardRef((props, ref) => {
-  const { onChange, ...other } = props;
-  return (
-    <IMaskInput
-      {...other}
-      mask="RR , PP , YY"
-      // overwrite
-      // lazy
-      blocks={{
-        RR: {
-          mask: Number,
-          radix: ".",
-          scale: 1,
-          signed: true,
-          min: -360,
-          max: 360,
-        },
-        PP: {
-          mask: Number,
-          radix: ".",
-          scale: 1,
-          signed: true,
-          min: -360,
-          max: 360,
-        },
-        YY: {
-          mask: Number,
-          radix: ".",
-          scale: 1,
-          signed: true,
-          min: -360,
-          max: 360,
-        },
-      }}
-      inputRef={ref}
-      onAccept={(value) => {
-        const values = value.split(",").map(Number);
-        console.log(values)
-        const radVec = eulerVecToRadians(values);
-        console.log('RADVEC',radVec)
-        onChange({
-          target: {
-            name: props.name,
-            value: quaternionVecToObject(
-              quaternionFromEuler(eulerVecToRadians(values))
-            ),
-          },
-        });
-      }}
-    />
-  );
-});
+const CompoundInput = forwardRef(
+  ({ onChange, value, disabled, ...other }, ref) => {
+    return (
+      <Stack
+        direction="row"
+        spacing={1}
+        divider={<Divider orientation="vertical" flexItem />}
+      >
+        <Input
+          autoFocus
+          disabled={disabled}
+          disableUnderline
+          className={other.className}
+          label={null}
+          value={strip(value[0])}
+          inputProps={{ step: 1 }}
+          onFocus={other.onFocus}
+          onBlur={other.onBlur}
+          onChange={(e) => {
+            const newVec = [strip(e.target.value), value[1], value[2]];
+            const quaternionObj = quaternionVecToObject(
+              quaternionFromEuler(eulerVecToRadians(newVec))
+            )
+            onChange({
+              target: {
+                name: other.name,
+                value: quaternionObj,
+              },
+            });
+          }}
+          type="number"
+          margin="dense"
+        />
+        <Input
+          disabled={disabled}
+          disableUnderline
+          className={other.className}
+          label={null}
+          value={strip(value[1])}
+          inputProps={{ step: 1 }}
+          onFocus={other.onFocus}
+          onBlur={other.onBlur}
+          onChange={(e) => {
+            const newVec = [value[0], strip(e.target.value), value[2]];
+            const quaternionObj = quaternionVecToObject(
+              quaternionFromEuler(eulerVecToRadians(newVec))
+            )
+            onChange({
+              target: {
+                name: other.name,
+                value: quaternionObj,
+              },
+            });
+          }}
+          type="number"
+          margin="dense"
+        />
+        <Input
+          disabled={disabled}
+          disableUnderline
+          className={other.className}
+          label={null}
+          value={strip(value[2])}
+          inputProps={{ step: 1 }}
+          onFocus={other.onFocus}
+          onBlur={other.onBlur}
+          onChange={(e) => {
+            const newVec = [value[0], value[1], strip(e.target.value)];
+            const quaternionObj = quaternionVecToObject(
+              quaternionFromEuler(eulerVecToRadians(newVec))
+            )
+            onChange({
+              target: {
+                name: other.name,
+                value: quaternionObj,
+              },
+            });
+          }}
+          type="number"
+          margin="dense"
+        />
+      </Stack>
+    );
+  }
+);
+
+
 
 //RPY is Euler
 //XYZW is Quaternion
@@ -82,19 +121,11 @@ const eulerVecToRadians = (vec) => {
 };
 
 function RotationInput(props) {
-  const valueString = useStore(useCallback(state=>{
-    const quatObj = state.programData[props.itemID].properties.rotation;
-    const quatVec = [
-      quatObj.w,
-      quatObj.x,
-      quatObj.y,
-      quatObj.z,
-    ];
-    const euler = eulerVecToDegrees(eulerFromQuaternion(quatVec));
-    return `${euler[0]} , ${euler[1]} , ${euler[2]}`;
-  },[props.itemID]),shallow);
+  const quatObj = props.rotation;
+  const quatVec = [quatObj.w, quatObj.x, quatObj.y, quatObj.z];
+  const euler = eulerVecToDegrees(eulerFromQuaternion(quatVec));
   // const euler = eulerVecToDegrees(eulerFromQuaternion(quat));
-  console.log('rerendering with valuestring:',valueString)
+  // console.log('rerendering with valuestring:',valueString)
 
   const updateItemSimpleProperty = useStore(
     (state) => state.updateItemSimpleProperty
@@ -108,28 +139,27 @@ function RotationInput(props) {
   function handleClose() {
     addFocusItem(props.itemID, true);
   }
-  
+
   // console.log('EULER',{euler,string:`${euler[0]} , ${euler[1]} , ${euler[2]}`})
 
   return (
-    <FormControl>
-      <InputLabel htmlFor="outlined-position-vector" color="primaryColor">
+    <FormControl >
+      <InputLabel htmlFor="outlined-rotation-vector" color="primaryColor" shrink>
         Rotation
       </InputLabel>
       <OutlinedInput
-        id="outlined-position-vector"
+        notched
+        id="outlined-rotation-vector"
         label="Position"
         color="primaryColor"
         disabled={props.disabled || props.mode === "translate"}
-        value={valueString}
-        inputComponent={EulerMaskInput}
+        value={euler}
+        inputComponent={CompoundInput}
         onChange={(e) =>
-          updateItemSimpleProperty(
-            props.itemID,
-            "rotation",
-            e.target.value
-          )
+          updateItemSimpleProperty(props.itemID, "rotation", e.target.value)
         }
+        inputProps={{shrink:true}}
+        margin='dense'
         endAdornment={
           <InputAdornment position="end">
             <IconButton

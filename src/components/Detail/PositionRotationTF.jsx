@@ -34,7 +34,7 @@ function PositionRotationTF(props) {
                         <PositionInput itemID={props.itemID} position={props.position} prevID = {props.prevID} mode={mode} disabled={props.disabled}/>
                     </Box>
                     <Box>
-                        <RotationInput itemID={props.itemID} prevID = {props.prevID} mode={mode} disabled={props.disabled}/>
+                        <RotationInput itemID={props.itemID} rotation={props.rotation} prevID = {props.prevID} mode={mode} disabled={props.disabled}/>
                     </Box>
                         
                 </Box>

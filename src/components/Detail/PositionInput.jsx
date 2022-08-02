@@ -7,36 +7,64 @@ import {
   OutlinedInput,
   InputLabel,
   FormControl,
+  Input,
+  Divider,
+  Stack,
 } from "@mui/material";
-import { IMaskInput } from "react-imask";
-import { round } from "number-precision";
+import { strip } from "number-precision";
 
-const Vector3MaskInput = forwardRef((props, ref) => {
-  const { onChange, ...other } = props;
-  return (
-    <IMaskInput
-      {...other}
-      mask="XX , YY , ZZ"
-      // overwrite
-      // lazy
-      blocks={{
-        XX: { mask: Number, radix: ".", scale: 3, signed: true },
-        YY: { mask: Number, radix: ".", scale: 3, signed: true },
-        ZZ: { mask: Number, radix: ".", scale: 3, signed: true },
-      }}
-      inputRef={ref}
-      onAccept={(value) => {
-        const values = value.split(",").map(Number);
-        onChange({
-          target: {
-            name: props.name,
-            value: { x: values[0], y: values[1], z: values[2] },
-          },
-        });
-      }}
-    />
-  );
-});
+
+const CompoundInput = forwardRef(
+  ({ onChange, value, disabled, ...other }, ref) => {
+    return (
+      <Stack direction="row" spacing={1} ref={ref} divider={<Divider orientation="vertical" flexItem />}>
+        <Input
+          disabled={disabled}
+          disableUnderline
+          className={other.className}
+          label={null}
+          value={value[0]}
+          inputProps={{step:0.1}}
+          onFocus={other.onFocus}
+          onBlur={other.onBlur}
+          onChange={(e)=>{onChange({target:{name:other.name,value:{x:strip(e.target.value),y:value[1],z:value[2]}}})}}
+          type="number"
+          margin="dense"
+        />
+        <Input
+          disabled={disabled}
+          disableUnderline
+          className={other.className}
+          label={null}
+          value={value[1]}
+          inputProps={{step:0.1}}
+          onFocus={other.onFocus}
+          onBlur={other.onBlur}
+          onChange={(e)=>{onChange({target:{name:other.name,value:{x:value[0],y:strip(e.target.value),z:value[2]}}})}}
+          type="number"
+          margin="dense"
+        />
+        <Input
+          disabled={disabled}
+          disableUnderline
+          className={other.className}
+          label={null}
+          value={value[2]}
+          inputProps={{step:0.1}}
+          onFocus={other.onFocus}
+          onBlur={other.onBlur}
+          onChange={(e)=>{onChange({target:{name:other.name,value:{x:value[0],y:value[1],z:strip(e.target.value)}}})}}
+          type="number"
+          margin="dense"
+        />
+      </Stack>
+    );
+  }
+);
+
+// function PositionInput({ itemID, disabled, mode }) {
+//   return <Card variant='outline'></Card>;
+// }
 
 function PositionInput(props) {
   const updateItemSimpleProperty = useStore(
@@ -54,29 +82,30 @@ function PositionInput(props) {
 
   return (
     <FormControl>
-      <InputLabel htmlFor="outlined-position-vector" color="primaryColor">
+      <InputLabel htmlFor="outlined-position-vector" color="primaryColor" shrink>
         Position
       </InputLabel>
       <OutlinedInput
+        notched
         id="outlined-position-vector"
         label="Position"
         color="primaryColor"
-        disabled={props.disabled || props.mode === 'rotate'}
-        value={`${round(props.position.x,3)} , ${round(props.position.y,3)} , ${round(props.position.z,3)}`}
-        inputComponent={Vector3MaskInput}
+        disabled={props.disabled || props.mode === "rotate"}
+        value={[props.position.x, props.position.y, props.position.z]}
+        inputComponent={CompoundInput}
         onChange={(e) =>
           updateItemSimpleProperty(props.itemID, "position", e.target.value)
         }
         endAdornment={
           <InputAdornment position="end">
             <IconButton
-              disabled={props.disabled || props.mode === 'rotate'}
-              color={props.mode === 'translate' ? 'primaryColor' : 'inherit'}
+              disabled={props.disabled || props.mode === "rotate"}
+              color={props.mode === "translate" ? "primaryColor" : "inherit"}
               aria-label="toggle password visibility"
-              onClick={props.mode === 'translate' ? handleClose : buttonClick}
+              onClick={props.mode === "translate" ? handleClose : buttonClick}
               // onMouseDown={open ? handleClose : buttonClick}
             >
-              {props.mode === 'translate' ? <FiSave/> : <FiEdit2/>}
+              {props.mode === "translate" ? <FiSave /> : <FiEdit2 />}
             </IconButton>
           </InputAdornment>
         }
