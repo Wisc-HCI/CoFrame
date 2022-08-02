@@ -21,56 +21,56 @@ import { getIssueInfo } from "../ContextualInfo/Issue";
 import Tile from "../Elements/Tile";
 import { DATA_TYPES } from "simple-vp";
 import actionTypes from "../../stores/typeInfo/action";
+import { stringEquality } from "../../helpers/performance";
 
 export function InfoTile({ maxHeight }) {
-  const [
-    frame,
-    primaryColor,
-    focusData,
-    activeFocus,
-    setActiveFocus,
-  ] = useStore((state) => {
-    let focusData = state.focus
-      .map((f) => {
-        if (state.programData[f]) {
-          return state.programData[f];
-        } else if (state.issues[f]) {
-          return state.issues[f];
+  const [frame, primaryColor, focusData, activeFocus, setActiveFocus] =
+    useStore((state) => {
+      let focusData = state.focus
+        .map((f) => {
+          if (state.programData[f]) {
+            return state.programData[f];
+          } else if (state.issues[f]) {
+            return state.issues[f];
+          } else {
+            return null;
+          }
+        })
+        .filter((d) => d !== null);
+
+      let programData = null;
+      Object.values(state.programData).some((d) => {
+        if (d.dataType === DATA_TYPES.INSTANCE && d.type === "programType") {
+          programData = d;
+          return true;
         } else {
-          return null;
+          return false;
         }
-      })
-      .filter((d) => d !== null);
+      });
 
-    let programData = null;
-    Object.values(state.programData).some((d) => {
-      if (d.dataType === DATA_TYPES.INSTANCE && d.type === "programType") {
-        programData = d;
-        return true;
-      } else {
-        return false;
+      if (focusData.length === 0) {
+        focusData = [programData];
       }
-    });
 
-    if (focusData.length === 0) {
-      focusData = [programData];
-    }
-
-    return [
-      state.frame,
-      state.primaryColor,
-      focusData,
-      state.activeFocus,
-      state.setActiveFocus,
-    ];
-  }, shallow);
+      return [
+        state.frame,
+        state.primaryColor,
+        focusData,
+        state.activeFocus,
+        state.setActiveFocus,
+      ];
+    }, stringEquality);
 
   // const [currentTab, setCurrentTab] = useState(focusData.length-1);
 
   let tabs = focusData.map((focusItem, i) => {
     if (focusItem.code) {
       // Is an issue
-      return { title: focusItem.title, key: focusItem.id, contents: getIssueInfo({frame, primaryColor, focusItem}) };
+      return {
+        title: focusItem.title,
+        key: focusItem.id,
+        contents: getIssueInfo({ frame, primaryColor, focusItem }),
+      };
     } else if (focusItem.type !== undefined) {
       let contents = <div>DATA CONTENT</div>;
       if (focusItem.type === "programType") {

@@ -1,100 +1,87 @@
-import {React,useState} from 'react';
-import useStore from '../../stores/Store';
-import { NumberInput } from '../Elements/NumberInput';
-import { Box, DropButton, Text, Button } from "grommet";
-import { FormEdit } from "grommet-icons";
-import {FiX } from 'react-icons/fi';
+import React, { forwardRef } from "react";
+import useStore from "../../stores/Store";
+import { FiEdit2, FiSave } from "react-icons/fi";
+import {
+  IconButton,
+  InputAdornment,
+  OutlinedInput,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
+import { IMaskInput } from "react-imask";
+import { round } from "number-precision";
+
+const Vector3MaskInput = forwardRef((props, ref) => {
+  const { onChange, ...other } = props;
+  return (
+    <IMaskInput
+      {...other}
+      mask="XX , YY , ZZ"
+      // overwrite
+      // lazy
+      blocks={{
+        XX: { mask: Number, radix: ".", scale: 3, signed: true },
+        YY: { mask: Number, radix: ".", scale: 3, signed: true },
+        ZZ: { mask: Number, radix: ".", scale: 3, signed: true },
+      }}
+      inputRef={ref}
+      onAccept={(value) => {
+        const values = value.split(",").map(Number);
+        onChange({
+          target: {
+            name: props.name,
+            value: { x: values[0], y: values[1], z: values[2] },
+          },
+        });
+      }}
+    />
+  );
+});
 
 function PositionInput(props) {
-  let minMax = [-10, 10];
-  const updateItemPositionProperty = useStore(state => state.updateItemPositionProperty);
-  const addFocusItem = useStore(state => state.addFocusItem);
-  const [open,setOpen] = useState(false);
+  const updateItemSimpleProperty = useStore(
+    (state) => state.updateItemSimpleProperty
+  );
+  const addFocusItem = useStore((state) => state.addFocusItem);
 
-  function buttonClick(){
+  function buttonClick() {
     addFocusItem("translate", true);
-    setOpen(!open);
   }
 
-  function handleClose(){
+  function handleClose() {
     addFocusItem(props.itemID, true);
-    setOpen(!open);
   }
-
-  
 
   return (
-    <Box round="xsmall"
-      background="black"
-      pad="small"
-      width="100%"
-      wrap = {true}
-    >
-      <Box>
-
-      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <Text style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Position:</Text>
-        </div>
-
-        <div >
-          <DropButton
-            primary
-            label="Edit"
-            icon={<FormEdit />}
-            dropAlign={{ right: 'right', top: "bottom" }}
-            dropProps={{ elevation: 'none', round: "xsmall" }}
-            onOpen={buttonClick}
-            open = {open}
-            dropContent={
-              <div>
-                <Box round="xsmall" background="grey" border={{ color: 'white', size: 'xsmall' }} width="small" direction='column' elevation="none" pad="xsmall" justify='center'>
-                  <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
-                    <Text weight="bolder" style={{ color: "red", paddingRight: "7%" }}>X</Text>
-                    <NumberInput
-                      min={minMax[0]}
-                      max={minMax[1]}
-                      value={props.position.x}
-                      onChange={(value) => updateItemPositionProperty(props.itemID, 'x', value)}
-                    />
-                  </Box>
-
-                  <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
-                    <Text weight="bolder" style={{ color: "lime", paddingRight: "7%" }}>Y</Text>
-                    <NumberInput
-                      min={minMax[0]}
-                      max={minMax[1]}
-                      value={props.position.y}
-                      onChange={(value) => updateItemPositionProperty(props.itemID, 'y', value)}
-
-                    />
-                  </Box>
-
-                  <Box direction='row' elevation="none" pad="xsmall" justify='center' width="small">
-                    <Text weight="bolder" style={{ color: "blue", paddingRight: "7%" }}>Z</Text>
-                    <NumberInput
-                      min={minMax[0]}
-                      max={minMax[1]}
-                      value={props.position.z}
-                      onChange={(value) => updateItemPositionProperty(props.itemID, 'z', value)}
-                    />
-                  </Box>
-                
-                  <Button onClick = {handleClose} size = "small" margin = "xxsmall" primary icon={<FiX />} label="Close" color="#ab4646" />
-                  
-                  
-                  
-                </Box>
-              </div>
-            }
-          />
-        </div>
-      </div>
-      </Box>
-    </Box>
-
-
-
-  )
+    <FormControl>
+      <InputLabel htmlFor="outlined-position-vector" color="primaryColor">
+        Position
+      </InputLabel>
+      <OutlinedInput
+        id="outlined-position-vector"
+        label="Position"
+        color="primaryColor"
+        disabled={props.disabled || props.mode === 'rotate'}
+        value={`${round(props.position.x,3)} , ${round(props.position.y,3)} , ${round(props.position.z,3)}`}
+        inputComponent={Vector3MaskInput}
+        onChange={(e) =>
+          updateItemSimpleProperty(props.itemID, "position", e.target.value)
+        }
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              disabled={props.disabled || props.mode === 'rotate'}
+              color={props.mode === 'translate' ? 'primaryColor' : 'inherit'}
+              aria-label="toggle password visibility"
+              onClick={props.mode === 'translate' ? handleClose : buttonClick}
+              // onMouseDown={open ? handleClose : buttonClick}
+            >
+              {props.mode === 'translate' ? <FiSave/> : <FiEdit2/>}
+            </IconButton>
+          </InputAdornment>
+        }
+      />
+    </FormControl>
+  );
 }
-export default (PositionInput);
+export default PositionInput;

@@ -4,12 +4,11 @@ import LHandleFile from './HandleL.glb';
 export default function Model(props) {
   const { nodes, materials } = useGLTF(LHandleFile);
   return [
-      { type: 'group', rotation:[Math.PI,0,0], children: [
+      { type: 'group', rotation:[Math.PI,0,0], scale:[1,1,1], children: [
         {
             type:'raw',
             geometry:nodes.LHandle.geometry,
-            material:materials.lmaterial,
-            scale:[5,5,5]
+            material:materials.lmaterial
           }
       ]}
     ]

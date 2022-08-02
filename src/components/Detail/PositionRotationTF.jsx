@@ -3,29 +3,42 @@ import React from 'react';
 import { Box } from "grommet";
 import PositionInput from './PositionInput';
 import RotationInput from './RotationInput';
+import { Card, CardHeader } from '@mui/material';
+import useStore from '../../stores/Store';
+import shallow from 'zustand/shallow';
 
 function PositionRotationTF(props) {
     
-
+    const mode = useStore(state=>{
+        if (state.focus[state.focus.length-1] === 'translate') {
+            return 'translate'
+        } else if (state.focus[state.focus.length-1] === 'rotate') {
+            return 'rotate'
+        } else {
+            return null
+        }
+    },shallow)
 
     return (
         <>
-            <Box
-                round="xsmall"
+            <Card
+                raised
+                // variant='outlined'
                 background="#303030"
-                pad="small" wrap = {true}>
+                sx={{padding:1}}>
+                    <CardHeader title='Placement' titleTypographyProps={{variant:'subtitle1'}}/>
                 <Box direction='column' gap='small' >
-                    <b style={{ color: 'rgba(255, 255, 255, 0.85)'}} >Placement : </b>
+                    {/* <b style={{ color: 'rgba(255, 255, 255, 0.85)'}} >Placement : </b> */}
                     
                     <Box>
-                        <PositionInput itemID={props.itemID} position={props.position} prevID = {props.prevID} />
+                        <PositionInput itemID={props.itemID} position={props.position} prevID = {props.prevID} mode={mode} disabled={props.disabled}/>
                     </Box>
                     <Box>
-                        <RotationInput rotation={props.rotation} itemID={props.itemID} prevID = {props.prevID}/>
+                        <RotationInput itemID={props.itemID} prevID = {props.prevID} mode={mode} disabled={props.disabled}/>
                     </Box>
                         
                 </Box>
-            </Box>
+            </Card>
         </>
     )
 

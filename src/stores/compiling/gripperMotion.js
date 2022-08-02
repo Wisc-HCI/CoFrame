@@ -3,7 +3,7 @@ import { range, mapValues } from 'lodash';
 import { findLastSatisfiedFromReference } from "../helpers";
 import { eventsToStates, statesToSteps } from ".";
 
-export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
+export const gripperMotionCompiler = ({ data, properties, memo }) => {
     
     const robot = Object.values(memo).filter(v => v.type === 'robotAgentType')[0];
     let status = STATUS.VALID;
@@ -16,6 +16,8 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
             steps: []
         }
     }
+
+    const thing = properties.thing;
     const duration = 1000 * Math.abs(delta) / properties.speed;
     const changePerTime = delta / duration;
     const closing = properties.positionEnd < properties.positionStart;
@@ -41,7 +43,7 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
         })
         innerSteps.push({
             stepType: STEP_TYPE.SCENE_UPDATE,
-            data: { links: frameData, thing: properties.thing.id, gripperValues, closing },
+            data: { links: frameData, thing, gripperValues, closing },
             effect: {},
             source: data.id,
             delay:time
@@ -51,14 +53,14 @@ export const gripperMotionCompiler = ({ data, properties, path, memo }) => {
     const initialStep = {
         stepType: STEP_TYPE.ACTION_START,
         effect:{[robot.id]: { busy: true }},
-        data: { agent: 'robot', id: data.id, closing },
+        data: { agent: 'robot', id: data.id, closing, thing },
         source: data.id,
         delay: 0
     }
     const finalStep = {
         stepType: STEP_TYPE.ACTION_END,
         effect:{[robot.id]: { busy: false }},
-        data: { agent: 'robot', id: data.id, closing },
+        data: { agent: 'robot', id: data.id, closing, thing },
         source: data.id,
         delay: duration
     }

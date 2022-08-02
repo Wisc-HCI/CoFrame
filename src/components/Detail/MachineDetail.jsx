@@ -12,7 +12,7 @@ export const MachineProcessList = ({ machineId }) => {
   const addFocusItem = useStore(state => state.addFocusItem);
 
   const processList = useStore(state => {
-    console.log("state.programData" , state.programData);
+    // console.log("state.programData" , state.programData);
     Object.values(state.programData).filter(value => value && value.properties && value.type === 'processType' && 
     value.properties.machine === machineId
     )

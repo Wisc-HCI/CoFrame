@@ -11,6 +11,8 @@ import { Detail } from "./components/Detail";
 import { SettingsModal } from "./components/Settings";
 import TimelineGraph from "./components/TimelineGraph";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from '@mui/material/CssBaseline';
+
 // import useMeasure from 'react-use-measure';
 
 // import { CoFrameIcon } from "./components/Icon";
@@ -41,24 +43,24 @@ export default function App() {
   // });
 
   const mainVariants = {
-    closedDrawer: {height: "100vh"},
-    openDrawer: {height: "80vh"}
-  }
+    closedDrawer: { height: "100vh" },
+    openDrawer: { height: "80vh" },
+  };
 
   const drawerVariants = {
-    closedDrawer: {height: "0vh"},
-    openDrawer: {height: "20vh"}
-  }
+    closedDrawer: { height: "0vh" },
+    openDrawer: { height: "20vh" },
+  };
 
   const leftVariants = {
-    visible: {flex:45},
-    hidden: {flex:0}
-  }
+    visible: { flex: 45 },
+    hidden: { flex: 0 },
+  };
 
   const rightVariants = {
-    visible: {flex:55},
-    hidden: {flex:0}
-  }
+    visible: { flex: 55 },
+    hidden: { flex: 0 },
+  };
 
   const theme = getTheme(primaryColor);
   const muiTheme = createTheme({
@@ -76,6 +78,7 @@ export default function App() {
 
   return (
     <Grommet full theme={theme}>
+      <CssBaseline/>
       {/* Main container */}
       <ThemeProvider theme={muiTheme}>
         <div
@@ -87,9 +90,8 @@ export default function App() {
           }}
         >
           <motion.div
-            layout
             variants={mainVariants}
-            animate={visibleSteps ? 'openDrawer' : 'closedDrawer'}
+            animate={visibleSteps ? "openDrawer" : "closedDrawer"}
             style={{
               flexDirection: "row",
               display: "flex",
@@ -100,9 +102,12 @@ export default function App() {
             </div>
 
             <motion.div
-            layout
-            variants={leftVariants}
-            animate={viewMode === "default" || viewMode === "sim" ? 'visible' : 'hidden'}
+              variants={leftVariants}
+              animate={
+                viewMode === "default" || viewMode === "sim"
+                  ? "visible"
+                  : "hidden"
+              }
               style={{
                 overflow: "hidden",
               }}
@@ -110,9 +115,13 @@ export default function App() {
               <SimulatorTile visible />
             </motion.div>
             <motion.div
-            layout
-            variants={rightVariants}
-            animate={viewMode === "default" || viewMode === "program" ? 'visible' : 'hidden'}
+              layout
+              variants={rightVariants}
+              animate={
+                viewMode === "default" || viewMode === "program"
+                  ? "visible"
+                  : "hidden"
+              }
               style={{
                 overflow: "hidden",
               }}
@@ -121,9 +130,8 @@ export default function App() {
             </motion.div>
           </motion.div>
           <motion.div
-          layout
             variants={drawerVariants}
-            animate={visibleSteps ? 'openDrawer' : 'closedDrawer'}
+            animate={visibleSteps ? "openDrawer" : "closedDrawer"}
             style={{
               backgroundColor: "#444444",
               borderTop: `5px solid ${primaryColor}`,
@@ -131,11 +139,12 @@ export default function App() {
           >
             <ParentSize>
               {({ width, height }) => (
+                visibleSteps ?
                 <TimelineGraph
                   width={width}
                   height={height - 10}
                   visible={visibleSteps}
-                />
+                /> : null
               )}
             </ParentSize>
           </motion.div>

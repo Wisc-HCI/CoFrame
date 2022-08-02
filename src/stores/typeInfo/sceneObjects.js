@@ -142,7 +142,7 @@ const zone = {
     scale: {
       name: "Scale",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: { x: null, y: null, z: null },
+      default: { x: 1, y: 1, z: 1 },
       isList: false,
       fullWidth: true,
     },
@@ -175,6 +175,12 @@ const tool = {
     ],
   },
   properties: {
+    graspPoints: {
+      name: 'Grasp Points',
+      accepts: ['graspPointType'],
+      default: [],
+      isList: true
+    },
     safe: {
       name: "Safe",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,

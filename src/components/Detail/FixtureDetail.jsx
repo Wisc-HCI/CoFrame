@@ -34,7 +34,7 @@ export const FixtureItem = ({ fixtureID }) => {
                 onClick={() => {
                     addFocusItem(fixtureID, true);
                 }}>
-                <Box>
+                <Box width='320px'>
                 <ExternalBlock
                     store={useStore}
                     data={fixtureRef}
