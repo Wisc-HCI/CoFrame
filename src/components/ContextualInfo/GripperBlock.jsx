@@ -5,7 +5,7 @@ import { Glossary } from "./Glossary";
 
 export function getGripperInfo({ frame, primaryColor, focusItem }) {
   const content = (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Gripper</h3>
         {focusItem.properties.description}
@@ -37,7 +37,7 @@ export function getGripperInfo({ frame, primaryColor, focusItem }) {
           object.
         </Blurb>
       )}
-    </div>
+    </>
   );
   return content;
 }

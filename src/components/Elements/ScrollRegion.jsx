@@ -45,10 +45,10 @@ const StyledScrollThumb = styled(ScrollArea.Thumb)`
 
 export const ScrollRegion = ({
     children,
-    horizontal,
-    vertical,
-    height,
-    width,
+    horizontal=false,
+    vertical=true,
+    height='100%',
+    width='100%',
   }) => (
     <StyledScrollArea $containerHeight={height} $containerWidth={width}>
       <StyledViewport>{children}</StyledViewport>

@@ -5,7 +5,7 @@ import { Glossary } from "./Glossary";
 
 export function getRobotAgentInfo({ frame, primaryColor, focusItem }) {
   return (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Robot Agent</h3>
         {focusItem.properties.description}
@@ -34,6 +34,6 @@ export function getRobotAgentInfo({ frame, primaryColor, focusItem }) {
           carry.
         </Blurb>
       )}
-    </div>
+    </>
   );
 }

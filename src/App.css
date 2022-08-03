@@ -1,4 +1,47 @@
-.App {
+.reflex-container .reflex-splitter {
+  background-color: #222222
+}
+
+.reflex-container .reflex-splitter.active {
+  background-color: #444444
+}
+
+.reflex-container .reflex-splitter:hover {
+  background-color: #444444
+}
+
+.reflex-container.vertical .reflex-splitter {
+  border-right: 0px solid transparent;
+  border-left: 0px solid transparent
+}
+
+.reflex-container.vertical .reflex-splitter.active {
+  border-right: 0px solid transparent;
+  border-left: 0px solid transparent
+}
+
+.reflex-container.vertical .reflex-splitter:hover {
+  border-right: 0px solid transparent;
+  border-left: 0px solid transparent
+}
+
+.reflex-container.horizontal .reflex-splitter {
+  border-top: 0px solid transparent;
+  border-bottom: 0px solid transparent
+}
+
+.reflex-container.horizontal .reflex-splitter.active {
+  border-top: 0px solid transparent;
+  border-bottom: 0px solid transparent
+}
+
+.reflex-container.horizontal .reflex-splitter:hover {
+  border-top: 0px solid transparent;
+  border-bottom: 0px solid transparent
+}
+
+
+/* .App {
   text-align: center;
 }
 
@@ -39,4 +82,4 @@
 
 button {
   font-size: calc(10px + 2vmin);
-}
+} */

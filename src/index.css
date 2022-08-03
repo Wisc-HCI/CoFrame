@@ -9,6 +9,7 @@ body {
     overflow: hidden;
     min-height: 900;
     min-width: 1900;
+    background-color: black;
 }
 
 .ant-popover-placement-right > .ant-popover-content > .ant-popover-arrow, .ant-popover-placement-rightTop > .ant-popover-content > .ant-popover-arrow, .ant-popover-placement-rightBottom > .ant-popover-content > .ant-popover-arrow {

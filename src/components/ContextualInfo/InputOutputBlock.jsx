@@ -4,7 +4,7 @@ import { Glossary } from "./Glossary";
 
 export function getInputOutputInfo({ frame, primaryColor, focusItem }) {
   return (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Input/Output</h3>
         {focusItem.properties.description}
@@ -31,6 +31,6 @@ export function getInputOutputInfo({ frame, primaryColor, focusItem }) {
                         
                     </Blurb>
                 )} */}
-    </div>
+    </>
   );
 }

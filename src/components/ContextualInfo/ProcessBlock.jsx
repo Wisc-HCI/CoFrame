@@ -5,7 +5,7 @@ import { Glossary } from "./Glossary";
 
 export function getProcessInfo({ frame, primaryColor, focusItem }) {
   return (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Process</h3>
         {focusItem.properties.description}
@@ -32,6 +32,6 @@ export function getProcessInfo({ frame, primaryColor, focusItem }) {
           outputs until the process is finished and the time is up.
         </Blurb>
       )}
-    </div>
+    </>
   );
 }

@@ -23,6 +23,7 @@ import { DATA_TYPES } from "simple-vp";
 import actionTypes from "../../stores/typeInfo/action";
 import { stringEquality } from "../../helpers/performance";
 import { Breadcrumbs } from "@mui/material";
+import { ScrollRegion } from "../Elements/ScrollRegion";
 
 export function InfoTile({ maxHeight }) {
   const [frame, primaryColor, focusData, activeFocus, setActiveFocus] =
@@ -190,13 +191,14 @@ export function InfoTile({ maxHeight }) {
   //     tabs = tabs.concat(temp);
   // }
 
-  console.log(tabs);
+  // console.log(tabs);
 
   return (
     <Tile
-      style={{ display: "flex", flexDirection: "column", height: maxHeight }}
+      style={{ display: "flex", flexDirection: "column", height: maxHeight,overflow:'hidden' }}
+      borderRadius={0}
       borderWidth={4}
-      internalPaddingWidth={10}
+      internalPaddingWidth={0}
       header={
         <Breadcrumbs separator={<FiChevronRight/>}>
           {tabs.map((tab, i) => (
@@ -222,9 +224,15 @@ export function InfoTile({ maxHeight }) {
         </Breadcrumbs>
       }
     >
-      <div style={{ height: maxHeight - 68, overflowY: "scroll" }}>
-        {tabs[tabIdx] ? tabs[tabIdx].contents : tabs[0].contents}
-      </div>
+      <ScrollRegion vertical height={maxHeight-48}>
+        <Box fill pad={{right:'small',left:'xsmall',top:'xsmall',bottom:'xsmall'}}>
+          {tabs[tabIdx] ? tabs[tabIdx].contents : tabs[0].contents}
+        </Box>
+        
+      </ScrollRegion>
+      {/* <div style={{ height: maxHeight - 68, overflowY: "scroll" }}>
+        
+      </div> */}
     </Tile>
   );
 }

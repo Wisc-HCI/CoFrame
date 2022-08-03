@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import frameStyles from "../frameStyles";
 import { mapValues } from "lodash";
 
-const FRAMES = Object.keys(frameStyles.labels);
+// const FRAMES = Object.keys(frameStyles.labels);
 
 const GROUPS = {
   safety: (
@@ -99,7 +99,7 @@ const Icon = ({ onChange, active, frame, width }) => {
 export const FrameTabBar = ({
   active,
   onChange,
-  width = 340,
+  width = 335,
   backgroundColor = "black",
 }) => {
   // const inactiveIconStyle
@@ -110,7 +110,7 @@ export const FrameTabBar = ({
     x: keys.indexOf(k)*width/4,
   }));
 
-  console.log(variants)
+  // console.log(variants)
 
   // const spring = useSpring(0);
   // const bcolor = useTransform(
@@ -153,7 +153,7 @@ export const FrameTabBar = ({
           // backgroundColor: bcolor,
           width: width / 4,
           position: "absolute",
-          height: "calc(100% - 4pt)",
+          height: 54,
           borderRadius: 4,
         }}
       ></motion.div>

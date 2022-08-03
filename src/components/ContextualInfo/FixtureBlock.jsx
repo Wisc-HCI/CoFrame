@@ -5,7 +5,7 @@ import { Glossary } from "./Glossary";
 
 export function getFixtureInfo({ frame, primaryColor, focusItem }) {
   return (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Fixture</h3>
         {focusItem.properties.description}
@@ -33,6 +33,6 @@ export function getFixtureInfo({ frame, primaryColor, focusItem }) {
                         
                     </Blurb>
                 )} */}
-    </div>
+    </>
   );
 }

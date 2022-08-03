@@ -4,7 +4,7 @@ import { Glossary } from "./Glossary";
 
 export function getProgramInfo({ frame, primaryColor, focusItem }) {
   return (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About the Program</h3>
         {focusItem.properties.description}
@@ -20,12 +20,12 @@ export function getProgramInfo({ frame, primaryColor, focusItem }) {
       {frame === "quality" && (
         <Blurb highlight={primaryColor}>
           <h3 style={{ color: primaryColor }}>Program Quality</h3>
-          Make sure to fully parameterize all
-          <Glossary.Actions primaryColor={primaryColor} />
-          and
-          <Glossary.SkillCalls primaryColor={primaryColor} />
-          in your program. Also, make sure to check all the existing
-          <Glossary.Skills primaryColor={primaryColor} />
+          Make sure to fully parameterize all{" "}
+          <Glossary.Actions primaryColor={primaryColor} />{" "}
+          and{" "}
+          <Glossary.SkillCalls primaryColor={primaryColor} />{" "}
+          in your program. Also, make sure to check all the existing{" "}
+          <Glossary.Skills primaryColor={primaryColor} />{" "}
           for inspiration.
         </Blurb>
       )}
@@ -37,6 +37,6 @@ export function getProgramInfo({ frame, primaryColor, focusItem }) {
           Investment (ROI).
         </Blurb>
       )}
-    </div>
+    </>
   );
 }

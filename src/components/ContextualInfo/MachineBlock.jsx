@@ -4,7 +4,7 @@ import { Glossary } from "./Glossary";
 
 export function getMachineInfo({ frame, primaryColor, focusItem }) {
   const content = (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Machine</h3>
         {focusItem.properties.description}
@@ -25,7 +25,7 @@ export function getMachineInfo({ frame, primaryColor, focusItem }) {
           avoid these zones to avoid collisions.
         </Blurb>
       )}
-    </div>
+    </>
   );
   return content;
 }

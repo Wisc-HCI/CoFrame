@@ -6,7 +6,7 @@ import { Glossary } from "./Glossary";
 export function getLocationInfo({ frame, primaryColor, focusItem }) {
     // console.log('FOCUS DATA',focusData);
   const content = (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Location</h3>
         {focusItem.properties?.description}
@@ -37,7 +37,7 @@ export function getLocationInfo({ frame, primaryColor, focusItem }) {
           waypoints between them for greater control.
         </Blurb>
       )}
-    </div>
+    </>
   );
   return content;
 }

@@ -4,7 +4,7 @@ import { Glossary } from "./Glossary";
 
 export function getSkillInfo({ frame, primaryColor, focusItem }) {
   const content = (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Skill</h3>
         {focusItem.properties.description}
@@ -25,7 +25,7 @@ export function getSkillInfo({ frame, primaryColor, focusItem }) {
           <Glossary.SkillCalls primaryColor={primaryColor} /> in your skill.
         </Blurb>
       )}
-    </div>
+    </>
   );
   return content;
 }

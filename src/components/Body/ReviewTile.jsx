@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button } from "grommet";
+import { Box } from "grommet";
 import { FiRefreshCw } from "react-icons/fi";
 import useStore from "../../stores/Store";
 import shallow from "zustand/shallow";
@@ -7,6 +7,8 @@ import { ReviewSection } from "../Review/ReviewSection";
 import useMeasure from "react-use-measure";
 import { FrameTabBar } from "../FrameTabBar";
 import { ScrollRegion } from "../Elements/ScrollRegion";
+import { stringEquality } from "../../helpers/performance";
+import { Button, BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 // import * as ScrollArea from "@radix-ui/react-scroll-area";
 // import { styled } from "@stitches/react";
 
@@ -109,10 +111,10 @@ export const ReviewTile = (_) => {
         )
       ),
     ],
-    shallow
+    stringEquality
   );
 
-  const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined);
+  const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined,shallow);
 
   const frameIdx = FRAMES.map((frame) => frame.key).indexOf(frameId);
 
@@ -120,37 +122,27 @@ export const ReviewTile = (_) => {
 //   const divStyle = useSpring({ width: "100%", config: config.stiff });
 
   return (
-    <Box ref={ref} direction="column" height='100%' width="100%" pad='xsmall'>
-        <FrameTabBar active={frameId} onChange={setFrame} />
+    <Paper ref={ref} sx={{width:350,borderRadius:0,padding:'5px',backgroundColor:'black'}} elevation={0}>
+        <FrameTabBar active={frameId} onChange={setFrame} width={338} backgroundColor='transparent'/>
         <Box direction="row" flex justify="between" align="center">
           <h3 style={{ margin: "10pt" }}>Review</h3>
           <Button
-            secondary
+            color="primaryColor"
+            variant='outlined'
             size="small"
-            round="none"
-            icon={<FiRefreshCw />}
+            startIcon={<FiRefreshCw />}
             onClick={refresh}
             label="Refresh"
             disabled={isProcessing}
-          ></Button>
+          >Refresh</Button>
         </Box>
-        <ScrollRegion vertical height={bounds.height - 125} width='100%'>
-          <Box direction='column' round='small'>
+        <ScrollRegion vertical height={bounds.height - 125} >
+          <Box direction='column' style={{width:'calc(100% - 6px)'}} round='small' gap='xsmall'>
               {FRAMES[frameIdx].sections.map((section, idx) => (
-                <Box
-                  key={idx}
-                  animation={{ type: "fadeIn", delay: idx * 100 }}
-                  style={{ marginBottom: 5 }}
-                  direction="row"
-                  flex
-                  height="100px"
-                  round='small'
-                >
-                  <ReviewSection sectionId={section} blocked={idx >= blockages[frameIdx]} initialBlocked={idx === blockages[frameIdx]} />
-                </Box>
+                 <ReviewSection key={section} sectionId={section} blocked={idx >= blockages[frameIdx]} initialBlocked={idx === blockages[frameIdx]} />
               ))}
             </Box>
         </ScrollRegion>
-    </Box>
+    </Paper>
   );
 };

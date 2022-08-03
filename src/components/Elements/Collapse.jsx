@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Collapsible, Box } from "grommet";
 import { ExpandCarrot } from "./ExpandCarrot";
+import { IconButton } from "@mui/material";
 
 export default function Collapse({
   defaultOpen,
@@ -45,7 +46,10 @@ export default function Collapse({
             pad={{ right: "small" }}
           >
             {extra}
-            <ExpandCarrot expanded={open} onClick={() => setOpen(!open)} />
+            <IconButton onClick={() => setOpen(!open)} size='small'>
+              <ExpandCarrot expanded={open}  />
+            </IconButton>
+            
           </Box>
         </Box>
       )}

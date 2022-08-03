@@ -3,70 +3,50 @@ import React from "react";
 import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
-import { Grommet } from "grommet";
+import { Grommet, Box } from "grommet";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import { TIMELINE_TYPES } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
 import { Detail } from "./components/Detail";
 import { SettingsModal } from "./components/Settings";
 import TimelineGraph from "./components/TimelineGraph";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from '@mui/material/CssBaseline';
-
-// import useMeasure from 'react-use-measure';
-
-// import { CoFrameIcon } from "./components/Icon";
-
+import {
+  ThemeProvider,
+  createTheme,
+  // styled,
+  // useTheme,
+} from "@mui/material/styles";
+import { Drawer } from "@mui/material";
+import { ReflexContainer, ReflexSplitter, ReflexElement } from "react-reflex";
+import useMeasure from 'react-use-measure';
 import useStore from "./stores/Store";
-
-// import { useSpring, animated } from "@react-spring/web";
-import { motion } from "framer-motion";
 import { getTheme } from "./theme";
+import "react-reflex/styles.css";
+import "./App.css";
+import shallow from "zustand/shallow";
 
 export default function App() {
-  const primaryColor = useStore((state) => state.primaryColor);
-  const viewMode = useStore((state) => state.viewMode);
+  const primaryColor = useStore((state) => state.primaryColor,shallow);
+  const viewMode = useStore((state) => state.viewMode,shallow);
   const visibleSteps = useStore((state) =>
     state.focus.some((focusItem) =>
       TIMELINE_TYPES.includes(state.programData[focusItem]?.type)
-    )
+    ),shallow
   );
-  //   console.warn("visibleSteps", visibleSteps);
-  //   const bodyStyle = useSpring({ height: visibleSteps ? "80vh" : "100vh" });
-  // const mainStyle = useSpring({ height: visibleSteps ? "80vh" : "100vh" });
-  // const drawerStyle = useSpring({ height: visibleSteps ? "20vh" : "0vh" });
-  // const leftStyle = useSpring({
-  //   flex: viewMode === "default" || viewMode === "sim" ? 45 : 0,
-  // });
-  // const rightStyle = useSpring({
-  //   flex: viewMode === "default" || viewMode === "program" ? 55 : 0,
-  // });
+  const setViewMode = useStore((state) => state.setViewMode,shallow);
 
-  const mainVariants = {
-    closedDrawer: { height: "100vh" },
-    openDrawer: { height: "80vh" },
-  };
-
-  const drawerVariants = {
-    closedDrawer: { height: "0vh" },
-    openDrawer: { height: "20vh" },
-  };
-
-  const leftVariants = {
-    visible: { flex: 45 },
-    hidden: { flex: 0 },
-  };
-
-  const rightVariants = {
-    visible: { flex: 55 },
-    hidden: { flex: 0 },
-  };
+  const [editorRef,editorBounds] = useMeasure();
+  const [simRef,simBounds] = useMeasure();
+  
 
   const theme = getTheme(primaryColor);
   const muiTheme = createTheme({
     palette: {
       mode: "dark",
       primaryColor: {
+        main: primaryColor,
+      },
+      primary: {
         main: primaryColor,
       },
       quiet: {
@@ -76,9 +56,18 @@ export default function App() {
     },
   });
 
+  // const programRef = useRef();
+  // const simulationRef = useRef();
+
+  // const [open, setOpen] = useState(false);
+  // console.log(viewMode);
+
+  const showSim = viewMode === "default" || viewMode === "sim";
+  const showEditor = viewMode === "default" || viewMode === "program";
+
   return (
     <Grommet full theme={theme}>
-      <CssBaseline/>
+      {/* <CssBaseline/> */}
       {/* Main container */}
       <ThemeProvider theme={muiTheme}>
         <div
@@ -89,70 +78,138 @@ export default function App() {
             position: "fixed",
           }}
         >
-          <motion.div
-            variants={mainVariants}
-            animate={visibleSteps ? "openDrawer" : "closedDrawer"}
-            style={{
-              flexDirection: "row",
-              display: "flex",
-            }}
-          >
-            <div style={{ width: 350, height: "100%" }}>
-              <ReviewTile />
-            </div>
+          {/* <Main open={open}> */}
+          <Box fill direction="row" style={{paddingBottom:visibleSteps?'20vh':0}}>
+            {/* <Box>
+              <Box onClick={() => setOpen(!open)}>Bottom</Box>
+            </Box> */}
+            <ReviewTile />
+            <ReflexContainer orientation="vertical">
+              {showSim && (
+                <ReflexElement
+                  style={{}}
+                  // minSize={200}
+                  onStopResize={(e) => {
+                    if (simBounds.width / editorBounds.width < 0.20) {
+                      console.log('setting to program',e)
+                      setViewMode("program");
+                    }
+                  }}
+                >
+                  <SimulatorTile ref={simRef}/>
+                </ReflexElement>
+              )}
+              {viewMode === "default" && <ReflexSplitter />}
 
-            <motion.div
-              variants={leftVariants}
-              animate={
-                viewMode === "default" || viewMode === "sim"
-                  ? "visible"
-                  : "hidden"
-              }
-              style={{
-                overflow: "hidden",
-              }}
-            >
-              <SimulatorTile visible />
-            </motion.div>
-            <motion.div
-              layout
-              variants={rightVariants}
-              animate={
-                viewMode === "default" || viewMode === "program"
-                  ? "visible"
-                  : "hidden"
-              }
-              style={{
-                overflow: "hidden",
-              }}
-            >
-              <ProgramTile visible />
-            </motion.div>
-          </motion.div>
-          <motion.div
-            variants={drawerVariants}
-            animate={visibleSteps ? "openDrawer" : "closedDrawer"}
-            style={{
-              backgroundColor: "#444444",
-              borderTop: `5px solid ${primaryColor}`,
+              {showEditor && (
+                <ReflexElement
+                  id='reflex-program'
+                  style={{ overflow: "hidden" }}
+                  // minSize={200}
+                  onStopResize={(e) => {
+                    if (editorBounds.width / simBounds.width < 0.20) {
+                      console.log('setting to sim',e)
+                      setViewMode("sim");
+                    }
+                  }}
+                >
+                  <ProgramTile ref={editorRef}/>
+                </ReflexElement>
+              )}
+            </ReflexContainer>
+          </Box>
+          {/* </Main> */}
+
+          <Drawer
+            anchor="bottom"
+            sx={{
+              height: "20vh",
+              flexShrink: 0,
+              "& .MuiDrawer-paper": {
+                height: "20vh",
+                boxSizing: "border-box",
+              },
             }}
+            variant="persistent"
+            open={visibleSteps}
           >
             <ParentSize>
-              {({ width, height }) => (
-                visibleSteps ?
-                <TimelineGraph
-                  width={width}
-                  height={height - 10}
-                  visible={visibleSteps}
-                /> : null
-              )}
+              {({ width, height }) =>
+                visibleSteps ? (
+                  <TimelineGraph
+                    width={width}
+                    height={height - 10}
+                    visible={visibleSteps}
+                  />
+                ) : null
+              }
             </ParentSize>
-          </motion.div>
+          </Drawer>
+          <Detail />
+          <SettingsModal />
         </div>
-        {/* <Modals /> */}
-        <SettingsModal />
-        <Detail />
+
+        {/* <SettingsModal />
+        
+       */}
       </ThemeProvider>
     </Grommet>
   );
 }
+
+// const Content = () => (
+//   <>
+//     <motion.div
+//       variants={mainVariants}
+//       animate={visibleSteps ? "openDrawer" : "closedDrawer"}
+//       style={{
+//         flexDirection: "row",
+//         display: "flex",
+//       }}
+//     >
+//       <motion.div
+//         variants={leftVariants}
+//         animate={
+//           viewMode === "default" || viewMode === "sim" ? "visible" : "hidden"
+//         }
+//         style={{
+//           overflow: "hidden",
+//         }}
+//       ></motion.div>
+//       <motion.div
+//         layout
+//         variants={rightVariants}
+//         animate={
+//           viewMode === "default" || viewMode === "program"
+//             ? "visible"
+//             : "hidden"
+//         }
+//         style={{
+//           overflow: "hidden",
+//         }}
+//       >
+//         <ProgramTile visible />
+//       </motion.div>
+//     </motion.div>
+//     <motion.div
+//       variants={drawerVariants}
+//       animate={visibleSteps ? "openDrawer" : "closedDrawer"}
+//       style={{
+//         backgroundColor: "#444444",
+//         borderTop: `5px solid ${primaryColor}`,
+//       }}
+//     >
+//       <ParentSize>
+//         {({ width, height }) =>
+//           visibleSteps ? (
+//             <TimelineGraph
+//               width={width}
+//               height={height - 10}
+//               visible={visibleSteps}
+//             />
+//           ) : null
+//         }
+//       </ParentSize>
+//     </motion.div>
+//   </>
+// );

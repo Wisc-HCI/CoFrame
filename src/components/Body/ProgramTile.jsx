@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import { Box, Spinner, Button } from 'grommet';
 import { Environment } from 'simple-vp';
 import Tile from '../Elements/Tile';
@@ -6,35 +6,47 @@ import useStore from '../../stores/Store';
 import { FiSettings, FiMaximize, FiMinimize } from "react-icons/fi";
 import { TipContent } from '../Elements/TipContent';
 import useMeasure from 'react-use-measure';
+import { Stack, CircularProgress, IconButton } from '@mui/material';
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
+import shallow from 'zustand/shallow';
 
-export const ProgramTile = ({ visible }) => {
+export const ProgramTile = forwardRef((_,ref) => {
 
-    const highlightColor = useStore(state => state.primaryColor);
-    const setViewMode = useStore(state => state.setViewMode);
-    const viewMode = useStore(state => state.viewMode);
-    const setActiveModal = useStore(state => state.setActiveModal);
-    const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined);
-    const [ref, bounds] = useMeasure();
+    const highlightColor = useStore(state => state.primaryColor,shallow);
+    const setViewMode = useStore(state => state.setViewMode,shallow);
+    const viewMode = useStore(state => state.viewMode,shallow);
+    const setActiveModal = useStore(state => state.setActiveModal,shallow);
+    const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined,shallow);
+    // const [ref, bounds] = useMeasure();
 
     // console.log(visible)
-    if (!visible) {
-        return null
-    }
     return (
-        <Box ref={ref} animation='fadeIn' style={{ flex: 55 }} direction='column' width='100%' height='100%' pad={{ right: '4pt', top: '4pt', bottom: '4pt', left: viewMode === 'default' ? '0pt' : '4pt' }}>
+        <Box ref={ref} animation='fadeIn' direction='column' width='100%' height='100%'>
+            <ParentSize>
+              {({ height }) =>
             <Tile
-                style={{ height: bounds.height - 10 }}
+                style={{ height: '100%' }}
                 borderWidth={3}
+                borderRadius={0}
                 internalPaddingWidth={0}
                 header={
-                    <Box direction='row' justify='between'>
+                    <Box direction='row' justify='between' align='center' pad={{right:'small'}}>
                         <h3 style={{ margin: '10pt' }}>
                             Program Editor
                         </h3>
-                        <Box direction='row' align='center' gap='small'>
+                        <Stack direction='row' gap={1} alignItems='center'>
                             {isProcessing && (
-                                <Spinner />
+                                <CircularProgress size={18} variant='indeterminate' color='primaryColor' />
                             )}
+                            <IconButton size='small' onClick={() => setViewMode(viewMode === 'default' ? 'program' : 'default')}>
+                                {viewMode === 'default' ? <FiMaximize /> : <FiMinimize />}
+                            </IconButton>
+                            <IconButton size='small' onClick={() => setActiveModal('settings')}>
+                                <FiSettings />
+                            </IconButton>
+                        </Stack>
+                        {/* <Box direction='row' align='center' gap='small'>
+                            
                             <Button
                                 tip={{
                                     content: <TipContent message={viewMode === 'default' ? 'Expand' : 'Shrink'} inverted />,
@@ -43,17 +55,22 @@ export const ProgramTile = ({ visible }) => {
                                         align: { top: 'bottom' }
                                     }
                                 }}
-                                icon={viewMode === 'default' ? <FiMaximize /> : <FiMinimize />}
+                                icon=
                                 onClick={() => setViewMode(viewMode === 'default' ? 'program' : 'default')}
                             />
                             <Button plain margin={{ right: 'medium' }} secondary icon={<FiSettings />} label='Settings' onClick={() => setActiveModal('settings')} />
-                        </Box>
+                        </Box> */}
                     </Box>
 
                 }
             >   
-                <Environment store={useStore} highlightColor={highlightColor} height={bounds.height - 72} snapToGrid={false} animateDrawer={false}/>
+            
+                <Environment store={useStore} highlightColor={highlightColor} height={height-62} snapToGrid={false} animateDrawer={false}/>
+             
+                
             </Tile>
+             }
+             </ParentSize>
         </Box>
 
 
@@ -71,4 +88,4 @@ export const ProgramTile = ({ visible }) => {
     //         <Detail/>
     //     </div>
     // );
-};
+});

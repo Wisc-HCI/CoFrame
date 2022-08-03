@@ -4,7 +4,7 @@ import { Blurb } from "./Blurb";
 
 export function getPrimitiveInfo({ frame, primaryColor, focusItem }) {
   return (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Action</h3>
         {focusItem.properties.description}
@@ -26,6 +26,6 @@ export function getPrimitiveInfo({ frame, primaryColor, focusItem }) {
           for inspiration.
         </Blurb>
       )}
-    </div>
+    </>
   );
 }

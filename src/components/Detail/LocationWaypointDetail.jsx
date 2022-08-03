@@ -2,7 +2,8 @@ import React from "react";
 import useStore from "../../stores/Store";
 import { Box, Button } from "grommet";
 import Collapse from "../Elements/Collapse";
-import { Toggle } from "../Elements/Toggle";
+// import { Toggle } from "../Elements/Toggle";
+import { Switch, IconButton } from "@mui/material";
 import { FiRefreshCw } from "react-icons/fi";
 
 function LocationWaypointDetail(props) {
@@ -33,12 +34,14 @@ function LocationWaypointDetail(props) {
         </Box>
       }
       extra={
-        <Button
-          secondary
+        <IconButton
+          sx={{marginRight:1}}
+          size='small'
+          color='primaryColor'
           onClick={() => forceRefreshBlock(item.id)}
-          icon={<FiRefreshCw color={primaryColor} />}
-          margin={{ right: "small" }}
-        />
+        >
+          <FiRefreshCw color={primaryColor} />
+        </IconButton>
       }
     >
       {Object.keys(item.properties.reachability).length === 0 && (
@@ -73,14 +76,15 @@ function LocationWaypointDetail(props) {
                   pad="xsmall"
                 >
                   {gripper.name}
-                  <Toggle
+                  <Switch onClick={()=>{}} checked={item.properties.reachability[robotAgent.id][gripper.id]} size="small" color='primaryColor'/>
+                  {/* <Toggle
                     selected={
                       item.properties.reachability[robotAgent.id][gripper.id]
                     }
                     disabled={true}
                     backgroundColor={primaryColor}
                     size="small"
-                  />
+                  /> */}
                 </Box>
               ))}
           </Box>

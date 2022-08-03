@@ -4,7 +4,7 @@ import { Glossary } from "./Glossary";
 
 export function getTrajectoryInfo({ frame, primaryColor, focusItem }) {
   const content = (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Trajectory</h3>
         {focusItem.properties.description}
@@ -35,7 +35,7 @@ export function getTrajectoryInfo({ frame, primaryColor, focusItem }) {
           Investment (ROI).
         </Blurb>
       )}
-    </div>
+    </>
   );
   return content;
 }

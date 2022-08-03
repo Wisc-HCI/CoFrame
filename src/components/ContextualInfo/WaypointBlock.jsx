@@ -4,7 +4,7 @@ import { Glossary } from "./Glossary";
 
 export function getWaypointInfo({ frame, primaryColor, focusItem }) {
   const content = (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Waypoint</h3>
         {focusItem.properties?.description}
@@ -34,7 +34,7 @@ export function getWaypointInfo({ frame, primaryColor, focusItem }) {
           longer to execute and can contribute to greater space usage.
         </Blurb>
       )}
-    </div>
+    </>
   );
   return content;
 }

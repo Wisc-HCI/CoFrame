@@ -4,7 +4,7 @@ import { Glossary } from "./Glossary";
 
 export function getThingInfo({ frame, primaryColor, focusItem }) {
   const content = (
-    <div>
+    <>
       <Blurb highlight="rgb(50,50,50)">
         <h3>About this Thing</h3>
         {focusItem.properties.description}
@@ -43,7 +43,7 @@ export function getThingInfo({ frame, primaryColor, focusItem }) {
           produced in a given amount of time.
         </Blurb>
       )}
-    </div>
+    </>
   );
   return content;
 }
