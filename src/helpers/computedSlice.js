@@ -1,5 +1,7 @@
 import lodash from "lodash";
 import {
+    MAX_GRIPPER_DISTANCE_DIFF,
+    MAX_GRIPPER_ROTATION_DIFF,
     STEP_TYPE,
 } from "../stores/Constants";
 import { generateUuid } from "../stores/generateUuid";
@@ -9,6 +11,17 @@ import {
 } from '../stores/helpers';
 import { map } from 'lodash';
 import { likProximityAdjustment } from "./conversion";
+import {
+    addGraspPointToModel,
+    addToEnvironModel,
+    createEnvironmentModel,
+    distance,
+    getAllChildrenFromModel,
+    getUserDataFromModel,
+    queryWorldPose,
+    updateEnvironModel
+} from "./geometry";
+import { Quaternion } from "three";
 
 const pinchColorFromMagnitude = (magnitude = 0) => {
     return {
@@ -337,8 +350,14 @@ export function stepsToAnimation(state, tfs, items) {
     let finalTime = 0;
     let timesteps = [];
     let trackedThings = [];
+    let trackedByType = {};
     let thingList = [];
-    // let currentGraspedThing = '';
+    let currentGraspedThingID = '';
+    let previousGraspedThingID = '';
+    let inMoveGripper = false;
+    let lastMoveGripperData = {};
+
+    let programModel = createEnvironmentModel(state.programData);
 
     let focusStub = null;
     // Only back up to once for the animation correlating to the issue (if applicable)
@@ -379,6 +398,45 @@ export function stepsToAnimation(state, tfs, items) {
                 type: step.data.thing 
             });
 
+
+            let ioPosition = queryWorldPose(programModel, step.data.inputOutput, '');
+            programModel = addToEnvironModel(programModel, 
+                'world', 
+                id, 
+                ioPosition.position, 
+                ioPosition.rotation
+                );
+
+            let graspPoints = state.programData[step.data.thing].properties.graspPoints;
+            graspPoints.forEach(graspId => {
+                let gID = generateUuid('graspPoint');
+                programModel = addGraspPointToModel(programModel, 
+                    id, 
+                    gID, 
+                    state.programData[graspId].properties.position, 
+                    state.programData[graspId].properties.rotation, 
+                    state.programData[graspId].properties.gripDistance
+                    );
+            })
+
+            if (!(step.data.thing in trackedByType)) {
+                trackedByType[step.data.thing] = [{
+                    id: id,
+                    position: {...ioPosition.position},
+                    rotation: {...ioPosition.rotation},
+                    relativeTo: 'world',
+                    type: step.data.thing 
+                }];
+            } else {
+                trackedByType[step.data.thing].push({
+                    id: id,
+                    position: {...ioPosition.position},
+                    rotation: {...ioPosition.rotation},
+                    relativeTo: 'world',
+                    type: step.data.thing 
+                });
+            }
+
             // create object
             dict[id] = {
                 position: { x: [], y: [], z: [] },
@@ -386,18 +444,71 @@ export function stepsToAnimation(state, tfs, items) {
                 hidden: [],
                 mesh: state.programData[step.data.thing]?.properties?.mesh,
                 relativeTo: step.data.relativeTo?.id,
+                type: step.data.thing
             }
 
             // backfill data
             for (let i = 0; i < timesteps.length; i++) {
-                dict[id].position.x.push(step.data.position.x);
-                dict[id].position.y.push(step.data.position.y);
-                dict[id].position.z.push(step.data.position.z);
-                dict[id].rotation.x.push(step.data.rotation.x);
-                dict[id].rotation.y.push(step.data.rotation.y);
-                dict[id].rotation.z.push(step.data.rotation.z);
-                dict[id].rotation.w.push(step.data.rotation.w);
+                dict[id].position.x.push(ioPosition.position.x);
+                dict[id].position.y.push(ioPosition.position.y);
+                dict[id].position.z.push(ioPosition.position.z);
+                dict[id].rotation.x.push(ioPosition.rotation.x);
+                dict[id].rotation.y.push(ioPosition.rotation.y);
+                dict[id].rotation.z.push(ioPosition.rotation.z);
+                dict[id].rotation.w.push(ioPosition.rotation.w);
                 dict[id].hidden.push(true);
+            }
+
+            // push latest data
+            lastTimestamp[id] = timesteps.length;
+            dict[id].position.x.push(ioPosition.position.x);
+            dict[id].position.y.push(ioPosition.position.y);
+            dict[id].position.z.push(ioPosition.position.z);
+            dict[id].rotation.x.push(ioPosition.rotation.x);
+            dict[id].rotation.y.push(ioPosition.rotation.y);
+            dict[id].rotation.z.push(ioPosition.rotation.z);
+            dict[id].rotation.w.push(ioPosition.rotation.w);
+            dict[id].hidden.push(false);
+        }
+
+        if (step.type === STEP_TYPE.DESTROY_ITEM) {
+            if (step.time > finalTime) {
+                finalTime = step.time;
+            }
+
+            timesteps.push(step.time);
+
+            let bucket = trackedByType[step.data.thing];
+            if (bucket.length === 1) {
+                delete trackedByType[step.data.thing];
+            } else {
+                // Remove the item that was most recently tracked
+                let lst = trackedByType[step.data.thing];
+                let idx = 0;
+                for (let i = 0; i < lst.length; i++) {
+                    if (lst[i].id === previousGraspedThingID) {
+                        idx = i;
+                        i = lst.length;
+                    }
+                }
+
+                trackedByType[step.data.thing].splice(idx, 1);
+                
+            }
+
+            // Use whatever the last item to have been grabbed
+            let id = previousGraspedThingID;
+
+            // backfill data
+            for (let i = lastTimestamp[id]; i < timesteps.length; i++) {
+                dict[id].position.x.push(dict[id].position.x[curLength-1]);
+                dict[id].position.y.push(dict[id].position.y[curLength-1]);
+                dict[id].position.z.push(dict[id].position.z[curLength-1]);
+                dict[id].rotation.x.push(dict[id].rotation.x[curLength-1]);
+                dict[id].rotation.y.push(dict[id].rotation.y[curLength-1]);
+                dict[id].rotation.z.push(dict[id].rotation.z[curLength-1]);
+                dict[id].rotation.w.push(dict[id].rotation.w[curLength-1]);
+                dict[id].hidden.push(dict[id].hidden[curLength-1]);
             }
 
             // push latest data
@@ -417,10 +528,91 @@ export function stepsToAnimation(state, tfs, items) {
                 finalTime = step.time;
             }
 
+            
+            if (state.programData[step.source] && state.programData[step.source].type === 'moveGripperType') {
+                if (!inMoveGripper) {
+                    inMoveGripper = true;
+                }
+                
+                lastMoveGripperData = {...step};
+            }
+
+            // grasp & release detection
+            if (inMoveGripper && !(state.programData[step.source] && state.programData[step.source].type === 'moveGripperType')) {
+                inMoveGripper = false;
+
+                let moveGripper = state.programData[lastMoveGripperData.source];
+
+                // TODO: Look at the compiled data
+                // Determine whether it was able to be grasped
+                let compileGraspSuceeded = true;
+
+                // temp varaiables
+                let grasping = false;
+                let releasing = false;
+
+                // figure out which one is grasped
+                let thing = lastMoveGripperData.data.thing.id ? lastMoveGripperData.data.thing.id : lastMoveGripperData.data.thing
+                let bucket = trackedByType[thing];
+                let id = '';
+
+                // Update model positions
+                Object.keys(lastMoveGripperData.data.links).forEach((link) => {
+                    programModel = updateEnvironModel(programModel, link, lastMoveGripperData.data.links[link].position, lastMoveGripperData.data.links[link].rotation);
+                });
+
+                let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+                let gripperRotation = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
+
+
+                // should be grasping
+                if (bucket && compileGraspSuceeded) {
+                    for (let i = 0; i < bucket.length; i++) {
+                        let graspPointIDs = getAllChildrenFromModel(programModel, bucket[i].id);
+                        // let thingPosition = queryWorldPose(programModel, bucket[i].id, '');
+                        if (graspPointIDs) {
+                            graspPointIDs.forEach(graspPointID => {
+                                let graspPosition = queryWorldPose(programModel, graspPointID, '');
+                                let graspWidth = getUserDataFromModel(programModel, graspPointID, 'width');
+                                let graspRotation = new Quaternion(graspPosition.rotation.x,
+                                    graspPosition.rotation.y,
+                                    graspPosition.rotation.z,
+                                    graspPosition.rotation.w);
+                                if (!grasping &&
+                                    distance(graspPosition.position, gripperOffset.position) <= MAX_GRIPPER_DISTANCE_DIFF &&
+                                    graspRotation.angleTo(gripperRotation) <= MAX_GRIPPER_ROTATION_DIFF &&
+                                    moveGripper.properties.positionEnd <= graspWidth
+                                ) {
+                                    grasping = true;
+                                    id = bucket[i].id;
+                                }
+                            });
+                        }
+                    }
+                } else if (moveGripper.properties.positionEnd > moveGripper.properties.positionStart &&
+                    moveGripper.properties.positionEnd > width) {
+                        releasing = true;
+                }
+
+                if (grasping && !releasing) {
+                    currentGraspedThingID = id;
+                }
+
+                if (!grasping && releasing) {
+                    previousGraspedThingID = currentGraspedThingID;
+                    currentGraspedThingID = '';
+                }
+            }
+
             timesteps.push(step.time);
 
             // Add link rotation/position
             Object.keys(step.data.links).forEach((link) => {
+                // Update the model
+                if (link in tfs) {
+                    programModel = updateEnvironModel(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                }
+
                 // Link didn't previously exist, so add it
                 if (!dict[link]) {
                     dict[link] = {
@@ -474,6 +666,43 @@ export function stepsToAnimation(state, tfs, items) {
                 dict[link].rotation.z.push(step.data.links[link].rotation.z);
                 dict[link].rotation.w.push(step.data.links[link].rotation.w);
             });
+
+            // Update gripped object
+            if (currentGraspedThingID !== '') {
+                let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+                programModel = updateEnvironModel(programModel, currentGraspedThingID, gripperOffset.position, gripperOffset.rotation);
+
+                // backfill data if necessary
+                if (lastTimestamp[currentGraspedThingID] !== 0 &&
+                    lastTimestamp[currentGraspedThingID] + 1 !== timesteps.length) {
+                    let posLength = dict[currentGraspedThingID].position.x.length;
+
+                    for (let tmpLength = posLength; tmpLength < timesteps.length; tmpLength++) {
+                        dict[currentGraspedThingID].position.x.push(dict[currentGraspedThingID].position.x[posLength - 1]);
+                        dict[currentGraspedThingID].position.y.push(dict[currentGraspedThingID].position.y[posLength - 1]);
+                        dict[currentGraspedThingID].position.z.push(dict[currentGraspedThingID].position.z[posLength - 1]);
+                        dict[currentGraspedThingID].rotation.x.push(dict[currentGraspedThingID].rotation.x[posLength - 1]);
+                        dict[currentGraspedThingID].rotation.y.push(dict[currentGraspedThingID].rotation.y[posLength - 1]);
+                        dict[currentGraspedThingID].rotation.z.push(dict[currentGraspedThingID].rotation.z[posLength - 1]);
+                        dict[currentGraspedThingID].rotation.w.push(dict[currentGraspedThingID].rotation.w[posLength - 1]);
+                        dict[currentGraspedThingID].hidden.push(dict[currentGraspedThingID].hidden[posLength - 1]);
+                    }
+                }
+
+                // Add new data
+                lastTimestamp[currentGraspedThingID] = timesteps.length;
+                dict[currentGraspedThingID].position.x.push(gripperOffset.position.x);
+                dict[currentGraspedThingID].position.y.push(gripperOffset.position.y);
+                dict[currentGraspedThingID].position.z.push(gripperOffset.position.z);
+                dict[currentGraspedThingID].rotation.x.push(gripperOffset.rotation.x);
+                dict[currentGraspedThingID].rotation.y.push(gripperOffset.rotation.y);
+                dict[currentGraspedThingID].rotation.z.push(gripperOffset.rotation.z);
+                dict[currentGraspedThingID].rotation.w.push(gripperOffset.rotation.w);
+                dict[currentGraspedThingID].hidden.push(false);
+
+                trackedByType[dict[currentGraspedThingID].type].position = {...gripperOffset.position};
+                trackedByType[dict[currentGraspedThingID].type].rotation = {...gripperOffset.rotation};
+            }
         } else if (timesteps.length > 0) {
             timesteps.push(step.time);
             if (step.time > finalTime) {
@@ -505,6 +734,7 @@ export function stepsToAnimation(state, tfs, items) {
     // Animate
     finalTime += 500;
     timesteps.push(finalTime);
+
     Object.keys(dict).forEach((link) => {
         let posLength = dict[link].position.x.length;
 
@@ -535,7 +765,7 @@ export function stepsToAnimation(state, tfs, items) {
             };
         } else if (thingList.includes(link)) {
             tfs[link] = {
-                frame: dict[link].relativeTo ? dict[link].relativeTo : 'world',
+                frame: 'world',
                 position: {
                     x: interpolateScalar(timesteps, dict[link].position.x),
                     y: interpolateScalar(timesteps, dict[link].position.y),
@@ -554,7 +784,7 @@ export function stepsToAnimation(state, tfs, items) {
                 frame: link,
                 position: { x: 0, y: 0, z: 0 },
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
-                scale: { x: 0.2, y: 0.2, z: 0.2 },
+                scale: { x: 1, y: 1, z: 1 },
                 transformMode: "inactive",
                 color: { r: 0, g: 200, b: 0, a: 0.2 },
                 highlighted: false,

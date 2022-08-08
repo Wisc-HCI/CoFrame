@@ -76,7 +76,7 @@ const TimelineGraph = ({ width, height, margin = defaultMargin, visible }) => {
     });
     return [steps, errorType];
   });
-  console.log("focusSteps", focusSteps);
+  // console.log("focusSteps", focusSteps);
 
   const clearFocus = useStore((state) => state.clearFocus);
   const primaryColor = useStore((state) => state.primaryColor);
@@ -308,7 +308,7 @@ const InnerGraph = withTooltip(
             {blockData.map((entry, i) => {
               // console.log({track:entry.track,yscale:yScale(entry.track)})
               const width = xScale(entry.end - entry.start);
-              console.log(width);
+              // console.log(width);
               return (
                 <g key={`${i}block`}>
                   <rect

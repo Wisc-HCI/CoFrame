@@ -7,7 +7,8 @@ import { hierarchicalType } from './hierarchical';
 import { skillType } from './skill';
 import { meshType } from './mesh';
 import { processType } from './process';
-import {inputOutputType} from './inputOutput'
+import {inputOutputType} from './inputOutput';
+import {graspPointType} from './graspPoint';
 import actionTypes from './action';
 import agentTypes from './agents';
 import sceneObjects from './sceneObjects';
@@ -25,6 +26,7 @@ const mod = {
     skillType,
     meshType,
     processType,
+    graspPointType,
     ...actionTypes,
     ...agentTypes,
     ...sceneObjects,

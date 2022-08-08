@@ -147,10 +147,12 @@ export const computedSlice = (state) => {
             }
         } else if (entry.type === 'processType') {
             entry.properties.inputs.forEach(input => {
+                
                 let inputObj = state.programData[input];
                 let thing = state.programData[inputObj.properties.thing];
                 tfs[input] = {
-                    frame: inputObj.properties.relativeTo ? inputObj.properties.relativeTo : "world",position: inputObj.properties.position,
+                    frame: inputObj.properties.relativeTo ? inputObj.properties.relativeTo : "world",
+                    position: inputObj.properties.position,
                     rotation: inputObj.properties.rotation,
                     scale: { x: 1, y: 1, z: 1 },
                     transformMode: itemTransformMethod(state, input)
@@ -164,15 +166,15 @@ export const computedSlice = (state) => {
                     transformMode: null,
                     color: { r: 0, g: 200, b: 0, a: 0.2 },
                     highlighted: false,
-                    hidden: !state.focus.includes(entry.id)
+                    hidden: !(state.focus.includes(entry.id) || state.focus.includes(input))
                 };
                 thing.properties.graspPoints.forEach((gp)=>{
                     const gpData = state.programData[gp];
                     items[gp] = {
                         frame: input,
                         shape: "package://app/meshes/LocationMarker.stl",
-                        position: gpData.position,
-                        rotation: gpData.rotation,
+                        position: gpData.properties.position,
+                        rotation: gpData.properties.rotation,
                         scale: { x: 1, y: 1, z: 1 },
                         highlighted: false,
                         showName: false,
@@ -185,29 +187,31 @@ export const computedSlice = (state) => {
                 let outputObj = state.programData[output];
                 let thing = state.programData[outputObj.properties.thing];
                 tfs[output] = {
-                    frame: outputObj.properties.relativeTo ? outputObj.properties.relativeTo : "world",position: outputObj.properties.position,
-                    rotation: outputObj.properties.rotation,
-                    scale: { x: 1, y: 1, z: 1 },
-                    transformMode: itemTransformMethod(state, output)
-                }
-                items[output] = {
-                    shape: thing.properties.mesh,
                     frame: outputObj.properties.relativeTo ? outputObj.properties.relativeTo : "world",
                     position: outputObj.properties.position,
                     rotation: outputObj.properties.rotation,
                     scale: { x: 1, y: 1, z: 1 },
+                    transformMode: itemTransformMethod(state, output)
+                }
+
+                items[output] = {
+                    shape: thing.properties.mesh,
+                    frame: output,
+                    position: {x:0,y:0,z:0},
+                    rotation: {w:1,x:0,y:0,z:0},
+                    scale: { x: 1, y: 1, z: 1 },
                     transformMode: itemTransformMethod(state, output),
                     color: { r: 0, g: 200, b: 0, a: 0.2 },
                     highlighted: false,
-                    hidden: !state.focus.includes(entry.id)
+                    hidden: !(state.focus.includes(entry.id) || state.focus.includes(output))
                 }
                 thing.properties.graspPoints.forEach((gp)=>{
                     const gpData = state.programData[gp];
                     items[gp] = {
-                        frame: input,
+                        frame: output,
                         shape: "package://app/meshes/LocationMarker.stl",
-                        position: gpData.position,
-                        rotation: gpData.rotation,
+                        position: gpData.properties.position,
+                        rotation: gpData.properties.rotation,
                         scale: { x: 1, y: 1, z: 1 },
                         highlighted: false,
                         showName: false,

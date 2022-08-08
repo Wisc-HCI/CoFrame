@@ -481,6 +481,81 @@ export const queryLocalPose = (model, ref, localTransform) => {
   return local;
 };
 
+export const getUserDataFromModel = (model, itemId, field) => {
+  return model[itemId]?.userData[field];
+}
+
+export const getAllChildrenFromModel = (model, itemId) => {
+  if (model[itemId]) {
+    let ids = [];
+    model[itemId].children.forEach(group => {
+      ids.push(group.uuid);
+    })
+    return ids;
+  }
+  return null;
+}
+
+export const addGraspPointToModel = (model, parentId, itemId, position, rotation, width) => {
+  if (model[parentId]) {
+    model[itemId] = new Group();
+    model[itemId].userData.parent = parentId;
+
+    model[itemId].position.set(
+      position.x,
+      position.y,
+      position.z
+    );
+    model[itemId].quaternion.set(
+      rotation.x,
+      rotation.y,
+      rotation.z,
+      rotation.w
+    );
+    model[itemId].uuid = itemId;
+    model[itemId].userData['width'] = width;
+    model[parentId].add(model[itemId]);
+  }
+  return model;
+}
+
+export const addToEnvironModel = (model, parentId, itemId, position, rotation) => {
+  if (model[parentId]) {
+    model[itemId] = new Group();
+    model[itemId].userData.parent = parentId;
+
+    model[itemId].position.set(
+      position.x,
+      position.y,
+      position.z
+    );
+    model[itemId].quaternion.set(
+      rotation.x,
+      rotation.y,
+      rotation.z,
+      rotation.w
+    );
+    model[itemId].uuid = itemId;
+    model[parentId].add(model[itemId]);
+  }
+  return model;
+}
+
+export const updateEnvironModel = (model, itemId, position, rotation) => {
+  model[itemId].position.set(
+    position.x,
+    position.y,
+    position.z
+  );
+  model[itemId].quaternion.set(
+    rotation.x,
+    rotation.y,
+    rotation.z,
+    rotation.w
+  );
+  return model;
+}
+
 export const createEnvironmentModel = (programData) => {
   let added = true;
   let model = {};
@@ -541,6 +616,7 @@ export const createEnvironmentModel = (programData) => {
           model[item.id].add(model[collisionObjKey]);
         });
       }
+
       model[item.id].position.set(
         item.properties.position.x,
         item.properties.position.y,
@@ -575,6 +651,8 @@ export const createEnvironmentModel = (programData) => {
     }
   };
 
+  let allObjectTypes = ['inputOutputType'];
+  REFERENCEABLE_OBJECTS.forEach(t => allObjectTypes.push(t));
   while (added) {
     added = false;
     Object.values(programData)
@@ -582,7 +660,7 @@ export const createEnvironmentModel = (programData) => {
         (i) =>
           !Object.keys(model).includes(i.id) &&
           i.dataType === DATA_TYPES.INSTANCE &&
-          REFERENCEABLE_OBJECTS.includes(i.type)
+          allObjectTypes.includes(i.type)
       )
       .forEach(handleItem);
   }
