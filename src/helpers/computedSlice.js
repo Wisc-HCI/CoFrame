@@ -181,7 +181,6 @@ const stepsToAnimatedPinchPoints = (steps) => {
     return animatedPinchPoints;
 };
 
-
 export function pinchpointAnimationFromExecutable(robotAgent, stepData) {
     let pairedLinks = robotAgent.properties.pinchPointPairLinks;
 
@@ -250,7 +249,6 @@ export const occupancyOverlap = (position, occupancyZones) => {
     return overlap;
 };
 
-
 export function poseToColor(pose, frame, focused, occupancyZones) {
     let color = { r: 255, g: 255, b: 255, a: focused ? 1 : 0 };
     let pos = pose.refData
@@ -305,7 +303,6 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
     ];
 }
 
-
 export function itemTransformMethod(state, id) {
     let idIncluded = false;
     let transformMethod = "inactive";
@@ -345,20 +342,41 @@ export function itemTransformMethod(state, id) {
 }
 
 export function stepsToAnimation(state, tfs, items) {
+    // Tracks all things and links for use in the animation
     let dict = {};
-    let lastTimestamp = {};
-    let finalTime = 0;
+
+    // Array of all timestep values from the compiled data
     let timesteps = [];
-    let trackedThings = [];
+
+    // Tracks the last index of timesteps that a given object (thing or link) was updated
+    let lastTimestamp = {};
+
+    // Last timestep - used for adding an addition 500ms delay at the end of the program
+    let finalTime = 0;
+
+    // Tracks lists of things indexed by their spawned type (example: all "blade"s are in a list indexed by "blade")
     let trackedByType = {};
+
+    // Array of all tracking thing ids - used to know whether a given id is a thing or not
     let thingList = [];
+
+    // Tracks what is currently grasped by the gripper
     let currentGraspedThingID = '';
+
+    // Tracks the previous grasped object by the gripper
     let previousGraspedThingID = '';
+
+    // Tracks whether we are currently in a moveGripper action
     let inMoveGripper = false;
+
+    // Stores the last update for the moveGripper action
     let lastMoveGripperData = {};
 
+    // Create an updatable model of the environment usng the program data
+    // This is updated from the compiled data as it's encountered
     let programModel = createEnvironmentModel(state.programData);
 
+    // Find what is the focus within CoFrame
     let focusStub = null;
     // Only back up to once for the animation correlating to the issue (if applicable)
     if (!state.programData[state.activeFocus]) {
@@ -380,26 +398,22 @@ export function stepsToAnimation(state, tfs, items) {
     // Build up the movements
     let steps = focusStub[compiledKey]?.steps ? focusStub[compiledKey]?.steps : [];
     steps.forEach((step) => {
+        // Thing is created/spawned
         if (step.type === STEP_TYPE.SPAWN_ITEM) {
+            // Update time trackers
             if (step.time > finalTime) {
                 finalTime = step.time;
             }
-
             timesteps.push(step.time);
 
-            // begin tracking thing
+            // Create ID for tracking, and add to array
             let id = generateUuid('thing');
             thingList.push(id);
-            trackedThings.push({
-                id: id,
-                position: {...step.data.position},
-                rotation: {...step.data.rotation},
-                relativeTo: step.data.relativeTo?.id,
-                type: step.data.thing 
-            });
 
-
+            // Use the inputOutput (that spawned the thing) as the original position
             let ioPosition = queryWorldPose(programModel, step.data.inputOutput, '');
+
+            // Add thing to the program model
             programModel = addToEnvironModel(programModel, 
                 'world', 
                 id, 
@@ -407,6 +421,7 @@ export function stepsToAnimation(state, tfs, items) {
                 ioPosition.rotation
                 );
 
+            // Add thing grasp points to the program model
             let graspPoints = state.programData[step.data.thing].properties.graspPoints;
             graspPoints.forEach(graspId => {
                 let gID = generateUuid('graspPoint');
@@ -419,25 +434,18 @@ export function stepsToAnimation(state, tfs, items) {
                     );
             })
 
+            // Add thing to the tracking
             if (!(step.data.thing in trackedByType)) {
                 trackedByType[step.data.thing] = [{
-                    id: id,
-                    position: {...ioPosition.position},
-                    rotation: {...ioPosition.rotation},
-                    relativeTo: 'world',
-                    type: step.data.thing 
+                    id: id
                 }];
             } else {
                 trackedByType[step.data.thing].push({
-                    id: id,
-                    position: {...ioPosition.position},
-                    rotation: {...ioPosition.rotation},
-                    relativeTo: 'world',
-                    type: step.data.thing 
+                    id: id
                 });
             }
 
-            // create object
+            // Create animation object
             dict[id] = {
                 position: { x: [], y: [], z: [] },
                 rotation: { x: [], y: [], z: [], w: [] },
@@ -447,7 +455,7 @@ export function stepsToAnimation(state, tfs, items) {
                 type: step.data.thing
             }
 
-            // backfill data
+            // Hide thing (backfill data)
             for (let i = 0; i < timesteps.length; i++) {
                 dict[id].position.x.push(ioPosition.position.x);
                 dict[id].position.y.push(ioPosition.position.y);
@@ -459,7 +467,7 @@ export function stepsToAnimation(state, tfs, items) {
                 dict[id].hidden.push(true);
             }
 
-            // push latest data
+            // Unhide thing (push latest data)
             lastTimestamp[id] = timesteps.length;
             dict[id].position.x.push(ioPosition.position.x);
             dict[id].position.y.push(ioPosition.position.y);
@@ -471,13 +479,15 @@ export function stepsToAnimation(state, tfs, items) {
             dict[id].hidden.push(false);
         }
 
+        // Thing is consumed/destroyed
         if (step.type === STEP_TYPE.DESTROY_ITEM) {
+            // Update time trackers
             if (step.time > finalTime) {
                 finalTime = step.time;
             }
-
             timesteps.push(step.time);
 
+            // Find and remove the tracked thing
             let bucket = trackedByType[step.data.thing];
             if (bucket.length === 1) {
                 delete trackedByType[step.data.thing];
@@ -491,9 +501,7 @@ export function stepsToAnimation(state, tfs, items) {
                         i = lst.length;
                     }
                 }
-
                 trackedByType[step.data.thing].splice(idx, 1);
-                
             }
 
             // Use whatever the last item to have been grabbed
@@ -511,7 +519,7 @@ export function stepsToAnimation(state, tfs, items) {
                 dict[id].hidden.push(dict[id].hidden[curLength-1]);
             }
 
-            // push latest data
+            // push latest data (hide thing)
             lastTimestamp[id] = timesteps.length;
             dict[id].position.x.push(step.data.position.x);
             dict[id].position.y.push(step.data.position.y);
@@ -524,11 +532,14 @@ export function stepsToAnimation(state, tfs, items) {
         }
 
         if (step.type === STEP_TYPE.SCENE_UPDATE) {
+            // Update time
             if (step.time > finalTime) {
                 finalTime = step.time;
             }
-
             
+            // Store last copy of the the moveGripper action
+            // This allows us to not constantly update grasped thing's position until the final moment
+            // at which it is considered "grasped".
             if (state.programData[step.source] && state.programData[step.source].type === 'moveGripperType') {
                 if (!inMoveGripper) {
                     inMoveGripper = true;
@@ -537,47 +548,45 @@ export function stepsToAnimation(state, tfs, items) {
                 lastMoveGripperData = {...step};
             }
 
-            // grasp & release detection
+            // Once the moveGripper action is done, use the last piece of it's data to update the grasped object.
             if (inMoveGripper && !(state.programData[step.source] && state.programData[step.source].type === 'moveGripperType')) {
                 inMoveGripper = false;
 
                 let moveGripper = state.programData[lastMoveGripperData.source];
-
-                // TODO: Look at the compiled data
-                // Determine whether it was able to be grasped
-                let compileGraspSuceeded = true;
-
-                // temp varaiables
                 let grasping = false;
                 let releasing = false;
 
-                // figure out which one is grasped
+                // Determine whether gripper is closing
+                let compileGripperClosing = step.data.closing;
+
+                // Get the corresponding bucket of things that could be potentially grasped
                 let thing = lastMoveGripperData.data.thing.id ? lastMoveGripperData.data.thing.id : lastMoveGripperData.data.thing
                 let bucket = trackedByType[thing];
                 let id = '';
 
-                // Update model positions
+                // Update model positions of all links in the gripper
                 Object.keys(lastMoveGripperData.data.links).forEach((link) => {
                     programModel = updateEnvironModel(programModel, link, lastMoveGripperData.data.links[link].position, lastMoveGripperData.data.links[link].rotation);
                 });
 
+                // Get the gripper offset position/rotation
                 let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
                 let gripperRotation = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
 
 
-                // should be grasping
-                if (bucket && compileGraspSuceeded) {
+                // If grasp succeeded and we have things available to be grasped, search for the corresponding
+                // thing that is being grasped
+                if (bucket && compileGripperClosing) {
                     for (let i = 0; i < bucket.length; i++) {
+                        // Get all potential grasp locations for a given thing
                         let graspPointIDs = getAllChildrenFromModel(programModel, bucket[i].id);
-                        // let thingPosition = queryWorldPose(programModel, bucket[i].id, '');
+                        // Search over the grasp locations and determine whether any are within some
+                        // tolerance of the gripper's offset position/rotation
                         if (graspPointIDs) {
                             graspPointIDs.forEach(graspPointID => {
                                 let graspPosition = queryWorldPose(programModel, graspPointID, '');
                                 let graspWidth = getUserDataFromModel(programModel, graspPointID, 'width');
-                                let graspRotation = new Quaternion(graspPosition.rotation.x,
-                                    graspPosition.rotation.y,
-                                    graspPosition.rotation.z,
-                                    graspPosition.rotation.w);
+                                let graspRotation = new Quaternion(graspPosition.rotation.x, graspPosition.rotation.y, graspPosition.rotation.z, graspPosition.rotation.w);
                                 if (!grasping &&
                                     distance(graspPosition.position, gripperOffset.position) <= MAX_GRIPPER_DISTANCE_DIFF &&
                                     graspRotation.angleTo(gripperRotation) <= MAX_GRIPPER_ROTATION_DIFF &&
@@ -589,15 +598,16 @@ export function stepsToAnimation(state, tfs, items) {
                             });
                         }
                     }
+                // moveGripper is releasing instead of grasping
                 } else if (moveGripper.properties.positionEnd > moveGripper.properties.positionStart &&
                     moveGripper.properties.positionEnd > width) {
                         releasing = true;
                 }
 
+                // Update trackers for grasped things
                 if (grasping && !releasing) {
                     currentGraspedThingID = id;
                 }
-
                 if (!grasping && releasing) {
                     previousGraspedThingID = currentGraspedThingID;
                     currentGraspedThingID = '';
@@ -606,14 +616,13 @@ export function stepsToAnimation(state, tfs, items) {
 
             timesteps.push(step.time);
 
-            // Add link rotation/position
             Object.keys(step.data.links).forEach((link) => {
-                // Update the model
+                // Update the program model for each link
                 if (link in tfs) {
                     programModel = updateEnvironModel(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
                 }
 
-                // Link didn't previously exist, so add it
+                // If link didn't previously exist add it
                 if (!dict[link]) {
                     dict[link] = {
                         position: { x: [], y: [], z: [] },
@@ -621,7 +630,9 @@ export function stepsToAnimation(state, tfs, items) {
                     };
                     lastTimestamp[link] = 0;
                 }
-                // If just encountering link (after t iterations) use first data piece to backfill information
+
+                // First time encountering link (but t iterations have passed since program beginning)
+                // so use first data piece to backfill information up to the current time
                 if (
                     lastTimestamp[link] === 0 &&
                     lastTimestamp[link] + 1 !== timesteps.length
@@ -635,7 +646,8 @@ export function stepsToAnimation(state, tfs, items) {
                         dict[link].rotation.z.push(step.data.links[link].rotation.z);
                         dict[link].rotation.w.push(step.data.links[link].rotation.w);
                     }
-                    // Use the old data to fill static position until current time
+                // Link exists in dict and t interactions have passed since we previously updated it
+                // Use the last data point to backfill up to the current time
                 } else if (
                     lastTimestamp[link] !== 0 &&
                     lastTimestamp[link] + 1 !== timesteps.length
@@ -656,7 +668,7 @@ export function stepsToAnimation(state, tfs, items) {
                     }
                 }
 
-                // Add new time
+                // Add newest data point
                 lastTimestamp[link] = timesteps.length;
                 dict[link].position.x.push(step.data.links[link].position.x);
                 dict[link].position.y.push(step.data.links[link].position.y);
@@ -669,10 +681,11 @@ export function stepsToAnimation(state, tfs, items) {
 
             // Update gripped object
             if (currentGraspedThingID !== '') {
+                // Get world pose of the gripper offset and update the grasped object to this pose
                 let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
                 programModel = updateEnvironModel(programModel, currentGraspedThingID, gripperOffset.position, gripperOffset.rotation);
 
-                // backfill data if necessary
+                // If thing hasn't been updated to the most recent timestep, backfill data using last data point
                 if (lastTimestamp[currentGraspedThingID] !== 0 &&
                     lastTimestamp[currentGraspedThingID] + 1 !== timesteps.length) {
                     let posLength = dict[currentGraspedThingID].position.x.length;
@@ -689,7 +702,7 @@ export function stepsToAnimation(state, tfs, items) {
                     }
                 }
 
-                // Add new data
+                // Add newest datapoint
                 lastTimestamp[currentGraspedThingID] = timesteps.length;
                 dict[currentGraspedThingID].position.x.push(gripperOffset.position.x);
                 dict[currentGraspedThingID].position.y.push(gripperOffset.position.y);
@@ -699,16 +712,16 @@ export function stepsToAnimation(state, tfs, items) {
                 dict[currentGraspedThingID].rotation.z.push(gripperOffset.rotation.z);
                 dict[currentGraspedThingID].rotation.w.push(gripperOffset.rotation.w);
                 dict[currentGraspedThingID].hidden.push(false);
-
-                trackedByType[dict[currentGraspedThingID].type].position = {...gripperOffset.position};
-                trackedByType[dict[currentGraspedThingID].type].rotation = {...gripperOffset.rotation};
             }
+        // Else the step type isn't an update/spawn/destroy, so update the time and buffer all object positions and rotations
         } else if (timesteps.length > 0) {
+            // Update time trackers
             timesteps.push(step.time);
             if (step.time > finalTime) {
                 finalTime = step.time;
             }
 
+            // Buffer all object position and rotations
             Object.keys(dict).forEach((link) => {
                 let posLength = dict[link].position.x.length;
 
@@ -731,13 +744,13 @@ export function stepsToAnimation(state, tfs, items) {
     });
 
     // Iterate through final objects and buffer out times (add additional 500ms)
-    // Animate
     finalTime += 500;
     timesteps.push(finalTime);
 
+    // Buffer all final position/rotations for objects and then interpolate the data for robot-scene to animate
     Object.keys(dict).forEach((link) => {
         let posLength = dict[link].position.x.length;
-
+        // Buffer all relevant data for the object
         for (let tmpLength = posLength; tmpLength < timesteps.length; tmpLength++) {
             dict[link].position.x.push(dict[link].position.x[posLength - 1]);
             dict[link].position.y.push(dict[link].position.y[posLength - 1]);
@@ -751,6 +764,7 @@ export function stepsToAnimation(state, tfs, items) {
             }
         }
 
+        // If object already exists in the scene data, update the tf with the interpolated data
         if (link in tfs) {
             tfs[link].position = {
                 x: interpolateScalar(timesteps, dict[link].position.x),
@@ -763,6 +777,7 @@ export function stepsToAnimation(state, tfs, items) {
                 z: interpolateScalar(timesteps, dict[link].rotation.z),
                 w: interpolateScalar(timesteps, dict[link].rotation.w),
             };
+        // If object is in the thinglist, create the tf and item for it
         } else if (thingList.includes(link)) {
             tfs[link] = {
                 frame: 'world',
