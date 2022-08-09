@@ -487,7 +487,7 @@ export const findThingSafetyIssues = ({program, programData}) => { // May requir
             source.properties.thing &&
             source.properties.positionEnd < source.properties.positionStart) {
                 trackedIds.push(step.source);
-                let thing = programData[step.data.thing];
+                let thing = programData[step.data.thing.id];
                 if (!thing.properties.safe) {
                     const uuid = generateUuid('issue');
                     issues[uuid] = {
