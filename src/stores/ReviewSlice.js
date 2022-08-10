@@ -1,6 +1,26 @@
-import { findCollisionIssues, findEndEffectorPoseIssues, findOccupancyIssues, findPinchPointIssues, findThingSafetyIssues } from "./issueDetectors/safety";
-import { findEmptyBlockIssues, findMissingBlockIssues, findMissingParameterIssues, findUnusedFeatureIssues, findUnusedSkillIssues, findProcessLogicIssues } from "./issueDetectors/quality";
-import { findEndEffectorSpeedIssues, findJointSpeedIssues, findPayloadIssues, findReachabilityIssues, findSpaceUsageIssues } from "./issueDetectors/performance";
+import {
+    findCollisionIssues, 
+    findEndEffectorPoseIssues, 
+    findOccupancyIssues, 
+    findPinchPointIssues, 
+    findThingSafetyIssues 
+} from "./issueDetectors/safety";
+import { 
+    findEmptyBlockIssues, 
+    findMissingBlockIssues, 
+    findMissingParameterIssues, 
+    findUnusedFeatureIssues, 
+    findUnusedSkillIssues, 
+    findProcessLogicIssues, 
+    findThingFlowIssues 
+} from "./issueDetectors/quality";
+import { 
+    findEndEffectorSpeedIssues, 
+    findJointSpeedIssues, 
+    findPayloadIssues, 
+    findReachabilityIssues, 
+    findSpaceUsageIssues 
+} from "./issueDetectors/performance";
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
 import { objectMap } from "./helpers";
 import lodash from 'lodash';
@@ -52,12 +72,59 @@ export const ReviewSlice = (set, get) => ({
         }
         */
     },
+    frameNames: {
+      safety: "Safety Concerns",
+      quality: "Program Quality",
+      performance: "Robot Performance",
+      business: "Business Objectives",
+    },
+    frames: {
+        "safety": {
+            key: "safety",
+            title: "Safety Concerns",
+            sections: [
+                "endEffectorPoses",
+                "thingSafety",
+                "pinchPoints",
+                "collisions",
+                "occupancy",
+            ],
+        },
+        "quality": {
+            key: "quality",
+            title: "Program Quality",
+            sections: [
+                "missingBlocks",
+                "missingParameters",
+                "processLogic",
+                "thingFlow",
+                "unusedSkills",
+                "unusedFeatures",
+                "emptyBlocks",
+            ],
+        },
+        "performance": {
+            key: "performance",
+            title: "Robot Performance",
+            sections: [
+                "reachability",
+                "jointSpeed",
+                "endEffectorSpeed",
+                "payload",
+                "spaceUsage",
+            ],
+        },
+        "business": {
+            key: "business",
+            title: "Business Objectives",
+            sections: ["cycleTime", "idleTime", "returnOnInvestment"],
+        }
+    },
     sections: {
         endEffectorPoses:{
             name:'End Effector Poses',
             updater:findEndEffectorPoseIssues,
             dependencies:['reachability'],
-            // dependencies:[],
             issues:[]
         },
         pinchPoints:{
@@ -99,6 +166,12 @@ export const ReviewSlice = (set, get) => ({
         processLogic:{
             name:'Process Logic',
             updater:findProcessLogicIssues,
+            dependencies:['missingBlocks','missingParameters'],
+            issues:[]
+        },
+        thingFlow:{
+            name:'Thing Flow',
+            updater:findThingFlowIssues,
             dependencies:['missingBlocks','missingParameters'],
             issues:[]
         },

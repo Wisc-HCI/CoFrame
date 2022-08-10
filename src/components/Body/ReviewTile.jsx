@@ -61,55 +61,15 @@ const isBlocked = (state, sectionId) =>
     (dep) => !isComplete(state, dep)
   ).length > 0;
 
-const FRAMES = [
-  {
-    key: "safety",
-    title: "Safety Concerns",
-    sections: [
-      "endEffectorPoses",
-      "thingSafety",
-      "collisions",
-      "pinchPoints",
-      "occupancy",
-    ],
-  },
-  {
-    key: "quality",
-    title: "Program Quality",
-    sections: [
-      "missingBlocks",
-      "missingParameters",
-      "processLogic",
-      "unusedSkills",
-      "unusedFeatures",
-      "emptyBlocks",
-    ],
-  },
-  {
-    key: "performance",
-    title: "Robot Performance",
-    sections: [
-      "reachability",
-      "jointSpeed",
-      "endEffectorSpeed",
-      "payload",
-      "spaceUsage",
-    ],
-  },
-  {
-    key: "business",
-    title: "Business Objectives",
-    sections: ["cycleTime", "idleTime", "returnOnInvestment"],
-  },
-];
-
 export const ReviewTile = (_) => {
+  const frames = useStore((state) => state.frames);
+
   const [frameId, setFrame, refresh, blockages] = useStore(
     (state) => [
       state.frame,
       state.setFrame,
       state.refresh,
-      FRAMES.map((frameInfo) =>
+      Object.values(frames).map((frameInfo) =>
         Math.min(
           ...frameInfo.sections.map((sectionId, idx) =>
             isBlocked(state, sectionId) ? idx : 100
@@ -127,9 +87,14 @@ export const ReviewTile = (_) => {
     shallow
   );
 
-  const reviewableChanges = useStore(state=>state.reviewableChanges,shallow);
+  const reviewableChanges = useStore(
+    (state) => state.reviewableChanges,
+    shallow
+  );
 
-  const frameIdx = FRAMES.map((frame) => frame.key).indexOf(frameId);
+  const frameIdx = Object.values(frames)
+    .map((frame) => frame.key)
+    .indexOf(frameId);
 
   const [ref, bounds] = useMeasure();
   //   const divStyle = useSpring({ width: "100%", config: config.stiff });
@@ -153,7 +118,12 @@ export const ReviewTile = (_) => {
       />
       <Box direction="row" flex justify="between" align="center">
         <h3 style={{ margin: "10pt" }}>Review</h3>
-        <Badge color='primary' badgeContent={<b>!</b>} invisible={reviewableChanges===0} anchorOrigin={{vertical:'top',horizontal:'left'}}>
+        <Badge
+          color="primary"
+          badgeContent={<b>!</b>}
+          invisible={reviewableChanges === 0}
+          anchorOrigin={{ vertical: "top", horizontal: "left" }}
+        >
           <Button
             color="primaryColor"
             variant="outlined"
@@ -174,7 +144,7 @@ export const ReviewTile = (_) => {
           round="small"
           gap="xsmall"
         >
-          {FRAMES[frameIdx].sections.map((section, idx) => (
+          {Object.values(frames)[frameIdx].sections.map((section, idx) => (
             <ReviewSection
               key={section}
               sectionId={section}

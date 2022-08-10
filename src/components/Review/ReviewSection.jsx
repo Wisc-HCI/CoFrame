@@ -17,63 +17,19 @@ const isComplete = (state, sectionId) =>
     .map((issueId) => state.issues[issueId])
     .filter((issue) => !issue.complete).length === 0;
 
-const FRAMES = [
-  {
-    key: "safety",
-    title: "Safety Concerns",
-    sections: [
-      "endEffectorPoses",
-      "thingMovement",
-      "pinchPoints",
-      "collisions",
-      "occupancy",
-    ],
-  },
-  {
-    key: "quality",
-    title: "Program Quality",
-    sections: [
-      "missingBlocks",
-      "missingParameters",
-      "processLogic",
-      "unusedSkills",
-      "unusedFeatures",
-      "emptyBlocks",
-    ],
-  },
-  {
-    key: "performance",
-    title: "Robot Performance",
-    sections: [
-      "reachability",
-      "jointSpeed",
-      "endEffectorSpeed",
-      "payload",
-      "spaceUsage",
-    ],
-  },
-  {
-    key: "business",
-    title: "Business Objectives",
-    sections: ["cycleTime", "idleTime", "returnOnInvestment"],
-  },
-];
-
-const NAMES = {
-  safety: "Safety Concerns",
-  quality: "Program Quality",
-  performance: "Robot Performance",
-  business: "Business Objectives",
-};
-
-const sectionFrame = (sectionId) =>
-  FRAMES.filter((filter) => filter.sections.indexOf(sectionId) > -1)[0].key;
-
 export function ReviewSection({ sectionId, blocked, initialBlocked }) {
   const [frame, setFrame] = useStore((state) => [
     state.frame,
     state.setFrame
   ]);
+
+  const [frames, frameNames] = useStore((state) => [state.frames, state.frameNames]);
+
+
+  const sectionFrame = (sectionId) =>
+    Object.values(frames).filter((filter) => filter.sections.indexOf(sectionId) > -1)[0].key;
+
+
   const [name, issueIds, complete, dependencies, depNames, depFrames] =
     useStore(
       useCallback(
@@ -118,7 +74,7 @@ export function ReviewSection({ sectionId, blocked, initialBlocked }) {
               <FrameButton
                 frame={depFrames[i]}
                 active={false}
-                text={`Go to ${NAMES[sectionFrame(dependencies[i])]}`}
+                text={`Go to ${frameNames[sectionFrame(dependencies[i])]}`}
                 onClick={() => setFrame(depFrames[i])}
               />
             )}

@@ -1,7 +1,9 @@
 import { DATA_TYPES } from "simple-vp";
 import { generateUuid } from "../generateUuid";
 import { pickBy } from 'lodash';
-import { ERROR, STATUS, STEP_TYPE } from "../Constants";
+import { ERROR, MAX_GRIPPER_DISTANCE_DIFF, MAX_GRIPPER_ROTATION_DIFF, STATUS, STEP_TYPE } from "../Constants";
+import { addGraspPointToModel, addToEnvironModel, createEnvironmentModel, distance, getAllChildrenFromModel, getUserDataFromModel, queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
+import { Quaternion } from "three";
 
 export const findMissingBlockIssues = ({programData}) => {
     let issues = {};
@@ -506,6 +508,362 @@ export const findProcessLogicIssues = ({program, programData}) => { //init , sta
 
 export const findThingFlowIssues = ({program, programData}) => {
     let issues = {};
+    let currentGrippedThing = '';
+    let currentGraspPoint = '';
+    let graspWidth = -1;
+    let inMoveGripper = false;
+    let lastMoveGripperData = {};
+    let samePositionMoveGrippers = [];
+    let itemExistsError = [];
+
+    // Tracks lists of things indexed by their spawned type (example: all "blade"s are in a list indexed by "blade")
+    let trackedByType = {};
+
+    // Array of all tracking thing ids - used to know whether a given id is a thing or not
+    let thingList = [];
+
+    // Create an updatable model of the environment usng the program data
+    // This is updated from the compiled data as it's encountered
+    let programModel = createEnvironmentModel(programData);
+
+    let moveGripperOrder = [];
+
+    // TODO: thing tracking (just like in computed slice...)
+    program.properties.compiled["{}"].steps.forEach(step => {
+        let source = programData[step.source];
+
+
+        // Thing is created/spawned
+        if (step.type === STEP_TYPE.SPAWN_ITEM) {
+            // Create ID for tracking, and add to array
+            let id = generateUuid('thing');
+            thingList.push(id);
+
+            // Use the inputOutput (that spawned the thing) as the original position
+            let ioPosition = queryWorldPose(programModel, step.data.inputOutput, '');
+
+            // Add thing to the program model
+            programModel = addToEnvironModel(programModel, 
+                'world', 
+                id, 
+                ioPosition.position, 
+                ioPosition.rotation
+                );
+
+            // Add thing grasp points to the program model
+            let graspPoints = programData[step.data.thing].properties.graspPoints;
+            graspPoints.forEach(graspId => {
+                let gID = generateUuid('graspPoint');
+                programModel = addGraspPointToModel(programModel, 
+                    id, 
+                    gID, 
+                    programData[graspId].properties.position, 
+                    programData[graspId].properties.rotation, 
+                    programData[graspId].properties.gripDistance
+                    );
+            })
+
+            // Add thing to the tracking
+            if (!(step.data.thing in trackedByType)) {
+                trackedByType[step.data.thing] = [{
+                    id: id
+                }];
+            } else {
+                trackedByType[step.data.thing].push({
+                    id: id
+                });
+            }
+        }
+
+        // Thing is consumed/destroyed
+        if (step.type === STEP_TYPE.DESTROY_ITEM) {
+            // Find and remove the tracked thing
+            let bucket = trackedByType[step.data.thing];
+            if (bucket.length === 1) {
+                delete trackedByType[step.data.thing];
+            } else {
+                // Remove the item that was most recently tracked
+                let lst = trackedByType[step.data.thing];
+                let idx = 0;
+                for (let i = 0; i < lst.length; i++) {
+                    if (lst[i].id === previousGraspedThingID) {
+                        idx = i;
+                        i = lst.length;
+                    }
+                }
+                trackedByType[step.data.thing].splice(idx, 1);
+            }
+        }
+
+        // Update all links in the model
+        if (step.type === STEP_TYPE.SCENE_UPDATE) {
+            Object.keys(step.data.links).forEach((link) => {
+                // Update the program model for each link
+                programModel = updateEnvironModel(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
+            });
+            
+            if (currentGrippedThing !== '') {
+                // Get world pose of the gripper offset and update the grasped object to this pose
+                let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+                programModel = updateEnvironModel(programModel, currentGrippedThing, gripperOffset.position, gripperOffset.rotation);
+            }
+        }
+
+        // Update until we get the last update of the move gripper action
+        if (step.type === STEP_TYPE.SCENE_UPDATE &&
+            source.type === 'moveGripperType') {
+                if (!inMoveGripper) {
+                    inMoveGripper = true;
+                }
+                lastMoveGripperData = {...step};
+        }
+
+        // Once out of the move gripper action, use the last data point to calculate everything
+        if (inMoveGripper && 
+            !(step.type === STEP_TYPE.SCENE_UPDATE &&
+              source.type === 'moveGripperType')) {
+            inMoveGripper = false;
+            moveGripperOrder.push(lastMoveGripperData.source);
+            let mgSource = programData[lastMoveGripperData.source];
+            let thing = programData[lastMoveGripperData.data.thing.id ? lastMoveGripperData.data.thing.id : lastMoveGripperData.data.thing];
+
+            if (thing) {
+                // Update model positions of all links in the gripper
+                Object.keys(lastMoveGripperData.data.links).forEach((link) => {
+                    programModel = updateEnvironModel(programModel, link, lastMoveGripperData.data.links[link].position, lastMoveGripperData.data.links[link].rotation);
+                });
+
+                // Get the gripper offset position/rotation
+                let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+                let gripperRotation = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
+
+                // Gripper is closing
+                if (mgSource.properties.positionStart > mgSource.properties.positionEnd) {
+                    let bucket = trackedByType[thing.id];
+
+                    if (bucket) {
+                        for (let i = 0; i < bucket.length; i++) {
+                            // Get all potential grasp locations for a given thing
+                            let graspPointIDs = getAllChildrenFromModel(programModel, bucket[i].id);
+                            // Search over the grasp locations and determine whether any are within some
+                            // tolerance of the gripper's offset position/rotation
+                            let selectedId = '';
+                            let selectedGraspWidth = -1;
+
+                            if (graspPointIDs) {
+                                graspPointIDs.forEach(graspPointID => {
+                                    let graspPosition = queryWorldPose(programModel, graspPointID, '');
+                                    let tmpGraspWidth = getUserDataFromModel(programModel, graspPointID, 'width');
+                                    let graspRotation = new Quaternion(graspPosition.rotation.x, graspPosition.rotation.y, graspPosition.rotation.z, graspPosition.rotation.w);
+                                    let distTol = distance(graspPosition.position, gripperOffset.position) <= MAX_GRIPPER_DISTANCE_DIFF;
+                                    let rotTol = graspRotation.angleTo(gripperRotation) <= MAX_GRIPPER_ROTATION_DIFF;
+
+                                    if (distTol && rotTol) {
+                                        selectedId = graspPointID;
+                                        selectedGraspWidth = tmpGraspWidth;
+                                    }
+                                });
+
+                                // Update grasped thing
+                                if (selectedId !== '' &&
+                                    mgSource.properties.positionEnd === selectedGraspWidth &&
+                                    currentGrippedThing === '') {
+                                        currentGrippedThing = bucket[i].id;
+                                        currentGraspPoint = selectedId;
+                                        graspWidth = selectedGraspWidth;
+                                }
+
+                                // width is not enough
+                                if (selectedId !== '' && mgSource.properties.positionEnd > selectedGraspWidth) {
+                                    const id = generateUuid('issue');
+                                    issues[id] = {
+                                        id: id,
+                                        requiresChanges: false,
+                                        title: 'Failed to grasp thing',
+                                        description: 'The move gripper\'s end position is greater than the grasping width of the thing',
+                                        complete: false,
+                                        focus: [mgSource.id],
+                                        graphData: null,
+                                        sceneData : null,
+                                        code : null
+                                    }
+                                }
+
+                                // width is too much
+                                if (selectedId !== '' && mgSource.properties.positionEnd < selectedGraspWidth) {
+                                    const id = generateUuid('issue');
+                                    issues[id] = {
+                                        id: id,
+                                        requiresChanges: true,
+                                        title: 'Gripper width is below grasp threshold',
+                                        description: 'The move gripper\'s end position is less than the grasping width of the thing',
+                                        complete: false,
+                                        focus: [mgSource.id],
+                                        graphData: null,
+                                        sceneData : null,
+                                        code : null
+                                    }
+
+                                    // update grip
+                                    if (currentGrippedThing === '') {
+                                        currentGrippedThing = bucket[i].id;
+                                        currentGraspPoint = selectedId;
+                                        graspWidth = selectedGraspWidth;
+                                    }
+                                }
+
+                                // gripping the wrong thing
+                                if (selectedId !== '' && currentGrippedThing !== '' && bucket[i].id !== currentGrippedThing) {
+                                    const id = generateUuid('issue');
+                                    issues[id] = {
+                                        id: id,
+                                        requiresChanges: true,
+                                        title: 'Grasping multiple things',
+                                        description: 'Another thing is currently grasped by the robot.',
+                                        complete: false,
+                                        focus: [mgSource.id],
+                                        graphData: null,
+                                        sceneData : null,
+                                        code : null
+                                    }
+                                }
+                            }
+                        }
+                    } else if (!itemExistsError.includes(mgSource.id)){
+                        itemExistsError.push(mgSource.id);
+                        const id = generateUuid('issue');
+                        issues[id] = {
+                            id: id,
+                            requiresChanges: true,
+                            title: 'Thing has not been created',
+                            description: 'Attempting to grasp thing that has not yet been spawned.',
+                            complete: false,
+                            focus: [mgSource.id],
+                            graphData: null,
+                            sceneData : null,
+                            code : null
+                        }
+                    }
+                // Gripper is opening
+                } else if (mgSource.properties.positionStart < mgSource.properties.positionEnd) {
+                    let bucket = trackedByType[thing.id];
+                    let bucketContainsCurrentGrip = bucket ? (bucket.map(e => e.id).some(e => e === currentGrippedThing)) : false;
+
+                    // width is still grasping
+                    if (bucketContainsCurrentGrip &&
+                        graspWidth !== -1 &&
+                        mgSource.properties.positionEnd <= graspWidth) {
+                            const id = generateUuid('issue');
+                            issues[id] = {
+                                id: id,
+                                requiresChanges: false,
+                                title: 'Failed to release thing',
+                                description: 'Move gripper\'s end position is less than or equal to the grasping width of the thing',
+                                complete: false,
+                                focus: [mgSource.id],
+                                graphData: null,
+                                sceneData : null,
+                                code : null
+                            }
+                    }
+
+                    // releasing wrong thing
+                    if (currentGrippedThing !== '' && !bucketContainsCurrentGrip) {
+                        const id = generateUuid('issue');
+                        issues[id] = {
+                            id: id,
+                            requiresChanges: false,
+                            title: `Releasing incorrect thing`,
+                            description: `Gripper is releasing the incorrect thing`,
+                            complete: false,
+                            focus: [mgSource.id],
+                            graphData: null,
+                            sceneData : null,
+                            code : null
+                        }
+                    }
+
+                    // releasing somethign before grabbing something
+                    if (currentGrippedThing === '' &&
+                        thing && thing.id) {
+                        const id = generateUuid('issue');
+                        issues[id] = {
+                            id: id,
+                            requiresChanges: false,
+                            title: `Incorrect thing release`,
+                            description: 'Robot has not previously grasped a thing',
+                            complete: false,
+                            focus: [mgSource.id],
+                            graphData: null,
+                            sceneData : null,
+                            code : null
+                        }
+                    }
+
+                    // release thing
+                    if (bucketContainsCurrentGrip &&
+                        graspWidth !== -1 &&
+                        mgSource.properties.positionEnd > graspWidth) {
+                            currentGrippedThing = '';
+                            currentGraspPoint = '';
+                            graspWidth = -1;
+                    }
+
+                // Gripper has the same start and end positions
+                }
+            }
+
+            if (!samePositionMoveGrippers.includes(mgSource.id) &&
+                mgSource.properties.positionStart === mgSource.properties.positionEnd) {
+                    samePositionMoveGrippers.push(mgSource.id);
+                    const id = generateUuid('issue');
+                    issues[id] = {
+                        id: id,
+                        requiresChanges: false,
+                        title: `Gripper position did not change`,
+                        description: `Gripper start and end positions are the same.`,
+                        complete: false,
+                        focus: [mgSource.id],
+                        graphData: null,
+                        sceneData : null,
+                        code : null
+                    }
+                }
+        }
+    });
+
+    // Find inconsistencies in gripper motion
+    let previousEnd = -1;
+    let currentStart = -1;
+    let idx = 0;
+    moveGripperOrder.forEach(moveGripperId => {
+        let source = programData[moveGripperId];
+
+        if (idx === 0) {
+            previousEnd = source.properties.positionEnd;
+        } else {
+            currentStart = source.properties.positionStart;
+
+            if (currentStart !== previousEnd) {
+                const id = generateUuid('issue');
+                issues[id] = {
+                    id: id,
+                    requiresChanges: true,
+                    title: 'Gripper position mismatch',
+                    description: 'Move gripper start position does not match previous move gripper end position',
+                    complete: false,
+                    focus: [moveGripperId],
+                    graphData: null,
+                    sceneData : null,
+                    code : null
+                }
+            }
+
+            previousEnd = source.properties.positionEnd;
+        }
+
+        idx += 1;
+    });
 
     return [issues, {}];
 }

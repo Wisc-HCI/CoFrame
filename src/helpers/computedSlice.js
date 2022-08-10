@@ -557,7 +557,7 @@ export function stepsToAnimation(state, tfs, items) {
                 let releasing = false;
 
                 // Determine whether gripper is closing
-                let compileGripperClosing = step.data.closing;
+                let compileGripperClosing = lastMoveGripperData.data.closing;
 
                 // Get the corresponding bucket of things that could be potentially grasped
                 let thing = lastMoveGripperData.data.thing.id ? lastMoveGripperData.data.thing.id : lastMoveGripperData.data.thing
