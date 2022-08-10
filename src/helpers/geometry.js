@@ -542,17 +542,19 @@ export const addToEnvironModel = (model, parentId, itemId, position, rotation) =
 }
 
 export const updateEnvironModel = (model, itemId, position, rotation) => {
-  model[itemId].position.set(
-    position.x,
-    position.y,
-    position.z
-  );
-  model[itemId].quaternion.set(
-    rotation.x,
-    rotation.y,
-    rotation.z,
-    rotation.w
-  );
+  if (model[itemId]) {
+    model[itemId].position.set(
+      position.x,
+      position.y,
+      position.z
+    );
+    model[itemId].quaternion.set(
+      rotation.x,
+      rotation.y,
+      rotation.z,
+      rotation.w
+    );
+  }
   return model;
 }
 

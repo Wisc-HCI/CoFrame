@@ -8,7 +8,7 @@ import useMeasure from "react-use-measure";
 import { FrameTabBar } from "../FrameTabBar";
 import { ScrollRegion } from "../Elements/ScrollRegion";
 import { stringEquality } from "../../helpers/performance";
-import { Button, BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 // import * as ScrollArea from "@radix-ui/react-scroll-area";
 // import { styled } from "@stitches/react";
 
@@ -55,55 +55,15 @@ const isBlocked = (state, sectionId) =>
     (dep) => !isComplete(state, dep)
   ).length > 0;
 
-const FRAMES = [
-  {
-    key: "safety",
-    title: "Safety Concerns",
-    sections: [
-      "endEffectorPoses",
-      "thingSafety",
-      "collisions",
-      "pinchPoints",
-      "occupancy",
-    ],
-  },
-  {
-    key: "quality",
-    title: "Program Quality",
-    sections: [
-      "missingBlocks",
-      "missingParameters",
-      "processLogic",
-      "unusedSkills",
-      "unusedFeatures",
-      "emptyBlocks",
-    ],
-  },
-  {
-    key: "performance",
-    title: "Robot Performance",
-    sections: [
-      "reachability",
-      "jointSpeed",
-      "endEffectorSpeed",
-      "payload",
-      "spaceUsage",
-    ],
-  },
-  {
-    key: "business",
-    title: "Business Objectives",
-    sections: ["cycleTime", "idleTime", "returnOnInvestment"],
-  },
-];
-
 export const ReviewTile = (_) => {
+  const frames = useStore((state) => state.frames);
+
   const [frameId, setFrame, refresh, blockages] = useStore(
     (state) => [
       state.frame,
       state.setFrame,
       state.refresh,
-      FRAMES.map((frameInfo) =>
+      Object.values(frames).map((frameInfo) =>
         Math.min(
           ...frameInfo.sections.map((sectionId, idx) =>
             isBlocked(state, sectionId) ? idx : 100
@@ -116,7 +76,7 @@ export const ReviewTile = (_) => {
 
   const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined,shallow);
 
-  const frameIdx = FRAMES.map((frame) => frame.key).indexOf(frameId);
+  const frameIdx = Object.values(frames).map((frame) => frame.key).indexOf(frameId);
 
   const [ref, bounds] = useMeasure();
 //   const divStyle = useSpring({ width: "100%", config: config.stiff });
@@ -138,7 +98,7 @@ export const ReviewTile = (_) => {
         </Box>
         <ScrollRegion vertical height={bounds.height - 125} >
           <Box direction='column' style={{width:'calc(100% - 6px)'}} round='small' gap='xsmall'>
-              {FRAMES[frameIdx].sections.map((section, idx) => (
+              {Object.values(frames)[frameIdx].sections.map((section, idx) => (
                  <ReviewSection key={section} sectionId={section} blocked={idx >= blockages[frameIdx]} initialBlocked={idx === blockages[frameIdx]} />
               ))}
             </Box>
