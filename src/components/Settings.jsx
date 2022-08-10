@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { TextInput, List } from "grommet";
+// import { TextInput, List } from "grommet";
 import { FiRotateCw, FiDownload, FiUpload } from "react-icons/fi";
 import useStore from "../stores/Store";
 import { saveAs } from "file-saver";
@@ -18,13 +18,15 @@ import {
   IconButton,
   Button,
   Typography,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { FrameTabBar } from "./FrameTabBar";
 import shallow from "zustand/shallow";
 import { ScrollRegion } from "./Elements/ScrollRegion";
 
 const DialogContent = () => {
-  const url = useStore((store) => store.url, shallow);
+  // const url = useStore((store) => store.url, shallow);
   const setUrl = useStore((store) => store.setUrl, shallow);
   const connection = useStore((store) => store.connection, shallow);
   const connect = useStore((store) => store.connect, shallow);
@@ -108,11 +110,12 @@ const DialogContent = () => {
 
   const [tab, setTab] = useState("settings");
 
-  const filteredIssueSettings = Object.values(issueSettings)
-    .filter((v) => v.frame === frameId)
+  const filteredIssueSettings = Object.values(issueSettings).filter(
+    (v) => v.frame === frameId
+  );
 
   return (
-    <Box sx={{ padding: 0, width: "50vw", height: "70vh" }}>
+    <Card sx={{ padding: 0 }}>
       <Box
         sx={{ borderBottom: 1, borderColor: "#444", backgroundColor: "#222" }}
       >
@@ -127,176 +130,189 @@ const DialogContent = () => {
           <Tab value="debug" label="Debug" />
         </Tabs>
       </Box>
+      <CardContent
+        sx={{
+          // height: "70vh",
+          // width: "50vw",
+          flexDirection: "row",
+          display: "flex",
+          padding: 0,
+          margin: 0,
+        }}
+      >
+        <Box
+          // background="#252525"
 
-      <Box sx={{ padding: "5px" }}>
-        {tab === "settings" ? (
-          <Stack direction="column" spacing={2}>
-            {/* ROS Connection (Not used currently) */}
-            <Alert
-              variant='filled'
-              severity={
-                connection === "connected"
-                  ? "success"
-                  : connection === "connecting"
-                  ? "info"
-                  : "error"
-              }
-            >
-              <AlertTitle>
+          // margin={{ top: "small" }}
+          // round="xsmall"
+          sx={{
+            overflowY: "scroll",
+            maxHeight: "70vh",
+            width: "50vw",
+            // flex: 1,
+            // width:'calc(50vw - 45px)',
+            // height:'calc(70vh - 10px)',
+          }}
+        >
+          {tab === "settings" ? (
+            <Stack direction="column" spacing={1} sx={{ padding: "5px" }}>
+              {/* ROS Connection (Not used currently) */}
+              <Alert
+                sx={{ marginBottom: "5px" }}
+                variant="filled"
+                severity={
+                  connection === "connected"
+                    ? "success"
+                    : connection === "connecting"
+                    ? "info"
+                    : "error"
+                }
+              >
+                <AlertTitle>
+                  {connection === "connected"
+                    ? "Connected"
+                    : connection === "Connecting..."
+                    ? "info"
+                    : "Disconnected"}
+                </AlertTitle>
                 {connection === "connected"
-                  ? "Connected"
-                  : connection === "Connecting..."
-                  ? "info"
-                  : "Disconnected"}
-              </AlertTitle>
-              {connection === "connected"
-                ? "You are connected to a ROS Server"
-                : connection === "connecting"
-                ? "You are connecting to a ROS Server"
-                : "You are not connected to a ROS Server"}
-            </Alert>
+                  ? "You are connected to a ROS Server"
+                  : connection === "connecting"
+                  ? "You are connecting to a ROS Server"
+                  : "You are not connected to a ROS Server"}
+              </Alert>
 
-            <TextField
-              // placeholder="e.g. ws://localhost:9090"
-              label="URL"
-              value={host}
-              onChange={(e) => updateHost(e.target.value)}
-              fullWidth
-              InputProps={{
-                className: "nodrag",
-                style: { paddingRight: 6 },
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Button onClick={togglePrefix}>{prefix}</Button>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={connect}>
-                      <FiRotateCw style={{ height: 14, width: 14 }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            {/* Upload/Download */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={upload}
-              style={{ display: "none" }}
-            />
-            <Stack direction="row" spacing={1} justifyContent="between">
-              <Button
-                variant="outlined"
-                icon={<FiUpload />}
-                style={{ flex: 1 }}
-                onClick={handleUploadClick}
-              >
-                Upload
-              </Button>
-              <Button
-                variant="outlined"
-                icon={<FiDownload />}
-                style={{ flex: 1 }}
-                label="Download"
-                onClick={download}
-              >
-                Download
-              </Button>
-            </Stack>
-
-            {/* Expert Settings */}
-            <Stack
-              direction="column"
-              alignItems="center"
-              alignContent="center"
-              sx={{ height: 60 }}
-            >
-              <FrameTabBar
-                active={frameId}
-                onChange={setFrame}
-                backgroundColor={"inherit"}
+              <TextField
+                // placeholder="e.g. ws://localhost:9090"
+                label="URL"
+                value={host}
+                onChange={(e) => updateHost(e.target.value)}
+                fullWidth
+                InputProps={{
+                  className: "nodrag",
+                  style: { paddingRight: 6 },
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Button onClick={togglePrefix}>{prefix}</Button>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={connect}>
+                        <FiRotateCw style={{ height: 14, width: 14 }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </Stack>
-            <ScrollRegion
-              vertical
-              height="calc(50vh - 215px)"
-              width="calc(50vw - 15px)"
-              style={{ backgroundColor: "#222222", borderRadius:4, paddingTop:4 }}
-            >
+
+              {/* Upload/Download */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={upload}
+                style={{ display: "none" }}
+              />
+              <Stack direction="row" spacing={1} justifyContent="between">
+                <Button
+                  variant="outlined"
+                  icon={<FiUpload />}
+                  style={{ flex: 1 }}
+                  onClick={handleUploadClick}
+                >
+                  Upload
+                </Button>
+                <Button
+                  variant="outlined"
+                  icon={<FiDownload />}
+                  style={{ flex: 1 }}
+                  label="Download"
+                  onClick={download}
+                >
+                  Download
+                </Button>
+              </Stack>
+
+              {/* Frames Selector */}
               <Stack
-                // sx={{ padding: '5px' }}
-                spacing={2}
                 direction="column"
-                sx={{
-                  width: "calc(50vw - 20px)",
-                  padding: '5px',
+                alignItems="center"
+                alignContent="center"
+                sx={{ height: 60 }}
+              >
+                <FrameTabBar
+                  active={frameId}
+                  onChange={setFrame}
+                  backgroundColor={"inherit"}
+                />
+              </Stack>
+              {/* Expert Settings */}
+              <ScrollRegion
+                vertical
+                height={"calc(70vh - 280px)"}
+                width="100%"
+                style={{
+                  backgroundColor: "#222222",
+                  borderRadius: 4,
+                  paddingTop: 4,
                 }}
               >
-                {filteredIssueSettings.length > 0 ? filteredIssueSettings.map((entry) => (
-                    <Box
-                      key={entry.name.concat("input")}
-                      sx={{
-                        display:'flex',
-                        width: "calc(50vw - 35px)",
-                        padding:'4px'
-                      }}
-                    >
-                      {!entry.max && (
-                        <TextField
-                          fullWidth
-                          label={entry.name}
-                          type="number"
-                          min={entry.min}
-                          value={entry.value}
-                          onChange={(e) => updateIssue(e.target.value, entry)}
-                        />
-                      )}
-                      {entry.max && (
-                        <TextField
-                          fullWidth
-                          label={entry.name}
-                          type="number"
-                          min={entry.min}
-                          max={entry.max}
-                          value={entry.value}
-                          onChange={(e) => updateIssue(e.target.value, entry)}
-                        />
-                      )}
-                    </Box>
-                  )) : (
-                    <Typography>No Settings</Typography>
+                <Stack
+                  // sx={{ padding: '5px' }}
+                  spacing={2}
+                  direction="column"
+                  sx={{
+                    // width: "calc(50vw - 25px)",
+                    padding: "5px",
+                  }}
+                >
+                  {filteredIssueSettings.length > 0 ? (
+                    filteredIssueSettings.map((entry) => (
+                      <Box
+                        key={entry.name.concat("input")}
+                        sx={{
+                          display: "flex",
+                          // width: "calc(50vw - 40px)",
+                          padding: "4px",
+                        }}
+                      >
+                        {!entry.max && (
+                          <TextField
+                            fullWidth
+                            label={entry.name}
+                            type="number"
+                            min={entry.min}
+                            value={entry.value}
+                            onChange={(e) => updateIssue(e.target.value, entry)}
+                          />
+                        )}
+                        {entry.max && (
+                          <TextField
+                            fullWidth
+                            label={entry.name}
+                            type="number"
+                            min={entry.min}
+                            max={entry.max}
+                            value={entry.value}
+                            onChange={(e) => updateIssue(e.target.value, entry)}
+                          />
+                        )}
+                      </Box>
+                    ))
+                  ) : (
+                    <Typography sx={{ width: "100%", textAlign: "center" }}>
+                      No Settings
+                    </Typography>
                   )}
-              </Stack>
-            </ScrollRegion>
-            {/* <Box
-              height="40vh"
-              background="#252525"
-              style={{ overflowY: "scroll" }}
-              margin={{ top: "small" }}
-              round="xsmall"
-            >
-              
-            </Box> */}
-          </Stack>
-        ) : tab === "debug" ? (
-          <Box
-            // background="#252525"
-
-            // margin={{ top: "small" }}
-            // round="xsmall"
-            sx={{
-              overflowY: "scroll",
-              height: "calc(70vh - 60px)",
-            }}
-          >
+                </Stack>
+              </ScrollRegion>
+            </Stack>
+          ) : tab === "debug" ? (
             <ReactJson src={data} collapsed={1} theme="tomorrow" />
-          </Box>
-        ) : null}
-      </Box>
-    </Box>
+          ) : null}
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 
