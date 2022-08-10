@@ -1,24 +1,27 @@
-import React, { useRef } from "react";
-import {
-  Layer,
-  Box,
-  Card,
-  Button,
-  Notification,
-  TextInput,
-  List,
-  Tabs,
-  Tab,
-} from "grommet";
+import React, { useRef, useState } from "react";
+import { TextInput, List } from "grommet";
 import { FiRotateCw, FiDownload, FiUpload } from "react-icons/fi";
 import useStore from "../stores/Store";
 import { saveAs } from "file-saver";
 import YAML from "yaml";
 import ReactJson from "react-json-view";
-import { Dialog } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
+import {
+  Dialog,
+  Tab,
+  Tabs,
+  Alert,
+  AlertTitle,
+  Box,
+  Stack,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Button,
+  Typography,
+} from "@mui/material";
 import { FrameTabBar } from "./FrameTabBar";
 import shallow from "zustand/shallow";
+import { ScrollRegion } from "./Elements/ScrollRegion";
 
 const DialogContent = () => {
   const url = useStore((store) => store.url, shallow);
@@ -34,6 +37,20 @@ const DialogContent = () => {
   const data = useStore((store) => store.programData, shallow);
   const frameId = useStore((store) => store.frame, shallow);
   const setFrame = useStore((store) => store.setFrame, shallow);
+
+  const [prefix, setPrefix] = useState("ws://");
+  const [host, setHost] = useState("localhost:9090");
+
+  const togglePrefix = () => {
+    const newPrefix = prefix === "ws://" ? "wss://" : "ws://";
+    setPrefix(newPrefix);
+    setUrl(newPrefix + host);
+  };
+
+  const updateHost = (newHost) => {
+    setHost(newHost);
+    setUrl(prefix + newHost);
+  };
 
   const fileInputRef = useRef();
 
@@ -89,167 +106,198 @@ const DialogContent = () => {
     updateIssueSetting(item);
   };
 
+  const [tab, setTab] = useState("settings");
+
+  const filteredIssueSettings = Object.values(issueSettings)
+    .filter((v) => v.frame === frameId)
+
   return (
-    <Tabs width="large">
-        <Tab title="Settings">
-          {/* ROS Connection (Not used currently) */}
-          {connection === "connected" && (
-            <Notification
-              status="normal"
-              showIcon
-              title="Connected!"
-              message="You are connected to a ROS Server"
-              round="xsmall"
-            />
-          )}
-          {connection === "connecting" && (
-            <Notification
-              status="unknown"
-              showIcon
-              title="Connecting..."
-              message="You are connecting to a ROS Server"
-              round="xsmall"
-            />
-          )}
-          {connection === "disconnected" && (
-            <Notification
-              status="warning"
-              showIcon
-              title="Disconnected"
-              message="You are not connected to a ROS Server"
-              round="xsmall"
-            />
-          )}
+    <Box sx={{ padding: 0, width: "50vw", height: "70vh" }}>
+      <Box
+        sx={{ borderBottom: 1, borderColor: "#444", backgroundColor: "#222" }}
+      >
+        <Tabs
+          value={tab}
+          onChange={(_, newValue) => {
+            setTab(newValue);
+          }}
+          centered
+        >
+          <Tab value="settings" label="Settings" />
+          <Tab value="debug" label="Debug" />
+        </Tabs>
+      </Box>
 
-          <Box
-            direction="row"
-            gap="xsmall"
-            align="center"
-            alignContent="center"
-            justify="center"
-            margin={{ top: "small" }}
-          >
-            <TextInput
-              placeholder="e.g. ws://localhost:9090"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              size="large"
-            />
-            <Button
-              primary
-              size="small"
-              icon={<FiRotateCw style={{ height: 14, width: 14 }} />}
-              onClick={connect}
-            />
-          </Box>
+      <Box sx={{ padding: "5px" }}>
+        {tab === "settings" ? (
+          <Stack direction="column" spacing={2}>
+            {/* ROS Connection (Not used currently) */}
+            <Alert
+              variant='filled'
+              severity={
+                connection === "connected"
+                  ? "success"
+                  : connection === "connecting"
+                  ? "info"
+                  : "error"
+              }
+            >
+              <AlertTitle>
+                {connection === "connected"
+                  ? "Connected"
+                  : connection === "Connecting..."
+                  ? "info"
+                  : "Disconnected"}
+              </AlertTitle>
+              {connection === "connected"
+                ? "You are connected to a ROS Server"
+                : connection === "connecting"
+                ? "You are connecting to a ROS Server"
+                : "You are not connected to a ROS Server"}
+            </Alert>
 
-          {/* Upload/Download */}
-          <Box
-            direction="row"
-            justify="around"
-            margin={{ top: "small" }}
-            pad="small"
-            background="#252525"
-            round="xsmall"
-          >
+            <TextField
+              // placeholder="e.g. ws://localhost:9090"
+              label="URL"
+              value={host}
+              onChange={(e) => updateHost(e.target.value)}
+              fullWidth
+              InputProps={{
+                className: "nodrag",
+                style: { paddingRight: 6 },
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Button onClick={togglePrefix}>{prefix}</Button>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={connect}>
+                      <FiRotateCw style={{ height: 14, width: 14 }} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            {/* Upload/Download */}
             <input
               type="file"
               ref={fileInputRef}
               onChange={upload}
               style={{ display: "none" }}
             />
-            <Button
-              secondary
-              icon={<FiUpload />}
-              style={{ flex: 1, marginRight: 5 }}
-              label="Upload"
-              onClick={handleUploadClick}
-            />
-            <Button
-              secondary
-              icon={<FiDownload />}
-              style={{ flex: 1, marginLeft: 5 }}
-              label="Download"
-              onClick={download}
-            />
-          </Box>
+            <Stack direction="row" spacing={1} justifyContent="between">
+              <Button
+                variant="outlined"
+                icon={<FiUpload />}
+                style={{ flex: 1 }}
+                onClick={handleUploadClick}
+              >
+                Upload
+              </Button>
+              <Button
+                variant="outlined"
+                icon={<FiDownload />}
+                style={{ flex: 1 }}
+                label="Download"
+                onClick={download}
+              >
+                Download
+              </Button>
+            </Stack>
 
-          {/* Expert Settings */}
-          <Box
-            direction="column"
-            align="center"
-            alignContent="center"
-            justify="center"
-            margin={{ top: "small" }}
-          >
-            <FrameTabBar
-              active={frameId}
-              onChange={setFrame}
-              backgroundColor={"inherit"}
-            />
-          </Box>
-          <Box
-            height="40vh"
-            background="#252525"
-            style={{ overflowY: "scroll" }}
-            margin={{ top: "small" }}
-            round="xsmall"
-          >
-            <List
-              data={Object.values(issueSettings).filter(
-                (v) => v.frame === frameId
-              )}
-              style={{ padding: 5 }}
-              margin="none"
-              pad="none"
-              border={false}
+            {/* Expert Settings */}
+            <Stack
+              direction="column"
+              alignItems="center"
+              alignContent="center"
+              sx={{ height: 60 }}
             >
-              {(entry, idx) => (
-                <Box
-                  animation={{ type: "fadeIn", delay: idx * 100 }}
-                  direction="row"
-                  key={entry.name.concat("div")}
-                  margin="small"
-                  pad="xsmall"
-                >
-                  {entry.name}
-                  {!entry.max && (
-                    <TextInput
-                      type="number"
+              <FrameTabBar
+                active={frameId}
+                onChange={setFrame}
+                backgroundColor={"inherit"}
+              />
+            </Stack>
+            <ScrollRegion
+              vertical
+              height="calc(50vh - 215px)"
+              width="calc(50vw - 15px)"
+              style={{ backgroundColor: "#222222", borderRadius:4, paddingTop:4 }}
+            >
+              <Stack
+                // sx={{ padding: '5px' }}
+                spacing={2}
+                direction="column"
+                sx={{
+                  width: "calc(50vw - 20px)",
+                  padding: '5px',
+                }}
+              >
+                {filteredIssueSettings.length > 0 ? filteredIssueSettings.map((entry) => (
+                    <Box
                       key={entry.name.concat("input")}
-                      min={entry.min}
-                      defaultValue={entry.value}
-                      onChange={(e) => updateIssue(e.target.value, entry)}
-                    />
+                      sx={{
+                        display:'flex',
+                        width: "calc(50vw - 35px)",
+                        padding:'4px'
+                      }}
+                    >
+                      {!entry.max && (
+                        <TextField
+                          fullWidth
+                          label={entry.name}
+                          type="number"
+                          min={entry.min}
+                          value={entry.value}
+                          onChange={(e) => updateIssue(e.target.value, entry)}
+                        />
+                      )}
+                      {entry.max && (
+                        <TextField
+                          fullWidth
+                          label={entry.name}
+                          type="number"
+                          min={entry.min}
+                          max={entry.max}
+                          value={entry.value}
+                          onChange={(e) => updateIssue(e.target.value, entry)}
+                        />
+                      )}
+                    </Box>
+                  )) : (
+                    <Typography>No Settings</Typography>
                   )}
-                  {entry.max && (
-                    <TextInput
-                      type="number"
-                      key={entry.name.concat("input")}
-                      min={entry.min}
-                      max={entry.max}
-                      defaultValue={entry.value}
-                      onChange={(e) => updateIssue(e.target.value, entry)}
-                    />
-                  )}
-                </Box>
-              )}
-            </List>
-          </Box>
-        </Tab>
-        <Tab title="Debug">
+              </Stack>
+            </ScrollRegion>
+            {/* <Box
+              height="40vh"
+              background="#252525"
+              style={{ overflowY: "scroll" }}
+              margin={{ top: "small" }}
+              round="xsmall"
+            >
+              
+            </Box> */}
+          </Stack>
+        ) : tab === "debug" ? (
           <Box
-            height="60vh"
-            background="#252525"
-            style={{ overflowY: "scroll" }}
-            margin={{ top: "small" }}
-            round="xsmall"
+            // background="#252525"
+
+            // margin={{ top: "small" }}
+            // round="xsmall"
+            sx={{
+              overflowY: "scroll",
+              height: "calc(70vh - 60px)",
+            }}
           >
             <ReactJson src={data} collapsed={1} theme="tomorrow" />
           </Box>
-        </Tab>
-      </Tabs>
-  )
+        ) : null}
+      </Box>
+    </Box>
+  );
 };
 
 export const SettingsModal = () => {
@@ -258,8 +306,7 @@ export const SettingsModal = () => {
 
   return (
     <Dialog open={Boolean(activeModal)} onBackdropClick={closeModal}>
-      <CssBaseline />
-      {activeModal && <DialogContent/>}
+      {activeModal && <DialogContent />}
     </Dialog>
   );
 };

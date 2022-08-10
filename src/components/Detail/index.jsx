@@ -30,6 +30,8 @@ import {
   TextField,
   LinearProgress,
 } from "@mui/material";
+import { BackRefSection } from "./BackRefSection";
+import { ForwardRefSection } from "./ForwardRefSection";
 
 export const Detail = (_) => {
   const { item, objectTypeInfo } = useStore((state) => {
@@ -243,15 +245,23 @@ export const Detail = (_) => {
                   position={item.properties.position}
                   rotation={item.properties.rotation}
                 />
-              )}
+            )}
 
-            {item.type === "machineType" && (
+            {(item.type === 'machineType' || item.type === 'toolType') && (
+              <BackRefSection title='Processes' reference={item.id} targetType='processType' targetField='gizmo'/>
+            )}
+
+            {/* {item.type === "machineType" && (
               <>
                 <MachineProcessList machineId={item.id} />
               </>
+            )} */}
+
+            {item?.properties?.relativeTo && (
+              <ForwardRefSection references={item.properties.relativeTo === 'world' ? [] : [item.properties.relativeTo]} title='Relative To'/>
             )}
 
-            {item.type === "processType" && (
+            {/* {item.type === "processType" && (
               <>
                 <ProcessIOList processId={item.id} isInput />
                 <div style={{ marginBottom: 10 }}></div>
@@ -266,7 +276,7 @@ export const Detail = (_) => {
                     <FixtureItem fixtureID={item.properties.relativeTo} />
                   </Box>
                 </>
-              )}
+              )} */}
 
             {item.type === "gripperType" && (
               <>

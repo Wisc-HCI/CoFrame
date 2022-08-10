@@ -65,9 +65,11 @@ export const ProgramTile = forwardRef((_,ref) => {
                 }
             >   
             
-                <Environment store={useStore} highlightColor={highlightColor} height={height-62} snapToGrid={false} animateDrawer={false}/>
-             
+                {/* <StyleWrapper highlightColor='red'> */}
+                <Environment store={useStore} highlightColor={highlightColor} height={height-62} snapToGrid={false} animateDrawer={true}/>
+                {/* </StyleWrapper> */}
                 
+             
             </Tile>
              }
              </ParentSize>

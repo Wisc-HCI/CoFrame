@@ -7,29 +7,33 @@ import { stringEquality } from "../../helpers/performance";
 import { Card, CardHeader, IconButton } from "@mui/material";
 import { ExpandCarrot } from "../Elements/ExpandCarrot";
 
-export const BackRefSection = ({
+export const ForwardRefSection = ({
   title,
-  reference,
-  targetType,
-  targetField,
+  references
 }) => {
-  const typeInfo = useStore(
-    useCallback(
-      (state) => state.programSpec.objectTypes[targetType],
-      [targetType]
-    ),
-    shallow
-  );
+//   const typeInfo = useStore(
+//     useCallback(
+//       (state) => state.programSpec.objectTypes[targetType],
+//       [targetType]
+//     ),
+//     shallow
+//   );
   const addFocusItem = useStore((state) => state.addFocusItem, shallow);
   const targets = useStore((state) => {
-    return Object.values(state.programData).filter(
-      (value) =>
-        value &&
-        value.properties &&
-        value.type === targetType &&
-        value.properties[targetField] === reference
-    );
+    return references
+        .map(reference=>state.programData[reference])
+        .filter(d=>d)
+        .map(d=>([d,state.programSpec.objectTypes[d.type]]))
+    // return Object.values(state.programData).filter(
+    //   (value) =>
+    //     value &&
+    //     value.properties &&
+    //     value.type === targetType &&
+    //     value.properties[targetField] === reference
+    // );
   }, stringEquality);
+
+  console.log(targets)
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -61,19 +65,19 @@ export const BackRefSection = ({
         >
           {targets.length > 0 ? (
             targets.map((target) => {
-              const targetRef = referenceTemplateFromSpec(
-                targetType,
-                target,
-                typeInfo
+              const data = target[0].dataType === 'reference' ? target[0] : referenceTemplateFromSpec(
+                target[0].type,
+                target[0],
+                target[1]
               );
               return (
                 <ExternalBlock
                   key={target.id}
                   store={useStore}
-                  data={targetRef}
+                  data={data}
                   highlightColor={"#333333"}
                   onClick={() => {
-                    addFocusItem(target.id, true);
+                    addFocusItem(target[0].id, true);
                   }}
                 />
               );

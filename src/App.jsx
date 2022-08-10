@@ -43,6 +43,9 @@ export default function App() {
   const muiTheme = createTheme({
     palette: {
       mode: "dark",
+      highlightColor: {
+        main: primaryColor,
+      },
       primaryColor: {
         main: primaryColor,
       },
@@ -52,6 +55,10 @@ export default function App() {
       quiet: {
         main: "#444",
         darker: "#333",
+      },
+      vibrant: {
+        main: "#fff",
+        darker: "#ddd",
       },
     },
   });
@@ -66,10 +73,12 @@ export default function App() {
   const showEditor = viewMode === "default" || viewMode === "program";
 
   return (
+
     <Grommet full theme={theme}>
       {/* <CssBaseline/> */}
       {/* Main container */}
       <ThemeProvider theme={muiTheme}>
+       
         <div
           style={{
             backgroundColor: "black",
@@ -146,12 +155,13 @@ export default function App() {
             </ParentSize>
           </Drawer>
           <Detail />
-          <SettingsModal />
+          <SettingsModal/>
         </div>
 
         {/* <SettingsModal />
         
        */}
+       
       </ThemeProvider>
     </Grommet>
   );

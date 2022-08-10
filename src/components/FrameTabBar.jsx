@@ -67,7 +67,7 @@ const Icon = ({ onChange, active, frame, width }) => {
         variants={variants}
         animate={active ? 'active':'inactive'}
         width="100%"
-        height="100%"
+        height="35px"
         viewBox="10 10 800 800"
         style={{
           unset: "all",
@@ -75,7 +75,7 @@ const Icon = ({ onChange, active, frame, width }) => {
           clipRule: "evenodd",
           strokeLinejoin: "round",
           strokeMiterlimit: 2,
-          paddingTop: 2,
+          paddingTop: '2pt',
         }}
       >
         {GROUPS[frame]}
@@ -84,6 +84,8 @@ const Icon = ({ onChange, active, frame, width }) => {
         variants={textVariants}
         animate={active ? 'active':'inactive'}
         style={{
+          paddingTop: '2px',
+          fontFamily: 'Helvetica',
           unset: "all",
           fontSize: 8,
           fontStyle: "bold",
@@ -153,7 +155,7 @@ export const FrameTabBar = ({
           // backgroundColor: bcolor,
           width: width / 4,
           position: "absolute",
-          height: 54,
+          height: '54px',
           borderRadius: 4,
         }}
       ></motion.div>
