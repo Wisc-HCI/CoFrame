@@ -4,7 +4,7 @@ import { Box, Collapsible, Text } from "grommet";
 import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 import shallow from "zustand/shallow";
 import { stringEquality } from "../../helpers/performance";
-import { Card, CardHeader, IconButton } from "@mui/material";
+import { Card, CardHeader, IconButton, Collapse } from "@mui/material";
 import { ExpandCarrot } from "../Elements/ExpandCarrot";
 
 export const BackRefSection = ({
@@ -49,7 +49,7 @@ export const BackRefSection = ({
           </IconButton>
         }
       />
-      <Collapsible open={!collapsed}>
+      <Collapse in={!collapsed}>
         <Box
           gap="xsmall"
           pad="xsmall"
@@ -82,7 +82,7 @@ export const BackRefSection = ({
             <Text alignSelf="center">No Associated Items</Text>
           )}
         </Box>
-      </Collapsible>
+      </Collapse>
     </Card>
   );
 };

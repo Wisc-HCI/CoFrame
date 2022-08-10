@@ -8,7 +8,13 @@ import useMeasure from "react-use-measure";
 import { FrameTabBar } from "../FrameTabBar";
 import { ScrollRegion } from "../Elements/ScrollRegion";
 import { stringEquality } from "../../helpers/performance";
-import { Button, BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
+import {
+  Button,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
+  Badge,
+} from "@mui/material";
 // import * as ScrollArea from "@radix-ui/react-scroll-area";
 // import { styled } from "@stitches/react";
 
@@ -114,35 +120,70 @@ export const ReviewTile = (_) => {
     stringEquality
   );
 
-  const isProcessing = useStore(state => state.processes.planProcess !== null && state.processes.planProcess !== undefined,shallow);
+  const isProcessing = useStore(
+    (state) =>
+      state.processes.planProcess !== null &&
+      state.processes.planProcess !== undefined,
+    shallow
+  );
+
+  const reviewableChanges = useStore(state=>state.reviewableChanges,shallow);
 
   const frameIdx = FRAMES.map((frame) => frame.key).indexOf(frameId);
 
   const [ref, bounds] = useMeasure();
-//   const divStyle = useSpring({ width: "100%", config: config.stiff });
+  //   const divStyle = useSpring({ width: "100%", config: config.stiff });
 
   return (
-    <Paper ref={ref} sx={{width:350,borderRadius:0,padding:'5px',backgroundColor:'black'}} elevation={0}>
-        <FrameTabBar active={frameId} onChange={setFrame} width={338} backgroundColor='transparent'/>
-        <Box direction="row" flex justify="between" align="center">
-          <h3 style={{ margin: "10pt" }}>Review</h3>
+    <Paper
+      ref={ref}
+      sx={{
+        width: 350,
+        borderRadius: 0,
+        padding: "5px",
+        backgroundColor: "black",
+      }}
+      elevation={0}
+    >
+      <FrameTabBar
+        active={frameId}
+        onChange={setFrame}
+        width={338}
+        backgroundColor="transparent"
+      />
+      <Box direction="row" flex justify="between" align="center">
+        <h3 style={{ margin: "10pt" }}>Review</h3>
+        <Badge color='primary' badgeContent={<b>!</b>} invisible={reviewableChanges===0} anchorOrigin={{vertical:'top',horizontal:'left'}}>
           <Button
             color="primaryColor"
-            variant='outlined'
+            variant="outlined"
             size="small"
             startIcon={<FiRefreshCw />}
             onClick={refresh}
             label="Refresh"
             disabled={isProcessing}
-          >Refresh</Button>
+          >
+            Refresh
+          </Button>
+        </Badge>
+      </Box>
+      <ScrollRegion vertical height={bounds.height - 125}>
+        <Box
+          direction="column"
+          style={{ width: "calc(100% - 6px)" }}
+          round="small"
+          gap="xsmall"
+        >
+          {FRAMES[frameIdx].sections.map((section, idx) => (
+            <ReviewSection
+              key={section}
+              sectionId={section}
+              blocked={idx >= blockages[frameIdx]}
+              initialBlocked={idx === blockages[frameIdx]}
+            />
+          ))}
         </Box>
-        <ScrollRegion vertical height={bounds.height - 125} >
-          <Box direction='column' style={{width:'calc(100% - 6px)'}} round='small' gap='xsmall'>
-              {FRAMES[frameIdx].sections.map((section, idx) => (
-                 <ReviewSection key={section} sectionId={section} blocked={idx >= blockages[frameIdx]} initialBlocked={idx === blockages[frameIdx]} />
-              ))}
-            </Box>
-        </ScrollRegion>
+      </ScrollRegion>
     </Paper>
   );
 };

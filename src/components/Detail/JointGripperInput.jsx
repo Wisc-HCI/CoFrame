@@ -4,6 +4,7 @@ import { Box } from "grommet";
 import useStore from '../../stores/Store';
 import Collapse from '../Elements/Collapse';
 import { NumberInput } from '../Elements/NumberInput';
+import shallow from 'zustand/shallow';
 
 
 function JointGripperInput({ robotID, isGripper }) {
@@ -22,9 +23,9 @@ function JointGripperInput({ robotID, isGripper }) {
             const initialState = state.programData[robotID].properties.initialJointState;
             return [initialStateInfo,initialState,null]
         }
-    })
+    }, shallow)
 
-    const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty);
+    const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty, shallow);
     if (isGripper) {
         return (
             <>

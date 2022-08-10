@@ -78,13 +78,16 @@ export const EvdSlice = (set, get) => ({
   }),
   updatePlanProcess: (newData, process) => set(state => {
     if (newData) {
+      let reviewableChanges = 0;
       // state.programData = lodash.merge(state.programData, newData);
       Object.keys(newData).forEach(entry=>{
+        reviewableChanges += 1;
         Object.keys(newData[entry].properties).forEach(field=>{
           state.programData[entry].properties[field] = newData[entry].properties[field]
           // console.log(`setting ${entry}/${field} to ${newData[entry].properties[field]}`)
         })
       })
+      state.reviewableChanges += reviewableChanges;
     }
     state.processes.planProcess = process
   }),
@@ -106,5 +109,7 @@ export const EvdSlice = (set, get) => ({
     // console.log(result)
     get().updatePlanProcess(result, null);
   },
-  processes: {}
+  processes: {},
+  reviewableChanges: 0,
+  // setReviewableChanges: (reviewableChanges) => set({reviewableChanges})
 });

@@ -1,6 +1,4 @@
 import { React } from "react";
-import { MachineProcessList } from "./MachineDetail";
-import { ProcessIOList } from "./ProcessDetail";
 import PositionRotationTF from "./PositionRotationTF";
 import {
   TextArea,
@@ -12,7 +10,6 @@ import {
   DropButton,
   Spinner,
 } from "grommet";
-import { FixtureItem } from "./FixtureDetail";
 import { GizmoDetail } from "./GizmoDetail";
 
 import useStore from "../../stores/Store";
@@ -84,13 +81,13 @@ export const Detail = (_) => {
   }, shallow);
 
   //const addFocusItem = useStore(state => state.addFocusItem);
-  const clearFocus = useStore((state) => state.clearFocus);
-  const updateItemName = useStore((state) => state.updateItemName);
+  const clearFocus = useStore((state) => state.clearFocus, shallow);
+  const updateItemName = useStore((state) => state.updateItemName, shallow);
   const updateItemSimpleProperty = useStore(
-    (state) => state.updateItemSimpleProperty
+    (state) => state.updateItemSimpleProperty, shallow
   );
   const updateItemDescription = useStore(
-    (state) => state.updateItemDescription
+    (state) => state.updateItemDescription, shallow
   );
 
   const Icon = objectTypeInfo?.instanceBlock?.icon
@@ -105,7 +102,7 @@ export const Detail = (_) => {
     ? objectTypeInfo?.referenceBlock.color
     : "#333333";
 
-  const deleteBlock = useStore((state) => state.deleteBlock);
+  const deleteBlock = useStore((state) => state.deleteBlock, shallow);
   //console.log("item:", item);
   // console.log("objectTypeInfo", objectTypeInfo);
   // console.log("focusData", focusData);
@@ -260,23 +257,6 @@ export const Detail = (_) => {
             {item?.properties?.relativeTo && (
               <ForwardRefSection references={item.properties.relativeTo === 'world' ? [] : [item.properties.relativeTo]} title='Relative To'/>
             )}
-
-            {/* {item.type === "processType" && (
-              <>
-                <ProcessIOList processId={item.id} isInput />
-                <div style={{ marginBottom: 10 }}></div>
-                <ProcessIOList processId={item.id} />
-              </>
-            )}
-            {item.properties.relativeTo !== undefined &&
-              item.properties.relativeTo !== "world" &&
-              item.properties.relativeTo !== null && (
-                <>
-                  <Box>
-                    <FixtureItem fixtureID={item.properties.relativeTo} />
-                  </Box>
-                </>
-              )} */}
 
             {item.type === "gripperType" && (
               <>

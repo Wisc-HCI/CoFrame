@@ -208,6 +208,8 @@ export const ReviewSlice = (set, get) => ({
         state.issues = newIssues;
         // Update the stats set.
         state.stats.push(allNewStats);
+        // Reset the reviewable changes counter
+        state.reviewableChanges = 0;
     }),
     updateIssueSetting: (newIssueSetting) => set(state => {
         state.issueSettings[newIssueSetting.id] = newIssueSetting;
