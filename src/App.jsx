@@ -45,9 +45,11 @@ export default function App() {
       mode: "dark",
       highlightColor: {
         main: primaryColor,
+        darker: primaryColor,
       },
       primaryColor: {
         main: primaryColor,
+        darker: primaryColor,
       },
       primary: {
         main: primaryColor,

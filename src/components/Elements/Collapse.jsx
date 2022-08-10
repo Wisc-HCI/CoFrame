@@ -77,6 +77,7 @@ import { IconButton, Card, CardHeader, Collapse, Box, Stack } from "@mui/materia
 // }
 
 const CollapseCard = memo(({
+  disabled,
   defaultOpen,
   extra,
   style = {},
@@ -89,6 +90,7 @@ const CollapseCard = memo(({
 }) => {
 
   const [collapsed, setCollapsed] = useState(!defaultOpen);
+  const open = !collapsed && !disabled;
 
   return (
     <Card
@@ -101,16 +103,16 @@ const CollapseCard = memo(({
         title={header}
         titleTypographyProps={{ variant: "subtitle1" }}
         action={
-          <Stack direction='row' spacing={0.5}>
+          <Stack direction='row' spacing={0.5} alignItems='center'>
             {extra}
-            <IconButton onClick={() => setCollapsed(!collapsed)}>
-              <ExpandCarrot expanded={!collapsed} />
+            <IconButton color={open?'primary':'quiet'} sx={{width:31,height:31}} disabled={disabled} onClick={() => setCollapsed(!collapsed)}>
+              <ExpandCarrot expanded={open} disabled={disabled} />
             </IconButton>
           </Stack>
           
         }
       />
-      <Collapse in={!collapsed}>
+      <Collapse in={open}>
         <Stack
           spacing={1}
           sx={{

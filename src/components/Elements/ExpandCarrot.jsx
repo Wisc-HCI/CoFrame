@@ -1,17 +1,25 @@
-import React from "react";
+import React, { memo } from "react";
 import { motion } from "framer-motion";
 import SvgIcon from "@mui/material/SvgIcon";
+import { useTheme } from "@mui/material";
 
-export const ExpandCarrot = ({ expanded, onClick }) => {
+export const ExpandCarrot = memo(({ expanded, disabled }) => {
+  const theme = useTheme();
   const variants = {
-    open: { d: "M770.578,215.347L399.578,586.347L26.887,213.656" },
-    closed: { d: "M214.078,28.156L585.078,399.156L212.387,771.847" },
+    openDisabled: { d: "M770.578,215.347L399.578,586.347L26.887,213.656", stroke: theme.palette.quiet.main },
+    closedDisabled: { d: "M214.078,28.156L585.078,399.156L212.387,771.847", stroke: theme.palette.quiet.main },
+    openEnabled: { d: "M770.578,215.347L399.578,586.347L26.887,213.656", stroke: theme.palette.primary.main},
+    closedEnabled: { d: "M214.078,28.156L585.078,399.156L212.387,771.847", stroke: theme.palette.primary.main }
   };
+  
+  const variant = expanded && disabled 
+    ? 'openDisabled' : expanded && !disabled 
+    ? 'openEnabled' : !expanded && disabled 
+    ? 'closedDisabled' : 'closedEnabled';
 
   return (
     <SvgIcon
       sx={{ fontSize: 15 }}
-      onClick={onClick}
       viewBox="0 0 800 800"
       style={{
         fillRule: "evenodd",
@@ -22,15 +30,15 @@ export const ExpandCarrot = ({ expanded, onClick }) => {
       }}
     >
       <motion.path
-        animate={expanded ? "open" : "closed"}
+        animate={variant}
         variants={variants}
         style={{
           fill: "none",
-          stroke: "white",
+          // stroke: disabled ? theme.palette.quiet.main : theme.palette.primary.main,
           strokeOpacity: 1,
-          strokeWidth: 60,
+          strokeWidth: 100,
         }}
       />
     </SvgIcon>
   );
-};
+});
