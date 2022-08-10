@@ -35,7 +35,7 @@ const FRAMES = [
     sections: [
       "missingBlocks",
       "missingParameters",
-      "machineLogic",
+      "processLogic",
       "unusedSkills",
       "unusedFeatures",
       "emptyBlocks",
