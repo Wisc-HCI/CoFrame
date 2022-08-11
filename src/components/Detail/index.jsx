@@ -278,6 +278,19 @@ export const Detail = (_) => {
                   />
                 )}
 
+                {item?.properties?.inputs && (
+                  <ForwardRefSection
+                    references={item.properties.inputs}
+                    title="Inputs"
+                  />
+                )}
+                {item?.properties?.outputs && (
+                  <ForwardRefSection
+                    references={item.properties.outputs}
+                    title="Outputs"
+                  />
+                )}
+
                 {item.type === "gripperType" && (
                   <>
                     <JointGripperInput robotID={item.id} isGripper={true} />
