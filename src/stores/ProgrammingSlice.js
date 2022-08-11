@@ -239,7 +239,6 @@ export function deleteChildren(state, data, parentId, fieldInfo) {
   // Clear children and properties (if applicable)
   if (data.dataType === DATA_TYPES.CALL) {
     state.programData[data.ref].arguments.forEach((argument) => {
-      console.log(argument);
       if (
         data.properties[argument] &&
         state.programData[data.properties[argument]]
