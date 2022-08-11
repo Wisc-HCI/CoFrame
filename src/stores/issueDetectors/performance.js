@@ -277,8 +277,55 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings}) => 
     return [issues, {}];
 }
 
-export const findPayloadIssues = (_) => { // Shouldn't change during a trajectory so more of a check on thing weight vs. robot payload (e.g., 3kg in 1g)
+export const findPayloadIssues = ({program, programData, settings}) => { // Shouldn't change during a trajectory so more of a check on thing weight vs. robot payload (e.g., 3kg in 1g)
     let issues = {};
+
+    let warningLevel = settings["payloadWarn"].value;
+    let errorLevel = settings["payloadErr"].value;
+
+    let tracked = [];
+
+    program.properties.compiled["{}"].steps.forEach(step => {
+        let source = programData[step.source];
+
+        if (source && source.type === "moveGripperType") {
+            let thingId = step.data.thing.id ? step.data.thing.id : step.data.thing;
+
+            if (thingId) {
+                let thing = programData[thingId];
+
+                if (thing.properties.weight >= errorLevel && !tracked.includes(step.source)) {
+                    tracked.push(step.source);
+                    let id = generateUuid('issue');
+                    issues[id] = {
+                        id: id,
+                        requiresChanges: true,
+                        title: `Payload threshold exceeded`,
+                        description: `The robot is attempting to grab a thing that exceeds the set payload threshold`,
+                        complete: false,
+                        focus: [step.source],
+                        graphData: null,
+                        sceneData: null
+                    }
+                } else if (thing.properties.weight >= warningLevel && !tracked.includes(step.source)) {
+                    tracked.push(step.source);
+
+                    tracked.push(step.source);
+                    let id = generateUuid('issue');
+                    issues[id] = {
+                        id: id,
+                        requiresChanges: false,
+                        title: `Approaching payload threshold`,
+                        description: `The robot is attempting to grab a thing that is close to the payload threshold`,
+                        complete: false,
+                        focus: [step.source],
+                        graphData: null,
+                        sceneData: null
+                    }
+                }
+            }
+        }
+    });
 
     return [issues, {}];
 }
