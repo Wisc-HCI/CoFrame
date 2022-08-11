@@ -528,7 +528,6 @@ export const findThingFlowIssues = ({program, programData}) => {
 
     let moveGripperOrder = [];
 
-    // TODO: thing tracking (just like in computed slice...)
     program.properties.compiled["{}"].steps.forEach(step => {
         let source = programData[step.source];
 
@@ -623,7 +622,11 @@ export const findThingFlowIssues = ({program, programData}) => {
             !(step.type === STEP_TYPE.SCENE_UPDATE &&
               source.type === 'moveGripperType')) {
             inMoveGripper = false;
-            moveGripperOrder.push(lastMoveGripperData.source);
+
+            if (!moveGripperOrder.includes(lastMoveGripperData.source)) {
+                moveGripperOrder.push(lastMoveGripperData.source);
+            }
+            
             let mgSource = programData[lastMoveGripperData.source];
             let thing = programData[lastMoveGripperData.data.thing.id ? lastMoveGripperData.data.thing.id : lastMoveGripperData.data.thing];
 

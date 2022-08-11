@@ -493,8 +493,8 @@ export const findThingSafetyIssues = ({program, programData}) => { // May requir
                     issues[uuid] = {
                         id: uuid,
                         requiresChanges: true,
-                        title: `Grasping on unsafe object`, // might need some changes
-                        description: `The robot is grasping on a dangerous item`,// might need some changes
+                        title: `Grasping an unsafe object`, // might need some changes
+                        description: `The robot is grasping a dangerous item`,// might need some changes
                         complete: false,
                         focus: [source.id],
                         graphData: null

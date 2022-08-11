@@ -288,13 +288,13 @@ export const findPayloadIssues = ({program, programData, settings}) => { // Shou
     program.properties.compiled["{}"].steps.forEach(step => {
         let source = programData[step.source];
 
-        if (source && source.type === "moveGripperType") {
+        if (step.type === STEP_TYPE.SCENE_UPDATE && source && source.type === "moveGripperType") {
             let thingId = step.data.thing.id ? step.data.thing.id : step.data.thing;
 
             if (thingId) {
                 let thing = programData[thingId];
 
-                if (thing.properties.weight >= errorLevel && !tracked.includes(step.source)) {
+                if (thing && thing.properties.weight >= errorLevel && !tracked.includes(step.source)) {
                     tracked.push(step.source);
                     let id = generateUuid('issue');
                     issues[id] = {
@@ -307,7 +307,7 @@ export const findPayloadIssues = ({program, programData, settings}) => { // Shou
                         graphData: null,
                         sceneData: null
                     }
-                } else if (thing.properties.weight >= warningLevel && !tracked.includes(step.source)) {
+                } else if (thing && thing.properties.weight >= warningLevel && !tracked.includes(step.source)) {
                     tracked.push(step.source);
 
                     tracked.push(step.source);
