@@ -42,7 +42,7 @@ export function move(array, moveIndex, toIndex) {
 
 export function deleteFromChildren(state, idsToDelete, parentData) {
   // Corner case for call blocks (don't look at parent's information)
-  if (parentData.dataType === DATA_TYPES.CALL) {
+  if (parentData && parentData.dataType === DATA_TYPES.CALL) {
     Object.keys(parentData.properties)?.forEach((propName) => {
       if (
         idsToDelete.includes(
@@ -57,7 +57,7 @@ export function deleteFromChildren(state, idsToDelete, parentData) {
     for (let i = 0; i < idsToDelete.length; i++) {
       delete state.programData[parentData.id].properties[idsToDelete[i]];
     }
-  } else {
+  } else if (parentData) {
     // Clear children and properties (if applicable)
     if (state.programSpec.objectTypes[parentData.type]?.properties) {
       Object.keys(
@@ -171,7 +171,7 @@ export function deleteSelfBlock(state, data, parentId, fieldInfo) {
             } else if (property && property.isList) {
               // Iterate through property list and remove all applicable references
               for (let i = 0; i < callIds.length; i++) {
-                if (entry.properties[propName]?.includes(callIds[i])) {
+                if (entry && entry.properies && entry.properties[propName]?.includes(callIds[i])) {
                   let removed_elems = remove(
                     state.programData[entryId].properties[propName],
                     (field) => field === callIds[i]
@@ -183,7 +183,7 @@ export function deleteSelfBlock(state, data, parentId, fieldInfo) {
                   }
                 }
               }
-            } else if (property && entry.properties[propName]) {
+            } else if (property && entry && entry.properties && entry.properties[propName]) {
               // Delete reference from property
               if (callIds.includes(entry.properties[propName])) {
                 entry.properties[propName] = null;
@@ -204,8 +204,13 @@ export function deleteSelfBlock(state, data, parentId, fieldInfo) {
   } else if (fieldInfo?.isSpawner) {
     if (parentId === "spawner") {
       // Drawer deletion
-      state = deleteFromProgram(state, [data.ref]);
-      delete state.programData[data.ref];
+      if (data.dataType === DATA_TYPES.INSTANCE) {
+        state = deleteFromProgram(state, [data.id]);
+        delete state.programData[data.id];
+      } else {
+        state = deleteFromProgram(state, [data.ref]);
+        delete state.programData[data.ref];
+      }
     } else {
       // Argument deletion
       state = deleteFromChildren(
@@ -249,6 +254,7 @@ export function deleteChildren(state, data, parentId, fieldInfo) {
     });
   } else if (
     data.dataType !== DATA_TYPES.REFERENCE &&
+    parentId !== 'spawner' &&
     state.programSpec.objectTypes[data.type].properties
   ) {
     Object.keys(state.programSpec.objectTypes[data.type].properties).forEach(
