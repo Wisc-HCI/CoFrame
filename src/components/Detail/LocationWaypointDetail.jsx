@@ -1,7 +1,7 @@
 import React from "react";
 import useStore from "../../stores/Store";
 import { Box, Button } from "grommet";
-import Collapse from "../Elements/Collapse";
+import {Collapse} from "../Elements/Collapse";
 // import { Toggle } from "../Elements/Toggle";
 import { Switch, IconButton } from "@mui/material";
 import { FiRefreshCw } from "react-icons/fi";
@@ -23,16 +23,8 @@ function LocationWaypointDetail(props) {
 
   return (
     <Collapse
-      openable={true}
-      borderWidth={10}
       defaultOpen={true}
-      style={{ backgroundColor: "#303030", marginBottom: 5 }}
-      backgroundColor="#202020"
-      header={
-        <Box direction="row">
-          <b style={{ color: "rgba(255, 255, 255, 0.85)" }}>Reachability : </b>
-        </Box>
-      }
+      header="Reachability"
       extra={
         <IconButton
           sx={{marginRight:1}}

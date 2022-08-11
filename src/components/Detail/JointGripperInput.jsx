@@ -1,95 +1,82 @@
-import React from 'react';
+import React from "react";
 import { Box } from "grommet";
 
-import useStore from '../../stores/Store';
-import Collapse from '../Elements/Collapse';
-import { NumberInput } from '../Elements/NumberInput';
-import shallow from 'zustand/shallow';
-
+import useStore from "../../stores/Store";
+import { Collapse } from "../Elements/Collapse";
+import { NumberInput } from "../Elements/NumberInput";
+import shallow from "zustand/shallow";
+import { TextField } from "@mui/material";
 
 function JointGripperInput({ robotID, isGripper }) {
+  const [initialStateInfo, initialState, initialStateValue] = useStore(
+    (state) => {
+      if (isGripper) {
+        return [[], {}, state.programData[robotID].properties.initialGripState];
+      } else {
+        let initialStateInfo = [];
+        for (const [key, value] of Object.entries(
+          state.programData[robotID].properties.initialJointState
+        )) {
+          const lower =
+            state.programData[robotID].properties.jointLimit[key].lower;
+          const upper =
+            state.programData[robotID].properties.jointLimit[key].upper;
 
-    const [initialStateInfo,initialState,initialStateValue] = useStore(state=>{
-        if (isGripper) {
-            return [[],{},state.programData[robotID].properties.initialGripState]
-        } else {
-            let initialStateInfo = [];
-            for (const [key, value] of Object.entries(state.programData[robotID].properties.initialJointState)) {
-                const lower = state.programData[robotID].properties.jointLimit[key].lower;
-                const upper = state.programData[robotID].properties.jointLimit[key].upper;
-
-                initialStateInfo.push({ key, "value": value, "lower": lower, "upper": upper });
-            }
-            const initialState = state.programData[robotID].properties.initialJointState;
-            return [initialStateInfo,initialState,null]
+          initialStateInfo.push({
+            key,
+            value: value,
+            lower: lower,
+            upper: upper,
+          });
         }
-    }, shallow)
+        const initialState =
+          state.programData[robotID].properties.initialJointState;
+        return [initialStateInfo, initialState, null];
+      }
+    },
+    shallow
+  );
 
-    const updateItemSimpleProperty = useStore(state => state.updateItemSimpleProperty, shallow);
-    if (isGripper) {
-        return (
-            <>
-                <Box direction='row' background='#303030' round="xsmall" pad="small" style={{ marginBottom: 5 }} justify='between' wrap={true}>
-                    <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Initial Gripper State : </b>
-                    <Box direction='row' >
-                        <div style={{ paddingLeft: "10%" }}>
-                            <NumberInput
-                                value={initialStateValue}
-                                min={0}
-                                max={Infinity}
-                                onChange={(value) => updateItemSimpleProperty(robotID, 'initialGripState', value)}
-                            />
-                        </div>
-                    </Box>
-                </Box>
+  const updateItemSimpleProperty = useStore(
+    (state) => state.updateItemSimpleProperty,
+    shallow
+  );
 
-            </>);
-    } else {
-        return (
-            <>
-                <Collapse
-                    openable={true}
-                    borderWidth={3}
-                    defaultOpen={true}
-                    style={{ backgroundColor: '#303030', marginBottom: 5 }}
-                    backgroundColor='#202020'
-                    header={<Box direction='row' pad="10pt">{isGripper ?
-                        <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Initial Gripper States : </b> :
-                        <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Initial Joint States : </b>}{' '}
-                    </Box>}
-                >
-                    {initialStateInfo.map((io, i) => {
-
-                        return (
-                            
-                                
-                                    <Box key={i} round="xsmall" background="rgba(100,100,100,0.3)" direction='row'
-                                        elevation="none" pad="xsmall" justify='between'
-                                        hoverIndicator={true} margin={{bottom:i===initialStateInfo.length-1?'0pt':'4pt'}}>
-                                        <b style={{ color: 'rgba(255, 255, 255, 0.85)' }}> {io.key.replace(/_/g, ' ')} </b>
-                                        <div key={i} >
-                                            <NumberInput
-                                                value={io.value}
-                                                min={io.lower}
-                                                max={io.upper}
-                                                onChange={
-                                                    (value) => updateItemSimpleProperty(robotID, { ...initialState, [io.key]: value })}
-                                            />
-                                        </div>
-
-                                    </Box>
-
-                        )
-                    })}
-
-
-                </Collapse>
-
-            </>
-        );
-
-    }
-
-
+  if (isGripper) {
+    return (
+      <Collapse defaultOpen header="Initial Gripper State" contentStyle={{paddingTop:'15px'}}>
+        <TextField
+            label='Distance'
+            type="number"
+            value={initialStateValue}
+            min={0}
+            onChange={(value) =>
+                updateItemSimpleProperty(robotID, "initialGripState", value)
+              }
+          />
+      </Collapse>
+    );
+  } else {
+    return (
+      <Collapse defaultOpen header="Initial Joint States" spacing={2} contentStyle={{paddingTop:'15px'}}>
+        {initialStateInfo.map((io, i) => (
+          <TextField
+            key={io.key}
+            label={io.key.replace(/_/g, " ")}
+            type="number"
+            value={io.value}
+            min={io.lower}
+            max={io.upper}
+            onChange={(e) =>
+              updateItemSimpleProperty(robotID, {
+                ...initialState,
+                [io.key]: e.target.value,
+              })
+            }
+          />
+        ))}
+      </Collapse>
+    );
+  }
 }
-export default (JointGripperInput);
+export default JointGripperInput;

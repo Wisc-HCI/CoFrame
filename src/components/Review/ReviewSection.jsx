@@ -4,13 +4,10 @@ import { ReviewIssue } from "./ReviewIssue";
 import useStore from "../../stores/Store";
 import { FrameButton } from "../FrameButton";
 import frameStyles from "../../frameStyles";
-import Collapse from "../Elements/Collapse";
-// import { Switch } from "../Elements/Switch";
-// import { FancyText } from "../Elements/FancyText";
-import Switch from "@mui/material/Switch";
+import { Collapse } from "../Elements/Collapse";
 import { Avatar, Chip, Typography, useTheme } from "@mui/material";
 import shallow from "zustand/shallow";
-import { FiCheck, FiThumbsUp } from "react-icons/fi";
+import { FiCheck} from "react-icons/fi";
 
 // import './custom.css'
 
@@ -39,7 +36,6 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
   const [
     name,
     issueIds,
-    complete,
     incompleteIds,
     dependencies,
     depNames,
@@ -52,14 +48,13 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
         const incompleteIds = issueIds
           .map((issueId) => state.issues[issueId])
           .filter((issue) => !issue.complete);
-        const complete = incompleteIds.length === 0;
 
         const dependencies = initialBlocked
           ? state.sections[sectionId].dependencies.filter(
               (dep) => !isComplete(state, dep)
             )
           : [];
-        console.log(issueIds.map((id) => state.issues[id]));
+        // console.log(issueIds.map((id) => state.issues[id]));
         const depNames = dependencies.map((dep) => state.sections[dep].name);
         const depFrames = dependencies.map((dep) =>
           sectionFrame(dep, state.frames)
@@ -67,7 +62,6 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
         return [
           name,
           issueIds,
-          complete,
           incompleteIds,
           dependencies,
           depNames,
@@ -78,8 +72,6 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
     ),
     shallow
   );
-
-  console.log(name, complete);
 
   return (
     <Box direction="column" width="100%">
@@ -116,8 +108,6 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
       <Collapse
         disabled={blocked}
         defaultOpen={false}
-        borderWidth={3}
-        internalPaddingWidth={5}
         header={name}
         //   style={{ marginBottom: 5 }}
         extra={

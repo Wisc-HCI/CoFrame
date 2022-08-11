@@ -2,7 +2,7 @@ import React from 'react';
 import useStore from '../../stores/Store';
 import { Box, Text } from 'grommet';
 import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
-import Collapse from '../Elements/Collapse';
+import {Collapse} from '../Elements/Collapse';
 
 export const GizmoDetail = ({ gizmoId }) => {
 
@@ -27,14 +27,8 @@ export const GizmoDetail = ({ gizmoId }) => {
 
   return (
     <Collapse
-      openable={true}
-      borderWidth={3}
-      defaultOpen={true}
-      style={{backgroundColor:'#303030',marginBottom: 5}}
-      backgroundColor='#202020'
-      header={<Box direction='row' pad="10pt"> 
-      <b style={{ color: 'rgba(255, 255, 255, 0.85)' }} >Gizmo : </b>
-      </Box>}
+      header='Gizmo'
+      defaultOpen
     >
 
       {gizmoList ? gizmoList.map(gizmo => {
