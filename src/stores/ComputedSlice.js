@@ -170,7 +170,7 @@ export const computedSlice = (state) => {
                 };
                 thing.properties.graspPoints.forEach((gp)=>{
                     const gpData = state.programData[gp];
-                    items[gp] = {
+                    items['inputOutput-viz-' + gp] = {
                         frame: input,
                         shape: "package://app/meshes/LocationMarker.stl",
                         position: gpData.properties.position,
@@ -207,7 +207,7 @@ export const computedSlice = (state) => {
                 }
                 thing.properties.graspPoints.forEach((gp)=>{
                     const gpData = state.programData[gp];
-                    items[gp] = {
+                    items['inputOutput-viz-' + gp] = {
                         frame: output,
                         shape: "package://app/meshes/LocationMarker.stl",
                         position: gpData.properties.position,
@@ -260,7 +260,7 @@ export const computedSlice = (state) => {
             });
             graspPoints.forEach((gp)=>{
                 const gpData = state.programData[gp];
-                items[gp] = {
+                items['tool-viz-' + gp] = {
                     frame: entry.id,
                     shape: "package://app/meshes/LocationMarker.stl",
                     position: gpData.properties.position,
@@ -272,8 +272,6 @@ export const computedSlice = (state) => {
                     hidden: !state.focus.includes(entry.id)
                 }
             })
-
-            //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType' || entry.type === 'gripperType') {
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
