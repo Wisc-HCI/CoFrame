@@ -179,7 +179,7 @@ export const computedSlice = (state) => {
                         highlighted: false,
                         showName: false,
                         color: { r: 0, g: 200, b: 0, a: 0.2 },
-                        hidden: !state.focus.includes(entry.id)
+                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(input))
                     }
                 })
             });
@@ -216,7 +216,7 @@ export const computedSlice = (state) => {
                         highlighted: false,
                         showName: false,
                         color: { r: 0, g: 200, b: 0, a: 0.2 },
-                        hidden: !state.focus.includes(entry.id)
+                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(output))
                     }
                 })
             });
@@ -224,6 +224,7 @@ export const computedSlice = (state) => {
             let entryProps = entry.properties;
             let meshObject = state.programData[entryProps.mesh];
             let collisionObject = state.programData[entryProps.collision];
+            let graspPoints = entryProps.graspPoints ? entryProps.graspPoints : [];
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
@@ -257,6 +258,20 @@ export const computedSlice = (state) => {
                     hidden: !state.collisionsVisible
                 }
             });
+            graspPoints.forEach((gp)=>{
+                const gpData = state.programData[gp];
+                items[gp] = {
+                    frame: entry.id,
+                    shape: "package://app/meshes/LocationMarker.stl",
+                    position: gpData.properties.position,
+                    rotation: gpData.properties.rotation,
+                    scale: { x: 1, y: 1, z: 1 },
+                    highlighted: false,
+                    showName: false,
+                    color: { r: 0, g: 200, b: 0, a: 0.2 },
+                    hidden: !state.focus.includes(entry.id)
+                }
+            })
 
             //items = { ...items, ...machineDataToPlaceholderPreviews(machine, state.data.thingTypes, state.data.regions, state.data.placeholders) }
         } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType' || entry.type === 'gripperType') {
@@ -457,8 +472,6 @@ export const computedSlice = (state) => {
         } else if (item.type === 'waypointType' || item.type === 'locationType') {
             Object.values(item.properties.states).forEach(robotGroup=>{
                     Object.values(robotGroup).forEach(gripperGroup=>{
-                        console.log('CURRENT TFS', tfs)
-                        console.log('ADDED LINKS',gripperGroup.links)
                         tfs = {...tfs, ...gripperGroup.links}
                     })
                 }
