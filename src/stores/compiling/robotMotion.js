@@ -203,8 +203,8 @@ const createIKSensitivityTester = (
   duration
 ) => {
   const tester = (state, goal, idx) => {
-    const p = state.frames[attachmentLink].translation;
-    const r = state.frames[attachmentLink].rotation;
+    const p = state.frames[attachmentLink].world.translation;
+    const r = state.frames[attachmentLink].world.rotation;
     const achievedPos = { x: p[0], y: p[1], z: p[2] };
     const goalQuat = new Quaternion(
       goal.rotation.x,

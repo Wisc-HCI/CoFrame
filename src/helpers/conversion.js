@@ -116,20 +116,21 @@ export const likProximityAdjustment = (trackedPoints, proximity, mirrorTrackedPo
   };
   
   export const likFramesToTransforms = (frames, model, frame) => {
+    console.log(frames)
     const relativeFrameId = frame ? frame : "world";
     // console.log({frames,model,frame})
     const linkTransforms = mapValues(frames, (frameData) => {
       const poseWorld = {
         position: {
-          x: frameData.translation[0],
-          y: frameData.translation[1],
-          z: frameData.translation[2],
+          x: frameData.world.translation[0],
+          y: frameData.world.translation[1],
+          z: frameData.world.translation[2],
         },
         rotation: {
-          w: frameData.rotation[3],
-          x: frameData.rotation[0],
-          y: frameData.rotation[1],
-          z: frameData.rotation[2],
+          w: frameData.world.rotation[3],
+          x: frameData.world.rotation[0],
+          y: frameData.world.rotation[1],
+          z: frameData.world.rotation[2],
         },
       };
       const poseLocal = queryLocalPose(model, relativeFrameId, poseWorld);
