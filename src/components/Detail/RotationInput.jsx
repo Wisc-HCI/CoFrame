@@ -41,7 +41,7 @@ const CompoundInput = forwardRef(
           onChange={(e) => {
             const newVec = [strip(e.target.value), value[1], value[2]];
             const quaternionObj = quaternionVecToObject(
-              quaternionFromEuler(eulerVecToRadians(newVec))
+              quaternionFromEuler(eulerVecToRadians(newVec),'sxyz')
             )
             onChange({
               target: {
@@ -65,7 +65,7 @@ const CompoundInput = forwardRef(
           onChange={(e) => {
             const newVec = [value[0], strip(e.target.value), value[2]];
             const quaternionObj = quaternionVecToObject(
-              quaternionFromEuler(eulerVecToRadians(newVec))
+              quaternionFromEuler(eulerVecToRadians(newVec),'sxyz')
             )
             onChange({
               target: {
@@ -89,7 +89,7 @@ const CompoundInput = forwardRef(
           onChange={(e) => {
             const newVec = [value[0], value[1], strip(e.target.value)];
             const quaternionObj = quaternionVecToObject(
-              quaternionFromEuler(eulerVecToRadians(newVec))
+              quaternionFromEuler(eulerVecToRadians(newVec),'sxyz')
             )
             onChange({
               target: {
@@ -123,7 +123,7 @@ const eulerVecToRadians = (vec) => {
 function RotationInput(props) {
   const quatObj = props.rotation;
   const quatVec = [quatObj.w, quatObj.x, quatObj.y, quatObj.z];
-  const euler = eulerVecToDegrees(eulerFromQuaternion(quatVec));
+  const euler = eulerVecToDegrees(eulerFromQuaternion(quatVec,'sxyz'));
   // const euler = eulerVecToDegrees(eulerFromQuaternion(quat));
   // console.log('rerendering with valuestring:',valueString)
 

@@ -1,4 +1,4 @@
-import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
+import { TYPES, SIMPLE_PROPERTY_TYPES, EXTRA_TYPES } from "simple-vp";
 import { baseTypeData } from "./baseType";
 import { COMPILE_FUNCTIONS } from "../Constants";
 import { RiSpace } from "react-icons/ri";
@@ -12,7 +12,7 @@ const graspPoint = {
     onCanvas: false,
     color: "#6663f0",
     icon: RiSpace,
-    extras: [],
+    extras: [EXTRA_TYPES.SELECTION_TOGGLE],
   },
   properties: {
     position: {
