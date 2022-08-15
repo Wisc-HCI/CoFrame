@@ -24,6 +24,9 @@ import {
 import { FrameTabBar } from "./FrameTabBar";
 import shallow from "zustand/shallow";
 import { ScrollRegion } from "./Elements/ScrollRegion";
+import { robotDataFromUrdf } from "../helpers/loading";
+import { PANDA_ROBOT_DATA } from "../presets/robotAgents/pandaRobot";
+import { UR3E_ROBOT_DATA } from "../presets/robotAgents/ur3eRobot";
 
 const DialogContent = () => {
   // const url = useStore((store) => store.url, shallow);
@@ -39,6 +42,8 @@ const DialogContent = () => {
   const data = useStore((store) => store.programData, shallow);
   const frameId = useStore((store) => store.frame, shallow);
   const setFrame = useStore((store) => store.setFrame, shallow);
+  const deleteAgent = useStore(store=>store.deleteAgent, shallow);
+  const addAgent = useStore(store=>store.addAgent,shallow);
 
   const [prefix, setPrefix] = useState("ws://");
   const [host, setHost] = useState("localhost:9090");
@@ -232,6 +237,13 @@ const DialogContent = () => {
                   Download
                 </Button>
               </Stack>
+
+              <Button onClick={()=>{
+                const newData = robotDataFromUrdf(UR3E_ROBOT_DATA['robot-agent'].properties.urdf,'pedestal');
+                // Clear out current robot
+                Object.values(data).filter(d=>d.type==='robotAgentType').forEach(d=>deleteAgent(d.id));
+                addAgent(newData);
+              }}>Parse</Button>
 
               {/* Frames Selector */}
               <Stack

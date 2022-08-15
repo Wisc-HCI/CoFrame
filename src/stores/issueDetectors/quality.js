@@ -644,6 +644,27 @@ export const findThingFlowIssues = ({program, programData}) => {
                 if (mgSource.properties.positionStart > mgSource.properties.positionEnd) {
                     let bucket = trackedByType[thing.id];
 
+                    // Add tool to bucket
+                    if (!bucket && thing.type === 'toolType') {
+                        trackedByType[thing.id] = [{
+                            id: thing.id
+                        }];
+                        bucket = trackedByType[thing.id];
+    
+                        // Add tool grasp points to the program model
+                        let graspPoints = thing.properties.graspPoints;
+                        graspPoints.forEach(graspId => {
+                            let gID = generateUuid('graspPoint');
+                            programModel = addGraspPointToModel(programModel, 
+                                thing.id, 
+                                gID, 
+                                programData[graspId].properties.position, 
+                                programData[graspId].properties.rotation, 
+                                programData[graspId].properties.gripDistance
+                                );
+                        });
+                    }
+
                     if (bucket) {
                         for (let i = 0; i < bucket.length; i++) {
                             // Get all potential grasp locations for a given thing

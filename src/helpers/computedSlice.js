@@ -556,12 +556,56 @@ export function stepsToAnimation(state, tfs, items) {
                 let grasping = false;
                 let releasing = false;
 
-                // Determine whether gripper is closing
-                let compileGripperClosing = lastMoveGripperData.data.closing;
-
                 // Get the corresponding bucket of things that could be potentially grasped
-                let thing = lastMoveGripperData.data.thing.id ? lastMoveGripperData.data.thing.id : lastMoveGripperData.data.thing
+                let thing = lastMoveGripperData.data.thing.id ? lastMoveGripperData.data.thing.id : lastMoveGripperData.data.thing;
                 let bucket = trackedByType[thing];
+
+                // Grasped item is a tool, not a thing
+                if (!bucket && state.programData[thing]?.type === 'toolType') {
+                    trackedByType[thing] = [{
+                        id: thing
+                    }];
+                    bucket = trackedByType[thing];
+
+                    // Add tool grasp points to the program model
+                    let graspPoints = state.programData[thing].properties.graspPoints;
+                    graspPoints.forEach(graspId => {
+                        let gID = generateUuid('graspPoint');
+                        programModel = addGraspPointToModel(programModel, 
+                            thing, 
+                            gID, 
+                            state.programData[graspId].properties.position, 
+                            state.programData[graspId].properties.rotation, 
+                            state.programData[graspId].properties.gripDistance
+                            );
+                    });
+
+                    let toolPos = queryWorldPose(programModel, thing, '');
+
+                    // Create animation object
+                    dict[thing] = {
+                        position: { x: [], y: [], z: [] },
+                        rotation: { x: [], y: [], z: [], w: [] },
+                        hidden: [],
+                        mesh: state.programData[thing]?.properties?.mesh,
+                        relativeTo: state.programData[thing]?.properties.relativeTo?.id,
+                        type: thing
+                    }
+
+                    // backfill data
+                    let posStart = lastTimestamp[thing] ? lastTimestamp[thing] : 0;
+                    for (let i = posStart; i < timesteps.length; i++) {
+                        dict[thing].position.x.push(toolPos.position.x);
+                        dict[thing].position.y.push(toolPos.position.y);
+                        dict[thing].position.z.push(toolPos.position.z);
+                        dict[thing].rotation.x.push(toolPos.rotation.x);
+                        dict[thing].rotation.y.push(toolPos.rotation.y);
+                        dict[thing].rotation.z.push(toolPos.rotation.z);
+                        dict[thing].rotation.w.push(toolPos.rotation.w);
+                    }
+                    lastTimestamp[thing] = timesteps.length;
+                }
+
                 let id = '';
 
                 // Update model positions of all links in the gripper
@@ -573,10 +617,9 @@ export function stepsToAnimation(state, tfs, items) {
                 let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
                 let gripperRotation = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
 
-
                 // If grasp succeeded and we have things available to be grasped, search for the corresponding
                 // thing that is being grasped
-                if (bucket && compileGripperClosing) {
+                if (bucket && moveGripper.properties.positionEnd < moveGripper.properties.positionStart) {
                     for (let i = 0; i < bucket.length; i++) {
                         // Get all potential grasp locations for a given thing
                         let graspPointIDs = getAllChildrenFromModel(programModel, bucket[i].id);

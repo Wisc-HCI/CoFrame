@@ -196,6 +196,7 @@ const tool = {
       fullWidth: true,
     },
     compileFn: { default: COMPILE_FUNCTIONS.PROPERTY },
+    updateFields: { default: ['graspPoints', 'safe', 'weight', 'position', 'rotation']}
   },
 };
 
