@@ -3,6 +3,7 @@ import { DATA_TYPES } from "simple-vp";
 import { REFERENCEABLE_OBJECTS } from "../stores/Constants";
 import { transformToThreeMatrix } from "./conversion";
 import { strip } from "number-precision";
+import { merge } from 'lodash';
 
 Object3D.DefaultUp.set(0, 0, 1);
 
@@ -572,7 +573,7 @@ export const createEnvironmentModel = (programData) => {
       model[item.id].userData.parent = parentId;
 
       // Only create collisions for non-link objects, as they are handled in the URDF
-      if (false && item.properties.collision && item.type !== "linkType") {
+      if (item.properties.collision && item.type !== "linkType" && item.type !== "toolType" && item.type !== "thingType") {
         let collisionObjects =
           programData[item.properties.collision].properties.componentShapes;
         collisionObjects.forEach((collisionObjKey) => {
@@ -670,48 +671,41 @@ export const createEnvironmentModel = (programData) => {
 };
 
 export const createStaticEnvironment = (model) => {
-  return Object.values(model)
-    .filter((item) =>
-      false && item.userData.parent !== "world"
-        ? item.userData.collisionInfo
-        : null
-    )
-    .map((item) => ({}));
-  // let retVal = [];
-  // Object.values(model).filter(item => item.userData.isCollisionObj).forEach(item => {
-  //     // Convert position to world frame
-  //     let {position, rotation} = queryWorldPose(model, item.uuid);
+  let retVal = [];
+  Object.values(model).filter(item => item.userData.isCollisionObj).forEach(item => {
+      // Convert position to world frame
+      let {position, rotation} = queryWorldPose(model, item.uuid);
 
-  //     let partialObject = {
-  //         name: item.uuid,
-  //         frame: 'world',
-  //         physical: item.userData.physical,
-  //         localTransform: {
-  //             translation: [position.x, position.y, position.z],
-  //             rotation: [rotation.x, rotation.y, rotation.z, rotation.w]
-  //         }
-  //     };
+      let partialObject = {
+          name: item.uuid,
+          frame: 'world',
+          physical: item.userData.physical,
+          localTransform: {
+              translation: [position.x, position.y, position.z],
+              rotation: [rotation.x, rotation.y, rotation.z, rotation.w]
+          }
+      };
 
-  //     // Create appropriate object
-  //     if (item.userData.collisionType === "cube") {
-  //         retVal.push(merge(partialObject, {
-  //             type: 'Box',
-  //             x: item.scale.x,
-  //             y: item.scale.y,
-  //             z: item.scale.z,
-  //         }))
-  //     } else if (item.userData.collisionType === "sphere") {
-  //         retVal.push(merge(partialObject, {
-  //             type:'Sphere',
-  //             radius: item.userData.radius,
-  //         }))
-  //     } else if (["capsule", "cylinder"].includes(item.userData.collisionType)) {
-  //         retVal.push(merge(partialObject, {
-  //             type: item.userData.collisionType === "capsule" ? 'Capsule' : 'Cylinder',
-  //             length: item.userData.length,
-  //             radius: item.userData.radius,
-  //         }))
-  //     }
-  // })
-  // return retVal;
+      // Create appropriate object
+      if (item.userData.collisionType === "cube") {
+          retVal.push(merge(partialObject, {
+              type: 'Box',
+              x: item.scale.x,
+              y: item.scale.y,
+              z: item.scale.z,
+          }));
+      } else if (item.userData.collisionType === "sphere") {
+          retVal.push(merge(partialObject, {
+              type:'Sphere',
+              radius: item.userData.radius,
+          }));
+      } else if (["capsule", "cylinder"].includes(item.userData.collisionType)) {
+          retVal.push(merge(partialObject, {
+              type: item.userData.collisionType === "capsule" ? 'Capsule' : 'Cylinder',
+              length: item.userData.length,
+              radius: item.userData.radius,
+          }));
+      }
+  });
+  return retVal;
 };
