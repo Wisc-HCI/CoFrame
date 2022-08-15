@@ -682,7 +682,7 @@ export const createStaticEnvironment = (model) => {
           physical: item.userData.physical,
           localTransform: {
               translation: [position.x, position.y, position.z],
-              rotation: [rotation.x, rotation.y, rotation.z, rotation.w]
+              rotation: [rotation.w, rotation.x, rotation.y, rotation.z]
           }
       };
 

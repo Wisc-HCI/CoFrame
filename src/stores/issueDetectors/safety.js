@@ -104,7 +104,7 @@ export const findCollisionIssues = ({program, programData, settings}) => {
 
     let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType'})[0];
     let robotPoints = robotAgent ? robotAgent.properties.pinchPointPairLinks : [];
-    let fixtureIDs = lodash.filter(programData, function (v) { return v.type === 'fixtureType'}).map(fixture => { return fixture.id });
+    let collisionIDs = lodash.filter(programData, function (v) { return v.type === 'collisionShapeType' }).map(collision => { return collision.ip });
 
     let linkNames = Object.values(robotAgent.properties.jointLinkMap);
     let linkNameMap = {}
@@ -124,7 +124,7 @@ export const findCollisionIssues = ({program, programData, settings}) => {
     });
     let envrionTracker = [];
     robotJointIDs.forEach(rID => {
-        fixtureIDs.forEach(fID => {
+        collisionIDs.forEach(fID => {
             envrionTracker.push({link1: rID, link2: fID});
         })
     });
