@@ -148,7 +148,6 @@ export const likProximityAdjustment = (trackedPoints, proximity, mirrorTrackedPo
   export const likStateToData = (state, model, frame) => {
     // console.log('PRE-PARSED STATE DATA',state);
     // console.log({frames:state.frames,model,frame})
-    console.log('Prox Data', state.proximity);
     const data = {
       joints: state.joints,
       links: likFramesToTransforms(state.frames, model, frame),
