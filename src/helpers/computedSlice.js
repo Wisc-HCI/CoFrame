@@ -18,6 +18,7 @@ import {
     distance,
     getAllChildrenFromModel,
     getUserDataFromModel,
+    quaternionFromEuler,
     queryWorldPose,
     updateEnvironModel
 } from "./geometry";
@@ -363,6 +364,8 @@ export function stepsToAnimation(state, tfs, items) {
     // Tracks what is currently grasped by the gripper
     let currentGraspedThingID = '';
 
+    let graspAngle = null;
+
     // Tracks the previous grasped object by the gripper
     let previousGraspedThingID = '';
 
@@ -616,6 +619,7 @@ export function stepsToAnimation(state, tfs, items) {
                 // Get the gripper offset position/rotation
                 let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
                 let gripperRotation = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
+                let selectedGraspRotation = null;
 
                 // If grasp succeeded and we have things available to be grasped, search for the corresponding
                 // thing that is being grasped
@@ -637,6 +641,7 @@ export function stepsToAnimation(state, tfs, items) {
                                 ) {
                                     grasping = true;
                                     id = bucket[i].id;
+                                    selectedGraspRotation = graspRotation;
                                 }
                             });
                         }
@@ -650,10 +655,13 @@ export function stepsToAnimation(state, tfs, items) {
                 // Update trackers for grasped things
                 if (grasping && !releasing) {
                     currentGraspedThingID = id;
+                    let {_, rotation} = queryWorldPose(programModel, currentGraspedThingID, '');
+                    graspAngle = (new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w)).multiply(selectedGraspRotation.invert());
                 }
                 if (!grasping && releasing) {
                     previousGraspedThingID = currentGraspedThingID;
                     currentGraspedThingID = '';
+                    graspAngle = null;
                 }
             }
 
@@ -726,7 +734,10 @@ export function stepsToAnimation(state, tfs, items) {
             if (currentGraspedThingID !== '') {
                 // Get world pose of the gripper offset and update the grasped object to this pose
                 let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
-                programModel = updateEnvironModel(programModel, currentGraspedThingID, gripperOffset.position, gripperOffset.rotation);
+                // Rotate the thing to use the grasped point's rotation (relative to the thing)
+                let adjustedRotation = graspAngle ?  new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w).multiply(graspAngle) : gripperOffset.rotation
+                let rotatedToGraspPoint = {x: adjustedRotation.x, y: adjustedRotation.y, z: adjustedRotation.z, w: adjustedRotation.w};
+                programModel = updateEnvironModel(programModel, currentGraspedThingID, gripperOffset.position, rotatedToGraspPoint);
 
                 // If thing hasn't been updated to the most recent timestep, backfill data using last data point
                 if (lastTimestamp[currentGraspedThingID] !== 0 &&
@@ -750,10 +761,10 @@ export function stepsToAnimation(state, tfs, items) {
                 dict[currentGraspedThingID].position.x.push(gripperOffset.position.x);
                 dict[currentGraspedThingID].position.y.push(gripperOffset.position.y);
                 dict[currentGraspedThingID].position.z.push(gripperOffset.position.z);
-                dict[currentGraspedThingID].rotation.x.push(gripperOffset.rotation.x);
-                dict[currentGraspedThingID].rotation.y.push(gripperOffset.rotation.y);
-                dict[currentGraspedThingID].rotation.z.push(gripperOffset.rotation.z);
-                dict[currentGraspedThingID].rotation.w.push(gripperOffset.rotation.w);
+                dict[currentGraspedThingID].rotation.x.push(rotatedToGraspPoint.x);
+                dict[currentGraspedThingID].rotation.y.push(rotatedToGraspPoint.y);
+                dict[currentGraspedThingID].rotation.z.push(rotatedToGraspPoint.z);
+                dict[currentGraspedThingID].rotation.w.push(rotatedToGraspPoint.w);
                 dict[currentGraspedThingID].hidden.push(false);
             }
         // Else the step type isn't an update/spawn/destroy, so update the time and buffer all object positions and rotations
