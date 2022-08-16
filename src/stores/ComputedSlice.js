@@ -170,16 +170,23 @@ export const computedSlice = (state) => {
                 };
                 thing.properties.graspPoints.forEach((gp)=>{
                     const gpData = state.programData[gp];
-                    items['inputOutput-viz-' + gp] = {
+                    tfs['inputOutput-viz-' + gp] = {
                         frame: input,
-                        shape: "package://app/meshes/LocationMarker.stl",
                         position: gpData.properties.position,
                         rotation: gpData.properties.rotation,
+                        transformMode: itemTransformMethod(state, gp),
+                        scale: {x:1,y:1,z:1}
+                    }
+                    items['inputOutput-viz-' + gp] = {
+                        frame: 'inputOutput-viz-' + gp,
+                        shape: "package://app/meshes/LocationMarker.stl",
+                        position: {x:0,y:0,z:0},
+                        rotation: {x:0,y:0,z:0,w:1},
                         scale: { x: 1, y: 1, z: 1 },
                         highlighted: false,
                         showName: false,
                         color: { r: 0, g: 200, b: 0, a: 0.2 },
-                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(input))
+                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(input) || state.focus.includes(gp))
                     }
                 })
             });
@@ -207,16 +214,23 @@ export const computedSlice = (state) => {
                 }
                 thing.properties.graspPoints.forEach((gp)=>{
                     const gpData = state.programData[gp];
-                    items['inputOutput-viz-' + gp] = {
+                    tfs['inputOutput-viz-' + gp] = {
                         frame: output,
-                        shape: "package://app/meshes/LocationMarker.stl",
                         position: gpData.properties.position,
                         rotation: gpData.properties.rotation,
+                        transformMode: itemTransformMethod(state, gp),
+                        scale: {x:1,y:1,z:1}
+                    }
+                    items['inputOutput-viz-' + gp] = {
+                        frame: 'inputOutput-viz-' + gp,
+                        shape: "package://app/meshes/LocationMarker.stl",
+                        position: {x:0,y:0,z:0},
+                        rotation: {x:0,y:0,z:0,w:1},
                         scale: { x: 1, y: 1, z: 1 },
                         highlighted: false,
                         showName: false,
                         color: { r: 0, g: 200, b: 0, a: 0.2 },
-                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(output))
+                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(output) || state.focus.includes(gp))
                     }
                 })
             });
@@ -261,16 +275,23 @@ export const computedSlice = (state) => {
             });
             graspPoints.forEach((gp)=>{
                 const gpData = state.programData[gp];
-                items['tool-viz-' + gp] = {
+                tfs['tool-viz-' + gp] = {
                     frame: entry.id,
-                    shape: "package://app/meshes/LocationMarker.stl",
                     position: gpData.properties.position,
                     rotation: gpData.properties.rotation,
+                    transformMode: itemTransformMethod(state, gp),
+                    scale: {x:1,y:1,z:1}
+                }
+                items['tool-viz-' + gp] = {
+                    frame: 'tool-viz-' + gp,
+                    shape: "package://app/meshes/LocationMarker.stl",
+                    position: {x:0,y:0,z:0},
+                    rotation: {x:0,y:0,z:0,w:1},
                     scale: { x: 1, y: 1, z: 1 },
                     highlighted: false,
                     showName: false,
                     color: { r: 0, g: 200, b: 0, a: 0.2 },
-                    hidden: !state.focus.includes(entry.id)
+                    hidden: !(state.focus.includes(entry.id) || state.focus.includes(gp))
                 }
             })
         } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType' || entry.type === 'gripperType') {
@@ -362,6 +383,29 @@ export const computedSlice = (state) => {
             //     }
             // }
         }
+        // } else if (entry.type === 'graspPointType') {
+        //     let entryProps = entry.properties;
+        //     tfs[entry.id] = {
+        //         frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
+        //         position: entry.properties.position,
+        //         rotation: entry.properties.rotation,
+        //         transformMode: itemTransformMethod(state, entry.id),
+        //         scale: {x:1,y:1,z:1}
+        //     }
+
+        //     const gpData = state.programData[gp];
+        //     items['tool-viz-' + gp] = {
+        //         frame: entry.id,
+        //         shape: "package://app/meshes/LocationMarker.stl",
+        //         position: gpData.properties.position,
+        //         rotation: gpData.properties.rotation,
+        //         scale: { x: 1, y: 1, z: 1 },
+        //         highlighted: false,
+        //         showName: false,
+        //         color: { r: 0, g: 200, b: 0, a: 0.2 },
+        //         hidden: !state.focus.includes(entry.id)
+        //     }
+        // }
     })
 
     // Pinch Point visualizations

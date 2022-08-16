@@ -143,7 +143,7 @@ const createIKGoals = (
       ],
       weights: [
         10,
-        5,
+        7,
         50,
         25,
         ...jointNames.map(() => startJointGoalWeight),
@@ -186,7 +186,7 @@ const createJointGoals = (jointState1, jointState2, duration, jointNames) => {
         null,
         ...jointNames.map((joint) => ({ Scalar: tmpJointGoals[joint] })),
       ],
-      weights: [10, 5, ...jointNames.map(() => 20)],
+      weights: [10, 7, ...jointNames.map(() => 20)],
       joints: cloneDeep(tmpJointGoals),
     });
     idx += 1;
@@ -475,7 +475,7 @@ export const robotMotionCompiler = ({
           {
             type: "CollisionAvoidance",
             name: "Collision Avoidance",
-            weight: 5,
+            weight: 7,
           },
         ];
         const objectives =
