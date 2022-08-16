@@ -239,11 +239,18 @@ const DialogContent = () => {
               </Stack>
 
               <Button onClick={()=>{
+                const newData = robotDataFromUrdf(PANDA_ROBOT_DATA['robot-agent-3290720sfd3950234907450129sfcwesd2'].properties.urdf,'pedestal');
+                // Clear out current robot
+                Object.values(data).filter(d=>d.type==='robotAgentType').forEach(d=>deleteAgent(d.id));
+                addAgent(newData);
+              }}>Parse Panda</Button>
+
+              <Button onClick={()=>{
                 const newData = robotDataFromUrdf(UR3E_ROBOT_DATA['robot-agent'].properties.urdf,'pedestal');
                 // Clear out current robot
                 Object.values(data).filter(d=>d.type==='robotAgentType').forEach(d=>deleteAgent(d.id));
                 addAgent(newData);
-              }}>Parse</Button>
+              }}>Parse UR3e</Button>
 
               {/* Frames Selector */}
               <Stack

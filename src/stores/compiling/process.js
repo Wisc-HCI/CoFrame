@@ -42,8 +42,8 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
     const processIdleState = newCompiled.status === STATUS.VALID && process.id ? { [process.id]: {busy: false}, ...gizmoIdleState } : {};
     const gizmoBusyState = newCompiled.status === STATUS.VALID && gizmo.id ? { [gizmo.id]: {busy: true} } : {};
     const processBusyState = newCompiled.status === STATUS.VALID && process.id ? { [process.id]: {busy: true}, ...gizmoBusyState } : {};
-    const robotIdleState = {[robot.id]: {busy: false}};
-    const robotBusyState = {[robot.id]: {busy: true}}
+    const robotIdleState = robot ? {[robot.id]: {busy: false}} : {};
+    const robotBusyState = robot ? {[robot.id]: {busy: true}} : {};
 
     const processSpawnables = process.properties ? process.properties.compiled[path].outputs : [];
     const processDestroyables = process.properties ? process.properties.compiled[path].inputs : [];

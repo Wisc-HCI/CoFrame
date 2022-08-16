@@ -195,11 +195,14 @@ export const poseCompiler = ({
             errorCode = ERROR.UNREACHABLE_POSE;
           }
           reachability[robot.id][gripper.id] = goalAchieved;
-          states[robot.id][gripper.id] = likStateToData(
-            state,
-            worldModel,
-            robot.id
-          );
+          console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
+          states[robot.id][gripper.id] = likStateToData(state, robot.id, robot.properties.compiled[ROOT_PATH].linkParentMap);
+          console.log(states[robot.id][gripper.id])
+          // states[robot.id][gripper.id] = likStateToData(
+          //   state,
+          //   worldModel,
+          //   robot.id
+          // );
         }
       });
     });

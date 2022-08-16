@@ -124,7 +124,7 @@ export const EvdSlice = (set, get) => ({
     const agent = programData[id];
     // Delete any links that are associated with this agent
     Object.values(programData).forEach(value=>{
-      if (value.type === 'linkType' && value.properties?.agent === id) {
+      if (['linkType','zoneType'].includes(value.type) && value.properties?.agent === id) {
         deleteBlock(value,'spawner',{
           name: "",
           value: null,
@@ -140,7 +140,6 @@ export const EvdSlice = (set, get) => ({
       accepts: [],
       isSpawner: true,
     });
-    console.log(get().programData)
   },
   setData: (data) =>
     set((state) => {

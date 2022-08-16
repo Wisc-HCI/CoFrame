@@ -380,6 +380,8 @@ export const robotMotionCompiler = ({
 
   let innerSteps = [];
 
+  console.log(robots)
+
   const poses = [
     trajectory.properties.compiled[path].startLocation.properties.compiled[
       path
@@ -535,7 +537,8 @@ export const robotMotionCompiler = ({
           initialState,
           false,
           1,
-          250
+          250,
+          null
         );
         // console.log('constructed trajectory solver')
         // console.log(solver.currentState);
@@ -595,7 +598,9 @@ export const robotMotionCompiler = ({
             state = solver.solve(goal.values, goal.weights);
             reached = sensitivityTester(state, goal, idx);
 
-            const stateData = likStateToData(state, worldModel, robot.id);
+            // const stateData = likStateToData(state, robot.properties.root);
+            console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
+            const stateData = likStateToData(state, robot.id, robot.properties.compiled[ROOT_PATH].linkParentMap);
             if (!reached && status !== STATUS.FAILED) {
               status = STATUS.WARN;
               errorCode = ERROR.TRAJECTORY_PROGRESS;
@@ -629,14 +634,14 @@ export const robotMotionCompiler = ({
 
   const initialStep = {
     stepType: STEP_TYPE.ACTION_START,
-    effect: { [robot.id]: { busy: true } },
+    effect: robot ? { [robot.id]: { busy: true } } : {},
     data: { agent: "robot", id: data.id },
     source: data.id,
     delay: 0,
   };
   const finalStep = {
     stepType: STEP_TYPE.ACTION_END,
-    effect: { [robot.id]: { busy: false } },
+    effect: robot ? { [robot.id]: { busy: false } } : {},
     data: { agent: "robot", id: data.id },
     source: data.id,
     delay: innerSteps.length > 0 ? innerSteps[innerSteps.length - 1].delay : 0,
@@ -644,9 +649,9 @@ export const robotMotionCompiler = ({
 
   const events = [
     {
-      condition: {
+      condition: robot ? {
         [robot.id]: { busy: false },
-      },
+      } : {},
       onTrigger: [initialStep, ...innerSteps, finalStep],
       source: data.id,
     },

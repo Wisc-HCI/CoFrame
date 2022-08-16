@@ -10,9 +10,9 @@ export const machineCompiler = ({data, properties, memo}) => {
 
     const events = status === STATUS.VALID ? [
         {
-            condition: {
+            condition: robot ? {
                 [robot.id]: { busy: false }
-            },
+            } : {},
             onTrigger: [
                 {
                     stepType: STEP_TYPE.LANDMARK,

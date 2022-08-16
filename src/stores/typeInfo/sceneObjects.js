@@ -88,8 +88,14 @@ const link = {
       default: null,
       isList: false,
     },
+    frameKey: {
+      name: "Frame Key",
+      type: SIMPLE_PROPERTY_TYPES.STRING,
+      default: "",
+      isList: false
+    },
     compileFn: { default: COMPILE_FUNCTIONS.LINK },
-    updateFields: { default: ["position", "rotation", "relativeTo", "agent"] },
+    updateFields: { default: ["position", "rotation", "relativeTo", "agent","frameKey"] },
   },
 };
 

@@ -251,6 +251,7 @@ export const computedSlice = (state) => {
                     position: collisionShape.properties.position,
                     rotation: collisionShape.properties.rotation,
                     scale: collisionShape.properties.scale,
+                    extraParams: collisionShape.properties.extraParams,
                     transformMode: 'inactive',
                     highlighted: false,
                     color: { r: 250, g: 0, b: 0, a: 0.6 },
@@ -481,7 +482,7 @@ export const computedSlice = (state) => {
     })
 
     stepsToAnimation(state, tfs, items);
-
+    console.log('TFS',tfs)
     return ({
         executablePrimitives,
         tfs,

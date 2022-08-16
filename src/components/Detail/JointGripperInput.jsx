@@ -6,6 +6,7 @@ import { Collapse } from "../Elements/Collapse";
 import { NumberInput } from "../Elements/NumberInput";
 import shallow from "zustand/shallow";
 import { TextField } from "@mui/material";
+import { clamp } from 'lodash';
 
 function JointGripperInput({ robotID, isGripper }) {
   const [initialStateInfo, initialState, initialStateValue] = useStore(
@@ -70,7 +71,7 @@ function JointGripperInput({ robotID, isGripper }) {
             onChange={(e) =>
               updateItemSimpleProperty(robotID, {
                 ...initialState,
-                [io.key]: e.target.value,
+                [io.key]: clamp(Number(e.target.value),io.lower,io.upper),
               })
             }
           />

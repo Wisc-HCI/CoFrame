@@ -36,7 +36,10 @@ export const robotAgentCompiler = ({
       basePose.rotation.w,
     ],
   };
-  // console.log(properties.urdf)
+  // console.log(properties.urdf);
+  // console.log(rootBounds);
+  console.log({ origin, joints: properties.initialJointState })
+
   // console.log(module.solver_new)
   const fwdsolver = new module.Solver(
     properties.urdf,
@@ -46,13 +49,11 @@ export const robotAgentCompiler = ({
     { origin, joints: properties.initialJointState },
     false,
     1,
-    450
+    450,
+    null
   );
-  const newCompiled = likStateToData(
-    fwdsolver.currentState,
-    worldModel,
-    data.id
-  );
+  const newCompiled = likStateToData(fwdsolver.currentState,data.id,properties.linkParentMap);
+  console.log('newCompiled',newCompiled)
   return {
     type: data.type,
     ...newCompiled,

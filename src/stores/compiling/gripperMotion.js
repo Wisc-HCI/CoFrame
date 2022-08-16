@@ -34,7 +34,7 @@ export const gripperMotionCompiler = ({ data, properties, memo }) => {
         let frameData = {};
         let gripperValues = {};
         grippers.forEach(gripper => {
-            console.log(gripper)
+            // console.log(gripper)
             const gripperValue = time * changePerTime + properties.positionStart;
             const idx = findLastSatisfiedFromReference(gripper.properties.compiled[ROOT_PATH].gripperIndex, v => v >= gripperValue);
             const links = mapValues(gripper.properties.compiled[ROOT_PATH].gripperFrames, frameSet => frameSet[idx]);
@@ -52,14 +52,14 @@ export const gripperMotionCompiler = ({ data, properties, memo }) => {
 
     const initialStep = {
         stepType: STEP_TYPE.ACTION_START,
-        effect:{[robot.id]: { busy: true }},
+        effect: robot ? {[robot.id]: { busy: true }} : {},
         data: { agent: 'robot', id: data.id, closing, thing },
         source: data.id,
         delay: 0
     }
     const finalStep = {
         stepType: STEP_TYPE.ACTION_END,
-        effect:{[robot.id]: { busy: false }},
+        effect: robot ? {[robot.id]: { busy: false }} : {},
         data: { agent: 'robot', id: data.id, closing, thing },
         source: data.id,
         delay: duration
@@ -67,9 +67,9 @@ export const gripperMotionCompiler = ({ data, properties, memo }) => {
 
     const events = [
         {
-            condition: {
+            condition: robot ? {
                 [robot.id]: { busy: false }
-            },
+            } : {},
             onTrigger: [
                 initialStep,
                 ...innerSteps,

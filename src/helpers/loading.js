@@ -10,8 +10,8 @@ import { meshType } from "../stores/typeInfo/mesh";
 const capitalize = (value) => value[0].toUpperCase() + value.substring(1);
 
 const originToPose = (origin) => {
-  const posVec = origin.xyz.split(" ").map(Number);
-  const rpyVec = origin.rpy.split(" ").map(Number);
+  const posVec = origin?.xyz ? origin.xyz.split(" ").map(Number) : [0, 0, 0];
+  const rpyVec = origin?.rpy ? origin.rpy.split(" ").map(Number) : [0, 0, 0];
 
   return {
     position: { x: posVec[0], y: posVec[1], z: posVec[2] },
@@ -51,6 +51,7 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
     name: robotName,
   };
   robot.properties.relativeTo = relativeTo;
+  robot.properties.urdf = urdf;
 
   let allData = {
     [robotId]: robot,
@@ -70,23 +71,27 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
     }
   });
   console.log("root", root);
+  robot.properties.root = root?.name;
 
   // Al
   let jointLimit = {};
   let initialJointState = {};
   let linkNames = [];
+  let linkParentMap = {};
 
   // Define a stack to iterate through
   let processStack = [
     { type: "link", data: root, parent: robot, relativeTo: robotId },
   ];
 
-//   let jointCount = 0
+  //   let jointCount = 0
 
   while (processStack.length > 0) {
     let toProcess = processStack.pop();
     if (toProcess.type === "link") {
-      const linkId = generateUuid("linkType");
+      // We should really generate a UUID, but currently the system expects these to match the frame names
+      const linkId = toProcess.data.name;
+    //   const linkId = generateUuid("linkType");
       let link = {
         ...instanceTemplateFromSpec("linkType", sceneObjects.linkType, false),
         id: linkId,
@@ -94,14 +99,17 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
         raw: toProcess.data,
       };
       link.properties.relativeTo = toProcess.relativeTo;
+      link.properties.frameKey = toProcess.data.name;
       link.properties.agent = robotId;
+      const origin = originToPose(toProcess.data.origin);
+      link.properties.position = origin.position;
+      link.properties.rotation = origin.rotation;
       if (toProcess.parent.id !== robotId) {
-        console.log('non-root link',toProcess)
-        const origin = originToPose(toProcess.parent.origin);
-        link.properties.position = origin.position;
-        link.properties.rotation = origin.rotation;
+        console.log("non-root link", toProcess);
+        linkParentMap[toProcess.data.name] = toProcess.relativeTo;
+      } else {
+        linkParentMap[toProcess.data.name] = robot.id
       }
-      
 
       // Create a new collision body entry and assign it to the link's collision property.
       const collisionBodyId = generateUuid("collisionBodyType");
@@ -120,23 +128,47 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
       link.properties.collision = collisionBodyId;
 
       // For each of the shapes in the collision, add a collisionShape and link it to the body
-      let components = []
-      toProcess.data.collision?.forEach((rawCollisionShape,idx) => {
-        const collisionType = rawCollisionShape.geometry.cylinder ? 'cylinder'
-            : rawCollisionShape.geometry.capsule ? 'capsule'
-            : rawCollisionShape.geometry.box ? 'cube'
-            : rawCollisionShape.geometry.sphere ? 'sphere'
-            : 'mesh'
-        if (collisionType !== 'mesh') {
-            const collisionShapeId = generateUuid('collisionShapeType');
-            let collisionShape = {...instanceTemplateFromSpec('collisionShapeType',collisionTypes.collisionShapeType,false),id:collisionShapeId,name:`${link.name}-${collisionType}-${idx}`};
-            collisionShape.properties.keyword = collisionType;
-            const collisionShapeOrigin = originToPose(rawCollisionShape.origin)
-            collisionShape.properties.position = collisionShapeOrigin.position;
-            collisionShape.properties.rotation = collisionShapeOrigin.rotation;
-            allData[collisionShapeId] = collisionShape;
-            components.push(collisionShapeId);
+      let components = [];
+      toProcess.data.collision?.forEach((rawCollisionShape, idx) => {
+        const collisionType = rawCollisionShape.geometry.cylinder
+          ? "cylinder"
+          : rawCollisionShape.geometry.capsule
+          ? "capsule"
+          : rawCollisionShape.geometry.box
+          ? "cube"
+          : rawCollisionShape.geometry.sphere
+          ? "sphere"
+          : "mesh";
+        if (collisionType !== "mesh") {
+          const collisionShapeId = generateUuid("collisionShapeType");
+          let collisionShape = {
+            ...instanceTemplateFromSpec(
+              "collisionShapeType",
+              collisionTypes.collisionShapeType,
+              false
+            ),
+            id: collisionShapeId,
+            name: `${link.name}-${collisionType}-${idx}`,
+          };
+          collisionShape.properties.keyword = collisionType;
+          const collisionShapeOrigin = originToPose(rawCollisionShape.origin);
+          collisionShape.properties.position = collisionShapeOrigin.position;
+          collisionShape.properties.rotation = collisionShapeOrigin.rotation;
+          if (collisionType === 'cylinder') {
+            collisionShape.properties.extraParams = {length: Number(rawCollisionShape.geometry.cylinder.length), radius: Number(rawCollisionShape.geometry.cylinder.radius)};
+            collisionShape
+          } else if (collisionType === 'capsule') {
+            collisionShape.properties.extraParams = {length: Number(rawCollisionShape.geometry.capsule.length), radius: Number(rawCollisionShape.geometry.capsule.radius)};
+          } else if (collisionType === 'cube') {
+            const sizeVec = rawCollisionShape.geometry.box.size.split(' ').map(Number);
+            collisionShape.properties.extraParams = {x: sizeVec[0], y: sizeVec[1], z:sizeVec[2]};
+          } else if (collisionType === 'sphere') {
+            collisionShape.properties.extraParams = {radius: Number(rawCollisionShape.geometry.capsule.radius)};
+          }
+          allData[collisionShapeId] = collisionShape;
+          components.push(collisionShapeId);
         }
+        
       });
 
       collisionBody.properties.componentShapes = components;
@@ -174,45 +206,45 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
         }
       });
     } else if (toProcess.type === "joint") {
-        // Find the child link and add it to the stack
-        data.robot.link.some(rawLink=>{
-            if (rawLink.name === toProcess.data.child.link) {
-                processStack.push({
-                    type: 'link',
-                    data: rawLink,
-                    parent: toProcess.data,
-                    relativeTo: toProcess.relativeTo
-                })
-                return true
-            }
-            return false
-        })
-        if (toProcess.data.type !== 'fixed') {
-            const lower = Number(toProcess.data.limit.lower);
-            const upper = Number(toProcess.data.limit.upper);
-            const mid = (lower + upper) / 2;
-            initialJointState[toProcess.data.name] = mid;
-            jointLimit[toProcess.data.name] = {lower, upper};
+      // Find the child link and add it to the stack
+      data.robot.link.some((rawLink) => {
+        if (rawLink.name === toProcess.data.child.link) {
+          processStack.push({
+            type: "link",
+            data: rawLink,
+            parent: toProcess.data,
+            relativeTo: toProcess.relativeTo,
+          });
+          return true;
         }
-        // jointCount += 1
-        
+        return false;
+      });
+      if (toProcess.data.type !== "fixed") {
+        const lower = Number(toProcess.data.limit.lower);
+        const upper = Number(toProcess.data.limit.upper);
+        const mid = (lower + upper) / 2;
+        initialJointState[toProcess.data.name] = mid;
+        jointLimit[toProcess.data.name] = { lower, upper };
+      }
+      // jointCount += 1
     }
   }
 
   let pinchPointPairLinks = [];
-  linkNames.forEach(link1=>{
-    linkNames.forEach(link2=>{
+  linkNames.forEach((link1) => {
+    linkNames.forEach((link2) => {
       if (link1 !== link2) {
-        pinchPointPairLinks.push({link1,link2})
+        pinchPointPairLinks.push({ link1, link2 });
       }
-    })
-  })
+    });
+  });
 
   allData[robotId].properties.initialJointState = initialJointState;
   allData[robotId].properties.jointLimit = jointLimit;
   allData[robotId].properties.pinchPointPairLinks = pinchPointPairLinks;
+  allData[robotId].properties.linkParentMap = linkParentMap;
 
-  console.log(allData);
+    console.log(allData);
 
-  return {};
+  return allData;
 };
