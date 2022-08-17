@@ -379,6 +379,9 @@ export function stepsToAnimation(state, tfs, items) {
     // This is updated from the compiled data as it's encountered
     let programModel = createEnvironmentModel(state.programData);
 
+    // Gripper offset ID
+    let gripOffsetID = Object.values(state.programData).filter(v => v.type === 'gripperType')[0].id + '-gripOffset';
+
     // Find what is the focus within CoFrame
     let focusStub = null;
     // Only back up to once for the animation correlating to the issue (if applicable)
@@ -617,7 +620,7 @@ export function stepsToAnimation(state, tfs, items) {
                 });
 
                 // Get the gripper offset position/rotation
-                let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+                let gripperOffset = queryWorldPose(programModel, gripOffsetID, '');
                 let gripperRotation = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
                 let selectedGraspRotation = null;
 
@@ -733,7 +736,7 @@ export function stepsToAnimation(state, tfs, items) {
             // Update gripped object
             if (currentGraspedThingID !== '') {
                 // Get world pose of the gripper offset and update the grasped object to this pose
-                let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+                let gripperOffset = queryWorldPose(programModel, gripOffsetID, '');
                 // Rotate the thing to use the grasped point's rotation (relative to the thing)
                 let adjustedRotation = graspAngle ?  new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w).multiply(graspAngle) : gripperOffset.rotation
                 let rotatedToGraspPoint = {x: adjustedRotation.x, y: adjustedRotation.y, z: adjustedRotation.z, w: adjustedRotation.w};
