@@ -241,7 +241,7 @@ const DialogContent = () => {
               </Stack>
 
               <Button onClick={()=>{
-                const newData = robotDataFromUrdf(PANDA_ROBOT_DATA['robot-agent-3290720sfd3950234907450129sfcwesd2'].properties.urdf,'pedestal');
+                const newData = robotDataFromUrdf(PANDA_ROBOT_DATA['robot-agent-3290720sfd3950234907450129sfcwesd2'].properties.urdf,'table');
                 // Clear out current robot
                 Object.values(data).filter(d=>d.type==='robotAgentType').forEach(d=>deleteAgent(d.id));
                 addAgent({...newData,...PANDA_GRIPPER_DATA});
