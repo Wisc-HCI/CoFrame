@@ -15,6 +15,7 @@ import {
 import { DATA_TYPES } from 'simple-vp';
 import { STEP_TYPE } from './Constants';
 import { filter } from "lodash";
+import { createEnvironmentModel, queryWorldPose, updateEnvironModel } from '../helpers/geometry';
 
 export const computedSlice = (state) => {
     let executablePrimitives = {};
@@ -432,7 +433,7 @@ export const computedSlice = (state) => {
 
             let vertKeys = Object.keys(deepestIssue.sceneData.vertices);
             for (let i = 0; i < vertKeys.length; i++) {
-                lines[primitive.id.concat(vertKeys[i])] = { name: vertKeys[i], vertices: deepestIssue.sceneData.vertices[vertKeys[i]], frame: 'base_link', hidden, width: 4 };
+                lines[primitive.id.concat(vertKeys[i])] = { name: vertKeys[i], vertices: deepestIssue.sceneData.vertices[vertKeys[i]], frame: 'world', hidden, width: 4 };
             }
         }
     });
@@ -474,18 +475,20 @@ export const computedSlice = (state) => {
         })
 
         let program = filter(state.programData, function (v) { return v.type === 'programType' && v.dataType === DATA_TYPES.INSTANCE})[0];
-        let gripper = filter(state.programData, function (v) { return v.type === 'gripperType'})[0];
-        let robotAgent = filter(state.programData, function (v) { return v.type === 'robotAgentType'})[0];
         let steps = program.properties.compiled["{}"]?.steps;
         let sceneTmp = (steps && moveTrajectoryId) ? steps.filter(step => step.type === STEP_TYPE.SCENE_UPDATE && step.source === moveTrajectoryId) : [];
+        let programModel = createEnvironmentModel(state.programData);
         let eePoseVerts = sceneTmp.map(sceneUpdate => {
+            Object.keys(sceneUpdate.data.links).forEach(link => {
+                programModel = updateEnvironModel(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
+            });
+            let {position, rotation} = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
             return {
-                // TODO: update goalPoses to eePose
-                position: sceneUpdate.data.eePoses[robotAgent.id][gripper.id].position,
+                position: position,
                 color: { ...DEFAULT_TRAJECTORY_COLOR }
             }
         });
-        lines[trajectory.id.concat('-eePose')] = { name: trajectory.name.concat('-eePose'), vertices: eePoseVerts, frame: 'base_link', hidden, width: 2 };
+        lines[trajectory.id.concat('-eePose')] = { name: trajectory.name.concat('-eePose'), vertices: eePoseVerts, frame: 'world', hidden, width: 2 };
 
         lines[trajectory.id] = { name: trajectory.name, vertices, frame: 'world', hidden, width: 2 }
     })

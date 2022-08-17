@@ -3,7 +3,7 @@ import frameStyles from "../../frameStyles";
 import { STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import { anyReachable, getIDsAndStepsFromCompiled, verticesToVolume } from "../helpers";
-import { distance } from "../../helpers/geometry";
+import { distance, queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
 import { Vector3 } from "three";
 import lodash from 'lodash';
 import { hexToRgb } from "../../helpers/colors";
@@ -49,8 +49,9 @@ export const findReachabilityIssues = ({programData}) => { // requires joint_pro
 }
 
 // requires trace processor, joint speed grader (can also use intermediate type)
-export const findJointSpeedIssues = ({program, programData, settings}) => {
+export const findJointSpeedIssues = ({program, programData, settings, environmentModel}) => {
     let issues = {};
+    return [issues, {}];
 
     const warningLevel = settings["jointSpeedWarn"].value * settings['jointMaxSpeed'].value;
     const errorLevel = settings["jointSpeedErr"].value * settings['jointMaxSpeed'].value;
@@ -186,7 +187,7 @@ export const findJointSpeedIssues = ({program, programData, settings}) => {
 }
 
 // requires trace processor, end effector grader + intermediate end effector speed interediate type
-export const findEndEffectorSpeedIssues = ({program, programData, settings}) => {
+export const findEndEffectorSpeedIssues = ({program, programData, settings, environmentModel}) => {
     let issues = {};
 
     const warningLevel = settings['eeSpeedWarn'].value;
@@ -197,16 +198,15 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings}) => 
     let sceneUpdates = res[1];
 
     let timeData = {};
-    let frames = {};
+    let linkData = {};
     sceneUpdates.forEach(step => {
         if (step.source && moveTrajectoryIDs.includes(step.source)) {
             if (!(step.source in timeData)) {
                 timeData[step.source] = [];
-                frames[step.source] = [];
+                linkData[step.source] = [];
             }
             timeData[step.source].push(step.time);
-            // TODO use eePose
-            frames[step.source].push(step.data.links.tool0.position)
+            linkData[step.source].push({...step.data.links});
         }
     });
 
@@ -218,10 +218,26 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings}) => 
         let hasErrorVelocity = false;
         let hasWarningVelocity = false;
 
-        for (let i = 1; i < frames[moveID].length; i++) {
+        // Initially update the model
+        Object.keys(linkData[moveID][0]).forEach(link => {
+            environmentModel = updateEnvironModel(environmentModel, link, {...linkData[moveID][0][link].position}, {...linkData[moveID][0][link].rotation});
+        });
+
+        for (let i = 1; i < linkData[moveID].length; i++) {
+            // Pull previous end-effector position
+            let prevFrameData = queryWorldPose(environmentModel, 'gripper-robotiq-gripOffset', '');
+            let prevFrame = prevFrameData.position;
+
+            // Update model to current frame
+            Object.keys(linkData[moveID][i]).forEach(link => {
+                environmentModel = updateEnvironModel(environmentModel, link, {...linkData[moveID][i][link].position}, {...linkData[moveID][i][link].rotation});
+            });
+
+            // Pull current end-effector position
+            let curFrameData = queryWorldPose(environmentModel, 'gripper-robotiq-gripOffset', '');
+            let curFrame = curFrameData.position;
+
             // Adjust the time from milliseconds to seconds to calculate the velocity correctly
-            let curFrame = frames[moveID][i]
-            let prevFrame = frames[moveID][i - 1]
             let calcVel = distance(curFrame, prevFrame) / ((timeData[moveID][i] - timeData[moveID][i-1]) / 1000);
 
 
