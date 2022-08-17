@@ -95,6 +95,8 @@ export const findEndEffectorPoseIssues = ({program, programData, settings}) => {
 // Requires collision graders
 export const findCollisionIssues = ({program, programData, settings}) => { 
     let issues = {};
+    return [issues, {}];
+
     const warningLevel = settings['collisionWarn'].value;
     const errorLevel = settings['collisionErr'].value;
 
@@ -314,6 +316,7 @@ export const findCollisionIssues = ({program, programData, settings}) => {
 // Requires occupancy zone graders
 export const findOccupancyIssues = ({program, programData, settings}) => {
     let issues = {};
+    return [issues, {}];
 
     const warningLevel = settings['occupancyWarn'].value;
     const errorLevel = settings['occupancyErr'].value;

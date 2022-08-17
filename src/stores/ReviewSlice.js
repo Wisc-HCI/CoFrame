@@ -24,6 +24,7 @@ import {
 import { findCycleTimeIssues, findIdleTimeIssues, findReturnOnInvestmentIssues } from "./issueDetectors/business";
 import { objectMap } from "./helpers";
 import lodash from 'lodash';
+import { createEnvironmentModel } from "../helpers/geometry";
 
 export const ReviewSlice = (set, get) => ({
     // Issues are stored in a flat lookup
@@ -251,6 +252,7 @@ export const ReviewSlice = (set, get) => ({
         let newIssues = {};
         let program = lodash.filter(state.programData, function (v) {return v.type === "programType"})[0];
         let allNewStats = {};
+        let environmentModel = createEnvironmentModel(state.programData);
         Object.entries(state.sections).forEach(([sectionKey,section])=>{
             // Use the predefined updater to get the new issues
             let [newSectionIssues, newStats] = state.sections[sectionKey].updater({
@@ -258,7 +260,8 @@ export const ReviewSlice = (set, get) => ({
                 programSpec: state.programSpec, 
                 program: program, 
                 stats: state.stats,
-                settings: state.issueSettings
+                settings: state.issueSettings,
+                environmentModel: environmentModel
             });
             // Augment allNewStats with the new incoming stats.
             allNewStats = {...allNewStats,...newStats};
