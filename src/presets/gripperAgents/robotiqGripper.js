@@ -2706,7 +2706,7 @@ export const ROBOTIQ_GRIPPER_DATA = {
         z: 0,
       },
       relativeTo: "tool0",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
           type: "gripperType",
@@ -5508,7 +5508,7 @@ export const ROBOTIQ_GRIPPER_DATA = {
               },
             },
           },
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             relativeTo: "tool0",
           },
@@ -5559,10 +5559,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "gripper-robotiq",
       mesh: "gripperBaseLinkMesh",
       collision: "robotiqBaseCollsion",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "gripper-robotiq",
             position: {
@@ -5611,10 +5611,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "robotiq_85_base_link",
       mesh: "gripperLeftKnuckleMesh",
       collision: "",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "robotiq_85_base_link",
             position: {
@@ -5663,10 +5663,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "robotiq_85_base_link",
       mesh: "gripperRightKnuckleMesh",
       collision: "",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "robotiq_85_base_link",
             position: {
@@ -5715,10 +5715,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "robotiq_85_left_knuckle_link",
       mesh: "gripperLeftFingerMesh",
       collision: "",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "robotiq_85_left_knuckle_link",
             position: {
@@ -5767,10 +5767,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "robotiq_85_right_knuckle_link",
       mesh: "gripperRightFingerMesh",
       collision: "",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "robotiq_85_right_knuckle_link",
             position: {
@@ -5819,10 +5819,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "robotiq_85_base_link",
       mesh: "gripperLeftInnerKnuckleMesh",
       collision: "",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "robotiq_85_base_link",
             position: {
@@ -5871,10 +5871,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "robotiq_85_base_link",
       mesh: "gripperRightInnerKnuckleMesh",
       collision: "",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "robotiq_85_base_link",
             position: {
@@ -5923,10 +5923,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "robotiq_85_left_inner_knuckle_link",
       mesh: "gripperLeftFingerTipMesh",
       collision: "robotiqTipCollsion",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "robotiq_85_left_inner_knuckle_link",
             position: {
@@ -5975,10 +5975,10 @@ export const ROBOTIQ_GRIPPER_DATA = {
       relativeTo: "robotiq_85_right_inner_knuckle_link",
       mesh: "gripperRightFingerTipMesh",
       collision: "robotiqTipCollsion",
-      status: "VALID",
+      status: "PENDING",
       compiled: {
         "{}": {
-          status: "VALID",
+          status: "PENDING",
           otherPropertyUpdates: {
             frame: "robotiq_85_right_inner_knuckle_link",
             position: {
@@ -5997,6 +5997,440 @@ export const ROBOTIQ_GRIPPER_DATA = {
       },
       singleton: true,
       frame: "robotiq_85_right_inner_knuckle_link",
+    },
+  },
+  gripperBaseLinkMesh: {
+    type: "meshType",
+    id: "gripperBaseLinkMesh",
+    name: "Gripper Base Link Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_base_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  gripperLeftKnuckleMesh: {
+    type: "meshType",
+    id: "gripperLeftKnuckleMesh",
+    name: "Gripper Left Knuckle Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  gripperRightKnuckleMesh: {
+    type: "meshType",
+    id: "gripperRightKnuckleMesh",
+    name: "Gripper Right Knuckle Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_knuckle_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  gripperLeftFingerMesh: {
+    type: "meshType",
+    id: "gripperLeftFingerMesh",
+    name: "Gripper Left Finger Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  gripperRightFingerMesh: {
+    type: "meshType",
+    id: "gripperRightFingerMesh",
+    name: "Gripper Right Finger Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_finger_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  gripperLeftInnerKnuckleMesh: {
+    type: "meshType",
+    id: "gripperLeftInnerKnuckleMesh",
+    name: "Gripper Left Inner Knuckle Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  gripperRightInnerKnuckleMesh: {
+    type: "meshType",
+    id: "gripperRightInnerKnuckleMesh",
+    name: "Gripper Right Inner Knuckle Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_inner_knuckle_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  gripperLeftFingerTipMesh: {
+    type: "meshType",
+    id: "gripperLeftFingerTipMesh",
+    name: "Gripper Left Finger Tip Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  gripperRightFingerTipMesh: {
+    type: "meshType",
+    id: "gripperRightFingerTipMesh",
+    name: "Gripper Right Finger Tip Mesh",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 1,
+        y: 1,
+        z: 1,
+      },
+      keyword:
+        "package://robotiq_85_description/meshes/visual/robotiq_85_finger_tip_link.dae",
+      extraParams: null,
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      updateFields: ["position", "rotation", "scale"],
+      singleton: true,
+    },
+  },
+  robotiqBaseCollsion: {
+    type: "collisionBodyType",
+    id: "robotiqBaseCollsion",
+    name: "Robot IQ 85 Base Gripper Collision Body",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      componentShapes: ["robotiqBaseCollisionShape0"],
+      updateFields: ["componentShapes"],
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      singleton: true,
+    },
+  },
+  robotiqBaseCollisionShape0: {
+    type: "collisionShapeType",
+    id: "robotiqBaseCollisionShape0",
+    name: "Robot Gripper Base Collision Shape",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0.045,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 0.09,
+        y: 0.09,
+        z: 0.07,
+      },
+      keyword: "cube",
+      radius: 0,
+      length: 0,
+      extraParams: null,
+      updateFields: ["position", "rotation", "scale"],
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      singleton: true,
+    },
+  },
+  robotiqTipCollsion: {
+    type: "collisionBodyType",
+    id: "robotiqTipCollsion",
+    name: "Robot IQ 85 Gripper Tip Collision Body",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      componentShapes: ["robotiqTipCollsionShape0"],
+      updateFields: ["componentShapes"],
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      singleton: true,
+    },
+  },
+  robotiqTipCollsionShape0: {
+    type: "collisionShapeType",
+    id: "robotiqTipCollsionShape0",
+    name: "Robot Gripper Tip Collision Shape",
+    canDelete: true,
+    canEdit: true,
+    dataType: "INSTANCE",
+    selected: false,
+    editing: false,
+    properties: {
+      position: {
+        x: 0.01,
+        y: 0,
+        z: 0,
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 1,
+      },
+      scale: {
+        x: 0.07,
+        y: 0.02,
+        z: 0.04,
+      },
+      keyword: "cube",
+      radius: 0,
+      length: 0,
+      extraParams: null,
+      updateFields: ["position", "rotation", "scale"],
+      status: "PENDING",
+      compileFn: 0,
+      compiled: {},
+      singleton: true,
     },
   },
 };

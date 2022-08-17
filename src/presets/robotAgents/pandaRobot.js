@@ -477,79 +477,10 @@ export const PANDA_ROBOT_DATA = {
             </joint>
             <joint name="panda_hand_joint" type="fixed">
               <parent link="panda_link8"/>
-              <child link="panda_hand"/>
+              <child link="panda_connector"/>
               <origin rpy="0 0 -0.7853981633974483" xyz="0 0 0"/>
             </joint>
-            <link name="panda_hand">
-              <visual>
-                <geometry>
-                  <mesh filename="package://franka_ros/franka_description/meshes/visual/hand.dae"/>
-                </geometry>
-              </visual>
-              <collision>
-                <origin rpy="0 0 0" xyz="0.0 0.0 0.03"/>
-                <geometry>
-                  <box size="0.04 0.2 0.08"/>
-                </geometry>
-              </collision>
-              <inertial>
-                  <origin rpy="0 0 0" xyz="0 0.0015244 0.0275912"/>
-                  <mass value="0.73"/>
-                  <inertia ixx="0.00278560230025" ixy="0.0" ixz="0.0" iyy="0.000400033405336" iyz="0.0" izz="0.00256378041832"/>
-                </inertial>
-            </link>
-            <link name="panda_leftfinger">
-              <visual>
-                <geometry>
-                  <mesh filename="package://franka_ros/franka_description/meshes/visual/finger.dae"/>
-                </geometry>
-              </visual>
-              <collision>
-                <origin rpy="0 0 0" xyz="0.0 0.012 0.033"/>
-                <geometry>
-                  <box size="0.02 0.025 0.041"/>
-                </geometry>
-              </collision>
-              <inertial>
-                  <origin rpy="0 0 0" xyz="0 0.0145644 0.0227941"/>
-                  <mass value="0.1"/>
-                  <inertia ixx="3.01220925051e-05" ixy="0.0" ixz="0.0" iyy="2.95873808038e-05" iyz="0.0" izz="6.95125211657e-06"/>
-              </inertial>
-            </link>
-            <link name="panda_rightfinger">
-              <visual>
-                <origin rpy="0 0 3.141592653589793" xyz="0 0 0"/>
-                <geometry>
-                  <mesh filename="package://franka_ros/franka_description/meshes/visual/finger.dae"/>
-                </geometry>
-              </visual>
-              <collision>
-                <origin rpy="0 0 0" xyz="0.0 -0.012 0.033"/>
-                <geometry>
-                  <box size="0.02 0.025 0.041"/>
-                </geometry>
-              </collision>
-              <inertial>
-                  <origin rpy="0 0 3.141592653589793" xyz="0 -0.0145644 0.0227941"/>
-                  <mass value="0.1"/>
-                  <inertia ixx="3.01220925051e-05" ixy="0.0" ixz="0.0" iyy="2.95873808038e-05" iyz="0.0" izz="6.95125211657e-06"/>
-                </inertial>
-            </link>
-            <joint name="panda_finger_joint1" type="prismatic">
-              <parent link="panda_hand"/>
-              <child link="panda_leftfinger"/>
-              <origin rpy="0 0 0" xyz="0 0 0.0584"/>
-              <axis xyz="0 1 0"/>
-              <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
-            </joint>
-            <joint name="panda_finger_joint2" type="prismatic">
-              <parent link="panda_hand"/>
-              <child link="panda_rightfinger"/>
-              <origin rpy="0 0 0" xyz="0 0 0.0584"/>
-              <axis xyz="0 -1 0"/>
-              <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
-              <mimic joint="panda_finger_joint1"/>
-            </joint>
+            <link name="panda_connector"/>
           </robot>`,
       compileFn: 10,
       updateFields: [

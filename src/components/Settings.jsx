@@ -27,6 +27,8 @@ import { ScrollRegion } from "./Elements/ScrollRegion";
 import { robotDataFromUrdf } from "../helpers/loading";
 import { PANDA_ROBOT_DATA } from "../presets/robotAgents/pandaRobot";
 import { UR3E_ROBOT_DATA } from "../presets/robotAgents/ur3eRobot";
+import { PANDA_GRIPPER_DATA } from "../presets/gripperAgents/pandaGripper";
+import { ROBOTIQ_GRIPPER_DATA } from "../presets/gripperAgents/robotiqGripper";
 
 const DialogContent = () => {
   // const url = useStore((store) => store.url, shallow);
@@ -242,14 +244,14 @@ const DialogContent = () => {
                 const newData = robotDataFromUrdf(PANDA_ROBOT_DATA['robot-agent-3290720sfd3950234907450129sfcwesd2'].properties.urdf,'pedestal');
                 // Clear out current robot
                 Object.values(data).filter(d=>d.type==='robotAgentType').forEach(d=>deleteAgent(d.id));
-                addAgent(newData);
+                addAgent({...newData,...PANDA_GRIPPER_DATA});
               }}>Parse Panda</Button>
 
               <Button onClick={()=>{
                 const newData = robotDataFromUrdf(UR3E_ROBOT_DATA['robot-agent'].properties.urdf,'pedestal');
                 // Clear out current robot
                 Object.values(data).filter(d=>d.type==='robotAgentType').forEach(d=>deleteAgent(d.id));
-                addAgent(newData);
+                addAgent({...newData.ROBOTIQ_GRIPPER_DATA});
               }}>Parse UR3e</Button>
 
               {/* Frames Selector */}
