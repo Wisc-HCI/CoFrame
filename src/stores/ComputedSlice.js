@@ -478,11 +478,12 @@ export const computedSlice = (state) => {
         let steps = program.properties.compiled["{}"]?.steps;
         let sceneTmp = (steps && moveTrajectoryId) ? steps.filter(step => step.type === STEP_TYPE.SCENE_UPDATE && step.source === moveTrajectoryId) : [];
         let programModel = createEnvironmentModel(state.programData);
+        let gripOffsetID = Object.values(state.programData).filter(v => v.type === 'gripperType')[0].id + '-gripOffset';
         let eePoseVerts = sceneTmp.map(sceneUpdate => {
             Object.keys(sceneUpdate.data.links).forEach(link => {
                 programModel = updateEnvironModel(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
             });
-            let {position, rotation} = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+            let {position, rotation} = queryWorldPose(programModel, gripOffsetID, '');
             return {
                 position: position,
                 color: { ...DEFAULT_TRAJECTORY_COLOR }
