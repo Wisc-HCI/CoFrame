@@ -56,67 +56,6 @@ export const threeQuaternionToRotation = (quaternion) => ({
 export const rotationToThreeQuaternion = (rotation) =>
   new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
-export const likProximityAdjustment = (
-  trackedPoints,
-  proximity,
-  mirrorTrackedPoints
-) => {
-  let trackedPinchPoints = trackedPoints ? trackedPoints : [];
-  let proximityModel = {};
-
-  if (!proximity) {
-    return proximityModel;
-  }
-  proximity.forEach(({ shape1, shape2, distance, points, physical }) => {
-    if (trackedPinchPoints !== []) {
-      trackedPinchPoints.forEach(({ link1, link2 }) => {
-        if (
-          (link1 === shape1 && link2 === shape2) ||
-          (link2 === shape1 && link1 === shape2)
-        ) {
-          if (!proximityModel[link1]) {
-            proximityModel[link1] = {};
-          }
-          if (mirrorTrackedPoints && !proximityModel[link2]) {
-            proximityModel[link2] = {};
-          }
-          proximityModel[link1][link2] = {
-            distance: distance,
-            physical: physical,
-            points: points,
-          };
-          if (mirrorTrackedPoints) {
-            proximityModel[link2][link1] = {
-              distance: distance,
-              physical: physical,
-              points: points,
-            };
-          }
-        } else {
-          if (!proximityModel[link1]) {
-            proximityModel[link1] = {};
-          }
-          if (!proximityModel[link2]) {
-            proximityModel[link2] = {};
-          }
-          proximityModel[link1][link2] = {
-            distance: distance,
-            physical: physical,
-            points: points,
-          };
-          proximityModel[link2][link1] = {
-            distance: distance,
-            physical: physical,
-            points: points,
-          };
-        }
-      });
-    }
-  });
-
-  return proximityModel;
-};
-
 export const likFramesToTransforms = (frames, agentId, linkParentMap) => {
   // console.log(frames)
   // const field = useLocal ? 'local' : 'world';

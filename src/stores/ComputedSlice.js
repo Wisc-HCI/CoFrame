@@ -526,7 +526,8 @@ export const computedSlice = (state) => {
     })
 
     stepsToAnimation(state, tfs, items);
-    console.log('TFS',tfs)
+    // console.log('TFS',tfs)
+    // console.log('LINES',lines)
     return ({
         executablePrimitives,
         tfs,

@@ -380,7 +380,7 @@ export const robotMotionCompiler = ({
 
   let innerSteps = [];
 
-  console.log(robots)
+  // console.log(robots)
 
   const poses = [
     trajectory.properties.compiled[path].startLocation.properties.compiled[
@@ -599,7 +599,7 @@ export const robotMotionCompiler = ({
             reached = sensitivityTester(state, goal, idx);
 
             // const stateData = likStateToData(state, robot.properties.root);
-            console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
+            // console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
             const stateData = likStateToData(state, robot.id, robot.properties.compiled[ROOT_PATH].linkParentMap);
             if (!reached && status !== STATUS.FAILED) {
               status = STATUS.WARN;

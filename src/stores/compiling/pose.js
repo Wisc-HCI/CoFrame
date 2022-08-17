@@ -195,9 +195,9 @@ export const poseCompiler = ({
             errorCode = ERROR.UNREACHABLE_POSE;
           }
           reachability[robot.id][gripper.id] = goalAchieved;
-          console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
+          // console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
           states[robot.id][gripper.id] = likStateToData(state, robot.id, robot.properties.compiled[ROOT_PATH].linkParentMap);
-          console.log(states[robot.id][gripper.id])
+          // console.log(states[robot.id][gripper.id])
           // states[robot.id][gripper.id] = likStateToData(
           //   state,
           //   worldModel,
@@ -207,7 +207,7 @@ export const poseCompiler = ({
       });
     });
 
-  console.log("pose recalculation: ", { data, reachability });
+  // console.log("pose recalculation: ", { data, reachability, states });
 
   const newCompiled = {
     goalPose,

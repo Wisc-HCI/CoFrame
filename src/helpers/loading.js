@@ -154,16 +154,21 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
           const collisionShapeOrigin = originToPose(rawCollisionShape.origin);
           collisionShape.properties.position = collisionShapeOrigin.position;
           collisionShape.properties.rotation = collisionShapeOrigin.rotation;
-          if (collisionType === 'cylinder') {
-            collisionShape.properties.extraParams = {length: Number(rawCollisionShape.geometry.cylinder.length), radius: Number(rawCollisionShape.geometry.cylinder.radius)};
-            collisionShape
-          } else if (collisionType === 'capsule') {
-            collisionShape.properties.extraParams = {length: Number(rawCollisionShape.geometry.capsule.length), radius: Number(rawCollisionShape.geometry.capsule.radius)};
+          if (collisionType === 'cylinder' || collisionType === 'capsule') {
+            const radius = Number(rawCollisionShape.geometry[collisionType].radius);
+            const length = Number(rawCollisionShape.geometry[collisionType].length);
+            // Should probably use extraParams in the future
+            // collisionShape.properties.extraParams = {length, radius};
+            collisionShape.properties.scale = {x: radius*2,y: radius*2,z: length}
           } else if (collisionType === 'cube') {
             const sizeVec = rawCollisionShape.geometry.box.size.split(' ').map(Number);
-            collisionShape.properties.extraParams = {x: sizeVec[0], y: sizeVec[1], z:sizeVec[2]};
+            // Should probably use extraParams in the future
+            // collisionShape.properties.extraParams = {x: sizeVec[0], y: sizeVec[1], z:sizeVec[2]};
+            collisionShape.properties.scale = {x: sizeVec[0], y: sizeVec[1], z:sizeVec[2]};
           } else if (collisionType === 'sphere') {
-            collisionShape.properties.extraParams = {radius: Number(rawCollisionShape.geometry.capsule.radius)};
+            const radius = Number(rawCollisionShape.geometry[collisionType].radius);
+            // collisionShape.properties.extraParams = {radius};
+            collisionShape.properties.scale = {x: radius*2, y: radius*2, z:radius*2};
           }
           allData[collisionShapeId] = collisionShape;
           components.push(collisionShapeId);
