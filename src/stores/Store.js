@@ -13,6 +13,7 @@ import {computedSlice} from './ComputedSlice';
 import { SceneSlice } from 'robot-scene';
 import lodash from 'lodash';
 import KnifeAssembly from './Knife_Assembly_Simple_VP.json';
+import PandaDemo from './Panda_Demo.json'
 import { STATUS } from './Constants';
 
 const immer = (config) => (set, get, api) =>
@@ -57,7 +58,7 @@ useStore.subscribe(state=>
 )
 
 if (Object.keys(useStore.getState().programData).length === 0) {
-  useStore.getState().setData(KnifeAssembly);
+  useStore.getState().setData(PandaDemo);
 }
 
 export default useStore;

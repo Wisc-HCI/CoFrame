@@ -3,7 +3,7 @@ import lodash from 'lodash';
 import { eventsToStates, statesToSteps } from ".";
 
 export const simpleCompiler = ({ data, properties, routes, objectTypes, context, path, memo, module, urdf, worldModel }) => {
-
+    console.log('simple',data.id)
     let newCompiled = {
         shouldBreak: false,
         status: STATUS.VALID,

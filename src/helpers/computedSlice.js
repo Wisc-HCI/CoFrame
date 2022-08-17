@@ -380,7 +380,8 @@ export function stepsToAnimation(state, tfs, items) {
     let programModel = createEnvironmentModel(state.programData);
 
     // Gripper offset ID
-    let gripOffsetID = Object.values(state.programData).filter(v => v.type === 'gripperType')[0].id + '-gripOffset';
+    const grippers = Object.values(state.programData).filter(v => v.type === 'gripperType');
+    let gripOffsetID = grippers.length > 0 ? grippers[0].id + '-gripOffset' : null;
 
     // Find what is the focus within CoFrame
     let focusStub = null;
