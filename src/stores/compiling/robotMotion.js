@@ -18,6 +18,7 @@ import { Quaternion, Vector3 } from "three";
 import { eventsToStates, statesToSteps } from ".";
 
 const FRAME_TIME = 30;
+const COLLISION_WEIGHT = 0
 
 const addOrMergeAnimation = (
   animations,
@@ -143,7 +144,7 @@ const createIKGoals = (
         ...jointNames.map((joint) => ({ Scalar: jointState2[joint] })),
       ],
       weights: [
-        10,
+        COLLISION_WEIGHT,
         7,
         50,
         25,
@@ -187,7 +188,7 @@ const createJointGoals = (jointState1, jointState2, duration, jointNames) => {
         null,
         ...jointNames.map((joint) => ({ Scalar: tmpJointGoals[joint] })),
       ],
-      weights: [10, 7, ...jointNames.map(() => 20)],
+      weights: [COLLISION_WEIGHT, 7, ...jointNames.map(() => 20)],
       joints: cloneDeep(tmpJointGoals),
     });
     idx += 1;
@@ -204,6 +205,7 @@ const createIKSensitivityTester = (
   duration
 ) => {
   const tester = (state, goal, idx) => {
+    return true;
     const p = state.frames[attachmentLink].world.translation;
     const r = state.frames[attachmentLink].world.rotation;
     const achievedPos = { x: p[0], y: p[1], z: p[2] };
@@ -281,6 +283,7 @@ const createIKSensitivityTester = (
 
 const createJointSensitivityTester = (jointNames) => {
   const tester = (state, goal, _) => {
+    return true
     return !jointNames.some((jointName) => {
       const passed =
         Math.abs(state.joints[jointName] - goal.joints[jointName]) < 0.1;
@@ -473,7 +476,7 @@ export const robotMotionCompiler = ({
 
         // Instantiate the initial state and solver;
         const standardObjectives = [
-          { type: "SmoothnessMacro", name: "Smoothness", weight: 10 },
+          { type: "SmoothnessMacro", name: "Smoothness", weight: COLLISION_WEIGHT },
           {
             type: "CollisionAvoidance",
             name: "Collision Avoidance",

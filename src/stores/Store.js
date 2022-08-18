@@ -58,7 +58,7 @@ useStore.subscribe(state=>
 )
 
 if (Object.keys(useStore.getState().programData).length === 0) {
-  useStore.getState().setData(PandaDemo);
+  useStore.getState().setData(KnifeAssembly);
 }
 
 export default useStore;
