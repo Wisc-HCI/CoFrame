@@ -194,6 +194,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
     const errorLevel = settings['eeSpeedErr'].value;
 
     let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
+    let gripperId = Object.values(programData).filter(d=>d.type==='gripperType'&&d.dataType===DATA_TYPES.INSTANCE)[0].id;
     let moveTrajectoryIDs = res[0];
     let sceneUpdates = res[1];
 
@@ -225,7 +226,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
 
         for (let i = 1; i < linkData[moveID].length; i++) {
             // Pull previous end-effector position
-            let prevFrameData = queryWorldPose(environmentModel, 'gripper-robotiq-gripOffset', '');
+            let prevFrameData = queryWorldPose(environmentModel, gripperId+'-gripOffset', '');
             let prevFrame = prevFrameData.position;
 
             // Update model to current frame
@@ -234,7 +235,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
             });
 
             // Pull current end-effector position
-            let curFrameData = queryWorldPose(environmentModel, 'gripper-robotiq-gripOffset', '');
+            let curFrameData = queryWorldPose(environmentModel, gripperId+'-gripOffset', '');
             let curFrame = curFrameData.position;
 
             // Adjust the time from milliseconds to seconds to calculate the velocity correctly

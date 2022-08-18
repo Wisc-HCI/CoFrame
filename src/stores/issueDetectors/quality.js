@@ -527,6 +527,7 @@ export const findThingFlowIssues = ({program, programData}) => {
     let programModel = createEnvironmentModel(programData);
 
     let moveGripperOrder = [];
+    let gripperId = Object.values(programData).filter(d=>d.type==='gripperType'&&d.dataType===DATA_TYPES.INSTANCE)[0].id;
 
     program.properties.compiled["{}"].steps.forEach(step => {
         let source = programData[step.source];
@@ -603,7 +604,7 @@ export const findThingFlowIssues = ({program, programData}) => {
             
             if (currentGrippedThing !== '') {
                 // Get world pose of the gripper offset and update the grasped object to this pose
-                let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+                let gripperOffset = queryWorldPose(programModel, gripperId+'-gripOffset', '');
                 programModel = updateEnvironModel(programModel, currentGrippedThing, gripperOffset.position, gripperOffset.rotation);
             }
         }
@@ -637,7 +638,7 @@ export const findThingFlowIssues = ({program, programData}) => {
                 });
 
                 // Get the gripper offset position/rotation
-                let gripperOffset = queryWorldPose(programModel, 'gripper-robotiq-gripOffset', '');
+                let gripperOffset = queryWorldPose(programModel,  gripperId+'-gripOffset', '');
                 let gripperRotation = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
 
                 // Gripper is closing

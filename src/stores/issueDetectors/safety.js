@@ -32,7 +32,7 @@ export const findEndEffectorPoseIssues = ({program, programData, settings}) => {
                 endPointFrames[step.source] = [];
             }
             timeData[step.source].push(step.time);
-            toolFrames[step.source].push(step.data.links.tool0.position);
+            toolFrames[step.source].push(step.data.links[gripper.properties.relativeTo].position);
             // TODO: iterate over robots and tools
             endPointFrames[step.source].push(step.data.attachmentPoses[robotAgent.id][gripper.id].position);
         }
