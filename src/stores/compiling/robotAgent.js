@@ -4,7 +4,8 @@ import { likStateToData } from "../../helpers/conversion";
 import {
   createStaticEnvironment,
   queryWorldPose,
-  quaternionLog,
+  // quaternionLog,
+  eulerFromQuaternion,
 } from "../../helpers/geometry";
 
 export const robotAgentCompiler = ({
@@ -14,14 +15,15 @@ export const robotAgentCompiler = ({
   worldModel,
 }) => {
   const basePose = queryWorldPose(worldModel, data.id);
-  const quatLog = quaternionLog(basePose.rotation);
+  const baseEuler = eulerFromQuaternion([basePose.w, basePose.x, basePose.y, basePose.z],'sxyz');
+  // const quatLog = quaternionLog(basePose.rotation);
   const rootBounds = [
     { value: basePose.position.x, delta: 0.0 },
     { value: basePose.position.y, delta: 0.0 },
     { value: basePose.position.z, delta: 0.0 }, // Translational
-    { value: quatLog[0], delta: 0.0 },
-    { value: quatLog[1], delta: 0.0 },
-    { value: quatLog[2], delta: 0.0 }, // Rotational
+    { value: baseEuler[0], delta: 0.0 },
+    { value: baseEuler[1], delta: 0.0 },
+    { value: baseEuler[2], delta: 0.0 }, // Rotational
   ];
   const origin = {
     translation: [

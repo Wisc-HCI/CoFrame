@@ -316,10 +316,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -330,10 +330,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -344,10 +344,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -358,10 +358,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -372,10 +372,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -386,10 +386,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -400,10 +400,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -414,10 +414,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -444,10 +444,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -458,10 +458,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -472,10 +472,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -486,10 +486,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -500,10 +500,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -514,10 +514,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -528,10 +528,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {
@@ -542,10 +542,10 @@ export const PANDA_GRIPPER_DATA = {
               z: 0.0584,
             },
             rotation: {
-              x: 1,
+              x: 0,
               y: 0,
               z: 0,
-              w: 0,
+              w: 1,
             },
           },
           {

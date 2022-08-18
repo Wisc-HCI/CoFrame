@@ -8,7 +8,7 @@ crate-type = ["cdylib","rlib"]
 
 [dependencies]
 console_error_panic_hook = { version = "0.1.7" }
-lively_tk = {git = "https://github.com/Wisc-HCI/lively_tk", rev="7f4809d3dbb8ce2cdce981bbd7c79a722b8a878d"}
+lively_tk = {git = "https://github.com/Wisc-HCI/lively_tk", rev="c7c0065"}
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 serde = { version = "1.0", features = ["derive"]}
 
