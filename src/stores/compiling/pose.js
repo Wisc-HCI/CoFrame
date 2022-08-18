@@ -12,6 +12,8 @@ import {
 // import { DATA_TYPES } from "simple-vp";
 import { range, random } from "lodash";
 
+const COLLISION_WEIGHT = 0.1;
+
 const sampleJoints = (joints) => {
   let jointState = {};
   joints.forEach((joint) => {
@@ -113,7 +115,7 @@ export const poseCompiler = ({
             {
               type: "CollisionAvoidance",
               name: "Collision Avoidance",
-              weight: 5,
+              weight: COLLISION_WEIGHT,
             },
             {
               type: "PositionMatch",
@@ -168,7 +170,7 @@ export const poseCompiler = ({
           restarts.some(() => {
             // let currentTime = Date.now();
             rounds.some(() => {
-              state = solver.solve(goals, [50, 30, 5, 5, 1]);
+              state = solver.solve(goals, [50, 30, COLLISION_WEIGHT, 5, 1]);
               const p = state.frames[attachmentLink].world.translation;
               const r = state.frames[attachmentLink].world.rotation;
               const achievedPos = { x: p[0], y: p[1], z: p[2] };
@@ -187,7 +189,7 @@ export const poseCompiler = ({
             if (!goalAchieved) {
               let newStart = sampleJoints(solver.joints);
               // console.warn(newStart)
-              solver.reset({ origin, joints: newStart }, [50, 30, 5, 5, 1]);
+              solver.reset({ origin, joints: newStart }, [50, 30, COLLISION_WEIGHT, 5, 1]);
             }
             return goalAchieved;
           });
