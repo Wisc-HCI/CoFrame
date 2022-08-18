@@ -1,4 +1,4 @@
-import { STATUS, ROOT_PATH, ERROR, MAX_GRIPPER_DISTANCE_DIFF, MAX_GRIPPER_ROTATION_DIFF } from "../Constants";
+import { STATUS, ROOT_PATH, ERROR, MAX_POSE_DISTANCE_DIFF, MAX_POSE_ROTATION_DIFF } from "../Constants";
 import { Quaternion } from "three";
 import { likStateToData } from "../../helpers/conversion";
 import {
@@ -176,7 +176,7 @@ export const poseCompiler = ({
               const translationDistance = distance(achievedPos, pos);
               const rotationalDistance = goalQuat.angleTo(achievedQuat);
               // console.log({translationDistance,rotationalDistance})
-              if (translationDistance < MAX_GRIPPER_DISTANCE_DIFF && rotationalDistance < MAX_GRIPPER_ROTATION_DIFF) {
+              if (translationDistance < MAX_POSE_DISTANCE_DIFF && rotationalDistance < MAX_POSE_ROTATION_DIFF) {
                 goalAchieved = true;
               }
               // if (translationDistance < 0.01) {
