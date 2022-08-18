@@ -17,7 +17,7 @@ import { merge, cloneDeep } from "lodash";
 import { Quaternion, Vector3 } from "three";
 import { eventsToStates, statesToSteps } from ".";
 
-const FRAME_TIME = 20;
+const FRAME_TIME = 30;
 
 const addOrMergeAnimation = (
   animations,
@@ -139,7 +139,7 @@ const createIKGoals = (
         null,
         { Translation: [interpPos.x, interpPos.y, interpPos.z] },
         { Rotation: [interpQuat.x, interpQuat.y, interpQuat.z, interpQuat.w] },
-        ...jointNames.map((joint) => ({ Scalar: jointState1[joint] })),
+        // ...jointNames.map((joint) => ({ Scalar: jointState1[joint] })),
         ...jointNames.map((joint) => ({ Scalar: jointState2[joint] })),
       ],
       weights: [
@@ -147,7 +147,7 @@ const createIKGoals = (
         7,
         50,
         25,
-        ...jointNames.map(() => startJointGoalWeight),
+        // ...jointNames.map(() => startJointGoalWeight),
         ...jointNames.map(() => endJointGoalWeight),
       ],
       joints: jointGoals,
@@ -498,12 +498,12 @@ export const robotMotionCompiler = ({
                     weight: 25,
                   },
                 ],
-                ...jointNames.map((jointKey) => ({
-                  type: "JointMatch",
-                  name: `JointHelperStart:${jointKey}`,
-                  joint: jointKey,
-                  weight: 0,
-                })),
+                // ...jointNames.map((jointKey) => ({
+                //   type: "JointMatch",
+                //   name: `JointHelperStart:${jointKey}`,
+                //   joint: jointKey,
+                //   weight: 0,
+                // })),
                 ...jointNames.map((jointKey) => ({
                   type: "JointMatch",
                   name: `JointHelperEnd:${jointKey}`,

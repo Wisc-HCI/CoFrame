@@ -205,6 +205,7 @@ export const poseCompiler = ({
           //   worldModel,
           //   robot.id
           // );
+          // delete solver;
         }
       });
     });
