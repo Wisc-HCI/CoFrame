@@ -51,136 +51,142 @@ export const findReachabilityIssues = ({programData}) => { // requires joint_pro
 // requires trace processor, joint speed grader (can also use intermediate type)
 export const findJointSpeedIssues = ({program, programData, settings, environmentModel}) => {
     let issues = {};
-    return [issues, {}];
 
     const warningLevel = settings["jointSpeedWarn"].value * settings['jointMaxSpeed'].value;
     const errorLevel = settings["jointSpeedErr"].value * settings['jointMaxSpeed'].value;
 
-    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
-    let moveTrajectoryIDs = res[0];
-    let sceneUpdates = res[1];
-
-    let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType' })[0];
-    let jointLinkMap = robotAgent.properties.jointLinkMap;
-    let jointNames = Object.keys(jointLinkMap);
+    let timeData = {};
+    const robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType' })[0];
+    const jointLinkMap = robotAgent.properties.jointLinkMap;
+    const jointNames = Object.keys(jointLinkMap);
     let jointNameMap = {}
     jointNames.forEach(name => {
         jointNameMap[name] = name.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
     });
+    
+    let errorWarning = {};
+    jointNames.forEach(jName => {
+        errorWarning[jName] = {error: false, warning: false};
+    });
 
-    let timeData = {};
-    let allJointData = {};
-    let positionData = {};
-    sceneUpdates.forEach(step => {
-        if (step.source && moveTrajectoryIDs.includes(step.source)) {
-            if (!(step.source in timeData)) {
-                timeData[step.source] = [];
-                allJointData[step.source] = {};
-                positionData[step.source] = {};
+    let moveTrajectorySteps = {};
+    let moveIds = [];
+    program.properties.compiled["{}"].steps.forEach(step => {
+        if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source].type === 'moveTrajectoryType') {
+            if (!(moveIds.includes(step.source))) {
+                moveIds.push(step.source);
+                moveTrajectorySteps[step.source] = [];
             }
-            timeData[step.source].push(step.time);
-            Object.keys(step.data.joints).forEach(key => {
-                if (!(key in allJointData[step.source])) {
-                    allJointData[step.source][key] = [];
-                    positionData[step.source][key] = [];
-                }
-                allJointData[step.source][key].push(step.data.joints[key]);
-                positionData[step.source][key].push(step.data.links[jointLinkMap[key]]);
-            });
+            moveTrajectorySteps[step.source].push({...step});
         }
     });
 
-    moveTrajectoryIDs.forEach(moveID => {
-        let jointDataLength = allJointData[moveID][jointNames[0]] ? allJointData[moveID][jointNames[0]].length : 0;
+
+    moveIds.forEach(source => {
+        let count = 0;
+
+        timeData[source] = [];
 
         let sceneData = {};
         let jointVelocities = {};
         let jointGraphData = [];
 
-        let hasWarningVelocity = false;
-        let hasErrorVelocity = false;
-        let shouldGraphJoint = [];
+        jointNames.forEach(joint => {
+            jointVelocities[joint] = [0];
+            sceneData[joint] = [];
+        });
 
-        for (let i = 0; i < jointNames.length; i++) {
-            jointVelocities[jointNames[i]] = [0];
-            sceneData[jointNames[i]] = [];
-            shouldGraphJoint.push(false);
-        }
+        // Base update
+        Object.keys(moveTrajectorySteps[source][0].data.links).forEach(link => {
+            environmentModel = updateEnvironModel(environmentModel, link, moveTrajectorySteps[source][0].data.links[link].position, moveTrajectorySteps[source][0].data.links[link].rotation);
+        });
 
-        // Calculate velocites and determine which to graph
-        for (let i = 0; i < jointNames.length; i++) {
-            for (let j = 1; j < jointDataLength; j++) {
-                // Adjust the time from milliseconds to seconds to calculate the velocity correctly
-                let calcVel = Math.abs((allJointData[moveID][jointNames[i]][j] - allJointData[moveID][jointNames[i]][j-1]) / ((timeData[moveID][j] - timeData[moveID][j-1]) / 1000));
-                let curFrame = positionData[moveID][jointNames[i]][j].position;
+        moveTrajectorySteps[source].forEach(step => {
+            if (count > 0) {
+                timeData[source].push(step.time);
+                let prevousPositions = {}
+                jointNames.forEach(joint => {
+                    prevousPositions[joint] = {...queryWorldPose(environmentModel, jointLinkMap[joint], '')};
+                });
 
-                if (calcVel >= errorLevel) {
-                    if (!hasErrorVelocity) {
-                        hasErrorVelocity = true;
-                        hasWarningVelocity = true;
-                        shouldGraphJoint[i] = true;
+                Object.keys(step.data.links).forEach(link => {
+                    environmentModel = updateEnvironModel(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                });
+
+                jointNames.forEach(joint => {
+                    const prevJointValue = moveTrajectorySteps[source][count-1].data.joints[joint];
+                    const prevTime = moveTrajectorySteps[source][count-1].time;
+                    const curJointValue = step.data.joints[joint];
+                    const curTime = step.time;
+                    const currentPosition = queryWorldPose(environmentModel, jointLinkMap[joint], '');
+                    const curFrame = currentPosition.position;
+                    const calcVel = Math.abs((curJointValue - prevJointValue) / ((curTime - prevTime) / 1000));
+
+                    if (calcVel >= errorLevel) {
+                        errorWarning[joint].error = true;
+                        errorWarning[joint].warning = true;
+                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["performance"])});
+                    } else if (calcVel >= warningLevel) {
+                        errorWarning[joint].warning = true;
+                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["performance"])});
+                    } else {
+                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
                     }
-                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["performance"])});
-                } else if (calcVel >= warningLevel) {
-                    if (!hasWarningVelocity) {
-                        hasWarningVelocity = true;
-                        shouldGraphJoint[i] = true;
-                    }
-                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["performance"])});
-                } else {
-                    sceneData[jointNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
-                }
-                jointVelocities[jointNames[i]].push(calcVel);
+                    jointVelocities[joint].push(calcVel);
+                });
             }
-        }
+            count += 1;
+        });
 
         // Filter and format graph data
-        for (let i = 0; i < jointDataLength; i++) {
-            let graphDataPoint = {x: timeData[moveID][i]};
-            for (let j = 0; j < jointNames.length; j++) {
-                if (shouldGraphJoint[j]) {
-                    graphDataPoint[jointNameMap[jointNames[j]]] = jointVelocities[jointNames[j]][i];
+        for (let i = 0; i < timeData[source].length; i++) {
+            let graphDataPoint = {x: timeData[source][i]};
+            jointNames.forEach(joint => {
+                if (errorWarning[joint].error || errorWarning[joint].warning) {
+                    graphDataPoint[jointNameMap[joint]] = jointVelocities[joint][i];
                 }
-            }
+            })
             jointGraphData.push(graphDataPoint);
         }
 
         // Adding ending 0 velocity
-        let graphDataPoint = {x: timeData[moveID][timeData[moveID].length-1]+1};
-        for (let j = 0; j < jointNames.length; j++) {
-            if (shouldGraphJoint[j]) {
-                graphDataPoint[jointNameMap[jointNames[j]]] = 0;
+        let graphDataPoint = {x: timeData[source][timeData[source].length-1]+1};
+        jointNames.forEach(joint => {
+            if (errorWarning[joint].error || errorWarning[joint].warning) {
+                graphDataPoint[jointNameMap[joint]] = 0;
             }
-        }
+        })
         jointGraphData.push(graphDataPoint);
 
-        // Build issue
-        if (hasWarningVelocity || hasErrorVelocity) {
-            const uuid = generateUuid('issue');
-            issues[uuid] = {
-                id: uuid,
-                requiresChanges: hasErrorVelocity,
-                title: `Robot joint(s) move too fast`,
-                description: `The robot's joint speeds are too fast`,
-                complete: false,
-                focus: [moveID],
-                graphData: {
-                    series: jointGraphData,
-                    xAxisLabel: 'Timestamp',
-                    yAxisLabel: 'Velocity',
-                    thresholds: [
-                        {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
-                    ],
-                    units: 'm/s',
-                    decimal: 5,
-                    title: '',
-                    isTimeseries: true
-                },
-                sceneData: {vertices: sceneData}
+        jointNames.forEach(joint => {
+            // Build issue
+            if (errorWarning[joint].error || errorWarning[joint].warning) {
+                const uuid = generateUuid('issue');
+                issues[uuid] = {
+                    id: uuid,
+                    requiresChanges: errorWarning[joint].error ,
+                    title: `Robot joint(s) move too fast`,
+                    description: `The robot's joint speeds are too fast`,
+                    complete: false,
+                    focus: [source],
+                    graphData: {
+                        series: jointGraphData,
+                        xAxisLabel: 'Timestamp',
+                        yAxisLabel: 'Velocity',
+                        thresholds: [
+                            {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
+                            {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
+                            {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
+                        ],
+                        units: 'm/s',
+                        decimal: 5,
+                        title: '',
+                        isTimeseries: true
+                    },
+                    sceneData: {vertices: sceneData}
+                }
             }
-        }
+        })
     });
 
     return [issues, {}];

@@ -171,15 +171,16 @@ export const computedSlice = (state) => {
                 };
                 thing.properties.graspPoints.forEach((gp)=>{
                     const gpData = state.programData[gp];
-                    tfs['inputOutput-viz-' + gp] = {
+                    const id = input + gp + '-viz';
+                    tfs[id] = {
                         frame: input,
                         position: gpData.properties.position,
                         rotation: gpData.properties.rotation,
                         transformMode: itemTransformMethod(state, gp),
                         scale: {x:1,y:1,z:1}
                     }
-                    items['inputOutput-viz-' + gp] = {
-                        frame: 'inputOutput-viz-' + gp,
+                    items[id] = {
+                        frame: id,
                         shape: "package://app/meshes/LocationMarker.stl",
                         position: {x:0,y:0,z:0},
                         rotation: {x:0,y:0,z:0,w:1},
@@ -215,15 +216,16 @@ export const computedSlice = (state) => {
                 }
                 thing.properties.graspPoints.forEach((gp)=>{
                     const gpData = state.programData[gp];
-                    tfs['inputOutput-viz-' + gp] = {
+                    const id = output + gp + '-viz';
+                    tfs[id] = {
                         frame: output,
                         position: gpData.properties.position,
                         rotation: gpData.properties.rotation,
                         transformMode: itemTransformMethod(state, gp),
                         scale: {x:1,y:1,z:1}
                     }
-                    items['inputOutput-viz-' + gp] = {
-                        frame: 'inputOutput-viz-' + gp,
+                    items[id] = {
+                        frame: id,
                         shape: "package://app/meshes/LocationMarker.stl",
                         position: {x:0,y:0,z:0},
                         rotation: {x:0,y:0,z:0,w:1},
@@ -530,8 +532,7 @@ export const computedSlice = (state) => {
     })
 
     stepsToAnimation(state, tfs, items);
-    // console.log('TFS',tfs)
-    // console.log('LINES',lines)
+
     return ({
         executablePrimitives,
         tfs,
