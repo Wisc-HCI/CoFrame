@@ -205,7 +205,7 @@ const createIKSensitivityTester = (
   duration
 ) => {
   const tester = (state, goal, idx) => {
-    return true;
+    // return true;
     const p = state.frames[attachmentLink].world.translation;
     const r = state.frames[attachmentLink].world.rotation;
     const achievedPos = { x: p[0], y: p[1], z: p[2] };
@@ -283,7 +283,7 @@ const createIKSensitivityTester = (
 
 const createJointSensitivityTester = (jointNames) => {
   const tester = (state, goal, _) => {
-    return true
+    // return true
     return !jointNames.some((jointName) => {
       const passed =
         Math.abs(state.joints[jointName] - goal.joints[jointName]) < 0.1;

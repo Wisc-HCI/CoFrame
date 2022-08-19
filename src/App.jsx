@@ -1,11 +1,11 @@
-import React from "react";
+import React, {useCallback} from "react";
 // import { FiSettings } from "react-icons/fi";
 import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
 import { Grommet, Box } from "grommet";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
-import { TIMELINE_TYPES } from "./stores/Constants";
+import { TIMELINE_TYPES, STATUS } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
 import { Detail } from "./components/Detail";
 import { SettingsModal } from "./components/Settings";
@@ -16,9 +16,9 @@ import {
   // styled,
   // useTheme,
 } from "@mui/material/styles";
-import { Drawer } from "@mui/material";
+import { Drawer, Snackbar, Alert, AlertTitle } from "@mui/material";
 import { ReflexContainer, ReflexSplitter, ReflexElement } from "react-reflex";
-import useMeasure from 'react-use-measure';
+import useMeasure from "react-use-measure";
 import useStore from "./stores/Store";
 import { getTheme } from "./theme";
 import "react-reflex/styles.css";
@@ -26,18 +26,55 @@ import "./App.css";
 import shallow from "zustand/shallow";
 
 export default function App() {
-  const primaryColor = useStore((state) => state.primaryColor,shallow);
-  const viewMode = useStore((state) => state.viewMode,shallow);
+  const primaryColor = useStore((state) => state.primaryColor, shallow);
+  const viewMode = useStore((state) => state.viewMode, shallow);
   const visibleSteps = useStore((state) =>
     state.focus.some((focusItem) =>
       TIMELINE_TYPES.includes(state.programData[focusItem]?.type)
     ),shallow
   );
-  const setViewMode = useStore((state) => state.setViewMode,shallow);
+  const [focusSteps, errorType] = useStore(useCallback((state) => {
+    let steps = [];
+    let errorType = null;
+    if (!visibleSteps) {
+      return [steps, errorType];
+    }
+    // console.log("STUFF", {
+    //   programData: state.programData,
+    //   focus: state.focus,
+    //   programSpec: state.programSpec
+    // });
+    state.focus.some((f) => {
+      const entry = state.programData[f];
+      if (
+        [STATUS.VALID, STATUS.PENDING, STATUS.WARN].includes(
+          entry?.properties?.status
+        ) &&
+        TIMELINE_TYPES.includes(state.programData[f].type)
+      ) {
+        if (Object.keys(entry.properties?.compiled).length === 1) {
+          steps =
+            entry.properties.compiled[
+              Object.keys(entry.properties?.compiled)[0]
+            ]?.steps;
+          return true;
+        } else {
+          errorType = "traces";
+          return false;
+        }
+      } else {
+        errorType = "invalid";
+        return false;
+      }
+    });
+    return [steps, errorType];
+  },[visibleSteps]), shallow);
 
-  const [editorRef,editorBounds] = useMeasure();
-  const [simRef,simBounds] = useMeasure();
-  
+  const setViewMode = useStore((state) => state.setViewMode, shallow);
+  const clearFocus = useStore((state) => state.clearFocus, shallow);
+
+  const [editorRef, editorBounds] = useMeasure();
+  const [simRef, simBounds] = useMeasure();
 
   const theme = getTheme(primaryColor);
   const muiTheme = createTheme({
@@ -75,12 +112,10 @@ export default function App() {
   const showEditor = viewMode === "default" || viewMode === "program";
 
   return (
-
     <Grommet full theme={theme}>
       {/* <CssBaseline/> */}
       {/* Main container */}
       <ThemeProvider theme={muiTheme}>
-       
         <div
           style={{
             backgroundColor: "black",
@@ -90,7 +125,11 @@ export default function App() {
           }}
         >
           {/* <Main open={open}> */}
-          <Box fill direction="row" style={{paddingBottom:visibleSteps?'20vh':0}}>
+          <Box
+            fill
+            direction="row"
+            style={{ paddingBottom: visibleSteps && errorType===null ? "20vh" : 0 }}
+          >
             {/* <Box>
               <Box onClick={() => setOpen(!open)}>Bottom</Box>
             </Box> */}
@@ -101,36 +140,73 @@ export default function App() {
                   style={{}}
                   // minSize={200}
                   onStopResize={(e) => {
-                    if (simBounds.width / editorBounds.width < 0.20) {
-                      console.log('setting to program',e)
+                    if (simBounds.width / editorBounds.width < 0.2) {
+                      console.log("setting to program", e);
                       setViewMode("program");
                     }
                   }}
                 >
-                  <SimulatorTile ref={simRef}/>
+                  <SimulatorTile ref={simRef} />
                 </ReflexElement>
               )}
               {viewMode === "default" && <ReflexSplitter />}
 
               {showEditor && (
                 <ReflexElement
-                  id='reflex-program'
+                  id="reflex-program"
                   style={{ overflow: "hidden" }}
                   // minSize={200}
                   onStopResize={(e) => {
-                    if (editorBounds.width / simBounds.width < 0.20) {
-                      console.log('setting to sim',e)
+                    if (editorBounds.width / simBounds.width < 0.2) {
+                      console.log("setting to sim", e);
                       setViewMode("sim");
                     }
                   }}
                 >
-                  <ProgramTile ref={editorRef}/>
+                  <ProgramTile ref={editorRef} />
                 </ReflexElement>
               )}
             </ReflexContainer>
           </Box>
           {/* </Main> */}
-
+          <Snackbar
+            open={errorType}
+            autoHideDuration={6000}
+            onClose={clearFocus}
+          >
+            <Alert
+              variant="filled"
+              severity="error"
+              sx={{ width: "100%" }}
+              onClose={clearFocus}
+            >
+              <AlertTitle>
+                {errorType === "traces"
+                  ? "No single trace is available to display"
+                  : "Selected action contains errors"}
+              </AlertTitle>
+              {errorType === "traces" ? (
+                <>
+                  <p>
+                    This is usually because you are attempting to visualize an
+                    action in a skill that is used multiple times.
+                  </p>
+                  <p>
+                    To visualize, you will need to visualize the skill-call
+                    instead.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    You likely have not parameterized all fields correctly, or
+                    are missing critical values.
+                  </p>
+                  <p>Consult the review panel for more suggestions.</p>
+                </>
+              )}
+            </Alert>
+          </Snackbar>
           <Drawer
             anchor="bottom"
             sx={{
@@ -142,28 +218,27 @@ export default function App() {
               },
             }}
             variant="persistent"
-            open={visibleSteps}
+            open={visibleSteps && errorType === null}
           >
             <ParentSize>
               {({ width, height }) =>
-                visibleSteps ? (
+                visibleSteps && errorType === null ? (
                   <TimelineGraph
                     width={width}
                     height={height - 10}
-                    visible={visibleSteps}
+                    focusSteps={focusSteps}
                   />
                 ) : null
               }
             </ParentSize>
           </Drawer>
           <Detail />
-          <SettingsModal/>
+          <SettingsModal />
         </div>
 
         {/* <SettingsModal />
         
        */}
-       
       </ThemeProvider>
     </Grommet>
   );

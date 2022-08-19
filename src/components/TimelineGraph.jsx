@@ -12,6 +12,8 @@ import { STATUS, TIMELINE_TYPES } from "../stores/Constants";
 import { useSpring, animated } from "@react-spring/web";
 import { useTime } from "./useTime";
 import { stepDataToBlocksAndTracks } from "../helpers/graphs";
+import { Snackbar, Alert, AlertTitle, Stack } from "@mui/material";
+import shallow from "zustand/shallow";
 
 const defaultMargin = { top: 40, left: 80, right: 40, bottom: 25 };
 
@@ -20,7 +22,7 @@ const tooltipStyles = {
   minWidth: 60,
   backgroundColor: "rgba(0,0,0,0.9)",
   color: "white",
-  padding: 5
+  padding: 5,
 };
 
 const pointSensitivity = 500;
@@ -42,40 +44,12 @@ function formatTime(ms) {
 
 const axisColor = "white";
 
-const TimelineGraph = ({ width, height, margin = defaultMargin, visible }) => {
-  const [focusSteps, errorType] = useStore((state) => {
-    let steps = [];
-    let errorType = null;
-    // console.log("STUFF", {
-    //   programData: state.programData,
-    //   focus: state.focus,
-    //   programSpec: state.programSpec
-    // });
-    state.focus.some((f) => {
-      const entry = state.programData[f];
-      if (
-        [STATUS.VALID, STATUS.PENDING, STATUS.WARN].includes(
-          entry?.properties?.status
-        ) &&
-        TIMELINE_TYPES.includes(state.programData[f].type)
-      ) {
-        if (Object.keys(entry.properties?.compiled).length === 1) {
-          steps =
-            entry.properties.compiled[
-              Object.keys(entry.properties?.compiled)[0]
-            ]?.steps;
-          return true;
-        } else {
-          errorType = "traces";
-          return false;
-        }
-      } else {
-        errorType = "invalid";
-        return false;
-      }
-    });
-    return [steps, errorType];
-  });
+const TimelineGraph = ({
+  width,
+  height,
+  margin = defaultMargin,
+  focusSteps,
+}) => {
   // console.log("focusSteps", focusSteps);
 
   const clearFocus = useStore((state) => state.clearFocus);
@@ -87,8 +61,8 @@ const TimelineGraph = ({ width, height, margin = defaultMargin, visible }) => {
     let trackTypes = {
       [robot.id]: {
         label: robot.name,
-        color: state.programSpec.objectTypes.delayType.instanceBlock.color
-      }
+        color: state.programSpec.objectTypes.delayType.instanceBlock.color,
+      },
     };
     return stepDataToBlocksAndTracks(
       state.programData,
@@ -97,66 +71,62 @@ const TimelineGraph = ({ width, height, margin = defaultMargin, visible }) => {
       trackTypes,
       robot
     );
-  });
+  }, shallow);
 
   // console.warn("STEP DATA", blockData);
 
-  const eventTypes = useStore((state) => ({
-    action: {
-      label: "Robot Action",
-      color: state.programSpec.objectTypes.delayType.instanceBlock.color
-    },
-    process: {
-      label: "Process",
-      color: state.programSpec.objectTypes.processType.referenceBlock.color
-    },
-    machines: {
-      label: "Machines",
-      color: state.programSpec.objectTypes.machineType.referenceBlock.color
-    },
-    things: {
-      label: "Things",
-      color: state.programSpec.objectTypes.thingType.referenceBlock.color
-    }
-  }));
+  const eventTypes = useStore(
+    (state) => ({
+      action: {
+        label: "Robot Action",
+        color: state.programSpec.objectTypes.delayType.instanceBlock.color,
+      },
+      process: {
+        label: "Process",
+        color: state.programSpec.objectTypes.processType.referenceBlock.color,
+      },
+      machines: {
+        label: "Machines",
+        color: state.programSpec.objectTypes.machineType.referenceBlock.color,
+      },
+      things: {
+        label: "Things",
+        color: state.programSpec.objectTypes.thingType.referenceBlock.color,
+      },
+    }),
+    shallow
+  );
 
-  if (!visible) {
-    return null;
-  }
-  if (errorType) {
-    return (
-      <Box fill justifyContent="center" alignContent="center" width="100%">
-        <Notification
-          onClose={() => {}}
-          status="warning"
-          title={
-            errorType === "traces"
-              ? "No single trace is available to display"
-              : "Selected action contains errors"
-          }
-          message={
-            errorType === "traces"
-              ? "This is usually because you are attempting to visualize an action in a skill that is used multiple times. To visualize, you will need to visualize the skill-call instead"
-              : "You likely have not parameterized all fields correctly, or are missing critical values. Consult the review panel for more suggestions."
-          }
-          toast
-        />
-        <Box
-          height="100%"
-          alignSelf="center"
-          gap="xsmall"
-          direction="column"
-          justify="around"
-          pad="medium"
-        >
-          <Text size="large">
-            <i>Nothing to display</i>
-          </Text>
-          <Button label="Close" onClick={clearFocus} />
-        </Box>
-      </Box>
-    );
-  }
+  // if (errorType) {
+  //   return (
+  //     <Box fill justifyContent="center" alignContent="center" width="100%">
+  //       <Notification
+  //         onClose={() => {}}
+  //         status="warning"
+  //         title={
+  //           errorType === "traces"
+  //             ? "No single trace is available to display"
+  //             : "Selected action contains errors"
+  //         }
+  //         message=
+  //         toast
+  //       />
+  //       <Box
+  //         height="100%"
+  //         alignSelf="center"
+  //         gap="xsmall"
+  //         direction="column"
+  //         justify="around"
+  //         pad="medium"
+  //       >
+  //         <Text size="large">
+  //           <i>Nothing to display</i>
+  //         </Text>
+  //         <Button label="Close" onClick={clearFocus} />
+  //       </Box>
+  //     </Box>
+  //   );
+  // }
 
   return width < 10 && height < 40 ? null : (
     <InnerGraph
@@ -187,7 +157,7 @@ const InnerGraph = withTooltip(
     tooltipData,
     hideTooltip,
     showTooltip,
-    primaryColor
+    primaryColor,
   }) => {
     const xMax = width - margin.left - margin.right;
     const yMax = height - margin.top - margin.bottom;
@@ -204,17 +174,17 @@ const InnerGraph = withTooltip(
     // console.log(Object.keys(trackTypes))
     const yScale = scaleBand({
       domain: Object.keys(trackTypes),
-      padding: 0.2
+      padding: 0.2,
     });
     const colorScale = scaleOrdinal({
       domain: Object.keys(eventTypes),
-      range: Object.keys(eventTypes).map((e) => eventTypes[e].color)
+      range: Object.keys(eventTypes).map((e) => eventTypes[e].color),
     });
 
     // console.log('lastEnd', lastEnd)
     const xScale = scaleLinear({
       domain: [0, lastEnd],
-      nice: true
+      nice: true,
     });
 
     const barHeight = Math.max(
@@ -228,7 +198,7 @@ const InnerGraph = withTooltip(
     const [pause, play, reset] = useStore((state) => [
       state.pause,
       state.play,
-      state.reset
+      state.reset,
     ]);
 
     const handleTooltip = useCallback(
@@ -241,7 +211,7 @@ const InnerGraph = withTooltip(
             .map((b) => ({ ...b, progress: x0 - b.start })),
           events: eventData.filter((e) =>
             Math.abs(e.time - x0 < pointSensitivity)
-          )
+          ),
         };
         if (paused) {
           pause();
@@ -250,7 +220,7 @@ const InnerGraph = withTooltip(
             tooltipData: d,
             tooltipLeft: x - defaultMargin.left,
             tooltipRight: x + defaultMargin.right,
-            tooltipTop: y - defaultMargin.top
+            tooltipTop: y - defaultMargin.top,
           });
         } else {
           play();
@@ -265,7 +235,7 @@ const InnerGraph = withTooltip(
         hideTooltip,
         pause,
         play,
-        reset
+        reset,
       ]
     );
 
@@ -374,7 +344,7 @@ const InnerGraph = withTooltip(
                 fontSize: 11,
                 textAnchor: "end",
                 dy: "0.33em",
-                width: defaultMargin.left - 10
+                width: defaultMargin.left - 10,
               })}
             />
             <AxisBottom
@@ -386,7 +356,7 @@ const InnerGraph = withTooltip(
               tickLabelProps={() => ({
                 fill: axisColor,
                 fontSize: 11,
-                textAnchor: "middle"
+                textAnchor: "middle",
               })}
             />
             {lastEnd && yMax && (
@@ -438,7 +408,7 @@ const InnerGraph = withTooltip(
             width: "100%",
             display: "flex",
             justifyContent: "center",
-            fontSize: "14px"
+            fontSize: "14px",
           }}
         >
           <LegendOrdinal
@@ -492,7 +462,7 @@ const InnerGraph = withTooltip(
                             width: 7,
                             height: 7,
                             backgroundColor: colorScale(e.event),
-                            boxShadow: "0 0 0 2px white"
+                            boxShadow: "0 0 0 2px white",
                           }}
                         />
                         <Text color={colorScale(e.event)} size={"small"}>
@@ -535,7 +505,7 @@ const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
     x2: x ? x : 0,
     y1: 0,
     y2: yMax,
-    config: { mass: 0.25, tension: 250, friction: 10 }
+    config: { mass: 0.25, tension: 250, friction: 10 },
   });
 
   return (

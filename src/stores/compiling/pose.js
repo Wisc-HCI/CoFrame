@@ -12,7 +12,8 @@ import {
 // import { DATA_TYPES } from "simple-vp";
 import { range, random } from "lodash";
 
-const COLLISION_WEIGHT = 0.1;
+const COLLISION_WEIGHT = 0;
+const SMOOTHNESS_WEIGHT = 0;
 
 const sampleJoints = (joints) => {
   let jointState = {};
@@ -123,7 +124,7 @@ export const poseCompiler = ({
               link: "wrist_1_link",
               weight: 5,
             },
-            { type: "SmoothnessMacro", name: "General Smoothness", weight: 1 },
+            { type: "SmoothnessMacro", name: "General Smoothness", weight: SMOOTHNESS_WEIGHT },
           ];
 
           // Find the position we need in the attachment link to match the desired pose gripper position
@@ -189,7 +190,7 @@ export const poseCompiler = ({
             if (!goalAchieved) {
               let newStart = sampleJoints(solver.joints);
               // console.warn(newStart)
-              solver.reset({ origin, joints: newStart }, [50, 30, COLLISION_WEIGHT, 5, 1]);
+              solver.reset({ origin, joints: newStart }, [50, 30, COLLISION_WEIGHT, 5, SMOOTHNESS_WEIGHT]);
             }
             return goalAchieved;
           });
