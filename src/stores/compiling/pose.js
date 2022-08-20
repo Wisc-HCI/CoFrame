@@ -12,8 +12,8 @@ import {
 // import { DATA_TYPES } from "simple-vp";
 import { range, random } from "lodash";
 
-const COLLISION_WEIGHT = 0;
-const SMOOTHNESS_WEIGHT = 0;
+const COLLISION_WEIGHT = 1;
+const SMOOTHNESS_WEIGHT = 1;
 
 const sampleJoints = (joints) => {
   let jointState = {};

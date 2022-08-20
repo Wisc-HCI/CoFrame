@@ -51,8 +51,6 @@ const TimelineGraph = ({
   focusSteps,
 }) => {
   // console.log("focusSteps", focusSteps);
-
-  const clearFocus = useStore((state) => state.clearFocus);
   const primaryColor = useStore((state) => state.primaryColor);
   const [blockData, eventData, trackTypes] = useStore((state) => {
     let robot = Object.values(state.programData).filter(
@@ -97,36 +95,21 @@ const TimelineGraph = ({
     shallow
   );
 
-  // if (errorType) {
-  //   return (
-  //     <Box fill justifyContent="center" alignContent="center" width="100%">
-  //       <Notification
-  //         onClose={() => {}}
-  //         status="warning"
-  //         title={
-  //           errorType === "traces"
-  //             ? "No single trace is available to display"
-  //             : "Selected action contains errors"
-  //         }
-  //         message=
-  //         toast
-  //       />
-  //       <Box
-  //         height="100%"
-  //         alignSelf="center"
-  //         gap="xsmall"
-  //         direction="column"
-  //         justify="around"
-  //         pad="medium"
-  //       >
-  //         <Text size="large">
-  //           <i>Nothing to display</i>
-  //         </Text>
-  //         <Button label="Close" onClick={clearFocus} />
-  //       </Box>
-  //     </Box>
-  //   );
-  // }
+  const issueGraphContent = useStore(
+    state=>{
+      let content = null;
+      state.focus.slice().reverse().some(f=>{
+        if (state.issues[f]) {
+          content = state.issues[f]
+          return true
+        } else {
+          return false
+        }
+      })
+    }, shallow
+  )
+
+  console.log(issueGraphContent)
 
   return width < 10 && height < 40 ? null : (
     <InnerGraph

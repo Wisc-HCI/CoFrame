@@ -18,7 +18,7 @@ import { Quaternion, Vector3 } from "three";
 import { eventsToStates, statesToSteps } from ".";
 
 const FRAME_TIME = 30;
-const COLLISION_WEIGHT = 0
+const COLLISION_WEIGHT = 1;
 
 const addOrMergeAnimation = (
   animations,
@@ -358,7 +358,7 @@ export const robotMotionCompiler = ({
     };
   }
 
-  const staticEnvironment = createStaticEnvironment(worldModel);
+  const staticEnvironment = [];//createStaticEnvironment(worldModel);
 
   // const delta = properties.positionEnd - properties.positionStart;
   // if (properties.speed === 0) {
