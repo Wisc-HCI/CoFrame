@@ -91,14 +91,14 @@ export const Detail = (_) => {
   const Icon = objectTypeInfo?.instanceBlock?.icon
     ? objectTypeInfo.instanceBlock.icon
     : objectTypeInfo?.referenceBlock?.icon
-    ? objectTypeInfo?.referenceBlock.icon
-    : FiSquare;
+      ? objectTypeInfo?.referenceBlock.icon
+      : FiSquare;
 
   const objectColor = objectTypeInfo?.instanceBlock?.color
     ? objectTypeInfo.instanceBlock.color
     : objectTypeInfo?.referenceBlock?.color
-    ? objectTypeInfo?.referenceBlock.color
-    : "#333333";
+      ? objectTypeInfo?.referenceBlock.color
+      : "#333333";
 
   const deleteBlock = useStore((state) => state.deleteBlock, shallow);
   //console.log("item:", item);
@@ -123,8 +123,9 @@ export const Detail = (_) => {
       variant="persistent"
       open={item !== null && item !== undefined}
       hideBackdrop
-      // elevation={16}
+    // elevation={16}
     >
+
       {item && (
         <>
           <Box
@@ -135,7 +136,7 @@ export const Detail = (_) => {
             background={objectColor}
             pad="xsmall"
             gap="xsmall"
-            // border={{ side: "bottom", color: "#333333" }}
+          // border={{ side: "bottom", color: "#333333" }}
           >
             <Box
               align="center"
@@ -187,7 +188,7 @@ export const Detail = (_) => {
             overflow="auto"
             pad="xsmall"
             gap="small"
-            // border={{ color: "black", size: "xxsmall" }}
+          // border={{ color: "black", size: "xxsmall" }}
           >
             <ScrollRegion vertical>
               <Box width="355px" gap="xsmall" pad={{ top: "small" }}>
@@ -278,7 +279,7 @@ export const Detail = (_) => {
                   />
                 )}
 
-                {item?.properties?.graspPoints && (
+                {item?.properties?.graspPoints && item?.type !== "thingType" && (
                   <ForwardRefSection
                     references={item.properties.graspPoints}
                     title="Grasp Points"
@@ -309,10 +310,10 @@ export const Detail = (_) => {
                 )}
                 {(item.type === "locationType" ||
                   item.type === "waypointType") && (
-                  <>
-                    <LocationWaypointDetail itemID={item.id} />
-                  </>
-                )}
+                    <>
+                      <LocationWaypointDetail itemID={item.id} />
+                    </>
+                  )}
                 {item.properties.gizmo && (
                   <>
                     <GizmoDetail gizmoId={item.properties.gizmo} />
