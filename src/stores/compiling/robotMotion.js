@@ -283,7 +283,7 @@ const stepJoint = ({ currentJoints, goalJoints, solver, speed, joints }) => {
     .map((jointKey) => jointDists[jointKey])
     .reduce((next, current) => next + current);
 
-  console.log({ newError, oldError });
+  // console.log({ newError, oldError });
 
   const improved = newError < oldError;
 
@@ -357,7 +357,7 @@ export const robotMotionCompiler = ({
   }
 
   const staticEnvironment = createStaticEnvironment(worldModel).slice(0, 2);
-  console.log(staticEnvironment);
+  // console.log(staticEnvironment);
 
   // const delta = properties.positionEnd - properties.positionStart;
   // if (properties.speed === 0) {
@@ -676,6 +676,7 @@ export const robotMotionCompiler = ({
               console.warn("No longer improving, cancelling");
             }
 
+            // stateData.frames[attachmentLink]
             const eePose = attachmentToEEPose(
               worldModel,
               gripper.id,
