@@ -29,9 +29,9 @@ export const computedSlice = (state) => {
     for (var i = state.focus.length - 1; i >= 0; i--) {
         reversedFocus.push(state.focus[i]);
     }
-    
+
     // Show the tf animation of the farthest-down focus
-    reversedFocus.some(f=>{
+    reversedFocus.some(f => {
         if (executablePrimitives[f]) {
             // TODO: FIX
             // tfs = tfAnimationFromExecutable(executable, tfs)
@@ -44,7 +44,7 @@ export const computedSlice = (state) => {
     // Get the deepest issue in case we need to visualize things
     let deepestIssue = null;
     let visualizeIssue = false;
-    reversedFocus.some(f=>{
+    reversedFocus.some(f => {
         if (state.issues[f]) {
             visualizeIssue = true;
             deepestIssue = state.issues[f]
@@ -54,10 +54,13 @@ export const computedSlice = (state) => {
         }
     })
 
+
+
     // ===================== Items =====================
     let focusedTrajectoryChildren = [];
     if (!visualizeIssue) {
         state.focus.forEach((entry) => {
+
             // let trajectory = null;
             if (state.programData[entry]?.type === "moveTrajectoryType" || state.programData[entry]?.type === "trajectoryType") {
                 let trajectoryTmp = null;
@@ -83,6 +86,9 @@ export const computedSlice = (state) => {
 
     // Add items from the initial static scene
     Object.values(state.programData).filter(v => v.dataType === DATA_TYPES.INSTANCE).forEach(entry => {
+
+
+
         if (entry.type === 'linkType' || entry.type === 'fixtureType') {
             const itemKey = entry.id;
             let highlighted = false;
@@ -94,12 +100,15 @@ export const computedSlice = (state) => {
                 highlighted = true
             }
 
+            //console.log()
+
+
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
                 rotation: entry.properties.rotation,
                 transformMode: itemTransformMethod(state, entry.id),
-                scale: {x:1,y:1,z:1}
+                scale: { x: 1, y: 1, z: 1 }
             }
 
             if (meshObject) {
@@ -148,7 +157,7 @@ export const computedSlice = (state) => {
             }
         } else if (entry.type === 'processType') {
             entry.properties.inputs.forEach(input => {
-                
+
                 let inputObj = state.programData[input];
                 let thing = state.programData[inputObj.properties.thing];
                 tfs[input] = {
@@ -161,15 +170,15 @@ export const computedSlice = (state) => {
                 items[input] = {
                     shape: thing.properties.mesh,
                     frame: input,
-                    position: {x:0,y:0,z:0},
-                    rotation: {w:1,x:0,y:0,z:0},
+                    position: { x: 0, y: 0, z: 0 },
+                    rotation: { w: 1, x: 0, y: 0, z: 0 },
                     scale: { x: 1, y: 1, z: 1 },
                     transformMode: null,
                     color: { r: 0, g: 200, b: 0, a: 0.2 },
                     highlighted: false,
                     hidden: !(state.focus.includes(entry.id) || state.focus.includes(input))
                 };
-                thing.properties.graspPoints.forEach((gp)=>{
+                thing.properties.graspPoints.forEach((gp) => {
                     const gpData = state.programData[gp];
                     const id = input + gp + '-viz';
                     tfs[id] = {
@@ -177,13 +186,13 @@ export const computedSlice = (state) => {
                         position: gpData.properties.position,
                         rotation: gpData.properties.rotation,
                         transformMode: itemTransformMethod(state, gp),
-                        scale: {x:1,y:1,z:1}
+                        scale: { x: 1, y: 1, z: 1 }
                     }
                     items[id] = {
                         frame: id,
                         shape: "package://app/meshes/LocationMarker.stl",
-                        position: {x:0,y:0,z:0},
-                        rotation: {x:0,y:0,z:0,w:1},
+                        position: { x: 0, y: 0, z: 0 },
+                        rotation: { x: 0, y: 0, z: 0, w: 1 },
                         scale: { x: 1, y: 1, z: 1 },
                         highlighted: false,
                         showName: false,
@@ -193,6 +202,7 @@ export const computedSlice = (state) => {
                 })
             });
             entry.properties.outputs.forEach(output => {
+
                 let outputObj = state.programData[output];
                 let thing = state.programData[outputObj.properties.thing];
                 tfs[output] = {
@@ -203,18 +213,21 @@ export const computedSlice = (state) => {
                     transformMode: itemTransformMethod(state, output)
                 }
 
+
                 items[output] = {
                     shape: thing.properties.mesh,
                     frame: output,
-                    position: {x:0,y:0,z:0},
-                    rotation: {w:1,x:0,y:0,z:0},
+                    position: { x: 0, y: 0, z: 0 },
+                    rotation: { w: 1, x: 0, y: 0, z: 0 },
                     scale: { x: 1, y: 1, z: 1 },
                     transformMode: itemTransformMethod(state, output),
                     color: { r: 0, g: 200, b: 0, a: 0.2 },
                     highlighted: false,
                     hidden: !(state.focus.includes(entry.id) || state.focus.includes(output))
                 }
-                thing.properties.graspPoints.forEach((gp)=>{
+
+
+                thing.properties.graspPoints.forEach((gp) => {
                     const gpData = state.programData[gp];
                     const id = output + gp + '-viz';
                     tfs[id] = {
@@ -222,13 +235,13 @@ export const computedSlice = (state) => {
                         position: gpData.properties.position,
                         rotation: gpData.properties.rotation,
                         transformMode: itemTransformMethod(state, gp),
-                        scale: {x:1,y:1,z:1}
+                        scale: { x: 1, y: 1, z: 1 }
                     }
                     items[id] = {
                         frame: id,
                         shape: "package://app/meshes/LocationMarker.stl",
-                        position: {x:0,y:0,z:0},
-                        rotation: {x:0,y:0,z:0,w:1},
+                        position: { x: 0, y: 0, z: 0 },
+                        rotation: { x: 0, y: 0, z: 0, w: 1 },
                         scale: { x: 1, y: 1, z: 1 },
                         highlighted: false,
                         showName: false,
@@ -247,7 +260,7 @@ export const computedSlice = (state) => {
                 position: entry.properties.position,
                 rotation: entry.properties.rotation,
                 transformMode: itemTransformMethod(state, entry.id),
-                scale: {x:1,y:1,z:1}
+                scale: { x: 1, y: 1, z: 1 }
             }
             items[entry.id] = {
                 shape: meshObject.properties.keyword,
@@ -276,20 +289,20 @@ export const computedSlice = (state) => {
                     hidden: !state.collisionsVisible
                 }
             });
-            graspPoints.forEach((gp)=>{
+            graspPoints.forEach((gp) => {
                 const gpData = state.programData[gp];
                 tfs['tool-viz-' + gp] = {
                     frame: entry.id,
                     position: gpData.properties.position,
                     rotation: gpData.properties.rotation,
                     transformMode: itemTransformMethod(state, gp),
-                    scale: {x:1,y:1,z:1}
+                    scale: { x: 1, y: 1, z: 1 }
                 }
                 items['tool-viz-' + gp] = {
                     frame: 'tool-viz-' + gp,
                     shape: "package://app/meshes/LocationMarker.stl",
-                    position: {x:0,y:0,z:0},
-                    rotation: {x:0,y:0,z:0,w:1},
+                    position: { x: 0, y: 0, z: 0 },
+                    rotation: { x: 0, y: 0, z: 0, w: 1 },
                     scale: { x: 1, y: 1, z: 1 },
                     highlighted: false,
                     showName: false,
@@ -302,10 +315,10 @@ export const computedSlice = (state) => {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
                 rotation: entry.properties.rotation,
-                scale: {x:1,y:1,z:1}
+                scale: { x: 1, y: 1, z: 1 }
             }
             // if (entry.type === 'gripperType') {
-                
+
             //     items[entry.id+'-gripperOffset'] = {
             //         shape: 'arrow',
             //         name: `${entry.name} Gripper Position`,
@@ -346,11 +359,11 @@ export const computedSlice = (state) => {
             }
 
             poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
-                const transform = state.focus.includes('translate') 
-                    ? 'translate' 
+                const transform = state.focus.includes('translate')
+                    ? 'translate'
                     : state.focus.includes('rotate')
-                    ? 'rotate'
-                    : 'inactive'
+                        ? 'rotate'
+                        : 'inactive'
                 items[shape.uuid] = {
                     ...shape,
                     highlighted: focused,
@@ -361,7 +374,7 @@ export const computedSlice = (state) => {
                 // e => setItemProperty('location', location_uuid, 'position', { ...state.data.locations[location_uuid].position, x: e[0], y: e[1], z: e[2] });
             })
 
-            
+
             // items[entry.id+'-poseRepresentation'] = {
             //     shape: 'arrow',
             //     name: `${entry.name} Gripper Position Goal`,
@@ -444,13 +457,13 @@ export const computedSlice = (state) => {
         let moveTrajectoryId = null;
         state.focus.forEach(focusItem => {
             let obj = state.programData[focusItem];
-            if ( obj?.type === "moveTrajectoryType" && obj?.properties?.trajectory === trajectory.id) {
+            if (obj?.type === "moveTrajectoryType" && obj?.properties?.trajectory === trajectory.id) {
                 moveTrajectoryId = obj.id;
             }
         });
 
         const hidden = visualizeIssue || (!state.focus.includes(trajectory.id) && !state.focus.includes(moveTrajectoryId));
-        
+
         let poses = []
         if (trajectory.properties.startLocation) {
             poses.push(state.programData[trajectory.properties.startLocation])
@@ -476,7 +489,7 @@ export const computedSlice = (state) => {
             }
         })
 
-        let program = filter(state.programData, function (v) { return v.type === 'programType' && v.dataType === DATA_TYPES.INSTANCE})[0];
+        let program = filter(state.programData, function (v) { return v.type === 'programType' && v.dataType === DATA_TYPES.INSTANCE })[0];
         let steps = program.properties.compiled["{}"]?.steps;
         let sceneTmp = (steps && moveTrajectoryId) ? steps.filter(step => step.type === STEP_TYPE.SCENE_UPDATE && step.source === moveTrajectoryId) : [];
         let programModel = createEnvironmentModel(state.programData);
@@ -485,7 +498,7 @@ export const computedSlice = (state) => {
             Object.keys(sceneUpdate.data.links).forEach(link => {
                 programModel = updateEnvironModel(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
             });
-            let {position, rotation} = queryWorldPose(programModel, gripOffsetID, '');
+            let { position, rotation } = queryWorldPose(programModel, gripOffsetID, '');
             return {
                 position: position,
                 color: { ...DEFAULT_TRAJECTORY_COLOR }
@@ -514,16 +527,16 @@ export const computedSlice = (state) => {
     });
 
     // Show preview of deepest preview type.
-    reversedFocus.some(focusId=>{
+    reversedFocus.some(focusId => {
         const item = state.programData[focusId];
         if (!item) {
             return false
         } else if (item.type === 'waypointType' || item.type === 'locationType') {
-            Object.values(item.properties.states).forEach(robotGroup=>{
-                    Object.values(robotGroup).forEach(gripperGroup=>{
-                        tfs = {...tfs, ...gripperGroup.links}
-                    })
-                }
+            Object.values(item.properties.states).forEach(robotGroup => {
+                Object.values(robotGroup).forEach(gripperGroup => {
+                    tfs = { ...tfs, ...gripperGroup.links }
+                })
+            }
             )
             return true
         } else {
@@ -532,6 +545,16 @@ export const computedSlice = (state) => {
     })
 
     stepsToAnimation(state, tfs, items);
+
+
+
+
+
+
+
+
+
+
 
     return ({
         executablePrimitives,
