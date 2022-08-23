@@ -26,6 +26,14 @@ mod tests {
 #[wasm_bindgen]
 extern "C" {
     fn alert(s: &str);
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+macro_rules! console_log {
+    // Note that this is using the `log` function imported above during
+    // `bare_bones`
+    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
 
 #[wasm_bindgen]
@@ -84,6 +92,7 @@ impl JsSolver {
         let inner_shapes: Option<Vec<Shape>> = shapes.into_serde().unwrap();
         let inner_state: Option<State> = initial_state.into_serde().unwrap();
         let inner_collision_settings:Option<CollisionSettingInfo> = collision_settings.into_serde().unwrap();
+        // console_log!("initial state {:?}",inner_state);
         Self(Solver::new(
             urdf,
             inner_objectives,
@@ -159,16 +168,12 @@ impl JsSolver {
             .solve(inner_goals, inner_weights, time, inner_updates);
         return JsValue::from_serde(&state).unwrap();
     }
-}
 
-#[wasm_bindgen]
-extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
+    #[wasm_bindgen(js_name = computeAverageDistanceTable)]
+    pub fn compute_average_distance_table(&mut self) -> JsValue {
+        return JsValue::from_serde(&self.0.compute_average_distance_table()).unwrap()
+    }
 }
-
 //
 // macro_rules! console_log {
 //     // Note that this is using the `log` function imported above during

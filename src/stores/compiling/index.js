@@ -298,6 +298,7 @@ export const handleUpdate = ({
 }) => {
   let newMemo = { ...memo };
   // console.warn('DATA:',{data,path,context,memo})
+  // console.log('objectTypes',objectTypes)
   const updateFn =
     compilers[objectTypes[data.type].properties.compileFn.default];
   let memoizedData = memo[data.id] ? memo[data.id] : {};

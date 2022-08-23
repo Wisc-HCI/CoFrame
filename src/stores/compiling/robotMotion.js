@@ -1,24 +1,37 @@
-import { STATUS, STEP_TYPE, ROOT_PATH, ERROR } from "../Constants";
 import {
-  timeGradientFunction,
-  timeGradientFunctionOneTailStart,
-  timeGradientFunctionOneTailEnd,
-} from "../helpers";
+  STATUS,
+  STEP_TYPE,
+  ROOT_PATH,
+  ERROR,
+  MAX_POSE_DISTANCE_DIFF,
+  MAX_POSE_ROTATION_DIFF,
+  MAX_JOINT_DISTANCE_DIFF,
+} from "../Constants";
+// import {
+//   timeGradientFunction,
+//   timeGradientFunctionOneTailStart,
+//   timeGradientFunctionOneTailEnd,
+// } from "../helpers";
 import { likStateToData } from "../../helpers/conversion";
 import {
   createStaticEnvironment,
   queryWorldPose,
-  quaternionLog,
+  // quaternionLog,
   eulerFromQuaternion,
-  distance,
+  // distance,
   attachmentToEEPose,
 } from "../../helpers/geometry";
-import { merge, cloneDeep } from "lodash";
+import { merge, mapValues } from "lodash";
 import { Quaternion, Vector3 } from "three";
 import { eventsToStates, statesToSteps } from ".";
 
 const FRAME_TIME = 30;
-const COLLISION_WEIGHT = 1;
+const POSITION_WEIGHT = 20;
+const ROTATION_WEIGHT = 15;
+const COLLISION_WEIGHT = 0;
+const SMOOTHNESS_WEIGHT = 10;
+const IMPROVEMENT_THRESHOLD = 0.7;
+const MS_TIME_LIMIT = 7000;
 
 const addOrMergeAnimation = (
   animations,
@@ -77,222 +90,204 @@ const addOrMergeAnimation = (
   return animations;
 };
 
-const createIKGoals = (
-  goalPose1,
-  goalPose2,
-  jointState1,
-  jointState2,
-  duration,
-  jointNames
-) => {
-  const numGoals = Math.ceil(duration / FRAME_TIME);
-  let goals = [];
-  let idx = 0;
-  const goalPos1 = new Vector3(
-    goalPose1.position.x,
-    goalPose1.position.y,
-    goalPose1.position.z
+const stepIK = ({
+  currentPose,
+  currentJoints,
+  goalPose,
+  goalJoints,
+  solver,
+  speed,
+  joints,
+  attachmentLink,
+  poseType
+}) => {
+  const currentPosition = new Vector3(
+    currentPose.position.x,
+    currentPose.position.y,
+    currentPose.position.z
   );
-  const goalPos2 = new Vector3(
-    goalPose2.position.x,
-    goalPose2.position.y,
-    goalPose2.position.z
+
+  const currentQuaternion = new Quaternion(
+    currentPose.rotation.x,
+    currentPose.rotation.y,
+    currentPose.rotation.z,
+    currentPose.rotation.w
   );
-  const goalQuat1 = new Quaternion(
-    goalPose1.rotation.x,
-    goalPose1.rotation.y,
-    goalPose1.rotation.z,
-    goalPose1.rotation.w
+
+  const goalPosition = new Vector3(
+    goalPose.position.x,
+    goalPose.position.y,
+    goalPose.position.z
   );
-  const goalQuat2 = new Quaternion(
-    goalPose2.rotation.x,
-    goalPose2.rotation.y,
-    goalPose2.rotation.z,
-    goalPose2.rotation.w
+
+  const goalQuaternion = new Quaternion(
+    goalPose.rotation.x,
+    goalPose.rotation.y,
+    goalPose.rotation.z,
+    goalPose.rotation.w
   );
+
   const interpPos = new Vector3(0, 0, 0);
   const interpQuat = new Quaternion(0, 0, 0, 1);
-  let jointGoals = { ...jointState1 };
-  while (idx <= numGoals) {
-    const percent = idx / numGoals;
-    interpPos.lerpVectors(goalPos1, goalPos2, percent);
-    interpQuat.slerpQuaternions(goalQuat1, goalQuat2, percent);
-    jointNames.forEach((jointKey) => {
-      jointGoals[jointKey] =
-        percent * jointState2[jointKey] + (1 - percent) * jointState1[jointKey];
-    });
-    const startJointGoalWeight = timeGradientFunctionOneTailStart(
-      idx,
-      10,
-      -20,
-      Math.min(numGoals / 5, 30)
-    );
-    const endJointGoalWeight = timeGradientFunctionOneTailEnd(
-      idx,
-      10,
-      -20,
-      Math.min(numGoals / 5, 30),
-      numGoals
-    );
-    goals.push({
-      values: [
-        null,
-        null,
-        { Translation: [interpPos.x, interpPos.y, interpPos.z] },
-        { Rotation: [interpQuat.x, interpQuat.y, interpQuat.z, interpQuat.w] },
-        // ...jointNames.map((joint) => ({ Scalar: jointState1[joint] })),
-        ...jointNames.map((joint) => ({ Scalar: jointState2[joint] })),
-      ],
-      weights: [
-        COLLISION_WEIGHT,
-        7,
-        50,
-        25,
-        // ...jointNames.map(() => startJointGoalWeight),
-        ...jointNames.map(() => endJointGoalWeight),
-      ],
-      joints: jointGoals,
-      position: { x: interpPos.x, y: interpPos.y, z: interpPos.z },
-      rotation: {
-        x: interpQuat.x,
-        y: interpQuat.y,
-        z: interpQuat.z,
-        w: interpQuat.w,
-      },
-    });
-    idx += 1;
-  }
-  return goals;
-};
 
-const createJointGoals = (jointState1, jointState2, duration, jointNames) => {
-  const numGoals = Math.ceil(duration / FRAME_TIME);
-  let goals = [];
-  let idx = 0;
-  let tmpJointGoals = {};
-  // console.log("createJointGoals",{tmpJointGoals,jointState1,jointState2})
-  while (idx <= numGoals) {
-    const percent = idx / numGoals;
-    // console.log('percent',percent)
-    jointNames.forEach((jointKey) => {
-      tmpJointGoals[jointKey] =
-        (1 - percent) * jointState1[jointKey] + percent * jointState2[jointKey];
-      // if (jointKey === 'wrist_2_joint') {
-      // console.log("createJointGoalsInner",{percent,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
-      // }
-      // console.log("createJointGoalsInner",{tmpJointGoals,jointState1,jointState2,percent,jointKey,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
-    });
-    goals.push({
-      values: [
-        null,
-        null,
-        ...jointNames.map((joint) => ({ Scalar: tmpJointGoals[joint] })),
-      ],
-      weights: [COLLISION_WEIGHT, 7, ...jointNames.map(() => 20)],
-      joints: cloneDeep(tmpJointGoals),
-    });
-    idx += 1;
-  }
-  // console.log('GOALS',goals)
-  return goals;
-};
+  const posDist = currentPosition.distanceTo(goalPosition);
+  const rotDist = currentQuaternion.angleTo(goalQuaternion);
 
-const createIKSensitivityTester = (
-  attachmentLink,
-  jointNames,
-  startJoints,
-  endJoints,
-  duration
-) => {
-  const tester = (state, goal, idx) => {
-    // return true;
-    const p = state.frames[attachmentLink].world.translation;
-    const r = state.frames[attachmentLink].world.rotation;
-    const achievedPos = { x: p[0], y: p[1], z: p[2] };
-    const goalQuat = new Quaternion(
-      goal.rotation.x,
-      goal.rotation.y,
-      goal.rotation.z,
-      goal.rotation.w
-    );
-    const achievedQuat = new Quaternion(r[0], r[1], r[2], r[3]);
-    const translationalDistance = distance(achievedPos, goal.position);
-    const rotationalDistance = goalQuat.angleTo(achievedQuat);
-    const translationalDistanceLimit = Math.max(
-      0.01,
-      timeGradientFunction(
-        idx,
-        0.01,
-        0.6,
-        Math.min(duration / 10, 30),
-        duration
-      )
-    );
-    const rotationalDistanceLimit = Math.max(
-      0.01,
-      timeGradientFunction(idx, 0.01, 4, Math.min(duration / 10, 30), duration)
-    );
-    let passed =
-      translationalDistance <= translationalDistanceLimit &&
-      rotationalDistance <= rotationalDistanceLimit;
-    // console.log()
-    if (!passed) {
-      // console.log('POS NOT PASSED',{ passed, translationalDistance, rotationalDistance, translationalDistanceLimit, rotationalDistanceLimit })
-      return false;
+  const jointDists = mapValues(currentJoints, (v, key) =>
+    Math.abs(v - goalJoints[key])
+  );
+
+  // console.log({ posDist, rotDist, jointDists });
+
+  let passed = poseType === "waypoint" ?
+    posDist <= MAX_POSE_DISTANCE_DIFF &&
+    rotDist <= MAX_POSE_ROTATION_DIFF :
+    posDist <= MAX_POSE_DISTANCE_DIFF &&
+    rotDist <= MAX_POSE_ROTATION_DIFF &&
+    !Object.values(jointDists).some((v) => v >= MAX_JOINT_DISTANCE_DIFF*2);
+  if (passed) {
+    return { newState: solver.currentState, improved: true, reached: true };
+  }
+
+  if (posDist < speed/20) {
+    interpPos.copy(goalPosition)
+  } else {
+    interpPos
+      .copy(goalPosition)
+      .sub(currentPosition)
+      .clampLength(0, speed / 20)
+      .add(currentPosition);
+  }
+  if (rotDist < speed/20) {
+    interpQuat.copy(goalQuaternion);
+  } else {
+    interpQuat.copy(currentQuaternion).rotateTowards(goalQuaternion, speed / 20);
+  }
+
+  const nextJoints = mapValues(currentJoints, (currentJointValue, jointKey) => {
+    const signedDist = goalJoints[jointKey] - currentJointValue;
+    const direction = signedDist / Math.abs(signedDist);
+    const travel = (direction * speed) / 10;
+    if (Math.abs(signedDist) < Math.abs(travel)) {
+      return goalJoints[jointKey];
+    } else {
+      // console.log(travel)
+      return currentJointValue + travel;
     }
-    return true;
-    return !jointNames.some((jointName) => {
-      const jointDistanceStart = Math.abs(
-        state.joints[jointName] - startJoints[jointName]
-      );
-      const jointDistanceEnd = Math.abs(
-        state.joints[jointName] - endJoints[jointName]
-      );
-      const jointDistanceLimitStart = timeGradientFunctionOneTailStart(
-        idx,
-        0.05,
-        4 * Math.PI,
-        Math.min(duration / 10, 30)
-      );
-      const jointDistanceLimitEnd = timeGradientFunctionOneTailEnd(
-        idx,
-        0.05,
-        4 * Math.PI,
-        Math.min(duration / 10, 30),
-        duration
-      );
-      const jointPassed =
-        jointDistanceStart < jointDistanceLimitStart &&
-        jointDistanceEnd < jointDistanceLimitEnd;
-      if (!jointPassed) {
-        console.log("JOINT NOT PASSED", {
-          jointName,
-          passed: jointPassed,
-          jointDistanceStart,
-          jointDistanceLimitStart,
-          jointDistanceEnd,
-          jointDistanceLimitEnd,
-        });
-      }
-      return !jointPassed;
-    });
-  };
+  });
 
-  return tester;
+  const goals = [
+    null,
+    null,
+    { Translation: [interpPos.x, interpPos.y, interpPos.z] },
+    { Rotation: [interpQuat.x, interpQuat.y, interpQuat.z, interpQuat.w] },
+    ...joints.map((j) => ({ Scalar: nextJoints[j] })),
+  ];
+
+  const weights = [
+    SMOOTHNESS_WEIGHT,
+    COLLISION_WEIGHT,
+    POSITION_WEIGHT,
+    ROTATION_WEIGHT,
+    ...joints.map(() => 3),
+  ];
+
+  const newState = solver.solve(goals, weights);
+
+  const newPoseRaw = newState.frames[attachmentLink].world;
+  const newPosition = new Vector3(
+    newPoseRaw.translation[0],
+    newPoseRaw.translation[1],
+    newPoseRaw.translation[2]
+  );
+  const newQuaternion = new Quaternion(
+    newPoseRaw.rotation[0],
+    newPoseRaw.rotation[1],
+    newPoseRaw.rotation[2],
+    newPoseRaw.rotation[3]
+  );
+
+  // console.log({
+  //   interpPos,
+  //   interpQuat,
+  //   speed,
+  //   currentPosition,
+  //   currentQuaternion,
+  //   nextJoints,
+  //   goalPosition,
+  //   goalQuaternion,
+  //   newPosition,
+  // });
+
+  const newPoseError = goalPosition.distanceTo(newPosition) + goalQuaternion.angleTo(newQuaternion);
+  const newJointError = joints
+  .map((jointKey) =>
+    Math.abs(newState.joints[jointKey] - goalJoints[jointKey])
+  )
+  .reduce((next, current) => next + current);
+      
+  const oldPoseError = posDist + rotDist;
+  const oldJointError = joints
+  .map((jointKey) => jointDists[jointKey])
+  .reduce((next, current) => next + current); 
+
+  // console.log({ newPoseError, oldPoseError, newJointError, oldJointError });
+
+  const improved =  oldPoseError - newPoseError > 0.0001|| oldJointError - newJointError > 0.0001 ;
+
+  return { newState, improved, reached: false };
 };
 
-const createJointSensitivityTester = (jointNames) => {
-  const tester = (state, goal, _) => {
-    // return true
-    return !jointNames.some((jointName) => {
-      const passed =
-        Math.abs(state.joints[jointName] - goal.joints[jointName]) < 0.1;
-      // if (!passed) {console.log('NOT PASSED',{jointName, dist: Math.abs(state.joints[jointName] - goal.joints[jointName]) , state: state.joints[jointName], goal: goal.joints[jointName]})}
-      return !passed;
-    });
-  };
+const stepJoint = ({ currentJoints, goalJoints, solver, speed, joints }) => {
+  const jointDists = mapValues(currentJoints, (v, key) =>
+    Math.abs(v - goalJoints[key])
+  );
+  // console.log({currentJoints,goalJoints,jointDists})
+  let passed = !Object.values(jointDists).some(
+    (v) => v >= MAX_JOINT_DISTANCE_DIFF
+  );
+  if (passed) {
+    return { newState: solver.currentState, improved: true, reached: true };
+  }
 
-  return tester;
+  const nextJoints = mapValues(currentJoints, (currentJointValue, jointKey) => {
+    const signedDist = goalJoints[jointKey] - currentJointValue;
+    const direction = signedDist / Math.abs(signedDist);
+    const travel = (direction * speed) / 10;
+    if (Math.abs(signedDist) < Math.abs(travel)) {
+      return goalJoints[jointKey];
+    } else {
+      // console.log(travel)
+      return currentJointValue + travel;
+    }
+  });
+
+  // console.log('nextJoints',nextJoints)
+
+  const goals = [null, null, ...joints.map((j) => ({ Scalar: nextJoints[j] }))];
+
+  const weights = [
+    SMOOTHNESS_WEIGHT,
+    COLLISION_WEIGHT,
+    ...joints.map((j) => 20),
+  ];
+
+  const newState = solver.solve(goals, weights);
+
+  const newError = joints
+    .map((jointKey) =>
+      Math.abs(newState.joints[jointKey] - goalJoints[jointKey])
+    )
+    .reduce((next, current) => next + current);
+  const oldError = joints
+    .map((jointKey) => jointDists[jointKey])
+    .reduce((next, current) => next + current);
+
+  console.log({ newError, oldError });
+
+  const improved = newError < oldError;
+
+  return { newState, improved, reached: false };
 };
 
 export const robotMotionCompiler = ({
@@ -331,7 +326,7 @@ export const robotMotionCompiler = ({
 
   let status = STATUS.VALID;
   let errorCode = null;
-  
+
   if (!trajectory.id) {
     return {
       status: STATUS.FAILED,
@@ -348,7 +343,10 @@ export const robotMotionCompiler = ({
       events: [],
       steps: [],
     };
-  } else if (trajectory.properties && trajectory.properties.status === STATUS.FAILED) {
+  } else if (
+    trajectory.properties &&
+    trajectory.properties.status === STATUS.FAILED
+  ) {
     return {
       status: STATUS.FAILED,
       errorCode: ERROR.CHILD_FAILED,
@@ -358,7 +356,8 @@ export const robotMotionCompiler = ({
     };
   }
 
-  const staticEnvironment = [];//createStaticEnvironment(worldModel);
+  const staticEnvironment = createStaticEnvironment(worldModel).slice(0, 2);
+  console.log(staticEnvironment);
 
   // const delta = properties.positionEnd - properties.positionStart;
   // if (properties.speed === 0) {
@@ -387,20 +386,32 @@ export const robotMotionCompiler = ({
   // console.log(robots)
 
   const poses = [
-    trajectory.properties.compiled[path].startLocation.properties.compiled[
-      path
-    ],
-    ...trajectory.properties.compiled[path].waypoints.map(
-      (wp) => wp.properties.compiled[path]
-    ),
-    trajectory.properties.compiled[path].endLocation.properties.compiled[path],
+    {
+      type: "location",
+      ...trajectory.properties.compiled[path].startLocation.properties.compiled[
+        path
+      ],
+    },
+    ...trajectory.properties.compiled[path].waypoints.map((wp) => ({
+      type: "waypoint",
+      ...wp.properties.compiled[path],
+    })),
+    {
+      type: "location",
+      ...trajectory.properties.compiled[path].endLocation.properties.compiled[
+        path
+      ],
+    },
   ];
 
   // console.log(poses);
 
   robots.forEach((robot) => {
     const basePose = queryWorldPose(worldModel, robot.id);
-    const baseEuler = eulerFromQuaternion([basePose.w, basePose.x, basePose.y, basePose.z],'sxyz');
+    const baseEuler = eulerFromQuaternion(
+      [basePose.w, basePose.x, basePose.y, basePose.z],
+      "sxyz"
+    );
     // const quatLog = quaternionLog(basePose.rotation);
     const rootBounds = [
       { value: basePose.position.x, delta: 0.0 },
@@ -455,7 +466,12 @@ export const robotMotionCompiler = ({
         const attachmentLink = gripper.properties.relativeTo;
         const jointNames = Object.keys(firstJoints);
 
-        const eePose = attachmentToEEPose(worldModel,gripper.id,attachmentLink,firstLinks[attachmentLink])
+        const eePose = attachmentToEEPose(
+          worldModel,
+          gripper.id,
+          attachmentLink,
+          firstLinks[attachmentLink]
+        );
 
         // load the first frame
         innerSteps = addOrMergeAnimation(
@@ -472,44 +488,40 @@ export const robotMotionCompiler = ({
           eePose
         );
 
-        let reached = true;
+        let improved = true;
 
         // Instantiate the initial state and solver;
         const standardObjectives = [
-          { type: "SmoothnessMacro", name: "Smoothness", weight: COLLISION_WEIGHT },
+          {
+            type: "SmoothnessMacro",
+            name: "Smoothness",
+            weight: SMOOTHNESS_WEIGHT,
+          },
           {
             type: "CollisionAvoidance",
             name: "Collision Avoidance",
-            weight: 7,
+            weight: COLLISION_WEIGHT,
           },
         ];
         const objectives =
           motionType === "IK"
             ? [
                 ...standardObjectives,
-                ...[
-                  {
-                    type: "PositionMatch",
-                    name: "EE Position",
-                    link: attachmentLink,
-                    weight: 50,
-                  },
-                  {
-                    type: "OrientationMatch",
-                    name: "EE Rotation",
-                    link: attachmentLink,
-                    weight: 25,
-                  },
-                ],
-                // ...jointNames.map((jointKey) => ({
-                //   type: "JointMatch",
-                //   name: `JointHelperStart:${jointKey}`,
-                //   joint: jointKey,
-                //   weight: 0,
-                // })),
+                {
+                  type: "PositionMatch",
+                  name: "EE Position",
+                  link: attachmentLink,
+                  weight: POSITION_WEIGHT,
+                },
+                {
+                  type: "OrientationMatch",
+                  name: "EE Rotation",
+                  link: attachmentLink,
+                  weight: ROTATION_WEIGHT,
+                },
                 ...jointNames.map((jointKey) => ({
                   type: "JointMatch",
-                  name: `JointHelperEnd:${jointKey}`,
+                  name: `JointHelper:${jointKey}`,
                   joint: jointKey,
                   weight: 0,
                 })),
@@ -529,7 +541,8 @@ export const robotMotionCompiler = ({
         // console.log('goal:',goalPose)
 
         // Construct the joint state information
-        let state = {};
+        console.log({ objectives, motionType });
+        // let state = {};
 
         // Construct the solver
         const initialState = { origin, joints: firstJoints };
@@ -549,70 +562,126 @@ export const robotMotionCompiler = ({
         // console.log(solver.currentState);
         // Enumerate pairs of poses.
         let poseStack = [...poses];
+        let history = [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+        ];
+
+        let currentState = solver.currentState;
+
+        let reached = false;
+
         let mainIdx = 0;
-        while (poseStack.length > 1 && reached) {
-          const pose1 = poseStack[0];
-          const pose2 = poseStack[1];
-          // console.log('pose stacks', { pose1, pose2 });
-          const goalPose1 = pose1.goalPose;
-          const goalPose2 = pose2.goalPose;
-          const jointState1 = pose1.states[robot.id][gripper.id].joints;
-          const jointState2 = pose2.states[robot.id][gripper.id].joints;
-          // console.log({jointState1,jointState2})
 
-          const dist = distance(goalPose1.position, goalPose2.position);
-          const duration = (1000 * dist) / velocity;
+        // Remove the first element, since that is our initial state;
+        poseStack.shift();
 
-          // console.log('creating goals');
-          let goals =
-            motionType === "IK"
-              ? createIKGoals(
-                  goalPose1,
-                  goalPose2,
-                  jointState1,
-                  jointState2,
-                  duration,
-                  jointNames
-                )
-              : createJointGoals(
-                  jointState1,
-                  jointState2,
-                  duration,
-                  jointNames
-                );
+        let startTime = Date.now();
 
-          // console.log('creating sensitivity testers')
-          const sensitivityTester =
-            motionType === "IK"
-              ? createIKSensitivityTester(
-                  attachmentLink,
-                  jointNames,
-                  jointState1,
-                  jointState2,
-                  goals.length
-                )
-              : createJointSensitivityTester(jointNames);
+        while (poseStack.length > 0 && improved) {
 
-          let idx = 0;
+          if (Date.now() - startTime > MS_TIME_LIMIT) {
+            improved = false;
+            status = STATUS.WARN;
+            errorCode = ERROR.TIMEOUT;
+            console.warn("timeout on trajectory calculation, cancelling");
+            break
+          }
 
-          while (goals.length > 0 && reached) {
-            // console.log('animation frames: ', innerSteps.length)
-            // console.log('goals: ', goals.length)
-            const goal = goals[0];
-            // console.log(goal)
-            state = solver.solve(goal.values, goal.weights);
-            reached = sensitivityTester(state, goal, idx);
+          reached = false;
 
-            // const stateData = likStateToData(state, robot.properties.root);
-            // console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
-            const stateData = likStateToData(state, robot.id, robot.properties.compiled[ROOT_PATH].linkParentMap);
-            if (!reached && status !== STATUS.FAILED) {
-              status = STATUS.WARN;
-              errorCode = ERROR.TRAJECTORY_PROGRESS;
+          const pose = poseStack[0];
+          // console.log('pose', pose);
+          // const goalPose1 = pose1.goalPose;
+          const goalPose = pose.goalPose;
+          // const jointState1 = pose1.states[robot.id][gripper.id].joints;
+          const goalJoints = pose.states[robot.id][gripper.id].joints;
+          
+          while (improved && !reached) {
+            if (history.length > 30) {
+              history.shift();
+              // console.log("history trimmed", history);
             }
 
-            // Calculate the eePose of the gripper
-            const eePose = attachmentToEEPose(worldModel,gripper.id,attachmentLink,stateData.links[attachmentLink])
+            const currentPoseRaw = currentState.frames[attachmentLink].world;
+            const currentPose = {
+              position: {
+                x: currentPoseRaw.translation[0],
+                y: currentPoseRaw.translation[1],
+                z: currentPoseRaw.translation[2],
+              },
+              rotation: {
+                x: currentPoseRaw.rotation[0],
+                y: currentPoseRaw.rotation[1],
+                z: currentPoseRaw.rotation[2],
+                w: currentPoseRaw.rotation[3],
+              },
+            };
+
+            const props = {
+              currentJoints: currentState.joints,
+              goalJoints,
+              currentPose,
+              goalPose,
+              solver,
+              joints: jointNames,
+              speed: velocity,
+              attachmentLink,
+              poseType: pose.type
+            };
+
+            const results =
+              motionType === "IK" ? stepIK(props) : stepJoint(props);
+
+            // console.log("results", results);
+
+            const stateData = likStateToData(
+              results.newState,
+              robot.id,
+              robot.properties.compiled[ROOT_PATH].linkParentMap
+            );
+
+            reached = results.reached;
+            currentState = results.newState;
+            history.push(results.improved);
+
+            // Check the history, and if less than 50% of the past 30ish solutions haven't improved, kill it.
+            const improvementScore =
+              history.reduce(
+                (previousValue, currentValue) => previousValue + currentValue
+              ) / history.length;
+            // console.log("improvement score:", { improvementScore, history });
+            if (improvementScore < IMPROVEMENT_THRESHOLD) {
+              improved = false;
+              status = STATUS.WARN;
+              errorCode = ERROR.TRAJECTORY_PROGRESS;
+              console.warn("No longer improving, cancelling");
+            }
+
+            const eePose = attachmentToEEPose(
+              worldModel,
+              gripper.id,
+              attachmentLink,
+              stateData.links[attachmentLink]
+            );
 
             innerSteps = addOrMergeAnimation(
               innerSteps,
@@ -627,12 +696,11 @@ export const robotMotionCompiler = ({
               attachmentLink,
               eePose
             );
-            idx += 1;
+
             mainIdx += 1;
-            goals.shift();
           }
-          // Pop off the first item in the poseStack
           poseStack.shift();
+          // console.warn('Segment completed',{poseStack,reached,currentState})
         }
       });
   });
@@ -654,9 +722,11 @@ export const robotMotionCompiler = ({
 
   const events = [
     {
-      condition: robot ? {
-        [robot.id]: { busy: false },
-      } : {},
+      condition: robot
+        ? {
+            [robot.id]: { busy: false },
+          }
+        : {},
       onTrigger: [initialStep, ...innerSteps, finalStep],
       source: data.id,
     },
@@ -672,3 +742,237 @@ export const robotMotionCompiler = ({
 
   return newCompiled;
 };
+
+// const createIKGoals = (
+//   goalPose1,
+//   goalPose2,
+//   jointState1,
+//   jointState2,
+//   duration,
+//   jointNames,
+//   type1,
+//   type2
+// ) => {
+//   const numGoals = Math.ceil(duration / FRAME_TIME);
+//   let goals = [];
+//   let idx = 0;
+//   const goalPos1 = new Vector3(
+//     goalPose1.position.x,
+//     goalPose1.position.y,
+//     goalPose1.position.z
+//   );
+//   const goalPos2 = new Vector3(
+//     goalPose2.position.x,
+//     goalPose2.position.y,
+//     goalPose2.position.z
+//   );
+//   const goalQuat1 = new Quaternion(
+//     goalPose1.rotation.x,
+//     goalPose1.rotation.y,
+//     goalPose1.rotation.z,
+//     goalPose1.rotation.w
+//   );
+//   const goalQuat2 = new Quaternion(
+//     goalPose2.rotation.x,
+//     goalPose2.rotation.y,
+//     goalPose2.rotation.z,
+//     goalPose2.rotation.w
+//   );
+//   const interpPos = new Vector3(0, 0, 0);
+//   const interpQuat = new Quaternion(0, 0, 0, 1);
+//   let jointGoals = { ...jointState1 };
+//   while (idx <= numGoals) {
+//     const percent = idx / numGoals;
+//     interpPos.lerpVectors(goalPos1, goalPos2, percent);
+//     interpQuat.slerpQuaternions(goalQuat1, goalQuat2, percent);
+//     jointNames.forEach((jointKey) => {
+//       jointGoals[jointKey] =
+//         percent * jointState2[jointKey] + (1 - percent) * jointState1[jointKey];
+//     });
+//     const startJointGoalWeight = timeGradientFunctionOneTailStart(
+//       idx,
+//       10,
+//       -20,
+//       Math.min(numGoals / 5, 30)
+//     );
+//     const endJointGoalWeight =
+//       type2 === "waypoint"
+//         ? 0.1
+//         : timeGradientFunctionOneTailEnd(
+//             idx,
+//             10,
+//             -20,
+//             Math.min(numGoals / 5, 30),
+//             numGoals
+//           );
+//     goals.push({
+//       values: [
+//         null,
+//         null,
+//         { Translation: [interpPos.x, interpPos.y, interpPos.z] },
+//         { Rotation: [interpQuat.x, interpQuat.y, interpQuat.z, interpQuat.w] },
+//         // ...jointNames.map((joint) => ({ Scalar: jointState1[joint] })),
+//         ...jointNames.map((joint) => ({ Scalar: jointState2[joint] })),
+//       ],
+//       weights: [
+//         SMOOTHNESS_WEIGHT,
+//         COLLISION_WEIGHT,
+//         50,
+//         25,
+//         // ...jointNames.map(() => startJointGoalWeight),
+//         ...jointNames.map(() => endJointGoalWeight),
+//       ],
+//       joints: jointGoals,
+//       position: { x: interpPos.x, y: interpPos.y, z: interpPos.z },
+//       rotation: {
+//         x: interpQuat.x,
+//         y: interpQuat.y,
+//         z: interpQuat.z,
+//         w: interpQuat.w,
+//       },
+//     });
+//     idx += 1;
+//   }
+//   return goals;
+// };
+
+// const createJointGoals = (jointState1, jointState2, duration, jointNames) => {
+//   const numGoals = Math.ceil(duration / FRAME_TIME);
+//   let goals = [];
+//   let idx = 0;
+//   let tmpJointGoals = {};
+//   // console.log("createJointGoals",{tmpJointGoals,jointState1,jointState2})
+//   while (idx <= numGoals) {
+//     const percent = idx / numGoals;
+//     // console.log('percent',percent)
+//     jointNames.forEach((jointKey) => {
+//       tmpJointGoals[jointKey] =
+//         (1 - percent) * jointState1[jointKey] + percent * jointState2[jointKey];
+//       // if (jointKey === 'wrist_2_joint') {
+//       // console.log("createJointGoalsInner",{percent,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
+//       // }
+//       // console.log("createJointGoalsInner",{tmpJointGoals,jointState1,jointState2,percent,jointKey,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
+//     });
+//     goals.push({
+//       values: [
+//         null,
+//         null,
+//         ...jointNames.map((joint) => ({ Scalar: tmpJointGoals[joint] })),
+//       ],
+//       weights: [
+//         SMOOTHNESS_WEIGHT,
+//         COLLISION_WEIGHT,
+//         ...jointNames.map(() => 20),
+//       ],
+//       joints: cloneDeep(tmpJointGoals),
+//     });
+//     idx += 1;
+//   }
+//   // console.log('GOALS',goals)
+//   return goals;
+// };
+
+// const createIKSensitivityTester = (
+//   attachmentLink,
+//   jointNames,
+//   startJoints,
+//   endJoints,
+//   duration,
+//   type1,
+//   type2
+// ) => {
+//   const tester = (state, goal, percent) => {
+//     // return true;
+//     const p = state.frames[attachmentLink].world.translation;
+//     const r = state.frames[attachmentLink].world.rotation;
+//     const achievedPos = { x: p[0], y: p[1], z: p[2] };
+//     const goalQuat = new Quaternion(
+//       goal.rotation.x,
+//       goal.rotation.y,
+//       goal.rotation.z,
+//       goal.rotation.w
+//     );
+//     const achievedQuat = new Quaternion(r[0], r[1], r[2], r[3]);
+//     const translationalDistance = distance(achievedPos, goal.position);
+//     const rotationalDistance = goalQuat.angleTo(achievedQuat);
+//     console.log("percent", percent);
+//     // const sensitivity = type1 === 'location' && type2 === 'location'
+//     //   ?
+//     const translationalDistanceLimit = 0.03;
+//     const rotationalDistanceLimit = 0.03;
+//     // const translationalDistanceLimit = Math.max(
+//     //   0.01,
+//     //   timeGradientFunction(
+//     //     idx,
+//     //     0.01,
+//     //     0.6,
+//     //     Math.min(duration / 10, 30),
+//     //     duration
+//     //   )
+//     // );
+//     // const rotationalDistanceLimit = Math.max(
+//     //   0.01,
+//     //   timeGradientFunction(idx, 0.01, 4, Math.min(duration / 10, 30), duration)
+//     // );
+//     let passed =
+//       translationalDistance <= translationalDistanceLimit &&
+//       rotationalDistance <= rotationalDistanceLimit;
+//     // console.log()
+//     if (!passed) {
+//       // console.log('POS NOT PASSED',{ passed, translationalDistance, rotationalDistance, translationalDistanceLimit, rotationalDistanceLimit })
+//       return false;
+//     }
+//     return true;
+//     return !jointNames.some((jointName) => {
+//       const jointDistanceStart = Math.abs(
+//         state.joints[jointName] - startJoints[jointName]
+//       );
+//       const jointDistanceEnd = Math.abs(
+//         state.joints[jointName] - endJoints[jointName]
+//       );
+//       const jointDistanceLimitStart = timeGradientFunctionOneTailStart(
+//         idx,
+//         0.05,
+//         4 * Math.PI,
+//         Math.min(duration / 10, 30)
+//       );
+//       const jointDistanceLimitEnd = timeGradientFunctionOneTailEnd(
+//         idx,
+//         0.05,
+//         4 * Math.PI,
+//         Math.min(duration / 10, 30),
+//         duration
+//       );
+//       const jointPassed =
+//         jointDistanceStart < jointDistanceLimitStart &&
+//         jointDistanceEnd < jointDistanceLimitEnd;
+//       if (!jointPassed) {
+//         console.log("JOINT NOT PASSED", {
+//           jointName,
+//           passed: jointPassed,
+//           jointDistanceStart,
+//           jointDistanceLimitStart,
+//           jointDistanceEnd,
+//           jointDistanceLimitEnd,
+//         });
+//       }
+//       return !jointPassed;
+//     });
+//   };
+
+//   return tester;
+// };
+
+// const createJointSensitivityTester = (jointNames) => {
+//   const tester = (state, goal, _) => {
+//     // return true
+//     return !jointNames.some((jointName) => {
+//       const passed =
+//         Math.abs(state.joints[jointName] - goal.joints[jointName]) < 0.1;
+//       // if (!passed) {console.log('NOT PASSED',{jointName, dist: Math.abs(state.joints[jointName] - goal.joints[jointName]) , state: state.joints[jointName], goal: goal.joints[jointName]})}
+//       return !passed;
+//     });
+//   };
+
+//   return tester;
+// };

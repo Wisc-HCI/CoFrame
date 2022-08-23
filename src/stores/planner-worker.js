@@ -64,7 +64,7 @@ import init, { Solver } from 'coframe-rust';
 //     return result
 // }
 
-const performCompileProcess = async (data) => {
+export const performCompileProcess = async (data) => {
     // console.log('performCompilerProcess--inworker')
     const { programData, objectTypes } = data;
     // Process the data without stalling the UI
@@ -73,6 +73,7 @@ const performCompileProcess = async (data) => {
     // console.warn(welcome('Harry'));
     const module = {Solver};
     // console.log(module)
+    // console.warn('performing compile process')
 
 
     // const compModule = await loadCompilerModule();

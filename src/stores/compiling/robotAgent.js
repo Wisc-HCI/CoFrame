@@ -54,7 +54,8 @@ export const robotAgentCompiler = ({
     450,
     null
   );
-  const newCompiled = likStateToData(fwdsolver.currentState,data.id,properties.linkParentMap);
+  const proximity = fwdsolver.computeAverageDistanceTable();
+  const newCompiled = likStateToData({...fwdsolver.currentState,proximity},data.id,properties.linkParentMap);
   // console.log('newCompiled',newCompiled)
   return {
     type: data.type,

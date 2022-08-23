@@ -44,6 +44,8 @@ export const poseCompiler = ({
   // but we pre-process them beforehand so it is fine. We also always assume root execution
   // (which is fine for robots/humans/grippers).
 
+  // console.log('running pose compiler')
+
   const grippers = Object.values(memo).filter((v) => v.type === "gripperType");
 
   const staticEnvironment = []; // createStaticEnvironment(worldModel);
@@ -87,6 +89,8 @@ export const poseCompiler = ({
       const urdf = robot.properties.compiled[ROOT_PATH].urdf;
       const robotInitialJointState =
         robot.properties.compiled[ROOT_PATH].initialJointState;
+
+      const proximity = robot.properties.compiled[ROOT_PATH].proximity
 
       // Enumerate grippers and search for ones that are based on this robot.
       grippers.forEach((gripper) => {
@@ -140,7 +144,7 @@ export const poseCompiler = ({
           let state = {};
 
           // Construct the solver
-          const initialState = { origin, joints: initialJointState };
+          const initialState = { origin, joints: initialJointState, proximity };
           const solver = new module.Solver(
             urdf,
             objectives,
@@ -151,6 +155,8 @@ export const poseCompiler = ({
             1,
             150
           );
+
+          // console.log('proximity',proximity)
 
           // Construct the goals
           const pos = goalPose.position;

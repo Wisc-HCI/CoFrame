@@ -15,6 +15,7 @@ import lodash from 'lodash';
 import KnifeAssembly from './Knife_Assembly_Simple_VP.json';
 import PandaDemo from './Panda_Demo.json'
 import { STATUS } from './Constants';
+import {performCompileProcess} from './planner-worker'
 
 const immer = (config) => (set, get, api) =>
   config(
@@ -53,6 +54,9 @@ useStore.subscribe(state=>
   ()=>{
     console.log("REPLANNING")
     useStore.getState().performCompileProcess()
+    // const data = useStore.getState();
+    // console.log(data);
+    // performCompileProcess({programData:data.programData,objectTypes:data.programSpec.objectTypes})
   },
   {equalityFn:shallow}
 )
