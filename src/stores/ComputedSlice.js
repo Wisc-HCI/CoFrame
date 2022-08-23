@@ -54,6 +54,8 @@ export const computedSlice = (state) => {
         }
     })
 
+    const robotAgent = Object.values(state.programData).filter(v => v.type === "robotAgentType")[0];
+    const gripperAgent = Object.values(state.programData).filter(v => v.type === "gripperType")[0];
 
 
     // ===================== Items =====================
@@ -86,9 +88,6 @@ export const computedSlice = (state) => {
 
     // Add items from the initial static scene
     Object.values(state.programData).filter(v => v.dataType === DATA_TYPES.INSTANCE).forEach(entry => {
-
-
-
         if (entry.type === 'linkType' || entry.type === 'fixtureType') {
             const itemKey = entry.id;
             let highlighted = false;
@@ -99,9 +98,6 @@ export const computedSlice = (state) => {
             } else if (entry.type === "linkType" && state.focus.includes(entry.properties.agent)) {
                 highlighted = true
             }
-
-            //console.log()
-
 
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
@@ -143,18 +139,46 @@ export const computedSlice = (state) => {
                 })
             }
         } else if (entry.type === 'zoneType' && state.programData[entry.properties.agent].type === 'humanAgentType') {
+            tfs[entry.id] = {
+                frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
+                position: entry.properties.position,
+                rotation: entry.properties.rotation,
+                transformMode: itemTransformMethod(state, entry.id),
+                scale: entry.properties.scale
+            }
+
             items[entry.id] = {
                 shape: 'cube',
                 name: entry.name,
-                frame: entry.properties.relativeTo ? entry.properties.relativeTo : 'world',
-                position: entry.properties.position,
-                rotation: entry.properties.rotation,
+                frame: entry.id,
+                position: {x: 0, y: 0, z: 0},
+                rotation: {x: 0, y: 0, z: 0, w: 1},
                 color: { ...OCCUPANCY_ERROR_COLOR, a: 0.2 },
-                scale: entry.properties.scale,
-                transformMode: itemTransformMethod(state, entry.id),
+                scale: {x: 1, y: 1, z: 1},
                 highlighted: false,
                 hidden: !state.occupancyVisible
             }
+
+            let collisionObject = state.programData[entry.properties.collision];
+
+            // Now add collisions
+            collisionObject?.properties.componentShapes.forEach((collisionShapeId) => {
+                let collisionShape = state.programData[collisionShapeId];
+                items[entry.id + collisionShapeId] = {
+                    shape: collisionShape.properties.keyword,
+                    name: collisionShape.id,
+                    frame: entry.id,
+                    position: collisionShape.properties.position,
+                    rotation: collisionShape.properties.rotation,
+                    scale: collisionShape.properties.scale,
+                    extraParams: collisionShape.properties.extraParams,
+                    transformMode: 'inactive',
+                    highlighted: false,
+                    color: { r: 250, g: 0, b: 0, a: 0.6 },
+                    wireframe: true,
+                    hidden: !(state.collisionsVisible && state.occupancyVisible)
+                }
+            });
         } else if (entry.type === 'processType') {
             entry.properties.inputs.forEach(input => {
 
@@ -351,12 +375,65 @@ export const computedSlice = (state) => {
             } else if (state.frame === 'safety' && occupancyOverlap(correctEntry.properties.position, state.programData)) {
                 color = { ...OCCUPANCY_ERROR_COLOR };
             }
+            let robotColor = {...color};
             if (trajectoryFocused) {
                 const idx = focusedTrajectoryChildren.indexOf(entry.id);
                 color.a = (time) => 0.5 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
+                robotColor.a = (time) => 0.2 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
             } else {
-                color.a = 0.7
+                color.a = 0.7;
+                robotColor.a = 0.35;
             }
+
+            const addItem = (link, isGripper) => {
+                let id = 'ghost-' + entry.id + link;
+                let linkData = state.programData[link];
+                let meshObject = state.programData[linkData.properties.mesh];
+                
+                let frame = 'world';
+                if (!isGripper) {
+                    let frameFlag = state.programData[entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame]?.type === 'robotAgentType';
+                    frame = frameFlag ? entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame : 'ghost-' + entry.id + entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame
+                } else {
+                    let frameFlag = state.programData[state.programData[link]?.properties?.relativeTo]?.type === 'gripperType';
+                    frame = 'ghost-' + entry.id + (
+                        frameFlag ? 
+                            state.programData[state.programData[link]?.properties?.relativeTo]?.properties?.relativeTo : 
+                            state.programData[link]?.properties?.relativeTo
+                        );
+                }
+                tfs[id] = {
+                    frame: frame,
+                    position: isGripper ? state.programData[link].properties.position : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].position,
+                    rotation: isGripper ? state.programData[link].properties.rotation : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].rotation,
+                    transformMode: "inactive",
+                    scale: { x: 1, y: 1, z: 1 }
+                }
+    
+                if (meshObject) {
+                    items[id] = {
+                        shape: meshObject.properties.keyword,
+                        name: id,
+                        frame: id,
+                        position: meshObject.properties.position,
+                        rotation: meshObject.properties.rotation,
+                        color: robotColor,
+                        scale: meshObject.properties.scale,
+                        highlighted: false,
+                        hidden: !(state.robotPreviewVisible && trajectoryFocused),
+                    }
+                }
+            }
+
+            // Add ghost robot to location
+            Object.keys(entry.properties?.states[robotAgent.id][gripperAgent.id].links).forEach(link => {
+                addItem(link, false);
+            });
+
+            // Add ghost gripper to location
+            Object.keys(gripperAgent.properties.gripperFrames).forEach(link => {
+                addItem(link, true);
+            })
 
             poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
                 const transform = state.focus.includes('translate')
@@ -426,7 +503,7 @@ export const computedSlice = (state) => {
 
     // Pinch Point visualizations
     if (deepestIssue && deepestIssue.code === 'pinchPoints' && state.programData[deepestIssue.focus[0]]) {
-        const pinchPointAnimations = pinchpointAnimationFromExecutable(Object.values(state.programData).filter(v => v.type === "robotAgentType")[0], state.programData[deepestIssue.focus[0]].properties.compiled["{}"].steps)
+        const pinchPointAnimations = pinchpointAnimationFromExecutable(robotAgent, state.programData[deepestIssue.focus[0]].properties.compiled["{}"].steps)
         Object.keys(pinchPointAnimations).forEach(field => {
             items[field] = {
                 shape: 'sphere',
@@ -466,13 +543,13 @@ export const computedSlice = (state) => {
 
         let poses = []
         if (trajectory.properties.startLocation) {
-            poses.push(state.programData[trajectory.properties.startLocation])
+            poses.push(state.programData[trajectory.properties.startLocation]);
         }
         trajectory.properties.waypoints.forEach(waypointId => {
             poses.push(state.programData[waypointId])
         })
         if (trajectory.properties.endLocation) {
-            poses.push(state.programData[trajectory.properties.endLocation])
+            poses.push(state.programData[trajectory.properties.endLocation]);
         }
         const vertices = poses.map(pose => {
             let pos = pose.ref ? state.programData[pose.ref].properties.position : pose.properties.position;
@@ -493,7 +570,7 @@ export const computedSlice = (state) => {
         let steps = program.properties.compiled["{}"]?.steps;
         let sceneTmp = (steps && moveTrajectoryId) ? steps.filter(step => step.type === STEP_TYPE.SCENE_UPDATE && step.source === moveTrajectoryId) : [];
         let programModel = createEnvironmentModel(state.programData);
-        let gripOffsetID = Object.values(state.programData).filter(v => v.type === 'gripperType')[0].id + '-gripOffset';
+        let gripOffsetID = gripperAgent.id + '-gripOffset';
         let eePoseVerts = sceneTmp.map(sceneUpdate => {
             Object.keys(sceneUpdate.data.links).forEach(link => {
                 programModel = updateEnvironModel(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
@@ -545,16 +622,6 @@ export const computedSlice = (state) => {
     })
 
     stepsToAnimation(state, tfs, items);
-
-
-
-
-
-
-
-
-
-
 
     return ({
         executablePrimitives,

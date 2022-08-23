@@ -197,6 +197,10 @@ export const GuiSlice = (set, get) => ({
   setTfVisible: (visible) => set(state => {
     state.tfVisible = visible;
   }),
+  robotPreviewVisible: false,
+  setRobotPreviewVisible: (visible) => set(state => {
+    state.robotPreviewVisible = visible;
+  }),
   onClick: (id, hidden, event) => set(state => {
     // ignore hidden objects
     // ignore movement for the clicks (translate/rotate)

@@ -35,6 +35,8 @@ export function Controls() {
     setOccupancyVisible,
     tfVisible,
     setTfVisible,
+    robotPreviewVisible,
+    setRobotPreviewVisible
   ] = useStore(
     (state) => [
       state.primaryColor,
@@ -46,6 +48,8 @@ export function Controls() {
       state.setOccupancyVisible,
       state.tfVisible,
       state.setTfVisible,
+      state.robotPreviewVisible,
+      state.setRobotPreviewVisible
     ],
     shallow
   );
@@ -103,6 +107,12 @@ export function Controls() {
             {tfVisible ? <FiCheckCircle /> : <FiCircle/>}
           </ListItemIcon>
           <ListItemText>Show TFs</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={()=>setRobotPreviewVisible(!robotPreviewVisible)}>
+          <ListItemIcon>
+            {robotPreviewVisible ? <FiCheckCircle /> : <FiCircle/>}
+          </ListItemIcon>
+          <ListItemText>Robot Preview for Trajectories</ListItemText>
         </MenuItem>
       </Menu>
     </Stack>
