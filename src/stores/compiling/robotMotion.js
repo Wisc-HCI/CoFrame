@@ -28,7 +28,7 @@ import { eventsToStates, statesToSteps } from ".";
 const FRAME_TIME = 30;
 const POSITION_WEIGHT = 20;
 const ROTATION_WEIGHT = 15;
-const COLLISION_WEIGHT = 4;
+const COLLISION_WEIGHT = 0;
 const SMOOTHNESS_WEIGHT = 10;
 const IMPROVEMENT_THRESHOLD = 0.7;
 const MS_TIME_LIMIT = 7000;
@@ -155,19 +155,19 @@ const stepIK = ({
     interpPos
       .copy(goalPosition)
       .sub(currentPosition)
-      .clampLength(0, speed / 20)
+      .clampLength(0, speed / 15)
       .add(currentPosition);
   }
   if (rotDist < speed/20) {
     interpQuat.copy(goalQuaternion);
   } else {
-    interpQuat.copy(currentQuaternion).rotateTowards(goalQuaternion, speed / 20);
+    interpQuat.copy(currentQuaternion).rotateTowards(goalQuaternion, speed / 15);
   }
 
   const nextJoints = mapValues(currentJoints, (currentJointValue, jointKey) => {
     const signedDist = goalJoints[jointKey] - currentJointValue;
     const direction = signedDist / Math.abs(signedDist);
-    const travel = (direction * speed) / 10;
+    const travel = (direction * speed) / 5;
     if (Math.abs(signedDist) < Math.abs(travel)) {
       return goalJoints[jointKey];
     } else {
@@ -253,7 +253,7 @@ const stepJoint = ({ currentJoints, goalJoints, solver, speed, joints }) => {
   const nextJoints = mapValues(currentJoints, (currentJointValue, jointKey) => {
     const signedDist = goalJoints[jointKey] - currentJointValue;
     const direction = signedDist / Math.abs(signedDist);
-    const travel = (direction * speed) / 10;
+    const travel = (direction * speed) / 5;
     if (Math.abs(signedDist) < Math.abs(travel)) {
       return goalJoints[jointKey];
     } else {
