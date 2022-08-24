@@ -542,7 +542,7 @@ export const robotMotionCompiler = ({
         // console.log('goal:',goalPose)
 
         // Construct the joint state information
-        console.log({ objectives, motionType });
+        // console.log({ objectives, motionType });
         // let state = {};
 
         // Construct the solver
