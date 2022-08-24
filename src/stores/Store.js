@@ -1,8 +1,8 @@
 import create from 'zustand';
-import shallow from 'zustand/shallow'
-import { persist, subscribeWithSelector } from 'zustand/middleware'
-import { computed } from 'zustand-middleware-computed-state'
-import produce from "immer";
+import shallow from 'zustand/shallow';
+import { subscribeWithSelector } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer'
+import { computed } from 'zustand-middleware-computed-state';
 import {GuiSlice} from './GuiSlice';
 import {ReviewSlice} from './ReviewSlice';
 import {EvdSlice} from './EvdSlice';
@@ -17,16 +17,16 @@ import PandaDemo from './Panda_Demo.json'
 import { STATUS } from './Constants';
 import {performCompileProcess} from './planner-worker'
 
-const immer = (config) => (set, get, api) =>
-  config(
-    (partial, replace) => {
-      const nextState =
-        typeof partial === "function" ? produce(partial) : partial;
-      return set(nextState, replace);
-    },
-    get,
-    api
-);
+// const immer = (config) => (set, get, api) =>
+//   config(
+//     (partial, replace) => {
+//       const nextState =
+//         typeof partial === "function" ? produce(partial) : partial;
+//       return set(nextState, replace);
+//     },
+//     get,
+//     api
+// );
 
 const store = (set, get) => ({
     ...SceneSlice(set,get),
@@ -43,17 +43,17 @@ const computedStore = computed(immerStore,computedSlice);
 const subscribeStore = subscribeWithSelector(computedStore);
 
 const useStore = create(subscribeStore);
-// const useSyncStore = create(yjs(doc,"shared",subscribeStore))
-
-// console.log("getState: ", useStore.getState());
 
 useStore.subscribe(state=>
   lodash.mapValues(state.programData,(value)=>{
     return value?.properties?.status ? value.properties.status : STATUS.PENDING
   }),
-  ()=>{
-    console.log("REPLANNING")
-    useStore.getState().performCompileProcess()
+  (currentStatuses,previousStatuses)=>{
+    if (Object.keys(currentStatuses).some(id=>currentStatuses[id]===STATUS.PENDING && previousStatuses[id]!==STATUS.PENDING)) {
+      console.log("REPLANNING")
+      useStore.getState().performCompileProcess()
+    }
+    
     // const data = useStore.getState();
     // console.log(data);
     // performCompileProcess({programData:data.programData,objectTypes:data.programSpec.objectTypes})

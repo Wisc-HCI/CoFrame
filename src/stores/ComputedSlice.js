@@ -621,7 +621,7 @@ export const computedSlice = (state) => {
         }
     })
 
-    stepsToAnimation(state, tfs, items);
+    // stepsToAnimation(state, tfs, items);
 
     return ({
         executablePrimitives,

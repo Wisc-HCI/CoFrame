@@ -29,7 +29,7 @@ const FRAME_TIME = 30;
 const POSITION_WEIGHT = 20;
 const ROTATION_WEIGHT = 15;
 const COLLISION_WEIGHT = 0;
-const SMOOTHNESS_WEIGHT = 10;
+const SMOOTHNESS_WEIGHT = 1;
 const IMPROVEMENT_THRESHOLD = 0.7;
 const MS_TIME_LIMIT = 7000;
 
@@ -677,7 +677,7 @@ export const robotMotionCompiler = ({
               console.warn("No longer improving, cancelling");
             }
 
-            console.log(stateData.links[attachmentLink])
+            // console.log(stateData.links[attachmentLink])
             // stateData.frames[attachmentLink]
             const eePose = attachmentToEEPose(
               worldModel,

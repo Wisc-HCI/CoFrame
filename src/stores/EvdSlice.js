@@ -1,12 +1,12 @@
 // import { arrayMove, deleteAction } from './helpers';
-import lodash from "lodash";
+import {pick, omit, mapValues} from "lodash";
 // import { FiClipboard, FiBriefcase, FiGrid, FiBox, FiLogOut, FiMoreHorizontal, FiLayers, FiFeather } from "react-icons/fi";
 import { DATA_TYPES } from "simple-vp";
 
 import typeInfo from "./typeInfo";
 // import { performPoseProcess } from './planner-worker';
 import { instanceTemplateFromSpec } from "simple-vp";
-
+import useCompiledStore from './CompiledStore';
 import * as Comlink from "comlink";
 /* eslint-disable import/no-webpack-loader-syntax */
 import PlannerWorker from "./planner-worker?worker";
@@ -28,7 +28,7 @@ import {
 } from "./typeInfo/icons";
 
 const cleanedObjectType = (objectType) =>
-  lodash.pick(objectType, ["name", "properties", "type"]);
+  pick(objectType, ["name", "properties", "type"]);
 
 export const EvdSlice = (set, get) => ({
   solver: null,
@@ -143,7 +143,7 @@ export const EvdSlice = (set, get) => ({
   },
   setData: (data) =>
     set((state) => {
-      const newData = lodash.mapValues(data, (d) => {
+      const newData = mapValues(data, (d) => {
         if (d.dataType === DATA_TYPES.INSTANCE) {
           const defaultv = instanceTemplateFromSpec(
             d.type,
@@ -154,7 +154,7 @@ export const EvdSlice = (set, get) => ({
             ...d,
             properties: {
               ...defaultv.properties,
-              ...lodash.omit(d.properties, [
+              ...omit(d.properties, [
                 "status",
                 "compiled",
                 "compileFn",
@@ -182,15 +182,22 @@ export const EvdSlice = (set, get) => ({
         // state.programData = lodash.merge(state.programData, newData);
         Object.keys(newData).forEach((entry) => {
           reviewableChanges += 1;
-          Object.keys(newData[entry].properties).forEach((field) => {
-            state.programData[entry].properties[field] =
-              newData[entry].properties[field];
+          Object.keys(newData[entry].properties)
+            .forEach((field) => {
+              if (field === 'compiled') {
+                useCompiledStore.setState({[entry]:newData[entry].properties.compiled})
+              } else {
+                state.programData[entry].properties[field] =
+                  newData[entry].properties[field];
+              }
+            
             // console.log(`setting ${entry}/${field} to ${newData[entry].properties[field]}`)
           });
         });
         state.reviewableChanges += reviewableChanges;
       }
       state.processes.planProcess = process;
+      console.log(useCompiledStore.getState())
     }),
   performCompileProcess: async () => {
     // console.log('starting plan processing')
@@ -206,9 +213,11 @@ export const EvdSlice = (set, get) => ({
     get().updatePlanProcess(null, plannerWorker);
     const { performCompileProcess } = Comlink.wrap(plannerWorker);
     // console.warn('performCompileProcess',performCompileProcess);
+    const compiled = useCompiledStore.getState();
+    let programData = mapValues(get().programData,((value)=>({...value,properties:{...value.properties,compiled:compiled[value.id]}})))
     const result = await performCompileProcess({
-      programData: get().programData,
-      objectTypes: lodash.mapValues(
+      programData,
+      objectTypes: mapValues(
         get().programSpec.objectTypes,
         cleanedObjectType
       ),
