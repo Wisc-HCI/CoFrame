@@ -2,15 +2,17 @@
   "name": "CoFrame",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "vite --host",
+    "start": "tauri dev",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist",
+    "tauri": "tauri",
     "build:wasm": "wasm-pack build --release ./coframe-rust --target web"
   },
   "dependencies": {
+    "@tauri-apps/api": "^1.0.2",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/material": "^5.9.3",
@@ -43,10 +45,11 @@
     "zustand-middleware-computed-state": "^0.1.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "@vitejs/plugin-react": "^1.3.0",
-    "vite": "^3.0.9",
+    "@tauri-apps/cli": "^1.0.5",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.0.0",
+    "vite": "^3.0.0",
     "vite-plugin-comlink": "^3.0.3",
     "vite-plugin-svgr": "^2.2.0",
     "vite-plugin-wasm-pack": "^0.1.12"
