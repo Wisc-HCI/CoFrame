@@ -654,7 +654,7 @@ export const createEnvironmentModel = (programData) => {
     }
   };
 
-  let allObjectTypes = ['inputOutputType'];
+  let allObjectTypes = ['inputOutputType', 'zoneType'];
   REFERENCEABLE_OBJECTS.forEach(t => allObjectTypes.push(t));
   while (added) {
     added = false;

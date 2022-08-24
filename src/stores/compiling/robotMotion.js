@@ -542,7 +542,7 @@ export const robotMotionCompiler = ({
         // console.log('goal:',goalPose)
 
         // Construct the joint state information
-        console.log({ objectives, motionType });
+        // console.log({ objectives, motionType });
         // let state = {};
 
         // Construct the solver
@@ -677,7 +677,7 @@ export const robotMotionCompiler = ({
               console.warn("No longer improving, cancelling");
             }
 
-            console.log(stateData.links[attachmentLink])
+            // console.log(stateData.links[attachmentLink])
             // stateData.frames[attachmentLink]
             const eePose = attachmentToEEPose(
               worldModel,

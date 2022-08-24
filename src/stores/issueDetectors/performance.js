@@ -81,6 +81,7 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
         }
     });
 
+    let moveTracjectoryIssues = [];
 
     moveIds.forEach(source => {
         let count = 0;
@@ -158,35 +159,41 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
         })
         jointGraphData.push(graphDataPoint);
 
+        let err = false;
+        let warn = false;
         jointNames.forEach(joint => {
-            // Build issue
-            if (errorWarning[joint].error || errorWarning[joint].warning) {
-                const uuid = generateUuid('issue');
-                issues[uuid] = {
-                    id: uuid,
-                    requiresChanges: errorWarning[joint].error ,
-                    title: `Robot joint(s) move too fast`,
-                    description: `The robot's joint speeds are too fast`,
-                    complete: false,
-                    focus: [source],
-                    graphData: {
-                        series: jointGraphData,
-                        xAxisLabel: 'Timestamp',
-                        yAxisLabel: 'Velocity',
-                        thresholds: [
-                            {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                            {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
-                            {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
-                        ],
-                        units: 'm/s',
-                        decimal: 5,
-                        title: '',
-                        isTimeseries: true
-                    },
-                    sceneData: {vertices: sceneData}
-                }
+            err = err || errorWarning[joint].error;
+            warn = warn || errorWarning[joint].warning;
+        });
+
+        // Build issue
+        if (!moveTracjectoryIssues.includes(source) && (err || warn)) {
+            moveTracjectoryIssues.push(source);
+            const uuid = generateUuid('issue');
+            issues[uuid] = {
+                id: uuid,
+                requiresChanges: err,
+                title: `Robot joint(s) move too fast`,
+                description: `The robot's joint speeds are too fast`,
+                complete: false,
+                focus: [source],
+                graphData: {
+                    series: jointGraphData,
+                    xAxisLabel: 'Timestamp',
+                    yAxisLabel: 'Velocity',
+                    thresholds: [
+                        {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
+                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
+                    ],
+                    units: 'm/s',
+                    decimal: 5,
+                    title: '',
+                    isTimeseries: true
+                },
+                sceneData: {vertices: sceneData}
             }
-        })
+        }
     });
 
     return [issues, {}];

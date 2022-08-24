@@ -5,6 +5,7 @@ import { checkHandThresholds, stepsToEEPoseScores, getIDsAndStepsFromCompiled } 
 import { likProximityAdjustment } from "../../helpers/conversion";
 import lodash from 'lodash';
 import { hexToRgb } from "../../helpers/colors";
+import { queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
 
 export const findEndEffectorPoseIssues = ({program, programData, settings}) => { // Requires trace pose information
     let issues = {};
@@ -93,22 +94,17 @@ export const findEndEffectorPoseIssues = ({program, programData, settings}) => {
 }
 
 // Requires collision graders
-export const findCollisionIssues = ({program, programData, settings}) => { 
+export const findCollisionIssues = ({program, programData, settings, environmentModel}) => { 
     let issues = {};
     return [issues, {}];
 
     const warningLevel = settings['collisionWarn'].value;
     const errorLevel = settings['collisionErr'].value;
 
-    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
-    let moveTrajectoryIDs = res[0];
-    let sceneUpdates = res[1];
+    const robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType'})[0];
+    const robotPoints = robotAgent ? robotAgent.properties.pinchPointPairLinks : [];
 
-    let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType'})[0];
-    let robotPoints = robotAgent ? robotAgent.properties.pinchPointPairLinks : [];
-    let collisionIDs = lodash.filter(programData, function (v) { return v.type === 'collisionShapeType' }).map(collision => { return collision.ip });
-
-    let linkNames = Object.values(robotAgent.properties.jointLinkMap);
+    const linkNames = Object.values(robotAgent.properties.jointLinkMap);
     let linkNameMap = {}
     linkNames.forEach(name => {
         linkNameMap[name] = name.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
@@ -124,7 +120,9 @@ export const findCollisionIssues = ({program, programData, settings}) => {
             robotJointIDs.push(pair.link2);
         }
     });
+
     let envrionTracker = [];
+    const collisionIDs = lodash.filter(programData, function (v) { return v.type === 'collisionShapeType' }).map(collision => { return collision.id });
     robotJointIDs.forEach(rID => {
         collisionIDs.forEach(fID => {
             envrionTracker.push({link1: rID, link2: fID});
@@ -135,9 +133,12 @@ export const findCollisionIssues = ({program, programData, settings}) => {
     let sCol = {};
     let eCol = {};
     let positionData = {};
-    sceneUpdates.forEach(step => {
-        if (step.source && moveTrajectoryIDs.includes(step.source)) {
+    let moveTrajectoryIDs = [];
+
+    program.properties.compiled["{}"].steps.forEach(step => {
+        if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source]?.type === "moveTrajectoryType") {
             if (!(step.source in timeData)) {
+                moveTrajectoryIDs.push(step.souce);
                 timeData[step.source] = [];
                 sCol[step.source] = [];
                 eCol[step.source] = [];
@@ -210,9 +211,18 @@ export const findCollisionIssues = ({program, programData, settings}) => {
             graphData[selfIndex].push({x: timestamp});
             graphData[envIndex].push({x: timestamp});
 
+            Object.keys(sCol[moveID][i]).forEach(rLink => { 
+                environmentModel = updateEnvironModel(environmentModel, rLink, positionData[moveID][i][rLink].position, positionData[moveID][i][rLink].rotation)
+            });
+
+            let posRot = {};
+            Object.keys(sCol[moveID][i]).forEach(rLink => { 
+                posRot[rLink] = queryWorldPose(environmentModel, rLink, '');
+            });
+
             Object.keys(sCol[moveID][i]).forEach(rLink => {
                 if (shouldGraphJoint[selfIndex][rLink]) {
-                    let curFrame = positionData[moveID][i][rLink].position;
+                    let curFrame = posRot[rLink].position;
                     shouldGraphSet[selfIndex] = true;
 
                     if (!collisionData[selfIndex][rLink]) {
@@ -233,7 +243,7 @@ export const findCollisionIssues = ({program, programData, settings}) => {
 
             Object.keys(eCol[moveID][i]).forEach(rLink => {
                 if (shouldGraphJoint[envIndex][rLink]) {
-                    let curFrame = positionData[moveID][i][rLink].position;
+                    let curFrame = posRot[rLink].position;
                     shouldGraphSet[envIndex] = true;
 
                     if (!collisionData[envIndex][rLink]) {
@@ -314,16 +324,17 @@ export const findCollisionIssues = ({program, programData, settings}) => {
 }
 
 // Requires occupancy zone graders
-export const findOccupancyIssues = ({program, programData, settings}) => {
+export const findOccupancyIssues = ({program, programData, settings, environmentModel}) => {
     let issues = {};
-    return [issues, {}];
 
     const warningLevel = settings['occupancyWarn'].value;
     const errorLevel = settings['occupancyErr'].value;
 
-    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
-    let moveTrajectoryIDs = res[0];
-    let sceneUpdates = res[1];
+    let timeData = {};
+    let proximityData = {};
+    let positionData = {};
+    let shouldGraphlink = {};
+    let occupancyValues = {};
 
     let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType' })[0];
     let linkNames = Object.values(robotAgent.properties.jointLinkMap);
@@ -332,18 +343,16 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
         linkNameMap[name] = name.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
     });
 
-    let timeData = {};
-    let proximityData = {};
-    let positionData = {};
-    let shouldGraphlink = {};
-    let occupancyValues = {};
-
-    sceneUpdates.forEach(step => {
-        if (step.source && moveTrajectoryIDs.includes(step.source)) {
-            if (!(step.source in timeData)) {
+    // Build timeline of move trajectory steps
+    let moveIds = [];
+    program.properties.compiled["{}"].steps.forEach(step => {
+        if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source]?.type === 'moveTrajectoryType') {
+            if (!(moveIds.includes(step.source))) {
+                moveIds.push(step.source);
+                
                 timeData[step.source] = [];
                 proximityData[step.source] = [];
-                positionData[step.source] = []
+                positionData[step.source] = [];
                 
                 occupancyValues[step.source] = {};
                 shouldGraphlink[step.source] = [];
@@ -354,18 +363,18 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
             }
             positionData[step.source].push({...step.data.links});
             timeData[step.source].push(step.time);
-            proximityData[step.source].push(likProximityAdjustment([], step.data.proximity.filter(v => !v.physical), false))
+            proximityData[step.source].push(likProximityAdjustment([], step.data.proximity.filter(v => !v.physical), false));
         }
     });
 
-    moveTrajectoryIDs.forEach(moveID => {
+    moveIds.forEach(source => {
         // Figure out which links to graph
-        for (let i = 0; i < proximityData[moveID].length; i++) {
+        for (let i = 0; i < proximityData[source].length; i++) {
             for (let j = 0; j < linkNames.length; j++) {
-                if (!shouldGraphlink[moveID][j] && proximityData[moveID][i][linkNames[j]]) {
-                    Object.values(proximityData[moveID][i][linkNames[j]]).forEach(obj => {
+                if (!shouldGraphlink[source][j] && proximityData[source][i][linkNames[j]]) {
+                    Object.values(proximityData[source][i][linkNames[j]]).forEach(obj => {
                         if (obj.distance <= warningLevel) {
-                                shouldGraphlink[moveID][j] = true;
+                                shouldGraphlink[source][j] = true;
                                 j = linkNames.length;
                         }
                     });
@@ -375,29 +384,32 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
         let enteredZone = false;
         let filteredGraphData = [];
 
-        for (let j = 0; j < proximityData[moveID].length; j++) {
-            let dataPoint = {x: timeData[moveID][j]};
-            for (let i = 0; i < shouldGraphlink[moveID].length; i++) {
+
+        for (let j = 0; j < proximityData[source].length; j++) {
+            let dataPoint = {x: timeData[source][j]};
+            for (let i = 0; i < shouldGraphlink[source].length; i++) {
                 // Grab the position data for each link and mark it's color
-                let curFrame = positionData[moveID][j][linkNames[i]].position;
+                environmentModel = updateEnvironModel(environmentModel, linkNames[i], positionData[source][j][linkNames[i]].position, positionData[source][j][linkNames[i]].rotation)
+                const posRot = queryWorldPose(environmentModel, linkNames[i], '');
+                let curFrame = posRot.position;
                 let point = null;
 
-                if (proximityData[moveID][j][linkNames[i]]) {
-                    Object.values(proximityData[moveID][j][linkNames[i]]).forEach(obj => {
+                if (proximityData[source][j][linkNames[i]]) {
+                    Object.values(proximityData[source][j][linkNames[i]]).forEach(obj => {
                         if (obj.distance <= errorLevel) {
                             enteredZone = true;
-                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["safety"])});
+                            occupancyValues[source][linkNames[i]].push({position: {...curFrame}, color: hexToRgb(frameStyles.errorColors["safety"])});
                         } else if (obj.distance <= warningLevel) {
-                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["safety"])});
+                            occupancyValues[source][linkNames[i]].push({position: {...curFrame}, color: hexToRgb(frameStyles.colors["safety"])});
                         } else {
-                            occupancyValues[moveID][linkNames[i]].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
+                            occupancyValues[source][linkNames[i]].push({position: {...curFrame}, color: hexToRgb(frameStyles.colors["default"])});
                         }
                         point = obj.distance;
                     });
                 }
 
                 // Add the data for the contextual info graph
-                if (shouldGraphlink[moveID][i] && point !== null) {
+                if (shouldGraphlink[source][i] && point !== null) {
                     dataPoint[linkNameMap[linkNames[i]]] = point;
                 }
             }
@@ -408,14 +420,14 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
         }
 
         if (filteredGraphData.length > 0) {
-            const uuid = generateUuid('issue');
-            issues[uuid] = {
-                id: uuid,
+            const id = generateUuid('issue');
+            issues[id] = {
+                id: id,
                 requiresChanges: false,
                 title: enteredZone ? `Entered Occupancy Zone`: `Close to Occupancy Zone`,
                 description: enteredZone ? `Robot trajectory entered occupancy zone`: `Robot trajectory results in close proximity to the occupancy zone`,
                 complete: false,
-                focus: [moveID],
+                focus: [source],
                 graphData: {
                     series: filteredGraphData,
                     xAxisLabel: 'Timestamp',
@@ -430,7 +442,7 @@ export const findOccupancyIssues = ({program, programData, settings}) => {
                     decimal: 5,
                     isTimeseries: true
                 },
-                sceneData: {vertices: occupancyValues[moveID]}
+                sceneData: {vertices: occupancyValues[source]}
             }
         }
     });
@@ -442,12 +454,12 @@ export const findPinchPointIssues = ({program, programData}) => { // Requires pi
     let issues = {};
     let addressed = [];
 
-    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
-    let moveTrajectoryIDs = res[0];
-    let sceneUpdates = res[1];
+    let pinchPoints = {};
+    let timeData = {};
+    let errorSteps = [];
 
-    sceneUpdates.forEach((step) => {
-        if (step.source && moveTrajectoryIDs.includes(step.source) && !addressed.includes(step.source)) {
+    program.properties.compiled["{}"].steps.forEach(step => {
+        if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source].type === 'moveTrajectoryType') {
             let hasError = false;
             let proxData = step.data?.proximity;
             if (proxData) {
@@ -456,23 +468,53 @@ export const findPinchPointIssues = ({program, programData}) => { // Requires pi
                 });
             }
 
-            if (hasError) {
-                const uuid = generateUuid('issue');
-                issues[uuid] = {
-                    id: uuid,
-                    requiresChanges: true,
-                    title: `Likely pinch points`,
-                    description: `Robot trajectory includes likely pinch points`,
-                    complete: false,
-                    focus: [step.source],
-                    graphData: null,
-                    sceneData: null
-                }
+            if (!pinchPoints[step.source]) {
+                timeData[step.source] = [step.time];
+                pinchPoints[step.source] = [hasError];
+            } else {
+                timeData[step.source].push(step.time);
+                pinchPoints[step.source].push(hasError);
+            }
 
-                addressed.push(step.source);
+            if (hasError) {
+                errorSteps.push(step.source)
             }
         }
     });
+
+    errorSteps.forEach(source => {
+        if (!addressed.includes(source)) {
+            const graphData = timeData[source].map((element, idx, arr) => {
+                return {x: element, inPinch: (pinchPoints[source][idx] ? 1 : 0)}
+            });
+
+            const uuid = generateUuid('issue');
+            issues[uuid] = {
+                id: uuid,
+                requiresChanges: true,
+                title: `Likely pinch points`,
+                description: `Robot trajectory includes likely pinch points`,
+                complete: false,
+                focus: [source],
+                graphData: {
+                    series: graphData,
+                    xAxisLabel: 'Timestamp',
+                    yAxisLabel: 'Pinch Points Exist',
+                    units: '',
+                    thresholds: [
+                        {range: ["MIN", 1], color: 'grey', label: 'OK'},
+                        {range: [1, "MAX"], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'}
+                    ],
+                    decimal: 1,
+                    title: '',
+                    isTimeseries: true
+                },
+                sceneData: null
+            }
+
+            addressed.push(source);
+        }
+    })
 
     return [issues, {}];
 }
