@@ -20,6 +20,7 @@ import { Drawer, Snackbar, Alert, AlertTitle } from "@mui/material";
 import { ReflexContainer, ReflexSplitter, ReflexElement } from "react-reflex";
 import useMeasure from "react-use-measure";
 import useStore from "./stores/Store";
+import useCompiledStore from "./stores/CompiledStore";
 import { getTheme } from "./theme";
 import "react-reflex/styles.css";
 import "./App.css";
@@ -33,29 +34,25 @@ export default function App() {
       TIMELINE_TYPES.includes(state.programData[focusItem]?.type)
     ),shallow
   );
-  const [focusSteps, errorType] = useStore(useCallback((state) => {
+  const focusData = useStore(state=>state.focus.map(f=>state.programData[f]));
+
+  const [focusSteps, errorType] = useCompiledStore(useCallback(state=>{
     let steps = [];
     let errorType = null;
     if (!visibleSteps) {
       return [steps, errorType];
     }
-    // console.log("STUFF", {
-    //   programData: state.programData,
-    //   focus: state.focus,
-    //   programSpec: state.programSpec
-    // });
-    state.focus.some((f) => {
-      const entry = state.programData[f];
+    focusData.some((f) => {
       if (
         [STATUS.VALID, STATUS.PENDING, STATUS.WARN].includes(
-          entry?.properties?.status
+          f?.properties?.status
         ) &&
-        TIMELINE_TYPES.includes(state.programData[f].type)
+        TIMELINE_TYPES.includes(f.type)
       ) {
-        if (Object.keys(entry.properties?.compiled).length === 1) {
+        if (Object.keys(state[f.id]).length === 1) {
           steps =
-            entry.properties.compiled[
-              Object.keys(entry.properties?.compiled)[0]
+          state[f.id][
+              Object.keys(state[f.id])[0]
             ]?.steps;
           return true;
         } else {
@@ -68,7 +65,8 @@ export default function App() {
       }
     });
     return [steps, errorType];
-  },[visibleSteps]), shallow);
+
+  },[focusData,visibleSteps]), shallow)
 
   const setViewMode = useStore((state) => state.setViewMode, shallow);
   const clearFocus = useStore((state) => state.clearFocus, shallow);

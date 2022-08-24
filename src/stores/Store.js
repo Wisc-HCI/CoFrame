@@ -39,8 +39,8 @@ const store = (set, get) => ({
 })
 
 const immerStore = immer(store);
-const computedStore = computed(immerStore,computedSlice);
-const subscribeStore = subscribeWithSelector(computedStore);
+// const computedStore = computed(immerStore,computedSlice);
+const subscribeStore = subscribeWithSelector(immerStore);
 
 const useStore = create(subscribeStore);
 
