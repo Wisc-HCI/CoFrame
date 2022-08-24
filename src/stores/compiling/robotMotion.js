@@ -28,7 +28,7 @@ import { eventsToStates, statesToSteps } from ".";
 const FRAME_TIME = 30;
 const POSITION_WEIGHT = 20;
 const ROTATION_WEIGHT = 15;
-const COLLISION_WEIGHT = 0;
+const COLLISION_WEIGHT = 4;
 const SMOOTHNESS_WEIGHT = 10;
 const IMPROVEMENT_THRESHOLD = 0.7;
 const MS_TIME_LIMIT = 7000;
@@ -356,7 +356,7 @@ export const robotMotionCompiler = ({
     };
   }
 
-  const staticEnvironment = createStaticEnvironment(worldModel).slice(0, 2);
+  const staticEnvironment = createStaticEnvironment(worldModel);
   // console.log(staticEnvironment);
 
   // const delta = properties.positionEnd - properties.positionStart;
@@ -441,6 +441,7 @@ export const robotMotionCompiler = ({
     );
     // Get the urdf of the robot (for livelyTK)
     const urdf = robot.properties.compiled[ROOT_PATH].urdf;
+    const proximity = robot.properties.compiled[ROOT_PATH].proximity
 
     // Consider each gripper/robot combo.
     // We filter those combos by the ones that actually feature linkages
@@ -545,7 +546,7 @@ export const robotMotionCompiler = ({
         // let state = {};
 
         // Construct the solver
-        const initialState = { origin, joints: firstJoints };
+        const initialState = { origin, joints: firstJoints, proximity };
         // console.log('initial state', initialState)
         const solver = new module.Solver(
           urdf,
@@ -676,6 +677,7 @@ export const robotMotionCompiler = ({
               console.warn("No longer improving, cancelling");
             }
 
+            console.log(stateData.links[attachmentLink])
             // stateData.frames[attachmentLink]
             const eePose = attachmentToEEPose(
               worldModel,

@@ -12,8 +12,8 @@ import {
 // import { DATA_TYPES } from "simple-vp";
 import { range, random } from "lodash";
 
-const COLLISION_WEIGHT = 1;
-const SMOOTHNESS_WEIGHT = 1;
+const COLLISION_WEIGHT = 0.0001;
+const SMOOTHNESS_WEIGHT = 0.1;
 
 const sampleJoints = (joints) => {
   let jointState = {};
@@ -177,7 +177,7 @@ export const poseCompiler = ({
           restarts.some(() => {
             // let currentTime = Date.now();
             rounds.some(() => {
-              state = solver.solve(goals, [50, 30, COLLISION_WEIGHT, 5, 1]);
+              state = solver.solve(goals, [50, 30, COLLISION_WEIGHT, 5, SMOOTHNESS_WEIGHT]);
               const p = state.frames[attachmentLink].world.translation;
               const r = state.frames[attachmentLink].world.rotation;
               const achievedPos = { x: p[0], y: p[1], z: p[2] };
@@ -208,6 +208,7 @@ export const poseCompiler = ({
           reachability[robot.id][gripper.id] = goalAchieved;
           // console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
           states[robot.id][gripper.id] = likStateToData(state, robot.id, robot.properties.compiled[ROOT_PATH].linkParentMap);
+          console.log(states[robot.id][gripper.id].proximity)
           // console.log(states[robot.id][gripper.id])
           // states[robot.id][gripper.id] = likStateToData(
           //   state,
