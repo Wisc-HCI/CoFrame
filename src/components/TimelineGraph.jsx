@@ -1,21 +1,40 @@
-import React, { useCallback, memo } from "react";
+import React, { useCallback, memo, useState } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
 import { withTooltip, Tooltip, defaultStyles } from "@visx/tooltip";
 import { LinearGradient } from "@visx/gradient";
 import { localPoint } from "@visx/event";
-import { LegendOrdinal } from "@visx/legend";
+import { Text as VText } from "@visx/text";
+// import { LegendOrdinal } from "@visx/legend";
 import useStore from "../stores/Store";
-import { Box, Button, Notification, Text } from "grommet";
-import { STATUS, TIMELINE_TYPES } from "../stores/Constants";
+import { Box, Text } from "grommet";
 import { useSpring, animated } from "@react-spring/web";
 import { useTime } from "./useTime";
-import { stepDataToBlocksAndTracks } from "../helpers/graphs";
-import { Snackbar, Alert, AlertTitle, Stack } from "@mui/material";
+import {
+  collapseBands,
+  stepDataToBlocksAndTracks,
+  getMaxForAllSeries,
+  getMinForAllSeries,
+  collapseSeries,
+  smoothInterpolateScalar
+} from "../helpers/graphs";
 import shallow from "zustand/shallow";
+import styled from "@emotion/styled";
+import { range } from "lodash";
 
 const defaultMargin = { top: 40, left: 80, right: 40, bottom: 25 };
+
+const Selector = styled.div`
+  border-radius: 100px;
+  width: 20px;
+  height: 20px;
+  background-color: ${(props) => props.color};
+  box-shadow: ${(props) => (props.selected ? "0px 0px 2px 2px white" : null)};
+  &:hover {
+    opacity: 0.7;
+  }
+`;
 
 const tooltipStyles = {
   ...defaultStyles,
@@ -28,9 +47,6 @@ const tooltipStyles = {
 const pointSensitivity = 500;
 
 const round = (num) => Math.round(num * 10) / 10;
-
-const capitalize = (row) => row.charAt(0).toUpperCase() + row.slice(1);
-// const formatCol = (row) => round(row / 1000);
 
 function formatTime(ms) {
   const seconds = ms / 1000;
@@ -49,6 +65,7 @@ const TimelineGraph = ({
   height,
   margin = defaultMargin,
   focusSteps,
+  issue,
 }) => {
   // console.log("focusSteps", focusSteps);
   const primaryColor = useStore((state) => state.primaryColor);
@@ -95,21 +112,22 @@ const TimelineGraph = ({
     shallow
   );
 
-  const issueGraphContent = useStore(
-    state=>{
-      let content = null;
-      state.focus.slice().reverse().some(f=>{
+  const issueGraphContent = useStore((state) => {
+    let content = null;
+    state.focus
+      .slice()
+      .reverse()
+      .some((f) => {
         if (state.issues[f]) {
-          content = state.issues[f]
-          return true
+          content = state.issues[f];
+          return true;
         } else {
-          return false
+          return false;
         }
-      })
-    }, shallow
-  )
+      });
+  }, shallow);
 
-  console.log(issueGraphContent)
+  console.log(issueGraphContent);
 
   return width < 10 && height < 40 ? null : (
     <InnerGraph
@@ -118,6 +136,7 @@ const TimelineGraph = ({
       margin={margin}
       blockData={blockData}
       eventData={eventData}
+      issueData={issue}
       eventTypes={eventTypes}
       trackTypes={trackTypes}
       primaryColor={primaryColor}
@@ -131,6 +150,7 @@ const InnerGraph = withTooltip(
     height,
     blockData,
     eventData,
+    issueData,
     eventTypes,
     trackTypes,
     margin = defaultMargin,
@@ -145,6 +165,19 @@ const InnerGraph = withTooltip(
     const xMax = width - margin.left - margin.right;
     const yMax = height - margin.top - margin.bottom;
 
+    const [expanded, setExpanded] = useState([Object.keys(eventTypes)[0]]);
+
+    const toggleExpanded = (eventType) => {
+      if (expanded.includes(eventType)) {
+        setExpanded(expanded.filter((e) => e !== eventType));
+      } else {
+        setExpanded([...expanded, eventType]);
+      }
+    };
+
+    const [filteredBlockData, filteredEventData, filteredTrackTypes] =
+      collapseBands(blockData, eventData, trackTypes, expanded);
+
     const lastEnd = Math.max(
       Math.max(
         ...blockData.map((e) => e.end),
@@ -156,7 +189,7 @@ const InnerGraph = withTooltip(
     // console.log(blockData.map((e) => (e.time ? e.time : e.end)))
     // console.log(Object.keys(trackTypes))
     const yScale = scaleBand({
-      domain: Object.keys(trackTypes),
+      domain: Object.keys(filteredTrackTypes),
       padding: 0.2,
     });
     const colorScale = scaleOrdinal({
@@ -172,17 +205,65 @@ const InnerGraph = withTooltip(
 
     const barHeight = Math.max(
       0,
-      (0.8 * yMax) / Object.keys(trackTypes).length
+      (0.8 * yMax) / Object.keys(filteredTrackTypes).length
     );
 
     xScale.rangeRound([0, xMax]);
     yScale.rangeRound([0, yMax]);
 
-    const [pause, play, reset] = useStore((state) => [
-      state.pause,
-      state.play,
-      state.reset,
-    ]);
+    const [pause, play, reset] = useStore(
+      (state) => [state.pause, state.play, state.reset],
+      shallow
+    );
+
+    const issueTimeseriesData = issueData?.series || [];
+    // const issueXAxisLabel = issueData?.xAxisLabel || "";
+    // const issueYAxisLabel = issueData?.yAxisLabel || "";
+    const issueThresholds = issueData?.thresholds || [];
+    // const issueUnits = issueData?.units || "";
+    // const issueDecimals = issueData?.decimals || 0;
+    const issueKeys = issueData
+      ? Object.keys(issueTimeseriesData[0]).filter((k) => k !== "x")
+      : [];
+    const collapsedSeries = collapseSeries(issueTimeseriesData, issueKeys);
+
+    const xIssueMax = Math.max(...issueTimeseriesData.map((s) => s.x));
+    const yIssueMax = getMaxForAllSeries(issueTimeseriesData, issueKeys);
+    const xIssueMin = Math.min(...issueTimeseriesData.map((s) => s.x));
+    const yIssueMin = getMinForAllSeries(issueTimeseriesData, issueKeys);
+
+    const interp = issueData ? smoothInterpolateScalar(
+      collapsedSeries.map((c) => c.x),
+      collapsedSeries.map((c) => c.y)
+    ) : null;
+    const interpSeries = issueData ? range(
+      xIssueMin,
+      xIssueMax + 1,
+      (xIssueMax - xIssueMin) / 50
+    ).map((x) => ({
+      x,
+      y: interp(x),
+    })) : [];    
+
+    const filledThresholds = issueThresholds.map((t) => ({
+      range: [
+        t.range[0] === "MIN"
+          ? yIssueMin
+          : t.range[0] === "MAX"
+          ? yIssueMax
+          : t.range[0],
+        t.range[1] === "MIN"
+          ? yIssueMin
+          : t.range[1] === "MAX"
+          ? yIssueMax
+          : t.range[1],
+      ],
+      color: t.color,
+    }));
+
+    const blocksAtThreshold = issueData
+      ? filledThresholds.map((thresh) => getBlocks(interpSeries, thresh))
+      : [];
 
     const handleTooltip = useCallback(
       (event, paused) => {
@@ -258,38 +339,64 @@ const InnerGraph = withTooltip(
               to="#66666699"
             />
 
-            {blockData.map((entry, i) => {
+            {filteredBlockData.map((entry, i) => {
               // console.log({track:entry.track,yscale:yScale(entry.track)})
               const width = xScale(entry.end - entry.start);
               // console.log(width);
               return (
-                <g key={`${i}block`}>
-                  <rect
-                    rx={5}
-                    x={xScale(entry.start)}
-                    y={yScale(entry.track)}
-                    width={width}
-                    height={barHeight}
-                    fill={colorScale(entry.event)}
-                    fillOpacity={0.6}
-                    stroke={colorScale(entry.event)}
-                    strokeOpacity={1}
-                    strokeWidth={1}
-                  />
-                  {width > 100 && (
-                    <text
-                      fontSize={12}
-                      fill="white"
-                      x={xScale(entry.start) + 20}
-                      y={yScale(entry.track) + 0.6 * barHeight}
-                    >
-                      {entry.label}
-                    </text>
-                  )}
-                </g>
+                <rect
+                  key={`${i}block`}
+                  rx={5}
+                  x={xScale(entry.start)}
+                  y={yScale(entry.track)}
+                  width={width}
+                  height={barHeight}
+                  fill={colorScale(entry.event)}
+                  fillOpacity={0.6}
+                  stroke={colorScale(entry.event)}
+                  strokeOpacity={1}
+                  strokeWidth={1}
+                />
               );
             })}
-            {eventData.map((entry, i) => {
+            {blocksAtThreshold.map((t, i) => (
+              <>
+                {t.map((b, j) => (
+                  <rect
+                    key={`${i}-${j}`}
+                    x={xScale(b.x0)}
+                    y={yScale(filteredBlockData[0].track) + (3 * barHeight) / 4}
+                    width={xScale(b.x1 - b.x0)}
+                    height={barHeight / 4}
+                    fill={thresholds[i].color}
+                    rx={barHeight / 8}
+                  />
+                ))}
+              </>
+            ))}
+            {filteredBlockData
+              .filter((entry) => xScale(entry.end - entry.start) > 100)
+              .map((entry, i) => {
+                // console.log({track:entry.track,yscale:yScale(entry.track)})
+                return (
+                  <VText
+                    key={`${i}block-text`}
+                    scaleToFit
+                    textAnchor="start"
+                    verticalAnchor="middle"
+                    dy="-0.15em"
+                    lineHeight={barHeight * 0.6}
+                    width={100}
+                    fill="white"
+                    line="black"
+                    x={xScale(entry.start) + 20}
+                    y={yScale(entry.track) + 0.6 * barHeight}
+                  >
+                    {entry.label}
+                  </VText>
+                );
+              })}
+            {filteredEventData.map((entry, i) => {
               return (
                 <g key={`${i}spot`}>
                   <circle
@@ -319,7 +426,7 @@ const InnerGraph = withTooltip(
               // hideAxisLine
               hideTicks
               scale={yScale}
-              tickFormat={(row) => trackTypes[row].label}
+              tickFormat={(row) => filteredTrackTypes[row].label}
               stroke={axisColor}
               tickStroke={axisColor}
               tickLabelProps={() => ({
@@ -394,14 +501,34 @@ const InnerGraph = withTooltip(
             fontSize: "14px",
           }}
         >
-          <LegendOrdinal
+          {/* <LegendOrdinal
             scale={colorScale}
             direction="row"
             shape="circle"
             labelMargin="0 15px 0 0"
             legendLabelProps={{ style: { color: "white", paddingRight: 8 } }}
             labelFormat={(l) => capitalize(l)}
-          />
+          /> */}
+          <Box direction="row" gap="small">
+            {Object.entries(eventTypes).map(([eventTypeKey, eventType]) => (
+              <Box
+                key={eventTypeKey}
+                onClick={() => toggleExpanded(eventTypeKey)}
+                focusIndicator={false}
+                direction="row"
+                align="center"
+                gap="xsmall"
+              >
+                <Selector
+                  color={eventType.color}
+                  selected={expanded.includes(eventTypeKey)}
+                />
+                <Text color="white " size="small">
+                  {eventType.label}
+                </Text>
+              </Box>
+            ))}
+          </Box>
         </div>
         {tooltipOpen && tooltipData && (
           <Tooltip top={tooltipTop} left={tooltipLeft} style={tooltipStyles}>
