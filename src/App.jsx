@@ -34,7 +34,22 @@ export default function App() {
       TIMELINE_TYPES.includes(state.programData[focusItem]?.type)
     ),shallow
   );
-  const focusData = useStore(state=>state.focus.map(f=>state.programData[f]));
+  const focusData = useStore(state=>state.focus.map(f=>state.programData[f]),shallow);
+
+  const issueData = useStore(state=>{
+    let issue = null
+    state.focus
+      .slice()
+      .reverse()
+      .some(x=>{
+        if (state.issues[x]) {
+          issue = state.issues[x]
+          return true
+        }
+        return false
+    });
+    return issue
+  },shallow)
 
   const [focusSteps, errorType] = useCompiledStore(useCallback(state=>{
     let steps = [];
@@ -225,6 +240,7 @@ export default function App() {
                     width={width}
                     height={height - 10}
                     focusSteps={focusSteps}
+                    issue={issueData}
                   />
                 ) : null
               }

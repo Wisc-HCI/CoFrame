@@ -112,22 +112,7 @@ const TimelineGraph = ({
     shallow
   );
 
-  const issueGraphContent = useStore((state) => {
-    let content = null;
-    state.focus
-      .slice()
-      .reverse()
-      .some((f) => {
-        if (state.issues[f]) {
-          content = state.issues[f];
-          return true;
-        } else {
-          return false;
-        }
-      });
-  }, shallow);
-
-  console.log(issueGraphContent);
+  // console.log(issueGraphContent); 
 
   return width < 10 && height < 40 ? null : (
     <InnerGraph
@@ -587,14 +572,6 @@ const InnerGraph = withTooltip(
                 <strong style={{ color: primaryColor }}>No actions</strong>
               )}
             </Box>
-
-            {/* <div style={{ color: colorScale(tooltipData.event) }}>
-                                <strong>{tooltipData.label}</strong>
-                            </div>
-                            <div>{tooltipData.end - tooltipData.start} sec</div>
-                            <div>
-                                <small>{capitalize(tooltipData.group)}</small>
-                            </div> */}
           </Tooltip>
         )}
       </div>
