@@ -8,6 +8,7 @@ import {
   HAND_PINCH_MAX_DISTANCE,
   HAND_PINCH_MIN_DISTANCE,
   // REFERENCEABLE_OBJECTS,
+  ROOT_PATH,
   STEP_TYPE,
 } from "./Constants";
 // import { merge } from "lodash";
@@ -370,9 +371,9 @@ export function durationEstimate(programSteps) {
   return programSteps[programSteps.length - 1].time / 1000;
 }
 
-export function getIDsAndStepsFromCompiled(program, programData, stepType, blockType) {
+export function getIDsAndStepsFromCompiled(program, programData, stepType, blockType, compiledData) {
   let ids = []
-  let steps = program.properties.compiled["{}"] ? program.properties.compiled["{}"].steps.filter(v => v.type === stepType) : [];
+  let steps =  compiledData[program.id]?.[ROOT_PATH]?.steps?.filter(v => v.type === stepType) || [];
   steps.forEach((step) => {
       if (step.source && programData[step.source].type === blockType && !ids.includes(step.source)) {
         ids.push(step.source);

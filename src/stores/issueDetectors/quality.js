@@ -1,7 +1,7 @@
 import { DATA_TYPES } from "simple-vp";
 import { generateUuid } from "../generateUuid";
 import { pickBy } from 'lodash';
-import { ERROR, MAX_GRIPPER_DISTANCE_DIFF, MAX_GRIPPER_ROTATION_DIFF, STATUS, STEP_TYPE } from "../Constants";
+import { ERROR, MAX_GRIPPER_DISTANCE_DIFF, MAX_GRIPPER_ROTATION_DIFF, ROOT_PATH, STATUS, STEP_TYPE } from "../Constants";
 import { addGraspPointToModel, addToEnvironModel, createEnvironmentModel, distance, getAllChildrenFromModel, getUserDataFromModel, queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
 import { Quaternion } from "three";
 
@@ -397,7 +397,7 @@ export const findEmptyBlockIssues = ({programData, program}) => {
     return [issues, {}];
 }
 
-export const findProcessLogicIssues = ({program, programData}) => { //init , started, waiting, stopped
+export const findProcessLogicIssues = ({program, programData, compiledData}) => { //init , started, waiting, stopped
     let issues = {};
     let machineState = [];
     let trackedActions = [];
@@ -408,7 +408,7 @@ export const findProcessLogicIssues = ({program, programData}) => { //init , sta
         machineState[tool.id] = 'init';
     })
 
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         let source = programData[step.source];
 
         if (step.type === STEP_TYPE.LANDMARK && source.type === 'machineInitType') {
@@ -506,7 +506,7 @@ export const findProcessLogicIssues = ({program, programData}) => { //init , sta
     return [issues, {}];
 }
 
-export const findThingFlowIssues = ({program, programData}) => {
+export const findThingFlowIssues = ({program, programData, compiledData}) => {
     let issues = {};
     let currentGrippedThing = '';
     let currentGraspPoint = '';
@@ -529,7 +529,7 @@ export const findThingFlowIssues = ({program, programData}) => {
     let moveGripperOrder = [];
     let gripperId = Object.values(programData).filter(d=>d.type==='gripperType'&&d.dataType===DATA_TYPES.INSTANCE)[0].id;
 
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         let source = programData[step.source];
 
 

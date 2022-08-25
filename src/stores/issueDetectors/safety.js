@@ -1,5 +1,5 @@
 import frameStyles from "../../frameStyles";
-import { STEP_TYPE } from "../Constants";
+import {  ROOT_PATH, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid";
 import { checkHandThresholds, stepsToEEPoseScores, getIDsAndStepsFromCompiled } from "../helpers";
 import { likProximityAdjustment } from "../../helpers/conversion";
@@ -7,7 +7,7 @@ import lodash from 'lodash';
 import { hexToRgb } from "../../helpers/colors";
 import { queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
 
-export const findEndEffectorPoseIssues = ({program, programData, settings}) => { // Requires trace pose information
+export const findEndEffectorPoseIssues = ({program, programData, settings, compiledData}) => { // Requires trace pose information
     let issues = {};
 
     let warningLevel = settings['eePoseWarn'].value;
@@ -17,7 +17,7 @@ export const findEndEffectorPoseIssues = ({program, programData, settings}) => {
     let gripper = lodash.filter(programData, function (v) { return v.type === 'gripperType'})[0];
     let robotAgent = lodash.filter(programData, function (v) { return v.type === 'robotAgentType'})[0];
 
-    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
+    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType", compiledData);
     let moveTrajectoryIDs = res[0];
     let sceneUpdates = res[1];
 
@@ -94,7 +94,7 @@ export const findEndEffectorPoseIssues = ({program, programData, settings}) => {
 }
 
 // Requires collision graders
-export const findCollisionIssues = ({program, programData, settings, environmentModel}) => { 
+export const findCollisionIssues = ({program, programData, settings, environmentModel, compiledData}) => { 
     let issues = {};
     return [issues, {}];
 
@@ -135,7 +135,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
     let positionData = {};
     let moveTrajectoryIDs = [];
 
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source]?.type === "moveTrajectoryType") {
             if (!(step.source in timeData)) {
                 moveTrajectoryIDs.push(step.souce);
@@ -324,7 +324,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
 }
 
 // Requires occupancy zone graders
-export const findOccupancyIssues = ({program, programData, settings, environmentModel}) => {
+export const findOccupancyIssues = ({program, programData, settings, environmentModel, compiledData}) => {
     let issues = {};
 
     const warningLevel = settings['occupancyWarn'].value;
@@ -345,7 +345,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
 
     // Build timeline of move trajectory steps
     let moveIds = [];
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source]?.type === 'moveTrajectoryType') {
             if (!(moveIds.includes(step.source))) {
                 moveIds.push(step.source);
@@ -450,7 +450,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
     return [issues, {}];
 }
 
-export const findPinchPointIssues = ({program, programData}) => { // Requires pinch-point graders
+export const findPinchPointIssues = ({program, programData, compiledData}) => { // Requires pinch-point graders
     let issues = {};
     let addressed = [];
 
@@ -458,7 +458,7 @@ export const findPinchPointIssues = ({program, programData}) => { // Requires pi
     let timeData = {};
     let errorSteps = [];
 
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source].type === 'moveTrajectoryType') {
             let hasError = false;
             let proxData = step.data?.proximity;
@@ -519,11 +519,11 @@ export const findPinchPointIssues = ({program, programData}) => { // Requires pi
     return [issues, {}];
 }
 
-export const findThingSafetyIssues = ({program, programData}) => { // May require trace pose information
+export const findThingSafetyIssues = ({program, programData, compiledData}) => { // May require trace pose information
     let issues = {};
     let trackedIds = [];
 
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         let source = programData[step.source];
 
         if (!trackedIds.includes(step.source) &&

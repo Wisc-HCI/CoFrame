@@ -240,7 +240,7 @@ export default function App() {
                     width={width}
                     height={height - 10}
                     focusSteps={focusSteps}
-                    issue={issueData}
+                    issue={issueData?.graphData?.isTimeseries ? issueData.graphData : null}
                   />
                 ) : null
               }

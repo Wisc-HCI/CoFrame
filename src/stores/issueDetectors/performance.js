@@ -1,6 +1,6 @@
 import { DATA_TYPES } from "simple-vp";
 import frameStyles from "../../frameStyles";
-import { STEP_TYPE } from "../Constants";
+import { ROOT_PATH, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import { anyReachable, getIDsAndStepsFromCompiled, verticesToVolume } from "../helpers";
 import { distance, queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
@@ -49,7 +49,7 @@ export const findReachabilityIssues = ({programData}) => { // requires joint_pro
 }
 
 // requires trace processor, joint speed grader (can also use intermediate type)
-export const findJointSpeedIssues = ({program, programData, settings, environmentModel}) => {
+export const findJointSpeedIssues = ({program, programData, settings, environmentModel, compiledData}) => {
     let issues = {};
 
     const warningLevel = settings["jointSpeedWarn"].value * settings['jointMaxSpeed'].value;
@@ -71,7 +71,7 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
 
     let moveTrajectorySteps = {};
     let moveIds = [];
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source].type === 'moveTrajectoryType') {
             if (!(moveIds.includes(step.source))) {
                 moveIds.push(step.source);
@@ -200,13 +200,13 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
 }
 
 // requires trace processor, end effector grader + intermediate end effector speed interediate type
-export const findEndEffectorSpeedIssues = ({program, programData, settings, environmentModel}) => {
+export const findEndEffectorSpeedIssues = ({program, programData, settings, environmentModel, compiledData}) => {
     let issues = {};
 
     const warningLevel = settings['eeSpeedWarn'].value;
     const errorLevel = settings['eeSpeedErr'].value;
 
-    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
+    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType", compiledData);
     let gripperId = Object.values(programData).filter(d=>d.type==='gripperType'&&d.dataType===DATA_TYPES.INSTANCE)[0].id;
     let moveTrajectoryIDs = res[0];
     let sceneUpdates = res[1];
@@ -307,7 +307,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
     return [issues, {}];
 }
 
-export const findPayloadIssues = ({program, programData, settings}) => { // Shouldn't change during a trajectory so more of a check on thing weight vs. robot payload (e.g., 3kg in 1g)
+export const findPayloadIssues = ({program, programData, settings, compiledData}) => { // Shouldn't change during a trajectory so more of a check on thing weight vs. robot payload (e.g., 3kg in 1g)
     let issues = {};
 
     let warningLevel = settings["payloadWarn"].value;
@@ -315,7 +315,7 @@ export const findPayloadIssues = ({program, programData, settings}) => { // Shou
 
     let tracked = [];
 
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         let source = programData[step.source];
 
         if (step.type === STEP_TYPE.SCENE_UPDATE && source && source.type === "moveGripperType") {
@@ -361,7 +361,7 @@ export const findPayloadIssues = ({program, programData, settings}) => { // Shou
 }
 
 // Requires a convex hall operation on joint frames in traces. This volume can be compared against whole workcell (fraction) and can be used for intersection with extruded human occupancy zones 
-export const findSpaceUsageIssues = ({program, programData, stats, settings}) => {
+export const findSpaceUsageIssues = ({program, programData, stats, settings, compiledData}) => {
     let issues = {};
     let addStats = {};
 
@@ -373,7 +373,7 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings}) =>
         })[0];
     let robotWorkZoneVolume = robotWorkZone.properties.scale.x * robotWorkZone.properties.scale.y * robotWorkZone.properties.scale.z;
 
-    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType");
+    let res = getIDsAndStepsFromCompiled(program, programData, STEP_TYPE.SCENE_UPDATE, "moveTrajectoryType", compiledData);
     let moveTrajectoryIDs = res[0];
     let sceneUpdates = res[1];
 

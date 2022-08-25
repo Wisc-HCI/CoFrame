@@ -17,7 +17,8 @@ import {
   getMaxForAllSeries,
   getMinForAllSeries,
   collapseSeries,
-  smoothInterpolateScalar
+  smoothInterpolateScalar,
+  getBlocks
 } from "../helpers/graphs";
 import shallow from "zustand/shallow";
 import styled from "@emotion/styled";
@@ -200,7 +201,7 @@ const InnerGraph = withTooltip(
       (state) => [state.pause, state.play, state.reset],
       shallow
     );
-
+    
     const issueTimeseriesData = issueData?.series || [];
     // const issueXAxisLabel = issueData?.xAxisLabel || "";
     // const issueYAxisLabel = issueData?.yAxisLabel || "";
@@ -208,7 +209,7 @@ const InnerGraph = withTooltip(
     // const issueUnits = issueData?.units || "";
     // const issueDecimals = issueData?.decimals || 0;
     const issueKeys = issueData
-      ? Object.keys(issueTimeseriesData[0]).filter((k) => k !== "x")
+      ? Object.keys(issueTimeseriesData[0] || {}).filter((k) => k !== "x")
       : [];
     const collapsedSeries = collapseSeries(issueTimeseriesData, issueKeys);
 
@@ -345,7 +346,7 @@ const InnerGraph = withTooltip(
               );
             })}
             {blocksAtThreshold.map((t, i) => (
-              <>
+              <g key={`issue-${i}`}>
                 {t.map((b, j) => (
                   <rect
                     key={`${i}-${j}`}
@@ -353,11 +354,11 @@ const InnerGraph = withTooltip(
                     y={yScale(filteredBlockData[0].track) + (3 * barHeight) / 4}
                     width={xScale(b.x1 - b.x0)}
                     height={barHeight / 4}
-                    fill={thresholds[i].color}
+                    fill={issueThresholds[i].color}
                     rx={barHeight / 8}
                   />
                 ))}
-              </>
+              </g>
             ))}
             {filteredBlockData
               .filter((entry) => xScale(entry.end - entry.start) > 100)

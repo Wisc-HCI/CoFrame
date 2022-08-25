@@ -251,3 +251,45 @@ export const getMaxForAllSeries = (series, keys) =>
   Math.max(...series.map((s) => Math.max(...keys.map((k) => s[k]))));
 export const getMinForAllSeries = (series, keys) =>
   Math.min(...series.map((s) => Math.min(...keys.map((k) => s[k]))));
+
+export const getBlocks = (series, threshold) => {
+  let blocks = [];
+  let open = false;
+  let lastBlock = null;
+  let lastData = null;
+  series.forEach((s) => {
+    if (!lastData && s.y >= threshold.range[0] && s.y <= threshold.range[1]) {
+      // Series data is within range, so start a new block series
+      // console.log("series in range");
+      lastBlock = { x0: 0, x1: 0 };
+      open = true;
+    } else if (
+      s.y >= threshold.range[0] &&
+      s.y <= threshold.range[1] &&
+      !open
+    ) {
+      // The series has started to become in range.
+      // console.log("series in range");
+
+      // const changeX = findChange(lastData, s, threshold, descriptor);
+      // console.log("open", changeX);
+      lastBlock = { x0: s.x, x1: s.x };
+      open = true;
+    } else if ((s.y < threshold.range[0] || s.y > threshold.range[1]) && open) {
+      // The series has gone out of range
+      // console.log("series out of range");
+      // const changeX = findChange(lastData, s, threshold, descriptor);
+      blocks.push({ ...lastBlock, x1: s.x });
+      lastBlock = null;
+      open = false;
+      // descriptor = s.y < threshold.range[0] ? "below" : "above";
+      // console.log(`series out of range`);
+    }
+    lastData = s;
+  });
+  if (open) {
+    // console.log('hanging')
+    blocks.push({ ...lastBlock, x1: lastData.x });
+  }
+  return blocks;
+};

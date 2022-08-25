@@ -1,13 +1,13 @@
 import frameStyles from "../../frameStyles";
-import { STEP_TYPE } from "../Constants";
+import { ROOT_PATH, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import {idleTimeEstimate, durationEstimate} from "../helpers"
 
 // Requires trace timing + delay and machine wait primitives (start computation after move_unplanned in initialize)
-export const findCycleTimeIssues = ({program, stats}) => {
+export const findCycleTimeIssues = ({program, stats, compiledData}) => {
     let issues = {};
 
-    const estimate = durationEstimate(program.properties.compiled["{}"].steps);
+    const estimate = durationEstimate(compiledData[program.id]?.[ROOT_PATH]?.steps);
 
     // get prior values
     let priorData = [];
@@ -53,10 +53,10 @@ export const findCycleTimeIssues = ({program, stats}) => {
     return [issues, {cycleTime: estimate}];
 }
 // Use delay and machine wait primitives (delays can be tweaked if application acceptable)
-export const findIdleTimeIssues = ({programData, program, stats}) => {
+export const findIdleTimeIssues = ({programData, program, stats, compiledData}) => {
     let issues = {};
 
-    const estimate = idleTimeEstimate(programData, program.properties.compiled["{}"].steps);
+    const estimate = idleTimeEstimate(programData, compiledData[program.id]?.[ROOT_PATH]?.steps);
 
     // get prior values
     let priorData = [];
@@ -102,10 +102,10 @@ export const findIdleTimeIssues = ({programData, program, stats}) => {
     return [issues, {idleTime: estimate}];
 }
 // Retrun on Investment
-export const findReturnOnInvestmentIssues = ({programData, program, stats, settings}) => {
+export const findReturnOnInvestmentIssues = ({programData, program, stats, settings, compiledData}) => {
     let issues = {};
     let newStats = {}
-
+    
     // get prior values
     let priorData = [];
     let i = 0;
@@ -138,7 +138,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     let previousJoints = {};
     let previousVelocity = {};
     let previousTimeStep = 0;
-    program.properties.compiled["{}"].steps.forEach(step => {
+    compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         // If the next action is a move trajectory, start evaluating the wear and tear on the moving joints
         if(step.type === STEP_TYPE.ACTION_START && "moveTrajectoryType" === programData[step.source].type) {
             trajectoryUpdate = true;
