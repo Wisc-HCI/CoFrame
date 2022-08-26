@@ -78,6 +78,27 @@ const swapLocations = (state, id) => {
   return state
 }
 
+const updatePartialSceneState = (state, sceneKey, obj) => {
+  const keys = obj ? Object.keys(obj) : [];
+  keys.forEach(key => {
+    const objKeys = Object.keys(obj[key]);
+    objKeys.forEach(objKey => {
+      state[sceneKey][key][objKey] = obj[key][objKey];
+    });
+  });
+
+  return state;
+}
+
+const updateSceneState = (state, sceneKey, obj) => {
+  const keys = obj ? Object.keys(obj) : [];
+  keys.forEach(key => {
+      state[sceneKey][key] = obj[key];
+    });
+
+  return state;
+}
+
 export const GuiSlice = (set, get) => ({
   // EDITOR/SETUP/MAIN
   // The frame specifies the expert (color) frame
@@ -198,6 +219,20 @@ export const GuiSlice = (set, get) => ({
     state.tfVisible = visible;
   }),
   robotPreviewVisible: false,
+  applyPartialSceneUpdate: ({tfs, items, lines, hulls, texts}) => set(state => {
+    state = updatePartialSceneState(state, 'tfs', tfs);
+    state = updatePartialSceneState(state, 'items', items);
+    state = updatePartialSceneState(state, 'lines', lines);
+    state = updatePartialSceneState(state, 'hulls', hulls);
+    state = updatePartialSceneState(state, 'texts', texts);
+  }),
+  applySceneUpdate: ({tfs, items, lines, hulls, texts}) => set(state => {
+    state = updateSceneState(state, 'tfs', tfs);
+    state = updateSceneState(state, 'items', items);
+    state = updateSceneState(state, 'lines', lines);
+    state = updateSceneState(state, 'hulls', hulls);
+    state = updateSceneState(state, 'texts', texts);
+  }),
   setRobotPreviewVisible: (visible) => set(state => {
     state.robotPreviewVisible = visible;
   }),

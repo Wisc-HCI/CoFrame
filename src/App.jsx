@@ -64,7 +64,7 @@ export default function App() {
         ) &&
         TIMELINE_TYPES.includes(f.type)
       ) {
-        if (Object.keys(state[f.id]).length === 1) {
+        if (state[f.id] && Object.keys(state[f.id]).length === 1) {
           steps =
           state[f.id][
               Object.keys(state[f.id])[0]

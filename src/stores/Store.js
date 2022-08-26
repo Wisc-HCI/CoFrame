@@ -9,13 +9,13 @@ import {EvdSlice} from './EvdSlice';
 import {RosSlice} from './RosSlice';
 import {ProgrammingSlice} from 'simple-vp';
 import { ProgrammingSliceOverride } from './ProgrammingSlice';
-import {computedSlice} from './ComputedSlice';
+import { computedSliceSubscribe } from './ComputedSlice';
 import { SceneSlice } from 'robot-scene';
 import lodash from 'lodash';
 import KnifeAssembly from './Knife_Assembly_Simple_VP.json';
 import PandaDemo from './Panda_Demo.json'
 import { STATUS } from './Constants';
-import {performCompileProcess} from './planner-worker'
+import {performCompileProcess} from './planner-worker';
 
 // const immer = (config) => (set, get, api) =>
 //   config(
@@ -43,6 +43,9 @@ const immerStore = immer(store);
 const subscribeStore = subscribeWithSelector(immerStore);
 
 const useStore = create(subscribeStore);
+
+// Create subscribers for scene data
+computedSliceSubscribe(useStore);
 
 useStore.subscribe(state=>
   lodash.mapValues(state.programData,(value)=>{
