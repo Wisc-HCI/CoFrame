@@ -1,5 +1,10 @@
 import create from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
 
 const compiledStore = (set,get) => ({});
 
-export default create(compiledStore);
+const subscribeStore = subscribeWithSelector(compiledStore);
+
+const useCompiledStore = create(subscribeStore);
+
+export default useCompiledStore;

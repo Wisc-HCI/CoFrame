@@ -13,7 +13,7 @@ import {
     pinchpointAnimationFromExecutable
 } from '../helpers/computedSlice';
 import { DATA_TYPES } from 'simple-vp';
-import { STEP_TYPE } from './Constants';
+import { ROOT_PATH, STEP_TYPE } from './Constants';
 import lodash from 'lodash';
 import { createEnvironmentModel, queryWorldPose, updateEnvironModel } from '../helpers/geometry';
 import shallow from 'zustand/shallow';
@@ -581,6 +581,7 @@ export const computedSliceSubscribe = (useStore) => {
             const state = useStore.getState();
             let lines = {};
             let hulls = {};
+            let items = {};
             let different = false;
             let updateProps = false;
             let deepestIssue = null;
@@ -664,11 +665,30 @@ export const computedSliceSubscribe = (useStore) => {
                     } 
                 }
             }
+
+            if (!shallow(deepestIssue, previousDeepestIssue) &&
+                ((deepestIssue && deepestIssue.code === 'pinchPoints') || (previousDeepestIssue && previousDeepestIssue.code === 'pinchPoints')) &&
+                ((deepestIssue && state.programData[deepestIssue.focus[0]]) || (previousDeepestIssue && state.programData[previousDeepestIssue.focus[0]]))) {
+                
+                updateProps = true;
+                const robotAgent = Object.values(state.programData).filter(v => v.type === 'robotAgentType')[0];
+                const moveID = deepestIssue ? deepestIssue.focus[0] : previousDeepestIssue.focus[0];
+                robotAgent.properties.pinchPointPairLinks.forEach(({link1, link2}) => {
+                    const pinchID = moveID + link1 + "___" + link2;
+                    if (state.items[pinchID]) {
+                        items[pinchID] = {
+                            hidden: previousDeepestIssue && previousDeepestIssue.code === 'pinchPoints'
+                        }
+                    }
+                });
+                
+
+            }
             
             if (!updateProps && different) {
-                useStore.getState().applySceneUpdate({lines, hulls});
+                useStore.getState().applySceneUpdate({items, lines, hulls});
             } else if (updateProps) {
-                useStore.getState().applyPartialSceneUpdate({lines, hulls});
+                useStore.getState().applyPartialSceneUpdate({items, lines, hulls});
             }
         },
         { equalityFn: csArrayEquality }
@@ -977,6 +997,10 @@ export const computedSliceSubscribe = (useStore) => {
                         hidden: hidden
                     }
 
+                    const eePoseID = key.concat('-eePose');
+                    if (state.lines[eePoseID]) {
+                        lines[eePoseID] = {hidden: hidden}
+                    }
                 } else if (!previous[key] || (JSON.stringify(current[key]) !== JSON.stringify(previous[key]))) {
                     different = true;
             
@@ -1007,24 +1031,7 @@ export const computedSliceSubscribe = (useStore) => {
                             color
                         }
                     })
-            
-                    // let program = lodash.filter(state.programData, function (v) { return v.type === 'programType' && v.dataType === DATA_TYPES.INSTANCE })[0];
-                    // let steps = program.properties.compiled["{}"]?.steps;
-                    // let sceneTmp = (steps && moveTrajectoryId) ? steps.filter(step => step.type === STEP_TYPE.SCENE_UPDATE && step.source === moveTrajectoryId) : [];
-                    // let programModel = createEnvironmentModel(state.programData);
-                    // let gripOffsetID = gripperAgent.id + '-gripOffset';
-                    // let eePoseVerts = sceneTmp.map(sceneUpdate => {
-                    //     Object.keys(sceneUpdate.data.links).forEach(link => {
-                    //         programModel = updateEnvironModel(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
-                    //     });
-                    //     let { position, rotation } = queryWorldPose(programModel, gripOffsetID, '');
-                    //     return {
-                    //         position: position,
-                    //         color: { ...DEFAULT_TRAJECTORY_COLOR }
-                    //     }
-                    // });
-                    // lines[entry.id.concat('-eePose')] = { name: entry.name.concat('-eePose'), vertices: eePoseVerts, frame: 'world', hidden, width: 2 };
-            
+
                     lines[entry.id] = { name: entry.name, vertices, frame: 'world', hidden, width: 2 }
                 }
             });
@@ -1037,11 +1044,121 @@ export const computedSliceSubscribe = (useStore) => {
         },
         { equalityFn: csArrayEquality }
     );
+
+    // Lines
+    // BUG: TODO: lines are being removed, as if the state is being reverted
+    // Very hacky
+    useStore.subscribe(state => 
+        state.lines,
+        (cur, prev) => {
+            let lines = {}
+            let changed = false
+            Object.keys(prev).forEach(key => {
+                if (prev[key] && !cur[key]) {
+                    changed = true;
+                    lines[key] = prev[key];
+                }
+            })
+
+            if (changed) {
+                useStore.getState().applySceneUpdate({lines})
+            }
+        },
+        { equalityFn: shallow }
+    )
+
+    // Items
+    // BUG: TODO: items are being removed, as if the state is being reverted
+    // Very hacky
+    useStore.subscribe(state => 
+        state.items,
+        (cur, prev) => {
+            let items = {}
+            let changed = false
+
+            Object.keys(prev).forEach(key => {
+                if (prev[key] && !cur[key]) {
+                    changed = true;
+                    items[key] = prev[key];
+                }
+            })
+
+            if (changed) {
+                useStore.getState().applySceneUpdate({items})
+            }
+        },
+        { equalityFn: shallow }
+    )
 }
 
 // Subscribes to the compiled store
-export const computedSliceCompiledSubscribe = (useStore) => {
+export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
+    const programID = Object.values(useStore.getState().programData).filter((v) => v.type === 'programType')[0].id;
+    const robotAgent = Object.values(useStore.getState().programData).filter(v => v.type === 'robotAgentType')[0];
 
+    useCompiledStore.subscribe(state => 
+        [state[programID]?.[ROOT_PATH]?.steps],
+        (current, previous) => {
+            let lines = {};
+            let items = {};
+            const steps = current[0];
+            const state = useCompiledStore.getState();
+            const programData = useStore.getState().programData;
+            const trajectories = Object.values(programData).filter(v => v.dataType === DATA_TYPES.INSTANCE && v.type === 'trajectoryType');
+            const gripperAgent = Object.values(programData).filter(v => v.dataType === DATA_TYPES.INSTANCE && v.type === 'gripperType')[0];
+            const keys = trajectories.map(t => {return t.id});
+            const focus = useStore.getState().focus;
+
+            keys.forEach(key => {
+                let moveTrajectoryId = null;
+                const moves = Object.values(programData).filter(v => v.dataType === DATA_TYPES.INSTANCE && v.type === 'moveTrajectoryType');
+                moves.forEach(move =>{
+                    if (move.properties?.trajectory === key) {
+                        moveTrajectoryId = move.id;
+                    }
+                })
+
+                let sceneTmp = (steps && moveTrajectoryId) ? steps?.filter(step => step.type === STEP_TYPE.SCENE_UPDATE && step.source === moveTrajectoryId) : [];
+                let programModel = createEnvironmentModel(programData);
+                let gripOffsetID = gripperAgent.id + '-gripOffset';
+                const hidden = (!focus.includes(key) && !focus.includes(moveTrajectoryId));
+                let eePoseVerts = sceneTmp.map(sceneUpdate => {
+                    Object.keys(sceneUpdate.data.links).forEach(link => {
+                        programModel = updateEnvironModel(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
+                    });
+                    let { position, rotation } = queryWorldPose(programModel, gripOffsetID, '');
+                    return {
+                        position: position,
+                        color: { ...DEFAULT_TRAJECTORY_COLOR }
+                    }
+                });
+                const name = programData[key].name
+                lines[key.concat('-eePose')] = { name: name.concat('-eePose'), vertices: eePoseVerts, frame: 'world', hidden, width: 2 };  
+            })
+
+
+            const moveTrajectories = Object.values(programData).filter(v => v.dataType === DATA_TYPES.INSTANCE && v.type === 'moveTrajectoryType');
+            const moveKeys = moveTrajectories.map(m => {return m.id});
+            moveKeys.forEach(moveID => {
+                if (state[moveID]) {
+                    const pinchPointAnimations = pinchpointAnimationFromExecutable(robotAgent, state[moveID]?.[ROOT_PATH]?.steps);
+                    Object.values(pinchPointAnimations).forEach(field => {
+                        items[moveID + field.id] = {
+                            shape: 'sphere',
+                            rotation: { w: 1, x: 0, y: 0, z: 0 },
+                            frame: field.frame,
+                            position: field.position,
+                            color: field.color,
+                            scale: field.scale,
+                            hidden: true
+                        }
+                    });
+                }
+            });
+            useStore.getState().applySceneUpdate({items, lines});
+        },
+        { equalityFn: csArrayEquality }
+    );
 }
 
 
@@ -1111,19 +1228,6 @@ export const computedSlice = (state) => {
                     });
                     focusedTrajectoryChildren.push(state.programData[trajectory.properties.endLocation].ref);
                 }
-            }
-        });
-    }
-
-
-    // Pinch Point visualizations
-    if (deepestIssue && deepestIssue.code === 'pinchPoints' && state.programData[deepestIssue.focus[0]]) {
-        const pinchPointAnimations = pinchpointAnimationFromExecutable(robotAgent, state.programData[deepestIssue.focus[0]].properties.compiled["{}"].steps)
-        Object.keys(pinchPointAnimations).forEach(field => {
-            items[field] = {
-                shape: 'sphere',
-                rotation: { w: 1, x: 0, y: 0, z: 0 },
-                ...pinchPointAnimations[field]
             }
         });
     }

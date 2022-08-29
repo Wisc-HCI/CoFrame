@@ -157,9 +157,11 @@ const stepsToAnimatedPinchPoints = (steps) => {
         });
     });
 
-    const animatedPinchPoints = map(
-        tempAnimatedPinchPoints,
-        (pinchPoint) => ({
+    let animatedPinchPoints = {};
+    Object.keys(tempAnimatedPinchPoints).forEach(key => {
+        let pinchPoint = tempAnimatedPinchPoints[key];
+        animatedPinchPoints[key] = {
+            id: key,
             frame: "world",
             position: {
                 x: interpolateScalar(timesteps, pinchPoint.position.x),
@@ -177,8 +179,8 @@ const stepsToAnimatedPinchPoints = (steps) => {
                 b: interpolateScalar(timesteps, pinchPoint.color.b),
                 a: 0.3,
             },
-        })
-    );
+        }
+    });
     return animatedPinchPoints;
 };
 
