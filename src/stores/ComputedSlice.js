@@ -18,9 +18,61 @@ import lodash from 'lodash';
 import { createEnvironmentModel, queryWorldPose, updateEnvironModel } from '../helpers/geometry';
 import shallow from 'zustand/shallow';
 import { csArrayEquality } from '../helpers/performance';
+import useCompiledStore from './CompiledStore';
 
 // Subscribes to the non-compiled store
 export const computedSliceSubscribe = (useStore) => {
+
+    const createFixtureLink = (state, entry, key, items, tfs) => {
+        const itemKey = entry.id;
+        let highlighted = false;
+        let meshObject = state.programData[entry.properties.mesh];
+        let collisionObject = entry.properties.collision ? state.programData[entry.properties.collision] : null;
+        if (entry.type === 'fixtureType' && state.focus.includes(entry.id)) {
+            highlighted = true
+        } else if (entry.type === "linkType" && state.focus.includes(entry.properties.agent)) {
+            highlighted = true
+        }
+        tfs[entry.id] = {
+            frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
+            position: entry.properties.position,
+            rotation: entry.properties.rotation,
+            transformMode: itemTransformMethod(state, entry.id),
+            scale: { x: 1, y: 1, z: 1 }
+        };
+
+        if (meshObject) {
+            items[itemKey] = {
+                shape: meshObject.properties.keyword,
+                name: entry.name,
+                frame: entry.id,
+                position: meshObject.properties.position,
+                rotation: meshObject.properties.rotation,
+                color: meshObject.properties.color,//{r:10,g:10,b:10,a:0.35},//
+                scale: meshObject.properties.scale,
+                highlighted
+            }
+        }
+
+        if (collisionObject) {
+            collisionObject.properties.componentShapes.forEach((shape) => {
+                let componentShape = state.programData[shape];
+                items[entry.id + shape] = {
+                    shape: componentShape.properties.keyword,
+                    name: componentShape.name,
+                    frame: entry.id,
+                    position: componentShape.properties.position,
+                    rotation: componentShape.properties.rotation,
+                    scale: componentShape.properties.scale,
+                    color: { r: 250, g: 0, b: 0, a: 0.6 },
+                    transformMode: "inactive",
+                    highlighted: false,
+                    wireframe: true,
+                    hidden: !state.collisionsVisible
+                };
+            })
+        }
+    }
 
     const fixtureAndLink = (update, prev) => {
         const current = update[0];
@@ -62,62 +114,14 @@ export const computedSliceSubscribe = (useStore) => {
                 }
             } else if (!previous[key] || (JSON.stringify(current[key]) !== JSON.stringify(previous[key]))) {
                 different = true;
-                const entry = current[key];
-                const itemKey = entry.id;
-                let highlighted = false;
-                let meshObject = state.programData[entry.properties.mesh];
-                let collisionObject = entry.properties.collision ? state.programData[entry.properties.collision] : null;
-                if (entry.type === 'fixtureType' && state.focus.includes(entry.id)) {
-                    highlighted = true
-                } else if (entry.type === "linkType" && state.focus.includes(entry.properties.agent)) {
-                    highlighted = true
-                }
-                tfs[entry.id] = {
-                    frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
-                    position: entry.properties.position,
-                    rotation: entry.properties.rotation,
-                    transformMode: itemTransformMethod(state, entry.id),
-                    scale: { x: 1, y: 1, z: 1 }
-                };
-        
-                if (meshObject) {
-                    items[itemKey] = {
-                        shape: meshObject.properties.keyword,
-                        name: entry.name,
-                        frame: entry.id,
-                        position: meshObject.properties.position,
-                        rotation: meshObject.properties.rotation,
-                        color: meshObject.properties.color,//{r:10,g:10,b:10,a:0.35},//
-                        scale: meshObject.properties.scale,
-                        highlighted
-                    }
-                }
-        
-                if (collisionObject) {
-                    collisionObject.properties.componentShapes.forEach((shape) => {
-                        let componentShape = state.programData[shape];
-                        items[entry.id + shape] = {
-                            shape: componentShape.properties.keyword,
-                            name: componentShape.name,
-                            frame: entry.id,
-                            position: componentShape.properties.position,
-                            rotation: componentShape.properties.rotation,
-                            scale: componentShape.properties.scale,
-                            color: { r: 250, g: 0, b: 0, a: 0.6 },
-                            transformMode: "inactive",
-                            highlighted: false,
-                            wireframe: true,
-                            hidden: !state.collisionsVisible
-                        };
-                    })
-                }
+                createFixtureLink(state, current[key], key, items, tfs);
             }
         });
 
         if (!updateProps && different) {
-            useStore.getState().applySceneUpdate({tfs, items});
+            state.applySceneUpdate({tfs, items});
         } else if (updateProps) {
-            useStore.getState().applyPartialSceneUpdate({tfs, items});
+            state.applyPartialSceneUpdate({tfs, items});
         }
     };
 
@@ -189,6 +193,72 @@ export const computedSliceSubscribe = (useStore) => {
         { equalityFn: shallow }
     );
 
+    const createMachineTool = (state, entry, items, tfs) => {
+        const entryProps = entry.properties;
+        const meshObject = state.programData[entryProps.mesh];
+        const collisionObject = state.programData[entryProps.collision];
+        const graspPoints = entryProps.graspPoints ? entryProps.graspPoints : [];
+
+        tfs[entry.id] = {
+            frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
+            position: entry.properties.position,
+            rotation: entry.properties.rotation,
+            transformMode: itemTransformMethod(state, entry.id),
+            scale: { x: 1, y: 1, z: 1 }
+        }
+
+        items[entry.id] = {
+            shape: meshObject.properties.keyword,
+            name: entry.name,
+            frame: entry.id,
+            position: meshObject.properties.position,
+            rotation: meshObject.properties.rotation,
+            scale: meshObject.properties.scale,
+            highlighted: state.focus.includes(entry.id)
+        }
+
+        // Now add collisions
+        collisionObject?.properties.componentShapes.forEach((collisionShapeId) => {
+            let collisionShape = state.programData[collisionShapeId];
+            items[entry.id + collisionShapeId] = {
+                shape: collisionShape.properties.keyword,
+                name: collisionShape.id,
+                frame: entry.id,
+                position: collisionShape.properties.position,
+                rotation: collisionShape.properties.rotation,
+                scale: collisionShape.properties.scale,
+                extraParams: collisionShape.properties.extraParams,
+                transformMode: 'inactive',
+                highlighted: false,
+                color: { r: 250, g: 0, b: 0, a: 0.6 },
+                wireframe: true,
+                hidden: !state.collisionsVisible
+            }
+        });
+
+        graspPoints.forEach((gp) => {
+            const gpData = state.programData[gp];
+            tfs['tool-viz-' + gp] = {
+                frame: entry.id,
+                position: gpData.properties.position,
+                rotation: gpData.properties.rotation,
+                transformMode: itemTransformMethod(state, gp),
+                scale: { x: 1, y: 1, z: 1 }
+            }
+            items['tool-viz-' + gp] = {
+                frame: 'tool-viz-' + gp,
+                shape: "package://app/meshes/LocationMarker.stl",
+                position: { x: 0, y: 0, z: 0 },
+                rotation: { x: 0, y: 0, z: 0, w: 1 },
+                scale: { x: 1, y: 1, z: 1 },
+                highlighted: false,
+                showName: false,
+                color: { r: 0, g: 200, b: 0, a: 0.2 },
+                hidden: !(state.focus.includes(entry.id) || state.focus.includes(gp))
+            }
+        })
+    }
+
     const machineAndTool = (update, prev) => {
         const current = update[0];
         const previous = prev[0];
@@ -233,77 +303,14 @@ export const computedSliceSubscribe = (useStore) => {
                 });
             } else if (!previous[key] || (JSON.stringify(current[key]) !== JSON.stringify(previous[key]))) {
                 different = true;
-                const entry = current[key];
-                const entryProps = entry.properties;
-                const meshObject = state.programData[entryProps.mesh];
-                const collisionObject = state.programData[entryProps.collision];
-                const graspPoints = entryProps.graspPoints ? entryProps.graspPoints : [];
-
-                tfs[entry.id] = {
-                    frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
-                    position: entry.properties.position,
-                    rotation: entry.properties.rotation,
-                    transformMode: itemTransformMethod(state, entry.id),
-                    scale: { x: 1, y: 1, z: 1 }
-                }
-
-                items[entry.id] = {
-                    shape: meshObject.properties.keyword,
-                    name: entry.name,
-                    frame: entry.id,
-                    position: meshObject.properties.position,
-                    rotation: meshObject.properties.rotation,
-                    scale: meshObject.properties.scale,
-                    highlighted: state.focus.includes(entry.id)
-                }
-
-                // Now add collisions
-                collisionObject?.properties.componentShapes.forEach((collisionShapeId) => {
-                    let collisionShape = state.programData[collisionShapeId];
-                    items[entry.id + collisionShapeId] = {
-                        shape: collisionShape.properties.keyword,
-                        name: collisionShape.id,
-                        frame: entry.id,
-                        position: collisionShape.properties.position,
-                        rotation: collisionShape.properties.rotation,
-                        scale: collisionShape.properties.scale,
-                        extraParams: collisionShape.properties.extraParams,
-                        transformMode: 'inactive',
-                        highlighted: false,
-                        color: { r: 250, g: 0, b: 0, a: 0.6 },
-                        wireframe: true,
-                        hidden: !state.collisionsVisible
-                    }
-                });
-
-                graspPoints.forEach((gp) => {
-                    const gpData = state.programData[gp];
-                    tfs['tool-viz-' + gp] = {
-                        frame: entry.id,
-                        position: gpData.properties.position,
-                        rotation: gpData.properties.rotation,
-                        transformMode: itemTransformMethod(state, gp),
-                        scale: { x: 1, y: 1, z: 1 }
-                    }
-                    items['tool-viz-' + gp] = {
-                        frame: 'tool-viz-' + gp,
-                        shape: "package://app/meshes/LocationMarker.stl",
-                        position: { x: 0, y: 0, z: 0 },
-                        rotation: { x: 0, y: 0, z: 0, w: 1 },
-                        scale: { x: 1, y: 1, z: 1 },
-                        highlighted: false,
-                        showName: false,
-                        color: { r: 0, g: 200, b: 0, a: 0.2 },
-                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(gp))
-                    }
-                })
+                createMachineTool(state, current[key], items, tfs) 
             }
         });
         
         if (!updateProps && different) {
-            useStore.getState().applySceneUpdate({tfs, items});
+            state.applySceneUpdate({tfs, items});
         } else if (updateProps) {
-            useStore.getState().applyPartialSceneUpdate({tfs, items});
+            state.applyPartialSceneUpdate({tfs, items});
         }
     };
 
@@ -483,9 +490,9 @@ export const computedSliceSubscribe = (useStore) => {
             });
             
             if (!updateProps && different) {
-                useStore.getState().applySceneUpdate({tfs, items});
+                state.applySceneUpdate({tfs, items});
             } else if (updateProps) {
-                useStore.getState().applyPartialSceneUpdate({tfs, items});
+                state.applyPartialSceneUpdate({tfs, items});
             }
         },
         { equalityFn: csArrayEquality }
@@ -565,9 +572,9 @@ export const computedSliceSubscribe = (useStore) => {
             });
             
             if (!updateProps && different) {
-                useStore.getState().applySceneUpdate({tfs, items});
+                state.applySceneUpdate({tfs, items});
             } else if (updateProps) {
-                useStore.getState().applyPartialSceneUpdate({items});
+                state.applyPartialSceneUpdate({items});
             }
         },
         { equalityFn: csArrayEquality }
@@ -686,9 +693,9 @@ export const computedSliceSubscribe = (useStore) => {
             }
             
             if (!updateProps && different) {
-                useStore.getState().applySceneUpdate({items, lines, hulls});
+                state.applySceneUpdate({items, lines, hulls});
             } else if (updateProps) {
-                useStore.getState().applyPartialSceneUpdate({items, lines, hulls});
+                state.applyPartialSceneUpdate({items, lines, hulls});
             }
         },
         { equalityFn: csArrayEquality }
@@ -895,9 +902,9 @@ export const computedSliceSubscribe = (useStore) => {
         });
         
         if (!updateProps && different) {
-            useStore.getState().applySceneUpdate({tfs, items});
+            state.applySceneUpdate({tfs, items});
         } else if (updateProps) {
-            useStore.getState().applyPartialSceneUpdate({tfs, items});
+            state.applyPartialSceneUpdate({tfs, items});
         }
     }
 
@@ -1037,12 +1044,46 @@ export const computedSliceSubscribe = (useStore) => {
             });
             
             if (!updateProps && different) {
-                useStore.getState().applySceneUpdate({lines});
+                state.applySceneUpdate({lines});
             } else if (updateProps) {
-                useStore.getState().applyPartialSceneUpdate({lines});
+                state.applyPartialSceneUpdate({lines});
             }
         },
         { equalityFn: csArrayEquality }
+    );
+
+    // Animation
+    useStore.subscribe(state => 
+        state.focus,
+        (current, previous) => {
+            const state = useStore.getState();
+            let items = {};
+            let tfs = {};
+
+            // TODO: cache/save this somewhere instead of recomputing it every time
+            // Reset any prior animations to the default pose
+            const links = Object.values(state.programData).filter(v => v.type === 'linkType');
+            links.forEach(link => {
+                createFixtureLink(state, link, link.id, items, tfs);
+            });
+            const tools = Object.values(state.programData).filter(v => v.type === 'toolType');
+            tools.forEach(tool => {
+                createMachineTool(state, tool, items, tfs);
+            });
+            
+            // Clone current items/tfs and overwrite with the default data
+            items = { ...lodash.cloneDeep(state.items), ...items};
+            tfs = { ...lodash.cloneDeep(state.tfs), ...tfs};
+
+            // Create animation (if any)
+            stepsToAnimation(state, useCompiledStore.getState(), tfs, items);
+
+            // If changes occurred, update the scene
+            if (!shallow(items, state.items) || !shallow(tfs, state.tfs)) {
+                state.applySceneUpdate({tfs, items});
+            }
+        },
+        {equalityFn: shallow}
     );
 
     // Lines
@@ -1101,13 +1142,15 @@ export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
         (current, previous) => {
             let lines = {};
             let items = {};
+            let tfs = {};
             const steps = current[0];
             const state = useCompiledStore.getState();
-            const programData = useStore.getState().programData;
+            const programState = useStore.getState();
+            const programData = programState.programData;
             const trajectories = Object.values(programData).filter(v => v.dataType === DATA_TYPES.INSTANCE && v.type === 'trajectoryType');
             const gripperAgent = Object.values(programData).filter(v => v.dataType === DATA_TYPES.INSTANCE && v.type === 'gripperType')[0];
             const keys = trajectories.map(t => {return t.id});
-            const focus = useStore.getState().focus;
+            const focus = programState.focus;
 
             keys.forEach(key => {
                 let moveTrajectoryId = null;
@@ -1155,7 +1198,8 @@ export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
                     });
                 }
             });
-            useStore.getState().applySceneUpdate({items, lines});
+
+            programState.applySceneUpdate({tfs, items, lines});
         },
         { equalityFn: csArrayEquality }
     );

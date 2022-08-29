@@ -2,6 +2,7 @@ import lodash from "lodash";
 import {
     MAX_GRIPPER_DISTANCE_DIFF,
     MAX_GRIPPER_ROTATION_DIFF,
+    ROOT_PATH,
     STEP_TYPE,
 } from "../stores/Constants";
 import { generateUuid } from "../stores/generateUuid";
@@ -344,7 +345,7 @@ export function itemTransformMethod(state, id) {
     return transformMethod;
 }
 
-export function stepsToAnimation(state, tfs, items) {
+export function stepsToAnimation(state, compiledState, tfs, items) {
     // Tracks all things and links for use in the animation
     let dict = {};
 
@@ -390,22 +391,15 @@ export function stepsToAnimation(state, tfs, items) {
     // Only back up to once for the animation correlating to the issue (if applicable)
     if (!state.programData[state.activeFocus]) {
         focusStub =
-            state.programData[state.focus[state.focus.length - 2]]?.properties
-                ?.compiled;
+        compiledState[state.focus[state.focus.length - 2]];
     } else {
-        focusStub = state.programData[state.activeFocus]?.properties?.compiled;
+        focusStub = compiledState[state.activeFocus];
     }
-    const compileKeys = Object.keys(focusStub ? focusStub : {});
-
-    // If too many or too few keys, return
-    if (compileKeys.length !== 1) {
-        return;
-    }
-
-    const compiledKey = compileKeys[0];
 
     // Build up the movements
-    let steps = focusStub[compiledKey]?.steps ? focusStub[compiledKey]?.steps : [];
+    let steps = (focusStub && focusStub[ROOT_PATH]?.steps) ? focusStub[ROOT_PATH]?.steps : [];
+
+
     steps.forEach((step) => {
         // Thing is created/spawned
         if (step.type === STEP_TYPE.SPAWN_ITEM) {
