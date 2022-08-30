@@ -96,7 +96,6 @@ export const findEndEffectorPoseIssues = ({program, programData, settings, compi
 // Requires collision graders
 export const findCollisionIssues = ({program, programData, settings, environmentModel, compiledData}) => { 
     let issues = {};
-    return [issues, {}];
 
     const warningLevel = settings['collisionWarn'].value;
     const errorLevel = settings['collisionErr'].value;
@@ -121,6 +120,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
         }
     });
 
+    // Build pairing of links to collision objects
     let envrionTracker = [];
     const collisionIDs = lodash.filter(programData, function (v) { return v.type === 'collisionShapeType' }).map(collision => { return collision.id });
     robotJointIDs.forEach(rID => {
@@ -137,8 +137,8 @@ export const findCollisionIssues = ({program, programData, settings, environment
 
     compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
         if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source]?.type === "moveTrajectoryType") {
-            if (!(step.source in timeData)) {
-                moveTrajectoryIDs.push(step.souce);
+            if (!timeData[step.source]) {
+                moveTrajectoryIDs.push(step.source);
                 timeData[step.source] = [];
                 sCol[step.source] = [];
                 eCol[step.source] = [];
@@ -147,25 +147,25 @@ export const findCollisionIssues = ({program, programData, settings, environment
             timeData[step.source].push(step.time);
             positionData[step.source].push({...step.data.links});
 
-            let sColTmp = likProximityAdjustment(robotPoints, step.data.proximity, true);
             let sColAdjusted = {}
-            // For each joint, assign it the minimum proximity value
-            Object.keys(sColTmp).forEach(key => {
-                if (linkNames.includes(key)) {
-                    sColAdjusted[key] = Math.min(...Object.values(sColTmp[key]).map(v => {return v.distance}));
-                }
-            })
-            sCol[step.source].push(sColAdjusted);
-
-            // Environment Collisions
-            let eColTmp = likProximityAdjustment(envrionTracker, step.data.proximity, true);
             let eColAdjusted = {}
-            // For each joint, assign it the minimum proximity value
-            Object.keys(eColTmp).forEach(key => {
-                if (linkNames.includes(key)) {
-                    eColAdjusted[key] = Math.min(...Object.values(eColTmp[key]).map(v => {return v.distance}));
+            robotJointIDs.forEach(jid => {
+                sColAdjusted[jid] = Number.MAX_VALUE;
+                eColAdjusted[jid] = Number.MAX_VALUE;
+            });
+
+            step.data.proximity.forEach(({ shape1, shape2, distance, points, physical }) => {
+                let r1 = robotJointIDs.includes(shape1);
+                let r2 = robotJointIDs.includes(shape2);
+                if (!(r1 && r2)) {
+                    let link = r1 ? shape1 : shape2;
+                    eColAdjusted[link] = Math.min(eColAdjusted[link], distance);
+                } else {
+                    sColAdjusted[shape1] = Math.min(eColAdjusted[shape1], distance);
+                    sColAdjusted[shape2] = Math.min(eColAdjusted[shape2], distance);
                 }
-            })
+            });
+            sCol[step.source].push(sColAdjusted);
             eCol[step.source].push(eColAdjusted);
         }
     });
@@ -204,6 +204,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
             });
         }
 
+
         // Build the graph and collision data
         // If a joint should be graphed, add it's data points to the respective array
         for (let i = 0; i < timeData[moveID].length; i++) {
@@ -211,8 +212,12 @@ export const findCollisionIssues = ({program, programData, settings, environment
             graphData[selfIndex].push({x: timestamp});
             graphData[envIndex].push({x: timestamp});
 
-            Object.keys(sCol[moveID][i]).forEach(rLink => { 
-                environmentModel = updateEnvironModel(environmentModel, rLink, positionData[moveID][i][rLink].position, positionData[moveID][i][rLink].rotation)
+            Object.keys(sCol[moveID][i]).forEach(rLink => {
+                if (positionData[moveID][i][rLink]) {
+                    environmentModel = updateEnvironModel(environmentModel, rLink, positionData[moveID][i][rLink].position, positionData[moveID][i][rLink].rotation)
+                } else {
+                    console.log('ERROR, rLink, POSITION', rLink, positionData[moveID][i][rLink]);
+                }
             });
 
             let posRot = {};
