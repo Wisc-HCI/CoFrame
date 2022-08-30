@@ -376,7 +376,8 @@ export const ProgrammingSliceOverride = (set, get) => ({
       if (!newSpawn) {
         state.programData[sourceInfo.parentId].properties.status =
           STATUS.PENDING;
-        state.programData[id].properties.status = STATUS.PENDING;
+        // console.log({editItem:state.programData[id],itemProps:state.programData[id].properties,id})
+        // state.programData[id].properties.status = STATUS.PENDING;
       }
       state.programData[destInfo.parentId].properties.status = STATUS.PENDING;
     });

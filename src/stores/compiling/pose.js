@@ -12,7 +12,7 @@ import {
 // import { DATA_TYPES } from "simple-vp";
 import { range, random } from "lodash";
 
-const COLLISION_WEIGHT = 0;
+const COLLISION_WEIGHT = 5;
 const SMOOTHNESS_WEIGHT = 0.1;
 
 const sampleJoints = (joints) => {

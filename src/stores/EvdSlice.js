@@ -168,6 +168,7 @@ export const EvdSlice = (set, get) => ({
       });
       console.log(newData);
       state.programData = newData;
+      state.loaded = true;
     }),
   // setData: (data) => set((_) => ({ programData: data})),
   updatePoseJoints: (id, value, process) =>
@@ -197,7 +198,7 @@ export const EvdSlice = (set, get) => ({
         state.reviewableChanges += reviewableChanges;
       }
       state.processes.planProcess = process;
-      console.log(useCompiledStore.getState())
+      // console.log(useCompiledStore.getState())
     }),
   performCompileProcess: async () => {
     // console.log('starting plan processing')
@@ -214,7 +215,7 @@ export const EvdSlice = (set, get) => ({
     const { performCompileProcess } = Comlink.wrap(plannerWorker);
     // console.warn('performCompileProcess',performCompileProcess);
     const compiled = useCompiledStore.getState();
-    let programData = mapValues(get().programData,((value)=>({...value,properties:{...value.properties,compiled:compiled[value.id]}})))
+    let programData = mapValues(get().programData,((value)=>({...value,properties:{...value.properties,compiled:compiled[value.id]||{}}})))
     const result = await performCompileProcess({
       programData,
       objectTypes: mapValues(

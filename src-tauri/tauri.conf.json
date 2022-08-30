@@ -58,8 +58,9 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "CoFrame",
-        "width": 800
+        "title": "Puppeteer",
+        "width": 800,
+        "fileDropEnabled":false
       }
     ]
   }

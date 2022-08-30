@@ -28,7 +28,7 @@ import { eventsToStates, statesToSteps } from ".";
 const FRAME_TIME = 30;
 const POSITION_WEIGHT = 20;
 const ROTATION_WEIGHT = 15;
-const COLLISION_WEIGHT = 0;
+const COLLISION_WEIGHT = 5;
 const SMOOTHNESS_WEIGHT = 1;
 const IMPROVEMENT_THRESHOLD = 0.7;
 const MS_TIME_LIMIT = 7000;
