@@ -119,7 +119,7 @@ export const likProximityAdjustment = (trackedPoints, proximity, mirrorTrackedPo
       return proximityModel;
     }
     proximity.forEach(({ shape1, shape2, distance, points, physical }) => {
-      if (trackedPinchPoints !== []) { 
+      if (trackedPinchPoints.length > 0) { 
         trackedPinchPoints.forEach(({ link1, link2 }) => {
           if (
             (link1 === shape1 && link2 === shape2) ||
@@ -146,24 +146,23 @@ export const likProximityAdjustment = (trackedPoints, proximity, mirrorTrackedPo
           }
         });
       } else {
-        if (!proximityModel[link1]) {
-          proximityModel[link1] = {};
+        if (!proximityModel[shape1]) {
+          proximityModel[shape1] = {};
         }
-        if (!proximityModel[link2]) {
-          proximityModel[link2] = {};
+        if (!proximityModel[shape2]) {
+          proximityModel[shape2] = {};
         }
-        proximityModel[link1][link2] = {
+        proximityModel[shape1][shape2] = {
           distance: distance,
           physical: physical,
           points: points,
         };
-        proximityModel[link2][link1] = {
+        proximityModel[shape2][shape1] = {
           distance: distance,
           physical: physical,
           points: points,
         };
       }
     });
-  
     return proximityModel;
   };

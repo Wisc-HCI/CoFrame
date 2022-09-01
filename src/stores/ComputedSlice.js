@@ -581,6 +581,7 @@ export const computedSliceSubscribe = (useStore) => {
     );
 
     // Move Trajectory lines and hulls
+    // BUG: TODO: lines aren't being recomputed
     // BUG: TODO: when changing the focus (from one issue to another), the lines/hulls still render
     useStore.subscribe(state => 
         [state.issues, state.focus],
@@ -714,7 +715,7 @@ export const computedSliceSubscribe = (useStore) => {
         let updateProps = false;
 
         let focusedTrajectoryChildren = [];
-        state.focus.forEach((entry) => {
+        update[1].forEach((entry) => {
             if (state.programData[entry]?.type === "moveTrajectoryType" || state.programData[entry]?.type === "trajectoryType") {
                 let trajectoryTmp = null;
 
@@ -769,7 +770,9 @@ export const computedSliceSubscribe = (useStore) => {
         })
 
         keys.forEach(key => {
-            if (previous[key] && (focusedTrajectoryChildren.includes[key] !== prevfocusedTrajectoryChildren.includes(key))) {
+            if (previous[key] && 
+                ((focusedTrajectoryChildren.includes[key] !== prevfocusedTrajectoryChildren.includes(key)) || 
+                !shallow(current[key], previous[key]))) {
                 updateProps = true;
                 const entry = current[key];
                 const focused = state.focus.includes(entry.id);
@@ -805,12 +808,13 @@ export const computedSliceSubscribe = (useStore) => {
                             ? 'rotate'
                             : 'inactive'
                     items[shape.uuid] = {
+                        ...shape,
                         highlighted: focused,
                         hidden: !focused && !trajectoryFocused,
                         transformMode: shape.uuid.includes('pointer') && focused ? transform : "inactive"
                     };
                 });
-            } else if (!previous[key] || (JSON.stringify(current[key]) !== JSON.stringify(previous[key]))) {
+            } else if (!previous[key] || !shallow(current[key],previous[key])) {
                 different = true;
                 const entry = current[key];
                 const focused = state.focus.includes(entry.id);
@@ -1070,6 +1074,10 @@ export const computedSliceSubscribe = (useStore) => {
             tools.forEach(tool => {
                 createMachineTool(state, tool, items, tfs);
             });
+
+            // TODO: clear out spawned objects (things)
+            // Option 1: add a {spawned: true} param on the item itself
+            // Option 2: have a state-based tracker for the ids (state.trackedThings = []), update it and then iterate through to remove
             
             // Clone current items/tfs and overwrite with the default data
             items = { ...lodash.cloneDeep(state.items), ...items};
