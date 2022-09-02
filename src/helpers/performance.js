@@ -26,11 +26,10 @@ export const csArrayEquality = (arr1, arr2) => {
     }
 
     for (let i = 0, n = arr1.length; i < n; i++) {
-        // First index is always an object (lookup table)
-        if (i === 0) {
-            equal = equal && shallow(arr1[i], arr2[i]);
-        } else if (Array.isArray(arr1[i])){
+        if (Array.isArray(arr1[i])){
             equal = equal && arrayEqual(arr1[i], arr2[i]);
+        } else if (typeof(arr1[i]) === typeof({}) && !Array.isArray(arr1[i])) {
+            equal = equal && shallow(arr1[i], arr2[i]);
         } else if (typeof(arr1[i]) === typeof(false)) {
             equal = equal && (arr1[i] === arr2[i]);
         } else {

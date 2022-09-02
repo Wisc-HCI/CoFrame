@@ -233,6 +233,13 @@ export const GuiSlice = (set, get) => ({
     state = updateSceneState(state, 'hulls', hulls);
     state = updateSceneState(state, 'texts', texts);
   }),
+  setSceneState: ({tfs, items, lines, hulls, texts}) => set(state => {
+    state.tfs = tfs;
+    state.items = items;
+    state.lines = lines;
+    state.hulls = hulls;
+    state.texts = texts;
+  }),
   setRobotPreviewVisible: (visible) => set(state => {
     state.robotPreviewVisible = visible;
   }),
