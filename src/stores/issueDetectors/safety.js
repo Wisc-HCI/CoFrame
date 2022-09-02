@@ -78,8 +78,8 @@ export const findEndEffectorPoseIssues = ({program, programData, settings, compi
                     title: '',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["safety"]), label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: frameStyles.colors["safety"], label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
                     ],
                     units: '',
                     decimal: 5,
@@ -285,8 +285,8 @@ export const findCollisionIssues = ({program, programData, settings, environment
                     title: '',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["safety"]), label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: frameStyles.colors["safety"], label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
                     ],
                     units: 'm',
                     decimal: 5,
@@ -313,8 +313,8 @@ export const findCollisionIssues = ({program, programData, settings, environment
                     title: '',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["safety"]), label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: frameStyles.colors["safety"], label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
                     ],
                     units: 'm',
                     decimal: 5,
@@ -439,8 +439,8 @@ export const findOccupancyIssues = ({program, programData, settings, environment
                     yAxisLabel: 'Proximity',
                     title: '',
                     thresholds: [
-                        {range: ["MIN", errorLevel], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'},
-                        {range: [errorLevel, warningLevel], color: hexToRgb(frameStyles.colors["safety"]), label: 'Warning'},
+                        {range: ["MIN", errorLevel], color: frameStyles.errorColors["safety"], label: 'Error'},
+                        {range: [errorLevel, warningLevel], color: frameStyles.colors["safety"], label: 'Warning'},
                         {range: [warningLevel, "MAX"], color: 'grey', label: 'OK'},
                     ],
                     units: 'm',
@@ -508,7 +508,7 @@ export const findPinchPointIssues = ({program, programData, compiledData}) => { 
                     units: '',
                     thresholds: [
                         {range: ["MIN", 1], color: 'grey', label: 'OK'},
-                        {range: [1, "MAX"], color: hexToRgb(frameStyles.errorColors["safety"]), label: 'Error'}
+                        {range: [1, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'}
                     ],
                     decimal: 1,
                     title: '',

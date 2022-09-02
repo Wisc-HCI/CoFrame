@@ -183,8 +183,8 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
                     yAxisLabel: 'Velocity',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
                     units: 'm/s',
                     decimal: 5,
@@ -291,8 +291,8 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
                     yAxisLabel: 'Velocity',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
                     units: 'm/s',
                     decimal: 5,
@@ -444,8 +444,8 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings, com
                     yAxisLabel: 'Space Usage',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
-                        {range: [warningLevel, errorLevel], color: hexToRgb(frameStyles.colors["performance"]), label: 'Warning'},
-                        {range: [errorLevel, "MAX"], color: hexToRgb(frameStyles.errorColors["performance"]), label: 'Error'},
+                        {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
+                        {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
                     units: '%',
                     decimal: 5,
