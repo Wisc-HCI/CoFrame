@@ -34,10 +34,10 @@ export const ReviewSlice = (set, get) => ({
     issueSettings: {
         'eePoseWarn': {id: 'eePoseWarn', frame: 'safety', name: "End Effector Pose Warning Level", value: 2, min: 0},
         'eePoseErr': {id: 'eePoseErr', frame: 'safety', name: "End Effector Pose Error Level", value: 5, min: 0},
-        'collisionWarn': {id: 'collisionWarn', frame: 'safety', name: "Collision Warning Level", value: 0.1, min: 0, max: 1},
+        'collisionWarn': {id: 'collisionWarn', frame: 'safety', name: "Collision Warning Level", value: 0.05, min: 0, max: 1},
         'collisionErr': {id: 'collisionErr', frame: 'safety', name: "Collision Error Level", value: 0, min: 0, max: 1},
-        'occupancyWarn': {id: 'occupancyWarn', frame: 'safety', name: "Occupancy Warning Level", value: 0.8, min: 0, max: 1},
-        'occupancyErr': {id: 'occupancyErr', frame: 'safety', name: "Occupancy Error Level", value: 1, min: 0, max: 1},
+        'occupancyWarn': {id: 'occupancyWarn', frame: 'safety', name: "Occupancy Warning Level", value: 0.05, min: 0, max: 1},
+        'occupancyErr': {id: 'occupancyErr', frame: 'safety', name: "Occupancy Error Level", value: 0, min: 0, max: 1},
         'jointMaxSpeed': {id: 'jointMaxSpeed', frame: 'performance', name: "Max Joint Speed", value: 10, min: 0},
         'jointSpeedWarn': {id: 'jointSpeedWarn', frame: 'performance', name: "Joint Speed Warning Level (% of max speed)", value: 0.1, min: 0, max: 1},
         'jointSpeedErr': {id: 'jointSpeedErr', frame: 'performance', name: "Joint Speed Error Level (% of max speed)", value: 0.5, min: 0, max: 1},
