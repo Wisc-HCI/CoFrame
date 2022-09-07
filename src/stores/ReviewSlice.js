@@ -26,6 +26,7 @@ import { objectMap } from "./helpers";
 import lodash from 'lodash';
 import { createEnvironmentModel } from "../helpers/geometry";
 import useCompiledStore from './CompiledStore';
+import { arrayEqual } from "../helpers/performance";
 
 export const ReviewSlice = (set, get) => ({
     // Issues are stored in a flat lookup
@@ -276,10 +277,10 @@ export const ReviewSlice = (set, get) => ({
                 let existingIssue = state.issues[issueKey];
                 if (existingIssue.complete) {
                     Object.entries(newSectionIssues).forEach(([newIssueKey,newIssue])=>{
-                        if (newIssue.focus.id === existingIssue.focus.id && !newIssue.requiresChanges) {
+                        if (arrayEqual(newIssue.focus, existingIssue.focus) && !newIssue.requiresChanges) {
                             newSectionIssues[newIssueKey].complete = true;
                         }
-                    })
+                    });
                 };
             })
             // Set the new issues for that section

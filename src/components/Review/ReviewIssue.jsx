@@ -80,7 +80,7 @@ export const ReviewIssue = ({ issueId }) => {
               <Switch
                 size="small"
                 color="primaryColor"
-                value={issue.complete}
+                checked={issue.complete}
                 onChange={(e) => {
                   onCheckedChange();
                   e.stopPropagation();

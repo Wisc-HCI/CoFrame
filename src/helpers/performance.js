@@ -2,7 +2,7 @@ import shallow from "zustand/shallow";
 
 export const stringEquality = (e1,e2) => JSON.stringify(e1) === JSON.stringify(e2)
 
-const arrayEqual = (a, b) => {
+export const arrayEqual = (a, b) => {
     if (a === b) return true;
     if (a == null || b == null) return false;
     if (a.length !== b.length) return false;
