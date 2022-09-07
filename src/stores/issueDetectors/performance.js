@@ -18,7 +18,7 @@ export const findReachabilityIssues = ({programData}) => { // requires joint_pro
             usedPoses.push(location.id)
             const uuid = generateUuid('issue');
             issues[uuid] = {
-                uuid: uuid,
+                id: uuid,
                 requiresChanges: false,
                 title: `Unused Location "${location.name}" not reachable`,
                 description: `Location "${location.name}" is not reachable by the robot, but isn't used in the program.`,
@@ -279,7 +279,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
         if (hasErrorVelocity) {
             const uuid = generateUuid('issue');
             issues[uuid] = {
-                uuid: uuid,
+                id: uuid,
                 requiresChanges: hasErrorVelocity,
                 title: `End effector moves too fast`,
                 description: `The end effector moves too fast for Trajectory "${programData[moveID].name}"`,

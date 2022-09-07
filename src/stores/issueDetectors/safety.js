@@ -387,6 +387,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
             }
         }
         let enteredZone = false;
+        let warningZone = false;
         let filteredGraphData = [];
 
 
@@ -403,8 +404,10 @@ export const findOccupancyIssues = ({program, programData, settings, environment
                     Object.values(proximityData[source][j][linkNames[i]]).forEach(obj => {
                         if (obj.distance <= errorLevel) {
                             enteredZone = true;
+                            warningZone = true;
                             occupancyValues[source][linkNames[i]].push({position: {...curFrame}, color: hexToRgb(frameStyles.errorColors["safety"])});
                         } else if (obj.distance <= warningLevel) {
+                            warningZone = true;
                             occupancyValues[source][linkNames[i]].push({position: {...curFrame}, color: hexToRgb(frameStyles.colors["safety"])});
                         } else {
                             occupancyValues[source][linkNames[i]].push({position: {...curFrame}, color: hexToRgb(frameStyles.colors["default"])});
@@ -424,7 +427,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
             }
         }
 
-        if (filteredGraphData.length > 0) {
+        if (warningZone) {
             const id = generateUuid('issue');
             issues[id] = {
                 id: id,
