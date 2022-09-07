@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api";
+// import { invoke } from "@tauri-apps/api";
 
 // const immer = (config) => (set, get, api) =>
 //   config(
@@ -11,8 +11,8 @@ import { invoke } from "@tauri-apps/api";
 //     api
 // );
 
-export const TauriStorage = {
-  getItem: (key) => invoke('get_item',{key}),
-  setItem: (key,value) => invoke('set_item',{key,value}),
-  removeItem: (key) => invoke('remove_item',{key})
-}
+// export const TauriStorage = {
+//   getItem: (key) => invoke('get_item',{key}),
+//   setItem: (key,value) => invoke('set_item',{key,value}),
+//   removeItem: (key) => invoke('remove_item',{key})
+// }

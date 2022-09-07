@@ -21,7 +21,7 @@ import { STATUS } from "./Constants";
 import { performCompileProcess } from "./planner-worker";
 import useCompiledStore from "./CompiledStore";
 import { Timer } from "./Timer";
-import { TauriStorage } from "./TauriStorage";
+// import { TauriStorage } from "./TauriStorage";
 
 const store = (set, get) => ({
   loaded: false,
@@ -42,41 +42,41 @@ const store = (set, get) => ({
 
 const immerStore = immer(store);
 // const computedStore = computed(immerStore,computedSlice);
-const persistStore = persist(immerStore, {
-  name: "coframe-store",
-  // partialize: (state) => ({ programData: state.programData, }),
-  getStorage: ()=>TauriStorage,
-  deserialize: (str) =>
-    JSON.parse(str, (key, value) => {
-      if (key === "clock") return new Timer();
-      return value;
-    }),
-  partialize: (state) => ({
-    loaded: state.loaded,
-    programData: state.programData,
-    // programSpec: state.programSpec,
-    tfs: state.tfs,
-    items: state.items,
-    lines: state.lines,
-    texts: state.texts,
-    hulls: state.hulls,
-  }),
-  onRehydrateStorage: (state) => {
-    console.log("hydration starts");
-    // optional
-    return (state, error) => {
-      if (error) {
-        console.log("An error happened during hydration. Reloading with Knife Assembly Task", error);
-        state.setData(KnifeAssembly);
-        state.setLoaded(true);
-      } else {
-        console.log("hydration finished");
-        state.setLoaded(true)
-      }
-    };
-  },
-});
-const subscribeStore = subscribeWithSelector(persistStore);
+// const persistStore = persist(immerStore, {
+//   name: "coframe-store",
+//   // partialize: (state) => ({ programData: state.programData, }),
+//   getStorage: ()=>TauriStorage,
+//   deserialize: (str) =>
+//     JSON.parse(str, (key, value) => {
+//       if (key === "clock") return new Timer();
+//       return value;
+//     }),
+//   partialize: (state) => ({
+//     loaded: state.loaded,
+//     programData: state.programData,
+//     // programSpec: state.programSpec,
+//     tfs: state.tfs,
+//     items: state.items,
+//     lines: state.lines,
+//     texts: state.texts,
+//     hulls: state.hulls,
+//   }),
+//   onRehydrateStorage: (state) => {
+//     console.log("hydration starts");
+//     // optional
+//     return (state, error) => {
+//       if (error) {
+//         console.log("An error happened during hydration. Reloading with Knife Assembly Task", error);
+//         state.setData(KnifeAssembly);
+//         state.setLoaded(true);
+//       } else {
+//         console.log("hydration finished");
+//         state.setLoaded(true)
+//       }
+//     };
+//   },
+// });
+const subscribeStore = subscribeWithSelector(immerStore);
 
 const useStore = create(subscribeStore);
 

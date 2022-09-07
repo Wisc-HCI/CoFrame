@@ -75,7 +75,8 @@ export const POSTPROCESS_TYPES = [
     'waypointType',
     'locationType',
     'machineType',
-    'fixtureType'
+    'fixtureType',
+    'toolType'
 ]
 
 export const ROOT_PATH = JSON.stringify({});

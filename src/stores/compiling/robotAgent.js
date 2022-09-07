@@ -45,7 +45,7 @@ export const robotAgentCompiler = ({
   // console.log(module.solver_new)
   const fwdsolver = new module.Solver(
     properties.urdf,
-    [],
+    {},
     rootBounds,
     createStaticEnvironment(worldModel),
     { origin, joints: properties.initialJointState },

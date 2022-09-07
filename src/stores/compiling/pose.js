@@ -1,8 +1,14 @@
-import { STATUS, ROOT_PATH, ERROR, MAX_POSE_DISTANCE_DIFF, MAX_POSE_ROTATION_DIFF } from "../Constants";
+import {
+  STATUS,
+  ROOT_PATH,
+  ERROR,
+  MAX_POSE_DISTANCE_DIFF,
+  MAX_POSE_ROTATION_DIFF,
+} from "../Constants";
 import { Quaternion } from "three";
 import { likStateToData } from "../../helpers/conversion";
 import {
-//   createStaticEnvironment,
+  //   createStaticEnvironment,
   queryWorldPose,
   // quaternionLog,
   eulerFromQuaternion,
@@ -12,7 +18,7 @@ import {
 // import { DATA_TYPES } from "simple-vp";
 import { range, random } from "lodash";
 
-const COLLISION_WEIGHT = 5;
+const COLLISION_WEIGHT = 3;
 const SMOOTHNESS_WEIGHT = 0.1;
 
 const sampleJoints = (joints) => {
@@ -59,7 +65,10 @@ export const poseCompiler = ({
       // Retrieve the robot's position/orientation
       const basePose = queryWorldPose(worldModel, robot.id);
       // const quatLog = quaternionLog(basePose.rotation);
-      const baseEuler = eulerFromQuaternion([basePose.w, basePose.x, basePose.y, basePose.z],'sxyz');
+      const baseEuler = eulerFromQuaternion(
+        [basePose.w, basePose.x, basePose.y, basePose.z],
+        "sxyz"
+      );
       const rootBounds = [
         { value: basePose.position.x, delta: 0.0 },
         { value: basePose.position.y, delta: 0.0 },
@@ -90,7 +99,7 @@ export const poseCompiler = ({
       const robotInitialJointState =
         robot.properties.compiled[ROOT_PATH].initialJointState;
 
-      const proximity = robot.properties.compiled[ROOT_PATH].proximity
+      const proximity = robot.properties.compiled[ROOT_PATH].proximity;
 
       // Enumerate grippers and search for ones that are based on this robot.
       grippers.forEach((gripper) => {
@@ -104,32 +113,36 @@ export const poseCompiler = ({
 
           // Set up the objectives based on the attachment link
           const attachmentLink = gripper.properties.relativeTo;
-          const objectives = [
-            {
+          const objectives = {
+            eePosition: {
               type: "PositionMatch",
               name: "EE Position",
               link: attachmentLink,
               weight: 50,
             },
-            {
+            eeRotation: {
               type: "OrientationMatch",
               name: "EE Rotation",
               link: attachmentLink,
               weight: 25,
             },
-            {
+            collision: {
               type: "CollisionAvoidance",
               name: "Collision Avoidance",
               weight: COLLISION_WEIGHT,
             },
-            {
-              type: "PositionMatch",
-              name: "Mid-Chain Up",
-              link: "wrist_1_link",
-              weight: 5,
-            },
-            { type: "SmoothnessMacro", name: "General Smoothness", weight: SMOOTHNESS_WEIGHT },
-          ];
+            // midChain: {
+            //   type: "PositionMatch",
+            //   name: "Mid-Chain Up",
+            //   link: "wrist_1_link",
+            //   weight: 5,
+            // },
+            // smoothness: {
+            //   type: "SmoothnessMacro",
+            //   name: "General Smoothness",
+            //   weight: SMOOTHNESS_WEIGHT,
+            // },
+          };
 
           // Find the position we need in the attachment link to match the desired pose gripper position
           goalPose = poseToGoalPosition(
@@ -152,8 +165,8 @@ export const poseCompiler = ({
             staticEnvironment,
             initialState,
             false,
-            1,
-            150
+            5,
+            50
           );
 
           // console.log('proximity',proximity)
@@ -162,22 +175,20 @@ export const poseCompiler = ({
           const pos = goalPose.position;
           const rot = goalPose.rotation;
           const goalQuat = new Quaternion(rot.x, rot.y, rot.z, rot.w);
-          const goals = [
-            { Translation: [pos.x, pos.y, pos.z] },
-            { Rotation: [rot.x, rot.y, rot.z, rot.w] },
-            null,
-            { Translation: [0, 0, 1] },
-            null,
-          ];
+          const goals = {
+            eePosition: { Translation: [pos.x, pos.y, pos.z] },
+            eeRotation: { Rotation: [rot.x, rot.y, rot.z, rot.w] },
+            midChain: { Translation: [0, 0, 1] },
+          };
           let goalAchieved = false;
 
-          let restarts = range(0, 20);
-          let rounds = range(0, 10);
+          let restarts = range(0, 1);
+          let rounds = range(0, 20);
 
           restarts.some(() => {
             // let currentTime = Date.now();
             rounds.some(() => {
-              state = solver.solve(goals, [50, 30, COLLISION_WEIGHT, 5, SMOOTHNESS_WEIGHT]);
+              state = solver.solve(goals, {});
               const p = state.frames[attachmentLink].world.translation;
               const r = state.frames[attachmentLink].world.rotation;
               const achievedPos = { x: p[0], y: p[1], z: p[2] };
@@ -185,7 +196,10 @@ export const poseCompiler = ({
               const translationDistance = distance(achievedPos, pos);
               const rotationalDistance = goalQuat.angleTo(achievedQuat);
               // console.log({translationDistance,rotationalDistance})
-              if (translationDistance < MAX_POSE_DISTANCE_DIFF && rotationalDistance < MAX_POSE_ROTATION_DIFF) {
+              if (
+                translationDistance < MAX_POSE_DISTANCE_DIFF &&
+                rotationalDistance < MAX_POSE_ROTATION_DIFF
+              ) {
                 goalAchieved = true;
               }
               // if (translationDistance < 0.01) {
@@ -196,7 +210,8 @@ export const poseCompiler = ({
             if (!goalAchieved) {
               let newStart = sampleJoints(solver.joints);
               // console.warn(newStart)
-              solver.reset({ origin, joints: newStart }, [50, 30, COLLISION_WEIGHT, 5, SMOOTHNESS_WEIGHT]);
+              solver.reset({ origin, joints: newStart }, {});
+              console.log('resampled state',solver.currentState)
             }
             return goalAchieved;
           });
@@ -207,8 +222,12 @@ export const poseCompiler = ({
           }
           reachability[robot.id][gripper.id] = goalAchieved;
           // console.log(robot.properties.compiled[ROOT_PATH].linkParentMap);
-          states[robot.id][gripper.id] = likStateToData(state, robot.id, robot.properties.compiled[ROOT_PATH].linkParentMap);
-          console.log(states[robot.id][gripper.id].proximity)
+          states[robot.id][gripper.id] = likStateToData(
+            state,
+            robot.id,
+            robot.properties.compiled[ROOT_PATH].linkParentMap
+          );
+          console.log(states[robot.id][gripper.id].proximity);
           // console.log(states[robot.id][gripper.id])
           // states[robot.id][gripper.id] = likStateToData(
           //   state,
