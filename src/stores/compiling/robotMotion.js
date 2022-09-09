@@ -551,7 +551,7 @@ export const robotMotionCompiler = ({
     };
   }
 
-  const staticEnvironment = [];//createStaticEnvironment(worldModel);
+  const staticEnvironment = createStaticEnvironment(worldModel);
   console.log('static env',staticEnvironment);
 
   // const delta = properties.positionEnd - properties.positionStart;
@@ -859,7 +859,7 @@ export const robotMotionCompiler = ({
             currentState = results.newState;
             history.push(results.improved);
 
-            console.log('collision between wrist_1_link and conveyorCollisionShapeBelt',currentState.proximity[1].distance)
+            // console.log('collision between wrist_1_link and conveyorCollisionShapeBelt',currentState.proximity[1].distance)
 
             // Check the history, and if less than 50% of the past 30ish solutions haven't improved, kill it.
             const improvementScore =
