@@ -1531,14 +1531,21 @@ const updateRobotScene = (useCompiledStore, useStore) => {
             }
 
             // Add ghost robot to location
-            Object.keys(entry.properties?.states[robotAgent.id][gripperAgent.id].links).forEach(link => {
-                addItem(link, false);
-            });
+            let addedLinks = false;
+            const allLinks = entry.properties?.states?.[robotAgent.id]?.[gripperAgent.id]?.links
+            if (allLinks) {
+                Object.keys(allLinks).forEach(link => {
+                    addItem(link, false);
+                    addedLinks = true;
+                });
+            }
 
             // Add ghost gripper to location
-            Object.keys(gripperAgent.properties.gripperFrames).forEach(link => {
-                addItem(link, true);
-            })
+            if (addedLinks) {
+                Object.keys(gripperAgent?.properties?.gripperFrames).forEach(link => {
+                    addItem(link, true);
+                })
+            }
 
             poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
                 const transform = state.focus.includes('translate')

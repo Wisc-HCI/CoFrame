@@ -279,7 +279,7 @@ export const Detail = (_) => {
                   />
                 )}
 
-                {item?.properties?.graspPoints && item?.type !== "thingType" && (
+                {item?.properties?.graspPoints && (
                   <ForwardRefSection
                     references={item.properties.graspPoints}
                     title="Grasp Points"
