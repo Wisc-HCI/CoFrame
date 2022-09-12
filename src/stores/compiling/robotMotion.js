@@ -717,14 +717,17 @@ export const robotMotionCompiler = ({
   };
 
   const steps = errorCode === ERROR.TRAJECTORY_PROGRESS ? 
-  [initialStep, ...innerSteps, finalStep] : 
   [initialStep, ...innerSteps, {
     stepType: STEP_TYPE.LANDMARK,
     data: {label: 'Robot Could Not Continue'},
     effect: {},
     source: data.id,
     delay: innerSteps.length > 0 ? innerSteps[innerSteps.length - 1].delay : 0,
-  }, finalStep]
+  }, finalStep] : 
+  [initialStep, ...innerSteps, finalStep];
+  
+
+  console.log({errorCode,status,steps})
 
   const events = [
     {

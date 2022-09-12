@@ -10,6 +10,7 @@ import { Text as VText } from "@visx/text";
 import useStore from "../stores/Store";
 import { Box, Text } from "grommet";
 import { useSpring, animated } from "@react-spring/web";
+import { motion } from "framer-motion";
 import { useTime } from "./useTime";
 import {
   collapseBands,
@@ -586,18 +587,19 @@ const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
   // const [visualTime, setVisualTime] = useState(0);
 
   const visualTime = useTime(lastEnd);
+  // console.log(visualTime)
   const x = xScale(visualTime);
 
-  const timeIndicatorLineStyle = useSpring({
-    x1: x ? x : 0,
-    x2: x ? x : 0,
-    y1: 0,
-    y2: yMax,
-    config: { mass: 0.25, tension: 250, friction: 10 },
-  });
+  // const timeIndicatorLineStyle = useSpring({
+  //   x1: x ? x : 0,
+  //   x2: x ? x : 0,
+  //   y1: 0,
+  //   y2: yMax,
+  //   config: { mass: 0.25, tension: 250, friction: 10 },
+  // });
 
   return (
-    <animated.line
+    <motion.line
       stroke="lightgrey"
       strokeWidth={2}
       strokeDasharray="5,2"
@@ -605,7 +607,8 @@ const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
       // x2={x}
       // y1={0}
       // y2={yMax}
-      {...timeIndicatorLineStyle}
+      animate={{x1:x,x2:x,y1:0,y2:yMax}}
+      // {...timeIndicatorLineStyle}
     />
   );
 });

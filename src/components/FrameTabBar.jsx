@@ -64,6 +64,7 @@ const Icon = ({ onChange, active, frame, width }) => {
       }}
     >
       <motion.svg
+        layout
         variants={variants}
         animate={active ? 'active':'inactive'}
         width="100%"
@@ -81,6 +82,7 @@ const Icon = ({ onChange, active, frame, width }) => {
         {GROUPS[frame]}
       </motion.svg>
       <motion.b
+        layout
         variants={textVariants}
         animate={active ? 'active':'inactive'}
         style={{
