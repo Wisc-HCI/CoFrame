@@ -161,8 +161,8 @@ export const findCollisionIssues = ({program, programData, settings, environment
                     let link = r1 ? shape1 : shape2;
                     eColAdjusted[link] = Math.min(eColAdjusted[link], distance);
                 } else {
-                    sColAdjusted[shape1] = Math.min(eColAdjusted[shape1], distance);
-                    sColAdjusted[shape2] = Math.min(eColAdjusted[shape2], distance);
+                    sColAdjusted[shape1] = Math.min(sColAdjusted[shape1], distance);
+                    sColAdjusted[shape2] = Math.min(sColAdjusted[shape2], distance);
                 }
             });
             sCol[step.source].push(sColAdjusted);
@@ -301,8 +301,8 @@ export const findCollisionIssues = ({program, programData, settings, environment
             const uuid = generateUuid('issue');
             issues[uuid] = {
                 id: uuid,
-                requiresChanges: collisionErrors[selfIndex],
-                title: collisionErrors[selfIndex] ? `Robot collides with environment` : `Robot is in near collision with environment`,
+                requiresChanges: collisionErrors[envIndex],
+                title: collisionErrors[envIndex] ? `Robot collides with environment` : `Robot is in near collision with environment`,
                 description: `Robot collides with the environment`,
                 complete: false,
                 focus: [moveID],

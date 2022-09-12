@@ -61,11 +61,13 @@ export const findMissingParameterIssues = ({programData, programSpec}) => {
                     }
                     if (primitive.dataType === DATA_TYPES.INSTANCE && (parameterName === 'startLocation' || parameterName === 'endLocation')) {
                         const uuid = generateUuid('issue');
+                        const isTrajectory = primitive.type === 'trajectoryType';
+                        const location = parameterName === 'startLocation' ? 'Start' : 'End';
                         issues[uuid] = {
                             id: uuid,
                             requiresChanges: true,
-                            title: `Missing Location parameter in action`,
-                            description: `This action does not have a defined Location, and needs this value to be functional.`,
+                            title: isTrajectory ? `Missing ` + location +` Location in trajectory` : `Missing Location parameter in action`,
+                            description: isTrajectory ? `This trajectory needs a `+ location + ` Location to be specified to be functional.` : `This action does not have a defined Location, and needs this value to be functional.`,
                             complete: false,
                             focus: [primitive.id],
                             graphData: null
@@ -98,34 +100,7 @@ export const findMissingParameterIssues = ({programData, programSpec}) => {
                 }
             })
         }
-    })
-
-    Object.values(programData).filter(v => v.type === "trajectoryType" && v.dataType === DATA_TYPES.INSTANCE).forEach(trajectory=>{
-        if (!trajectory.properties.startLocation) {
-            const uuid = generateUuid('issue');
-                issues[uuid] = {
-                    id: uuid,
-                    requiresChanges: true,
-                    title: `Missing Start Location in trajectory`,
-                    description: `This trajectory needs a Start Location to be specified to be functional.`,
-                    complete: false,
-                    focus: [trajectory.id],
-                    graphData: null
-                }
-        }
-        if (!trajectory.properties.endLocation) {
-            const uuid = generateUuid('issue');
-                issues[uuid] = {
-                    id: uuid,
-                    requiresChanges: true,
-                    title: `Missing End Location in trajectory`,
-                    description: `This trajectory needs a End Location to be specified to be functional.`,
-                    complete: false,
-                    focus: [trajectory.id],
-                    graphData: null
-                }
-        }
-    })
+    });
 
     Object.values(programData).filter(v => ['processStartType', 'processWaitType'].includes(v.type) && v.properties.status === STATUS.FAILED && v.properties.errorCode === ERROR.MISMATCHED_GIZMO).forEach(failed => {
         const uuid = generateUuid('issue');
@@ -226,10 +201,10 @@ export const findUnusedFeatureIssues = ({programData}) => {
                     });
                 }
             });
-        } else {
+        } else if (primitive.dataType === DATA_TYPES.CALL) {
             // In cases with skill-calls, check the corresponding skills for the types and do matchmaking
             const skillInfo = programData[primitive.ref];
-            if (skillInfo.arguments) {
+            if (skillInfo && skillInfo.arguments) {
                 skillInfo.arguments.forEach(argument=>{
                     if (primitive.properties[argument] !== null && programData[primitive.properties[argument]]) {
                         if (programData[argument].type === 'machineType') {
