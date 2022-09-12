@@ -271,13 +271,12 @@ export const Detail = (_) => {
                   />
                 )}
 
-                {item?.properties?.graspPoints &&
-                  item?.type !== "thingType" && (
-                    <ForwardRefSection
-                      references={item.properties.graspPoints}
-                      title="Grasp Points"
-                    />
-                  )}
+                {item?.properties?.graspPoints && (
+                  <ForwardRefSection
+                    references={item.properties.graspPoints}
+                    title="Grasp Points"
+                  />
+                )}
                 {item?.properties?.inputs && (
                   <ForwardRefSection
                     references={item.properties.inputs}
