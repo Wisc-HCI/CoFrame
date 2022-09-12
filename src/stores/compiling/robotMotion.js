@@ -26,14 +26,15 @@ import { Quaternion, Vector3 } from "three";
 import { eventsToStates, statesToSteps } from ".";
 
 const FRAME_TIME = 30;
-const POSITION_WEIGHT = 20;
-const ROTATION_WEIGHT = 0;
+const POSITION_WEIGHT = 30;
+const ROTATION_WEIGHT = 1;
+const JOINT_WEIGHT = 20;
 const COLLISION_WEIGHT = 5;
-const SMOOTHNESS_WEIGHT = 1;
+const SMOOTHNESS_WEIGHT = 50;
 const IMPROVEMENT_THRESHOLD = 0.5;
 const MS_TIME_LIMIT = 7000;
 const SIMPLE_SMOOTHNESS_WEIGHT = 50;
-const SIMPLE_COLLISION_WEIGHT = 5;//7;
+const SIMPLE_COLLISION_WEIGHT = 5; //7;
 const SIMPLE_JOINT_WEIGHT = 25;
 
 const addOrMergeAnimation = (
@@ -102,7 +103,7 @@ const stepIK = ({
   speed,
   joints,
   attachmentLink,
-  poseType
+  poseType,
 }) => {
   const currentPosition = new Vector3(
     currentPose.position.x,
@@ -142,18 +143,18 @@ const stepIK = ({
 
   // console.log({ posDist, rotDist, jointDists });
 
-  let passed = poseType === "waypoint" ?
-    posDist <= MAX_POSE_DISTANCE_DIFF &&
-    rotDist <= MAX_POSE_ROTATION_DIFF :
-    posDist <= MAX_POSE_DISTANCE_DIFF &&
-    rotDist <= MAX_POSE_ROTATION_DIFF &&
-    !Object.values(jointDists).some((v) => v >= MAX_JOINT_DISTANCE_DIFF*2);
+  let passed =
+    poseType === "waypoint"
+      ? posDist <= MAX_POSE_DISTANCE_DIFF * 2
+      : !Object.values(jointDists).some((v) => v >= MAX_JOINT_DISTANCE_DIFF);
+
   if (passed) {
+    console.warn(`${poseType} reached`);
     return { newState: solver.currentState, improved: true, reached: true };
   }
 
-  if (posDist < speed/20) {
-    interpPos.copy(goalPosition)
+  if (posDist < speed / 20) {
+    interpPos.copy(goalPosition);
   } else {
     interpPos
       .copy(goalPosition)
@@ -161,10 +162,12 @@ const stepIK = ({
       .clampLength(0, speed / 15)
       .add(currentPosition);
   }
-  if (rotDist < speed/20) {
+  if (rotDist < speed / 20) {
     interpQuat.copy(goalQuaternion);
   } else {
-    interpQuat.copy(currentQuaternion).rotateTowards(goalQuaternion, speed / 15);
+    interpQuat
+      .copy(currentQuaternion)
+      .rotateTowards(goalQuaternion, speed / 15);
   }
 
   const nextJoints = mapValues(currentJoints, (currentJointValue, jointKey) => {
@@ -184,217 +187,50 @@ const stepIK = ({
     eeRotation: { Rotation: [interpQuat.x, interpQuat.y, interpQuat.z, interpQuat.w] }
   };
   joints.forEach((j) => {
-    goals[j] = { Scalar: nextJoints[j] }
-  })
+    goals[j] = { Scalar: nextJoints[j] };
+  });
 
-  let weights = {smoothness:SMOOTHNESS_WEIGHT,collision:COLLISION_WEIGHT,eePosition:POSITION_WEIGHT,eeRotation:ROTATION_WEIGHT};
+  let weights = {
+    smoothness: SMOOTHNESS_WEIGHT,
+    collision: COLLISION_WEIGHT,
+    eePosition: POSITION_WEIGHT,
+    eeRotation:ROTATION_WEIGHT/2
+  };
   joints.forEach((j) => {
-    weights[j] = 3
-  })
+    weights[j] = poseType === "waypoint" ? JOINT_WEIGHT / 10 : JOINT_WEIGHT/2;
+  });
 
   const newState = solver.solve(goals, weights);
 
-  const newPoseRaw = newState.frames[attachmentLink].world;
-  const newPosition = new Vector3(
-    newPoseRaw.translation[0],
-    newPoseRaw.translation[1],
-    newPoseRaw.translation[2]
-  );
-  const newQuaternion = new Quaternion(
-    newPoseRaw.rotation[0],
-    newPoseRaw.rotation[1],
-    newPoseRaw.rotation[2],
-    newPoseRaw.rotation[3]
-  );
+  const hasMovement = joints.some((jointKey) => {
+    const delta = Math.abs(newState.joints[jointKey] - currentJoints[jointKey]);
+    if (delta > 0.01) {
+      return true;
+    }
+    return false;
+  });
 
-  // console.log({
-  //   interpPos,
-  //   interpQuat,
-  //   speed,
-  //   currentPosition,
-  //   currentQuaternion,
-  //   nextJoints,
-  //   goalPosition,
-  //   goalQuaternion,
-  //   newPosition,
-  // });
-
-  const newPoseError = goalPosition.distanceTo(newPosition);// + goalQuaternion.angleTo(newQuaternion);
-  const newJointError = joints
-  .map((jointKey) =>
-    Math.abs(newState.joints[jointKey] - goalJoints[jointKey])
-  )
-  .reduce((next, current) => next + current);
-      
-  const oldPoseError = posDist;// + rotDist;
-  const oldJointError = joints
-  .map((jointKey) => jointDists[jointKey])
-  .reduce((next, current) => next + current); 
-
-  // console.log({ newPoseError, oldPoseError, newJointError, oldJointError });
-
-  const improved =  oldPoseError - newPoseError > 0.0001|| oldJointError - newJointError > 0.0001 ;
-
-  return { newState, improved, reached: false };
+  return { newState, improved: hasMovement, reached: false };
 };
 
-const stepIKSimple = ({
-  currentPose,
+const stepJoint = ({
   currentJoints,
-  goalPose,
   goalJoints,
   solver,
   speed,
   joints,
-  attachmentLink,
-  poseType
+  poseType,
 }) => {
-  const currentPosition = new Vector3(
-    currentPose.position.x,
-    currentPose.position.y,
-    currentPose.position.z
-  );
-
-  const currentQuaternion = new Quaternion(
-    currentPose.rotation.x,
-    currentPose.rotation.y,
-    currentPose.rotation.z,
-    currentPose.rotation.w
-  );
-
-  const goalPosition = new Vector3(
-    goalPose.position.x,
-    goalPose.position.y,
-    goalPose.position.z
-  );
-
-  const goalQuaternion = new Quaternion(
-    goalPose.rotation.x,
-    goalPose.rotation.y,
-    goalPose.rotation.z,
-    goalPose.rotation.w
-  );
-
-  // const interpPos = new Vector3(0, 0, 0);
-  // const interpQuat = new Quaternion(0, 0, 0, 1);
-
-  const posDist = currentPosition.distanceTo(goalPosition);
-  const rotDist = currentQuaternion.angleTo(goalQuaternion);
-
-  // const jointDists = mapValues(currentJoints, (v, key) =>
-  //   Math.abs(v - goalJoints[key])
-  // );
-
-  // console.log({ posDist, rotDist, jointDists });
-
-  let passed = poseType === "waypoint" ?
-    posDist <= MAX_POSE_DISTANCE_DIFF :
-    posDist <= MAX_POSE_DISTANCE_DIFF &&
-    rotDist <= MAX_POSE_ROTATION_DIFF &&
-    true// !Object.values(jointDists).some((v) => v >= MAX_JOINT_DISTANCE_DIFF*2);
-  if (passed) {
-    return { newState: solver.currentState, improved: true, reached: true };
-  }
-
-  // if (posDist < speed/20) {
-  //   interpPos.copy(goalPosition)
-  // } else {
-  //   interpPos
-  //     .copy(goalPosition)
-  //     .sub(currentPosition)
-  //     .clampLength(0, speed / 15)
-  //     .add(currentPosition);
-  // }
-  // if (rotDist < speed/20) {
-  //   interpQuat.copy(goalQuaternion);
-  // } else {
-  //   interpQuat.copy(currentQuaternion).rotateTowards(goalQuaternion, speed / 15);
-  // }
-
-  // const nextJoints = mapValues(currentJoints, (currentJointValue, jointKey) => {
-  //   const signedDist = goalJoints[jointKey] - currentJointValue;
-  //   const direction = signedDist / Math.abs(signedDist);
-  //   const travel = (direction * speed) / 5;
-  //   if (Math.abs(signedDist) < Math.abs(travel)) {
-  //     return goalJoints[jointKey];
-  //   } else {
-  //     // console.log(travel)
-  //     return currentJointValue + travel;
-  //   }
-  // });
-
-  let goals = {
-    eePosition: { Translation: [goalPosition.x, goalPosition.y, goalPosition.z] },
-    // eeRotation: { Rotation: [goalQuaternion.x, goalQuaternion.y, goalQuaternion.z, goalQuaternion.w] }
-  };
-  joints.forEach((j) => {
-    goals[j] = { Scalar: goalJoints[j] }
-  })
-
-  let weights = {
-    smoothness:50,
-    collision:5,
-    eePosition:30,
-    // eeRotation:0
-  };
-  joints.forEach((j) => {
-    weights[j] = poseType === 'waypoint' ? 0 : 5
-  })
-
-  const newState = solver.solve(goals, weights);
-
-  const newPoseRaw = newState.frames[attachmentLink].world;
-  const newPosition = new Vector3(
-    newPoseRaw.translation[0],
-    newPoseRaw.translation[1],
-    newPoseRaw.translation[2]
-  );
-  // const newQuaternion = new Quaternion(
-  //   newPoseRaw.rotation[0],
-  //   newPoseRaw.rotation[1],
-  //   newPoseRaw.rotation[2],
-  //   newPoseRaw.rotation[3]
-  // );
-
-  // console.log({
-  //   interpPos,
-  //   interpQuat,
-  //   speed,
-  //   currentPosition,
-  //   currentQuaternion,
-  //   nextJoints,
-  //   goalPosition,
-  //   goalQuaternion,
-  //   newPosition,
-  // });
-
-  const newPoseError = goalPosition.distanceTo(newPosition);// + goalQuaternion.angleTo(newQuaternion);
-  // const newJointError = joints
-  // .map((jointKey) =>
-  //   Math.abs(newState.joints[jointKey] - goalJoints[jointKey])
-  // )
-  // .reduce((next, current) => next + current);
-      
-  const oldPoseError = posDist;// + rotDist;
-  // const oldJointError = joints
-  // .map((jointKey) => jointDists[jointKey])
-  // .reduce((next, current) => next + current); 
-
-  // console.log({ newPoseError, oldPoseError, newJointError, oldJointError });
-
-  const improved =  oldPoseError - newPoseError > 0.0001;//|| oldJointError - newJointError > 0.0001 ;
-
-  return { newState, improved, reached: false };
-};
-
-const stepJoint = ({ currentJoints, goalJoints, solver, speed, joints }) => {
   const jointDists = mapValues(currentJoints, (v, key) =>
     Math.abs(v - goalJoints[key])
   );
   // console.log({currentJoints,goalJoints,jointDists})
-  let passed = !Object.values(jointDists).some(
-    (v) => v >= MAX_JOINT_DISTANCE_DIFF
-  );
+  let passed = poseType === "waypoint" ?
+    !Object.values(jointDists).some((v) => v >= MAX_JOINT_DISTANCE_DIFF * 3) :
+    !Object.values(jointDists).some((v) => v >= MAX_JOINT_DISTANCE_DIFF);
+  if (passed) {
+    return { newState: solver.currentState, improved: true, reached: true };
+  }
   if (passed) {
     return { newState: solver.currentState, improved: true, reached: true };
   }
@@ -415,57 +251,13 @@ const stepJoint = ({ currentJoints, goalJoints, solver, speed, joints }) => {
 
   let goals = {};
   joints.forEach((j) => {
-    goals[j] = { Scalar: nextJoints[j] }
-  })
+    goals[j] = { Scalar: nextJoints[j] };
+  });
 
-  let weights = {smoothness:SMOOTHNESS_WEIGHT,collision:COLLISION_WEIGHT};
+  let weights = { smoothness: SMOOTHNESS_WEIGHT, collision: COLLISION_WEIGHT };
   joints.forEach((j) => {
-    weights[j] = 20
-  })
-
-  const newState = solver.solve(goals, weights);
-
-  const newError = joints
-    .map((jointKey) =>
-      Math.abs(newState.joints[jointKey] - goalJoints[jointKey])
-    )
-    .reduce((next, current) => next + current);
-  const oldError = joints
-    .map((jointKey) => jointDists[jointKey])
-    .reduce((next, current) => next + current);
-
-  // console.log({ newError, oldError });
-
-  const improved = newError < oldError;
-
-  return { newState, improved, reached: false };
-};
-
-const stepJointSimple = ({ currentJoints, goalJoints, solver, speed, joints }) => {
-  const jointDists = mapValues(currentJoints, (v, key) =>
-    Math.abs(v - goalJoints[key])
-  );
-  // console.log({currentJoints,goalJoints,jointDists})
-  console.log('running simple',jointDists)
-  let passed = !Object.values(jointDists).some(
-    (v) => v >= MAX_JOINT_DISTANCE_DIFF
-  );
-  if (passed) {
-    return { newState: solver.currentState, improved: true, reached: true };
-  }
-
-  // console.log('nextJoints',nextJoints)
-  console.log('goals/objectives',{goals:solver.currentGoals,objectives:solver.objectives});
-
-  let goals = {};
-  joints.forEach((j) => {
-    goals[j] = { Scalar: goalJoints[j] }
-  })
-
-  let weights = {smoothness:SIMPLE_SMOOTHNESS_WEIGHT,collision:0};
-  joints.forEach((j) => {
-    weights[j] = SIMPLE_JOINT_WEIGHT
-  })
+    weights[j] = 20;
+  });
 
   const newState = solver.solve(goals, weights);
 
@@ -552,7 +344,7 @@ export const robotMotionCompiler = ({
   }
 
   const staticEnvironment = createStaticEnvironment(worldModel);
-  console.log('static env',staticEnvironment);
+  console.log("static env", staticEnvironment);
 
   // const delta = properties.positionEnd - properties.positionStart;
   // if (properties.speed === 0) {
@@ -636,7 +428,7 @@ export const robotMotionCompiler = ({
     );
     // Get the urdf of the robot (for livelyTK)
     const urdf = robot.properties.compiled[ROOT_PATH].urdf;
-    const proximity = robot.properties.compiled[ROOT_PATH].proximity
+    const proximity = robot.properties.compiled[ROOT_PATH].proximity;
 
     // Consider each gripper/robot combo.
     // We filter those combos by the ones that actually feature linkages
@@ -707,30 +499,35 @@ export const robotMotionCompiler = ({
                   type: "PositionMatch",
                   name: "EE Position",
                   link: attachmentLink,
-                  weight: 30,
+                  weight: POSITION_WEIGHT,
                 },
-                // eeRotation: {
-                //   type: "OrientationMatch",
-                //   name: "EE Rotation",
-                //   link: attachmentLink,
-                //   weight: 20,
-                // },
-                // ...fromPairs(jointNames.map((jointKey) => ([jointKey,{
-                //   type: "JointMatch",
-                //   name: `JointHelper:${jointKey}`,
-                //   joint: jointKey,
-                //   weight: 0,
-                // }]))),
-            }
-            : {
-                ...standardObjectives,
+                eeRotation: {
+                  type: "OrientationMatch",
+                  name: "EE Rotation",
+                  link: attachmentLink,
+                  weight: ROTATION_WEIGHT,
+                },
                 ...fromPairs(jointNames.map((jointKey) => ([jointKey,{
                   type: "JointMatch",
                   name: `JointControl:${jointKey}`,
                   joint: jointKey,
-                  weight: 20,
+                  weight: JOINT_WEIGHT / 2,
                 }]))),
-            };
+              }
+            : {
+                ...standardObjectives,
+                ...fromPairs(
+                  jointNames.map((jointKey) => [
+                    jointKey,
+                    {
+                      type: "JointMatch",
+                      name: `JointControl:${jointKey}`,
+                      joint: jointKey,
+                      weight: JOINT_WEIGHT,
+                    },
+                  ])
+                ),
+              };
 
         // Find the position we need in the attachment link to match the desired pose gripper position
 
@@ -793,13 +590,12 @@ export const robotMotionCompiler = ({
         let startTime = Date.now();
 
         while (poseStack.length > 0 && improved) {
-
           if (Date.now() - startTime > MS_TIME_LIMIT) {
             improved = false;
             status = STATUS.WARN;
             errorCode = ERROR.TIMEOUT;
             console.warn("timeout on trajectory calculation, cancelling");
-            break
+            break;
           }
 
           reached = false;
@@ -810,7 +606,7 @@ export const robotMotionCompiler = ({
           const goalPose = pose.goalPose;
           // const jointState1 = pose1.states[robot.id][gripper.id].joints;
           const goalJoints = pose.states[robot.id][gripper.id].joints;
-          
+
           while (improved && !reached) {
             if (history.length > 30) {
               history.shift();
@@ -841,11 +637,11 @@ export const robotMotionCompiler = ({
               joints: jointNames,
               speed: velocity,
               attachmentLink,
-              poseType: pose.type
+              poseType: pose.type,
             };
 
             const results =
-              motionType === "IK" ? stepIKSimple(props) : stepJointSimple(props);
+              motionType === "IK" ? stepIK(props) : stepJoint(props);
 
             // console.log("results", results);
 
@@ -871,7 +667,7 @@ export const robotMotionCompiler = ({
               improved = false;
               status = STATUS.WARN;
               errorCode = ERROR.TRAJECTORY_PROGRESS;
-              console.warn("No longer improving, cancelling",currentState);
+              console.warn("No longer improving, cancelling", currentState);
             }
 
             // console.log(stateData.links[attachmentLink])
@@ -920,6 +716,16 @@ export const robotMotionCompiler = ({
     delay: innerSteps.length > 0 ? innerSteps[innerSteps.length - 1].delay : 0,
   };
 
+  const steps = errorCode === ERROR.TRAJECTORY_PROGRESS ? 
+  [initialStep, ...innerSteps, finalStep] : 
+  [initialStep, ...innerSteps, {
+    stepType: STEP_TYPE.LANDMARK,
+    data: {label: 'Robot Could Not Continue'},
+    effect: {},
+    source: data.id,
+    delay: innerSteps.length > 0 ? innerSteps[innerSteps.length - 1].delay : 0,
+  }, finalStep]
+
   const events = [
     {
       condition: robot
@@ -927,7 +733,7 @@ export const robotMotionCompiler = ({
             [robot.id]: { busy: false },
           }
         : {},
-      onTrigger: [initialStep, ...innerSteps, finalStep],
+      onTrigger: steps,
       source: data.id,
     },
   ];
@@ -1175,4 +981,223 @@ export const robotMotionCompiler = ({
 //   };
 
 //   return tester;
+// };
+
+// const stepIKSimple = ({
+//   currentPose,
+//   currentJoints,
+//   goalPose,
+//   goalJoints,
+//   solver,
+//   speed,
+//   joints,
+//   attachmentLink,
+//   poseType,
+// }) => {
+//   const currentPosition = new Vector3(
+//     currentPose.position.x,
+//     currentPose.position.y,
+//     currentPose.position.z
+//   );
+
+//   // const currentQuaternion = new Quaternion(
+//   //   currentPose.rotation.x,
+//   //   currentPose.rotation.y,
+//   //   currentPose.rotation.z,
+//   //   currentPose.rotation.w
+//   // );
+
+//   const goalPosition = new Vector3(
+//     goalPose.position.x,
+//     goalPose.position.y,
+//     goalPose.position.z
+//   );
+
+//   // const goalQuaternion = new Quaternion(
+//   //   goalPose.rotation.x,
+//   //   goalPose.rotation.y,
+//   //   goalPose.rotation.z,
+//   //   goalPose.rotation.w
+//   // );
+
+//   // const interpPos = new Vector3(0, 0, 0);
+//   // const interpQuat = new Quaternion(0, 0, 0, 1);
+
+//   const posDist = currentPosition.distanceTo(goalPosition);
+//   // const rotDist = currentQuaternion.angleTo(goalQuaternion);
+
+//   // const jointDists = mapValues(currentJoints, (v, key) =>
+//   //   Math.abs(v - goalJoints[key])
+//   // );
+
+//   // console.log({ posDist, rotDist, jointDists });
+
+//   let passed =
+//     poseType === "waypoint"
+//       ? posDist <= MAX_POSE_DISTANCE_DIFF * 2
+//       : !Object.values(jointDists).some((v) => v >= MAX_JOINT_DISTANCE_DIFF);
+//   if (passed) {
+//     return { newState: solver.currentState, improved: true, reached: true };
+//   }
+
+//   // if (posDist < speed/20) {
+//   //   interpPos.copy(goalPosition)
+//   // } else {
+//   //   interpPos
+//   //     .copy(goalPosition)
+//   //     .sub(currentPosition)
+//   //     .clampLength(0, speed / 15)
+//   //     .add(currentPosition);
+//   // }
+//   // if (rotDist < speed/20) {
+//   //   interpQuat.copy(goalQuaternion);
+//   // } else {
+//   //   interpQuat.copy(currentQuaternion).rotateTowards(goalQuaternion, speed / 15);
+//   // }
+
+//   // const nextJoints = mapValues(currentJoints, (currentJointValue, jointKey) => {
+//   //   const signedDist = goalJoints[jointKey] - currentJointValue;
+//   //   const direction = signedDist / Math.abs(signedDist);
+//   //   const travel = (direction * speed) / 5;
+//   //   if (Math.abs(signedDist) < Math.abs(travel)) {
+//   //     return goalJoints[jointKey];
+//   //   } else {
+//   //     // console.log(travel)
+//   //     return currentJointValue + travel;
+//   //   }
+//   // });
+
+//   let goals = {
+//     eePosition: {
+//       Translation: [goalPosition.x, goalPosition.y, goalPosition.z],
+//     },
+//     // eeRotation: { Rotation: [goalQuaternion.x, goalQuaternion.y, goalQuaternion.z, goalQuaternion.w] }
+//   };
+//   joints.forEach((j) => {
+//     goals[j] = { Scalar: goalJoints[j] };
+//   });
+
+//   let weights = {
+//     smoothness: 50,
+//     collision: 5,
+//     eePosition: 35,
+//     // eeRotation:0
+//   };
+//   joints.forEach((j) => {
+//     weights[j] = poseType === "waypoint" ? 0 : 5;
+//   });
+
+//   const newState = solver.solve(goals, weights);
+
+//   const newPoseRaw = newState.frames[attachmentLink].world;
+//   const newPosition = new Vector3(
+//     newPoseRaw.translation[0],
+//     newPoseRaw.translation[1],
+//     newPoseRaw.translation[2]
+//   );
+//   // const newQuaternion = new Quaternion(
+//   //   newPoseRaw.rotation[0],
+//   //   newPoseRaw.rotation[1],
+//   //   newPoseRaw.rotation[2],
+//   //   newPoseRaw.rotation[3]
+//   // );
+
+//   // console.log({
+//   //   interpPos,
+//   //   interpQuat,
+//   //   speed,
+//   //   currentPosition,
+//   //   currentQuaternion,
+//   //   nextJoints,
+//   //   goalPosition,
+//   //   goalQuaternion,
+//   //   newPosition,
+//   // });
+
+//   const hasMovement = joints.some((jointKey) => {
+//     const delta = Math.abs(newState.joints[jointKey] - currentJoints[jointKey]);
+//     if (delta > 0.005) {
+//       return true;
+//     }
+//     return false;
+//   });
+
+//   // const newPoseError = goalPosition.distanceTo(newPosition);// + goalQuaternion.angleTo(newQuaternion);
+//   // const newJointError = joints
+//   // .map((jointKey) =>
+//   //   Math.abs(newState.joints[jointKey] - goalJoints[jointKey])
+//   // )
+//   // .reduce((next, current) => next + current);
+
+//   // const oldPoseError = posDist;// + rotDist;
+//   // const oldJointError = joints
+//   // .map((jointKey) => jointDists[jointKey])
+//   // .reduce((next, current) => next + current);
+
+//   // console.log({ newPoseError, oldPoseError, newJointError, oldJointError });
+
+//   // const improved =  oldPoseError - newPoseError > 0.0001;//|| oldJointError - newJointError > 0.0001 ;
+
+//   return { newState, improved: hasMovement, reached: false };
+// };
+
+// const stepJointSimple = ({
+//   currentJoints,
+//   goalJoints,
+//   solver,
+//   speed,
+//   joints,
+// }) => {
+//   const jointDists = mapValues(currentJoints, (v, key) =>
+//     Math.abs(v - goalJoints[key])
+//   );
+//   // console.log({currentJoints,goalJoints,jointDists})
+//   console.log("running simple", jointDists);
+//   let passed = !Object.values(jointDists).some(
+//     (v) => v >= MAX_JOINT_DISTANCE_DIFF
+//   );
+//   if (passed) {
+//     return { newState: solver.currentState, improved: true, reached: true };
+//   }
+
+//   // console.log('nextJoints',nextJoints)
+//   console.log("goals/objectives", {
+//     goals: solver.currentGoals,
+//     objectives: solver.objectives,
+//   });
+
+//   let goals = {};
+//   joints.forEach((j) => {
+//     goals[j] = { Scalar: goalJoints[j] };
+//   });
+
+//   let weights = { smoothness: SIMPLE_SMOOTHNESS_WEIGHT, collision: 0 };
+//   joints.forEach((j) => {
+//     weights[j] = SIMPLE_JOINT_WEIGHT;
+//   });
+
+//   const newState = solver.solve(goals, weights);
+
+//   const hasMovement = joints.some((jointKey) => {
+//     const delta = Math.abs(newState.joints[jointKey] - currentJoints[jointKey]);
+//     if (delta > 0.01) {
+//       return true;
+//     }
+//     return false;
+//   });
+
+//   // const newError = joints
+//   //   .map((jointKey) =>
+//   //     Math.abs(newState.joints[jointKey] - goalJoints[jointKey])
+//   //   )
+//   //   .reduce((next, current) => next + current);
+//   // const oldError = joints
+//   //   .map((jointKey) => jointDists[jointKey])
+//   //   .reduce((next, current) => next + current);
+
+//   // console.log({ newError, oldError });
+
+//   // const improved = newError < oldError;
+
+//   return { newState, improved: hasMovement, reached: false };
 // };
