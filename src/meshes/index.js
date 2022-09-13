@@ -148,6 +148,7 @@ import ConveyorReceiver from './Other/ConveyorReceiver';
 import ConveyorDispatcherCollision from './Other/ConveyorDispatcherCollision';
 import ConveyorReceiverCollision from './Other/ConveyorReceiverCollision';
 import UW from './Other/UW';
+import Human from './Other/Human';
 
 const MeshLookupTable = {
     // 'sphere':Sphere,
@@ -269,6 +270,7 @@ const MeshLookupTable = {
        'package://app/meshes/LocationMarker.stl': LocationMarker,
        'package://app/meshes/OpenWaypointMarker.stl': OpenWaypointMarker, //
        'UW': UW,
+       'human': Human,
   }
 
   export default MeshLookupTable

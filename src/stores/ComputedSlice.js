@@ -1286,6 +1286,21 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 hidden: !state.occupancyVisible
             }
 
+            let meshObj = state.programData[entry?.properties?.mesh];
+            if (meshObj) {
+                items[entry.id + meshObj.id] = {
+                    shape: meshObj.properties.keyword,
+                    name: meshObj.name,
+                    frame: entry.id,
+                    position: meshObj.properties.position,
+                    rotation: meshObj.properties.rotation,
+                    color: { ...OCCUPANCY_ERROR_COLOR, a: 0.5 },
+                    scale: meshObj.properties.scale,
+                    highlighted: false,
+                    hidden: !state.occupancyVisible
+                }
+            }
+
             let collisionObject = state.programData[entry.properties.collision];
 
             // Now add collisions
