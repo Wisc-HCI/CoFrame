@@ -39,7 +39,7 @@ export const GoalIssue = ({ goalText, isComplete }) => {
               width: 28,
               height: 28,
               backgroundColor: theme.palette.quiet.main,
-              boxShadow: `0px 0px 2px 2px ${theme.palette.primary.main}`,
+              boxShadow: `0px 0px 2px 2px ${isComplete ? theme.palette.primary.main : theme.palette.error.main}`,
               position: "relative",
               top: "50%",
               transform: "translateY(-50%)"
@@ -48,7 +48,7 @@ export const GoalIssue = ({ goalText, isComplete }) => {
           >
           {isComplete ? 
           <FiCheck style={{ width: 20, height: 20, color: theme.palette.primary.main }} /> :
-          <FiX style={{ width: 20, height: 20, color: theme.palette.primary.main }} /> }
+          <FiX style={{ width: 20, height: 20, color: theme.palette.error.main }} /> }
           </Avatar>
         </Box>
       </Box>
