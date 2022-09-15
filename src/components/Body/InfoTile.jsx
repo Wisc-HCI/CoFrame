@@ -24,9 +24,10 @@ import actionTypes from "../../stores/typeInfo/action";
 import { stringEquality } from "../../helpers/performance";
 import { Breadcrumbs } from "@mui/material";
 import { ScrollRegion } from "../Elements/ScrollRegion";
+import { GoalSection } from "../Goal/GoalSection";
 
 export function InfoTile({ maxHeight }) {
-  const [frame, primaryColor, focusData, activeFocus, setActiveFocus] =
+  const [frame, primaryColor, focusData, activeFocus, setActiveFocus, goalList] =
     useStore((state) => {
       let focusData = state.focus
         .map((f) => {
@@ -60,6 +61,7 @@ export function InfoTile({ maxHeight }) {
         focusData,
         state.activeFocus,
         state.setActiveFocus,
+        Object.values(state.programData).filter(v => v.type === "goalType")
       ];
     }, stringEquality);
 
@@ -228,6 +230,7 @@ export function InfoTile({ maxHeight }) {
         <Box fill pad={{right:'small',left:'xsmall',top:'xsmall',bottom:'xsmall'}}>
           {tabs[tabIdx] ? tabs[tabIdx].contents : tabs[0].contents}
         </Box>
+        {goalList.length > 0 && (<GoalSection goalList={goalList}/>)}
         
       </ScrollRegion>
       {/* <div style={{ height: maxHeight - 68, overflowY: "scroll" }}>

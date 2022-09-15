@@ -243,6 +243,11 @@ export const GuiSlice = (set, get) => ({
   setRobotPreviewVisible: (visible) => set(state => {
     state.robotPreviewVisible = visible;
   }),
+  updateCompleteGoals: (update) => set(state => {
+    Object.keys(update).forEach(key => {
+      state.programData[key].properties.isComplete = update[key];
+    });
+  }),
   onClick: (id, hidden, event) => set(state => {
     // ignore hidden objects
     // ignore movement for the clicks (translate/rotate)

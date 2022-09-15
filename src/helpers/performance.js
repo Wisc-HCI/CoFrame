@@ -18,6 +18,18 @@ export const arrayEqual = (a, b) => {
     return true;
 }
 
+export const objectEquality = (obj1, obj2) => {
+    if (Array.isArray(obj1)){
+        return arrayEqual(obj1, obj2);
+    } else if (typeof(obj1) === typeof({}) && !Array.isArray(obj1)) {
+        return shallow(obj1, obj2);
+    } else if (typeof(obj1) === typeof(false)) {
+        return obj1 === obj2;
+    } else {
+        return obj1 === obj2
+    }
+}
+
 export const csArrayEquality = (arr1, arr2) => {
     let equal = true;
 
@@ -26,15 +38,7 @@ export const csArrayEquality = (arr1, arr2) => {
     }
 
     for (let i = 0, n = arr1.length; i < n; i++) {
-        if (Array.isArray(arr1[i])){
-            equal = equal && arrayEqual(arr1[i], arr2[i]);
-        } else if (typeof(arr1[i]) === typeof({}) && !Array.isArray(arr1[i])) {
-            equal = equal && shallow(arr1[i], arr2[i]);
-        } else if (typeof(arr1[i]) === typeof(false)) {
-            equal = equal && (arr1[i] === arr2[i]);
-        } else {
-            equal = equal && (arr1[i] === arr2[i])
-        }
+        equal = equal && objectEquality(arr1[i], arr2[i]);
     }
     return equal;
 }

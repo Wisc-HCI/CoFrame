@@ -13,11 +13,11 @@ import {
     pinchpointAnimationFromExecutable
 } from '../helpers/computedSlice';
 import { DATA_TYPES } from 'simple-vp';
-import { ROOT_PATH, STEP_TYPE } from './Constants';
+import { GOAL_FUNCTIONS, ROOT_PATH, STEP_TYPE } from './Constants';
 import lodash from 'lodash';
 import { createEnvironmentModel, queryWorldPose, updateEnvironModel } from '../helpers/geometry';
 import shallow from 'zustand/shallow';
-import { csArrayEquality } from '../helpers/performance';
+import { csArrayEquality, objectEquality } from '../helpers/performance';
 import useCompiledStore from './CompiledStore';
 import useStore from './Store';
 import { filter } from "lodash";
@@ -1700,6 +1700,198 @@ const updateRobotScene = (useCompiledStore, useStore) => {
     state.setSceneState({tfs, items, lines, hulls, texts});
 }
 
+const executeGoalCondition = (condition, compiledData, programState, programID) => {
+    if (condition.type === GOAL_FUNCTIONS.IF) {
+        // condition:
+        // leftSide:
+        // rightSide:
+        if (executeGoalCondition(condition.condition, compiledData, programState, programID)) {
+            return executeGoalCondition(condition.then, compiledData, programState, programID);
+        }
+        return executeGoalCondition(condition.else, compiledData, programState, programID);
+    } else if (condition.type === GOAL_FUNCTIONS.EQUAL) {
+        // leftSide:
+        // rightSide:
+        return executeGoalCondition(condition.leftSide, compiledData, programState, programID) === executeGoalCondition(condition.rightSide, compiledData, programState, programID);
+    } else if (condition.type === GOAL_FUNCTIONS.OR) {
+        // leftSide:
+        // rightSide:
+        return executeGoalCondition(condition.leftSide, compiledData, programState, programID) || executeGoalCondition(condition.rightSide, compiledData, programState, programID);
+    } else if (condition.type === GOAL_FUNCTIONS.AND) {
+        // leftSide:
+        // rightSide:
+        return executeGoalCondition(condition.leftSide, compiledData, programState, programID) && executeGoalCondition(condition.rightSide, compiledData, programState, programID);
+    } else if (condition.type === GOAL_FUNCTIONS.NOT) {
+        // condition:
+        return !executeGoalCondition(condition.condition, compiledData, programState, programID);
+    } else if (condition.type === GOAL_FUNCTIONS.STR ||
+               condition.type === GOAL_FUNCTIONS.INT ||
+               condition.type === GOAL_FUNCTIONS.FLOAT ||
+               condition.type === GOAL_FUNCTIONS.BOOL) {
+        return condition.value;
+    } else if (condition.type === GOAL_FUNCTIONS.PID) {
+        // path : ["","",...] - path in object
+        // id: id of object
+        let path = programState.programData[condition.id];
+        if (condition.path) {
+            condition?.path.forEach(piece => {
+                path = path?.[piece];
+            })
+        }
+        return path;
+    } else if (condition.type === GOAL_FUNCTIONS.CID) {
+        // path : ["","",...] - path in object
+        // id: id of object
+        let path = compiledData[condition.id];
+        if (condition.path) {
+            condition?.path.forEach(piece => {
+                path = path?.[piece];
+            })
+        }
+        return path;
+    } else if (condition.type === GOAL_FUNCTIONS.MOVE) {
+        // startLocation: id of locationType
+        // endLocation: id of locationType
+        const stepLength = compiledData[programID]?.[ROOT_PATH]?.steps?.length;
+        if (stepLength) {
+            for (let i = 0; i < stepLength; i++) {
+                const step = compiledData[programID]?.[ROOT_PATH]?.steps[i];
+                const source = programState.programData[step?.source];
+                if (step.type === STEP_TYPE.SCENE_UPDATE &&
+                    source.type === 'moveTrajectoryType') {
+                        const trajectoryData = compiledData[source?.properties?.trajectory];
+                        if (trajectoryData?.[ROOT_PATH]?.startLocation?.id === condition.startLocation &&
+                            trajectoryData?.[ROOT_PATH]?.endLocation?.id === condition.endLocation) {
+                                return true;
+                        }
+                }
+            }
+        }
+
+        // did not find a trajectory that satisfies the constraints (location1 and location2)
+        return false
+    } else if (condition.type === GOAL_FUNCTIONS.GRASP) {
+        // release: T/F
+        // gizmo: id of thingType or toolType
+        const stepLength = compiledData[programID]?.[ROOT_PATH]?.steps?.length;
+        if (stepLength) {
+            for (let i = 0; i < stepLength; i++) {
+                const step = compiledData[programID]?.[ROOT_PATH]?.steps[i];
+                const source = programState.programData[step?.source];
+                if (step.type === STEP_TYPE.ACTION_START &&
+                    source.type === 'moveGripperType' &&
+                    step.data.thing.id === condition.gizmo) {
+                        // released gizmo
+                        if (source.properties.positionEnd < source.properties.positionStart && !condition.release) {
+                            return true;
+                        }
+    
+                        // released gizmo
+                        if (source.properties.positionEnd > source.properties.positionStart && condition.release) {
+                            return true;
+                        }
+                    }
+            }
+        }
+
+        // event did not occur
+        return false;
+    } else if (condition.type === GOAL_FUNCTIONS.PROCESS) {
+        // processId: id of the process
+        // machineId: id of the machine
+        // state: start/wait
+        const stepLength = compiledData[programID]?.[ROOT_PATH]?.steps?.length;
+        if (stepLength) {
+            for (let i = 0; i < stepLength; i++) {
+                const step = compiledData[programID]?.[ROOT_PATH]?.steps[i];
+                const source = programState.programData[step?.source];
+                if (condition.state === 'start' &&
+                    step.type === STEP_TYPE.PROCESS_START &&
+                    source.type === 'processStartType' &&
+                    step.data.gizmo === condition.machineId &&
+                    step.data.process === condition.processId) {
+                        return true;
+                }
+                if (condition.state === 'wait' &&
+                    step.type === STEP_TYPE.PROCESS_START &&
+                    source.type === 'processWaitType' &&
+                    step.data.gizmo === condition.machineId &&
+                    step.data.process === condition.processId) {
+                        return true;
+                }
+            }
+        }
+        
+        return false;
+    } else if (condition.type === GOAL_FUNCTIONS.CHECKINIT) {
+        // machineId: id of the machine
+        const stepLength = compiledData[programID]?.[ROOT_PATH]?.steps?.length;
+        if (stepLength) {
+            for (let i = 0; i < stepLength; i++) {
+                const step = compiledData[programID]?.[ROOT_PATH]?.steps[i];
+                const source = programState.programData[step?.source];
+                if (step.type === STEP_TYPE.LANDMARK &&
+                    source.type === 'machineInitType' &&
+                    step.data.machine === condition.machineId) {
+                        return true;
+                    }
+            }
+        }
+
+        return false;
+    } else if (condition.type === GOAL_FUNCTIONS.ISSUES) {
+        // allCategories: T/F
+        // categoryList: ["","",...]
+        if (condition.allCategories) {
+            // Toggle to false if any issue category isn't 0
+            let allIssues = programState.reviewableChanges === 0;
+            Object.keys(programState.sections).forEach(section => {
+                allIssues = allIssues && programState.sections[section].issues.length === 0;
+            });
+            return allIssues;
+        }
+
+        // Toggle to false if any issue category isn't 0
+        let allCategories = programState.reviewableChanges === 0;
+        condition.categoryList.forEach(category => {
+            allCategories = allCategories && programState.sections[category].issues.length === 0;
+        });
+        return allCategories;
+        
+    } else if (condition.type === GOAL_FUNCTIONS.CREATE || 
+               condition.type === GOAL_FUNCTIONS.DELETE) {
+        // programType: ""
+        // criteria: [{path:["","",...], value: ANY}]
+        const filterByType = Object.values(programState.programData).filter(v => v.type === condition.programType);
+        for (let i = 0; i < filterByType.length; i++) {
+            const obj = filterByType[i];
+            let matchAllCriteria = true;
+            for (let j = 0; j < condition.criteria.length; j++) {
+                const curCriteria = condition.criteria[j];
+                
+                let piecedObj = obj;
+                for (let k = 0; k < curCriteria.path.length; k++) {
+                    piecedObj = piecedObj?.[curCriteria.path[k]];
+                }
+                
+                matchAllCriteria = matchAllCriteria && objectEquality(piecedObj, curCriteria.value)
+            }
+
+            // all criteria was matched
+            // if this is a create condition, return true, as object was created
+            // if this is a delete condition, return false, as the object to delete still exists
+            if (matchAllCriteria) {
+                return condition.type === GOAL_FUNCTIONS.CREATE;
+            }
+        }
+
+        // nothing was found to match all criteria
+        // so if in deletion, return true - as this implies (near enough) a deletion of the item
+        // if this is a create, return false, as the item we wanted was not created
+        return condition.type === GOAL_FUNCTIONS.DELETE;
+    }
+}
+
 // Subscribes to the compiled store
 export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
     const programID = Object.values(useStore.getState().programData).filter((v) => v.type === 'programType')[0].id;
@@ -1771,11 +1963,21 @@ export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
     //     },
     //     { equalityFn: csArrayEquality }
     // );
-    
+    const goals = Object.values(useStore.getState().programData).filter((v) => v.type === 'goalType');
+
+
     useCompiledStore.subscribe(state =>
         [state[programID]?.[ROOT_PATH]?.steps],
         (current, previous) => {
+            const programState = useStore.getState();
             updateRobotScene(useCompiledStore, useStore);
+            const compiledState = useCompiledStore.getState();
+            let conds = {};
+            goals.forEach(goal => {
+                const pass = executeGoalCondition(goal.properties.condition, compiledState, programState, programID);
+                conds[goal.id] = pass;
+            });
+            programState.updateCompleteGoals(conds);
         },
         { equalityFn: csArrayEquality }
     )
@@ -1791,4 +1993,19 @@ export const computedSliceSubscribe = (useStore) => {
         },
         { equalityFn: csArrayEquality }
     )
+    
+    useStore.subscribe(state => 
+        [state.issues, state.reviewableChanges],
+        (current, previous) => {
+            let conds = {};
+            const compiledState = useCompiledStore.getState();
+            const programState = useStore.getState();
+            const goals = Object.values(programState.programData).filter((v) => v.type === 'goalType');
+            const programID = Object.values(programState.programData).filter(v => v.type === 'programType')[0].id;
+            goals.forEach(goal => {
+                const pass = executeGoalCondition(goal.properties.condition, compiledState, programState, programID);
+                conds[goal.id] = pass;
+            });
+            programState.updateCompleteGoals(conds);
+        }, { equalityFn: csArrayEquality })
 }

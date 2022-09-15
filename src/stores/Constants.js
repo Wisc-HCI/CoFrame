@@ -34,6 +34,27 @@ export const COMPILE_FUNCTIONS = {
     PROPERTY: 14
 }
 
+export const GOAL_FUNCTIONS = {
+    EQUAL: 0,
+    OR: 1,
+    AND: 2,
+    NOT: 3,
+    IF: 4,
+    CID: 5,
+    INT: 6,
+    STR: 7,
+    PID: 8,
+    BOOL: 9,
+    MOVE: 10,
+    GRASP: 11,
+    PROCESS: 12,
+    ISSUES: 13,
+    FLOAT: 14,
+    CREATE: 15,
+    DELETE: 16,
+    CHECKINIT: 17,
+}
+
 export const STEP_TYPE = {
     LANDMARK: 'LANDMARK',
     SCENE_UPDATE: 'SCENE_UPDATE',

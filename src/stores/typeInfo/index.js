@@ -13,7 +13,7 @@ import actionTypes from './action';
 import agentTypes from './agents';
 import sceneObjects from './sceneObjects';
 import collisionTypes from './collision';
-
+import { goalType } from './goal';
 
 const mod = { 
     inputOutputType,
@@ -27,6 +27,7 @@ const mod = {
     meshType,
     processType,
     graspPointType,
+    goalType,
     ...actionTypes,
     ...agentTypes,
     ...sceneObjects,
