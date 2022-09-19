@@ -15,5 +15,5 @@ export default defineConfig({
   assetsInclude: ["**/*.gltf", "**/*.glb"],
   worker: {
     plugins: [comlink()],
-  },
+  }
 });

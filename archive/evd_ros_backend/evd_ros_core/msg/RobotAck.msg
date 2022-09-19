@@ -1,2 +1,0 @@
-string subsystem
-bool ack

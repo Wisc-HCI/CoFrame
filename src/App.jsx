@@ -128,6 +128,18 @@ export default function App() {
         main: "#fff",
         darker: "#ddd",
       },
+      safety: {
+        main: '#CC79A7'
+      },
+      quality: {
+        main: '#56B4E9'
+      },
+      performance: {
+        main: '#E69F00'
+      },
+      business: {
+        main: '#009E73'
+      },
     },
   });
 

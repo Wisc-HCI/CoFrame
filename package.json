@@ -13,13 +13,13 @@
     "build:wasm": "wasm-pack build --release ./coframe-rust --target web"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.0.2",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/material": "^5.9.3",
     "@people_and_robots/lively_tk": "0.9.35",
     "@radix-ui/react-scroll-area": "^1.0.0",
     "@robostack/roslib": "^1.1.1",
+    "@tauri-apps/api": "^1.0.2",
     "@visx/visx": "^2.12.1",
     "comlink": "^4.3.1",
     "fast-xml-parser": "^4.0.9",
@@ -49,7 +49,7 @@
     "@tauri-apps/cli": "^1.0.5",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
-    "@vitejs/plugin-react": "^2.0.0",
+    "@vitejs/plugin-react": "^2.1.0",
     "vite": "^3.0.0",
     "vite-plugin-comlink": "^3.0.3",
     "vite-plugin-svgr": "^2.2.0",
