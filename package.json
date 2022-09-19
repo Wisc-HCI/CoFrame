@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "build:wasm": "wasm-pack build --release ./coframe-rust --target web"
+    "build:wasm": "wasm-pack build --release ./coframe-rust --target web",
+    "build:gh": "vite build && git add dist -f && git commit -m \"Updating gh-pages\" && git subtree push --prefix dist origin gh-pages"
   },
   "dependencies": {
     "@emotion/react": "^11.9.3",
