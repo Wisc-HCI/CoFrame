@@ -15,29 +15,53 @@ const goal = {
     extras: [EXTRA_TYPES.SELECTION_TOGGLE],
   },
   properties: {
+    header: {
+      name: "Header Text",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: ""
+    },
     textfield: {
-        name: "Display Text",
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: "",
+      name: "Display Text",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: "",
     },
     condition: {
-        name: "Accepting Condition",
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: {},
+      name: "Accepting Condition",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: {},
+    },
+    example: {
+      name: "Example",
+      accepts: [
+        "hierarchicalType",
+        "skillType",
+        "delayType",
+        "breakpointType",
+        "moveGripperType",
+        "machineInitType",
+        "processStartType",
+        "processStopType",
+        "processWaitType",
+        "moveTrajectoryType",
+        "moveUnplannedType",
+        "robotInitType",
+      ],
+      default: [],
+      isList: true,
     },
     isComplete: {
-        name: "Condition has passed",
-        type: SIMPLE_PROPERTY_TYPES.IGNORED,
-        default: false,
+      name: "Condition has passed",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: false,
     },
     updateFields: {
-      default: ["textfield", "condition"]
+      default: ["header", "textfield", "condition", "example"]
     },
     singleton: {
       default: true,
     },
     compileFn: {
-      default: COMPILE_FUNCTIONS.PROPERTY
+      default: COMPILE_FUNCTIONS.GOAL
     },
   }
 };

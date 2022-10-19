@@ -1,57 +1,81 @@
 import React from "react";
-import { Card, Avatar, useTheme, Typography } from "@mui/material";
-import { FiCheck, FiX, FiClipboard } from "react-icons/fi";
-import { Box } from "grommet";
+import { Badge, Stack, Button } from "@mui/material";
+import { FiCheck, FiX, FiClipboard, FiEye, FiEyeOff } from "react-icons/fi";
+import { Blurb } from "../ContextualInfo/Blurb";
+import useStore from "../../stores/Store";
+import shallow from "zustand/shallow";
 
-export const GoalIssue = ({ goalText, isComplete }) => {
-  const theme = useTheme();
+export const GoalIssue = ({ goal }) => {
+
+  const [
+    addFocusItem,
+    clearFocus,
+    focus,
+    isProcessing
+  ] = useStore((state) => [
+    state.addFocusItem,
+    state.clearFocus,
+    state.focus,
+    state.processes.planProcess !== null && state.processes.planProcess !== undefined
+  ], shallow);
+
+  const exampleFocused = goal.properties.example.length > 0 && focus.includes(goal.properties.example[0]);
 
   const Icon = FiClipboard;
-  
+
   return (
-    <Card
-      raised
-      sx={{
-        backgroundColor: "#333",
-        borderRadius: 2,
-        boxShadow: null,
-      }}
-    >
-      <Box direction="row" style={{padding: 10, display: "flex", flexDirection: "row"}}>
-        <Box direction="row" style={{display: "flex", flexDirection: "row", paddingRight: 30}}>
-            <Avatar
-              sx={{ 
-                backgroundColor: "grey",
-                position: "relative",
+    <Blurb highlight="rgb(50,50,50)">
+      <Stack direction="row" spacing={2} style={{width: '100%'}}>
+        <div>
+            <Badge
+              style={{
+                right: 5,
                 top: "50%",
                 transform: "translateY(-50%)"
               }}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              badgeContent={goal.properties.isComplete ? 
+                <FiCheck style={{
+                  width: 15,
+                  height: 15,
+                  color: "white"
+                }} /> :
+                <FiX style={{
+                  width: 15,
+                  height: 15,
+                  color: "white"
+                }} /> } 
+              color={goal.properties.isComplete ? "primary" : "error"}
+              >
+                <Icon style={{ width: 35, height: 35, color: "white" }} />
+            </Badge>
+          </div>
+        <Stack direction="column" spacing={2} style={{width: '100%'}}>
+          <h3>{goal.properties.header}</h3>
+          {goal.properties.textfield}
+        </Stack>
+        {goal.properties.example.length > 0 && <div>
+          <Button
+              variant="outlined"
+              style={{ top: "50%", transform: "translateY(-50%)"}}
+              color={exampleFocused ? 'primary' : 'vibrant'}
+              onClick={() => {
+                if (exampleFocused) {
+                  clearFocus();
+                } else {
+                  addFocusItem(goal.properties.example[0], false);
+                }
+              }}
+              startIcon={exampleFocused ? <FiEyeOff /> : <FiEye />}
+              disabled={isProcessing}
             >
-            <Icon style={{ color: "white" }} />
-          </Avatar>
-          <Typography component="div" style={{paddingLeft: 15}}>
-          {goalText}
-          </Typography>
-        </Box>
-        <Box direction="row" style={{marginLeft: "auto", marginRight: 15}}>
-          <Avatar
-            sx={{
-              width: 28,
-              height: 28,
-              backgroundColor: theme.palette.quiet.main,
-              boxShadow: `0px 0px 2px 2px ${isComplete ? theme.palette.primary.main : theme.palette.error.main}`,
-              position: "relative",
-              top: "50%",
-              transform: "translateY(-50%)"
-            }}
-            color="primary"
-          >
-          {isComplete ? 
-          <FiCheck style={{ width: 20, height: 20, color: theme.palette.primary.main }} /> :
-          <FiX style={{ width: 20, height: 20, color: theme.palette.error.main }} /> }
-          </Avatar>
-        </Box>
-      </Box>
-    </Card>
+              Preview
+            </Button>
+        </div>}
+      </Stack>
+    </Blurb>
   );
 };
