@@ -2,7 +2,7 @@ import { ERROR, STATUS } from "../Constants";
 import lodash from 'lodash';
 import { eventsToStates, statesToSteps } from ".";
 
-export const simpleCompiler = ({ data, properties, routes, objectTypes, context, path, memo, compiledMemo, module, urdf, worldModel }) => {
+export const goalCompiler = ({ data, properties, routes, objectTypes, context, path, memo, compiledMemo, module, urdf, worldModel }) => {
     // console.log('simple',data.id)
     let newCompiled = {
         shouldBreak: false,
@@ -13,11 +13,8 @@ export const simpleCompiler = ({ data, properties, routes, objectTypes, context,
         steps: []
     };
 
-    properties.children.some((child,idx) => {
-        if (Object.keys(child).length === 0) {
-            return false;
-        }
-        let childPath = routes.children[idx];
+    properties.example.some((child,idx) => {
+        let childPath = routes.example[idx];
         const childData = compiledMemo[child.id][childPath];
         if (childData.shouldBreak) {
             newCompiled.shouldBreak = true;

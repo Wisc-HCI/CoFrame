@@ -36,6 +36,7 @@ export const poseCompiler = ({
   properties,
   path,
   memo,
+  compiledMemo,
   module,
   worldModel,
 }) => {
@@ -92,23 +93,23 @@ export const poseCompiler = ({
       };
 
       // Get a list of links in the robot;
-      const robotLinks = robot.properties.compiled[ROOT_PATH].linkInfo.map(
+      const robotLinks = compiledMemo[robot.id][ROOT_PATH].linkInfo.map(
         (link) => link.name
       );
-      const urdf = robot.properties.compiled[ROOT_PATH].urdf;
+      const urdf = compiledMemo[robot.id][ROOT_PATH].urdf;
       const robotInitialJointState =
-        robot.properties.compiled[ROOT_PATH].initialJointState;
+      compiledMemo[robot.id][ROOT_PATH].initialJointState;
 
-      const proximity = robot.properties.compiled[ROOT_PATH].proximity;
+      const proximity = compiledMemo[robot.id][ROOT_PATH].proximity;
 
       // Enumerate grippers and search for ones that are based on this robot.
       grippers.forEach((gripper) => {
         if (robotLinks.includes(gripper.properties.relativeTo)) {
           // Check to see if there are previously calculated joint values for this pose.
-          const initialJointState = data.properties.compiled?.[path]?.states[
+          const initialJointState = compiledMemo[data.id]?.[path]?.states[
             robot.id
           ]?.[gripper.id]?.joints
-            ? data.properties.compiled[path].states[robot.id][gripper.id].joints
+            ? compiledMemo[data.id][path].states[robot.id][gripper.id].joints
             : robotInitialJointState;
 
           // Set up the objectives based on the attachment link
@@ -225,9 +226,8 @@ export const poseCompiler = ({
           states[robot.id][gripper.id] = likStateToData(
             state,
             robot.id,
-            robot.properties.compiled[ROOT_PATH].linkParentMap
+            compiledMemo[robot.id][ROOT_PATH].linkParentMap
           );
-          console.log(states[robot.id][gripper.id].proximity);
           // console.log(states[robot.id][gripper.id])
           // states[robot.id][gripper.id] = likStateToData(
           //   state,
@@ -249,5 +249,6 @@ export const poseCompiler = ({
     errorCode,
     otherPropertyUpdates: { states, reachability },
   };
+
   return newCompiled;
 };

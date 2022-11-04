@@ -31,7 +31,8 @@ export const COMPILE_FUNCTIONS = {
     HUMAN_AGENT: 11,
     GRIPPER: 12,
     LINK: 13,
-    PROPERTY: 14
+    PROPERTY: 14,
+    GOAL: 15
 }
 
 export const GOAL_FUNCTIONS = {
@@ -97,7 +98,8 @@ export const POSTPROCESS_TYPES = [
     'locationType',
     'machineType',
     'fixtureType',
-    'toolType'
+    'toolType',
+    'goalType'
 ]
 
 export const ROOT_PATH = JSON.stringify({});

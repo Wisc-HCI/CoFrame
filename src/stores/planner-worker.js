@@ -66,7 +66,7 @@ import init, { Solver } from 'coframe-rust';
 
 export const performCompileProcess = async (data) => {
     // console.log('performCompilerProcess--inworker')
-    const { programData, objectTypes } = data;
+    const { programData, compiledData, objectTypes } = data;
     // Process the data without stalling the UI
     // const module = await loadLikModule();
     await init();
@@ -94,8 +94,12 @@ export const performCompileProcess = async (data) => {
     // TODO: define scene based on the scene item instances
     const worldModel = createEnvironmentModel(programData)
 
+    const compileModel = compiledData;
+
     // First, preprocess certain types:
     let memo = {};
+    let compiledMemo = {};
+
     Object.values(programData)
         .filter(v=>PREPROCESS_TYPES.includes(v.type) && v.dataType === DATA_TYPES.INSTANCE)
         .forEach(data=>{
@@ -106,12 +110,15 @@ export const performCompileProcess = async (data) => {
                 context:programData,
                 path:ROOT_PATH,
                 memo,
+                compiledMemo,
                 module,
-                worldModel
+                worldModel,
+                compileModel
             }
-            const {memo:newMemo} = handleUpdate(computeProps)
+            const {memo:newMemo, compiledMemo:newCompiledMemo} = handleUpdate(computeProps);
             // console.log(newMemo)
-            memo = {...memo,...newMemo}
+            memo = {...memo,...newMemo};
+            compiledMemo = {...compiledMemo, ...newCompiledMemo};
     })
 
     // This is recursive
@@ -121,12 +128,15 @@ export const performCompileProcess = async (data) => {
         context:programData,
         path:ROOT_PATH,
         memo,
+        compiledMemo,
         module,
-        worldModel
+        worldModel,
+        compileModel
     }
-    const {memo:newMemo} = handleUpdate(computeProps)
+    const {memo:newMemo, compiledMemo:newCompiledMemo} = handleUpdate(computeProps);
 
-    memo = {...memo,...newMemo}
+    memo = {...memo,...newMemo};
+    compiledMemo = {...compiledMemo, ...newCompiledMemo};
 
     // Snag any instances which were not directly accessible that may need to be processed.
     Object.values(programData)
@@ -138,14 +148,17 @@ export const performCompileProcess = async (data) => {
                 context:programData,
                 path:ROOT_PATH,
                 memo,
+                compiledMemo,
                 module,
-                worldModel
+                worldModel,
+                compileModel
             }
-            const {memo:newMemo} = handleUpdate(computeProps)
-            memo = {...memo,...newMemo}
+            const {memo:newMemo, compiledMemo:newCompiledMemo} = handleUpdate(computeProps);
+            memo = {...memo,...newMemo};
+            compiledMemo = {...compiledMemo, ...newCompiledMemo};
     })
   
-    return memo;
+    return {data: memo, compiledData: compiledMemo };
 }
 
 Comlink.expose({performCompileProcess,test:()=>'Hi'})

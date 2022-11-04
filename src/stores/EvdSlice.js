@@ -185,9 +185,7 @@ export const EvdSlice = (set, get) => ({
           reviewableChanges += 1;
           Object.keys(newData[entry].properties)
             .forEach((field) => {
-              if (field === 'compiled') {
-                useCompiledStore.setState({[entry]:newData[entry].properties.compiled})
-              } else {
+              if (field !== 'compiled') {
                 state.programData[entry].properties[field] =
                   newData[entry].properties[field];
               }
@@ -214,17 +212,23 @@ export const EvdSlice = (set, get) => ({
     get().updatePlanProcess(null, plannerWorker);
     const { performCompileProcess } = Comlink.wrap(plannerWorker);
     // console.warn('performCompileProcess',performCompileProcess);
-    const compiled = useCompiledStore.getState();
-    let programData = mapValues(get().programData,((value)=>({...value,properties:{...value.properties,compiled:compiled[value.id]||{}}})))
+    // let programData = mapValues(get().programData,((value)=>({...value,properties:{...value.properties,compiled:compiled[value.id]||{}}})))
+    const programData = get().programData;
     const result = await performCompileProcess({
       programData,
+      compiledData: useCompiledStore.getState(),
       objectTypes: mapValues(
         get().programSpec.objectTypes,
         cleanedObjectType
       ),
     });
     // console.log(result)
-    get().updatePlanProcess(result, null);
+    get().updatePlanProcess(result.data, null);
+
+    // Update the compiled store
+    for (const key in result.compiledData) {
+      useCompiledStore.setState({[key]:result.compiledData[key]})
+    }
   },
   processes: {},
   reviewableChanges: 0,

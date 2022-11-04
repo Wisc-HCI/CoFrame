@@ -15,6 +15,7 @@ import lodash from "lodash";
 import { COMPILE_FUNCTIONS, ERROR, ROOT_PATH, STATUS } from "../Constants";
 import { DATA_TYPES } from "simple-vp";
 import { gripperCompiler } from "./gripper";
+import { goalCompiler } from "./goal";
 
 const KEY_MAPPING = {
   NULL: nullCompiler,
@@ -31,6 +32,7 @@ const KEY_MAPPING = {
   GRIPPER: gripperCompiler,
   LINK: linkCompiler,
   PROPERTY: propertyCompiler,
+  GOAL: goalCompiler,
 };
 // Ordering corresponds to the values in the COMPILE_FUNCTIONS constant
 
@@ -64,23 +66,25 @@ export const equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 // Copies data from a memo into the specified node.
 // Returns standard changes, which will need to be propagated back up.
-const copyMemoizedData = (memoizedData, data, path, singleton) => {
+const copyMemoizedData = (memoizedData, memoizedCompiledData, data, path, singleton) => {
 
-  if (memoizedData.properties.compiled[path]) {
+  if (memoizedCompiledData[path]) {
     return [
       memoizedData, // memoizedData
-      memoizedData.properties.compiled[path].status, // status
-      memoizedData.properties.compiled[path].errorCode, // errorCode
+      memoizedCompiledData, // memoizedCompiledData
+      memoizedCompiledData[path].status, // status
+      memoizedCompiledData[path].errorCode, // errorCode
       data.properties ? data.properties.status === STATUS.PENDING : true, // updated
-      memoizedData.properties.compiled[path].break, // shouldBreak
+      memoizedCompiledData[path].break, // shouldBreak
     ];
-  } else if (singleton && memoizedData.properties.compiled[ROOT_PATH]) {
+  } else if (singleton && memoizedCompiledData[ROOT_PATH]) {
     return [
       memoizedData, // memoizedData
-      memoizedData.properties.compiled[ROOT_PATH].status, // status
-      memoizedData.properties.compiled[ROOT_PATH].errorCode, // errorCode
+      memoizedCompiledData, // memoizedCompiledData
+      memoizedCompiledData[ROOT_PATH].status, // status
+      memoizedCompiledData[ROOT_PATH].errorCode, // errorCode
       data.properties ? data.properties.status === STATUS.PENDING : true, // updated
-      memoizedData.properties.compiled[ROOT_PATH].break, // shouldBreak
+      memoizedCompiledData[ROOT_PATH].break, // shouldBreak
     ];
   }
   
@@ -88,31 +92,33 @@ const copyMemoizedData = (memoizedData, data, path, singleton) => {
 
 // Copies data into memoized data.
 // Returns standard changes, which will need to be propagated back up.
-const updateMemoizedData = (memoizedData, data, path, singleton) => {
+const updateMemoizedData = (memoizedData, memoizedCompiledData, data, path, singleton, compileModel) => {
   // console.log("updateMemoizedData", { memoizedData, path, data, singleton });
   // console.warn('updating memoized version of ', data);
   let newMemoizedData = lodash.merge(
     { properties: { compiled: { [path]: {} } } },
     memoizedData
   );
-  let pastCompiled = data.properties.compiled[path];
-  if (!pastCompiled && singleton && data.properties.compiled[ROOT_PATH]) {
-    pastCompiled = data.properties.compiled[ROOT_PATH];
+  let newMemoizedCompiled = lodash.merge({[path]: {}}, memoizedCompiledData);
+  let pastCompiled = compileModel[data.id]?.[path];
+  if (!pastCompiled && singleton && compileModel[data.id]?.[ROOT_PATH]) {
+    pastCompiled = compileModel[data.id][ROOT_PATH];
   }
-  newMemoizedData.properties.compiled[path] = lodash.merge(
-    newMemoizedData.properties.compiled[path],
+  newMemoizedCompiled[path] = lodash.merge(
+    newMemoizedCompiled[path],
     pastCompiled
   );
-  if (newMemoizedData.properties.compiled[path].otherPropertyUpdates) {
+  if (newMemoizedCompiled[path].otherPropertyUpdates) {
     // console.log('Has other properties, updating...')
     newMemoizedData = lodash.merge(newMemoizedData, {
       properties:
-        newMemoizedData.properties.compiled[path].otherPropertyUpdates,
+      newMemoizedCompiled[path].otherPropertyUpdates,
     });
     // console.log('New with updates:', newMemoizedData)
   }
   return [
     newMemoizedData, // memoizedData
+    newMemoizedCompiled,
     pastCompiled.status, // status
     pastCompiled.errorCode, // errorCode
     data.properties ? data.properties.status === STATUS.PENDING : true, // updated
@@ -131,6 +137,7 @@ const performUpdate = (
   context,
   path,
   memo,
+  compiledMemo,
   module,
   worldModel,
   updateFn
@@ -144,6 +151,7 @@ const performUpdate = (
     context,
     path,
     memo,
+    compiledMemo,
     module,
     worldModel,
   });
@@ -154,10 +162,13 @@ const performUpdate = (
     { properties: { compiled: { [path]: {} } } },
     memoizedData
   );
-  newMemoizedData.properties.compiled[path] = lodash.merge(
-    newMemoizedData.properties.compiled[path],
+  let newMemoizedCompiled = {[path]: {}};
+  
+  newMemoizedCompiled[path] = lodash.merge(
+    newMemoizedCompiled[path],
     newCompiled
   );
+
   if (newCompiled.otherPropertyUpdates) {
     // console.log('Has other properties, updating...')
     newMemoizedData = lodash.merge(newMemoizedData, {
@@ -165,9 +176,10 @@ const performUpdate = (
     });
     // console.log('New with updates:', newMemoizedData)
   }
-  // console.log(newMemoizedData)
+
   return [
     newMemoizedData, // memoizedData
+    newMemoizedCompiled,
     newCompiled.status, // status
     newCompiled.errorCode, // errorCode
     data.properties ? data.properties.status === STATUS.PENDING : true, // updated
@@ -208,11 +220,14 @@ const computeProperty = (
   context,
   path,
   memo,
+  compiledMemo,
   module,
-  worldModel
+  worldModel,
+  compileModel,
 ) => {
   let memoizedData = {};
   let newMemo = { ...memo };
+  let newCompiledMemo = { ...compiledMemo };
   let status = STATUS.VALID;
   let updated = false;
   let shouldBreak = false;
@@ -223,14 +238,14 @@ const computeProperty = (
     status = STATUS.FAILED;
   }
   if (!fieldValue) {
-    return { memoizedData, memo: newMemo, status, updated, shouldBreak };
+    return { memoizedData, memo: newMemo, compiledMemo: newCompiledMemo, status, updated, shouldBreak };
   }
 
   if (fieldInfo.accepts) {
     const propData = findInstance(fieldValue, context);
     // Check cases where the result is null here
     if (!propData && fieldInfo.nullValid) {
-      return { memoizedData, memo: newMemo, status, updated, shouldBreak };
+      return { memoizedData, memo: newMemo, compiledMemo: newCompiledMemo, status, updated, shouldBreak };
     } else if (!propData) {
       status = STATUS.FAILED;
     } else {
@@ -241,13 +256,16 @@ const computeProperty = (
         context,
         path,
         memo: newMemo,
+        compiledMemo: newCompiledMemo,
         module,
         worldModel,
+        compileModel,
       };
 
       const {
         memoizedData: innerMemoizedData,
         memo: innerMemo,
+        compiledMemo: innerCompiledMemo,
         status: innerStatus,
         updated: innerUpdated,
         shouldBreak: innerShouldBreak,
@@ -269,6 +287,7 @@ const computeProperty = (
       exportPath = innerExportPath;
       memoizedData = innerMemoizedData;
       newMemo = lodash.merge(newMemo, innerMemo);
+      newCompiledMemo = lodash.merge(newCompiledMemo, innerCompiledMemo);
     }
   } else {
     memoizedData = fieldValue;
@@ -277,6 +296,7 @@ const computeProperty = (
   return {
     memoizedData,
     memo: newMemo,
+    compiledMemo: newCompiledMemo,
     status,
     updated,
     shouldBreak,
@@ -292,20 +312,31 @@ export const handleUpdate = ({
   context,
   path,
   memo,
+  compiledMemo,
   module,
   worldModel,
+  compileModel,
   force,
 }) => {
   let newMemo = { ...memo };
+  let newCompiledMemo = { ...compiledMemo };
   // console.warn('DATA:',{data,path,context,memo})
   // console.log('objectTypes',objectTypes)
-  const updateFn =
-    compilers[objectTypes[data.type].properties.compileFn.default];
+
+  // Determine the correct compiling function based on the object's properties
+  const updateFn = compilers[objectTypes[data.type].properties.compileFn.default];
+
+  // Use the memoized data if available
   let memoizedData = memo[data.id] ? memo[data.id] : {};
+  let memoizedCompiledData = compiledMemo[data.id] ? compiledMemo[data.id] : {};
+
   let updated = data.properties.status === STATUS.PENDING || force;
+
   if (force) {
     // console.log("forcing update for ", data);
   }
+
+  // Initial variable setup
   let status = STATUS.VALID;
   let shouldBreak = false;
   let exportPath = path;
@@ -322,10 +353,11 @@ export const handleUpdate = ({
   if (data.dataType !== DATA_TYPES.CALL) {
     // HANDLE NON-CALL LOGIC (MOST THINGS) //
 
-    if (memoizedData.properties?.compiled[path] || (memoizedData.properties?.singleton && memoizedData.properties?.compiled[ROOT_PATH])) {
+    if (memoizedCompiledData?.[path] || (memoizedData.properties?.singleton && memoizedCompiledData?.[ROOT_PATH])) {
       // Use the version in the memo
-      [memoizedData, status, errorCode, updated, shouldBreak] = copyMemoizedData(
+      [memoizedData, memoizedCompiledData, status, errorCode, updated, shouldBreak] = copyMemoizedData(
         memoizedData,
+        memoizedCompiledData,
         data,
         path,
         data.properties?.singleton
@@ -340,6 +372,7 @@ export const handleUpdate = ({
             const {
               memoizedData: innerMemoizedData,
               memo: innerMemo,
+              compiledMemo: innerCompiledMemo,
               status: innerStatus,
               updated: innerUpdated,
               shouldBreak: innerShouldBreak,
@@ -351,12 +384,15 @@ export const handleUpdate = ({
               context,
               path,
               memo,
+              compiledMemo,
               module,
-              worldModel
+              worldModel,
+              compileModel
             );
             properties[field].push(innerMemoizedData);
             routes[field].push(innerExportPath);
             newMemo = lodash.merge(newMemo, innerMemo);
+            newCompiledMemo = lodash.merge(newCompiledMemo, innerCompiledMemo);
             if (innerUpdated) {
               updated = true;
             }
@@ -377,6 +413,7 @@ export const handleUpdate = ({
           const {
             memoizedData: innerMemoizedData,
             memo: innerMemo,
+            compiledMemo: innerCompiledMemo,
             status: innerStatus,
             updated: innerUpdated,
             shouldBreak: innerShouldBreak,
@@ -388,12 +425,15 @@ export const handleUpdate = ({
             context,
             path,
             memo,
+            compiledMemo,
             module,
-            worldModel
+            worldModel,
+            compileModel,
           );
           properties[field] = innerMemoizedData;
           routes[field] = innerExportPath;
           newMemo = lodash.merge(newMemo, innerMemo);
+          newCompiledMemo = lodash.merge(newCompiledMemo, innerCompiledMemo);
           if (innerUpdated) {
             updated = true;
           }
@@ -412,7 +452,7 @@ export const handleUpdate = ({
       });
       let newErrorCode = null;
       if (updated) {
-        [memoizedData, status, newErrorCode, updated, shouldBreak] = performUpdate(
+        [memoizedData, memoizedCompiledData, status, newErrorCode, updated, shouldBreak] = performUpdate(
           memoizedData,
           data,
           properties,
@@ -421,17 +461,21 @@ export const handleUpdate = ({
           context,
           path,
           newMemo,
+          newCompiledMemo,
           module,
           worldModel,
           updateFn
         );
+
         updated = true;
       } else {
-        [memoizedData, status, newErrorCode, updated, shouldBreak] = updateMemoizedData(
+        [memoizedData, memoizedCompiledData, status, newErrorCode, updated, shouldBreak] = updateMemoizedData(
           memoizedData,
+          memoizedCompiledData,
           data,
           path,
-          data.properties?.singleton
+          data.properties?.singleton,
+          compileModel
         );
       }
       if (newErrorCode) {
@@ -454,10 +498,12 @@ export const handleUpdate = ({
     exportPath = fnPath;
     let newErrorCode = null;
 
-    if (memoizedData.properties?.compiled[exportPath] || (memoizedData.properties?.singleton && memoizedData.properties?.compiled[ROOT_PATH])) {
+    
+    if (memoizedCompiledData[exportPath] || (memoizedData.properties?.singleton && memoizedCompiledData[ROOT_PATH])) {
       // Use the version in the memo
-      [memoizedData, status, newErrorCode, updated, shouldBreak] = copyMemoizedData(
+      [memoizedData, memoizedCompiledData, status, newErrorCode, updated, shouldBreak] = copyMemoizedData(
         memoizedData,
+        memoizedCompiledData,
         data,
         exportPath,
         memoizedData.properties?.singleton
@@ -473,16 +519,16 @@ export const handleUpdate = ({
           status = STATUS.FAILED;
           memoizedData = {
             properties: {
-              compiled: {
-                [exportPath]: {
-                  shouldBreak: false,
-                  status: STATUS.FAILED,
-                  events: [],
-                  steps: [],
-                },
-              },
               status: STATUS.FAILED,
             },
+          };
+          memoizedCompiledData = {
+            [exportPath]: {
+              shouldBreak: false,
+              status: STATUS.FAILED,
+              events: [],
+              steps: [],
+            }
           };
           // console.log("failed arg check", { argument, context });
           // return { memoizedData, memo: newMemo, status, updated, shouldBreak, exportPath };
@@ -499,6 +545,7 @@ export const handleUpdate = ({
           const {
             memoizedData: innerMemoizedData,
             memo: innerMemo,
+            compiledMemo: innerCompiledMemo,
             status: innerStatus,
             updated: innerUpdated,
             shouldBreak: innerShouldBreak,
@@ -509,11 +556,14 @@ export const handleUpdate = ({
             fnContext,
             exportPath,
             memo,
+            compiledMemo,
             module,
-            worldModel
+            worldModel,
+            compileModel
           );
           properties[argument] = innerMemoizedData;
           newMemo = lodash.merge(newMemo, innerMemo);
+          newCompiledMemo = lodash.merge(newCompiledMemo, innerCompiledMemo);
           if (innerUpdated) {
             updated = true;
           }
@@ -537,6 +587,7 @@ export const handleUpdate = ({
         const {
           memoizedData: fnMemoizedData,
           memo: fnMemo,
+          compiledMemo: fnCompiledMemo,
           status: fnStatus,
           shouldBreak: fnShouldBreak,
           updated: fnUpdated,
@@ -546,13 +597,17 @@ export const handleUpdate = ({
           context: fnContext,
           path: fnPath,
           memo: newMemo,
+          compiledMemo: newCompiledMemo,
           module,
           worldModel,
+          compileModel,
           force: true,
         });
   
         memoizedData = { ...fnMemoizedData, id: data.id };
         newMemo = lodash.merge(newMemo, fnMemo);
+        newCompiledMemo = lodash.merge(newCompiledMemo, fnCompiledMemo);
+        memoizedCompiledData = newCompiledMemo[fnInstance.id];
         if (
           fnStatus === STATUS.FAILED ||
           (fnStatus === STATUS.WARN && status !== STATUS.FAILED)
@@ -574,22 +629,25 @@ export const handleUpdate = ({
 
   memoizedData.properties.status = status;
   memoizedData.properties.errorCode = errorCode;
-  if (memoizedData.properties.compiled[exportPath]) {
-    memoizedData.properties.compiled[exportPath].break = shouldBreak;
+  if (memoizedCompiledData[exportPath]) {
+    memoizedCompiledData[exportPath].break = shouldBreak;
   } else {
     console.warn("SHOULDBREAK ERROR: ", {
       memoizedData,
+      memoizedCompiledData,
       exportPath,
     });
   }
-  memoizedData.properties.compiled[exportPath].break = shouldBreak;
+  memoizedCompiledData[exportPath].break = shouldBreak;
   memoizedData.type = data.type;
   memoizedData.id = data.id;
 
   newMemo = { ...newMemo, [data.id]: memoizedData };
+  newCompiledMemo = { ...newCompiledMemo, [data.id]: memoizedCompiledData};
   return {
     memoizedData,
     memo: newMemo,
+    compiledMemo: newCompiledMemo,
     status,
     updated,
     shouldBreak,

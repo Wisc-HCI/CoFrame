@@ -283,6 +283,7 @@ export const robotMotionCompiler = ({
   // context,
   path,
   memo,
+  compiledMemo,
   // solver,
   module,
   worldModel,
@@ -375,23 +376,21 @@ export const robotMotionCompiler = ({
   const poses = [
     {
       type: "location",
-      ...trajectory.properties.compiled[path].startLocation.properties.compiled[
+      ...compiledMemo[compiledMemo[trajectory.id][path].startLocation.id][
         path
       ],
     },
-    ...trajectory.properties.compiled[path].waypoints.map((wp) => ({
+    ...compiledMemo[trajectory.id][path].waypoints.map((wp) => ({
       type: "waypoint",
-      ...wp.properties.compiled[path],
+      ...compiledMemo[wp.id][path],
     })),
     {
       type: "location",
-      ...trajectory.properties.compiled[path].endLocation.properties.compiled[
+      ...compiledMemo[compiledMemo[trajectory.id][path].endLocation.id][
         path
       ],
     },
   ];
-
-  // console.log(poses);
 
   robots.forEach((robot) => {
     const basePose = queryWorldPose(worldModel, robot.id);
@@ -423,12 +422,12 @@ export const robotMotionCompiler = ({
     };
 
     // Get a list of links in the robot;
-    const robotLinks = robot.properties.compiled[ROOT_PATH].linkInfo.map(
+    const robotLinks = compiledMemo[robot.id][ROOT_PATH].linkInfo.map(
       (link) => link.name
     );
     // Get the urdf of the robot (for livelyTK)
-    const urdf = robot.properties.compiled[ROOT_PATH].urdf;
-    const proximity = robot.properties.compiled[ROOT_PATH].proximity;
+    const urdf = compiledMemo[robot.id][ROOT_PATH].urdf;
+    const proximity = compiledMemo[robot.id][ROOT_PATH].proximity;
 
     // Consider each gripper/robot combo.
     // We filter those combos by the ones that actually feature linkages
@@ -648,7 +647,7 @@ export const robotMotionCompiler = ({
             const stateData = likStateToData(
               results.newState,
               robot.id,
-              robot.properties.compiled[ROOT_PATH].linkParentMap
+              compiledMemo[robot.id][ROOT_PATH].linkParentMap
             );
 
             reached = results.reached;

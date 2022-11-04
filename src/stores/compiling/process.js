@@ -1,11 +1,11 @@
 import { eventsToStates, statesToSteps } from ".";
 import { ERROR, STATUS, STEP_TYPE } from "../Constants";
 
-export const processCompiler = ({ data, properties, path, context, memo }) => {
+export const processCompiler = ({ data, properties, path, context, memo, compiledMemo }) => {
     const process = properties.process;
     const gizmo = properties.gizmo;
     // console.log('process',process)
-    const processGizmo = process.id && process?.properties?.compiled?.[path]?.gizmo ? process.properties.compiled[path].gizmo : {};
+    const processGizmo = process.id && compiledMemo[process.id]?.[path]?.gizmo ? compiledMemo[process.id][path].gizmo : {};
     // console.log({process, gizmo, processGizmo});
     let errorCode = null;
 
@@ -45,10 +45,10 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
     const robotIdleState = robot ? {[robot.id]: {busy: false}} : {};
     const robotBusyState = robot ? {[robot.id]: {busy: true}} : {};
 
-    const processSpawnables = process.properties ? process.properties.compiled[path].outputs : [];
-    const processDestroyables = process.properties ? process.properties.compiled[path].inputs : [];
+    const processSpawnables = process.properties ? compiledMemo[process.id][path].outputs : [];
+    const processDestroyables = process.properties ? compiledMemo[process.id][path].inputs : [];
     // console.log({process})
-    const requiredTime = process.id ? process.properties.compiled[path].processTime : 0;
+    const requiredTime = process.id ? compiledMemo[process.id][path].processTime : 0;
     // console.log('required time:',requiredTime)
 
     if (data.type === 'processStartType' && newCompiled.status === STATUS.VALID) {
@@ -67,11 +67,11 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
                         stepType: STEP_TYPE.DESTROY_ITEM,
                         data: {
                             ...stepData,
-                            thing: destroyable.properties.compiled[path].thing.id,
+                            thing: compiledMemo[destroyable.id][path].thing.id,
                             inputOutput: destroyable.id,
-                            position: destroyable.properties.compiled[path].position,
-                            rotation: destroyable.properties.compiled[path].rotation,
-                            relativeTo: destroyable.properties.compiled[path].relativeTo ? destroyable.properties.compiled[path].relativeTo : null
+                            position: compiledMemo[destroyable.id][path].position,
+                            rotation: compiledMemo[destroyable.id][path].rotation,
+                            relativeTo: compiledMemo[destroyable.id][path].relativeTo ? compiledMemo[destroyable.id][path].relativeTo : null
                         },
                         source: data.id,
                         effect: { [destroyable.id]: 'destroyed' },
@@ -88,11 +88,11 @@ export const processCompiler = ({ data, properties, path, context, memo }) => {
                         stepType: STEP_TYPE.SPAWN_ITEM,
                         data: {
                             ...stepData,
-                            thing: spawnable.properties.compiled[path].thing.id,
+                            thing: compiledMemo[spawnable.id][path].thing.id,
                             inputOutput: spawnable.id,
-                            position: spawnable.properties.compiled[path].position,
-                            rotation: spawnable.properties.compiled[path].rotation,
-                            relativeTo: spawnable.properties.compiled[path].relativeTo ? spawnable.properties.compiled[path].relativeTo : null
+                            position: compiledMemo[spawnable.id][path].position,
+                            rotation: compiledMemo[spawnable.id][path].rotation,
+                            relativeTo: compiledMemo[spawnable.id][path].relativeTo ? compiledMemo[spawnable.id][path].relativeTo : null
                         },
                         source: data.id,
                         effect: { [spawnable.id]: 'spawned' },

@@ -3,7 +3,7 @@ import { range, mapValues } from 'lodash';
 import { findLastSatisfiedFromReference } from "../helpers";
 import { eventsToStates, statesToSteps } from ".";
 
-export const gripperMotionCompiler = ({ data, properties, memo }) => {
+export const gripperMotionCompiler = ({ data, properties, memo, compiledMemo }) => {
     
     const robot = Object.values(memo).filter(v => v.type === 'robotAgentType')[0];
     let status = STATUS.VALID;
@@ -35,9 +35,10 @@ export const gripperMotionCompiler = ({ data, properties, memo }) => {
         let gripperValues = {};
         grippers.forEach(gripper => {
             // console.log(gripper)
+            const compiledGripper = compiledMemo[gripper.id];
             const gripperValue = time * changePerTime + properties.positionStart;
-            const idx = findLastSatisfiedFromReference(gripper.properties.compiled[ROOT_PATH].gripperIndex, v => v >= gripperValue);
-            const links = mapValues(gripper.properties.compiled[ROOT_PATH].gripperFrames, frameSet => frameSet[idx]);
+            const idx = findLastSatisfiedFromReference(compiledGripper[ROOT_PATH].gripperIndex, v => v >= gripperValue);
+            const links = mapValues(compiledGripper[ROOT_PATH].gripperFrames, frameSet => frameSet[idx]);
             frameData = { ...frameData, ...links };
             gripperValues[gripper.id] = gripperValue;
         })
