@@ -1,11 +1,9 @@
 import React, {forwardRef} from 'react';
-import { Box, Spinner, Button } from 'grommet';
+import { Box } from 'grommet';
 import { Environment } from 'simple-vp';
 import Tile from '../Elements/Tile';
 import useStore from '../../stores/Store';
 import { FiSettings, FiMaximize, FiMinimize } from "react-icons/fi";
-import { TipContent } from '../Elements/TipContent';
-import useMeasure from 'react-use-measure';
 import { Stack, CircularProgress, IconButton } from '@mui/material';
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import shallow from 'zustand/shallow';

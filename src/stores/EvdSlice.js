@@ -143,7 +143,8 @@ export const EvdSlice = (set, get) => ({
   },
   setData: (data) =>
     set((state) => {
-      const newData = mapValues(data, (d) => {
+      const {tabs, activeTab, ...programData} = data;
+      const newData = mapValues(programData, (d) => {
         if (d.dataType === DATA_TYPES.INSTANCE) {
           const defaultv = instanceTemplateFromSpec(
             d.type,
@@ -166,9 +167,15 @@ export const EvdSlice = (set, get) => ({
           return d;
         }
       });
-      console.log(newData);
+      // console.log(newData);
       state.programData = newData;
       state.loaded = true;
+      if (tabs) {
+        state.tabs = tabs
+      }
+      if (activeTab) {
+        state.activeTab = activeTab
+      }
     }),
   // setData: (data) => set((_) => ({ programData: data})),
   updatePoseJoints: (id, value, process) =>

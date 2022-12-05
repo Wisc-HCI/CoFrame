@@ -142,10 +142,18 @@ const createIKGoals = (
     goals.push({
       values: {
         eePosition: { Translation: [interpPos.x, interpPos.y, interpPos.z] },
-        eeRotation: { Rotation: [interpQuat.x, interpQuat.y, interpQuat.z, interpQuat.w] },
-        ...zipObject(jointNames,jointNames.map((joint) => ({ Scalar: jointState2[joint] })))
+        eeRotation: {
+          Rotation: [interpQuat.x, interpQuat.y, interpQuat.z, interpQuat.w],
+        },
+        ...zipObject(
+          jointNames,
+          jointNames.map((joint) => ({ Scalar: jointState2[joint] }))
+        ),
       },
-      weights: zipObject(jointNames,jointNames.map(() => endJointGoalWeight)),
+      weights: zipObject(
+        jointNames,
+        jointNames.map(() => endJointGoalWeight)
+      ),
       joints: jointGoals,
       position: { x: interpPos.x, y: interpPos.y, z: interpPos.z },
       rotation: {
@@ -178,12 +186,20 @@ const createJointGoals = (jointState1, jointState2, duration, jointNames) => {
       // console.log("createJointGoalsInner",{tmpJointGoals,jointState1,jointState2,percent,jointKey,joint1:jointState1[jointKey],joint2:jointState2[jointKey],interp:tmpJointGoals[jointKey]})
     });
     goals.push({
-      values: [
-        null,
-        null,
-        ...jointNames.map((joint) => ({ Scalar: tmpJointGoals[joint] })),
-      ],
-      weights: [COLLISION_WEIGHT, 7, ...jointNames.map(() => 20)],
+      values: {
+        eePosition: { Translation: [interpPos.x, interpPos.y, interpPos.z] },
+        eeRotation: {
+          Rotation: [interpQuat.x, interpQuat.y, interpQuat.z, interpQuat.w],
+        },
+        ...zipObject(
+          jointNames,
+          jointNames.map((joint) => ({ Scalar: tmpJointGoals[joint] }))
+        ),
+      },
+      weights: zipObject(
+        jointNames,
+        jointNames.map(() => 20)
+      ),
       joints: cloneDeep(tmpJointGoals),
     });
     idx += 1;

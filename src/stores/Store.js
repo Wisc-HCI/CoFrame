@@ -38,6 +38,15 @@ const store = (set, get) => ({
   ...EvdSlice(set, get),
   ...RosSlice(set, get),
   clock: new Timer(),
+  tabs: [
+    {
+      title:'Main',
+      id: 'default',
+      visible: true,
+      blocks: []
+    }
+  ],
+  activeTab:'default',
 });
 
 const immerStore = immer(store);
