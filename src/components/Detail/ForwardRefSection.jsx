@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import useStore from "../../stores/Store";
-import { Text } from "grommet";
 import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 import shallow from "zustand/shallow";
 import { stringEquality } from "../../helpers/performance";
 import {Collapse} from "../Elements/Collapse";
+import { Typography } from "@mui/material";
 
 export const ForwardRefSection = ({
   title,
@@ -57,7 +57,7 @@ export const ForwardRefSection = ({
               );
             })
           ) : (
-            <Text key='no-items' alignSelf="center">No Associated Items</Text>
+            <Typography style={{alignSelf:"center"}}>No Associated Items</Typography>
           )}
       </Collapse>
   );

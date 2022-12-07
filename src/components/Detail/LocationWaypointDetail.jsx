@@ -1,9 +1,8 @@
 import React from "react";
 import useStore from "../../stores/Store";
-import { Box, Button } from "grommet";
-import {Collapse} from "../Elements/Collapse";
+import { Collapse } from "../Elements/Collapse";
 // import { Toggle } from "../Elements/Toggle";
-import { Switch, IconButton } from "@mui/material";
+import { Switch, IconButton, Stack } from "@mui/material";
 import { FiRefreshCw } from "react-icons/fi";
 
 function LocationWaypointDetail(props) {
@@ -27,9 +26,9 @@ function LocationWaypointDetail(props) {
       header="Reachability"
       extra={
         <IconButton
-          sx={{marginRight:1}}
-          size='small'
-          color='primaryColor'
+          sx={{ marginRight: 1 }}
+          size="small"
+          color="primaryColor"
           onClick={() => forceRefreshBlock(item.id)}
         >
           <FiRefreshCw color={primaryColor} />
@@ -42,12 +41,14 @@ function LocationWaypointDetail(props) {
       {robotAgents
         .filter((robotAgent) => item.properties.reachability[robotAgent.id])
         .map((robotAgent) => (
-          <Box
+          <Stack
             key={robotAgent.id}
-            background="black"
-            round="xsmall"
-            gap="xsmall"
-            pad="xsmall"
+            style={{
+              backgroundColor: "black",
+              borderRadius: 2,
+              padding: 1,
+            }}
+            spacing={0.5}
           >
             {robotAgent.name}
             {grippers
@@ -57,18 +58,27 @@ function LocationWaypointDetail(props) {
                   undefined
               )
               .map((gripper) => (
-                <Box
+                <Stack
                   direction="row"
-                  justify="between"
-                  align="center"
+                  style={{
+                    justify: "between",
+                    align: "center",
+                    borderRadius: 2,
+                    backgroundColor: "#333333",
+                    padding: 1,
+                  }}
                   key={gripper.id}
-                  background="#333333"
-                  round="xsmall"
-                  gap="xsmall"
-                  pad="xsmall"
+                  spacing={0.5}
                 >
                   {gripper.name}
-                  <Switch onClick={()=>{}} checked={item.properties.reachability[robotAgent.id][gripper.id]} size="small" color='primaryColor'/>
+                  <Switch
+                    onClick={() => {}}
+                    checked={
+                      item.properties.reachability[robotAgent.id][gripper.id]
+                    }
+                    size="small"
+                    color="primaryColor"
+                  />
                   {/* <Toggle
                     selected={
                       item.properties.reachability[robotAgent.id][gripper.id]
@@ -77,9 +87,9 @@ function LocationWaypointDetail(props) {
                     backgroundColor={primaryColor}
                     size="small"
                   /> */}
-                </Box>
+                </Stack>
               ))}
-          </Box>
+          </Stack>
         ))}
     </Collapse>
   );

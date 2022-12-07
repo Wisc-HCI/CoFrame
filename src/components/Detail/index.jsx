@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import PositionRotationTF from "./PositionRotationTF";
-import { Box } from "grommet";
 import { GizmoDetail } from "./GizmoDetail";
 import useStore from "../../stores/Store";
 import shallow from "zustand/shallow";
-import { FiX, FiSquare, FiTrash2 } from "react-icons/fi";
+import { FiX, FiSquare, FiTrash2, FiDelete } from "react-icons/fi";
 import { NumberInput } from "../Elements/NumberInput";
 import { DETAIL_TYPES, STATUS } from "../../stores/Constants";
 import JointGripperInput from "./JointGripperInput";
 import LocationWaypointDetail from "./LocationWaypointDetail";
 import { ScrollRegion } from "../Elements/ScrollRegion";
 import {
+  Stack,
   Drawer,
   IconButton,
   TextField,
@@ -21,6 +21,7 @@ import {
   Typography,
   DialogContent,
   DialogActions,
+  Avatar,
 } from "@mui/material";
 import { BackRefSection } from "./BackRefSection";
 import { ForwardRefSection } from "./ForwardRefSection";
@@ -105,6 +106,7 @@ export const Detail = (_) => {
   // console.log("focusData", focusData);
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const open = item !== null && item !== undefined;
 
   return (
     // <Layer full="vertical" onEsc={clearFocus} position="right" modal={false}>
@@ -120,76 +122,77 @@ export const Detail = (_) => {
         },
       }}
       variant="persistent"
-      open={item !== null && item !== undefined}
+      open={open}
       hideBackdrop
       // elevation={16}
     >
-      {item && (
+      {open && (
         <>
-          <Box
+          <Stack
             direction="row"
-            align="center"
-            as="header"
-            justify="between"
-            background={objectColor}
-            pad="xsmall"
-            gap="xsmall"
-            // border={{ side: "bottom", color: "#333333" }}
+            style={{
+              align: "center",
+              justifyContent: "space-between",
+              backgroundColor: objectColor,
+              padding: 1,
+            }}
+            spacing={0.5}
           >
-            <Box
-              align="center"
-              justify="center"
-              style={{
-                backgroundColor: "#22222299",
-                color: "white",
-                padding: 9,
-                borderRadius: 5,
-                boxShadow: `0 0 0 1px #dddddd55`,
-                height: "39px",
-                width: "39px",
-              }}
-            >
-              <Icon />
-            </Box>
-
-            <TextField
-              // label='Name'
-              size="small"
-              margin="none"
-              variant="outlined"
-              color="quiet"
-              disabled={!item.canEdit}
-              value={item.name ? item.name : ""}
-              onChange={(e) => {
-                updateItemName(item.id, e.target.value);
-              }}
-              InputProps={{
-                style: {
-                  borderRadius: 5,
+            <Stack direction="row" spacing={0.25}>
+              <Avatar
+                variant="rounded"
+                style={{
                   backgroundColor: "#22222299",
-                },
-              }}
-            />
-            <Box direction="row" flex />
+                  color: "white",
+                  boxShadow: "0px 0px 1px 1px grey",
+                  margin: 1,
+                  height: 38,
+                  width: 38,
+                }}
+              >
+                <Icon />
+              </Avatar>
+
+              <TextField
+                // label='Name'
+                size="small"
+                margin="none"
+                variant="outlined"
+                color="quiet"
+                disabled={!item.canEdit}
+                value={item.name ? item.name : ""}
+                onChange={(e) => {
+                  updateItemName(item.id, e.target.value);
+                }}
+                InputProps={{
+                  style: {
+                    borderRadius: 5,
+                    backgroundColor: "#22222299",
+                  },
+                }}
+              />
+            </Stack>
+
             <IconButton onClick={clearFocus}>
               <FiX />
             </IconButton>
-          </Box>
-          <Box height="5px">
-            {item.properties.status === STATUS.PENDING && (
-              <LinearProgress variant="indeterminate" color="primaryColor" />
-            )}
-          </Box>
+          </Stack>
 
-          <Box
-            flex
-            overflow="auto"
-            pad="xsmall"
-            gap="small"
+          {item.properties.status === STATUS.PENDING && (
+            <LinearProgress variant="indeterminate" color="primaryColor" />
+          )}
+
+          <Stack
+            style={{
+              display: "flex",
+              overflow: "auto",
+              padding: 6,
+            }}
+            spacing={1}
             // border={{ color: "black", size: "xxsmall" }}
           >
             <ScrollRegion vertical>
-              <Box width="355px" gap="xsmall" pad={{ top: "small" }}>
+              <Stack spacing={0.5} style={{ width: "355px", paddingTop: 7 }}>
                 {/* Description */}
                 <TextField
                   multiline
@@ -202,19 +205,19 @@ export const Detail = (_) => {
                 />
 
                 {item.properties.processTime !== undefined && (
-                  <Box
+                  <Stack
                     direction="row"
-                    background="#303030"
-                    round="xsmall"
-                    pad="small"
-                    style={{ marginBottom: 5 }}
-                    justify="between"
-                    wrap={true}
+                    style={{
+                      backgroundColor: "#303030",
+                      borderRadius: 2,
+                      padding: 2,
+                      marginBottom: 5,
+                    }}
                   >
                     <b style={{ color: "rgba(255, 255, 255, 0.85)" }}>
                       Time :{" "}
                     </b>
-                    <Box direction="row">
+                    <Stack direction="row">
                       <NumberInput
                         value={item.properties.processTime}
                         min={0}
@@ -237,8 +240,8 @@ export const Detail = (_) => {
                       >
                         sec
                       </b>
-                    </Box>
-                  </Box>
+                    </Stack>
+                  </Stack>
                 )}
 
                 {item.properties.position !== undefined &&
@@ -311,16 +314,19 @@ export const Detail = (_) => {
                     <GizmoDetail gizmoId={item.properties.gizmo} />
                   </>
                 )}
-              </Box>
+              </Stack>
             </ScrollRegion>
-          </Box>
-          <Box
-            as="footer"
-            border={{ side: "top", color: "#333333" }}
-            pad="small"
-            justify="end"
+          </Stack>
+          <div style={{ display: "flex", flex: 1 }} />
+          <Stack
             direction="row"
-            align="center"
+            style={{
+              padding: 5,
+              justifyContent: "center",
+              alignContent: "center",
+              borderTop: "1px solid #333333",
+              backgroundColor: "#000",
+            }}
           >
             <div style={{ marginInline: "30%", display: "flex" }}>
               <Button
@@ -334,7 +340,7 @@ export const Detail = (_) => {
                 Delete
               </Button>
             </div>
-          </Box>
+          </Stack>
           <Dialog
             open={deleteConfirmOpen}
             onClose={() => setDeleteConfirmOpen(false)}

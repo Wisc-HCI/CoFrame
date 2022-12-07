@@ -8,8 +8,8 @@ import { localPoint } from "@visx/event";
 import { Text as VText } from "@visx/text";
 // import { LegendOrdinal } from "@visx/legend";
 import useStore from "../stores/Store";
-import { Box, Text } from "grommet";
-import { useSpring, animated } from "@react-spring/web";
+// import { Box, Text } from "grommet";
+// import { useSpring, animated } from "@react-spring/web";
 import { motion } from "framer-motion";
 import { useTime } from "./useTime";
 import {
@@ -24,6 +24,7 @@ import {
 import shallow from "zustand/shallow";
 import styled from "@emotion/styled";
 import { range } from "lodash";
+import { Stack, Typography } from "@mui/material";
 
 const defaultMargin = { top: 40, left: 80, right: 40, bottom: 25 };
 
@@ -496,15 +497,15 @@ const InnerGraph = withTooltip(
             legendLabelProps={{ style: { color: "white", paddingRight: 8 } }}
             labelFormat={(l) => capitalize(l)}
           /> */}
-          <Box direction="row" gap="small">
+          <Stack direction="row" spacing={1}>
             {Object.entries(eventTypes).map(([eventTypeKey, eventType]) => (
-              <Box
+              <Stack
                 key={eventTypeKey}
                 onClick={() => toggleExpanded(eventTypeKey)}
                 focusIndicator={false}
                 direction="row"
                 align="center"
-                gap="xsmall"
+                spacing={0.5}
               >
                 <Selector
                   color={eventType.color}
@@ -513,29 +514,29 @@ const InnerGraph = withTooltip(
                 <Text color="white " size="small">
                   {eventType.label}
                 </Text>
-              </Box>
+              </Stack>
             ))}
-          </Box>
+          </Stack>
         </div>
         {tooltipOpen && tooltipData && (
           <Tooltip top={tooltipTop} left={tooltipLeft} style={tooltipStyles}>
-            <Box gap="xsmall">
+            <Stack spacing={0.5}>
               {tooltipData.blocks.length > 0 ||
               tooltipData.events.length > 0 ? (
                 <>
                   {tooltipData.blocks.map((e, i) => (
                     <div key={`${i}b`}>
-                      <Box
+                      <Stack
                         direction="row"
                         alignContent="center"
                         align="center"
                         justify="start"
-                        gap="xsmall"
+                        spacing={0.5}
                       >
-                        <Text color={colorScale(e.event)} size={"medium"}>
+                        <Typography color={colorScale(e.event)} size={"medium"}>
                           {e.label}
-                        </Text>
-                      </Box>
+                        </Typography>
+                      </Stack>
 
                       <div>
                         {" "}
@@ -546,12 +547,12 @@ const InnerGraph = withTooltip(
                   ))}
                   {tooltipData.events.map((e, i) => (
                     <div key={`${i}e`}>
-                      <Box
+                      <Stack
                         direction="row"
                         alignContent="center"
                         align="center"
                         justify="start"
-                        gap="xsmall"
+                        spacing={0.5}
                       >
                         <div
                           style={{
@@ -562,10 +563,10 @@ const InnerGraph = withTooltip(
                             boxShadow: "0 0 0 2px white",
                           }}
                         />
-                        <Text color={colorScale(e.event)} size={"small"}>
+                        <Typography color={colorScale(e.event)} size={"small"}>
                           {e.label}
-                        </Text>
-                      </Box>
+                        </Typography>
+                      </Stack>
                       <div>@ {round(e.time / 1000)} sec</div>
                     </div>
                   ))}
@@ -573,7 +574,7 @@ const InnerGraph = withTooltip(
               ) : (
                 <strong style={{ color: primaryColor }}>No actions</strong>
               )}
-            </Box>
+            </Stack>
           </Tooltip>
         )}
       </div>

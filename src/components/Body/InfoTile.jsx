@@ -1,15 +1,34 @@
 import React from "react";
-import { Box, Button } from "grommet";
 import useStore from "../../stores/Store";
 import { FiChevronRight } from "react-icons/fi";
 import { getIssueInfo } from "../ContextualInfo/Issue";
 import Tile from "../Elements/Tile";
 import { DATA_TYPES } from "simple-vp";
 import { stringEquality } from "../../helpers/performance";
-import { Breadcrumbs } from "@mui/material";
+import { Breadcrumbs, Stack, Button, Chip } from "@mui/material";
 import { ScrollRegion } from "../Elements/ScrollRegion";
 import { GoalSection } from "../Goal/GoalSection";
-import { Stack } from "@mui/system";
+import { emphasize, styled } from '@mui/material/styles';
+
+const StyledBreadcrumb = styled(Chip)(({ theme }) => {
+  const backgroundColor =
+    theme.palette.mode === 'light'
+      ? theme.palette.grey[100]
+      : theme.palette.grey[800];
+  return {
+    backgroundColor,
+    height: theme.spacing(3),
+    color: theme.palette.text.primary,
+    fontWeight: theme.typography.fontWeightRegular,
+    '&:hover, &:focus': {
+      backgroundColor: emphasize(backgroundColor, 0.06),
+    },
+    '&:active': {
+      boxShadow: theme.shadows[1],
+      backgroundColor: emphasize(backgroundColor, 0.12),
+    },
+  };
+})
 
 export function InfoTile({ maxHeight }) {
   const [frame, primaryColor, focusData, activeFocus, setActiveFocus, goalList] =
@@ -92,17 +111,10 @@ export function InfoTile({ maxHeight }) {
       header={
         <Breadcrumbs separator={<FiChevronRight/>}>
           {tabs.map((tab, i) => (
-              <Button
-              key={i}
-                plain
+              <StyledBreadcrumb
+                key={i}
                 label={tab.title}
                 onClick={() => setActiveFocus(tab.key)}
-                margin={{
-                  top: "7pt",
-                  bottom: "7pt",
-                  right: "5pt",
-                  left: "5pt",
-                }}
                 style={{
                   color: tab.key === activeFocus ? primaryColor : "white",
                 }}
@@ -111,7 +123,7 @@ export function InfoTile({ maxHeight }) {
         </Breadcrumbs>
       }
     >
-      <ScrollRegion vertical height={maxHeight-48}>
+      <ScrollRegion vertical height={maxHeight-30}>
         <Stack style={{ paddingLeft: 10, paddingTop: 10, paddingRight: 15}}>
           {tabs[tabIdx] ? tabs[tabIdx].contents : tabs[0].contents}
         </Stack>

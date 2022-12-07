@@ -1,11 +1,10 @@
 import React, { memo, useCallback } from "react";
-import { Box } from "grommet";
 import { ReviewIssue } from "./ReviewIssue";
 import useStore from "../../stores/Store";
 import { FrameButton } from "../FrameButton";
 import frameStyles from "../../frameStyles";
 import { Collapse } from "../Elements/Collapse";
-import { Avatar, Chip, Typography, useTheme } from "@mui/material";
+import { Avatar, Chip, Typography, useTheme, Stack } from "@mui/material";
 import shallow from "zustand/shallow";
 import { FiCheck} from "react-icons/fi";
 
@@ -74,9 +73,9 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
   );
 
   return (
-    <Box direction="column" width="100%">
+    <Stack direction="column" style={{width:'100%'}}>
       {dependencies.map((dep, i) => (
-        <Box
+        <Stack
           key={dep}
           direction="row"
           align="middle"
@@ -102,7 +101,7 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
               onClick={() => setFrame(depFrames[i])}
             />
           )}
-        </Box>
+        </Stack>
       ))}
 
       <Collapse
@@ -145,6 +144,6 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
           <Typography sx={{ textAlign: "center" }}>No Issues</Typography>
         )}
       </Collapse>
-    </Box>
+    </Stack>
   );
 });

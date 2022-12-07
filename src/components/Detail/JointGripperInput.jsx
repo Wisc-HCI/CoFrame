@@ -1,9 +1,7 @@
 import React from "react";
-import { Box } from "grommet";
 
 import useStore from "../../stores/Store";
 import { Collapse } from "../Elements/Collapse";
-import { NumberInput } from "../Elements/NumberInput";
 import shallow from "zustand/shallow";
 import { TextField } from "@mui/material";
 import { clamp } from 'lodash';

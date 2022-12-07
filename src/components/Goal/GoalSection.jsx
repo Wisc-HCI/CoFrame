@@ -1,7 +1,5 @@
 import React, { memo } from "react";
-import { Box } from "grommet";
 import { GoalIssue } from "./GoalIssue";
-import { Collapse } from "../Elements/Collapse";
 import { Typography } from "@mui/material";
 
 export const GoalSection = memo(({goalList}) => {

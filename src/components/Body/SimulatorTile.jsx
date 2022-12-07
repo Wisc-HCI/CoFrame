@@ -1,5 +1,4 @@
 import React, {forwardRef} from "react";
-import { Box } from "grommet";
 import { Scene } from "robot-scene";
 import useStore from "../../stores/Store";
 import { Controls } from "../Elements/Controls";
@@ -9,9 +8,10 @@ import { ReflexContainer, ReflexSplitter, ReflexElement } from "react-reflex";
 // import { useSpring, animated } from '@react-spring/web';
 // import { config } from 'react-spring';
 import Tile from "../Elements/Tile";
-
+import { Stack, Typography } from "@mui/material";
 import MeshLookupTable from "../../meshes";
 import shallow from "zustand/shallow";
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
 export const SimulatorTile = forwardRef((_,ref) => {
   const primaryColor = useStore((state) => state.primaryColor,shallow);
@@ -24,40 +24,46 @@ export const SimulatorTile = forwardRef((_,ref) => {
 //   console.log({ topBounds, bottomBounds });
 
   return (
-    <Box
+    <Stack
       ref={ref}
-      animation="fadeIn"
-      flex
-      direction="column"
-      width="100%"
-      height="100%"
-      gap="xsmall"
-      background='rgb(25,25,25)'
+      style={{
+        display:'flex',
+        width:'100%',
+        height:'100%',
+        backgroundColor:'rgb(25,25,25)'
+      }}
+      spacing={0.5}
+      
     >
       <ReflexContainer orientation="horizontal">
         <ReflexElement style={{ overflow: "hidden" }} minSize={200}>
-          <Box ref={topRef} fill>
-            <Tile
-              style={{ height: topBounds.height, paddingBottom: "4pt",overflow:'hidden'}}
+          <ParentSize>
+            {({ height }) => (
+              <Tile
+              style={{ height, paddingBottom: "4pt",overflow:'hidden'}}
               borderRadius={0}
               backgroundColor={primaryColor}
               borderWidth={3}
               internalPaddingWidth={2}
               header={
-                <Box
+                <Stack
+                  style={{
+                    justifyContent:'space-between',
+                    alignContent:'center'
+                  }}
                   direction="row"
                   justify="between"
                   align="center"
                   pad={{ right: "small" }}
                 >
-                  <h3 style={{ margin: "10pt" }}>Simulator</h3>
+                  <Typography variant='h7' style={{ margin: "10pt", color:'white',fontFamily:'-apple-system' }}>Simulator</Typography>
                   <Controls />
-                </Box>
+                </Stack>
               }
             >
               <div
                 style={{
-                  height: topBounds.height - 65,
+                  height: height - 58,
                   width: "100%",
                   backgroundColor: "black",
                   padding: 0,
@@ -79,15 +85,18 @@ export const SimulatorTile = forwardRef((_,ref) => {
                 />
               </div>
             </Tile>
-          </Box>
+            )}
+          </ParentSize>
         </ReflexElement>
         <ReflexSplitter />
         <ReflexElement minSize={200}>
-          <Box fill ref={bottomRef}>
-            <InfoTile maxHeight={bottomBounds.height-8} />
-          </Box>
+          <ParentSize>
+            {({height})=>(
+              <InfoTile maxHeight={height-8} />
+            )}
+          </ParentSize>
         </ReflexElement>
       </ReflexContainer>
-    </Box>
+    </Stack>
   );
 });

@@ -1,9 +1,7 @@
 import React from "react";
-// import useStore from '../../stores/Store';
-import { Box } from "grommet";
 import PositionInput from "./PositionInput";
 import RotationInput from "./RotationInput";
-import { Card, CardHeader } from "@mui/material";
+import { Card, CardHeader, Stack } from "@mui/material";
 import useStore from "../../stores/Store";
 import shallow from "zustand/shallow";
 
@@ -24,34 +22,30 @@ function PositionRotationTF(props) {
         raised
         // variant='outlined'
         background="#303030"
-        sx={{ padding: '0px 5px 5px 5px' }}
+        sx={{ padding: "0px 5px 5px 5px" }}
       >
         <CardHeader
           title="Placement"
           titleTypographyProps={{ variant: "subtitle1" }}
         />
-        <Box direction="column" gap="small">
+        <Stack direction="column" spacing={1}>
           {/* <b style={{ color: 'rgba(255, 255, 255, 0.85)'}} >Placement : </b> */}
 
-          <Box>
-            <PositionInput
-              itemID={props.itemID}
-              position={props.position}
-              prevID={props.prevID}
-              mode={mode}
-              disabled={props.disabled}
-            />
-          </Box>
-          <Box>
-            <RotationInput
-              itemID={props.itemID}
-              rotation={props.rotation}
-              prevID={props.prevID}
-              mode={mode}
-              disabled={props.disabled}
-            />
-          </Box>
-        </Box>
+          <PositionInput
+            itemID={props.itemID}
+            position={props.position}
+            prevID={props.prevID}
+            mode={mode}
+            disabled={props.disabled}
+          />
+          <RotationInput
+            itemID={props.itemID}
+            rotation={props.rotation}
+            prevID={props.prevID}
+            mode={mode}
+            disabled={props.disabled}
+          />
+        </Stack>
       </Card>
     </>
   );

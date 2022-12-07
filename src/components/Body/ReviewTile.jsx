@@ -1,5 +1,4 @@
 import React from "react";
-import { Box } from "grommet";
 import { FiRefreshCw } from "react-icons/fi";
 import useStore from "../../stores/Store";
 import shallow from "zustand/shallow";
@@ -10,47 +9,11 @@ import { ScrollRegion } from "../Elements/ScrollRegion";
 import { stringEquality } from "../../helpers/performance";
 import {
   Button,
-  BottomNavigation,
-  BottomNavigationAction,
+  Stack,
   Paper,
   Badge,
+  Typography
 } from "@mui/material";
-// import * as ScrollArea from "@radix-ui/react-scroll-area";
-// import { styled } from "@stitches/react";
-
-// const StyledScrollArea = styled(ScrollArea.Root, {
-//   overflow: "hidden",
-// });
-
-// const StyledViewport = styled(ScrollArea.Viewport, {
-//   width: "100%",
-//   height: "100%",
-//   borderRadius: "inherit",
-//   padding: "4pt",
-// });
-
-// const StyledScrollbar = styled(ScrollArea.Scrollbar, {
-//   display: "flex",
-//   // ensures no selection
-//   userSelect: "none",
-//   // disable browser handling of all panning and zooming gestures on touch devices
-//   touchAction: "none",
-//   padding: 2,
-//   background: "#55555525",
-//   transition: "background 160ms ease-out",
-//   "&:hover": { background: "#45454540" },
-//   '&[data-orientation="vertical"]': { width: 8 },
-//   '&[data-orientation="horizontal"]': {
-//     flexDirection: "column",
-//     height: 8,
-//   },
-// });
-
-// const StyledThumb = styled(ScrollArea.Thumb, {
-//   flex: 1,
-//   background: "#eeeeee66",
-//   borderRadius: 8,
-// });
 
 const isComplete = (state, sectionId) =>
   state.sections[sectionId].issues
@@ -116,8 +79,8 @@ export const ReviewTile = (_) => {
         width={338}
         backgroundColor="transparent"
       />
-      <Box direction="row" flex justify="between" align="center">
-        <h3 style={{ margin: "10pt" }}>Review</h3>
+      <Stack direction="row" style={{justifyContent:'space-between',alignContent:'center',padding:5}}>
+        <Typography component='span'>Review</Typography>
         <Badge
           color="primary"
           badgeContent={<b>!</b>}
@@ -130,19 +93,18 @@ export const ReviewTile = (_) => {
             size="small"
             startIcon={<FiRefreshCw />}
             onClick={refresh}
-            label="Refresh"
             disabled={isProcessing}
           >
             Refresh
           </Button>
         </Badge>
-      </Box>
+      </Stack>
       <ScrollRegion vertical height={bounds.height - 125}>
-        <Box
+        <Stack
           direction="column"
           style={{ width: "calc(100% - 6px)" }}
           round="small"
-          gap="xsmall"
+          spacing={0.5}
         >
           {Object.values(frames)[frameIdx].sections.map((section, idx) => (
             <ReviewSection
@@ -152,7 +114,7 @@ export const ReviewTile = (_) => {
               initialBlocked={idx === blockages[frameIdx]}
             />
           ))}
-        </Box>
+        </Stack>
       </ScrollRegion>
     </Paper>
   );

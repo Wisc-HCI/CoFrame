@@ -1,10 +1,9 @@
 import React, {forwardRef} from 'react';
-import { Box } from 'grommet';
 import { Environment } from 'simple-vp';
 import Tile from '../Elements/Tile';
 import useStore from '../../stores/Store';
 import { FiSettings, FiMaximize, FiMinimize } from "react-icons/fi";
-import { Stack, CircularProgress, IconButton } from '@mui/material';
+import { Stack, CircularProgress, IconButton, Typography } from '@mui/material';
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import shallow from 'zustand/shallow';
 
@@ -19,7 +18,7 @@ export const ProgramTile = forwardRef((_,ref) => {
 
     // console.log(visible)
     return (
-        <Box ref={ref} animation='fadeIn' direction='column' width='100%' height='100%'>
+        <Stack ref={ref} direction='column' style={{width:'100%',height:'100%'}} >
             <ParentSize>
               {({ height }) =>
             <Tile
@@ -28,10 +27,8 @@ export const ProgramTile = forwardRef((_,ref) => {
                 borderRadius={0}
                 internalPaddingWidth={0}
                 header={
-                    <Box direction='row' justify='between' align='center' pad={{right:'small'}}>
-                        <h3 style={{ margin: '10pt' }}>
-                            Program Editor
-                        </h3>
+                    <Stack direction='row' style={{paddingRight:'4px', alignContent:'center', justifyContent:'space-between'}}>
+                        <Typography variant='h7' style={{ margin: "10pt", color:'white',fontFamily:'-apple-system' }}>Program Editor</Typography>
                         <Stack direction='row' gap={1} alignItems='center'>
                             {isProcessing && (
                                 <CircularProgress size={18} variant='indeterminate' color='primaryColor' />
@@ -43,35 +40,20 @@ export const ProgramTile = forwardRef((_,ref) => {
                                 <FiSettings />
                             </IconButton>
                         </Stack>
-                        {/* <Box direction='row' align='center' gap='small'>
-                            
-                            <Button
-                                tip={{
-                                    content: <TipContent message={viewMode === 'default' ? 'Expand' : 'Shrink'} inverted />,
-                                    plain: true,
-                                    dropProps: {
-                                        align: { top: 'bottom' }
-                                    }
-                                }}
-                                icon=
-                                onClick={() => setViewMode(viewMode === 'default' ? 'program' : 'default')}
-                            />
-                            <Button plain margin={{ right: 'medium' }} secondary icon={<FiSettings />} label='Settings' onClick={() => setActiveModal('settings')} />
-                        </Box> */}
-                    </Box>
+                    </Stack>
 
                 }
             >   
             
                 {/* <StyleWrapper highlightColor='red'> */}
-                <Environment store={useStore} highlightColor={highlightColor} height={height-62} snapToGrid={false} animateDrawer={true}/>
+                <Environment store={useStore} highlightColor={highlightColor} height={height-58} snapToGrid={false} animateDrawer={true}/>
                 {/* </StyleWrapper> */}
                 
              
             </Tile>
              }
              </ParentSize>
-        </Box>
+        </Stack>
 
 
 

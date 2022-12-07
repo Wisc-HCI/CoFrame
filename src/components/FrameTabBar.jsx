@@ -36,8 +36,8 @@ const Icon = ({ onChange, active, frame, width }) => {
   //   // config: config.molasses,
   // });
   const variants = {
-    inactive: {backgroundColor:frameStyles.colors[frame],fill:frameStyles.colors[frame]},
-    active: {backgroundColor:'#000000',fill:'#000000'},
+    inactive: {backgroundColor:'transparent',fill:frameStyles.colors[frame]},
+    active: {backgroundColor:'transparent',fill:'#000000'},
   }
 
   const textVariants = {
@@ -60,7 +60,7 @@ const Icon = ({ onChange, active, frame, width }) => {
         zIndex: 100,
         display: "flex",
         flexDirection: "column",
-        width,
+        width
       }}
     >
       <motion.svg
@@ -77,6 +77,7 @@ const Icon = ({ onChange, active, frame, width }) => {
           strokeLinejoin: "round",
           strokeMiterlimit: 2,
           paddingTop: '2pt',
+          
         }}
       >
         {GROUPS[frame]}
@@ -109,33 +110,11 @@ export const FrameTabBar = ({
   // const inactiveIconStyle
 
   const keys = Object.keys(frameStyles.colors);
+  const count = 4;
   const variants = mapValues(frameStyles.colors, (v,k) => ({
     backgroundColor: v,
     x: keys.indexOf(k)*width/4,
   }));
-
-  // console.log(variants)
-
-  // const spring = useSpring(0);
-  // const bcolor = useTransform(
-  //   spring,
-  //   [0, 1, 2, 3],
-  //   ["safety", "quality", "performance", "business"].map(
-  //     (v) => frameStyles.colors[v]
-  //   )
-  // );
-  // const transformX = useTransform(
-  //   spring,
-  //   [0, 1, 2, 3],
-  //   [0, 1, 2, 3].map((v) => (v * width) / 4)
-  // );
-
-  // console.log(transformX);
-  // {
-  //   backgroundColor: frameStyles.colors[active],
-  //   translateX: FRAMES.indexOf(active) * width/4,
-  //   // config: config.stiff,
-  // });
 
   return (
     <div
@@ -153,9 +132,7 @@ export const FrameTabBar = ({
         variants={variants}
         animate={active}
         style={{
-          // x: transformX,
-          // backgroundColor: bcolor,
-          width: width / 4,
+          width: width / count,
           position: "absolute",
           height: '54px',
           borderRadius: 4,
@@ -165,28 +142,28 @@ export const FrameTabBar = ({
         frame="safety"
         active={active === "safety"}
         onChange={onChange}
-        width={width / 4}
+        width={width / count}
       />
 
       <Icon
         frame="quality"
         active={active === "quality"}
         onChange={onChange}
-        width={width / 4}
+        width={width / count}
       />
 
       <Icon
         frame="performance"
         active={active === "performance"}
         onChange={onChange}
-        width={width / 4}
+        width={width / count}
       />
 
       <Icon
         frame="business"
         active={active === "business"}
         onChange={onChange}
-        width={width / 4}
+        width={width / count}
       />
     </div>
   );

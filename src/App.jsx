@@ -3,7 +3,6 @@ import React, { useCallback } from "react";
 import { ReviewTile } from "./components/Body/ReviewTile";
 import { SimulatorTile } from "./components/Body/SimulatorTile";
 import { ProgramTile } from "./components/Body/ProgramTile";
-import { Grommet, Box } from "grommet";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import { TIMELINE_TYPES, STATUS } from "./stores/Constants";
 // import { Modals } from "./components/Modals";
@@ -21,22 +20,18 @@ import {
   Snackbar,
   Alert,
   AlertTitle,
-  Backdrop,
-  CircularProgress,
+  Stack,
 } from "@mui/material";
 import { ReflexContainer, ReflexSplitter, ReflexElement } from "react-reflex";
 import useMeasure from "react-use-measure";
 import useStore from "./stores/Store";
 import useCompiledStore from "./stores/CompiledStore";
-import { getTheme } from "./theme";
-import 'reactflow/dist/style.css';
+import "reactflow/dist/style.css";
 import "react-reflex/styles.css";
 import "./App.css";
 import shallow from "zustand/shallow";
 
 export default function App() {
-  const loaded = useStore((state) => state.loaded, shallow);
-  // console.log('loaded',loaded)
   const primaryColor = useStore((state) => state.primaryColor, shallow);
   const viewMode = useStore((state) => state.viewMode, shallow);
   const visibleSteps = useStore(
@@ -106,7 +101,7 @@ export default function App() {
   const [editorRef, editorBounds] = useMeasure();
   const [simRef, simBounds] = useMeasure();
 
-  const theme = getTheme(primaryColor);
+  // const theme = getTheme(primaryColor);
   const muiTheme = createTheme({
     palette: {
       mode: "dark",
@@ -130,17 +125,32 @@ export default function App() {
         darker: "#ddd",
       },
       safety: {
-        main: '#CC79A7'
+        main: "#CC79A7",
       },
       quality: {
-        main: '#56B4E9'
+        main: "#56B4E9",
       },
       performance: {
-        main: '#E69F00'
+        main: "#E69F00",
       },
       business: {
-        main: '#009E73'
+        main: "#009E73",
       },
+    },
+    typography: {
+      color:'white',
+      fontFamily: [
+        "-apple-system",
+        "BlinkMacSystemFont",
+        '"Segoe UI"',
+        "Roboto",
+        '"Helvetica Neue"',
+        "Arial",
+        "sans-serif",
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(","),
     },
   });
 
@@ -154,154 +164,126 @@ export default function App() {
   const showEditor = viewMode === "default" || viewMode === "program";
 
   return (
-    <Grommet full theme={theme}>
-      {/* <CssBaseline/> */}
-      {/* Main container */}
-      <ThemeProvider theme={muiTheme}>
-        <div
-          style={{
-            backgroundColor: "black",
-            height: "100vh",
-            width: "100vw",
-            position: "fixed",
-          }}
+    // <Grommet full theme={theme}>
+    <ThemeProvider theme={muiTheme}>
+      <Stack
+        direction="row"
+        style={{
+          backgroundColor: "red",
+          height: "100vh",
+          width: "100vw",
+          position: "fixed",
+        }}
+      >
+        <ReviewTile />
+        <ReflexContainer
+          orientation="vertical"
+          style={{ backgroundColor: "blue" }}
         >
-          {!loaded ? (
-            <Backdrop
-              sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-              open
+          {showSim && (
+            <ReflexElement
+              // minSize={200}
+              onStopResize={(e) => {
+                if (simBounds.width / editorBounds.width < 0.2) {
+                  console.log("setting to program", e);
+                  setViewMode("program");
+                }
+              }}
             >
-              <CircularProgress color="inherit" />
-            </Backdrop>
-          ) : (
-            <>
-              {/* <Main open={open}> */}
-              <Box
-                fill
-                direction="row"
-                style={{
-                  paddingBottom:
-                    visibleSteps && errorType === null ? "20vh" : 0,
-                }}
-              >
-                {/* <Box>
-              <Box onClick={() => setOpen(!open)}>Bottom</Box>
-            </Box> */}
-                <ReviewTile />
-                <ReflexContainer orientation="vertical">
-                  {showSim && (
-                    <ReflexElement
-                      style={{}}
-                      // minSize={200}
-                      onStopResize={(e) => {
-                        if (simBounds.width / editorBounds.width < 0.2) {
-                          console.log("setting to program", e);
-                          setViewMode("program");
-                        }
-                      }}
-                    >
-                      <SimulatorTile ref={simRef} />
-                    </ReflexElement>
-                  )}
-                  {viewMode === "default" && <ReflexSplitter />}
-
-                  {showEditor && (
-                    <ReflexElement
-                      id="reflex-program"
-                      style={{ overflow: "hidden" }}
-                      // minSize={200}
-                      onStopResize={(e) => {
-                        if (editorBounds.width / simBounds.width < 0.2) {
-                          console.log("setting to sim", e);
-                          setViewMode("sim");
-                        }
-                      }}
-                    >
-                      <ProgramTile ref={editorRef} />
-                    </ReflexElement>
-                  )}
-                </ReflexContainer>
-              </Box>
-              {/* </Main> */}
-              <Snackbar
-                open={errorType}
-                autoHideDuration={6000}
-                onClose={clearFocus}
-              >
-                <Alert
-                  variant="filled"
-                  severity="error"
-                  sx={{ width: "100%" }}
-                  onClose={clearFocus}
-                >
-                  <AlertTitle>
-                    {errorType === "traces"
-                      ? "No single trace is available to display"
-                      : "Selected action contains errors"}
-                  </AlertTitle>
-                  {errorType === "traces" ? (
-                    <>
-                      <p>
-                        This is usually because you are attempting to visualize
-                        an action in a skill that is used multiple times.
-                      </p>
-                      <p>
-                        To visualize, you will need to visualize the skill-call
-                        instead.
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p>
-                        You likely have not parameterized all fields correctly,
-                        or are missing critical values.
-                      </p>
-                      <p>Consult the review panel for more suggestions.</p>
-                    </>
-                  )}
-                </Alert>
-              </Snackbar>
-              <Drawer
-                anchor="bottom"
-                sx={{
-                  height: "20vh",
-                  flexShrink: 0,
-                  "& .MuiDrawer-paper": {
-                    height: "20vh",
-                    boxSizing: "border-box",
-                  },
-                }}
-                variant="persistent"
-                open={visibleSteps && errorType === null}
-              >
-                <ParentSize>
-                  {({ width, height }) =>
-                    visibleSteps && errorType === null ? (
-                      <TimelineGraph
-                        width={width}
-                        height={height - 10}
-                        focusSteps={focusSteps}
-                        issue={
-                          issueData?.graphData?.isTimeseries
-                            ? issueData.graphData
-                            : null
-                        }
-                      />
-                    ) : null
-                  }
-                </ParentSize>
-              </Drawer>
-              <Detail />
-              <SettingsModal />
-            </>
+              <SimulatorTile ref={simRef} />
+            </ReflexElement>
           )}
-        </div>
+          {viewMode === "default" && <ReflexSplitter />}
 
-        {/* <SettingsModal />
+          {showEditor && (
+            <ReflexElement
+              id="reflex-program"
+              style={{ overflow: "hidden", backgroundColor: "red" }}
+              // minSize={200}
+              onStopResize={(e) => {
+                if (editorBounds.width / simBounds.width < 0.2) {
+                  console.log("setting to sim", e);
+                  setViewMode("sim");
+                }
+              }}
+            >
+              <ProgramTile ref={editorRef} />
+            </ReflexElement>
+          )}
+        </ReflexContainer>
+        {/* <Snackbar open={errorType} autoHideDuration={6000} onClose={clearFocus}>
+          <Alert
+            variant="filled"
+            severity="error"
+            sx={{ width: "100%" }}
+            onClose={clearFocus}
+          >
+            <AlertTitle>
+              {errorType === "traces"
+                ? "No single trace is available to display"
+                : "Selected action contains errors"}
+            </AlertTitle>
+            {errorType === "traces" ? (
+              <>
+                <p>
+                  This is usually because you are attempting to visualize an
+                  action in a skill that is used multiple times.
+                </p>
+                <p>
+                  To visualize, you will need to visualize the skill-call
+                  instead.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  You likely have not parameterized all fields correctly, or are
+                  missing critical values.
+                </p>
+                <p>Consult the review panel for more suggestions.</p>
+              </>
+            )}
+          </Alert>
+        </Snackbar> */}
+        {/* <Drawer
+          anchor="bottom"
+          sx={{
+            height: "20vh",
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              height: "20vh",
+              boxSizing: "border-box",
+            },
+          }}
+          variant="persistent"
+          open={visibleSteps && errorType === null}
+        >
+          <ParentSize>
+            {({ width, height }) =>
+              visibleSteps && errorType === null ? (
+                <TimelineGraph
+                  width={width}
+                  height={height - 10}
+                  focusSteps={focusSteps}
+                  issue={
+                    issueData?.graphData?.isTimeseries
+                      ? issueData.graphData
+                      : null
+                  }
+                />
+              ) : null
+            }
+          </ParentSize>
+        </Drawer> */}
+        
+      </Stack>
+      <Detail />
+      <SettingsModal />
+      {/* <SettingsModal />
         
        */}
-      </ThemeProvider>
-    </Grommet>
+    </ThemeProvider>
+    // </Grommet>
   );
 }
 

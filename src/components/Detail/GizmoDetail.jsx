@@ -1,8 +1,8 @@
 import React from 'react';
 import useStore from '../../stores/Store';
-import { Box, Text } from 'grommet';
 import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
 import {Collapse} from '../Elements/Collapse';
+import { Stack, Typography } from '@mui/material';
 
 export const GizmoDetail = ({ gizmoId }) => {
 
@@ -34,9 +34,7 @@ export const GizmoDetail = ({ gizmoId }) => {
       {gizmoList ? gizmoList.map(gizmo => {
         const gizmoRef = gizmo.type === 'machineType' ? referenceTemplateFromSpec('machineType', gizmo, gizmoMachineInfo) : referenceTemplateFromSpec('toolType', gizmo, gizmoToolInfo) ;
         return (
-          <Box key={gizmo.id} round="xsmall" background="rgba(100,100,100,0.3)" direction='column'
-            elevation="none" pad="xsmall" justify='center'
-            hoverIndicator={true}
+          <Stack key={gizmo.id} style={{borderRadius:2,backgroundColor:"rgba(100,100,100,0.3)",padding:1,justify:'center'}} direction='column'
             onClick={() => {
               addFocusItem(gizmo.id, true);
             }}>
@@ -45,10 +43,10 @@ export const GizmoDetail = ({ gizmoId }) => {
               data={gizmoRef}
               highlightColor={"#333333"}
             />
-          </Box>
+          </Stack>
         )
       }) : (
-        <Text alignSelf='center'>No Associated Gizmo</Text>
+        <Typography style={{alignSelf:"center"}}>No Associated Items</Typography>
       )}
     </Collapse>
   )

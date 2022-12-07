@@ -9,8 +9,9 @@ import { localPoint } from "@visx/event";
 import { LegendOrdinal } from "@visx/legend";
 import useStore from "../stores/Store";
 // import { uniq } from "lodash";
-import { Box, Text } from "grommet";
+// import { Box, Text } from "grommet";
 import { strip } from "number-precision";
+import { Stack, Typography } from "@mui/material";
 
 export const background = "#eaedff";
 const defaultMargin = { top: 20, left: 40, right: 10, bottom: 20 };
@@ -352,16 +353,16 @@ const IssueGraph = withTooltip(
             left={tooltipLeft + 30}
             style={tooltipStyles}
           >
-            <Box gap="xsmall">
+            <Stack spacing={0.5}>
               {camelCaseToWords(yAxisLabel)}
               {keys.map((key) => (
-                <Box
+                <Stack
                   key={key}
                   direction="row"
                   alignContent="center"
                   align="center"
                   justify="start"
-                  gap="xsmall"
+                  spacing={0.5}
                 >
                   <div
                     style={{
@@ -372,7 +373,7 @@ const IssueGraph = withTooltip(
                       boxShadow: "0 0 0 2px white",
                     }}
                   ></div>
-                  <Text
+                  <Typography
                     color={getColor(tooltipData[key],filledThresholds)}
                     size="small"
                   >
@@ -381,10 +382,10 @@ const IssueGraph = withTooltip(
                     {strip(tooltipData[key].toFixed(decimals))}
                     {' '}
                     {units}
-                  </Text>
-                </Box>
+                  </Typography>
+                </Stack>
               ))}
-            </Box>
+            </Stack>
           </TooltipWithBounds>
         )}
       </div>
