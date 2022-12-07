@@ -29,6 +29,7 @@ import { PANDA_ROBOT_DATA } from "../presets/robotAgents/pandaRobot";
 import { UR3E_ROBOT_DATA } from "../presets/robotAgents/ur3eRobot";
 import { PANDA_GRIPPER_DATA } from "../presets/gripperAgents/pandaGripper";
 import { ROBOTIQ_GRIPPER_DATA } from "../presets/gripperAgents/robotiqGripper";
+import { statesToSteps } from "../stores/compiling";
 
 const DialogContent = () => {
   // const url = useStore((store) => store.url, shallow);
@@ -41,7 +42,7 @@ const DialogContent = () => {
     shallow
   );
   const setData = useStore((store) => store.setData, shallow);
-  const data = useStore((store) => store.programData, shallow);
+  const data = useStore((store) => ({...store.programData,tabs:store.tabs,activeTab:store.activeTab}), shallow);
   const frameId = useStore((store) => store.frame, shallow);
   const setFrame = useStore((store) => store.setFrame, shallow);
   const deleteAgent = useStore(store=>store.deleteAgent, shallow);

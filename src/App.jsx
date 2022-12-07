@@ -29,6 +29,7 @@ import useMeasure from "react-use-measure";
 import useStore from "./stores/Store";
 import useCompiledStore from "./stores/CompiledStore";
 import { getTheme } from "./theme";
+import 'reactflow/dist/style.css';
 import "react-reflex/styles.css";
 import "./App.css";
 import shallow from "zustand/shallow";
