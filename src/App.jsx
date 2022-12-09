@@ -198,7 +198,7 @@ export default function App() {
           {showEditor && (
             <ReflexElement
               id="reflex-program"
-              style={{ overflow: "hidden", backgroundColor: "red" }}
+              style={{ overflow: "hidden"}}
               // minSize={200}
               onStopResize={(e) => {
                 if (editorBounds.width / simBounds.width < 0.2) {

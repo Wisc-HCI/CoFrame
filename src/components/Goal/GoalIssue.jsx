@@ -62,8 +62,8 @@ export const GoalIssue = ({ goal }) => {
           </Badge>
         </div>
         <Stack direction="column" spacing={2} style={{ width: "100%" }}>
-          <Typography style={{fontSize:20,marginTop:10,marginBottom:0,color:'#ddd'}}>{goal.properties.header}</Typography>
-          <Typography style={{fontSize:16,marginTop:4,marginBottom:0,color:'#aaa'}}>{goal.properties.textfield}</Typography>
+          <Typography style={{fontSize:16,marginTop:10,marginBottom:0,color:'#ddd'}}>{goal.properties.header}</Typography>
+          <Typography style={{fontSize:12,marginTop:4,marginBottom:0,color:'#aaa'}}>{goal.properties.textfield}</Typography>
         </Stack>
         {goal.properties.example.length > 0 && (
           <div>

@@ -4,7 +4,6 @@ import Tile from '../Elements/Tile';
 import useStore from '../../stores/Store';
 import { FiSettings, FiMaximize, FiMinimize } from "react-icons/fi";
 import { Stack, CircularProgress, IconButton, Typography } from '@mui/material';
-import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import shallow from 'zustand/shallow';
 
 export const ProgramTile = forwardRef((_,ref) => {
@@ -19,16 +18,16 @@ export const ProgramTile = forwardRef((_,ref) => {
     // console.log(visible)
     return (
         <Stack ref={ref} direction='column' style={{width:'100%',height:'100%'}} >
-            <ParentSize>
-              {({ height }) =>
+
             <Tile
-                style={{ height: '100%' }}
+                style={{ height: '100%'}}
                 borderWidth={3}
                 borderRadius={0}
                 internalPaddingWidth={0}
+                innerStyle={{height:'calc(100% - 55px)'}}
                 header={
                     <Stack direction='row' style={{paddingRight:'4px', alignContent:'center', justifyContent:'space-between'}}>
-                        <Typography variant='h7' style={{ margin: "10pt", color:'white',fontFamily:'-apple-system' }}>Program Editor</Typography>
+                        <Typography style={{ margin: "10pt", color:'white'}}>Program Editor</Typography>
                         <Stack direction='row' gap={1} alignItems='center'>
                             {isProcessing && (
                                 <CircularProgress size={18} variant='indeterminate' color='primaryColor' />
@@ -44,15 +43,8 @@ export const ProgramTile = forwardRef((_,ref) => {
 
                 }
             >   
-            
-                {/* <StyleWrapper highlightColor='red'> */}
-                <Environment store={useStore} highlightColor={highlightColor} height={height-58} snapToGrid={false} animateDrawer={true}/>
-                {/* </StyleWrapper> */}
-                
-             
+                <Environment store={useStore} highlightColor={highlightColor} snapToGrid={false} animateDrawer={true}/>
             </Tile>
-             }
-             </ParentSize>
         </Stack>
 
 

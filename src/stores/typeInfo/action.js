@@ -1,14 +1,10 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { PrimitiveIconStyled, statusIcon } from "./icons";
 import {
-  FiMoreHorizontal,
-  FiAlertTriangle,
-  FiAlertOctagon,
-  FiRefreshCw,
-  FiThumbsUp,
+  FiMoreHorizontal
 } from "react-icons/fi";
 import { merge } from "lodash";
-import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import { COMPILE_FUNCTIONS } from "../Constants";
 import "./rotate.css";
 import { baseTypeData } from "./baseType";
 
@@ -31,7 +27,7 @@ const basicActionData = {
         type: EXTRA_TYPES.DROPDOWN,
         contents: [
           EXTRA_TYPES.DELETE_BUTTON,
-          EXTRA_TYPES.DEBUG_TOGGLE,
+          EXTRA_TYPES.DOC_TOGGLE,
           EXTRA_TYPES.SELECTION_TOGGLE,
           {
             type: EXTRA_TYPES.INDICATOR_ICON,

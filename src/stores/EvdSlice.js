@@ -206,10 +206,10 @@ export const EvdSlice = (set, get) => ({
       // console.log(useCompiledStore.getState())
     }),
   performCompileProcess: async () => {
-    // console.log('starting plan processing')
+    console.log('starting plan processing')
     const currentProcess = get().processes.planProcess;
     if (currentProcess) {
-      // console.log('terminating current plan process')
+      console.log('terminating current plan process')
       currentProcess.terminate();
     }
     // const workerInstance = new ComlinkWorker(plannerWorkerUrl,{});
@@ -217,10 +217,13 @@ export const EvdSlice = (set, get) => ({
     // console.log('plannerWorker',plannerWorker)
     // console.log(workerInstance)
     get().updatePlanProcess(null, plannerWorker);
-    const { performCompileProcess } = Comlink.wrap(plannerWorker);
+    const { performCompileProcess, test } = Comlink.wrap(plannerWorker);
+    const message = await test();
+    console.log(message)
     // console.warn('performCompileProcess',performCompileProcess);
     // let programData = mapValues(get().programData,((value)=>({...value,properties:{...value.properties,compiled:compiled[value.id]||{}}})))
     const programData = get().programData;
+    console.log('step 1')
     const result = await performCompileProcess({
       programData,
       compiledData: useCompiledStore.getState(),
@@ -230,6 +233,7 @@ export const EvdSlice = (set, get) => ({
       ),
     });
     // console.log(result)
+    console.log('step 2')
     get().updatePlanProcess(result.data, null);
 
     // Update the compiled store

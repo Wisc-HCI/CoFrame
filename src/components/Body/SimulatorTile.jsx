@@ -56,14 +56,14 @@ export const SimulatorTile = forwardRef((_,ref) => {
                   align="center"
                   pad={{ right: "small" }}
                 >
-                  <Typography variant='h7' style={{ margin: "10pt", color:'white',fontFamily:'-apple-system' }}>Simulator</Typography>
+                  <Typography style={{ margin: "10pt", color:'white'}}>Simulator</Typography>
                   <Controls />
                 </Stack>
               }
             >
               <div
                 style={{
-                  height: height - 58,
+                  height: height - 62,
                   width: "100%",
                   backgroundColor: "black",
                   padding: 0,

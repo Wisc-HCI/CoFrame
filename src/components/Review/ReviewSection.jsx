@@ -80,17 +80,19 @@ export const ReviewSection = memo(({ sectionId, blocked, initialBlocked }) => {
           direction="row"
           align="middle"
           justify="between"
-          margin={{ bottom: "xsmall" }}
+          alignContent='center'
           style={{
+            justifyContent:'space-between',
+            marginBottom:5,
             padding: 10,
             borderRadius: 4,
             border: `1px solid ${frameStyles.colors[depFrames[i]]}`,
             backgroundColor: `${frameStyles.colors[depFrames[i]]}44`,
           }}
         >
-          <span style={{ marginRight: 20 }}>
+          <Typography component='span' style={{ marginRight: 20 }}>
             Resolve <b>{depNames[i]}</b> before continuing
-          </span>
+          </Typography>
           {frame !== depFrames[i] && (
             <FrameButton
               frame={depFrames[i]}

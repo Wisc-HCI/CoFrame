@@ -3,7 +3,7 @@ import React from 'react';
 // import { config } from "react-spring";
 // import { motion } from "framer-motion";
 
-export default function Tile({style, header, children, backgroundColor, borderWidth, internalPaddingWidth, borderRadius=3}) {
+export default function Tile({style, header, children, backgroundColor, borderWidth, internalPaddingWidth, borderRadius=3,innerStyle={}}) {
 
     // const innerContainerStyle = useSpring({
     //     backgroundColor:backgroundColor?backgroundColor:'rgba(0,0,0,0.6)',
@@ -18,7 +18,7 @@ export default function Tile({style, header, children, backgroundColor, borderWi
                     {header}
                 </div>
             )}
-            <div style={{backgroundColor: backgroundColor ? backgroundColor : 'rgba(0,0,0,0.6)', padding: internalPaddingWidth, borderRadius: 3, color:'white'}}>
+            <div style={{backgroundColor: backgroundColor ? backgroundColor : 'rgba(0,0,0,0.6)', padding: internalPaddingWidth, borderRadius: 3, color:'white',...innerStyle}}>
                 {children}
             </div>
         </div>
