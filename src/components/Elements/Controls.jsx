@@ -149,14 +149,9 @@ const MediaControls = ({item}) => {
     if (state[item] && Object.keys(state[item]).length === 1) {
       steps = state[item][Object.keys(state[item])[0]]?.steps;
     }
-    steps.reverse();
-    steps.some((step)=>{
-      if (step.type === STEP_TYPE.ACTION_END) {
-        time = step.time
-        return true
-      } 
-      return false
-    })
+    if (steps.length > 0) {
+      time = steps[steps.length - 1].time
+    }
     return time
   },[item]),shallow)
 

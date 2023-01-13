@@ -2,7 +2,7 @@ import React, { useCallback, memo, useState } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
-import { withTooltip, Tooltip, defaultStyles } from "@visx/tooltip";
+import { withTooltip, defaultStyles } from "@visx/tooltip";
 import { LinearGradient } from "@visx/gradient";
 import { localPoint } from "@visx/event";
 import { Text } from "@visx/text";
@@ -19,12 +19,13 @@ import {
   getMinForAllSeries,
   collapseSeries,
   smoothInterpolateScalar,
-  getBlocks
+  getBlocks,
 } from "../helpers/graphs";
 import shallow from "zustand/shallow";
 import styled from "@emotion/styled";
 import { range } from "lodash";
-import { Stack, Typography } from "@mui/material";
+import { Stack, Typography, Tooltip, alpha } from "@mui/material";
+import { tooltipClasses } from '@mui/material/Tooltip';
 
 const defaultMargin = { top: 40, left: 80, right: 40, bottom: 25 };
 
@@ -115,7 +116,7 @@ const TimelineGraph = ({
     shallow
   );
 
-  // console.log(issueGraphContent); 
+  // console.log(issueGraphContent);
 
   return width < 10 && height < 40 ? null : (
     <InnerGraph
@@ -203,7 +204,7 @@ const InnerGraph = withTooltip(
       (state) => [state.pause, state.play, state.reset],
       shallow
     );
-    
+
     const issueTimeseriesData = issueData?.series || [];
     // const issueXAxisLabel = issueData?.xAxisLabel || "";
     // const issueYAxisLabel = issueData?.yAxisLabel || "";
@@ -220,18 +221,20 @@ const InnerGraph = withTooltip(
     const xIssueMin = Math.min(...issueTimeseriesData.map((s) => s.x));
     const yIssueMin = getMinForAllSeries(issueTimeseriesData, issueKeys);
 
-    const interp = issueData ? smoothInterpolateScalar(
-      collapsedSeries.map((c) => c.x),
-      collapsedSeries.map((c) => c.y)
-    ) : null;
-    const interpSeries = issueData ? range(
-      xIssueMin,
-      xIssueMax + 1,
-      (xIssueMax - xIssueMin) / 50
-    ).map((x) => ({
-      x,
-      y: interp(x),
-    })) : [];    
+    const interp = issueData
+      ? smoothInterpolateScalar(
+          collapsedSeries.map((c) => c.x),
+          collapsedSeries.map((c) => c.y)
+        )
+      : null;
+    const interpSeries = issueData
+      ? range(xIssueMin, xIssueMax + 1, (xIssueMax - xIssueMin) / 50).map(
+          (x) => ({
+            x,
+            y: interp(x),
+          })
+        )
+      : [];
 
     const filledThresholds = issueThresholds.map((t) => ({
       range: [
@@ -292,7 +295,9 @@ const InnerGraph = withTooltip(
     );
 
     return (
-      <div>
+      
+        <div>
+          <DarkTooltip title={<TooltipContent tooltipData={tooltipData} colorScale={colorScale} primaryColor={primaryColor}/>} followCursor arrow sx={{backgroundColor:'black',maxWidth:'none'}}>
         <svg width={width} height={height}>
           <Group
             top={margin.top}
@@ -372,7 +377,7 @@ const InnerGraph = withTooltip(
                 return (
                   <Text
                     key={`${i}block-text`}
-                    fontFamily='helvetica'
+                    fontFamily="helvetica"
                     scaleToFit
                     textAnchor="start"
                     verticalAnchor="middle"
@@ -427,7 +432,7 @@ const InnerGraph = withTooltip(
                 textAnchor: "end",
                 dy: "0.33em",
                 width: defaultMargin.left - 10,
-                fontFamily:'helvetica'
+                fontFamily: "helvetica",
               })}
             />
             <AxisBottom
@@ -440,7 +445,7 @@ const InnerGraph = withTooltip(
                 fill: axisColor,
                 fontSize: 11,
                 textAnchor: "middle",
-                fontFamily:'helvetica'
+                fontFamily: "helvetica",
               })}
             />
             {lastEnd && yMax && (
@@ -452,7 +457,6 @@ const InnerGraph = withTooltip(
             )}
             {tooltipData && (
               <g>
-
                 <circle
                   cx={tooltipLeft}
                   cy={tooltipTop + 1}
@@ -477,6 +481,7 @@ const InnerGraph = withTooltip(
             )}
           </Group>
         </svg>
+        </DarkTooltip>
         <div
           style={{
             position: "absolute",
@@ -502,80 +507,26 @@ const InnerGraph = withTooltip(
                 onClick={() => toggleExpanded(eventTypeKey)}
                 focusIndicator={false}
                 direction="row"
-                align="center"
+                alignItems="center"
                 spacing={0.5}
               >
                 <Selector
                   color={eventType.color}
                   selected={expanded.includes(eventTypeKey)}
                 />
-                <Typography>
-                  {eventType.label}
-                </Typography>
+                <Typography>{eventType.label}</Typography>
               </Stack>
             ))}
           </Stack>
         </div>
-        {false && tooltipOpen && tooltipData && (
-          <Tooltip top={tooltipTop} left={tooltipLeft} style={tooltipStyles}>
-            <Stack spacing={0.5}>
-              {tooltipData.blocks.length > 0 ||
-              tooltipData.events.length > 0 ? (
-                <>
-                  {tooltipData.blocks.map((e, i) => (
-                    <div key={`${i}b`}>
-                      <Stack
-                        direction="row"
-                        alignContent="center"
-                        align="center"
-                        justify="start"
-                        spacing={0.5}
-                      >
-                        <Typography color={colorScale(e.event)} size={"medium"}>
-                          {e.label}
-                        </Typography>
-                      </Stack>
-
-                      <Typography>
-                        {" "}
-                        {round(e.progress / 1000)} /{" "}
-                        {round((e.end - e.start) / 1000)} sec
-                      </Typography>
-                    </div>
-                  ))}
-                  {tooltipData.events.map((e, i) => (
-                    <div key={`${i}e`}>
-                      <Stack
-                        direction="row"
-                        alignContent="center"
-                        align="center"
-                        justify="start"
-                        spacing={0.5}
-                      >
-                        <div
-                          style={{
-                            borderRadius: 100,
-                            width: 7,
-                            height: 7,
-                            backgroundColor: colorScale(e.event),
-                            boxShadow: "0 0 0 2px white",
-                          }}
-                        />
-                        <Typography color={colorScale(e.event)} size={"small"}>
-                          {e.label}
-                        </Typography>
-                      </Stack>
-                      <Typography>@ {round(e.time / 1000)} sec</Typography>
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <strong style={{ color: primaryColor }}>No actions</strong>
-              )}
-            </Stack>
-          </Tooltip>
-        )}
-      </div>
+        {/* {false && tooltipOpen && tooltipData && (
+          <Tooltip
+            top={tooltipTop}
+            left={tooltipLeft}
+            style={tooltipStyles}
+          ></Tooltip>
+        )} */}</div>
+      
     );
   }
 );
@@ -606,10 +557,80 @@ const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
       // x2={x}
       // y1={0}
       // y2={yMax}
-      animate={{x1:x,x2:x,y1:0,y2:yMax}}
+      animate={{ x1: x, x2: x, y1: 0, y2: yMax }}
       // {...timeIndicatorLineStyle}
     />
   );
 });
+
+const DarkTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: alpha(theme.palette.common.black,0.9)
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: alpha(theme.palette.common.black,0.9),
+  },
+}));
+
+const TooltipContent = ({ tooltipData, colorScale, primaryColor }) => {
+  return tooltipData ? (
+    <Stack spacing={0.5}>
+      {tooltipData.blocks.length > 0 || tooltipData.events.length > 0 ? (
+        <>
+          {tooltipData.blocks.map((e, i) => (
+            <div key={`${i}b`}>
+              <Stack
+                direction="row"
+                alignContent="center"
+                align="center"
+                justify="start"
+                spacing={0.5}
+              >
+                <Typography color={colorScale(e.event)} size={"medium"}>
+                  {e.label}
+                </Typography>
+              </Stack>
+
+              <Typography>
+                {" "}
+                {round(e.progress / 1000)} / {round((e.end - e.start) / 1000)}{" "}
+                sec
+              </Typography>
+            </div>
+          ))}
+          {tooltipData.events.map((e, i) => (
+            <div key={`${i}e`}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                align="center"
+                justify="center"
+                spacing={0.5}
+              >
+                <div
+                  style={{
+                    borderRadius: 100,
+                    width: 7,
+                    height: 7,
+                    backgroundColor: colorScale(e.event),
+                    boxShadow: "0 0 0 2px white",
+                  }}
+                />
+                <Typography color={colorScale(e.event)} size={"small"}>
+                  {e.label}
+                </Typography>
+              </Stack>
+              <Typography style={{marginLeft:10}} variant='caption'>@ {round(e.time / 1000)} sec</Typography>
+            </div>
+          ))}
+        </>
+      ) : (
+        <strong style={{ color: primaryColor }}>No actions</strong>
+      )}
+    </Stack>
+  ) : null;
+};
 
 export default TimelineGraph;
