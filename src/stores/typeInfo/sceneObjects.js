@@ -12,6 +12,12 @@ import { COMPILE_FUNCTIONS } from "../Constants";
 import { REFERENCEABLE_OBJECTS } from "../Constants";
 import { baseTypeData } from "./baseType";
 
+const fixtureDoc = `Fixtures are static objects related to other components in the scene. For example, one could put a [Machine](machineType) or [Tools](toolType) on the surface of a table-like fixture. While the [Robot Agent](robotAgentType) cannot directly interact with fixtures, they can nevertheless collide.`;
+const linkDoc = `Links are parts of the [Robot](robotAgentType), connected by joints. Each link can define collision body, which can be toggled on and off in the Simulator Area`;
+const machineDoc = `Machines are static fixtures in the environment that are able to perform create, consume, or modify [Things](thingType) in the [Program](programType) through the use of [Processes](processType). They define specific [Regions](zoneType) that are used for depositing or retrieving these things.`;
+const zoneDoc = `Zones are areas designated to be primarily occupied by a single agent (either [Robot](robotAgentType) or [Human](humanAgentType)). While multiple agents can co-exist in a given zone, ideally this is minimized.`;
+const toolDoc = `Like [Machines](machineType), tools are able to create, consume, or modify [Things](thingType) in the [Program](programType) through the use of [Processes](processType). Unlike machines, however, tools can be moved or temporarily used as inputs and outputs in processes.`;
+
 const basicObject = {
   properties: {
     position: {
@@ -58,6 +64,7 @@ const basicObject = {
 const fixture = {
   name: "Fixture",
   type: TYPES.OBJECT,
+  description: fixtureDoc,
   instanceBlock: null,
   referenceBlock: {
     onCanvas: false,
@@ -74,6 +81,7 @@ const fixture = {
 const link = {
   name: "Link",
   type: TYPES.OBJECT,
+  description: linkDoc,
   instanceBlock: null,
   referenceBlock: {
     onCanvas: false,
@@ -102,6 +110,7 @@ const link = {
 const machine = {
   name: "Machine",
   type: TYPES.OBJECT,
+  description: machineDoc,
   instanceBlock: null,
   referenceBlock: {
     onCanvas: false,
@@ -115,7 +124,7 @@ const machine = {
         type: EXTRA_TYPES.DROPDOWN,
         contents: [
           EXTRA_TYPES.DELETE_BUTTON,
-          EXTRA_TYPES.DEBUG_TOGGLE,
+          EXTRA_TYPES.DOC_TOGGLE,
           EXTRA_TYPES.SELECTION_TOGGLE,
         ],
       },
@@ -130,6 +139,7 @@ const machine = {
 const zone = {
   name: "zone",
   type: TYPES.OBJECT,
+  description: zoneDoc,
   instanceBlock: null,
   referenceBlock: {
     onCanvas: false,
@@ -162,6 +172,7 @@ const zone = {
 const tool = {
   name: "Tool",
   type: TYPES.OBJECT,
+  description: toolDoc,
   instanceBlock: null,
   referenceBlock: {
     onCanvas: false,

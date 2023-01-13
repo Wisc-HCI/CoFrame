@@ -44,6 +44,7 @@ const basicActionData = {
 
 const delayFeatures = {
   name: "Delay",
+  description: "A pause by the [Robot](robotAgentType) by a specified amount of time.",
   properties: {
     description: { default: "Delay action for a specified amount of time" },
     duration: {
@@ -64,6 +65,7 @@ const delayFeatures = {
 
 const breakpointFeatures = {
   name: "Breakpoint",
+  description: "A terminator that prematurely ends the compilation of the [Program](programType).",
   properties: {
     description: { default: "Stop computation and processing here" },
     compileFn: { default: COMPILE_FUNCTIONS.BREAK },
@@ -73,6 +75,7 @@ const breakpointFeatures = {
 
 const gripperFeatures = {
   name: "Move Gripper",
+  description: "An action by the [Robot](robotAgentType) that adjusts the distance between the two fingers of the gripper. If interacting with a [Thing](thingType) or [Tool](toolType), it should be specified in the action.",
   properties: {
     description: { default: "Adjust the gripper position" },
     thing: {
@@ -116,6 +119,7 @@ const gripperFeatures = {
 
 const machineInitFeatures = {
   name: "Machine Initialize",
+  description: "An action that initializes the [Machine](machineType) for usage. This need only be done once per execution of the [Program](programType).",
   properties: {
     description: { default: "Initialize a machine for use" },
     machine: {
@@ -131,6 +135,7 @@ const machineInitFeatures = {
 
 const processStartFeatures = {
   name: "Process Start",
+  description: "An action that begins a process [Process](processType). If the process needs a [Machine](machineType) or [Tool](toolType), this must also be provided in the 'gizmo' field.",
   properties: {
     description: { default: "Begin a machine process" },
     process: {
@@ -151,32 +156,9 @@ const processStartFeatures = {
   },
 };
 
-const processStopFeatures = {
-  name: "Process Stop",
-  properties: {
-    description: {
-      default: "Mark completion of a process and enable retrieval of results",
-    },
-    process: {
-      name: "Process",
-      accepts: ["processType"],
-      default: null,
-      isList: false,
-    },
-    gizmo: {
-      name: "Gizmo",
-      accepts: ["machineType","toolType"],
-      default: null,
-      isList: false,
-      nullValid: true,
-    },
-    compileFn: { default: COMPILE_FUNCTIONS.PROCESS },
-    updateFields: { default: ["process", "gizmo"] },
-  },
-};
-
 const processWaitFeatures = {
   name: "Process Wait",
+  description: "An action that has the [Robot](robotAgentType) wait until the completion of the process [Process](processType). If the process needs a [Machine](machineType) or [Tool](toolType), this must also be provided in the 'gizmo' field.",
   properties: {
     description: {
       default:
@@ -202,6 +184,7 @@ const processWaitFeatures = {
 
 const moveTrajectoryFeatures = {
   name: "Move Trajectory",
+  description: "An action by the [Robot](robotAgentType) that moves its gripper along a specified [Trajectory](trajectoryType). Motion types include 'IK', which attempts to move the gripper in a straight line from one location to another, while 'Joint' interpolates the joints. Velocity adjusts the speed of the motion.",
   properties: {
     description: {
       default: "Move Robot according to a trajectory and motion type",

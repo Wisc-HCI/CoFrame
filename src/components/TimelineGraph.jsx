@@ -5,7 +5,7 @@ import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
 import { withTooltip, Tooltip, defaultStyles } from "@visx/tooltip";
 import { LinearGradient } from "@visx/gradient";
 import { localPoint } from "@visx/event";
-import { Text as VText } from "@visx/text";
+import { Text } from "@visx/text";
 // import { LegendOrdinal } from "@visx/legend";
 import useStore from "../stores/Store";
 // import { Box, Text } from "grommet";
@@ -306,6 +306,9 @@ const InnerGraph = withTooltip(
             onMouseMove={(e) => {
               handleTooltip(e, true);
             }}
+            onMouseEnter={(e) => {
+              handleTooltip(e, true);
+            }}
             onMouseLeave={(e) => {
               handleTooltip(e, false);
             }}
@@ -367,8 +370,9 @@ const InnerGraph = withTooltip(
               .map((entry, i) => {
                 // console.log({track:entry.track,yscale:yScale(entry.track)})
                 return (
-                  <VText
+                  <Text
                     key={`${i}block-text`}
+                    fontFamily='helvetica'
                     scaleToFit
                     textAnchor="start"
                     verticalAnchor="middle"
@@ -381,7 +385,7 @@ const InnerGraph = withTooltip(
                     y={yScale(entry.track) + 0.6 * barHeight}
                   >
                     {entry.label}
-                  </VText>
+                  </Text>
                 );
               })}
             {filteredEventData.map((entry, i) => {
@@ -423,6 +427,7 @@ const InnerGraph = withTooltip(
                 textAnchor: "end",
                 dy: "0.33em",
                 width: defaultMargin.left - 10,
+                fontFamily:'helvetica'
               })}
             />
             <AxisBottom
@@ -435,6 +440,7 @@ const InnerGraph = withTooltip(
                 fill: axisColor,
                 fontSize: 11,
                 textAnchor: "middle",
+                fontFamily:'helvetica'
               })}
             />
             {lastEnd && yMax && (
@@ -446,14 +452,6 @@ const InnerGraph = withTooltip(
             )}
             {tooltipData && (
               <g>
-                {/* <Line
-                  from={{ x: tooltipLeft, y: 0 }}
-                  to={{ x: tooltipLeft, y: yMax }}
-                  stroke={"lightgrey"}
-                  strokeWidth={2}
-                  pointerEvents="none"
-                  strokeDasharray="5,2"
-                /> */}
 
                 <circle
                   cx={tooltipLeft}
@@ -511,14 +509,14 @@ const InnerGraph = withTooltip(
                   color={eventType.color}
                   selected={expanded.includes(eventTypeKey)}
                 />
-                <Text color="white " size="small">
+                <Typography>
                   {eventType.label}
-                </Text>
+                </Typography>
               </Stack>
             ))}
           </Stack>
         </div>
-        {tooltipOpen && tooltipData && (
+        {false && tooltipOpen && tooltipData && (
           <Tooltip top={tooltipTop} left={tooltipLeft} style={tooltipStyles}>
             <Stack spacing={0.5}>
               {tooltipData.blocks.length > 0 ||
@@ -538,11 +536,11 @@ const InnerGraph = withTooltip(
                         </Typography>
                       </Stack>
 
-                      <div>
+                      <Typography>
                         {" "}
                         {round(e.progress / 1000)} /{" "}
                         {round((e.end - e.start) / 1000)} sec
-                      </div>
+                      </Typography>
                     </div>
                   ))}
                   {tooltipData.events.map((e, i) => (
@@ -567,7 +565,7 @@ const InnerGraph = withTooltip(
                           {e.label}
                         </Typography>
                       </Stack>
-                      <div>@ {round(e.time / 1000)} sec</div>
+                      <Typography>@ {round(e.time / 1000)} sec</Typography>
                     </div>
                   ))}
                 </>

@@ -65,10 +65,11 @@ import init, { Solver } from 'coframe-rust';
 // }
 
 export const performCompileProcess = async (data) => {
-    console.log('performCompilerProcess--inworker')
+    // console.log('performCompilerProcess--inworker')
     const { programData, compiledData, objectTypes } = data;
     // Process the data without stalling the UI
     // const module = await loadLikModule();
+    
     await init();
     // console.warn(welcome('Harry'));
     const module = {Solver};
@@ -157,7 +158,7 @@ export const performCompileProcess = async (data) => {
             memo = {...memo,...newMemo};
             compiledMemo = {...compiledMemo, ...newCompiledMemo};
     })
-    console.log('performCompilerProcess--inworker ended')
+    // console.log('performCompilerProcess--inworker ended')
     return {data: memo, compiledData: compiledMemo };
 }
 

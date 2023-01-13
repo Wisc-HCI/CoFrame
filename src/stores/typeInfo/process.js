@@ -5,9 +5,12 @@ import { FiMoreHorizontal } from "react-icons/fi";
 import { baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
+const processDoc = "A recipe for a transformation taking a certain amount of time that accepts any number of [Inputs and Outputs](inputOutputType), with the possible involvement of [Tools](toolType) or [Machines](machineType)";
+
 const processFeatures = {
     name: 'Process',
     type: TYPES.OBJECT,
+    description: processDoc,
     instanceBlock: null,
     referenceBlock: {
       onCanvas: false,
@@ -20,7 +23,7 @@ const processFeatures = {
           type: EXTRA_TYPES.DROPDOWN,
           contents: [
             EXTRA_TYPES.DELETE_BUTTON,
-            EXTRA_TYPES.DEBUG_TOGGLE,
+            EXTRA_TYPES.DOC_TOGGLE,
             EXTRA_TYPES.SELECTION_TOGGLE
           ]
         }

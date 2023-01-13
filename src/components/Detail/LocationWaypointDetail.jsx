@@ -2,7 +2,7 @@ import React from "react";
 import useStore from "../../stores/Store";
 import { Collapse } from "../Elements/Collapse";
 // import { Toggle } from "../Elements/Toggle";
-import { Switch, IconButton, Stack } from "@mui/material";
+import { Switch, IconButton, Stack, Typography } from "@mui/material";
 import { FiRefreshCw } from "react-icons/fi";
 
 function LocationWaypointDetail(props) {
@@ -36,7 +36,7 @@ function LocationWaypointDetail(props) {
       }
     >
       {Object.keys(item.properties.reachability).length === 0 && (
-        <i>Reachability Loading...</i>
+        <Typography>Reachability Loading...</Typography>
       )}
       {robotAgents
         .filter((robotAgent) => item.properties.reachability[robotAgent.id])
@@ -50,7 +50,7 @@ function LocationWaypointDetail(props) {
             }}
             spacing={0.5}
           >
-            {robotAgent.name}
+            <Typography>{robotAgent.name}</Typography>
             {grippers
               .filter(
                 (gripper) =>
@@ -70,7 +70,7 @@ function LocationWaypointDetail(props) {
                   key={gripper.id}
                   spacing={0.5}
                 >
-                  {gripper.name}
+                  <Typography>{gripper.name}</Typography>
                   <Switch
                     onClick={() => {}}
                     checked={
@@ -79,14 +79,6 @@ function LocationWaypointDetail(props) {
                     size="small"
                     color="primaryColor"
                   />
-                  {/* <Toggle
-                    selected={
-                      item.properties.reachability[robotAgent.id][gripper.id]
-                    }
-                    disabled={true}
-                    backgroundColor={primaryColor}
-                    size="small"
-                  /> */}
                 </Stack>
               ))}
           </Stack>

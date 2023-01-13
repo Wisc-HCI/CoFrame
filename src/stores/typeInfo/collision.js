@@ -3,6 +3,9 @@ import { merge } from "lodash";
 import { baseTypeData } from "./baseType";
 import { COMPILE_FUNCTIONS } from "../Constants";
 
+const collisionShapeDoc = 'A data object containing size, position, and shape information of the collider';
+const collisionBodyDoc = 'A collection of [Collision Shapes](collisionShapeType) attached to some scene object';
+
 const baseCollision = {
   type: TYPES.OBJECT,
   instanceBlock: null,
@@ -19,6 +22,7 @@ const baseCollision = {
 
 const collisionShape = {
   name: "Collision Shape",
+  description: collisionShapeDoc,
   properties: {
     position: {
       name: "Local Position",
@@ -79,6 +83,7 @@ const collisionShape = {
 
 const collisionBody = {
   name: "Collision Body",
+  description: collisionBodyDoc,
   properties: {
     componentShapes: {
       name: "Collision Shapes",

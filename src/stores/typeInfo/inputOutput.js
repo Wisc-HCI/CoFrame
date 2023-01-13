@@ -19,7 +19,7 @@ const inputOutputFeatures = {
         type: EXTRA_TYPES.DROPDOWN,
         contents: [
           EXTRA_TYPES.DELETE_BUTTON,
-          EXTRA_TYPES.DEBUG_TOGGLE,
+          EXTRA_TYPES.DOC_TOGGLE,
           EXTRA_TYPES.SELECTION_TOGGLE,
         ],
       },

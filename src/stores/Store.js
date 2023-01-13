@@ -16,11 +16,11 @@ import {
 import { SceneSlice } from "robot-scene";
 import lodash from "lodash";
 import KnifeAssembly from "./Knife_Assembly_Simple_VP.json";
-import PandaDemo from "./Panda_Demo.json";
+// import PandaDemo from "./Panda_Demo.json";
 import { STATUS } from "./Constants";
-import { performCompileProcess } from "./planner-worker";
 import useCompiledStore from "./CompiledStore";
 import { Timer } from "./Timer";
+import { mapValues } from "lodash";
 // import { TauriStorage } from "./TauriStorage";
 
 const store = (set, get) => ({
@@ -38,6 +38,18 @@ const store = (set, get) => ({
   ...EvdSlice(set, get),
   ...RosSlice(set, get),
   clock: new Timer(),
+  playing: false,
+  pause: () => {
+    set({playing:false});
+    get().clock.setTimescale(0);
+  },
+  play: (speed) => {
+    set({playing:true});
+    get().clock.setTimescale(speed ? speed : 1);
+  },
+  reset: (time) => {
+    get().clock._elapsed = time ? time * 1000 : 0;
+  },
   tabs: [
     {
       title:'Main',
@@ -46,45 +58,33 @@ const store = (set, get) => ({
       blocks: []
     }
   ],
+  updateItemDocActive: (id, value) => {
+    set((state) => {
+      console.log("setting doc active to ", value);
+      state.programData = mapValues(state.programData,d=>({
+        ...d,
+        docActive: id === d.id && value ? true : false
+      }))
+      // if (value) {
+      //   Object.keys(state.programData).forEach((v) => {
+      //     if (v === id) {
+      //       state.programData[v].docActive = true;
+      //     } else if (v !== id && state.programData[v].docActive) {
+      //       state.programData[v].docActive = false;
+      //     }
+      //   });
+      //   // state.programData = mapValues(state.programData,(v)=>v.id === id ? {...v,docActive:true} : {...v,docActive:false})
+      // } else {
+      //   state.programData[id].docActive = false;
+      // }
+
+      // state.programData[id].docActive = value;
+    });
+  },
   activeTab:'default',
 });
 
 const immerStore = immer(store);
-// const computedStore = computed(immerStore,computedSlice);
-// const persistStore = persist(immerStore, {
-//   name: "coframe-store",
-//   // partialize: (state) => ({ programData: state.programData, }),
-//   getStorage: ()=>TauriStorage,
-//   deserialize: (str) =>
-//     JSON.parse(str, (key, value) => {
-//       if (key === "clock") return new Timer();
-//       return value;
-//     }),
-//   partialize: (state) => ({
-//     loaded: state.loaded,
-//     programData: state.programData,
-//     // programSpec: state.programSpec,
-//     tfs: state.tfs,
-//     items: state.items,
-//     lines: state.lines,
-//     texts: state.texts,
-//     hulls: state.hulls,
-//   }),
-//   onRehydrateStorage: (state) => {
-//     console.log("hydration starts");
-//     // optional
-//     return (state, error) => {
-//       if (error) {
-//         console.log("An error happened during hydration. Reloading with Knife Assembly Task", error);
-//         state.setData(KnifeAssembly);
-//         state.setLoaded(true);
-//       } else {
-//         console.log("hydration finished");
-//         state.setLoaded(true)
-//       }
-//     };
-//   },
-// });
 const subscribeStore = subscribeWithSelector(immerStore);
 
 const useStore = create(subscribeStore);

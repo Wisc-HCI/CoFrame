@@ -4,7 +4,7 @@ import useStore from '../stores/Store';
 export const useTime = (totalLength) => {
 
     const clock = useStore((state) => state.clock);
-    const [time, setTime] = useState(0);
+    const [time, setTime] = useState(clock.getElapsed());
 
     useEffect(() => {
         const interval = setInterval(() => {

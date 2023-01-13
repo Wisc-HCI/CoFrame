@@ -6,9 +6,12 @@ import './rotate.css'
 import { baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
+const waypointDoc = "Waypoints are positions and orientations that are used as parts of [Trajectories](trajectoryType), and unlike [Locations](locationType), do not have inherent meaning other than to allow greater specificity of the manner with which the [Robot](robotAgentType) moves between a pair of locations."
+
 const waypointFeatures = {
     name: 'Waypoint',
     type: TYPES.OBJECT,
+    description: waypointDoc,
     instanceBlock: null,
     referenceBlock: {
       onCanvas: false,
@@ -27,7 +30,7 @@ const waypointFeatures = {
           contents: [
             EXTRA_TYPES.NAME_EDIT_TOGGLE,
             EXTRA_TYPES.DELETE_BUTTON,
-            EXTRA_TYPES.DEBUG_TOGGLE,
+            EXTRA_TYPES.DOC_TOGGLE,
             EXTRA_TYPES.SELECTION_TOGGLE
           ]
         }

@@ -1,20 +1,19 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { ContainerIconStyled, statusIcon } from "./icons";
 import {
-  FiMoreHorizontal,
-  FiAlertTriangle,
-  FiAlertOctagon,
-  FiRefreshCw,
-  FiThumbsUp,
+  FiMoreHorizontal
 } from "react-icons/fi";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import "./rotate.css";
 import { baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
+const programDoc = `The Program is the main sequence of actions, such as [Hierarchicals](hierarchicalType), [Move Trajectory](moveTrajectoryType), or [Process Start](processStartType), and [Skills](skillType) that are executed by the [Robot](robotAgentType).`;
+
 const programFeatures = {
   name: "Program",
   type: TYPES.OBJECT,
+  description: programDoc,
   instanceBlock: {
     hideNewPrefix: true,
     onCanvas: true,
@@ -33,7 +32,7 @@ const programFeatures = {
           EXTRA_TYPES.NAME_EDIT_TOGGLE,
           EXTRA_TYPES.LOCKED_INDICATOR,
           EXTRA_TYPES.SELECTION_TOGGLE,
-          EXTRA_TYPES.DEBUG_TOGGLE,
+          EXTRA_TYPES.DOC_TOGGLE,
           {
             type: EXTRA_TYPES.INDICATOR_TEXT,
             accessor: (data) => data.properties.children.length,
@@ -66,7 +65,6 @@ const programFeatures = {
         "processStopType",
         "processWaitType",
         "moveTrajectoryType",
-        "moveUnplannedType",
         "robotInitType",
       ],
       default: [],

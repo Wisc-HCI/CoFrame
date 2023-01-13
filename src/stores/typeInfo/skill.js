@@ -30,7 +30,7 @@ const skillFeatures = {
           EXTRA_TYPES.SELECTION_TOGGLE,
           EXTRA_TYPES.DELETE_BUTTON,
           EXTRA_TYPES.LOCKED_INDICATOR,
-          EXTRA_TYPES.DEBUG_TOGGLE,
+          EXTRA_TYPES.DOC_TOGGLE,
           {
             type: EXTRA_TYPES.ADD_ARGUMENT_GROUP,
             allowed: [
@@ -62,6 +62,7 @@ const skillFeatures = {
           },
           EXTRA_TYPES.SELECTION_TOGGLE,
           EXTRA_TYPES.DELETE_BUTTON,
+          EXTRA_TYPES.DOC_TOGGLE
         ],
       },
     ],

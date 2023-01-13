@@ -211,7 +211,7 @@ export default function App() {
             </ReflexElement>
           )}
         </ReflexContainer>
-        {/* <Snackbar open={errorType} autoHideDuration={6000} onClose={clearFocus}>
+        <Snackbar open={errorType} autoHideDuration={6000} onClose={clearFocus}>
           <Alert
             variant="filled"
             severity="error"
@@ -244,8 +244,8 @@ export default function App() {
               </>
             )}
           </Alert>
-        </Snackbar> */}
-        {/* <Drawer
+        </Snackbar>
+        <Drawer
           anchor="bottom"
           sx={{
             height: "20vh",
@@ -274,7 +274,7 @@ export default function App() {
               ) : null
             }
           </ParentSize>
-        </Drawer> */}
+        </Drawer>
         
       </Stack>
       <Detail />

@@ -5,8 +5,11 @@ import { FiMoreHorizontal } from "react-icons/fi";
 import { baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
+const hierarchicalDoc = "A hierarchical is a special type of action that acts as a grouping or organization structure within enclosing actions. While they don't have any utility in terms of changing the flow of a [Program](programType), they can be named and collapsed for easier viewing and editing.";
+
 const hierarchicalFeatures = {
     name: "Hierarchical",
+    description: hierarchicalDoc,
     type: TYPES.OBJECT,
     instanceBlock: {
       hideNewPrefix: true,
@@ -20,6 +23,7 @@ const hierarchicalFeatures = {
           type: EXTRA_TYPES.DROPDOWN,
           contents: [
             EXTRA_TYPES.DELETE_BUTTON,
+            EXTRA_TYPES.DOC_TOGGLE,
             EXTRA_TYPES.SELECTION_TOGGLE
           ],
         },

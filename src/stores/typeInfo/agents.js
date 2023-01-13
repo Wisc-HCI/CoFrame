@@ -3,6 +3,10 @@ import { merge } from "lodash";
 import { COMPILE_FUNCTIONS, REFERENCEABLE_OBJECTS } from "../Constants";
 import { baseTypeData } from "./baseType";
 
+const humanAgentDoc = 'Human Agents represent the workers that cooperate with [Robots](robotAgentType) and [Machines](machineType), and interact with [Tools](toolType) to execute the given [Program](programType)';
+const gripperAgentDoc = 'The gripper is a part of the [Robot](robotAgentType) that can perform actions like [Move Gripper](moveGripperType), and represents the part of the robot that is matched to [Locations](locationType) and [Waypoints](waypointType)';
+const robotAgentDoc = 'Robot Agents are the physical robots/cobots that cooperate with [Humans](humanAgentType) and [Machines](machineType), and interact with [Tools](toolType) to execute the given [Program](programType)';
+
 const basicAgentData = {
   type: TYPES.OBJECT,
   instanceBlock: {
@@ -39,6 +43,7 @@ const basicAgentData = {
 
 const robotAgentFeatures = {
   name: "Robot Agent",
+  description: robotAgentDoc,
   properties: {
     description: { default: "Robot Agent" },
     initialJointState: {
@@ -88,6 +93,7 @@ const robotAgentFeatures = {
 
 const gripperFeatures = {
   name: "Gripper",
+  description: gripperAgentDoc,
   properties: {
     description: { default: "Gripper" },
     initialGripState: {
@@ -127,6 +133,7 @@ const gripperFeatures = {
 
 const humanAgentFeatures = {
   name: "Human Agent",
+  description: humanAgentDoc,
   properties: {
     description: { default: "Human Agent" },
     updateFields: { default: ["position", "rotation", "relativeTo"] },

@@ -4,15 +4,18 @@ import { COMPILE_FUNCTIONS } from "../Constants";
 import { RiSpace } from "react-icons/ri";
 import { merge } from "lodash";
 
+const goalDoc = 'A special structure block that is used to define possible implementations for tasks. It accepts the same types of blocks as the [Program](programType), as well as some additional information about its completion conditions and status';
+
 const goal = {
   name: "Program Goal",
   type: TYPES.OBJECT,
+  description: goalDoc,
   instanceBlock: null,
   referenceBlock: {
     onCanvas: false,
     color: "#6663f0",
     icon: RiSpace,
-    extras: [EXTRA_TYPES.SELECTION_TOGGLE],
+    extras: [EXTRA_TYPES.SELECTION_TOGGLE,EXTRA_TYPES.DOC_TOGGLE],
   },
   properties: {
     header: {

@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import { BackRefSection } from "./BackRefSection";
 import { ForwardRefSection } from "./ForwardRefSection";
+import { DocSection } from "./DocSection";
 
 export const Detail = (_) => {
   const { item, objectTypeInfo } = useStore((state) => {
@@ -203,6 +204,8 @@ export const Detail = (_) => {
                     updateItemDescription(item.id, e.target.value)
                   }
                 />
+
+                <DocSection data={item}/>
 
                 {item.properties.processTime !== undefined && (
                   <Stack

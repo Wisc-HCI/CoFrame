@@ -1,14 +1,17 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
 import { LocationIconStyled, statusIcon } from "./icons";
-import { FiMoreHorizontal, FiAlertTriangle, FiAlertOctagon, FiRefreshCw, FiThumbsUp } from "react-icons/fi";
-import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
+import { FiMoreHorizontal } from "react-icons/fi";
+import { COMPILE_FUNCTIONS } from "../Constants";
 import './rotate.css'
 import { baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
+const locationDoc = "Locations are meaningful positions in the scene. For example, they can be used to define goals for placing or picking up [Things](thingType), or specifying starting or ending positions for the [Robot](robotAgentType). [Waypoints](waypointType) can be used in [Trajectories](trajectoryType) to specify intermediates between pairs of locations.";
+
 const locationFeatures = {
   name: 'Location',
   type: TYPES.OBJECT,
+  description: locationDoc,
   instanceBlock: null,
   referenceBlock: {
     onCanvas: false,
@@ -27,7 +30,7 @@ const locationFeatures = {
         contents: [
           EXTRA_TYPES.NAME_EDIT_TOGGLE,
           EXTRA_TYPES.DELETE_BUTTON,
-          EXTRA_TYPES.DEBUG_TOGGLE,
+          EXTRA_TYPES.DOC_TOGGLE,
           EXTRA_TYPES.SELECTION_TOGGLE
         ]
       }

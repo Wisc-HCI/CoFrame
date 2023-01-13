@@ -16,7 +16,7 @@
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
-    "@mui/material": "5.10.12",
+    "@mui/material": "5.11.0",
     "@people_and_robots/lively_tk": "0.9.35",
     "@radix-ui/react-scroll-area": "^1.0.0",
     "@robostack/roslib": "^1.1.1",
@@ -34,11 +34,12 @@
     "react-json-view": "^1.21.3",
     "react-markdown": "^8.0.4",
     "react-reflex": "^4.0.9",
+    "react-remark": "^2.1.0",
     "react-spring": "^9.5.2",
     "react-use-measure": "^2.1.1",
     "redux": "^4.2.0",
     "robot-scene": "github:Wisc-HCI/robot-scene#v0.9.6",
-    "simple-vp": "github:Wisc-HCI/simple-vp#v0.8.3",
+    "simple-vp": "github:Wisc-HCI/simple-vp#v0.8.5",
     "styled-components": "^5.3.5",
     "three": "^0.142.0",
     "uuid": "^8.3.2",
@@ -47,7 +48,7 @@
     "zustand-middleware-computed-state": "^0.1.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.2.1",
+    "@tauri-apps/cli": "^1.2.2",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.2.0",

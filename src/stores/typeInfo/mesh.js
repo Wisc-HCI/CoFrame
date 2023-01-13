@@ -3,9 +3,12 @@ import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import { baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
+const meshDoc = 'A data object containing size, position, and shape/path information of the mesh';
+
 const meshFeatures = {
   name: "Mesh",
   type: TYPES.OBJECT,
+  description: meshDoc,
   instanceBlock: null,
   referenceBlock: null,
   properties: {
