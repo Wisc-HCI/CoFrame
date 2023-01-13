@@ -79,8 +79,6 @@ export function Controls() {
     shallow
   );
 
-  console.log(focusItem)
-
   return (
     <Stack direction="row" gap={1} alignItems="center">
       {focusItem && <MediaControls item={focusItem}/>}
@@ -179,7 +177,6 @@ const MediaControls = ({item}) => {
         size="small" 
         value={time/1000} min={0} max={totalTime/1000} step={0.1}
         onChange={(_,value)=>{
-          console.log(value)
           reset(value);
           pause();
         }}
