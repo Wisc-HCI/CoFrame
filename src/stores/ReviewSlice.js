@@ -61,7 +61,8 @@ export const ReviewSlice = (set, get) => ({
             title: str (short title for issue)
             description: str (text string for error information, displayed in issue)
             complete: bool (mainly for issues that don't require changes, whether it has been marked as complete)
-            focus: {id:str, type:str} (what type of item to focus on in the gui when issue is selected)
+            focus: array[str] (what items to focus on in the gui when issue is selected)
+            featuredDocs: {id: str (markdown)},
             graphData: {
                 series : [{x: ..., '...': ..., ....},...],
                 xAxisLabel: '',
@@ -296,5 +297,6 @@ export const ReviewSlice = (set, get) => ({
     }),
     updateIssueSetting: (newIssueSetting) => set(state => {
         state.issueSettings[newIssueSetting.id] = newIssueSetting;
-    })
+    }),
+    setFeaturedDocs: (docs, active) => set({featuredDocs: docs,activeDoc: active})
 });

@@ -25,6 +25,7 @@ const programFeatures = {
         accessor: statusIcon,
         label: "Status",
       },
+      EXTRA_TYPES.DOC_TOGGLE,
       {
         icon: FiMoreHorizontal,
         type: EXTRA_TYPES.DROPDOWN,
@@ -32,15 +33,13 @@ const programFeatures = {
           EXTRA_TYPES.NAME_EDIT_TOGGLE,
           EXTRA_TYPES.LOCKED_INDICATOR,
           EXTRA_TYPES.SELECTION_TOGGLE,
-          EXTRA_TYPES.DOC_TOGGLE,
           {
             type: EXTRA_TYPES.INDICATOR_TEXT,
             accessor: (data) => data.properties.children.length,
             label: "Size",
           },
         ],
-      },
-      EXTRA_TYPES.LOCKED_INDICATOR,
+      }
     ],
   },
   referenceBlock: null,

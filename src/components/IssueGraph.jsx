@@ -2,39 +2,27 @@ import React, { useCallback } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { scaleLinear, scaleOrdinal } from "@visx/scale";
-import { withTooltip, TooltipWithBounds, defaultStyles } from "@visx/tooltip";
+import { withTooltip } from "@visx/tooltip";
 import { AreaClosed, Line } from "@visx/shape";
 import { LinearGradient } from "@visx/gradient";
 import { localPoint } from "@visx/event";
 import { LegendOrdinal } from "@visx/legend";
 import useStore from "../stores/Store";
-// import { uniq } from "lodash";
-// import { Box, Text } from "grommet";
 import { strip } from "number-precision";
 import { Stack, Typography } from "@mui/material";
+import { DarkTooltip } from "./Elements/DarkTooltip";
 
 export const background = "#eaedff";
 const defaultMargin = { top: 20, left: 40, right: 10, bottom: 20 };
 
-const tooltipStyles = {
-  ...defaultStyles,
-  minWidth: 60,
-  backgroundColor: "rgba(0,0,0,0.9)",
-  color: "white",
-  padding: 5,
-};
-
-const getColor = (
-  value,
-  thresholds
-) => {
-  let color = 'Label';
-  thresholds.forEach(t=>{
+const getColor = (value, thresholds) => {
+  let color = "Label";
+  thresholds.forEach((t) => {
     if (value >= t.range[0] && value < t.range[1]) {
       color = t.color;
     }
-  })
-  return color
+  });
+  return color;
 };
 
 const findClosestData = (series, x) => {
@@ -76,18 +64,16 @@ const IssueGraph = withTooltip(
     xAxisLabel,
     yAxisLabel,
     margin = defaultMargin,
-    tooltipOpen,
     tooltipLeft,
     tooltipTop,
     tooltipData,
     hideTooltip,
     showTooltip,
-    thresholds = [{range: ["MIN","MAX"],color:'grey',label:'Label'}],
-    units = '',
-    decimals = 2
+    thresholds = [{ range: ["MIN", "MAX"], color: "grey", label: "Label" }],
+    isTimeseries,
+    units = "",
+    decimals = 2,
   }) => {
-
-    console.log('ISSUE GRAPH DATA',data);
 
     const primaryColor = useStore((state) => state.primaryColor);
     const keys = Object.keys(data[0]).filter((k) => k !== "x");
@@ -113,6 +99,7 @@ const IssueGraph = withTooltip(
           : t.range[1],
       ],
       color: t.color,
+      label: t.label
     }));
 
     const colorDomain = filledThresholds.map((t) => t.range[0]);
@@ -142,7 +129,6 @@ const IssueGraph = withTooltip(
         const { x, y } = localPoint(event) || { x: -10, y: -10 };
         const x0 = xScale.invert(x - defaultMargin.left);
         const d = findClosestData(data, x0);
-        console.log("tooltipdata", d);
         if (inside) {
           // pause();
           // reset(x0/1000);
@@ -184,142 +170,154 @@ const IssueGraph = withTooltip(
 
     return width < 10 && height < 40 && data.length > 0 ? null : (
       <div>
+        <DarkTooltip
+        followCursor
+        arrow
+        sx={{ maxWidth: "none" }}
+        title={tooltipData ? <TooltipContent yAxisLabel={yAxisLabel} keys={keys} tooltipData={tooltipData} filledThresholds={filledThresholds} decimals={decimals} units={units}/> : null}
+      >
         <svg width={width} height={height}>
-          <Group
-            top={margin.top}
-            left={margin.left}
-            onTouchStart={(e) => {
-              handleTooltip(e, true);
-            }}
-            onTouchMove={(e) => {
-              handleTooltip(e, true);
-            }}
-            onMouseMove={(e) => {
-              handleTooltip(e, true);
-            }}
-            onMouseLeave={(e) => {
-              handleTooltip(e, false);
-            }}
-          >
-            <LinearGradient
-              id="area-background-gradient-issue"
-              from="black"
-              to="#222222"
-            />
-            {console.log({ tooltipOpen, tooltipData })}
-            <rect
-              x={0}
-              y={0}
-              width={width - defaultMargin.left - defaultMargin.right}
-              height={
-                height - defaultMargin.top - defaultMargin.bottom > 0
-                  ? height - defaultMargin.top - defaultMargin.bottom
-                  : 0
-              }
-              fill="url(#area-background-gradient-issue)"
-              // fill='black'
-            />
-            {keys.map((k) => (
-              <Group key={k} opacity={0.5}>
-                {/* {console.log({id: `area-gradient-${formatKey(k)}`})} */}
-                <defs>
-                  <linearGradient
-                    id={`area-gradient-issue-${formatKey(k)}`}
-                    x1="0"
-                    x2="0"
-                    y1="0"
-                    y2="1"
-                  >
-                    {getStops(getMaxForSeries(data, k))}
-                  </linearGradient>
-                </defs>
-                <AreaClosed
-                  data={data}
-                  x={(d) => xScale(d.x)}
-                  y={(d) => yScale(d[k])}
-                  x0={xScale(0)}
-                  y0={yScale(yMinValue)}
-                  strokeWidth={2}
-                  stroke={`url(#area-gradient-issue-${formatKey(k)})`}
-                  fill={`url(#area-gradient-issue-${formatKey(k)})`}
-                  fillOpacity={0.25}
-                  // curve={curveMonotoneX}
-                />
-                <AxisLeft
-                  // hideAxisLine
-                  scale={yScale}
-                  label={yAxisLabel}
-                  // tickFormat={(row) => trackTypes[row].label}
-                  stroke={axisColor}
-                  // numTicks={10}
-                  tickStroke={axisColor}
-                  tickLabelProps={() => ({
-                    fill: axisColor,
-                    fontSize: 11,
-                    textAnchor: "end",
-                    dy: "0.33em",
-                  })}
-                />
-                <AxisBottom
-                  top={yMax}
-                  scale={xScale}
-                  // numTicks={10}
-                  label={xAxisLabel}
-                  stroke={axisColor}
-                  tickStroke={axisColor}
-                  tickLabelProps={() => ({
-                    fill: axisColor,
-                    fontSize: 11,
-                    textAnchor: "middle",
-                  })}
-                />
-              </Group>
-            ))}
-            {filledThresholds.map((t) => (
-              <Line
-                key={`${t.color}-line`}
-                from={{ x: xScale(0), y: yScale(t.range[0]) }}
-                to={{ x: xScale(xMaxValue), y: yScale(t.range[0]) }}
-                strokeWidth={1}
-                stroke={t.color}
+          
+            
+            <Group
+              top={margin.top}
+              left={margin.left}
+              onTouchStart={(e) => {
+                handleTooltip(e, true);
+              }}
+              onTouchMove={(e) => {
+                handleTooltip(e, true);
+              }}
+              onMouseMove={(e) => {
+                handleTooltip(e, true);
+              }}
+              onMouseLeave={(e) => {
+                handleTooltip(e, false);
+              }}
+            >
+              <LinearGradient
+                id="area-background-gradient-issue"
+                from="black"
+                to="#222222"
               />
-            ))}
-
-            {tooltipData && (
-              <g>
+              <rect
+                x={0}
+                y={0}
+                width={width - defaultMargin.left - defaultMargin.right}
+                height={
+                  height - defaultMargin.top - defaultMargin.bottom > 0
+                    ? height - defaultMargin.top - defaultMargin.bottom
+                    : 0
+                }
+                fill="url(#area-background-gradient-issue)"
+                // fill='black'
+              />
+              {keys.map((k) => (
+                <Group key={k} opacity={0.5}>
+                  {/* {console.log({id: `area-gradient-${formatKey(k)}`})} */}
+                  <defs>
+                    <linearGradient
+                      id={`area-gradient-issue-${formatKey(k)}`}
+                      x1="0"
+                      x2="0"
+                      y1="0"
+                      y2="1"
+                    >
+                      {getStops(getMaxForSeries(data, k))}
+                    </linearGradient>
+                  </defs>
+                  <AreaClosed
+                    data={data}
+                    x={(d) => xScale(d.x)}
+                    y={(d) => yScale(d[k])}
+                    x0={xScale(0)}
+                    y0={yScale(yMinValue)}
+                    strokeWidth={2}
+                    stroke={`url(#area-gradient-issue-${formatKey(k)})`}
+                    fill={`url(#area-gradient-issue-${formatKey(k)})`}
+                    fillOpacity={0.25}
+                    // curve={curveMonotoneX}
+                  />
+                  <AxisLeft
+                    // hideAxisLine
+                    scale={yScale}
+                    label={yAxisLabel}
+                    // tickFormat={(row) => trackTypes[row].label}
+                    stroke={axisColor}
+                    // numTicks={10}
+                    tickStroke={axisColor}
+                    tickLabelProps={() => ({
+                      fill: axisColor,
+                      fontSize: 11,
+                      textAnchor: "end",
+                      dy: "0.33em",
+                      fontFamily: "helvetica",
+                    })}
+                  />
+                  <AxisBottom
+                    top={yMax}
+                    scale={xScale}
+                    // numTicks={10}
+                    tickFormat={(v)=>isTimeseries ? strip(v/1000) : strip(v)}
+                    label={xAxisLabel}
+                    stroke={axisColor}
+                    tickStroke={axisColor}
+                    tickLabelProps={() => ({
+                      fill: axisColor,
+                      fontSize: 11,
+                      textAnchor: "middle",
+                      fontFamily: "helvetica",
+                    })}
+                  />
+                </Group>
+              ))}
+              {filledThresholds.map((t) => (
                 <Line
-                  from={{ x: tooltipLeft, y: 0 }}
-                  to={{ x: tooltipLeft, y: yMax }}
-                  stroke={"lightgrey"}
-                  strokeWidth={2}
-                  pointerEvents="none"
-                  strokeDasharray="5,2"
+                  key={`${t.color}-line`}
+                  from={{ x: xScale(0), y: yScale(t.range[0]) }}
+                  to={{ x: xScale(xMaxValue), y: yScale(t.range[0]) }}
+                  strokeWidth={1}
+                  stroke={t.color}
                 />
+              ))}
 
-                <circle
-                  cx={tooltipLeft}
-                  cy={tooltipTop + 1}
-                  r={4}
-                  fill="black"
-                  fillOpacity={0.1}
-                  stroke="black"
-                  strokeOpacity={0.1}
-                  strokeWidth={2}
-                  pointerEvents="none"
-                />
-                <circle
-                  cx={tooltipLeft}
-                  cy={tooltipTop}
-                  r={4}
-                  fill={primaryColor}
-                  stroke="white"
-                  strokeWidth={2}
-                  pointerEvents="none"
-                />
-              </g>
-            )}
-          </Group>
+              {tooltipData && (
+                <g>
+                  <Line
+                    from={{ x: tooltipLeft, y: 0 }}
+                    to={{ x: tooltipLeft, y: yMax }}
+                    stroke={"lightgrey"}
+                    strokeWidth={2}
+                    pointerEvents="none"
+                    strokeDasharray="5,2"
+                  />
+
+                  <circle
+                    cx={tooltipLeft}
+                    cy={tooltipTop + 1}
+                    r={4}
+                    fill="black"
+                    fillOpacity={0.1}
+                    stroke="black"
+                    strokeOpacity={0.1}
+                    strokeWidth={2}
+                    pointerEvents="none"
+                  />
+                  <circle
+                    cx={tooltipLeft}
+                    cy={tooltipTop}
+                    r={4}
+                    fill={primaryColor}
+                    stroke="white"
+                    strokeWidth={2}
+                    pointerEvents="none"
+                  />
+                </g>
+              )}
+            </Group>
+          
         </svg>
+        </DarkTooltip>
         <div
           style={{
             position: "absolute",
@@ -333,13 +331,13 @@ const IssueGraph = withTooltip(
           {colorRange.length > 1 && (
             <LegendOrdinal
               labelFormat={(l) => {
-                let label = 'Label';
-                filledThresholds.forEach(t=>{
+                let label = "Label";
+                filledThresholds.forEach((t) => {
                   if (l >= t.range[0] && l < t.range[1]) {
                     label = t.label;
                   }
-                })
-                return label
+                });
+                return label;
               }}
               scale={colorScale}
               direction="row"
@@ -347,50 +345,54 @@ const IssueGraph = withTooltip(
             />
           )}
         </div>
-        {tooltipOpen && tooltipData && (
+        {/* {tooltipOpen && tooltipData && (
           <TooltipWithBounds
             top={tooltipTop}
             left={tooltipLeft + 30}
             style={tooltipStyles}
           >
-            <Stack spacing={0.5}>
-              {camelCaseToWords(yAxisLabel)}
-              {keys.map((key) => (
-                <Stack
-                  key={key}
-                  direction="row"
-                  alignContent="center"
-                  align="center"
-                  justify="start"
-                  spacing={0.5}
-                >
-                  <div
-                    style={{
-                      borderRadius: 100,
-                      width: 7,
-                      height: 7,
-                      backgroundColor: getColor(tooltipData[key],filledThresholds),
-                      boxShadow: "0 0 0 2px white",
-                    }}
-                  ></div>
-                  <Typography
-                    color={getColor(tooltipData[key],filledThresholds)}
-                    size="small"
-                  >
-                    {camelCaseToWords(key)}
-                    {" : "}
-                    {strip(tooltipData[key].toFixed(decimals))}
-                    {' '}
-                    {units}
-                  </Typography>
-                </Stack>
-              ))}
-            </Stack>
+            
           </TooltipWithBounds>
-        )}
+        )} */}
       </div>
     );
   }
 );
+
+const TooltipContent = ({yAxisLabel,keys,tooltipData,filledThresholds,decimals,units}) => {
+  return (
+    <Stack spacing={0.5}>
+      {camelCaseToWords(yAxisLabel)}
+      {keys.map((key) => (
+        <Stack
+          key={key}
+          direction="row"
+          alignItems="center"
+          align="center"
+          justify="start"
+          spacing={0.5}
+        >
+          <div
+            style={{
+              borderRadius: 100,
+              width: 7,
+              height: 7,
+              backgroundColor: getColor(tooltipData[key], filledThresholds),
+              boxShadow: "0 0 0 2px white",
+            }}
+          ></div>
+          <Typography
+            color={getColor(tooltipData[key], filledThresholds)}
+            size="small"
+          >
+            {camelCaseToWords(key)}
+            {" : "}
+            {strip(tooltipData[key].toFixed(decimals))} {units}
+          </Typography>
+        </Stack>
+      ))}
+    </Stack>
+  );
+};
 
 export default IssueGraph;

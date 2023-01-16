@@ -22,18 +22,13 @@ const basicActionData = {
         accessor: statusIcon,
         label: "Status",
       },
+      EXTRA_TYPES.DOC_TOGGLE,
       {
         icon: FiMoreHorizontal,
         type: EXTRA_TYPES.DROPDOWN,
         contents: [
           EXTRA_TYPES.DELETE_BUTTON,
-          EXTRA_TYPES.DOC_TOGGLE,
-          EXTRA_TYPES.SELECTION_TOGGLE,
-          {
-            type: EXTRA_TYPES.INDICATOR_ICON,
-            accessor: statusIcon,
-            label: "Status",
-          },
+          EXTRA_TYPES.SELECTION_TOGGLE
         ],
       },
     ],

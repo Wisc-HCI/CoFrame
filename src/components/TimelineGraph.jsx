@@ -2,7 +2,7 @@ import React, { useCallback, memo, useState } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
-import { withTooltip, defaultStyles } from "@visx/tooltip";
+import { withTooltip } from "@visx/tooltip";
 import { LinearGradient } from "@visx/gradient";
 import { localPoint } from "@visx/event";
 import { Text } from "@visx/text";
@@ -24,8 +24,8 @@ import {
 import shallow from "zustand/shallow";
 import styled from "@emotion/styled";
 import { range } from "lodash";
-import { Stack, Typography, Tooltip, alpha } from "@mui/material";
-import { tooltipClasses } from '@mui/material/Tooltip';
+import { Stack, Typography } from "@mui/material";
+import { DarkTooltip } from "./Elements/DarkTooltip";
 
 const defaultMargin = { top: 40, left: 80, right: 40, bottom: 25 };
 
@@ -33,20 +33,13 @@ const Selector = styled.div`
   border-radius: 100px;
   width: 20px;
   height: 20px;
+  cursor: pointer;
   background-color: ${(props) => props.color};
   box-shadow: ${(props) => (props.selected ? "0px 0px 2px 2px white" : null)};
   &:hover {
     opacity: 0.7;
   }
 `;
-
-const tooltipStyles = {
-  ...defaultStyles,
-  minWidth: 60,
-  backgroundColor: "rgba(0,0,0,0.9)",
-  color: "white",
-  padding: 5,
-};
 
 const pointSensitivity = 500;
 
@@ -294,10 +287,12 @@ const InnerGraph = withTooltip(
       ]
     );
 
+    const threshBlockHeight = Math.min(barHeight / 4, 15);
+
     return (
       
         <div>
-          <DarkTooltip title={<TooltipContent tooltipData={tooltipData} colorScale={colorScale} primaryColor={primaryColor}/>} followCursor arrow sx={{backgroundColor:'black',maxWidth:'none'}}>
+          <DarkTooltip title={<TooltipContent tooltipData={tooltipData} colorScale={colorScale} primaryColor={primaryColor}/>} followCursor arrow sx={{maxWidth:'none'}}>
         <svg width={width} height={height}>
           <Group
             top={margin.top}
@@ -361,11 +356,11 @@ const InnerGraph = withTooltip(
                   <rect
                     key={`${i}-${j}`}
                     x={xScale(b.x0)}
-                    y={yScale(filteredBlockData[0].track) + (3 * barHeight) / 4}
+                    y={yScale(filteredBlockData[0].track) + barHeight - threshBlockHeight*1.25}
                     width={xScale(b.x1 - b.x0)}
-                    height={barHeight / 4}
+                    height={threshBlockHeight}
                     fill={issueThresholds[i].color}
-                    rx={barHeight / 8}
+                    rx={threshBlockHeight/2}
                   />
                 ))}
               </g>
@@ -492,20 +487,11 @@ const InnerGraph = withTooltip(
             fontSize: "14px",
           }}
         >
-          {/* <LegendOrdinal
-            scale={colorScale}
-            direction="row"
-            shape="circle"
-            labelMargin="0 15px 0 0"
-            legendLabelProps={{ style: { color: "white", paddingRight: 8 } }}
-            labelFormat={(l) => capitalize(l)}
-          /> */}
           <Stack direction="row" spacing={1}>
             {Object.entries(eventTypes).map(([eventTypeKey, eventType]) => (
               <Stack
                 key={eventTypeKey}
                 onClick={() => toggleExpanded(eventTypeKey)}
-                focusIndicator={false}
                 direction="row"
                 alignItems="center"
                 spacing={0.5}
@@ -519,13 +505,7 @@ const InnerGraph = withTooltip(
             ))}
           </Stack>
         </div>
-        {/* {false && tooltipOpen && tooltipData && (
-          <Tooltip
-            top={tooltipTop}
-            left={tooltipLeft}
-            style={tooltipStyles}
-          ></Tooltip>
-        )} */}</div>
+      </div>
       
     );
   }
@@ -562,17 +542,6 @@ const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
     />
   );
 });
-
-const DarkTooltip = styled(({ className, ...props }) => (
-  <Tooltip {...props} arrow classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.arrow}`]: {
-    color: alpha(theme.palette.common.black,0.9)
-  },
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: alpha(theme.palette.common.black,0.9),
-  },
-}));
 
 const TooltipContent = ({ tooltipData, colorScale, primaryColor }) => {
   return tooltipData ? (

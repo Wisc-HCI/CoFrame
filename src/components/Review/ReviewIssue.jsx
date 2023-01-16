@@ -1,16 +1,18 @@
 import React, { useCallback } from "react";
 import { FiSlash, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 import useStore from "../../stores/Store";
-import { Card, CardHeader, Avatar, IconButton, Switch } from "@mui/material";
+import { Card, CardHeader, Avatar, IconButton, Switch, CardContent } from "@mui/material";
+import { getPlotInfo } from "../ContextualInfo/Plots";
 import shallow from "zustand/shallow";
 
 export const ReviewIssue = ({ issueId }) => {
   const issue = useStore(
     useCallback((state) => state.issues[issueId], [issueId])
   );
-  const [setIssueCompletion, primaryColor, addFocusItem, clearFocus, focus] =
+  const [setFeaturedDocs,setIssueCompletion, primaryColor, addFocusItem, clearFocus, focus] =
     useStore(
       (state) => [
+        state.setFeaturedDocs,
         state.setIssueCompletion,
         state.primaryColor,
         state.addFocusItem,
@@ -62,6 +64,7 @@ export const ReviewIssue = ({ issueId }) => {
               onClick={() => {
                 if (focused) {
                   clearFocus();
+                  setFeaturedDocs({});
                 } else {
                   let first = false;
                   issue.focus.forEach((item) => {
@@ -71,6 +74,10 @@ export const ReviewIssue = ({ issueId }) => {
                     }
                   });
                   addFocusItem(issueId, true);
+                  if (issue.featuredDocs) {
+                    const active = issue.focus.length > 0 ? issue.focus[issue.focus.length-1] : null;
+                    setFeaturedDocs(issue.featuredDocs,active);
+                  }
                 }
               }}
             >
@@ -90,6 +97,9 @@ export const ReviewIssue = ({ issueId }) => {
           </>
         }
       ></CardHeader>
+      {focused && issue.graphData &&  ( //!issue.graphData.isTimeseries &&
+        <CardContent style={{padding:0}}>{getPlotInfo({focusItem:issue})}</CardContent>
+      )}
     </Card>
   );
 };

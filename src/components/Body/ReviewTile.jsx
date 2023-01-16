@@ -24,7 +24,7 @@ const isBlocked = (state, sectionId) =>
     (dep) => !isComplete(state, dep)
   ).length > 0;
 
-export const ReviewTile = (_) => {
+export const ReviewTile = ({drawerOpen}) => {
   const frames = useStore((state) => state.frames);
 
   const [frameId, setFrame, refresh, blockages] = useStore(
@@ -99,7 +99,7 @@ export const ReviewTile = (_) => {
           </Button>
         </Badge>
       </Stack>
-      <ScrollRegion vertical height={bounds.height - 125}>
+      <ScrollRegion vertical height={`calc(${bounds.height - 105}px - ${drawerOpen ? "20vh" : "0vh"})`}>
         <Stack
           direction="column"
           style={{ width: "calc(100% - 6px)" }}

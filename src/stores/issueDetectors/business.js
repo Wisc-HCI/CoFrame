@@ -34,6 +34,7 @@ export const findCycleTimeIssues = ({program, stats, compiledData}) => {
         requiresChanges: false,
         title: 'Robot Cycle Time',
         description: 'Robot Cycle Time',
+        featuredDocs: {[program.id]:"The robot cycle time is a value"},
         complete: false,
         focus: [program.id],
         graphData: {
