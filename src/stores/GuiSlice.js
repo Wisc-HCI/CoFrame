@@ -1,13 +1,10 @@
 import frameStyles from '../frameStyles';
-import { DATA_TYPES } from 'simple-vp';
+import { DATA_TYPES, instanceTemplateFromSpec } from 'simple-vp';
 import { remove } from 'lodash';
 import { STATUS } from './Constants';
 import { mapValues } from 'lodash';
 import { round } from 'number-precision';
-// import { INITIAL_SIM, COLLISION_MESHES } from './initialSim';
-
-// const ROBOT_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('robot'));
-// const GRIPPER_PARTS = Object.keys(INITIAL_SIM.staticScene).filter(v => v.includes('gripper'));
+import { generateUuid } from './generateUuid';
 
 const onClickIgnoredTypes = [
   "meshType",
@@ -50,6 +47,21 @@ const addFocus = (state, id, add) => {
     }
   })
   return state;
+}
+
+const createNewInstance = (state, instanceType) => {
+  const id = generateUuid(instanceType);
+  const template = {
+    ...instanceTemplateFromSpec(
+      instanceType,
+      state.programSpec.objectTypes[instanceType],
+      false
+    ),
+    id,
+    dataType: DATA_TYPES.INSTANCE,
+  };
+  state.programData[id] = template;
+  return id;
 }
 
 const swapLocations = (state, id) => {
@@ -248,7 +260,7 @@ export const GuiSlice = (set, get) => ({
       state.programData[key].properties.isComplete = update[key];
     });
   }),
-  onClick: (id, hidden, event) => set(state => {
+  onClick: (id, hidden, transform, event) => set(state => {
     // ignore hidden objects
     // ignore movement for the clicks (translate/rotate)
     // ignore collision meshes (-collision)
@@ -264,6 +276,27 @@ export const GuiSlice = (set, get) => ({
         state = swapLocations(state, id.replace('-pointer', ''));
       } else if (id.endsWith('-tag')) {
         state = swapLocations(state, id.replace('-tag', ''));
+      } else if (id.startsWith('ghost-')) {
+        // Grasp obj
+        // let graspId = id.split('--')[3];
+        // let graspObj = state.programData[graspId];
+
+        // Create a location type
+        let newId = createNewInstance(state, "locationType");
+        let worldPose = transform.world;
+
+        // Update that location with the position of the grasp point
+        state.programData[newId].properties.position.x = worldPose.position.x;
+        state.programData[newId].properties.position.y = worldPose.position.y;
+        state.programData[newId].properties.position.z = worldPose.position.z;
+        state.programData[newId].properties.rotation.x = worldPose.rotation.x;
+        state.programData[newId].properties.rotation.y = worldPose.rotation.y;
+        state.programData[newId].properties.rotation.z = worldPose.rotation.z;
+        state.programData[newId].properties.rotation.w = worldPose.rotation.w;
+
+        // update that location with the name of the grasp point
+        // state.programData[newId].name = "Loc: " + graspObj.name;
+        state.programData[newId].name = "Grasp Point";
       } else {
         state = addFocus(state, id, false);
       }

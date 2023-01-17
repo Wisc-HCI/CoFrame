@@ -1365,7 +1365,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                         color: { r: 0, g: 200, b: 0, a: 0.2 },
                         hidden: !(state.focus.includes(entry.id) || state.focus.includes(input) || state.focus.includes(gp))
                     }
-                })
+                });
             });
             entry.properties.outputs.forEach(output => {
 
@@ -1414,7 +1414,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                         color: { r: 0, g: 200, b: 0, a: 0.2 },
                         hidden: !(state.focus.includes(entry.id) || state.focus.includes(output) || state.focus.includes(gp))
                     }
-                })
+                });
             });
         } else if (entry.type === 'machineType' || entry.type === 'toolType') {
             let entryProps = entry.properties;
@@ -1475,7 +1475,30 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     color: { r: 0, g: 200, b: 0, a: 0.2 },
                     hidden: !(state.focus.includes(entry.id) || state.focus.includes(gp))
                 }
-            })
+            });
+
+            // Ghost grasp points
+            graspPoints.forEach((gp) => {
+                const gpData = state.programData[gp];
+                tfs['ghost--viz--tool--' + gp] = {
+                    frame: entry.id,
+                    position: gpData.properties.position,
+                    rotation: gpData.properties.rotation,
+                    transformMode: itemTransformMethod(state, gp),
+                    scale: { x: 1, y: 1, z: 1 }
+                }
+                items['ghost--viz--tool--' + gp] = {
+                    frame: 'ghost--viz--tool--' + gp,
+                    shape: "package://app/meshes/LocationMarker.stl",
+                    position: { x: 0, y: 0, z: 0 },
+                    rotation: { x: 0, y: 0, z: 0, w: 1 },
+                    scale: { x: 1, y: 1, z: 1 },
+                    highlighted: false,
+                    showName: false,
+                    color: { r: 0, g: 255, b: 0, a: 0.5 },
+                    hidden: !(!state.playing && state.activeFocus)
+                }
+            });
         } else if (entry.type === 'robotAgentType' || entry.type === 'humanAgentType' || entry.type === 'gripperType') {
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
@@ -1987,7 +2010,7 @@ export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
 
 export const computedSliceSubscribe = (useStore) => {
     useStore.subscribe(state =>
-        [state.programData, state.focus, state.occupancyVisible, state.collisionsVisible, state.robotPreviewVisible],
+        [state.programData, state.focus, state.occupancyVisible, state.collisionsVisible, state.robotPreviewVisible, state.playing],
         (current, previous) => {
             updateRobotScene(useCompiledStore, useStore);
         },
