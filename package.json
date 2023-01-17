@@ -38,7 +38,7 @@
     "react-spring": "^9.5.2",
     "react-use-measure": "^2.1.1",
     "redux": "^4.2.0",
-    "robot-scene": "github:Wisc-HCI/robot-scene#v0.9.6",
+    "robot-scene": "github:Wisc-HCI/robot-scene#v0.9.9",
     "simple-vp": "github:Wisc-HCI/simple-vp#v0.8.5",
     "styled-components": "^5.3.5",
     "three": "^0.142.0",
