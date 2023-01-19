@@ -5373,9 +5373,9 @@ shallowequal@^1.1.0:
   resolved "https://registry.yarnpkg.com/shallowequal/-/shallowequal-1.1.0.tgz#188d521de95b9087404fd4dcb68b13df0ae4e7f8"
   integrity sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==
 
-"simple-vp@github:Wisc-HCI/simple-vp#v0.8.7":
-  version "0.8.7"
-  resolved "https://codeload.github.com/Wisc-HCI/simple-vp/tar.gz/5d271ae5d5189014f71ca00fd7f08871be7b4fd4"
+"simple-vp@github:Wisc-HCI/simple-vp#v0.8.8":
+  version "0.8.8"
+  resolved "https://codeload.github.com/Wisc-HCI/simple-vp/tar.gz/7b93075580c81fe0bc6d53df01b85071b4e82bdc"
   dependencies:
     "@mui/lab" "^5.0.0-alpha.112"
     "@radix-ui/react-scroll-area" "^1.0.0"

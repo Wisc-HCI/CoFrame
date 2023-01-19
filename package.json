@@ -40,7 +40,7 @@
     "react-use-measure": "^2.1.1",
     "redux": "^4.2.0",
     "robot-scene": "github:Wisc-HCI/robot-scene#v0.9.9",
-    "simple-vp": "github:Wisc-HCI/simple-vp#v0.8.7",
+    "simple-vp": "github:Wisc-HCI/simple-vp#v0.8.8",
     "styled-components": "^5.3.5",
     "three": "^0.142.0",
     "uuid": "^8.3.2",
