@@ -5,7 +5,7 @@ for collaborative robotic workcells.
 We accomplish this with an authoring tool that incorporates a Blockly-based visual
 programming language called EvD-Script, a simulation environment built in Unity,
 and an expert checklist that directs the operator to think in four frames:
-Safety, Program Quality, Robot Performance, and Buisness Objectives.
+Safety, Program Quality, Robot Performance, and Business Objectives.
 
 ## System Architecture
 The current version of this system involves a web-based front-end and a ROS-based backend used for executing reachability detection and trajectory planning. While the system functions basically without the backend, it is unable to generate data that is useful feedback without this connection. This means that to execute, you will need to install and run the ROS package according to the instructions below. 
