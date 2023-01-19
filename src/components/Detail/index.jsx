@@ -22,6 +22,8 @@ import {
   DialogContent,
   DialogActions,
   Avatar,
+  Card,
+  CardHeader,
 } from "@mui/material";
 import { BackRefSection } from "./BackRefSection";
 import { ForwardRefSection } from "./ForwardRefSection";
@@ -205,46 +207,32 @@ export const Detail = (_) => {
                   }
                 />
 
-                <DocSection data={item}/>
+                <DocSection data={item} />
 
                 {item.properties.processTime !== undefined && (
-                  <Stack
-                    direction="row"
-                    style={{
-                      backgroundColor: "#303030",
-                      borderRadius: 2,
-                      padding: 2,
-                      marginBottom: 5,
-                    }}
+                  <Card
+                    raised
+                    // variant='outlined'
+                    background="#303030"
+                    sx={{ padding: "0px 5px 5px 5px" }}
                   >
-                    <b style={{ color: "rgba(255, 255, 255, 0.85)" }}>
-                      Time :{" "}
-                    </b>
-                    <Stack direction="row">
-                      <NumberInput
-                        value={item.properties.processTime}
-                        min={0}
-                        max={Infinity}
-                        onChange={(value) =>
-                          updateItemSimpleProperty(
-                            item.id,
-                            "processTime",
-                            value
-                          )
-                        }
-                        disabled={!item.canDelete}
-                        visualScaling={1 / 1000}
-                      />
-                      <b
-                        style={{
-                          color: "rgba(255, 255, 255, 0.85)",
-                          paddingLeft: "4%",
-                        }}
-                      >
-                        sec
-                      </b>
-                    </Stack>
-                  </Stack>
+                    <CardHeader
+                      title="Time"
+                      titleTypographyProps={{ variant: "subtitle1" }}
+                    />
+                    <NumberInput
+                      value={item.properties.processTime/1000}
+                      min={0}
+                      max={Infinity}
+                      onChange={(value) =>
+                        updateItemSimpleProperty(item.id, "processTime", value*1000)
+                      }
+                      step={0.1}
+                      disabled={!item.canDelete}
+                      suffix="sec"
+                      
+                    />
+                  </Card>
                 )}
 
                 {item.properties.position !== undefined &&

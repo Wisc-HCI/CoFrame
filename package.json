@@ -14,14 +14,15 @@
     "build:gh": "vite build && git add dist -f && git commit -m \"Updating gh-pages\" && git subtree push --prefix dist origin gh-pages"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.4.9",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/material": "5.11.0",
-    "@people_and_robots/lively_tk": "0.9.35",
+    "@people_and_robots/lively": "1.0.0-rc.0",
     "@radix-ui/react-scroll-area": "^1.0.0",
     "@robostack/roslib": "^1.1.1",
     "@tauri-apps/api": "^1.2.0",
-    "@visx/visx": "^2.12.1",
+    "@visx/visx": "^3.0.0-alpha.0",
     "comlink": "^4.3.1",
     "fast-xml-parser": "^4.0.9",
     "file-saver": "^2.0.5",
@@ -39,7 +40,7 @@
     "react-use-measure": "^2.1.1",
     "redux": "^4.2.0",
     "robot-scene": "github:Wisc-HCI/robot-scene#v0.9.9",
-    "simple-vp": "github:Wisc-HCI/simple-vp#v0.8.5",
+    "simple-vp": "github:Wisc-HCI/simple-vp#v0.8.7",
     "styled-components": "^5.3.5",
     "three": "^0.142.0",
     "uuid": "^8.3.2",
@@ -48,7 +49,7 @@
     "zustand-middleware-computed-state": "^0.1.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.2.2",
+    "@tauri-apps/cli": "^1.2.3",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.2.0",

@@ -1,44 +1,41 @@
 html,
 body {
-    margin: 0;
-    height: 100vh;
-    width: 100vw;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    overflow: hidden;
-    min-height: 900;
-    min-width: 1900;
-    background-color: black;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  min-height: 900;
+  min-width: 1900;
+  background-color: black;
 }
 
-.ant-popover-placement-right > .ant-popover-content > .ant-popover-arrow, .ant-popover-placement-rightTop > .ant-popover-content > .ant-popover-arrow, .ant-popover-placement-rightBottom > .ant-popover-content > .ant-popover-arrow {
-    left: 6px;
-    border-top-color: transparent;
-    border-right-color: transparent;
-    border-bottom-color: #303030;
-    border-left-color: #303030;
-    box-shadow: -3px 3px 7px rgba(0, 0, 0, 0.07);
+.react-flow__controls button {
+  background-color: var(--bg-color);
+  color: #999;
+  border: 1px solid #999;
+  border-bottom: none;
 }
 
-.ant-popover-placement-left > .ant-popover-content > .ant-popover-arrow, .ant-popover-placement-leftTop > .ant-popover-content > .ant-popover-arrow, .ant-popover-placement-leftBottom > .ant-popover-content > .ant-popover-arrow {
-    right: 6px;
-    border-top-color: #303030;
-    border-right-color: #303030;
-    border-bottom-color: transparent;
-    border-left-color: transparent;
-    box-shadow: 3px -3px 7px rgba(0, 0, 0, 0.07);
+.react-flow__controls button:hover {
+  background-color: rgb(37, 37, 37);
 }
 
-.ant-popover-placement-top > .ant-popover-content > .ant-popover-arrow, .ant-popover-placement-topLeft > .ant-popover-content > .ant-popover-arrow, .ant-popover-placement-topRight > .ant-popover-content > .ant-popover-arrow {
-    bottom: 6.2px;
-    border-top-color: transparent;
-    border-right-color: #303030;
-    border-bottom-color: #303030;
-    border-left-color: transparent;
-    box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.07);
+.react-flow__controls button:first-child {
+  border-radius: 5px 5px 0 0;
+}
+
+.react-flow__controls button:last-child {
+  border-bottom: 1px solid #999;
+  border-radius: 0 0 5px 5px;
+}
+
+.react-flow__controls button path {
+  fill: #999;
 }
 
 .react-flow__attribution {
-    display: none
+  display: none;
 }

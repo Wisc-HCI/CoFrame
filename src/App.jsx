@@ -164,7 +164,7 @@ export default function App() {
   const showEditor = viewMode === "default" || viewMode === "program";
 
   return (
-    // <Grommet full theme={theme}>
+    
     <ThemeProvider theme={muiTheme}>
       <Stack
         direction="row"
@@ -279,11 +279,8 @@ export default function App() {
       </Stack>
       <Detail />
       <SettingsModal />
-      {/* <SettingsModal />
-        
-       */}
     </ThemeProvider>
-    // </Grommet>
+    
   );
 }
 

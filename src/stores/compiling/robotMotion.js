@@ -545,10 +545,8 @@ export const robotMotionCompiler = ({
           rootBounds,
           staticEnvironment,
           initialState,
-          false,
           1,
-          250,
-          null
+          250
         );
         // console.log('constructed trajectory solver')
         // console.log(solver.currentState);

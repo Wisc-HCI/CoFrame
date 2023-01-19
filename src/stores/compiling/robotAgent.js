@@ -49,7 +49,6 @@ export const robotAgentCompiler = ({
     rootBounds,
     createStaticEnvironment(worldModel),
     { origin, joints: properties.initialJointState },
-    false,
     1,
     450,
     null

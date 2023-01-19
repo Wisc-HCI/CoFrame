@@ -165,7 +165,6 @@ export const poseCompiler = ({
             rootBounds,
             staticEnvironment,
             initialState,
-            false,
             5,
             50
           );

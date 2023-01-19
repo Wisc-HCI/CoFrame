@@ -8,20 +8,45 @@ import { Vector3 } from "three";
 import lodash from 'lodash';
 import { hexToRgb } from "../../helpers/colors";
 
-export const findReachabilityIssues = ({programData}) => { // requires joint_processor to produce joints for each waypoint/location
+const unreachableUnusedDoc = `Reachability of a Location or Waypoint is driven by both the configuration of Location or Waypoint itself, but also the starting location and structure of the robot attempting to reach it. Since this item is not used in the program itself, this is only considered a warning, but all used locations or waypoints should be reachable.
+Designing reachable locations and waypoints is both an art and a science, requiring a bit of trial and error. Try tweaking the current item until it registers as reachable.
+`
+
+const unreachableUsedDoc = `Reachability of a Location or Waypoint is driven by both the configuration of Location or Waypoint itself, but also the starting location and structure of the robot attempting to reach it. Since this item is used in the program itself, this is considered an error.
+Designing reachable locations and waypoints is both an art and a science, requiring a bit of trial and error. Try tweaking the current item until it registers as reachable.
+`
+
+const jointSpeedDoc = `Joint speed is best minimized in the interest of being a proxy measure of wear-and-tear, as well as being a component of the safety assessment. 
+To minimize joint speed, you can consider the following options:
+- Reduce the speed of the robot during [Move Trajectory](moveTrajectoryType) actions. This potentially increases the cycle time of the program. 
+- Try checking out the differences between IK-based and joint-based trajectories. Sometimes it is easier to design slower joint-based trajectories, but they don't always produce as logical of motions.
+`
+
+const eeSpeedDoc = `End-effector speed is best minimized in the interest of being a proxy measure of wear-and-tear, as well as being a component of the safety assessment. 
+To minimize joint speed, you can consider the following options:
+- Reduce the speed of the robot during [Move Trajectory](moveTrajectoryType) actions. This potentially increases the cycle time of the program. 
+- Try checking out the differences between IK-based and joint-based trajectories. Sometimes it is easier to design slower joint-based trajectories, but they don't always produce as logical of motions.
+`
+
+export const findReachabilityIssues = ({programData, compiledData}) => { // requires joint_processor to produce joints for each waypoint/location
     let issues = {};
+    let checkedPoses = [];
     let usedPoses = [];
+
+    // TODO: Check to see if a location or waypoint is used in the compiled data
 
     // Enumerate locations and add warnings for those not used in the program.
     Object.values(programData).filter(v => v.type === 'locationType' && v.dataType === DATA_TYPES.INSTANCE).forEach(location=>{
-        if (!anyReachable(location) && usedPoses.indexOf(location.id) < 0) {
-            usedPoses.push(location.id)
+        if (!anyReachable(location) && checkedPoses.includes(location.id)) {
+            checkedPoses.push(location.id)
+            const used = usedPoses.includes(location.id)
             const uuid = generateUuid('issue');
             issues[uuid] = {
                 id: uuid,
-                requiresChanges: false,
-                title: `Unused Location "${location.name}" not reachable`,
-                description: `Location "${location.name}" is not reachable by the robot, but isn't used in the program.`,
+                requiresChanges: used,
+                title: used ? `Location "${location.name}" not reachable` : `Unused Location "${location.name}" not reachable`,
+                description: used ? `Location "${location.name}" is not reachable by the robot, and is used in the program.` : `Location "${location.name}" is not reachable by the robot, but isn't used in the program.`,
+                featuredDocs: {[location.id]: used ? unreachableUsedDoc : unreachableUnusedDoc},
                 complete: false,
                 focus: [location.id],
                 graphData: null
@@ -31,14 +56,16 @@ export const findReachabilityIssues = ({programData}) => { // requires joint_pro
 
     // Enumerate waypoints and add warnings for those not used in the program.
     Object.values(programData).filter(v => v.type === 'waypointType' && v.dataType === DATA_TYPES.INSTANCE).forEach(waypoint=>{
-        if (!anyReachable(waypoint) && usedPoses.indexOf(waypoint.id) < 0) {
-            usedPoses.push(waypoint.id)
+        if (!anyReachable(waypoint) && checkedPoses.includes(waypoint.id)) {
+            checkedPoses.push(waypoint.id)
+            const used = usedPoses.includes(location.id)
             const uuid = generateUuid('issue');
             issues[uuid] = {
                 id: uuid,
-                requiresChanges: false,
-                title: `Unused Waypoint "${waypoint.name}" not reachable`,
-                description: `Waypoint "${waypoint.name}" is not reachable by the robot, but isn't used in the program.`,
+                requiresChanges: used,
+                title: used ? `Waypoint "${waypoint.name}" not reachable` : `Unused Waypoint "${waypoint.name}" not reachable`,
+                description: used ? `Waypoint "${waypoint.name}" is not reachable by the robot, and is used in the program.` : `Waypoint "${waypoint.name}" is not reachable by the robot, but isn't used in the program.`,
+                featuredDocs: {[location.id]:used ? unreachableUsedDoc : unreachableUnusedDoc},
                 complete: false,
                 focus: [waypoint.id],
                 graphData: null
@@ -175,6 +202,7 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
                 requiresChanges: err,
                 title: `Robot joint(s) move too fast`,
                 description: `The robot's joint speeds are too fast`,
+                featuredDocs: {[source]:jointSpeedDoc},
                 complete: false,
                 focus: [source],
                 graphData: {

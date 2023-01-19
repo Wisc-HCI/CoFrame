@@ -65,20 +65,6 @@ const store = (set, get) => ({
         ...d,
         docActive: id === d.id && value ? true : false
       }))
-      // if (value) {
-      //   Object.keys(state.programData).forEach((v) => {
-      //     if (v === id) {
-      //       state.programData[v].docActive = true;
-      //     } else if (v !== id && state.programData[v].docActive) {
-      //       state.programData[v].docActive = false;
-      //     }
-      //   });
-      //   // state.programData = mapValues(state.programData,(v)=>v.id === id ? {...v,docActive:true} : {...v,docActive:false})
-      // } else {
-      //   state.programData[id].docActive = false;
-      // }
-
-      // state.programData[id].docActive = value;
     });
   },
   activeTab:'default',
