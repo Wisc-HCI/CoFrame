@@ -18,10 +18,6 @@ export const SimulatorTile = forwardRef((_,ref) => {
   const clearFocus = useStore((state) => state.clearFocus,shallow);
   const tfVisible = useStore((state) => state.tfVisible,shallow);
   const paused = useStore((state) => state.focus.length === 0,shallow);
-  const [topRef, topBounds] = useMeasure();
-  const [bottomRef, bottomBounds] = useMeasure();
-  // const containerStyle = useSpring({ flex: visible ? 11 : 0, config: config.stiff });
-//   console.log({ topBounds, bottomBounds });
 
   return (
     <Stack

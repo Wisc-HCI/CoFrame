@@ -57,7 +57,7 @@ function formatTime(ms) {
 
 const axisColor = "white";
 
-const TimelineGraph = ({
+const TimelineGraph = memo(({
   width,
   height,
   margin = defaultMargin,
@@ -124,7 +124,7 @@ const TimelineGraph = ({
       primaryColor={primaryColor}
     />
   );
-};
+});
 
 const InnerGraph = withTooltip(
   ({

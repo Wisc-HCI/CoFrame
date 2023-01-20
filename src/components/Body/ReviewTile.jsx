@@ -14,6 +14,7 @@ import {
   Badge,
   Typography
 } from "@mui/material";
+import { memo } from "react";
 
 const isComplete = (state, sectionId) =>
   state.sections[sectionId].issues
@@ -24,7 +25,7 @@ const isBlocked = (state, sectionId) =>
     (dep) => !isComplete(state, dep)
   ).length > 0;
 
-export const ReviewTile = ({drawerOpen}) => {
+export const ReviewTile = memo(({drawerOpen}) => {
   const frames = useStore((state) => state.frames);
 
   const [frameId, setFrame, refresh, blockages] = useStore(
@@ -118,4 +119,4 @@ export const ReviewTile = ({drawerOpen}) => {
       </ScrollRegion>
     </Paper>
   );
-};
+});

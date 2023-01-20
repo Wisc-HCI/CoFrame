@@ -1,9 +1,10 @@
 import React from 'react';
+import { memo } from 'react';
 // import { useSpring, animated } from "@react-spring/web";
 // import { config } from "react-spring";
 // import { motion } from "framer-motion";
 
-export default function Tile({style, header, children, backgroundColor, borderWidth, internalPaddingWidth, borderRadius=3,innerStyle={}}) {
+const Tile = memo(({style, header, children, backgroundColor, borderWidth, internalPaddingWidth, borderRadius=3,innerStyle={}}) => {
 
     // const innerContainerStyle = useSpring({
     //     backgroundColor:backgroundColor?backgroundColor:'rgba(0,0,0,0.6)',
@@ -23,4 +24,6 @@ export default function Tile({style, header, children, backgroundColor, borderWi
             </div>
         </div>
     )
-}
+})
+
+export default Tile

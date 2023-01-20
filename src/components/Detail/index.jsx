@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import PositionRotationTF from "./PositionRotationTF";
 import { GizmoDetail } from "./GizmoDetail";
 import useStore from "../../stores/Store";
@@ -29,7 +29,7 @@ import { BackRefSection } from "./BackRefSection";
 import { ForwardRefSection } from "./ForwardRefSection";
 import { DocSection } from "./DocSection";
 
-export const Detail = (_) => {
+export const Detail = memo((_) => {
   const { item, objectTypeInfo } = useStore((state) => {
     let focusData = state.focus
       .map((f) => {
@@ -384,4 +384,4 @@ export const Detail = (_) => {
       {/* </Layer> */}
     </Drawer>
   );
-};
+});

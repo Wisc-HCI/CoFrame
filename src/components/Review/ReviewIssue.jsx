@@ -1,11 +1,11 @@
-import React, { useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import { FiSlash, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 import useStore from "../../stores/Store";
 import { Card, CardHeader, Avatar, IconButton, Switch, CardContent } from "@mui/material";
 import { getPlotInfo } from "../ContextualInfo/Plots";
 import shallow from "zustand/shallow";
 
-export const ReviewIssue = ({ issueId }) => {
+export const ReviewIssue = memo(({ issueId }) => {
   const issue = useStore(
     useCallback((state) => state.issues[issueId], [issueId])
   );
@@ -102,4 +102,4 @@ export const ReviewIssue = ({ issueId }) => {
       )}
     </Card>
   );
-};
+});

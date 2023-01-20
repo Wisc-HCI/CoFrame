@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { scaleLinear, scaleOrdinal } from "@visx/scale";
@@ -56,7 +56,7 @@ const formatKey = (key) => key.replace(/ /g, "-");
 
 const getMaxForSeries = (series, key) => Math.max(...series.map((s) => s[key]));
 
-const IssueGraph = withTooltip(
+const IssueGraph = withTooltip(memo(
   ({
     width,
     height,
@@ -356,7 +356,7 @@ const IssueGraph = withTooltip(
         )} */}
       </div>
     );
-  }
+  })
 );
 
 const TooltipContent = ({yAxisLabel,keys,tooltipData,filledThresholds,decimals,units}) => {

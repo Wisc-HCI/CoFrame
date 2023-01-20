@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 // import { useSpring, animated } from "@react-spring/web";
 import { motion } from "framer-motion";
 // import { config, FrameValue } from "react-spring";
@@ -29,7 +29,7 @@ const GROUPS = {
   ),
 };
 
-const Icon = ({ onChange, active, frame, width }) => {
+const Icon = memo(({ onChange, active, frame, width }) => {
   // const svgStyle = useSpring({
   //   fill: active ? "black" : frameStyles.colors[frame],
   //   color: active ? "black" : frameStyles.colors[frame],
@@ -99,9 +99,9 @@ const Icon = ({ onChange, active, frame, width }) => {
       </motion.b>
     </div>
   );
-};
+});
 
-export const FrameTabBar = ({
+export const FrameTabBar = memo(({
   active,
   onChange,
   width = 335,
@@ -167,4 +167,4 @@ export const FrameTabBar = ({
       />
     </div>
   );
-};
+});

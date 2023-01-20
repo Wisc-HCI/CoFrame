@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 
 import {
   FiMinimize,
@@ -136,7 +136,7 @@ export function Controls() {
   );
 }
 
-const MediaControls = ({item}) => {
+const MediaControls = memo(({item}) => {
   const theme = useTheme();
   const playing = useStore((state) => state.playing, shallow);
   const play = useStore((state) => state.play, shallow);
@@ -208,4 +208,4 @@ const MediaControls = ({item}) => {
       </IconButton>
     </>
   ) : null;
-};
+});

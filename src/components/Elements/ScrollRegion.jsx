@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
+import { memo } from "react";
 
 const StyledScrollArea = styled(ScrollArea.Root)(
   { overflow: "hidden" },
@@ -35,7 +36,7 @@ const StyledScrollThumb = styled(ScrollArea.Thumb)({
   borderRadius: "8px",
 });
 
-export const ScrollRegion = ({
+export const ScrollRegion = memo(({
   children,
   horizontal = false,
   vertical = true,
@@ -62,4 +63,4 @@ export const ScrollRegion = ({
     )}
     <ScrollArea.Corner />
   </StyledScrollArea>
-);
+));

@@ -46,20 +46,5 @@ export const ProgramTile = forwardRef((_,ref) => {
                 <Environment store={useStore} highlightColor={highlightColor} snapToGrid={false} animateDrawer={true}/>
             </Tile>
         </Stack>
-
-
-
     )
-    // return (
-    //     <div style={{height:'calc(100vh - 48pt)',paddingRight:10,paddingTop:10,paddingBottom:10}}>
-    //         <Card 
-    //             headStyle={{height:65, paddingTop:5}}
-    //             style={{height:'100%',display:'flex',flex:1,flexDirection:'column',}}
-    //             bodyStyle={{padding:0,display:'flex',flex:1,flexDirection:'column',}}
-    //             title="Program Editor">
-    //                 <ProgramEditor/>
-    //         </Card>
-    //         <Detail/>
-    //     </div>
-    // );
 });
