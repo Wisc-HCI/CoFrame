@@ -127,7 +127,7 @@ const TimelineGraph = memo(({
 });
 
 const InnerGraph = withTooltip(
-  ({
+  memo(({
     width,
     height,
     blockData,
@@ -508,7 +508,7 @@ const InnerGraph = withTooltip(
       </div>
       
     );
-  }
+  })
 );
 
 const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
