@@ -19,21 +19,49 @@ Designing reachable locations and waypoints is both an art and a science, requir
 const jointSpeedDoc = `Joint speed is best minimized in the interest of being a proxy measure of wear-and-tear, as well as being a component of the safety assessment. 
 To minimize joint speed, you can consider the following options:
 - Reduce the speed of the robot during [Move Trajectory](moveTrajectoryType) actions. This potentially increases the cycle time of the program. 
-- Try checking out the differences between IK-based and joint-based trajectories. Sometimes it is easier to design slower joint-based trajectories, but they don't always produce as logical of motions.
+- Try checking out the differences between IK-based and joint-based trajectories. Sometimes it is easier to minimize joint speed in joint-based trajectories, but they don't always produce as logical of motions.
 `
 
-const eeSpeedDoc = `End-effector speed is best minimized in the interest of being a proxy measure of wear-and-tear, as well as being a component of the safety assessment. 
-To minimize joint speed, you can consider the following options:
+const eeSpeedDoc = `End-effector speed is best minimized in the interest of being safe around human workers, given that unpredictable fast movements may more likely result in collisions with people or other moving environmental objects. 
+To minimize end effector speed, you can consider the following options:
 - Reduce the speed of the robot during [Move Trajectory](moveTrajectoryType) actions. This potentially increases the cycle time of the program. 
-- Try checking out the differences between IK-based and joint-based trajectories. Sometimes it is easier to design slower joint-based trajectories, but they don't always produce as logical of motions.
+- Try checking out the differences between IK-based and joint-based trajectories. Sometimes it is easier to minimize end effector speed in IK-based trajectories, but they are sometimes harder to get valid solutions for.
 `
 
-export const findReachabilityIssues = ({programData, compiledData}) => { // requires joint_processor to produce joints for each waypoint/location
+const payloadDoc = `Payload is determined by the model of the robot being used, and each [Thing](thingType) or [Tool](toolType) that the robot picks up must be below that payload weight. 
+If some object is above the payload weight, the robot will be unable to pick it up.
+
+In the event of a payload error, an alternative program structure should be considered that doesn't involve moving the specified object.
+`
+
+const spaceUsageDoc = `Space usage is a measure of how much space the robot occupies while performing a [robot motion](moveTrajectoryType). The visual associated with this issue shows the 3D volume of the space occupied in this motion.
+To reduce space usage, consider doing the following:
+
+> [primary]Where possible, move the robot in a way that puts the robot's end-effector closest to its base for the majority of the trajectory. Note, you will have to balance this type of movement with the possibility of creating pinch points.
+`
+
+export const findReachabilityIssues = ({program, programData, compiledData}) => { // requires joint_processor to produce joints for each waypoint/location
     let issues = {};
     let checkedPoses = [];
     let usedPoses = [];
 
-    // TODO: Check to see if a location or waypoint is used in the compiled data
+    // Check to see if a location or waypoint is used in the compiled data
+    compiledData[program.id]?.[ROOT_PATH]?.steps.forEach(step=>{
+        if (step.type === STEP_TYPE.ACTION_START && programData[step.source].type === 'moveTrajectoryType') {
+            const moveTrajectory = programData[step.source];
+            const trajectory = programData[moveTrajectory.properties.trajectory];
+            const poses = [
+                trajectory.properties.startLocation,
+                ...trajectory.properties.waypoints,
+                trajectory.properties.endLocation,
+            ]
+            poses.forEach(pose=>{
+                if (!usedPoses.includes(pose)) {
+                    usedPoses.push(pose)
+                }
+            })
+        }
+    }),
 
     // Enumerate locations and add warnings for those not used in the program.
     Object.values(programData).filter(v => v.type === 'locationType' && v.dataType === DATA_TYPES.INSTANCE).forEach(location=>{
@@ -311,6 +339,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
                 requiresChanges: hasErrorVelocity,
                 title: `End effector moves too fast`,
                 description: `The end effector moves too fast for Trajectory "${programData[moveID].name}"`,
+                featuredDocs: {[source]:eeSpeedDoc},
                 complete: false,
                 focus: [moveID],
                 graphData: {
@@ -358,6 +387,7 @@ export const findPayloadIssues = ({program, programData, settings, compiledData}
                     issues[id] = {
                         id: id,
                         requiresChanges: true,
+                        featuredDocs: {[step.source]:payloadDoc},
                         title: `Payload threshold exceeded`,
                         description: `The robot is attempting to grab a thing that exceeds the set payload threshold`,
                         complete: false,
@@ -373,6 +403,7 @@ export const findPayloadIssues = ({program, programData, settings, compiledData}
                     issues[id] = {
                         id: id,
                         requiresChanges: false,
+                        featuredDocs: {[step.source]:payloadDoc},
                         title: `Approaching payload threshold`,
                         description: `The robot is attempting to grab a thing that is close to the payload threshold`,
                         complete: false,
@@ -465,6 +496,7 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings, com
                 title: `Robot Space Utilization`,
                 description: `Robot Space Utilization`,
                 complete: false,
+                featuredDocs: {[moveID]:spaceUsageDoc},
                 focus: [moveID],
                 graphData: {
                     series: priorData,

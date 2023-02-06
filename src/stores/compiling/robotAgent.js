@@ -38,9 +38,6 @@ export const robotAgentCompiler = ({
       basePose.rotation.w,
     ],
   };
-  // console.log(properties.urdf);
-  // console.log(rootBounds);
-  // console.log({ origin, joints: properties.initialJointState })
 
   // console.log(module.solver_new)
   const fwdsolver = new module.Solver(
@@ -53,9 +50,10 @@ export const robotAgentCompiler = ({
     450,
     null
   );
+  console.log('robotAgentCompiled',{...fwdsolver.currentState});
   const proximity = fwdsolver.computeAverageDistanceTable();
   const newCompiled = likStateToData({...fwdsolver.currentState,proximity},data.id,properties.linkParentMap);
-  // console.log('newCompiled',newCompiled)
+  console.log('newCompiled',newCompiled)
   return {
     type: data.type,
     ...newCompiled,

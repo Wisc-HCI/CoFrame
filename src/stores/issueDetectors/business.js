@@ -14,7 +14,7 @@ The graph in the Review Panel shows how your program's cycle time has changed ov
 const idleTimeDoc = `Robot idle time is a measure of how much the robot is inactive. This can come from explicit use of [delays](delayType), [waiting](processWaitType) for processes to finish, or other temporal logic constraints. Reducing idle time also generally reduces total Cycle Time. To reduce Idle Time, you can consider the following:
 - Remove as many [delays](delayType) actions as possible/
 - Instead of using [Process Wait](processWaitType) actions, consider filling that time with other robot activities that need to be done.
-> The graph in the Review Panel shows how your program's idle time has changed over your course of edits. Each time feedback is refreshed, the graph is updated with the most recent values.
+> [primary]The graph in the Review Panel shows how your program's idle time has changed over your course of edits. Each time feedback is refreshed, the graph is updated with the most recent values.
 `
 
 const roiDoc = `Return on Investment (ROI) is a measure of how much the robot is contributing to the efficacy of the process (e.g. decrease in Cycle Time), compared to the possible costs in maintenence. Specifically, it considers the cost of the parts being produced in a certain amount of time, compared to the wear and tear on the robot (approximated by joint movement of the robot over the course of a cycle). Programs that optimize the ROI will have the robot move as little as possible with the shortest cycle time.
@@ -22,7 +22,7 @@ To improve ROI, consider doing the following:
 - Create efficient robot motions by considering when IK versus joint-based trajectories are most effective. 
 - Cluster spatially-close activities together so the robot has fewer large movements to perform.
 - Reduce Cycle Time annd Idle Time.
-> The graph in the Review Panel shows how your program's ROI has changed over your course of edits. Each time feedback is refreshed, the graph is updated with the most recent values.
+> [primary]The graph in the Review Panel shows how your program's ROI has changed over your course of edits. Each time feedback is refreshed, the graph is updated with the most recent values.
 `
 
 // Requires trace timing + delay and machine wait primitives (start computation after move_unplanned in initialize)

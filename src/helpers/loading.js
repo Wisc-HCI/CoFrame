@@ -6,6 +6,7 @@ import collisionTypes from "../stores/typeInfo/collision";
 import sceneObjects from "../stores/typeInfo/sceneObjects";
 import { quaternionFromEuler, quaternionVecToObject } from "./geometry";
 import { meshType } from "../stores/typeInfo/mesh";
+import { Solver } from "@people_and_robots/lively";
 
 const capitalize = (value) => value[0].toUpperCase() + value.substring(1);
 
@@ -35,6 +36,11 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
     isArray: (name, jpath, isLeafNode, isAttribute) =>
       childrenPaths.includes(jpath),
   });
+
+  const solver = new Solver(urdf, {});
+
+  console.log({ links: solver.links, joints: solver.joints });
+
   const data = parser.parse(urdf);
   console.log(data.robot);
 
@@ -52,67 +58,82 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
   };
   robot.properties.relativeTo = relativeTo;
   robot.properties.urdf = urdf;
+  let root = solver.links[0].name;
+  robot.properties.root = root;
+  console.log(robot.properties)
+
+  let jointLinkMap = {};
+  solver.joints.forEach(j=>{
+    jointLinkMap[j.name] = j.childLink
+  })
+  robot.properties.jointLinkMap = jointLinkMap;
+
+  let linkParentMap = {};
+  solver.links.forEach((l,i)=>{
+    linkParentMap[l.name] = getParentLink(l.parentJoint,solver.joints,robotId,i>0?solver.links[i-1].name:robotId)
+  })
+  robot.properties.linkParentMap = linkParentMap;
 
   let allData = {
     [robotId]: robot,
   };
 
   // Find the root node. This is the link that is not referenced as a child of any joint.
-  let root = null;
-  data.robot.link.some((linkData) => {
-    const hasParent = data.robot.joint.some(
-      (jointData) => jointData.child.link === linkData.name
-    );
-    if (hasParent) {
-      return false;
-    } else {
-      root = linkData;
-      return true;
-    }
-  });
-  console.log("root", root);
-  robot.properties.root = root?.name;
+  
 
-  // Al
-  let jointLimit = {};
+  const initialState = solver.currentState;
+  console.log("initialState", initialState);
+
   let initialJointState = {};
   let linkNames = [];
-  let linkParentMap = {};
+  let initialJoints = {};
+  solver.joints.forEach(j=>initialJoints[j.name]=initialState.joints[j.name])
 
-  // Define a stack to iterate through
-  let processStack = [
-    { type: "link", data: root, parent: robot, relativeTo: robotId },
-  ];
-
-  //   let jointCount = 0
-
-  while (processStack.length > 0) {
-    let toProcess = processStack.pop();
-    if (toProcess.type === "link") {
-      // We should really generate a UUID, but currently the system expects these to match the frame names
-      const linkId = toProcess.data.name;
-    //   const linkId = generateUuid("linkType");
-      let link = {
-        ...instanceTemplateFromSpec("linkType", sceneObjects.linkType, false),
-        id: linkId,
-        name: toProcess.data.name,
-        raw: toProcess.data,
-      };
-      link.properties.relativeTo = toProcess.relativeTo;
-      link.properties.frameKey = toProcess.data.name;
-      link.properties.agent = robotId;
-      const origin = originToPose(toProcess.data.origin);
-      link.properties.position = origin.position;
-      link.properties.rotation = origin.rotation;
-      if (toProcess.parent.id !== robotId) {
-        console.log("non-root link", toProcess);
-        linkParentMap[toProcess.data.name] = toProcess.relativeTo;
-      } else {
-        linkParentMap[toProcess.data.name] = robot.id
+  solver.links.forEach((link,linkIdx) => {
+    console.log(link.name);
+    linkNames.push(link.name);
+    initialJointState = initialState.joints;
+    let linkMeshId = null;
+    // Create meshTypes for each visul mesh. This assumes only one visual mesh per link
+    link.visuals.forEach((linkVisual) => {
+      if (linkVisual.type === "Mesh") {
+        let meshId = generateUuid("meshType");
+        let mesh = {
+          ...instanceTemplateFromSpec("meshType", meshType, false),
+          id: meshId,
+          name: `${link.name}-mesh`,
+        };
+        mesh.properties.keyword = linkVisual.filename;
+        mesh.properties.position = {
+          x: linkVisual.localTransform.translation[0],
+          y: linkVisual.localTransform.translation[1],
+          z: linkVisual.localTransform.translation[2],
+        };
+        mesh.properties.rotation = {
+          x: linkVisual.localTransform.rotation[0],
+          y: linkVisual.localTransform.rotation[1],
+          z: linkVisual.localTransform.rotation[2],
+          w: linkVisual.localTransform.rotation[3],
+        };
+        mesh.properties.scale = {
+          x: linkVisual.x,
+          y: linkVisual.y,
+          z: linkVisual.z,
+        };
+        linkMeshId = meshId;
+        allData[meshId] = mesh;
       }
+    });
+    // Create collisionShapes for each collision entry.
+    let collisions = [];
+    link.collisions.forEach((linkCollision,idx) => {
+      const collision = linkCollisionToCollisionShape(linkCollision,idx,robotId);
+      allData[collision.id] = collision;
+      collisions.push(collision.id)
+    });
 
-      // Create a new collision body entry and assign it to the link's collision property.
-      const collisionBodyId = generateUuid("collisionBodyType");
+    // Create collisionBody for the link.
+    const collisionBodyId = generateUuid("collisionBodyType");
       let collisionBody = {
         ...instanceTemplateFromSpec(
           "collisionBodyType",
@@ -122,118 +143,36 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
         id: collisionBodyId,
         name: `${link.name}-collisionbody`,
       };
+    collisionBody.properties.componentShapes = collisions;
+    allData[collisionBodyId] = collisionBody;
+    
+    const linkId = link.name;
+    let linkData = {
+      ...instanceTemplateFromSpec("linkType", sceneObjects.linkType, false),
+      id: linkId,
+      name: link.name,
+      raw: link,
+    };
 
-      linkNames.push(link.name);
+    linkData.properties.collision = collisionBodyId;
+    linkData.properties.mesh = linkMeshId;
 
-      link.properties.collision = collisionBodyId;
-
-      // For each of the shapes in the collision, add a collisionShape and link it to the body
-      let components = [];
-      toProcess.data.collision?.forEach((rawCollisionShape, idx) => {
-        const collisionType = rawCollisionShape.geometry.cylinder
-          ? "cylinder"
-          : rawCollisionShape.geometry.capsule
-          ? "capsule"
-          : rawCollisionShape.geometry.box
-          ? "cube"
-          : rawCollisionShape.geometry.sphere
-          ? "sphere"
-          : "mesh";
-        if (collisionType !== "mesh") {
-          const collisionShapeId = generateUuid("collisionShapeType");
-          let collisionShape = {
-            ...instanceTemplateFromSpec(
-              "collisionShapeType",
-              collisionTypes.collisionShapeType,
-              false
-            ),
-            id: collisionShapeId,
-            name: `${link.name}-${collisionType}-${idx}`,
-          };
-          collisionShape.properties.keyword = collisionType;
-          const collisionShapeOrigin = originToPose(rawCollisionShape.origin);
-          collisionShape.properties.position = collisionShapeOrigin.position;
-          collisionShape.properties.rotation = collisionShapeOrigin.rotation;
-          if (collisionType === 'cylinder' || collisionType === 'capsule') {
-            const radius = Number(rawCollisionShape.geometry[collisionType].radius);
-            const length = Number(rawCollisionShape.geometry[collisionType].length);
-            // Should probably use extraParams in the future
-            // collisionShape.properties.extraParams = {length, radius};
-            collisionShape.properties.scale = {x: radius*2,y: radius*2,z: length}
-          } else if (collisionType === 'cube') {
-            const sizeVec = rawCollisionShape.geometry.box.size.split(' ').map(Number);
-            // Should probably use extraParams in the future
-            // collisionShape.properties.extraParams = {x: sizeVec[0], y: sizeVec[1], z:sizeVec[2]};
-            collisionShape.properties.scale = {x: sizeVec[0], y: sizeVec[1], z:sizeVec[2]};
-          } else if (collisionType === 'sphere') {
-            const radius = Number(rawCollisionShape.geometry[collisionType].radius);
-            // collisionShape.properties.extraParams = {radius};
-            collisionShape.properties.scale = {x: radius*2, y: radius*2, z:radius*2};
-          }
-          allData[collisionShapeId] = collisionShape;
-          components.push(collisionShapeId);
-        }
-        
-      });
-
-      collisionBody.properties.componentShapes = components;
-
-      // Create a new mesh entry and assign it to the mesh property of the link.
-      if (toProcess.data.visual?.length > 0) {
-        let meshId = generateUuid("meshType");
-        let mesh = {
-          ...instanceTemplateFromSpec("meshType", meshType, false),
-          id: meshId,
-          name: `${link.name}-mesh`,
-        };
-        mesh.properties.keyword =
-          toProcess.data.visual[0]?.geometry?.mesh?.filename;
-        const meshOrigin = originToPose(toProcess.data.visual[0]?.origin);
-        mesh.properties.position = meshOrigin.position;
-        mesh.properties.rotation = meshOrigin.rotation;
-        link.properties.mesh = meshId;
-        allData[meshId] = mesh;
-      }
-
-      // Add all the data to the set
-      allData[linkId] = link;
-      allData[collisionBodyId] = collisionBody;
-
-      // Find all joints that have this link as a parent and add them to the process stack
-      data.robot.joint.forEach((rawJoint) => {
-        if (rawJoint.parent.link === link.name) {
-          processStack.push({
-            type: "joint",
-            data: rawJoint,
-            parent: link,
-            relativeTo: link.id,
-          });
-        }
-      });
-    } else if (toProcess.type === "joint") {
-      // Find the child link and add it to the stack
-      data.robot.link.some((rawLink) => {
-        if (rawLink.name === toProcess.data.child.link) {
-          processStack.push({
-            type: "link",
-            data: rawLink,
-            parent: toProcess.data,
-            relativeTo: toProcess.relativeTo,
-          });
-          return true;
-        }
-        return false;
-      });
-      if (toProcess.data.type !== "fixed") {
-        const lower = Number(toProcess.data.limit.lower);
-        const upper = Number(toProcess.data.limit.upper);
-        const mid = (lower + upper) / 2;
-        initialJointState[toProcess.data.name] = mid;
-        jointLimit[toProcess.data.name] = { lower, upper };
-      }
-      // jointCount += 1
-    }
-  }
+    linkData.properties.relativeTo = getParentLink(link.parentJoint,solver.joints,robotId,linkIdx>0?solver.links[linkIdx-1].name:robotId);
+    linkData.properties.frameKey = link.name;
+    linkData.properties.agent = robotId;
+    linkData.properties.position = {
+      x: initialState.frames[link.name].local.translation[0],
+      y: initialState.frames[link.name].local.translation[1],
+      z: initialState.frames[link.name].local.translation[2],
+    };
+    linkData.properties.rotation = {
+      x: initialState.frames[link.name].local.rotation[0],
+      y: initialState.frames[link.name].local.rotation[1],
+      z: initialState.frames[link.name].local.rotation[2],
+      w: initialState.frames[link.name].local.rotation[3],
+    };
+    allData[linkId] = linkData
+  });
 
   let pinchPointPairLinks = [];
   linkNames.forEach((link1) => {
@@ -244,12 +183,91 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
     });
   });
 
-  allData[robotId].properties.initialJointState = initialJointState;
+  let jointLimit = {};
+  solver.joints.forEach(joint=>{
+    if (joint.jointType === 'rotational') {
+      jointLimit[joint.name] = {upper:joint.upperBound,lower:joint.lowerBound}
+    }
+  })
+
+  allData[robotId].properties.initialJointState = initialJoints;
   allData[robotId].properties.jointLimit = jointLimit;
   allData[robotId].properties.pinchPointPairLinks = pinchPointPairLinks;
   allData[robotId].properties.linkParentMap = linkParentMap;
 
-    console.log(allData);
+  console.log(allData);
 
   return allData;
 };
+
+const linkCollisionToCollisionShape = (linkCollision,idx,linkName) => {
+  const collisionType =
+    linkCollision.type === "Box" ? "cube" : linkCollision.type.toLowerCase();
+  if (collisionType !== "mesh") {
+    const collisionShapeId = generateUuid("collisionShapeType");
+    let collisionShape = {
+      ...instanceTemplateFromSpec(
+        "collisionShapeType",
+        collisionTypes.collisionShapeType,
+        false
+      ),
+      id: collisionShapeId,
+      name: `${linkName}-${collisionType}-${idx}`,
+    };
+    collisionShape.properties.keyword = collisionType;
+    collisionShape.properties.position = {
+      x: linkCollision.localTransform.translation[0],
+      y: linkCollision.localTransform.translation[1],
+      z: linkCollision.localTransform.translation[2],
+    };
+    collisionShape.properties.rotation = {
+      x: linkCollision.localTransform.rotation[0],
+      y: linkCollision.localTransform.rotation[1],
+      z: linkCollision.localTransform.rotation[2],
+      w: linkCollision.localTransform.rotation[3],
+    };
+    
+    if (collisionType === "cylinder" || collisionType === "capsule") {
+      const radius = linkCollision.radius;
+      const length = linkCollision.length;
+      // Should probably use extraParams in the future
+      // collisionShape.properties.extraParams = {length, radius};
+      collisionShape.properties.scale = {
+        x: radius * 2,
+        y: radius * 2,
+        z: length,
+      };
+    } else if (collisionType === "cube") {
+      // Should probably use extraParams in the future
+      // collisionShape.properties.extraParams = {x: sizeVec[0], y: sizeVec[1], z:sizeVec[2]};
+      collisionShape.properties.scale = {
+        x: linkCollision.x,
+        y: linkCollision.y,
+        z: linkCollision.z,
+      };
+    } else if (collisionType === "sphere") {
+      const radius = linkCollision.radius;
+      // collisionShape.properties.extraParams = {radius};
+      collisionShape.properties.scale = {
+        x: radius * 2,
+        y: radius * 2,
+        z: radius * 2,
+      };
+    }
+    return collisionShape;
+  }
+};
+
+const getParentLink = (parentJoint,joints,worldAttachment,prevLink) => {
+  if (parentJoint === 'world') {
+    return worldAttachment;
+  } 
+  const joint = joints.filter(j=>j.name === parentJoint)[0];
+  console.log('found joint',joint)
+  if (joint && joint.parentLink !== 'world') {
+    return joint.parentLink
+  } else if (!joint) {
+    return prevLink
+  }
+  return worldAttachment
+}

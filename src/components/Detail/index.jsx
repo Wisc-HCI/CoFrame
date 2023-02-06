@@ -230,7 +230,7 @@ export const Detail = memo((_) => {
                       step={0.1}
                       disabled={!item.canDelete}
                       suffix="sec"
-                      
+                      style={{width:345}}
                     />
                   </Card>
                 )}

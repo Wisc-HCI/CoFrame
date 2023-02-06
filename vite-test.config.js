@@ -9,6 +9,7 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  root: './test',
   base: '/CoFrame/', 
   plugins: [
     react(),
@@ -34,12 +35,12 @@ export default defineConfig({
       '$simple-vp': path.resolve('.', '$simple-vp'),
     },
   },
-  // server: {
-  //   fs: {
-  //     // Allow serving files from one level up to the project root
-  //     allow: ['..'],
-  //   },
-  // },
+  server: {
+    fs: {
+      // Allow serving files from one level up to the project root
+      allow: ['..'],
+    },
+  },
   test: {
     deps: { inline: ["@people_and_robots/lively", /\.wasm$/] },
   }

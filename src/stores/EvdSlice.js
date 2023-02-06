@@ -11,6 +11,9 @@ import * as Comlink from "comlink";
 /* eslint-disable import/no-webpack-loader-syntax */
 import PlannerWorker from "./planner-worker?worker";
 
+const plannerWorker = new PlannerWorker();
+const { performCompileProcess } = Comlink.wrap(plannerWorker);
+
 // const plannerWorkerUrl = new URL('./planner-worker.js',import.meta.url);
 // const workerInstance = new ComlinkWorker(plannerWorkerUrl,{});
 // console.warn('workerInstance',workerInstance)
@@ -118,29 +121,42 @@ export const EvdSlice = (set, get) => ({
     set((state) => {
       state.programData = { ...state.programData, ...data };
     }),
-  deleteAgent: (id) => {
-    const deleteBlock = get().deleteBlock;
-    const programData = get().programData;
-    const agent = programData[id];
-    // Delete any links that are associated with this agent
-    Object.values(programData).forEach(value=>{
-      if (['linkType','zoneType'].includes(value.type) && value.properties?.agent === id) {
-        deleteBlock(value,'spawner',{
-          name: "",
-          value: null,
-          accepts: [],
-          isSpawner: true,
-        })
+  replaceAgent: (newData) => set((state)=>{
+    const agent = Object.values(newData).filter(d=>d.type==='robotAgentType')[0];
+    // Delete any links, meshes, collisionBodies, collisionShapes that are associated with this agent
+    Object.values(state.programData).forEach(value=>{
+      if (value.type === 'linkType' && value.properties?.agent !== agent.id) {
+        if (value.properties.mesh && state.programData[value.properties.mesh]) {
+          // Delete mesh
+          delete state.programData[value.properties.mesh]
+        }
+        if (value.properties.collision && state.programData[value.properties.collision]) {
+          state.programData[value.properties.collision].properties.componentShapes.forEach(componentShape=>{
+            // delete collisionShape
+            delete state.programData[componentShape]
+          })
+          // delete collisionBody
+          delete state.programData[value.properties.collision]
+        }
+        // Delete link
+        delete state.programData[value.id]
       }
-    })
-    // Delete the agent itself
-    deleteBlock(agent, "spawner", {
-      name: "",
-      value: null,
-      accepts: [],
-      isSpawner: true,
     });
-  },
+    
+    // Move over robot zones
+    Object.values(state.programData)
+        .filter(d=>d.type==='zoneType' && state.programData[d.properties.agent].type === 'robotAgentType' && d.properties.agent !== agent.id)
+        .forEach((zone)=>{
+          state.programData[zone.id].properties.agent = agent.id
+    });
+
+    // Delete the agent
+    Object.values(state.programData).filter(d=>d.type==='robotAgentType').forEach(robotAgent=>{
+      delete state.programData[robotAgent.id]
+    })
+
+    state.programData = {...state.programData,...newData}
+  }),
   setData: (data) =>
     set((state) => {
       const {tabs, activeTab, ...programData} = data;
@@ -213,13 +229,13 @@ export const EvdSlice = (set, get) => ({
       currentProcess.terminate();
     }
     // const workerInstance = new ComlinkWorker(plannerWorkerUrl,{});
-    const plannerWorker = new PlannerWorker();
+    // const plannerWorker = new PlannerWorker();
     // console.log('plannerWorker',plannerWorker)
     // console.log(workerInstance)
     get().updatePlanProcess(null, plannerWorker);
-    const { performCompileProcess, test } = Comlink.wrap(plannerWorker);
-    const message = await test();
-    console.log(message)
+    // const { performCompileProcess, test } = Comlink.wrap(plannerWorker);
+    // const message = await test();
+    // console.log(message)
     // console.warn('performCompileProcess',performCompileProcess);
     // let programData = mapValues(get().programData,((value)=>({...value,properties:{...value.properties,compiled:compiled[value.id]||{}}})))
     const programData = get().programData;
@@ -233,10 +249,10 @@ export const EvdSlice = (set, get) => ({
       ),
     });
     // console.log(result)
-    console.log('step 2')
+    // console.log('step 2')
     get().updatePlanProcess(result.data, null);
 
-    // Update the compiled store
+    // // Update the compiled store
     for (const key in result.compiledData) {
       useCompiledStore.setState({[key]:result.compiledData[key]})
     }

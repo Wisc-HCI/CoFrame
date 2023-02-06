@@ -27,6 +27,7 @@ import { ScrollRegion } from "./Elements/ScrollRegion";
 import { robotDataFromUrdf } from "../helpers/loading";
 import { PANDA_ROBOT_DATA } from "../presets/robotAgents/pandaRobot";
 import { UR3E_ROBOT_DATA } from "../presets/robotAgents/ur3eRobot";
+import { UR5E_ROBOT_DATA } from "../presets/robotAgents/ur5eRobot";
 import { PANDA_GRIPPER_DATA } from "../presets/gripperAgents/pandaGripper";
 import { ROBOTIQ_GRIPPER_DATA } from "../presets/gripperAgents/robotiqGripper";
 import { statesToSteps } from "../stores/compiling";
@@ -45,8 +46,10 @@ const DialogContent = () => {
   const data = useStore((store) => ({...store.programData,tabs:store.tabs,activeTab:store.activeTab}), shallow);
   const frameId = useStore((store) => store.frame, shallow);
   const setFrame = useStore((store) => store.setFrame, shallow);
-  const deleteAgent = useStore(store=>store.deleteAgent, shallow);
+  // const deleteAgent = useStore(store=>store.deleteAgent, shallow);
   const addAgent = useStore(store=>store.addAgent,shallow);
+  const replaceAgent = useStore(store=>store.replaceAgent,shallow);
+
 
   const [prefix, setPrefix] = useState("ws://");
   const [host, setHost] = useState("localhost:9090");
@@ -243,17 +246,24 @@ const DialogContent = () => {
 
               <Button onClick={()=>{
                 const newData = robotDataFromUrdf(PANDA_ROBOT_DATA['robot-agent-3290720sfd3950234907450129sfcwesd2'].properties.urdf,'table');
+                console.log('New Robot Data',newData);
                 // Clear out current robot
-                Object.values(data).filter(d=>d.type==='robotAgentType').forEach(d=>deleteAgent(d.id));
-                addAgent({...newData,...PANDA_GRIPPER_DATA});
+                replaceAgent({...newData,...PANDA_GRIPPER_DATA});
               }}>Parse Panda</Button>
 
               <Button onClick={()=>{
                 const newData = robotDataFromUrdf(UR3E_ROBOT_DATA['robot-agent'].properties.urdf,'pedestal');
+                console.log('New Robot Data',newData);
                 // Clear out current robot
-                Object.values(data).filter(d=>d.type==='robotAgentType').forEach(d=>deleteAgent(d.id));
-                addAgent({...newData.ROBOTIQ_GRIPPER_DATA});
+                replaceAgent({...newData,...ROBOTIQ_GRIPPER_DATA});
               }}>Parse UR3e</Button>
+
+              <Button onClick={()=>{
+                const newData = robotDataFromUrdf(UR5E_ROBOT_DATA['robot-agent'].properties.urdf,'pedestal');
+                console.log('New Robot Data',newData);
+                // Clear out current robot
+                replaceAgent({...newData,...ROBOTIQ_GRIPPER_DATA});
+              }}>Parse UR5e</Button>
 
               {/* Frames Selector */}
               <Stack
