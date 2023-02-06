@@ -14,6 +14,7 @@ import agentTypes from './agents';
 import sceneObjects from './sceneObjects';
 import collisionTypes from './collision';
 import { goalType } from './goal';
+import { goalProgramType } from './goalProgram';
 
 const mod = { 
     inputOutputType,
@@ -31,7 +32,8 @@ const mod = {
     ...actionTypes,
     ...agentTypes,
     ...sceneObjects,
-    ...collisionTypes
+    ...collisionTypes,
+    goalProgramType
 }
 
 export default mod;

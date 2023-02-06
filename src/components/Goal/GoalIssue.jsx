@@ -80,7 +80,7 @@ export const GoalIssue = ({ goal }) => {
                   // Update the simulation
                   addFocusItem(goal.properties.example[0], false);
                   // Update the program tab
-                  setActiveTab({id: goal.id});
+                  setActiveTab({id: goal.properties.tab});
                 }
               }}
               startIcon={exampleFocused ? <FiEyeOff /> : <FiEye />}

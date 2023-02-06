@@ -80,7 +80,8 @@ export const ROOT_BOUNDS = [
 export const DETAIL_TYPES = ['machineType', 'inputOutputType', 'processType', 'locationType', 'waypointType', 'thingType','fixtureType','toolType','robotAgentType','humanAgentType','gripperType','graspPointType']
 export const TIMELINE_TYPES = ['programType', 'skillType', 'hierarchicalType', 'delayType',
                         'moveGripperType', 'machineInitType', 'processStartType', 
-                        'processWaitType', 'processStopType', 'moveTrajectoryType'
+                        'processWaitType', 'processStopType', 'moveTrajectoryType',
+                        'goalProgramType'
                     ]
 export const PREVIEW_TYPES = [...TIMELINE_TYPES,'locationType','waypointType'];
 export const REFERENCEABLE_OBJECTS = ["machineType", "fixtureType", "linkType", "toolType", "robotAgentType", "humanAgentType", 'gripperType'];
@@ -99,7 +100,8 @@ export const POSTPROCESS_TYPES = [
     'machineType',
     'fixtureType',
     'toolType',
-    'goalType'
+    'goalType',
+    'goalProgramType'
 ]
 
 export const ROOT_PATH = JSON.stringify({});

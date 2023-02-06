@@ -57,6 +57,11 @@ const goal = {
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
       default: false,
     },
+    tab: {
+      name: "Program tab to focus",
+      type: SIMPLE_PROPERTY_TYPES.IGNORED,
+      default: "default",
+    },
     updateFields: {
       default: ["header", "textfield", "condition", "example"]
     },
@@ -64,7 +69,7 @@ const goal = {
       default: true,
     },
     compileFn: {
-      default: COMPILE_FUNCTIONS.GOAL
+      default: COMPILE_FUNCTIONS.NULL
     },
   }
 };
