@@ -6,13 +6,14 @@ import useStore from "../../stores/Store";
 import shallow from "zustand/shallow";
 
 export const GoalIssue = ({ goal }) => {
-  const [addFocusItem, clearFocus, focus, isProcessing] = useStore(
+  const [addFocusItem, clearFocus, focus, isProcessing, setActiveTab] = useStore(
     (state) => [
       state.addFocusItem,
       state.clearFocus,
       state.focus,
       state.processes.planProcess !== null &&
         state.processes.planProcess !== undefined,
+      state.setActiveTab
     ],
     shallow
   );
@@ -74,8 +75,12 @@ export const GoalIssue = ({ goal }) => {
               onClick={() => {
                 if (exampleFocused) {
                   clearFocus();
+                  setActiveTab({id: "default"})
                 } else {
+                  // Update the simulation
                   addFocusItem(goal.properties.example[0], false);
+                  // Update the program tab
+                  setActiveTab({id: goal.id});
                 }
               }}
               startIcon={exampleFocused ? <FiEyeOff /> : <FiEye />}
