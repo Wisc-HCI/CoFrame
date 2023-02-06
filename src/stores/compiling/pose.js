@@ -65,11 +65,13 @@ export const poseCompiler = ({
 
       // Retrieve the robot's position/orientation
       const basePose = queryWorldPose(worldModel, robot.id);
+      
       // const quatLog = quaternionLog(basePose.rotation);
       const baseEuler = eulerFromQuaternion(
         [basePose.w, basePose.x, basePose.y, basePose.z],
         "sxyz"
       );
+      // console.log("euler",{basePose,baseEuler})
       const rootBounds = [
         { value: basePose.position.x, delta: 0.0 },
         { value: basePose.position.y, delta: 0.0 },

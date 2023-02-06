@@ -41,7 +41,7 @@ export const performCompileProcess = async (data) => {
     Object.values(programData)
         .filter(v=>PREPROCESS_TYPES.includes(v.type) && v.dataType === DATA_TYPES.INSTANCE)
         .forEach(data=>{
-            // console.log('preprocessing',data)
+            // console.log('preprocessing',data.type)
             const computeProps = {
                 data,
                 objectTypes,

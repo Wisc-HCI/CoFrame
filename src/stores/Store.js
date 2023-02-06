@@ -15,7 +15,7 @@ import {
 } from "./ComputedSlice";
 import { SceneSlice } from "robot-scene";
 import lodash from "lodash";
-import KnifeAssembly from "./Knife_Assembly_Simple_VP.json";
+import KnifeAssembly from "./Knife_Assembly_Simple_VP_UR5.json";
 // import PandaDemo from "./Panda_Demo.json";
 import { STATUS } from "./Constants";
 import useCompiledStore from "./CompiledStore";

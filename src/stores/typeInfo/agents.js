@@ -52,7 +52,7 @@ const robotAgentFeatures = {
       default: {},
     },
     root: {
-      name: "URDF",
+      name: "Root",
       type: SIMPLE_PROPERTY_TYPES.STRING,
       default: ''
     },

@@ -106,10 +106,7 @@ const updateMemoizedData = (
 ) => {
   // console.log("updateMemoizedData", { memoizedData, path, data, singleton });
   // console.warn('updating memoized version of ', data);
-  let newMemoizedData = lodash.merge(
-    { properties: { compiled: { [path]: {} } } },
-    memoizedData
-  );
+  let newMemoizedData = lodash.merge({ properties: {} }, memoizedData);
   let newMemoizedCompiled = lodash.merge({ [path]: {} }, memoizedCompiledData);
   let pastCompiled = compileModel[data.id]?.[path];
   if (!pastCompiled && singleton && compileModel[data.id]?.[ROOT_PATH]) {
@@ -152,7 +149,7 @@ const performUpdate = ({
   compiledMemo,
   module,
   worldModel,
-  updateFn
+  updateFn,
 }) => {
   // console.warn('updating version of ', data);
   let newCompiled = updateFn({
@@ -170,10 +167,7 @@ const performUpdate = ({
   // console.log('status',newCompiled.status)
   // console.log('memoizedData',memoizedData)
   // console.log('newCompiled',newCompiled)
-  let newMemoizedData = lodash.merge(
-    { properties: {} },
-    memoizedData
-  );
+  let newMemoizedData = lodash.merge({ properties: {} }, memoizedData);
   let newMemoizedCompiled = { [path]: {} };
 
   newMemoizedCompiled[path] = lodash.merge(
@@ -190,12 +184,12 @@ const performUpdate = ({
   }
 
   return {
-    memoizedData:newMemoizedData, // memoizedData
-    memoizedCompiledData:newMemoizedCompiled,
-    status:newCompiled.status, // status
-    errorCode:newCompiled.errorCode, // errorCode
-    updated:data.properties ? data.properties.status === STATUS.PENDING : true, // updated
-    shouldBreak:newCompiled.shouldBreak, // shouldBreak
+    memoizedData: newMemoizedData, // memoizedData
+    memoizedCompiledData: newMemoizedCompiled,
+    status: newCompiled.status, // status
+    errorCode: newCompiled.errorCode, // errorCode
+    updated: data.properties ? data.properties.status === STATUS.PENDING : true, // updated
+    shouldBreak: newCompiled.shouldBreak, // shouldBreak
   };
 };
 
@@ -346,7 +340,7 @@ export const handleUpdate = ({
 }) => {
   let newMemo = { ...memo };
   let newCompiledMemo = { ...compiledMemo };
-  // console.warn('DATA:',{data,path,context,memo})
+  // console.warn('DATA:',{data,path,context,compiledMemo})
   // console.log('objectTypes',objectTypes)
 
   // Determine the correct compiling function based on the object's properties
@@ -380,6 +374,7 @@ export const handleUpdate = ({
       (memoizedData.properties?.singleton && memoizedCompiledData?.[ROOT_PATH])
     ) {
       // Use the version in the memo
+      // console.log(`using previous memoized version of ${data.type}: ${data.id}`)
       const result = copyMemoizedData({
         memoizedData,
         memoizedCompiledData,
@@ -497,11 +492,11 @@ export const handleUpdate = ({
           objectTypes,
           context,
           path,
-          memo:newMemo,
-          compiledMemo:newCompiledMemo,
+          memo: newMemo,
+          compiledMemo: newCompiledMemo,
           module,
           worldModel,
-          updateFn
+          updateFn,
         });
 
         // Assign the results to the upper variables
