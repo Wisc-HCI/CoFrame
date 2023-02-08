@@ -201,7 +201,7 @@ export function deleteSelfBlock(state, data, parentId, fieldInfo) {
       state = deleteChildren(state, state.programData[reference]);
       delete state.programData[reference];
     });
-  } else if (fieldInfo?.isSpawner) {
+  } else if (fieldInfo && fieldInfo?.isSpawner) {
     if (parentId === "spawner") {
       // Drawer deletion
       if (data.dataType === DATA_TYPES.INSTANCE) {
@@ -385,17 +385,28 @@ export const ProgrammingSliceOverride = (set, get) => ({
   deleteBlock: (data, parentId, fieldInfo) => {
     set((state) => {
       // Delete block's children and parameters
+      state.tabs = state.tabs.map((t) => ({
+        ...t,
+        blocks: t.blocks.filter((b) => b !== data.id),
+      }));
       state = deleteChildren(state, data, parentId, fieldInfo);
 
       // Delete current block
       state = deleteSelfBlock(state, data, parentId, fieldInfo);
 
+      console.log("EXISTS?", state.programData[data.id])
+      console.log("EXISTS?", state.programData["machineInitType-f6d1e4b9-0f1f-4262-b5df-daf4d3c54a19"])
+      console.log("EXISTS?", state.programData["machineInitType-548b4a21-efe2-4f5a-b278-323eb9ba0ecf"])
+      console.log("EXISTS?", state.programData["machineInitType-adb54fed-3608-448e-a0a2-72e8822416de"])
+      console.log("EXISTS?", state.programData["skillType-2f3e0a5c-3dbb-4eca-bef6-aecb0568da1d"])
+      console.log("EXISTS?", state.programData["skillType-18abecd8-3493-404f-861c-55b254517d7c"])
+      
       // Clear parent properties
-      if (parentId !== "spawner") {
-        if (parentId && fieldInfo && !fieldInfo.isList) {
+      if (parentId && parentId !== "spawner") {
+        if (fieldInfo && !fieldInfo.isList) {
           // Clear parent's field value (to null)
           state.programData[parentId].properties[fieldInfo.value] = null;
-        } else if (parentId && fieldInfo && fieldInfo.isList) {
+        } else if (fieldInfo && fieldInfo.isList) {
           // Erase self from the parent's list
           remove(
             state.programData[parentId].properties[fieldInfo.value],
