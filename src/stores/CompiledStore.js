@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import { subscribeWithSelector, persist } from 'zustand/middleware';
 // import { TauriStorage } from './TauriStorage';
 

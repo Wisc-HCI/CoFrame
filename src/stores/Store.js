@@ -1,8 +1,7 @@
-import create from "zustand";
-import shallow from "zustand/shallow";
+import { create } from "zustand";
+import { shallow } from "zustand/shallow";
 import { persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { computed } from "zustand-middleware-computed-state";
 import { GuiSlice } from "./GuiSlice";
 import { ReviewSlice } from "./ReviewSlice";
 import { EvdSlice } from "./EvdSlice";

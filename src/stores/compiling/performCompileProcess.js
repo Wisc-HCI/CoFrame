@@ -2,12 +2,12 @@ import { ROOT_PATH, PREPROCESS_TYPES, POSTPROCESS_TYPES } from '../Constants';
 import { handleUpdate } from './';
 import { DATA_TYPES } from 'simple-vp';
 import { createEnvironmentModel } from '../../helpers/geometry';
-import init, {Solver} from 'coframe-rust';
+import init, {Solver, planTrajectory} from 'coframe-rust';
 // import { Solver } from '@people_and_robots/lively';
 
 export const performCompileProcess = async (data) => {
     console.log('performCompilerProcess--inworker')
-    const { programData, compiledData, objectTypes } = data;
+    const { programData, compiledData, objectTypes, module } = data;
     // Process the data without stalling the UI
     // const module = await loadLikModule();
     // console.warn('performing compile process')
@@ -27,7 +27,9 @@ export const performCompileProcess = async (data) => {
         }
     })
 
-    await init()
+    if (!module) {
+        await init()
+    }
 
     // TODO: define scene based on the scene item instances
     const worldModel = createEnvironmentModel(programData)
@@ -49,7 +51,7 @@ export const performCompileProcess = async (data) => {
                 path:ROOT_PATH,
                 memo,
                 compiledMemo,
-                module:{Solver},
+                module:module||{Solver,planTrajectory},
                 worldModel,
                 compileModel
             }
@@ -68,7 +70,7 @@ export const performCompileProcess = async (data) => {
         path:ROOT_PATH,
         memo,
         compiledMemo,
-        module:{Solver},
+        module:module||{Solver,planTrajectory},
         worldModel,
         compileModel
     }
@@ -88,7 +90,7 @@ export const performCompileProcess = async (data) => {
                 path:ROOT_PATH,
                 memo,
                 compiledMemo,
-                module:{Solver},
+                module:{Solver,planTrajectory},
                 worldModel,
                 compileModel
             }

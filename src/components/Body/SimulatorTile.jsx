@@ -10,7 +10,7 @@ import { ReflexContainer, ReflexSplitter, ReflexElement } from "react-reflex";
 import Tile from "../Elements/Tile";
 import { Stack, Typography } from "@mui/material";
 import MeshLookupTable from "../../meshes";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
 export const SimulatorTile = forwardRef((_,ref) => {

@@ -5,7 +5,7 @@ import {
   DATA_TYPES,
   SIMPLE_PROPERTY_TYPES
 } from "simple-vp";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import { Collapse } from "../Elements/Collapse";
 import {
   Avatar,

@@ -17,7 +17,7 @@ import {
   Input
 } from "@mui/material";
 // import { IMaskInput } from "react-imask";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import { strip } from "number-precision";
 
 const CompoundInput = forwardRef(

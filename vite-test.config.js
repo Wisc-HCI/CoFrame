@@ -42,6 +42,6 @@ export default defineConfig({
     },
   },
   test: {
-    deps: { inline: ["@people_and_robots/lively", /\.wasm$/] },
+    // deps: { inline: ["@people_and_robots/lively", /\.wasm$/] },
   }
 });

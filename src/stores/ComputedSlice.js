@@ -16,7 +16,6 @@ import { DATA_TYPES } from 'simple-vp';
 import { GOAL_FUNCTIONS, ROOT_PATH, STEP_TYPE } from './Constants';
 import lodash from 'lodash';
 import { createEnvironmentModel, queryWorldPose, updateEnvironModel } from '../helpers/geometry';
-import shallow from 'zustand/shallow';
 import { csArrayEquality, objectEquality } from '../helpers/performance';
 import useCompiledStore from './CompiledStore';
 import useStore from './Store';

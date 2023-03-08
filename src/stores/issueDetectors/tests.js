@@ -114,13 +114,13 @@ const mergedProgram = (newData,oldData) => {
     return oldData
 }
 
-export const performIssueTest = async (jsonData) => {
+export const performIssueTest = async (jsonData, solver) => {
     const {tabs, activeTab, ...programData} = jsonData;
     const objectTypes = mapValues(
         rawObjectTypes,
         cleanedObjectType
       )
-    const result = await performCompileProcess({programData:cleanedProgram(programData,rawObjectTypes), compiledData:{}, objectTypes});
+    const result = await performCompileProcess({programData:cleanedProgram(programData,rawObjectTypes), compiledData:{}, objectTypes, module:{Solver:solver}});
 
     let issues = {};
     const updatedProgram = mergedProgram(result.data,programData);

@@ -3,7 +3,7 @@ import PositionInput from "./PositionInput";
 import RotationInput from "./RotationInput";
 import { Card, CardHeader, Stack } from "@mui/material";
 import useStore from "../../stores/Store";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 
 function PositionRotationTF(props) {
   const mode = useStore((state) => {

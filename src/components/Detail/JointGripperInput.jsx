@@ -2,7 +2,7 @@ import React from "react";
 
 import useStore from "../../stores/Store";
 import { Collapse } from "../Elements/Collapse";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import { TextField } from "@mui/material";
 import { clamp } from 'lodash';
 

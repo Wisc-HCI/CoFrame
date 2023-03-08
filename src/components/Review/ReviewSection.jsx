@@ -5,7 +5,7 @@ import { FrameButton } from "../FrameButton";
 import frameStyles from "../../frameStyles";
 import { Collapse } from "../Elements/Collapse";
 import { Avatar, Chip, Typography, useTheme, Stack } from "@mui/material";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import { FiCheck} from "react-icons/fi";
 
 // import './custom.css'

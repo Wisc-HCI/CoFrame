@@ -8,7 +8,7 @@ import {
 import { Quaternion } from "three";
 import { likStateToData } from "../../helpers/conversion";
 import {
-  //   createStaticEnvironment,
+  createStaticEnvironment,
   queryWorldPose,
   // quaternionLog,
   eulerFromQuaternion,
@@ -18,7 +18,7 @@ import {
 // import { DATA_TYPES } from "simple-vp";
 import { range, random } from "lodash";
 
-const COLLISION_WEIGHT = 3;
+const COLLISION_WEIGHT = 1;
 const SMOOTHNESS_WEIGHT = 0.1;
 
 const sampleJoints = (joints) => {
@@ -51,11 +51,11 @@ export const poseCompiler = ({
   // but we pre-process them beforehand so it is fine. We also always assume root execution
   // (which is fine for robots/humans/grippers).
 
-  // console.log('running pose compiler')
+  console.log('running pose compiler')
 
   const grippers = Object.values(memo).filter((v) => v.type === "gripperType");
 
-  const staticEnvironment = []; // createStaticEnvironment(worldModel);
+  const staticEnvironment = createStaticEnvironment(worldModel);
 
   Object.values(memo)
     .filter((v) => v.type === "robotAgentType")
@@ -185,12 +185,14 @@ export const poseCompiler = ({
           let goalAchieved = false;
 
           let restarts = range(0, 1);
-          let rounds = range(0, 20);
+          let rounds = range(0, 10);
 
           restarts.some(() => {
             // let currentTime = Date.now();
             rounds.some(() => {
+              //console.log('Running Solve');
               state = solver.solve(goals, {});
+              //console.log('Completed Solve')
               const p = state.frames[attachmentLink].world.translation;
               const r = state.frames[attachmentLink].world.rotation;
               const achievedPos = { x: p[0], y: p[1], z: p[2] };

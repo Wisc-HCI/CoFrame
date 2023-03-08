@@ -116,7 +116,7 @@ True
   if (parity !== 0) {
     q[j] *= -1.0;
   }
-  console.log("the q is : " , q);
+  
   return q;
 };
 

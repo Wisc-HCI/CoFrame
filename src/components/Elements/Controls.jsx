@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import useStore from "../../stores/Store";
 import useCompiledStore from "../../stores/CompiledStore";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import { useTime } from "../useTime";
 import { STATUS, STEP_TYPE, TIMELINE_TYPES } from "../../stores/Constants";
 import { useCallback } from "react";

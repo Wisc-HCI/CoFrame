@@ -3,7 +3,7 @@ import { FiSlash, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 import useStore from "../../stores/Store";
 import { Card, CardHeader, Avatar, IconButton, Switch, CardContent } from "@mui/material";
 import { getPlotInfo } from "../ContextualInfo/Plots";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 
 export const ReviewIssue = memo(({ issueId }) => {
   const issue = useStore(

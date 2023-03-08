@@ -22,7 +22,7 @@ import {
   CardContent,
 } from "@mui/material";
 import { FrameTabBar } from "./FrameTabBar";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import { ScrollRegion } from "./Elements/ScrollRegion";
 import { robotDataFromUrdf } from "../helpers/loading";
 import { PANDA_ROBOT_DATA } from "../presets/robotAgents/pandaRobot";

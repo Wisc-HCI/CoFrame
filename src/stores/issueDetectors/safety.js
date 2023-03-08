@@ -7,6 +7,32 @@ import lodash from 'lodash';
 import { hexToRgb } from "../../helpers/colors";
 import { queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
 
+const endEffectorPoseDoc = `During this action, it appears that the gripper may be moving in a potentially dangerous manner. Specifically, this involves cases where the gripper moves quickly in the direction of its outstretched fingers, such that they could result in problems if coming in contact with a worker's soft tissue. To ddress this issue, consider one or more of the following changes:
+- Slow down the action so the movement of the gripper is not as fast, and therefore less of a danger
+- Reorient the gripper during the action so that the broad side of the gripper is moving in the current direction for the majority of the action.
+`;
+
+const collisionNearSelfDoc = `During this action, it appears that the robot is close to colliding with itself. While this doesn't str
+`;
+
+const collisionSelfDoc = `During this action, it appears that the robot is colliding with itself in one or more locations. To observe where this collision is happening, observe the timeline, which should highlight sections of the trajectory where the collisions occur, and 
+`;
+
+const collisionNearEnvironmentDoc = `
+`;
+
+const collisionEnvironmentDoc = `
+`;
+
+const occupancyDoc = `
+`;
+
+const pinchPointDoc = `
+`;
+
+const thingSafetyDoc = `
+`;
+
 export const findEndEffectorPoseIssues = ({program, programData, settings, compiledData}) => { // Requires trace pose information
     let issues = {};
 

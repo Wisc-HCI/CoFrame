@@ -307,80 +307,70 @@ export function deleteChildren(state, data, parentId, fieldInfo) {
   return state;
 }
 
+export const applyTransfer = (state, data, sourceInfo, destInfo) => {
+  let newSpawn = false;
+  let id = data.id;
+
+  if (!state.programData[data.id]) {
+    // Clone the data with a new id
+    id = generateUuid(data.type);
+    state.programData[id] = { ...data, id };
+    newSpawn = true;
+  }
+
+  const sourceIsList = sourceInfo.fieldInfo?.isList;
+  const destIsList = destInfo.fieldInfo.isList;
+
+  // If both source and dest are the same list, handle this specially
+  if (destIsList && sourceIsList && sourceInfo.parentId === destInfo.parentId) {
+    state.programData[destInfo.parentId].properties[destInfo.fieldInfo.value] =
+      move(
+        state.programData[destInfo.parentId].properties[
+          destInfo.fieldInfo.value
+        ],
+        sourceInfo.idx,
+        destInfo.idx
+      );
+  } else {
+    // Place the value in its new location
+    if (destIsList) {
+      state.programData[destInfo.parentId].properties[
+        destInfo.fieldInfo.value
+      ].splice(destInfo.idx, 0, id);
+    } else {
+      state.programData[destInfo.parentId].properties[
+        destInfo.fieldInfo.value
+      ] = id;
+    }
+    // If existing, remove from the previous location
+    if (
+      !newSpawn &&
+      sourceInfo.parentId === destInfo.parentId &&
+      sourceInfo.fieldInfo === destInfo.fieldInfo
+    ) {
+      // ignore if dropped in the source
+    } else if (!newSpawn && sourceIsList) {
+      // Insert at the right location
+      state.programData[sourceInfo.parentId].properties[
+        destInfo.fieldInfo.value
+      ].splice(sourceInfo.idx, 1);
+    } else if (!newSpawn && !sourceIsList) {
+      console.log("removing from previous by setting to null");
+      state.programData[sourceInfo.parentId].properties[
+        sourceInfo.fieldInfo.value
+      ] = null;
+    }
+  }
+};
+
 export const ProgrammingSliceOverride = (set, get) => ({
   forceRefreshBlock: (id) =>
     set((state) => {
       state.programData[id].properties.status = STATUS.PENDING;
     }),
   transferBlock: (data, sourceInfo, destInfo) => {
-    set((state) => {
-      let newSpawn = false;
-      let id = data.id;
-
-      if (!state.programData[data.id]) {
-        // Clone the data with a new id
-        id = generateUuid(data.type);
-        state.programData[id] = { ...data, id };
-        newSpawn = true;
-      }
-
-      const sourceIsList = sourceInfo.fieldInfo?.isList;
-      const destIsList = destInfo.fieldInfo.isList;
-
-      // If both source and dest are the same list, handle this specially
-      if (
-        destIsList &&
-        sourceIsList &&
-        sourceInfo.parentId === destInfo.parentId
-      ) {
-        state.programData[destInfo.parentId].properties[
-          destInfo.fieldInfo.value
-        ] = move(
-          state.programData[destInfo.parentId].properties[
-            destInfo.fieldInfo.value
-          ],
-          sourceInfo.idx,
-          destInfo.idx
-        );
-      } else {
-        // Place the value in its new location
-        if (destIsList) {
-          state.programData[destInfo.parentId].properties[
-            destInfo.fieldInfo.value
-          ].splice(destInfo.idx, 0, id);
-        } else {
-          state.programData[destInfo.parentId].properties[
-            destInfo.fieldInfo.value
-          ] = id;
-        }
-        // If existing, remove from the previous location
-        if (
-          !newSpawn &&
-          sourceInfo.parentId === destInfo.parentId &&
-          sourceInfo.fieldInfo === destInfo.fieldInfo
-        ) {
-          // ignore if dropped in the source
-        } else if (!newSpawn && sourceIsList) {
-          // Insert at the right location
-          state.programData[sourceInfo.parentId].properties[
-            destInfo.fieldInfo.value
-          ].splice(sourceInfo.idx, 1);
-        } else if (!newSpawn && !sourceIsList) {
-          console.log("removing from previous by setting to null");
-          state.programData[sourceInfo.parentId].properties[
-            sourceInfo.fieldInfo.value
-          ] = null;
-        }
-      }
-
-      if (!newSpawn) {
-        state.programData[sourceInfo.parentId].properties.status =
-          STATUS.PENDING;
-        // console.log({editItem:state.programData[id],itemProps:state.programData[id].properties,id})
-        // state.programData[id].properties.status = STATUS.PENDING;
-      }
-      state.programData[destInfo.parentId].properties.status = STATUS.PENDING;
-    });
+    console.log('transferBlock')
+    set((state) => applyTransfer(state, data, sourceInfo, destInfo));
   },
   deleteBlock: (data, parentId, fieldInfo) => {
     set((state) => {
@@ -420,19 +410,19 @@ export const ProgrammingSliceOverride = (set, get) => ({
       }
     });
   },
-  createPlacedBlock: (data, x, y) => {
-    set((state) => {
-      let id = data.id;
+  // createPlacedBlock: (data, x, y) => {
+  //   set((state) => {
+  //     let id = data.id;
 
-      if (!state.programData[data.id]) {
-        // Clone the data with a new id
-        id = generateUuid(data.type);
-        state.programData[id] = { ...data, id };
-      }
+  //     if (!state.programData[data.id]) {
+  //       // Clone the data with a new id
+  //       id = generateUuid(data.type);
+  //       state.programData[id] = { ...data, id };
+  //     }
 
-      state.programData[id].position = { x, y };
-    });
-  },
+  //     state.programData[id].position = { x, y };
+  //   });
+  // },
   addArgument: (parentFunctionId, argumentType) => {
     set((state) => {
       const id = generateUuid(argumentType);

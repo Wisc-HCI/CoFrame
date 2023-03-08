@@ -339,7 +339,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
                 requiresChanges: hasErrorVelocity,
                 title: `End effector moves too fast`,
                 description: `The end effector moves too fast for Trajectory "${programData[moveID].name}"`,
-                featuredDocs: {[source]:eeSpeedDoc},
+                featuredDocs: {[moveID]:eeSpeedDoc},
                 complete: false,
                 focus: [moveID],
                 graphData: {

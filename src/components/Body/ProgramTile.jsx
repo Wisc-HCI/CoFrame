@@ -4,7 +4,7 @@ import Tile from '../Elements/Tile';
 import useStore from '../../stores/Store';
 import { FiSettings, FiMaximize, FiMinimize } from "react-icons/fi";
 import { Stack, CircularProgress, IconButton, Typography } from '@mui/material';
-import shallow from 'zustand/shallow';
+import { shallow } from 'zustand/shallow';
 
 export const ProgramTile = forwardRef((_,ref) => {
 

@@ -2,7 +2,7 @@ import React, { memo, useState } from "react";
 import PositionRotationTF from "./PositionRotationTF";
 import { GizmoDetail } from "./GizmoDetail";
 import useStore from "../../stores/Store";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import { FiX, FiSquare, FiTrash2, FiDelete } from "react-icons/fi";
 import { NumberInput } from "../Elements/NumberInput";
 import { DETAIL_TYPES, STATUS } from "../../stores/Constants";

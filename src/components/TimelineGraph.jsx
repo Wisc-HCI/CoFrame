@@ -21,7 +21,7 @@ import {
   smoothInterpolateScalar,
   getBlocks,
 } from "../helpers/graphs";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import styled from "@emotion/styled";
 import { range } from "lodash";
 import { Stack, Typography } from "@mui/material";

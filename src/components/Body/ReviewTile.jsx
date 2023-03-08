@@ -1,7 +1,7 @@
 import React from "react";
 import { FiRefreshCw } from "react-icons/fi";
 import useStore from "../../stores/Store";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 import { ReviewSection } from "../Review/ReviewSection";
 import useMeasure from "react-use-measure";
 import { FrameTabBar } from "../FrameTabBar";

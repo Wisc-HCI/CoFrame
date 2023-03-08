@@ -190,13 +190,13 @@ const moveTrajectoryFeatures = {
       default: null,
       isList: false,
     },
-    velocity: {
+    duration: {
       // mm/ms or m/s
-      name: "Velocity",
+      name: "Duration",
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
-      default: 0.5,
+      default: 1,
       min: 0.01,
-      max: 5,
+      max: 15,
       step: 0.01,
       visualScaling: 1,
       visualPrecision: 2,
@@ -209,23 +209,9 @@ const moveTrajectoryFeatures = {
       default: "IK",
     },
     compileFn: { default: COMPILE_FUNCTIONS.ROBOT_MOTION },
-    updateFields: { default: ["trajectory", "velocity", "motionType"] },
+    updateFields: { default: ["trajectory", "duration", "motionType"] },
   },
 };
-
-// const moveUnplannedFeatures = {
-//   name: 'Move Unplanned',
-//   properties: {
-//     description: {default: 'Instantly Move Robot (initialization only)'},
-//     location: {
-//       name: "To Location",
-//       accepts: ["locationType"],
-//       default: null,
-//       isList: false
-//     },
-//     compileFn: {default:COMPILE_FUNCTIONS.ROBOT_MOTION}
-//   }
-// }
 
 const actionTypes = {
   delayType: merge(delayFeatures, basicActionData),

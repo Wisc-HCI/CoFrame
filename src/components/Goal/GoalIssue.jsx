@@ -3,7 +3,7 @@ import { Badge, Stack, Button, Typography } from "@mui/material";
 import { FiCheck, FiX, FiClipboard, FiEye, FiEyeOff } from "react-icons/fi";
 import { Blurb } from "../ContextualInfo/Blurb";
 import useStore from "../../stores/Store";
-import shallow from "zustand/shallow";
+import { shallow } from 'zustand/shallow';
 
 export const GoalIssue = ({ goal }) => {
   const [addFocusItem, clearFocus, focus, isProcessing, setActiveTab] = useStore(
