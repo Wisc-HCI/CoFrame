@@ -7,30 +7,54 @@ import lodash from 'lodash';
 import { hexToRgb } from "../../helpers/colors";
 import { queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
 
-const endEffectorPoseDoc = `During this action, it appears that the gripper may be moving in a potentially dangerous manner. Specifically, this involves cases where the gripper moves quickly in the direction of its outstretched fingers, such that they could result in problems if coming in contact with a worker's soft tissue. To ddress this issue, consider one or more of the following changes:
+const endEffectorPoseDoc = `During this action, it appears that the gripper may be moving in a potentially dangerous manner. Specifically, this involves cases where the gripper moves quickly in the direction of its outstretched fingers, such that they could result in problems if coming in contact with a worker's soft tissue. To address this issue, consider one or more of the following changes:
 - Slow down the action so the movement of the gripper is not as fast, and therefore less of a danger
 - Reorient the gripper during the action so that the broad side of the gripper is moving in the current direction for the majority of the action.
 `;
 
-const collisionNearSelfDoc = `During this action, it appears that the robot is close to colliding with itself. While this doesn't str
+const collisionNearSelfDoc = `During this action, it appears that the robot is close to colliding with itself. While this doesn't require changes, it is good practice to avoid these scenarios, as future issues may arise. To observe where this near collision is happening, observe the timeline, which should highlight sections of the trajectory where the issue occurs. To address this issue, consider one or more of the following changes:
+- Adding waypoints to the trajectory to try and move away from the near collision point
+- Moving existing waypoints and locations to move the robot in a way that avoids the near collision point.
+- Switching trajectory types (IK or Joint)
 `;
 
-const collisionSelfDoc = `During this action, it appears that the robot is colliding with itself in one or more locations. To observe where this collision is happening, observe the timeline, which should highlight sections of the trajectory where the collisions occur, and 
+const collisionSelfDoc = `During this action, it appears that the robot is colliding with itself in one or more locations. To observe where this collision is happening, observe the timeline, which should highlight sections of the trajectory where the collisions occur. To address this issue, consider one or more of the following changes:
+- Adding waypoints to the trajectory to try and avoid the collision point.
+- Moving existing waypoints and locations to move the robot in a way that avoids the collision point.
+- Switching trajectory types (IK or Joint)
 `;
 
-const collisionNearEnvironmentDoc = `
+const collisionNearEnvironmentDoc = `During this action, it appears that the robot is close to colliding with an object in the environment. While this doesn't require changes, it is good practice to avoid these scenarios, as future issues may arise. To observe where this near collision is happening, observe the timeline, which should highlight sections of the trajectory where the issue occurs. To address this issue, consider one or more of the following changes:
+- Adding waypoints to the trajectory to try and move away from the near collision point
+- Moving existing waypoints and locations to move the robot in a way that avoids the near collision point.
+- Switching trajectory types (IK or Joint)
 `;
 
-const collisionEnvironmentDoc = `
+const collisionEnvironmentDoc = `During this action, it appears that the robot is colliding with an object in the environment in one or more locations. To observe where this collision is happening, observe the timeline, which should highlight sections of the trajectory where the collisions occur. To address this issue, consider one or more of the following changes:
+- Adding waypoints to the trajectory to try and avoid the collision point.
+- Moving existing waypoints and locations to move the robot in a way that avoids the collision point.
+- Switching trajectory types (IK or Joint)
 `;
 
-const occupancyDoc = `
+const occupancyNearDoc = `During this action, it appears that the robot is moving near to an area designated as frequently occupied by people. While this doesn't require changes, it is good practice to avoid these scenarios, as future issues may arise. To observe where this near collision is happening, observe the timeline, which should highlight sections of the trajectory where the issue occurs. To address this issue, consider one or more of the following changes:
+- Adding waypoints to the trajectory to try and move away from the occupancy zone.
+- Moving existing waypoints and locations to move the robot in a way that moves further away from the occupancy zone.
+- Switching trajectory types (IK or Joint)
 `;
 
-const pinchPointDoc = `
+const occupancyDoc = `During this action, it appears that the robot is entering an area designated as frequently occupied by people. This can result in undesirable surprises and injuries to any individuals working in those areas. To observe where this near collision is happening, observe the timeline, which should highlight sections of the trajectory where the issue occurs. To address this issue, consider one or more of the following changes:
+- Adding waypoints to the trajectory to try and move away from the occupancy zone.
+- Moving existing waypoints and locations to move the robot in a way that moves further away from the occupancy zone.
+- Switching trajectory types (IK or Joint)
 `;
 
-const thingSafetyDoc = `
+const pinchPointDoc = `During this action, it appears that the robot's movement creates areas that would be dangerous for humans to be around. Specificially, pinch points results in areas that would be unsafe for a human hand to be in, as it could pinch and subsequently hurt the individual's hand. To address this issue, consider one or more of the following changes:
+- Adding waypoints to move the robot in a way that avoids the pinch point.
+- Moving existing waypoints and locations to move the robot in a way that avoids that pinch point.
+`;
+
+const thingSafetyDoc = `During this action, it appears that the robot is trying to grasp an unsafe object. Moving the robot while it's holding an unsafe object creates a dangerous work environment for any people working near to or with the robot. To address this issue, consider one or more of the following changes:
+- Placing the item in a safe to carry container before moving it about.
 `;
 
 export const findEndEffectorPoseIssues = ({program, programData, settings, compiledData}) => { // Requires trace pose information
@@ -95,6 +119,7 @@ export const findEndEffectorPoseIssues = ({program, programData, settings, compi
                 requiresChanges: hasError,
                 title: `End effector pose is poor`,
                 description: `End effector pose is poor`,
+                featuredDocs: {[moveID]: endEffectorPoseDoc},
                 complete: false,
                 focus: [moveID],
                 graphData: {
@@ -302,6 +327,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
                 requiresChanges: collisionErrors[selfIndex],
                 title: collisionErrors[selfIndex] ? `Robot collides with self` : `Robot is in near collision with self`,
                 description: `Robot collides with self`,
+                featuredDocs: {[moveID]: collisionErrors[selfIndex] ? collisionSelfDoc : collisionNearSelfDoc},
                 complete: false,
                 focus: [moveID],
                 graphData: {
@@ -330,6 +356,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
                 requiresChanges: collisionErrors[envIndex],
                 title: collisionErrors[envIndex] ? `Robot collides with environment` : `Robot is in near collision with environment`,
                 description: `Robot collides with the environment`,
+                featuredDocs: {[moveID]: collisionErrors[envIndex] ? collisionEnvironmentDoc : collisionNearEnvironmentDoc},
                 complete: false,
                 focus: [moveID],
                 graphData: {
@@ -460,6 +487,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
                 requiresChanges: false,
                 title: enteredZone ? `Entered Occupancy Zone`: `Close to Occupancy Zone`,
                 description: enteredZone ? `Robot trajectory entered occupancy zone`: `Robot trajectory results in close proximity to the occupancy zone`,
+                featuredDocs: {[source]: enteredZone ? occupancyDoc : occupancyNearDoc},
                 complete: false,
                 focus: [source],
                 graphData: {
@@ -528,6 +556,7 @@ export const findPinchPointIssues = ({program, programData, compiledData}) => { 
                 requiresChanges: true,
                 title: `Likely pinch points`,
                 description: `Robot trajectory includes likely pinch points`,
+                featuredDocs: {[source]: pinchPointDoc},
                 complete: false,
                 focus: [source],
                 graphData: {
@@ -574,6 +603,7 @@ export const findThingSafetyIssues = ({program, programData, compiledData}) => {
                         requiresChanges: true,
                         title: `Grasping an unsafe object`, // might need some changes
                         description: `The robot is grasping a dangerous item`,// might need some changes
+                        featuredDocs: {[source.id]: thingSafetyDoc},
                         complete: false,
                         focus: [source.id],
                         graphData: null
