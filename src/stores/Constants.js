@@ -107,7 +107,7 @@ export const POSTPROCESS_TYPES = [
 export const ROOT_PATH = JSON.stringify({});
 
 export const HAND_PINCH_MIN_DISTANCE = 0.025;
-export const HAND_PINCH_MAX_DISTANCE = 0.26;
+export const HAND_PINCH_MAX_DISTANCE = 0.06;
 
 
 export const MAX_JOINT_DISTANCE_DIFF = 0.01;
