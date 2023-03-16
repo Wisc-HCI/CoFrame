@@ -37,7 +37,7 @@ const store = (set, get) => ({
   ...EvdSlice(set, get),
   ...RosSlice(set, get),
   clock: new Timer(),
-  playing: false,
+  playing: true,
   pause: () => {
     set({playing:false});
     get().clock.setTimescale(0);
