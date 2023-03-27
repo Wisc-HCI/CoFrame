@@ -147,6 +147,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     // some constant product value and cost
     const productValue = settings['productValue'].value;
     const productCost = settings['productCost'].value;
+    const targetProduct = settings['product'].value;
 
     // track the cost of wear and tear due to robot acceleration
     let wearTearCost = 0;
@@ -158,11 +159,17 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
         return (Math.abs(acceleration) / errorAccelLevel) * 0.0001;
     }
 
+    let numberProductsCreated = 0;
     let trajectoryUpdate = false;
     let previousJoints = {};
     let previousVelocity = {};
     let previousTimeStep = 0;
     compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
+        // Count the number of target products created (consumed)
+        if (step.type === STEP_TYPE.SPAWN_ITEM && step.data.thing === targetProduct) {
+            numberProductsCreated += 1;
+        }
+
         // If the next action is a move trajectory, start evaluating the wear and tear on the moving joints
         if(step.type === STEP_TYPE.ACTION_START && "moveTrajectoryType" === programData[step.source].type) {
             trajectoryUpdate = true;
@@ -199,7 +206,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     });
 
     // roi = (net return / net cost) * 100%
-    let roi = productValue / (productCost + wearTearCost) * 100;
+    let roi = (numberProductsCreated * productValue) / ((numberProductsCreated * productCost) + wearTearCost) * 100;
 
     if (roi > peak) {
         peak = roi;

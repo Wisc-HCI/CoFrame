@@ -20,6 +20,10 @@ import {
   Typography,
   Card,
   CardContent,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@mui/material";
 import { FrameTabBar } from "./FrameTabBar";
 import { shallow } from 'zustand/shallow';
@@ -111,9 +115,7 @@ const DialogContent = () => {
 
   const updateIssue = (value, issue) => {
     const item = {
-      id: issue.id,
-      name: issue.name,
-      frame: issue.frame,
+      ...issue,
       value: parseFloat(value),
     };
     updateIssueSetting(item);
@@ -299,38 +301,68 @@ const DialogContent = () => {
                   }}
                 >
                   {filteredIssueSettings.length > 0 ? (
-                    filteredIssueSettings.map((entry) => (
-                      <Box
-                        key={entry.name.concat("input")}
-                        sx={{
-                          display: "flex",
-                          // width: "calc(50vw - 40px)",
-                          padding: "4px",
-                        }}
-                      >
-                        {!entry.max && (
-                          <TextField
-                            fullWidth
-                            label={entry.name}
-                            type="number"
-                            min={entry.min}
-                            value={entry.value}
-                            onChange={(e) => updateIssue(e.target.value, entry)}
-                          />
-                        )}
-                        {entry.max && (
-                          <TextField
-                            fullWidth
-                            label={entry.name}
-                            type="number"
-                            min={entry.min}
-                            max={entry.max}
-                            value={entry.value}
-                            onChange={(e) => updateIssue(e.target.value, entry)}
-                          />
-                        )}
-                      </Box>
-                    ))
+                    filteredIssueSettings.map((entry) => {
+                      if (entry.type === "text") {
+                        return <Box
+                            key={entry.name.concat("input")}
+                            sx={{
+                              display: "flex",
+                              // width: "calc(50vw - 40px)",
+                              padding: "4px",
+                            }}
+                          >
+                            {!entry.max && (
+                              <TextField
+                                fullWidth
+                                label={entry.name}
+                                type="number"
+                                min={entry.min}
+                                value={entry.value}
+                                onChange={(e) => updateIssue(e.target.value, entry)}
+                              />
+                            )}
+                            {entry.max && (
+                              <TextField
+                                fullWidth
+                                label={entry.name}
+                                type="number"
+                                min={entry.min}
+                                max={entry.max}
+                                value={entry.value}
+                                onChange={(e) => updateIssue(e.target.value, entry)}
+                              />
+                            )}
+                          </Box>
+                      } else if (entry.type === "dropdown") {
+                        return <Box
+                            key={entry.name.concat("input")}
+                            sx={{
+                              display: "flex",
+                              // width: "calc(50vw - 40px)",
+                              padding: "4px",
+                            }}
+                          >
+                            <FormControl fullWidth>
+                              <InputLabel id={entry.name.concat("select-label")}>{entry.name}</InputLabel>
+                              <Select
+                                labelId={entry.name.concat("select-label")}
+                                id={entry.name.concat("select")}
+                                value={entry.value}
+                                label={entry.name}
+                                onChange={(e) => updateIssue(e.target.value, entry)}
+                              >
+                                {Object.values(data).map(block => {
+                                  if (block.type === entry.blocktype) {
+                                    return <MenuItem value={block.id}>{block.name}</MenuItem>
+                                  } else {
+                                    return null
+                                  }
+                                })}
+                              </Select>
+                            </FormControl>
+                          </Box>
+                      }
+                    })
                   ) : (
                     <Typography sx={{ width: "100%", textAlign: "center" }}>
                       No Settings
