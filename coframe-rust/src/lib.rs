@@ -171,6 +171,79 @@ impl Planner {
     
         return passes;
     }
+
+    fn dot_product(&self, a: &Vec<f64>, b: &Vec<f64>) -> f64 {
+        // Calculate the dot product of two vectors. 
+        assert_eq!(a.len(), b.len()); 
+        let mut product = 0.0;
+        for i in 0..a.len() {
+            product += a[i] * b[i];
+        }
+        product
+    }
+
+    fn distance(&self, a: &Vec<f64>, b: &Vec<f64>) -> f64 {
+        assert_eq!(a.len(), b.len()); 
+        let mut dist = 0.0;
+        for i in 0..a.len() {
+            dist += (a[i] - b[i])*(a[i] - b[i]);
+        }
+        dist = dist.sqrt();
+        dist
+    }
+
+    fn sub_vectors(&self, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
+        assert_eq!(a.len(), b.len()); 
+        let mut c: Vec<f64> = Vec::new();
+        for i in 0..a.len() {
+            c.push(b[i] - a[i])
+        }
+        c
+    }
+
+    fn add_vectors(&self, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
+        assert_eq!(a.len(), b.len()); 
+        let mut c: Vec<f64> = Vec::new();
+        for i in 0..a.len() {
+            c.push(b[i] + a[i])
+        }
+        c
+    }
+
+
+
+    pub fn check_state_ik(&self,vector: &Vec<f64>, start: &Vec<f64>, goal: &Vec<f64>) -> bool {
+        let state: State = self.robot_model.get_state(&vector, true, 0.0);
+    
+        let mut passes: bool = true;
+    
+        for proximity in &state.proximity {
+            if proximity.physical
+                && proximity.distance < 0.001
+                && proximity.average_distance.unwrap_or(1.0) > 0.001
+            {
+                passes = false;
+                break;
+            }
+        }
+
+        if passes {
+            let ap: Vec<f64> = self.sub_vectors(start, vector);
+            let ab: Vec<f64> = self.sub_vectors(start, goal);
+            let ik_tolerance: f64 = 0.01;
+            let scaler: f64 = self.dot_product(&ap, &ab) / self.dot_product(&ab, &ab);
+            let mut scaled_a_b: Vec<f64> = Vec::new();
+            for i in 0..ab.len() {
+                scaled_a_b.push(scaler * ab[i]);
+            }
+            let proj_vec: Vec<f64> = self.add_vectors(start, &scaled_a_b);
+            if self.distance(&proj_vec, vector) > ik_tolerance {
+                passes = false;
+            }
+        }
+    
+        return passes;
+    }
     
     pub fn get_sample(&self) -> Vec<f64> {
         let mut rng_local: ThreadRng = thread_rng();
@@ -220,41 +293,70 @@ pub fn plan_trajectory(
 
         println!("Start {:?}", start_vec);
         println!("End {:?}", end_vec);
+        if _is_ik {
+            let planning_result = rrt::dual_rrt_connect(
+                &start_vec.as_slice(),
+                &end_vec.as_slice(),
+                |x| planner.check_state_ik(&x.to_vec(), &start_vec.to_vec(), &end_vec.to_vec()),
+                || planner.get_sample(),
+                0.1,
+                1000,
+            );
 
-        let planning_result = rrt::dual_rrt_connect(
-            &start_vec.as_slice(),
-            &end_vec.as_slice(),
-            |x| planner.check_state(&x.to_vec()),
-            || planner.get_sample(),
-            0.1,
-            1000,
-        );
+            println!("Computed Planning Result");
 
-        println!("Computed Planning Result");
-
-        match planning_result {
-            Ok(p) => {
-                let smoothed_path = filter(
-                    &p,
-                    |x| planner.check_state(&x.to_vec()),
-                    p.len()*200, 
-                    0
-                ).unwrap();
-                // let mut raw_path = p.clone();
-                // // Smooth the result
-                // rrt::smooth_path(
-                //     &mut raw_path,
-                //     |x| planner.check_state(&x.to_vec()),
-                //     0.1,
-                //     1,
-                // );
-                smoothed_path.iter().for_each(|x| {
-                    trajectory.push(planner.robot_model.get_state(x, true, 0.0));
-                })
+            match planning_result {
+                Ok(p) => {
+                    let smoothed_path = filter(
+                        &p,
+                        |x| planner.check_state_ik(&x.to_vec(), &start_vec.to_vec(), &end_vec.to_vec()),
+                        p.len()*200, 
+                        0
+                    ).unwrap();
+                    smoothed_path.iter().for_each(|x| {
+                        trajectory.push(planner.robot_model.get_state(x, true, 0.0));
+                    })
+                }
+                _ => {
+                    // Return the current trajectory as a failed planning result
+                    return PlanningResult::Failure { trajectory };
+                }
             }
-            _ => {
-                // Return the current trajectory as a failed planning result
-                return PlanningResult::Failure { trajectory };
+        } else {
+            let planning_result = rrt::dual_rrt_connect(
+                &start_vec.as_slice(),
+                &end_vec.as_slice(),
+                |x| planner.check_state(&x.to_vec()),
+                || planner.get_sample(),
+                0.1,
+                1000,
+            );
+            println!("Computed Planning Result");
+
+            match planning_result {
+                Ok(p) => {
+                    let smoothed_path = filter(
+                        &p,
+                        |x| planner.check_state(&x.to_vec()),
+                        p.len()*200, 
+                        0
+                    ).unwrap();
+                    // let mut raw_path = p.clone();
+                    // // Smooth the result
+                    // rrt::smooth_path(
+                    //     &mut raw_path,
+                    //     |x| planner.check_state(&x.to_vec()),
+                    //     0.1,
+                    //     1,
+                    // );
+                    smoothed_path.iter().for_each(|x| {
+                        trajectory.push(planner.robot_model.get_state(x, true, 0.0));
+                    })
+                }
+                _ => {
+                    // Return the current trajectory as a failed planning result
+                    return PlanningResult::Failure { trajectory };
+                }
             }
         }
         println!("Smoothed Result");
