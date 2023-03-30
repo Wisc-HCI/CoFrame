@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { shallow } from "zustand/shallow";
-import { persist, subscribeWithSelector } from "zustand/middleware";
+import { subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { GuiSlice } from "./GuiSlice";
 import { ReviewSlice } from "./ReviewSlice";

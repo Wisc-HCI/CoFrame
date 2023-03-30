@@ -1,20 +1,31 @@
-use lively::utils::{
-    info::{ScalarRange, TransformInfo, ProximityInfo},
-    robot_model::RobotModel,
-    shapes::Shape,
-    state::State,
+use lively::{
+    objectives::{
+        core::{
+            base::CollisionAvoidanceObjective,
+            matching::{OrientationMatchObjective, PositionMatchObjective},
+        },
+        objective::Objective,
+    },
+    utils::{
+        goals::Goal,
+        info::{ProximityInfo, ScalarRange, TransformInfo},
+        robot_model::RobotModel,
+        shapes::Shape,
+        state::State,
+    },
 };
+use nalgebra::geometry::Isometry3;
+use num_traits::{float::Float, ToPrimitive};
+use rand::distributions::{Distribution, WeightedIndex};
 use rand::rngs::ThreadRng;
 use rand::{thread_rng, Rng};
-use rand::distributions::{WeightedIndex,Distribution};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen;
 use std;
 use std::collections::HashMap;
-use wasm_bindgen::prelude::*;
-use std::ops::Sub;
-use num_traits::{float::Float, ToPrimitive};
 use std::fmt::Debug;
+use std::ops::Sub;
+use wasm_bindgen::prelude::*;
 // use crate::compiler::compiled::Compiled;
 // use crate::compiler::blocks::block::Block;
 extern crate console_error_panic_hook;
@@ -89,6 +100,20 @@ pub fn plan_trajectory_js(
     ));
 }
 
+#[wasm_bindgen(js_name = computePose)]
+pub fn compute_pose_js(
+    urdf: String,
+    goal: JsValue,
+    origin: JsValue,
+    attachment_link: String,
+    shapes: JsValue,
+) -> Result<JsValue, serde_wasm_bindgen::Error> {
+    let goal_iso: Isometry3<f64> = serde_wasm_bindgen::from_value(goal).unwrap();
+    let origin_iso: Isometry3<f64> = serde_wasm_bindgen::from_value(origin).unwrap();
+    let shape_vec: Option<Vec<Shape>> = serde_wasm_bindgen::from_value(shapes).unwrap();
+    return serialize(&compute_pose(urdf,goal_iso,origin_iso,attachment_link,shape_vec));
+}
+
 pub struct Planner {
     pub robot_model: RobotModel,
     pub upper_bounds: Vec<f64>,
@@ -102,7 +127,11 @@ impl Planner {
         let robot_model: RobotModel = RobotModel::new(urdf, shapes, &None, root_bounds.clone());
         let initial_frames = robot_model.get_default_state().frames;
         let proximity_info: Vec<ProximityInfo> = vec![];
-        robot_model.collision_manager.lock().unwrap().compute_ground_truth_distance_hashmap(&initial_frames, &proximity_info);
+        robot_model
+            .collision_manager
+            .lock()
+            .unwrap()
+            .compute_ground_truth_distance_hashmap(&initial_frames, &proximity_info);
 
         let mut upper_bounds: Vec<f64> = root_bounds
             .iter()
@@ -150,15 +179,19 @@ impl Planner {
             .unwrap()
             .compute_a_table(&sampled_states);
 
-        return Self {robot_model,upper_bounds,lower_bounds,default_x}
-
+        return Self {
+            robot_model,
+            upper_bounds,
+            lower_bounds,
+            default_x,
+        };
     }
 
-    pub fn check_state(&self,vector: &Vec<f64>) -> bool {
+    pub fn check_state(&self, vector: &Vec<f64>) -> bool {
         let state: State = self.robot_model.get_state(&vector, true, 0.0);
-    
+
         let mut passes: bool = true;
-    
+
         for proximity in &state.proximity {
             if proximity.physical
                 && proximity.distance < 0.001
@@ -168,13 +201,13 @@ impl Planner {
                 break;
             }
         }
-    
+
         return passes;
     }
 
     fn dot_product(&self, a: &Vec<f64>, b: &Vec<f64>) -> f64 {
-        // Calculate the dot product of two vectors. 
-        assert_eq!(a.len(), b.len()); 
+        // Calculate the dot product of two vectors.
+        assert_eq!(a.len(), b.len());
         let mut product = 0.0;
         for i in 0..a.len() {
             product += a[i] * b[i];
@@ -183,17 +216,17 @@ impl Planner {
     }
 
     fn distance(&self, a: &Vec<f64>, b: &Vec<f64>) -> f64 {
-        assert_eq!(a.len(), b.len()); 
+        assert_eq!(a.len(), b.len());
         let mut dist = 0.0;
         for i in 0..a.len() {
-            dist += (a[i] - b[i])*(a[i] - b[i]);
+            dist += (a[i] - b[i]) * (a[i] - b[i]);
         }
         dist = dist.sqrt();
         dist
     }
 
     fn sub_vectors(&self, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
-        assert_eq!(a.len(), b.len()); 
+        assert_eq!(a.len(), b.len());
         let mut c: Vec<f64> = Vec::new();
         for i in 0..a.len() {
             c.push(b[i] - a[i])
@@ -202,7 +235,7 @@ impl Planner {
     }
 
     fn add_vectors(&self, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
-        assert_eq!(a.len(), b.len()); 
+        assert_eq!(a.len(), b.len());
         let mut c: Vec<f64> = Vec::new();
         for i in 0..a.len() {
             c.push(b[i] + a[i])
@@ -210,13 +243,11 @@ impl Planner {
         c
     }
 
-
-
-    pub fn check_state_ik(&self,vector: &Vec<f64>, start: &Vec<f64>, goal: &Vec<f64>) -> bool {
+    pub fn check_state_ik(&self, vector: &Vec<f64>, start: &Vec<f64>, goal: &Vec<f64>) -> bool {
         let state: State = self.robot_model.get_state(&vector, true, 0.0);
-    
+
         let mut passes: bool = true;
-    
+
         for proximity in &state.proximity {
             if proximity.physical
                 && proximity.distance < 0.001
@@ -241,10 +272,10 @@ impl Planner {
                 passes = false;
             }
         }
-    
+
         return passes;
     }
-    
+
     pub fn get_sample(&self) -> Vec<f64> {
         let mut rng_local: ThreadRng = thread_rng();
         let mut rand_x: Vec<f64> = self.default_x.clone();
@@ -256,8 +287,8 @@ impl Planner {
                 rand_x[i] = rng_local.gen_range(lower..upper);
             }
         }
-        println!("rand {:?}",rand_x);
-        return rand_x
+        println!("rand {:?}", rand_x);
+        return rand_x;
     }
 }
 
@@ -266,10 +297,10 @@ pub fn plan_trajectory(
     waypoints: Vec<HashMap<String, f64>>,
     shapes: Vec<Shape>,
     root_bounds: Vec<ScalarRange>,
-    _is_ik: bool,
+    is_ik: bool,
 ) -> PlanningResult {
     // Define the robot model
-    let planner = Planner::new(urdf,shapes,root_bounds);
+    let planner = Planner::new(urdf, shapes, root_bounds);
 
     let waypoint_pairs: Vec<(&HashMap<String, f64>, &HashMap<String, f64>)> = waypoints
         .iter()
@@ -293,7 +324,7 @@ pub fn plan_trajectory(
 
         println!("Start {:?}", start_vec);
         println!("End {:?}", end_vec);
-        if _is_ik {
+        if is_ik {
             let planning_result = rrt::dual_rrt_connect(
                 &start_vec.as_slice(),
                 &end_vec.as_slice(),
@@ -309,10 +340,17 @@ pub fn plan_trajectory(
                 Ok(p) => {
                     let smoothed_path = filter(
                         &p,
-                        |x| planner.check_state_ik(&x.to_vec(), &start_vec.to_vec(), &end_vec.to_vec()),
-                        p.len()*200, 
-                        0
-                    ).unwrap();
+                        |x| {
+                            planner.check_state_ik(
+                                &x.to_vec(),
+                                &start_vec.to_vec(),
+                                &end_vec.to_vec(),
+                            )
+                        },
+                        p.len() * 200,
+                        0,
+                    )
+                    .unwrap();
                     smoothed_path.iter().for_each(|x| {
                         trajectory.push(planner.robot_model.get_state(x, true, 0.0));
                     })
@@ -335,12 +373,8 @@ pub fn plan_trajectory(
 
             match planning_result {
                 Ok(p) => {
-                    let smoothed_path = filter(
-                        &p,
-                        |x| planner.check_state(&x.to_vec()),
-                        p.len()*200, 
-                        0
-                    ).unwrap();
+                    let smoothed_path =
+                        filter(&p, |x| planner.check_state(&x.to_vec()), p.len() * 200, 0).unwrap();
                     // let mut raw_path = p.clone();
                     // // Smooth the result
                     // rrt::smooth_path(
@@ -365,6 +399,104 @@ pub fn plan_trajectory(
     return PlanningResult::Success { trajectory };
 }
 
+pub fn compute_pose(
+    urdf: String,
+    goal: Isometry3<f64>,
+    origin: Isometry3<f64>,
+    attachment_link: String,
+    shapes: Option<Vec<Shape>>,
+) -> PoseResult {
+    let origin_euler = origin.rotation.euler_angles();
+    let root_bounds: Vec<ScalarRange> = vec![
+        ScalarRange::new(origin.translation.x, 0.0),
+        ScalarRange::new(origin.translation.y, 0.0),
+        ScalarRange::new(origin.translation.z, 0.0),
+        ScalarRange::new(origin_euler.0, 0.0),
+        ScalarRange::new(origin_euler.1, 0.0),
+        ScalarRange::new(origin_euler.2, 0.0),
+    ];
+    let mut objectives: HashMap<String, Objective> = HashMap::new();
+    objectives.insert(
+        "position_match".to_string(),
+        Objective::PositionMatch(PositionMatchObjective::new(
+            "position_match".to_string(),
+            50.0,
+            attachment_link.clone(),
+        )),
+    );
+    objectives.insert(
+        "orientation_match".to_string(),
+        Objective::OrientationMatch(OrientationMatchObjective::new(
+            "orientation_match".to_string(),
+            30.0,
+            attachment_link.clone(),
+        )),
+    );
+    objectives.insert(
+        "collision_avoidance".to_string(),
+        Objective::CollisionAvoidance(CollisionAvoidanceObjective::new(
+            "collision_avoidance".to_string(),
+            0.1,
+        )),
+    );
+
+    let mut solver = Solver::new(
+        urdf,
+        objectives,
+        Some(root_bounds),
+        shapes,
+        None,
+        Some(5),
+        Some(75),
+        None,
+    );
+    let jacobian_result = solver.jacobian_ik(goal, origin, attachment_link.clone());
+    match jacobian_result {
+        Ok(state) => return PoseResult::Success { state },
+        Err(_errmsg) => {
+            solver.compute_average_distance_table();
+            let mut goals: HashMap<String, Goal> = HashMap::new();
+            goals.insert(
+                "position_match".to_string(),
+                Goal::Translation(goal.translation),
+            );
+            goals.insert(
+                "orientation_match".to_string(),
+                Goal::Rotation(goal.rotation),
+            );
+            let mut result: PoseResult = PoseResult::Failure {
+                state: solver.get_current_state(),
+                message: "Could not resolve after 0 iterations.".to_string(),
+            };
+            for i in 0..20 {
+                let candidate_state = solver.solve(goals.clone(), HashMap::new(), 0.0, None);
+                let position_diff: f64 = (candidate_state
+                    .get_link_transform(&attachment_link)
+                    .translation
+                    .vector
+                    - goal.translation.vector)
+                    .norm();
+                let rotation_diff: f64 = candidate_state
+                    .get_link_transform(&attachment_link)
+                    .rotation
+                    .angle_to(&goal.rotation);
+                if position_diff <= 0.01 && rotation_diff <= 0.01 {
+                    result = PoseResult::Success {
+                        state: candidate_state,
+                    };
+                    break;
+                } else {
+                    result = PoseResult::Failure {
+                        state: candidate_state,
+                        message: format!("Could not resolve after {} iterations.", i),
+                    }
+                }
+            }
+            return result;
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(tag = "code")]
 pub enum PlanningResult {
@@ -372,9 +504,16 @@ pub enum PlanningResult {
     Failure { trajectory: Vec<State> },
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(tag = "code")]
+pub enum PoseResult {
+    Success { state: State },
+    Failure { state: State, message: String },
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::{plan_trajectory, PlanningResult, compute_diff};
+    use crate::{compute_diff, plan_trajectory, PlanningResult};
     use lively::utils::info::ScalarRange;
     use std::collections::HashMap;
     use std::fs;
@@ -449,13 +588,13 @@ mod tests {
         let expected_vec = vec![
             vec![0.0, 0.1, -0.2],
             vec![0.0, 0.1, 0.1],
-            vec![0.0, 0.1, -0.2]
+            vec![0.0, 0.1, -0.2],
         ];
-        for (i,expected_frame) in expected_vec.iter().enumerate() {
-            assert_ne!(output_vec.get(i),None);
+        for (i, expected_frame) in expected_vec.iter().enumerate() {
+            assert_ne!(output_vec.get(i), None);
             let output_frame = output_vec.get(i).unwrap();
             for (j, expected_value) in expected_frame.iter().enumerate() {
-                assert_ne!(output_frame.get(j),None);
+                assert_ne!(output_frame.get(j), None);
                 // Check that the values are similar within some epsilon
                 assert!(expected_value - output_frame.get(j).unwrap() < 0.0001)
             }
@@ -474,13 +613,13 @@ mod tests {
         let expected_vec = vec![
             vec![0.0, 0.1, -0.2],
             vec![0.0, 0.1, 0.1],
-            vec![0.0, 0.1, -0.2]
+            vec![0.0, 0.1, -0.2],
         ];
-        for (i,expected_frame) in expected_vec.iter().enumerate() {
-            assert_ne!(output_vec.get(i),None);
+        for (i, expected_frame) in expected_vec.iter().enumerate() {
+            assert_ne!(output_vec.get(i), None);
             let output_frame = output_vec.get(i).unwrap();
             for (j, expected_value) in expected_frame.iter().enumerate() {
-                assert_ne!(output_frame.get(j),None);
+                assert_ne!(output_frame.get(j), None);
                 // Check that the values are similar within some epsilon
                 assert!(expected_value - output_frame.get(j).unwrap() < 0.0001)
             }
@@ -496,7 +635,14 @@ pub fn filter<FF, N>(
 ) -> Result<Vec<Vec<N>>, String>
 where
     FF: FnMut(&[N]) -> bool,
-    N: Float + Debug + Sub<N> + std::iter::Sum + Default + rand::distributions::uniform::SampleUniform + for<'a> std::ops::AddAssign<&'a N> + ToPrimitive
+    N: Float
+        + Debug
+        + Sub<N>
+        + std::iter::Sum
+        + Default
+        + rand::distributions::uniform::SampleUniform
+        + for<'a> std::ops::AddAssign<&'a N>
+        + ToPrimitive,
 {
     let mut filtered_vector = state_vector.clone();
     let mut rng = thread_rng();
@@ -504,67 +650,61 @@ where
     for _i in 0..rounds {
         // Calculate the second derivative to find places wher ethe rates are changing quickly
         let mut weights = vec_norm(compute_diff(compute_diff(filtered_vector.clone())));
-        weights.insert(0,N::zero());
+        weights.insert(0, N::zero());
         weights.push(N::zero());
 
         // Use the derivative to create a weighted distribution to sample points for improvement
         let dist: WeightedIndex<N> = WeightedIndex::new(&weights).unwrap();
         let candidate_idx = dist.sample(&mut rng);
 
-        let neighbor_1:Vec<N> = filtered_vector[candidate_idx-1].clone();
-        let neighbor_2:Vec<N> = filtered_vector[candidate_idx+1].clone();
-        let candidate:Vec<N> = filtered_vector[candidate_idx].clone();
+        let neighbor_1: Vec<N> = filtered_vector[candidate_idx - 1].clone();
+        let neighbor_2: Vec<N> = filtered_vector[candidate_idx + 1].clone();
+        let candidate: Vec<N> = filtered_vector[candidate_idx].clone();
 
-        let candidate_replacement:Vec<N> = candidate
+        let candidate_replacement: Vec<N> = candidate
             .iter()
             .enumerate()
-            .map(
-                |(element_idx, element)| 
-                    (
-                        (
-                            *neighbor_1.get(element_idx).unwrap_or(element) + 
-                            *neighbor_2.get(element_idx).unwrap_or(element)
-                        ) 
-                    / N::from(2.0).unwrap()) 
-                    * N::from(0.25).unwrap() + *element * N::from(0.75).unwrap()
-            )
+            .map(|(element_idx, element)| {
+                ((*neighbor_1.get(element_idx).unwrap_or(element)
+                    + *neighbor_2.get(element_idx).unwrap_or(element))
+                    / N::from(2.0).unwrap())
+                    * N::from(0.25).unwrap()
+                    + *element * N::from(0.75).unwrap()
+            })
             .collect();
         if is_free(candidate_replacement.as_slice()) {
             filtered_vector[candidate_idx] = candidate_replacement
         }
-
     }
-    
+
     Ok(filtered_vector)
 }
 
-pub fn compute_diff<N>(
-    state_vector:Vec<Vec<N>>
-) -> Vec<Vec<N>> 
-where 
-    N: Float + Debug + Sub<N> 
+pub fn compute_diff<N>(state_vector: Vec<Vec<N>>) -> Vec<Vec<N>>
+where
+    N: Float + Debug + Sub<N>,
 {
     return state_vector
         .iter()
         .zip(state_vector.iter().skip(1))
         .collect::<Vec<(&Vec<N>, &Vec<N>)>>()
-        .iter().map(|(start,end)|{
-            start.iter().enumerate().map(|(i,v)| *end.get(i).unwrap_or(v) - *v).collect()
+        .iter()
+        .map(|(start, end)| {
+            start
+                .iter()
+                .enumerate()
+                .map(|(i, v)| *end.get(i).unwrap_or(v) - *v)
+                .collect()
         })
         .collect();
 }
 
-pub fn vec_norm<N>(state_vector:Vec<Vec<N>>) -> Vec<N> where N: Float + Debug + std::iter::Sum {
+pub fn vec_norm<N>(state_vector: Vec<Vec<N>>) -> Vec<N>
+where
+    N: Float + Debug + std::iter::Sum,
+{
     return state_vector
         .iter()
-        .map(|state| 
-            state
-                .iter()
-                .map(
-                    |v| v.powi(2) as N
-                )
-                .sum::<N>()
-                .sqrt()
-        )
+        .map(|state| state.iter().map(|v| v.powi(2) as N).sum::<N>().sqrt())
         .collect();
 }

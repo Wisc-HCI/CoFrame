@@ -212,7 +212,7 @@ export const robotMotionCompiler = ({
         } 
         const jointWps = poses.map(pose=>pose.states[robot.id][gripper.id].joints);
         
-        const planResult = module.planTrajectory(urdf,jointWps,staticEnvironment,rootBounds);
+        const planResult = module.planTrajectory(urdf,jointWps,staticEnvironment,rootBounds,motionType==='IK');
 
         if (planResult.code === 'Failure') {
           status = STATUS.WARN;

@@ -2,7 +2,7 @@ import { ROOT_PATH, PREPROCESS_TYPES, POSTPROCESS_TYPES } from '../Constants';
 import { handleUpdate } from './';
 import { DATA_TYPES } from 'simple-vp';
 import { createEnvironmentModel } from '../../helpers/geometry';
-import init, {Solver, planTrajectory} from 'coframe-rust';
+import init, {Solver, planTrajectory, computePose} from 'coframe-rust';
 // import { Solver } from '@people_and_robots/lively';
 
 export const performCompileProcess = async (data) => {
@@ -51,7 +51,7 @@ export const performCompileProcess = async (data) => {
                 path:ROOT_PATH,
                 memo,
                 compiledMemo,
-                module:module||{Solver,planTrajectory},
+                module:module||{Solver,planTrajectory,computePose},
                 worldModel,
                 compileModel
             }
@@ -70,7 +70,7 @@ export const performCompileProcess = async (data) => {
         path:ROOT_PATH,
         memo,
         compiledMemo,
-        module:module||{Solver,planTrajectory},
+        module:module||{Solver,planTrajectory,computePose},
         worldModel,
         compileModel
     }
@@ -90,7 +90,7 @@ export const performCompileProcess = async (data) => {
                 path:ROOT_PATH,
                 memo,
                 compiledMemo,
-                module:{Solver,planTrajectory},
+                module:{Solver,planTrajectory,computePose},
                 worldModel,
                 compileModel
             }

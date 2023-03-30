@@ -981,16 +981,16 @@
     "@react-spring/shared" "~9.7.1"
     "@react-spring/types" "~9.7.1"
 
-"@react-three/drei@^9.29.1":
-  version "9.57.1"
-  resolved "https://registry.yarnpkg.com/@react-three/drei/-/drei-9.57.1.tgz#459d8a8a1578bf08385d5be3500b090b0c14e4e4"
-  integrity sha512-6Vy8PkEKpUXtlS8FvOj3rOZ5k4QurpQulLehgh3HEtUE7SKfhBBTfnSA0dxPZ9eQP5g6gNcgJvZj5oLIuw8GiQ==
+"@react-three/drei@^9.57.1":
+  version "9.58.5"
+  resolved "https://registry.yarnpkg.com/@react-three/drei/-/drei-9.58.5.tgz#ad57aac5362acf7b4952d0556a38ad29587e3b3f"
+  integrity sha512-2gPwge2SD0Ri2Yv9rmiROONbXGlFBm/zZLUFl9KloaI1TD/we91SDMNsifAWXGaEjIvWzPMXqFw0iWM1r0Lwow==
   dependencies:
     "@babel/runtime" "^7.11.2"
     "@react-spring/three" "~9.6.1"
     "@use-gesture/react" "^10.2.24"
-    camera-controls "^2.1.0"
-    detect-gpu "^5.0.10"
+    camera-controls "^2.3.1"
+    detect-gpu "^5.0.14"
     glsl-noise "^0.0.0"
     lodash.clamp "^4.0.3"
     lodash.omit "^4.5.0"
@@ -1007,10 +1007,10 @@
     utility-types "^3.10.0"
     zustand "^3.5.13"
 
-"@react-three/fiber@^8.7.1":
-  version "8.11.10"
-  resolved "https://registry.yarnpkg.com/@react-three/fiber/-/fiber-8.11.10.tgz#563144da2d20c1711a0bbfc04cd12cf2fcb89a37"
-  integrity sha512-VMFbzBRDcy05xBTd46BNVf2W2mXyxjRk0qIQlqmMk29ZSdlT2taap5JRlO0b83s9AtVbuHVOPeBWqP9cpF4/nw==
+"@react-three/fiber@^8.11.10":
+  version "8.12.0"
+  resolved "https://registry.yarnpkg.com/@react-three/fiber/-/fiber-8.12.0.tgz#80241992d780d436dfba59d90d9b61e52371fa3e"
+  integrity sha512-o6DkNtNHqcOFRbxaiY5xayelE/9+Z0z9wWu5awqjVbc0c/1QM6AttJH6rKW0U/O6LWxSfxDTARXVzknZqpDJ7A==
   dependencies:
     "@babel/runtime" "^7.17.8"
     "@types/react-reconciler" "^0.26.7"
@@ -1021,12 +1021,12 @@
     suspend-react "^0.0.8"
     zustand "^3.7.1"
 
-"@react-three/postprocessing@^2.6.2":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@react-three/postprocessing/-/postprocessing-2.7.0.tgz#bae6be248bdb43cbab3d125b23ba5b0de4d934d2"
-  integrity sha512-lJfV8GYp+L1SlGRcl8QPUg9QMdO+8ojW2kfaEc/MuvoI4rX3TRhVd3qFjjF++0bBmzt8LeQpDHCOHFAaT3MNYA==
+"@react-three/postprocessing@^2.7.0":
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@react-three/postprocessing/-/postprocessing-2.7.1.tgz#b042c974266ff3ce00139766fdd43b39aeaa65ae"
+  integrity sha512-FhmQB7INWKaecxq8u155cpbPWM2AM9SDazGmHMsW1r0IZy5aqsI1IWCxA+jJD1V7p6y0zXabssEqZ7JaANkiig==
   dependencies:
-    postprocessing "^6.29.0"
+    postprocessing "^6.30.1"
     react-merge-refs "^1.1.0"
     screen-space-reflections "2.5.0"
     three-stdlib "^2.8.11"
@@ -2414,10 +2414,10 @@ camelize@^1.0.0:
   resolved "https://registry.yarnpkg.com/camelize/-/camelize-1.0.1.tgz#89b7e16884056331a35d6b5ad064332c91daa6c3"
   integrity sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==
 
-camera-controls@^2.1.0:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/camera-controls/-/camera-controls-2.3.1.tgz#8e8e241fb874ae38b6fa1d22ba445a2e7b3b94ea"
-  integrity sha512-mGPDOqCTSUqaeX3yR3bWQ/p1M5CR8C+cnqndBxQugfGKysn1dhRtw8Q6sG1hq4GL8RPsGwRanwQk5zwQjyrxyQ==
+camera-controls@^2.3.1:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/camera-controls/-/camera-controls-2.3.3.tgz#45276a21d743a0e5d2ecdf1b23364228570ed66f"
+  integrity sha512-7OhbH0FyzpZtNKpxU9+NFMz9OeaQFWLVgrzotvpDnCCnAjaKhU8InTJZ9sMzfLYzfUbwBJ/ee6jXvWYwvgjuFA==
 
 caniuse-lite@^1.0.30001449:
   version "1.0.30001462"
@@ -2851,10 +2851,10 @@ dequal@^2.0.0:
   resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
   integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
 
-detect-gpu@^5.0.10:
-  version "5.0.14"
-  resolved "https://registry.yarnpkg.com/detect-gpu/-/detect-gpu-5.0.14.tgz#69cbb2941e35f5abf938df02a9e165cb7a17822d"
-  integrity sha512-CZwpdrG3hX4oYBcRATw8YaRV2I3AFIN2X6PA0rf9IQ0uYzi7w4gGQkmzazO9UtApHAYRraUICupnIQ+G3o0JDQ==
+detect-gpu@^5.0.14:
+  version "5.0.17"
+  resolved "https://registry.yarnpkg.com/detect-gpu/-/detect-gpu-5.0.17.tgz#fe4bbf8fc630aa68e1e770f4e63240212bdfbd38"
+  integrity sha512-eAnZDpYeDASfzFYmGULBEiK0P4q1naMxDzOtMkQEBcFdesu1LjnsOraZHQ7+BGgCTOcKWvI1rxjh5FvICst0xw==
   dependencies:
     webgl-constants "^1.1.1"
 
@@ -4008,7 +4008,7 @@ postcss@^8.4.21:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-postprocessing@^6.26.2, postprocessing@^6.29.0:
+postprocessing@^6.30.1:
   version "6.30.1"
   resolved "https://registry.yarnpkg.com/postprocessing/-/postprocessing-6.30.1.tgz#b1739eb78c26730bb86196f7dc8c759237e660b4"
   integrity sha512-GkBrQtX6KjNz+Pz3+ABvP1aXKCCW7h/tuE37wlM90WZLbaGfJ7eSIBN2gPgKExuK584IPde0YOoNiuWMr7PNCQ==
@@ -4426,21 +4426,20 @@ resolve@^1.19.0, resolve@^1.22.1:
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
-"robot-scene@github:Wisc-HCI/robot-scene#v0.9.9":
-  version "0.9.9"
-  resolved "https://codeload.github.com/Wisc-HCI/robot-scene/tar.gz/1e0fcd950a3efa8785454d4a7e3f3ea1796b77e1"
+"robot-scene@github:Wisc-HCI/robot-scene#v0.9.10":
+  version "0.9.10"
+  resolved "https://codeload.github.com/Wisc-HCI/robot-scene/tar.gz/7987a75d31d7ea9ff47aa6e7f8deb50bbb83900b"
   dependencies:
-    "@juggle/resize-observer" "^3.3.1"
-    "@react-three/drei" "^9.29.1"
-    "@react-three/fiber" "^8.7.1"
-    "@react-three/postprocessing" "^2.6.2"
+    "@react-three/drei" "^9.57.1"
+    "@react-three/fiber" "^8.11.10"
+    "@react-three/postprocessing" "^2.7.0"
     immer "^9.0.15"
     lodash "^4.17.21"
     number-precision "^1.5.2"
-    postprocessing "^6.26.2"
+    postprocessing "^6.30.1"
     react "^18.2.0"
     react-dom "^18.2.0"
-    zustand "^4.1.1"
+    zustand "^4.3.6"
 
 rollup@^3.10.0:
   version "3.18.0"
@@ -5291,7 +5290,7 @@ zustand@^3.5.13, zustand@^3.7.1:
   resolved "https://registry.yarnpkg.com/zustand/-/zustand-3.7.2.tgz#7b44c4f4a5bfd7a8296a3957b13e1c346f42514d"
   integrity sha512-PIJDIZKtokhof+9+60cpockVOq05sJzHCriyvaLBmEJixseQ1a5Kdov6fWZfWOu5SK9c+FhH1jU0tntLxRJYMA==
 
-zustand@^4.1.1, zustand@^4.3.1, zustand@^4.3.6:
+zustand@^4.3.1, zustand@^4.3.6:
   version "4.3.6"
   resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.3.6.tgz#ce7804eb75361af0461a2d0536b65461ec5de86f"
   integrity sha512-6J5zDxjxLE+yukC2XZWf/IyWVKnXT9b9HUv09VJ/bwGCpKNcaTqp7Ws28Xr8jnbvnZcdRaidztAPsXFBIqufiw==

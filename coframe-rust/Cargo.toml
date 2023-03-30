@@ -8,14 +8,15 @@ crate-type = ["cdylib","rlib"]
 
 [dependencies]
 console_error_panic_hook = { version = "0.1.7" }
-lively = {git = "https://github.com/Wisc-HCI/lively", tag="v1.0.0", features=["jsbindings"]}
-wasm-bindgen = { version = "=0.2.83", features = ["serde-serialize"] }
+lively = {git = "https://github.com/Wisc-HCI/lively", tag="v1.1.0", features=["jsbindings"]}
+wasm-bindgen = { version = "0.2.84", features = ["serde-serialize"] }
 serde = { version = "1.0", features = ["derive"]}
 urdf-rs = "0.6.8"
 rrt = "0.7.0"
 serde-wasm-bindgen = { version = "0.4.5" }
 rand = { version = "0.8.1", features=["alloc"]}
 num-traits = "0.2"
+nalgebra = { version = "0.31", features = ["serde-serialize-no-std"]}
 
 [patch.crates-io]
 k = {git = "https://github.com/AndrewJSchoen/k"}
