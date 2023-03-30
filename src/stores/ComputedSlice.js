@@ -602,7 +602,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
     state.setSceneState({tfs, items, lines, hulls, texts});
 }
 
-const executeGoalCondition = (condition, compiledData, programState, programID) => {
+const executeGoalCondition = (condition, compiledData, programState, programID, otherConditions) => {
     if (condition.type === GOAL_FUNCTIONS.IF) {
         // condition:
         // leftSide:
@@ -791,6 +791,17 @@ const executeGoalCondition = (condition, compiledData, programState, programID) 
         // so if in deletion, return true - as this implies (near enough) a deletion of the item
         // if this is a create, return false, as the item we wanted was not created
         return condition.type === GOAL_FUNCTIONS.DELETE;
+    } else if (condition.type === GOAL_FUNCTIONS.LOADPROGRAM) {
+        // Check if all other necessary conditions have been satisfied
+        let pass = true;
+        condition.goalIdList.forEach(goalId => {
+            if (otherConditions[goalId]) {
+                pass = pass && otherConditions[goalId]
+            } else {
+                pass = false;
+            }
+        });
+        return pass;
     }
 }
 
@@ -876,7 +887,7 @@ export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
             const compiledState = useCompiledStore.getState();
             let conds = {};
             goals.forEach(goal => {
-                const pass = executeGoalCondition(goal.properties.condition, compiledState, programState, programID);
+                const pass = executeGoalCondition(goal.properties.condition, compiledState, programState, programID, conds);
                 conds[goal.id] = pass;
             });
             programState.updateCompleteGoals(conds);
@@ -905,7 +916,7 @@ export const computedSliceSubscribe = (useStore) => {
             const goals = Object.values(programState.programData).filter((v) => v.type === 'goalType');
             const programID = Object.values(programState.programData).filter(v => v.type === 'programType')[0].id;
             goals.forEach(goal => {
-                const pass = executeGoalCondition(goal.properties.condition, compiledState, programState, programID);
+                const pass = executeGoalCondition(goal.properties.condition, compiledState, programState, programID, conds);
                 conds[goal.id] = pass;
             });
             programState.updateCompleteGoals(conds);
