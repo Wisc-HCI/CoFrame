@@ -567,59 +567,6 @@
   dependencies:
     unist-util-visit "^1.4.1"
 
-"@motionone/animation@^10.15.1":
-  version "10.15.1"
-  resolved "https://registry.yarnpkg.com/@motionone/animation/-/animation-10.15.1.tgz#4a85596c31cbc5100ae8eb8b34c459fb0ccf6807"
-  integrity sha512-mZcJxLjHor+bhcPuIFErMDNyrdb2vJur8lSfMCsuCB4UyV8ILZLvK+t+pg56erv8ud9xQGK/1OGPt10agPrCyQ==
-  dependencies:
-    "@motionone/easing" "^10.15.1"
-    "@motionone/types" "^10.15.1"
-    "@motionone/utils" "^10.15.1"
-    tslib "^2.3.1"
-
-"@motionone/dom@^10.15.3":
-  version "10.15.5"
-  resolved "https://registry.yarnpkg.com/@motionone/dom/-/dom-10.15.5.tgz#4af18f8136d85c2fc997cac98121c969f6731802"
-  integrity sha512-Xc5avlgyh3xukU9tydh9+8mB8+2zAq+WlLsC3eEIp7Ax7DnXgY7Bj/iv0a4X2R9z9ZFZiaXK3BO0xMYHKbAAdA==
-  dependencies:
-    "@motionone/animation" "^10.15.1"
-    "@motionone/generators" "^10.15.1"
-    "@motionone/types" "^10.15.1"
-    "@motionone/utils" "^10.15.1"
-    hey-listen "^1.0.8"
-    tslib "^2.3.1"
-
-"@motionone/easing@^10.15.1":
-  version "10.15.1"
-  resolved "https://registry.yarnpkg.com/@motionone/easing/-/easing-10.15.1.tgz#95cf3adaef34da6deebb83940d8143ede3deb693"
-  integrity sha512-6hIHBSV+ZVehf9dcKZLT7p5PEKHGhDwky2k8RKkmOvUoYP3S+dXsKupyZpqx5apjd9f+php4vXk4LuS+ADsrWw==
-  dependencies:
-    "@motionone/utils" "^10.15.1"
-    tslib "^2.3.1"
-
-"@motionone/generators@^10.15.1":
-  version "10.15.1"
-  resolved "https://registry.yarnpkg.com/@motionone/generators/-/generators-10.15.1.tgz#dc6abb11139d1bafe758a41c134d4c753a9b871c"
-  integrity sha512-67HLsvHJbw6cIbLA/o+gsm7h+6D4Sn7AUrB/GPxvujse1cGZ38F5H7DzoH7PhX+sjvtDnt2IhFYF2Zp1QTMKWQ==
-  dependencies:
-    "@motionone/types" "^10.15.1"
-    "@motionone/utils" "^10.15.1"
-    tslib "^2.3.1"
-
-"@motionone/types@^10.15.1":
-  version "10.15.1"
-  resolved "https://registry.yarnpkg.com/@motionone/types/-/types-10.15.1.tgz#89441b54285012795cbba8612cbaa0fa420db3eb"
-  integrity sha512-iIUd/EgUsRZGrvW0jqdst8st7zKTzS9EsKkP+6c6n4MPZoQHwiHuVtTQLD6Kp0bsBLhNzKIBlHXponn/SDT4hA==
-
-"@motionone/utils@^10.15.1":
-  version "10.15.1"
-  resolved "https://registry.yarnpkg.com/@motionone/utils/-/utils-10.15.1.tgz#6b5f51bde75be88b5411e084310299050368a438"
-  integrity sha512-p0YncgU+iklvYr/Dq4NobTRdAPv9PveRDUXabPEeOjBLSO/1FNB2phNTZxOxpi1/GZwYpAoECEa0Wam+nsmhSw==
-  dependencies:
-    "@motionone/types" "^10.15.1"
-    hey-listen "^1.0.8"
-    tslib "^2.3.1"
-
 "@mui/base@5.0.0-alpha.110":
   version "5.0.0-alpha.110"
   resolved "https://registry.yarnpkg.com/@mui/base/-/base-5.0.0-alpha.110.tgz#61174f64b23e667387708b2cbb31339e58c714cf"
@@ -2034,10 +1981,10 @@
     classnames "^2.3.1"
     prop-types "^15.5.10"
 
-"@visx/tooltip@3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@visx/tooltip/-/tooltip-3.0.0.tgz#9076f0d43e74c7f307b0320b0ec2460cc7fdbedf"
-  integrity sha512-a+ZzlE/vVxQgW83k/Ypj721K09IKG4JRHVb7YDxiQnAawkJe9rkTxGoAIXD6PrqvERa+rSISgUWHAxuee5MnhA==
+"@visx/tooltip@3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@visx/tooltip/-/tooltip-3.1.2.tgz#6c7bb36a296f4501adb99b59487412e39fe06f44"
+  integrity sha512-p46qztGRNkEDbxzc3V1virahvz3UQ29TzddUjA0oaTIBCrOd9UJuLvv1Tq9OpeUYPdbrO/ZRwaEeri2pbwv04Q==
   dependencies:
     "@types/react" "*"
     "@visx/bounds" "3.0.0"
@@ -2045,10 +1992,10 @@
     prop-types "^15.5.10"
     react-use-measure "^2.0.4"
 
-"@visx/visx@^3.0.0-alpha.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@visx/visx/-/visx-3.1.0.tgz#db87f31d2409e504e2218631cc63c9ad0ebafcf3"
-  integrity sha512-eb0zTeOsaV895+QrxYMMDf0NdPEsAOnj1MxRrA33dLqRAtCptfujpURn0uTu817fcqZEEeib7ev02PPx/zCxKA==
+"@visx/visx@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@visx/visx/-/visx-3.1.2.tgz#8a68591b1e7093ba5374567b155a6750d5744a72"
+  integrity sha512-dxa4vx/34pZz0ltsZWh6lTuf7KF5EQ9R8bFS71rzBN1lfHGGZv1U54X814UBsS3EskJvHKy0glx7UKZxgp9LIA==
   dependencies:
     "@visx/annotation" "3.0.1"
     "@visx/axis" "3.1.0"
@@ -2076,11 +2023,11 @@
     "@visx/shape" "3.0.0"
     "@visx/text" "3.0.0"
     "@visx/threshold" "3.0.0"
-    "@visx/tooltip" "3.0.0"
+    "@visx/tooltip" "3.1.2"
     "@visx/voronoi" "3.0.0"
     "@visx/wordcloud" "3.0.0"
-    "@visx/xychart" "3.1.0"
-    "@visx/zoom" "3.0.1"
+    "@visx/xychart" "3.1.2"
+    "@visx/zoom" "3.1.1"
 
 "@visx/voronoi@3.0.0":
   version "3.0.0"
@@ -2102,10 +2049,10 @@
     "@visx/group" "3.0.0"
     d3-cloud "^1.2.5"
 
-"@visx/xychart@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@visx/xychart/-/xychart-3.1.0.tgz#94c4646a975301b8ab24d9ee1b1651ce3e0b6784"
-  integrity sha512-s7NOgYGL83KICTwkSoo0g88ORZemCxp3MgIr3z4z6zm6ypKhArRRqXqPrmkoRfnx53kitzmpisH71lncymz0XA==
+"@visx/xychart@3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@visx/xychart/-/xychart-3.1.2.tgz#149336ca7d169e8075b251b298be15716f4e0450"
+  integrity sha512-ra8BAPzchVgvVDEJSBKYd5Hi2xXZ+m8gnQxJlrDBUg/LnCMRXebQWIjjhDBfumOjXT255IELB/vPrUfeMZD9jA==
   dependencies:
     "@types/lodash" "^4.14.172"
     "@types/react" "*"
@@ -2119,7 +2066,7 @@
     "@visx/scale" "3.0.0"
     "@visx/shape" "3.0.0"
     "@visx/text" "3.0.0"
-    "@visx/tooltip" "3.0.0"
+    "@visx/tooltip" "3.1.2"
     "@visx/voronoi" "3.0.0"
     classnames "^2.3.1"
     d3-array "^2.6.0"
@@ -2129,10 +2076,10 @@
     mitt "^2.1.0"
     prop-types "^15.6.2"
 
-"@visx/zoom@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@visx/zoom/-/zoom-3.0.1.tgz#872bf94b2aee2363b70dd6b15a1f6ff05f7a1fcd"
-  integrity sha512-E/HNp1c/tgippJBCqn1NKx8Xhh2y4pgVjET9or3GbTs/7VAN/NkAR2V7t7u3zfGaPnBjkfbmulMkmQP4bB8m1g==
+"@visx/zoom@3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@visx/zoom/-/zoom-3.1.1.tgz#24b5e966e95c0f71842668337b66bda0eb7ebf0f"
+  integrity sha512-/jwCAx3oHweZiF+VmdSz6kf4OnCnZI5NTP5i4vImvstt6M/8mWVZv5ICwOooZOWmceBOOwLYgEO35tJN9E34Cg==
   dependencies:
     "@types/react" "*"
     "@use-gesture/react" "^10.0.0-beta.22"
@@ -3097,14 +3044,12 @@ format@^0.2.0:
   resolved "https://registry.yarnpkg.com/format/-/format-0.2.2.tgz#d6170107e9efdc4ed30c9dc39016df942b5cb58b"
   integrity sha512-wzsgA6WOq+09wrU1tsJ09udeR/YZRaeArL9e1wPbFg3GG2yDnC2ldKpxs4xunpFF9DgqCqOIra3bc1HWrJ37Ww==
 
-framer-motion@^7.6.19:
-  version "7.10.3"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-7.10.3.tgz#8b23f50bbc1ee8c830c869c5398e457d5272feb5"
-  integrity sha512-k2ccYeZNSpPg//HTaqrU+4pRq9f9ZpaaN7rr0+Rx5zA4wZLbk547wtDzge2db1sB+1mnJ6r59P4xb+aEIi/W+w==
+framer-motion@^10.10.0:
+  version "10.10.0"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.10.0.tgz#929f3d3ca653af9885e162a979fc941acfa2ce7a"
+  integrity sha512-eCsyOcJimIRbx9KOzBTO3j9u1rF/H8/o/ybizYqdrzHkEeHx9L2NcEfGWfV0OHTc1JV17ECVzuZpomupEJ4+dw==
   dependencies:
-    "@motionone/dom" "^10.15.3"
-    hey-listen "^1.0.8"
-    tslib "2.4.0"
+    tslib "^2.4.0"
   optionalDependencies:
     "@emotion/is-prop-valid" "^0.8.2"
 
@@ -3228,11 +3173,6 @@ hastscript@^6.0.0:
     hast-util-parse-selector "^2.0.0"
     property-information "^5.0.0"
     space-separated-tokens "^1.0.0"
-
-hey-listen@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/hey-listen/-/hey-listen-1.0.8.tgz#8e59561ff724908de1aa924ed6ecc84a56a9aa68"
-  integrity sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==
 
 highlight.js@^10.4.1, highlight.js@~10.7.0:
   version "10.7.3"
@@ -4830,12 +4770,7 @@ trough@^2.0.0:
   resolved "https://registry.yarnpkg.com/trough/-/trough-2.1.0.tgz#0f7b511a4fde65a46f18477ab38849b22c554876"
   integrity sha512-AqTiAOLcj85xS7vQ8QkAV41hPDIJ71XJB4RCUrzo/1GM2CQwhkJGaf9Hgr7BOugMRpgGUrqRg/DrBDl4H40+8g==
 
-tslib@2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
-  integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
-
-tslib@^2.3.1, tslib@^2.4.0:
+tslib@^2.4.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.5.0.tgz#42bfed86f5787aeb41d031866c8f402429e0fddf"
   integrity sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==

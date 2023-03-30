@@ -29,7 +29,7 @@ import useCompiledStore from "./stores/CompiledStore";
 import "reactflow/dist/style.css";
 import "react-reflex/styles.css";
 import "./App.css";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 export default function App() {
   const primaryColor = useStore((state) => state.primaryColor, shallow);

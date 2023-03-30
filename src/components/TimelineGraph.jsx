@@ -1,4 +1,4 @@
-import React, { useCallback, memo, useState } from "react";
+import React, { useCallback, memo, useState, useEffect } from "react";
 import { Group } from "@visx/group";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
@@ -10,7 +10,7 @@ import { Text } from "@visx/text";
 import useStore from "../stores/Store";
 // import { Box, Text } from "grommet";
 // import { useSpring, animated } from "@react-spring/web";
-import { motion } from "framer-motion";
+import { motion, useSpring } from "framer-motion";
 import { useTime } from "./useTime";
 import {
   collapseBands,
@@ -512,13 +512,29 @@ const InnerGraph = withTooltip(
 );
 
 const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
-  // const clock = useStore((state) => state.clock);
-
+  const clock = useStore((state) => state.clock);
+  
   // const [visualTime, setVisualTime] = useState(0);
 
-  const visualTime = useTime(lastEnd);
+  // const visualTime = useTime(lastEnd);
   // console.log(visualTime)
-  const x = xScale(visualTime);
+  // const x = xScale(visualTime);
+  const smoothedX = useSpring(0);
+
+  useEffect(()=>{
+    let process = setInterval(()=>{
+      const time = (clock.getElapsed() * 1000) % lastEnd;
+      if (time < 100 || time > lastEnd - 100) {
+        console.log('jumping')
+        smoothedX.jump(xScale(time))
+      } else {
+        smoothedX.set(xScale(time));
+      }
+      
+      
+    },5);
+    return ()=>{clearInterval(process)}
+  },[lastEnd,clock,xScale])
 
   // const timeIndicatorLineStyle = useSpring({
   //   x1: x ? x : 0,
@@ -533,11 +549,11 @@ const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
       stroke="lightgrey"
       strokeWidth={2}
       strokeDasharray="5,2"
-      // x1={x}
-      // x2={x}
-      // y1={0}
-      // y2={yMax}
-      animate={{ x1: x, x2: x, y1: 0, y2: yMax }}
+      x1={smoothedX}
+      x2={smoothedX}
+      y1={0}
+      y2={yMax}
+      // animate={{ x1: x, x2: x, y1: 0, y2: yMax }}
       // {...timeIndicatorLineStyle}
     />
   );

@@ -10,7 +10,7 @@ export const useTime = (totalLength) => {
         const interval = setInterval(() => {
           const time = (clock.getElapsed() * 1000) % totalLength;
           setTime(time);
-        }, 25);
+        }, 15);
         return () => clearInterval(interval);
       });
 
