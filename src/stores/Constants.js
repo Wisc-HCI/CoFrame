@@ -54,6 +54,7 @@ export const GOAL_FUNCTIONS = {
     CREATE: 15,
     DELETE: 16,
     CHECKINIT: 17,
+    LOADPROGRAM: 18,
 }
 
 export const STEP_TYPE = {

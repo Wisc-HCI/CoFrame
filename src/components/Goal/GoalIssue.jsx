@@ -4,16 +4,18 @@ import { FiCheck, FiX, FiClipboard, FiEye, FiEyeOff } from "react-icons/fi";
 import { Blurb } from "../ContextualInfo/Blurb";
 import useStore from "../../stores/Store";
 import { shallow } from 'zustand/shallow';
+import { GOAL_FUNCTIONS } from "../../stores/Constants";
 
 export const GoalIssue = ({ goal }) => {
-  const [addFocusItem, clearFocus, focus, isProcessing, setActiveTab] = useStore(
+  const [addFocusItem, clearFocus, focus, isProcessing, setActiveTab, setCurrentProgram] = useStore(
     (state) => [
       state.addFocusItem,
       state.clearFocus,
       state.focus,
       state.processes.planProcess !== null &&
         state.processes.planProcess !== undefined,
-      state.setActiveTab
+      state.setActiveTab,
+      state.setCurrentProgram
     ],
     shallow
   );
@@ -87,6 +89,19 @@ export const GoalIssue = ({ goal }) => {
               disabled={isProcessing}
             >
               Preview
+            </Button>
+          </div>
+        )}
+        {goal.properties.condition.type === GOAL_FUNCTIONS.LOADPROGRAM && (
+          <div>
+            <Button
+              variant="outlined"
+              style={{ top: "50%", transform: "translateY(-50%)" }}
+              color={"vibrant"}
+              onClick={() => {setCurrentProgram(goal.properties.condition.progId)}}
+              disabled={isProcessing || !goal.properties.isComplete}
+            >
+              Next Progam
             </Button>
           </div>
         )}
