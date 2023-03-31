@@ -3,7 +3,6 @@ import { DATA_TYPES } from "simple-vp";
 import { instanceTemplateFromSpec } from "simple-vp";
 
 export const ProgramStoreSlice = (set, get) => ({
-  currentProgramData: {},
   currentProgramId: '',
   allPrograms: {},
   addProgramData: (id, data) => set(state => {
@@ -13,9 +12,16 @@ export const ProgramStoreSlice = (set, get) => ({
     delete state.allPrograms[id];
   }),
   setCurrentProgram: (id) => set(state => {
-    // if (key in state.allPrograms) {
-      state.currentProgramData = state.allPrograms[id];
+    if (key in state.allPrograms) {
+      // Store/update program changes
+      if (state.currentProgramId !== "") {
+        state.allPrograms[state.currentProgramId] = {...state.tabs, ...state.activeTab, ...state.programData}
+      }
+
+      // Set new program id
       state.currentProgramId = id;
+
+      // Copied from the setdata function
       const {tabs, activeTab, ...programData} = state.allPrograms[id];
       const newData = mapValues(programData, (d) => {
         if (d.dataType === DATA_TYPES.INSTANCE) {
@@ -40,7 +46,6 @@ export const ProgramStoreSlice = (set, get) => ({
           return d;
         }
       });
-      // console.log(newData);
       state.programData = newData;
       state.loaded = true;
       if (tabs) {
@@ -49,6 +54,6 @@ export const ProgramStoreSlice = (set, get) => ({
       if (activeTab) {
         state.activeTab = activeTab
       }
-    // }
+    }
   }),
 });
