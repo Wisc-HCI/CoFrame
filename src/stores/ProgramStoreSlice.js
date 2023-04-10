@@ -12,7 +12,7 @@ export const ProgramStoreSlice = (set, get) => ({
     delete state.allPrograms[id];
   }),
   setCurrentProgram: (id) => set(state => {
-    if (key in state.allPrograms) {
+    if (id in state.allPrograms) {
       // Store/update program changes
       if (state.currentProgramId !== "") {
         state.allPrograms[state.currentProgramId] = {...state.tabs, ...state.activeTab, ...state.programData}
