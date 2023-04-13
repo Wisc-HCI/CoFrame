@@ -189,20 +189,7 @@ impl Planner {
 
     pub fn check_state(&self, vector: &Vec<f64>) -> bool {
         let state: State = self.robot_model.get_state(&vector, true, 0.0);
-
-        let mut passes: bool = true;
-
-        for proximity in &state.proximity {
-            if proximity.physical
-                && proximity.distance < 0.001
-                && proximity.average_distance.unwrap_or(1.0) > 0.001
-            {
-                passes = false;
-                break;
-            }
-        }
-
-        return passes;
+        return state_proximity(&state);
     }
 
     fn dot_product(&self, a: &Vec<f64>, b: &Vec<f64>) -> f64 {
@@ -450,51 +437,85 @@ pub fn compute_pose(
         Some(75),
         None,
     );
+    solver.compute_average_distance_table();
     let jacobian_result = solver.jacobian_ik(goal, origin, attachment_link.clone());
     match jacobian_result {
-        Ok(state) => return PoseResult::Success { state },
-        Err(_errmsg) => {
-            solver.compute_average_distance_table();
-            let mut goals: HashMap<String, Goal> = HashMap::new();
-            goals.insert(
-                "position_match".to_string(),
-                Goal::Translation(goal.translation),
-            );
-            goals.insert(
-                "orientation_match".to_string(),
-                Goal::Rotation(goal.rotation),
-            );
-            let mut result: PoseResult = PoseResult::Failure {
-                state: solver.get_current_state(),
-                message: "Could not resolve after 0 iterations.".to_string(),
-            };
-            for i in 0..20 {
-                let candidate_state = solver.solve(goals.clone(), HashMap::new(), 0.0, None);
-                let position_diff: f64 = (candidate_state
-                    .get_link_transform(&attachment_link)
-                    .translation
-                    .vector
-                    - goal.translation.vector)
-                    .norm();
-                let rotation_diff: f64 = candidate_state
-                    .get_link_transform(&attachment_link)
-                    .rotation
-                    .angle_to(&goal.rotation);
-                if position_diff <= 0.01 && rotation_diff <= 0.01 {
-                    result = PoseResult::Success {
-                        state: candidate_state,
-                    };
-                    break;
-                } else {
-                    result = PoseResult::Failure {
-                        state: candidate_state,
-                        message: format!("Could not resolve after {} iterations.", i),
-                    }
-                }
+        Ok(state) => {
+
+            // TODO: run check_state
+            if state_proximity(&state) {
+                return PoseResult::Success { state }
             }
-            return result;
+            solver.reset(state, HashMap::new());
+            // TODO: if fail, basically do the err approach
+            return normal_solve(solver, goal, attachment_link);
+        },
+        Err(_errmsg) => {
+            return normal_solve(solver, goal, attachment_link);
         }
     }
+}
+
+pub fn state_proximity(state: &State) -> bool {
+    let mut passes: bool = true;
+
+    for proximity in &state.proximity {
+        if proximity.physical
+            && proximity.distance < 0.001
+            && proximity.average_distance.unwrap_or(1.0) > 0.001
+        {
+            passes = false;
+            break;
+        }
+    }
+
+    return passes;
+}
+
+pub fn normal_solve(
+    mut solver: Solver,
+    goal: Isometry3<f64>,
+    attachment_link: String
+) -> PoseResult {
+    let mut goals: HashMap<String, Goal> = HashMap::new();
+    goals.insert(
+        "position_match".to_string(),
+        Goal::Translation(goal.translation),
+    );
+    goals.insert(
+        "orientation_match".to_string(),
+        Goal::Rotation(goal.rotation),
+    );
+    let mut result: PoseResult = PoseResult::Failure {
+        state: solver.get_current_state(),
+        message: "Could not resolve after 0 iterations.".to_string(),
+    };
+    for i in 0..20 {
+        let candidate_state = solver.solve(goals.clone(), HashMap::new(), 0.0, None);
+        let position_diff: f64 = (candidate_state
+            .get_link_transform(&attachment_link)
+            .translation
+            .vector
+            - goal.translation.vector)
+            .norm();
+        let rotation_diff: f64 = candidate_state
+            .get_link_transform(&attachment_link)
+            .rotation
+            .angle_to(&goal.rotation);
+        if position_diff <= 0.01 && rotation_diff <= 0.01 {
+            result = PoseResult::Success {
+                state: candidate_state,
+            };
+            break;
+        } else {
+            result = PoseResult::Failure {
+                state: candidate_state,
+                message: format!("Could not resolve after {} iterations.", i),
+            }
+        }
+    }
+
+    return result;
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
