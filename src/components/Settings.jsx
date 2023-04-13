@@ -35,6 +35,7 @@ import { UR5E_ROBOT_DATA } from "../presets/robotAgents/ur5eRobot";
 import { PANDA_GRIPPER_DATA } from "../presets/gripperAgents/pandaGripper";
 import { ROBOTIQ_GRIPPER_DATA } from "../presets/gripperAgents/robotiqGripper";
 import { statesToSteps } from "../stores/compiling";
+import useCompiledStore from "../stores/CompiledStore";
 
 const DialogContent = () => {
   // const url = useStore((store) => store.url, shallow);
@@ -48,6 +49,7 @@ const DialogContent = () => {
   );
   const setData = useStore((store) => store.setData, shallow);
   const data = useStore((store) => ({...store.programData,tabs:store.tabs,activeTab:store.activeTab}), shallow);
+  const compiledData = useCompiledStore.getState();
   const frameId = useStore((store) => store.frame, shallow);
   const setFrame = useStore((store) => store.setFrame, shallow);
   // const deleteAgent = useStore(store=>store.deleteAgent, shallow);
@@ -70,6 +72,13 @@ const DialogContent = () => {
   };
 
   const fileInputRef = useRef();
+
+  const downloadCompiled = () => {
+    const text = JSON.stringify(compiledData);
+    let name = "compiled_data";
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, `${name.replace(" ", "_")}.json`);
+  };
 
   const download = () => {
     const text = JSON.stringify(data);
@@ -242,7 +251,16 @@ const DialogContent = () => {
                   label="Download"
                   onClick={download}
                 >
-                  Download
+                  Download Program
+                </Button>
+                <Button
+                  variant="outlined"
+                  icon={<FiDownload />}
+                  style={{ flex: 1 }}
+                  label="Download"
+                  onClick={downloadCompiled}
+                >
+                  Download Compiled
                 </Button>
               </Stack>
 
@@ -372,7 +390,12 @@ const DialogContent = () => {
               </ScrollRegion>
             </Stack>
           ) : tab === "debug" ? (
-            <ReactJson src={data} collapsed={1} theme="tomorrow" />
+            <div>
+              <p>Program Slice</p>
+              <ReactJson src={data} collapsed={1} theme="tomorrow" />
+              <p>Compiled Slice</p>
+              <ReactJson src={compiledData} collapsed={1} theme="tomorrow" />
+            </div>
           ) : null}
         </Box>
       </CardContent>
