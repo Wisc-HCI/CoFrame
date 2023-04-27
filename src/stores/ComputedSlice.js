@@ -316,6 +316,9 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 scale: meshObject.properties.scale,
                 highlighted: state.focus.includes(entry.id)
             }
+            if (meshObject.properties.color.a > 0) {
+                items[entry.id]["color"]  = meshObject.properties.color;
+            }
             // Now add collisions
             collisionObject?.properties.componentShapes.forEach((collisionShapeId) => {
                 let collisionShape = state.programData[collisionShapeId];
