@@ -41,7 +41,7 @@ fn main() {
         ScalarRange::new(0.0, 0.0)
     ];
 
-    let plan_result: PlanningResult = plan_trajectory(urdf, vec![wp1,wp2,wp3], vec![], root_bounds, false);
+    let plan_result: PlanningResult = plan_trajectory(urdf, vec![wp1,wp2,wp3], vec![], root_bounds, "tool0".to_string(), true);
     // println!("{:?}",plan_result);
     match plan_result {
         PlanningResult::Failure{trajectory:_trajectory} => assert!(false),

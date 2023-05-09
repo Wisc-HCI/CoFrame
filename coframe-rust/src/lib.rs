@@ -1,14 +1,14 @@
 use lively::{
     objectives::{
         core::{
-            base::CollisionAvoidanceObjective,
-            matching::{OrientationMatchObjective, PositionMatchObjective},
+            base::{CollisionAvoidanceObjective, SmoothnessMacroObjective, LinkVelocityMinimizationObjective, JointVelocityMinimizationObjective},
+            matching::{OrientationMatchObjective, PositionMatchObjective, PositionLineMatchObjective, JointMatchObjective},
         },
         objective::Objective,
     },
     utils::{
         goals::Goal,
-        info::{ProximityInfo, ScalarRange, TransformInfo},
+        info::{ProximityInfo, ScalarRange, TransformInfo, Line},
         robot_model::RobotModel,
         shapes::Shape,
         state::State,
@@ -77,6 +77,7 @@ pub fn plan_trajectory_js(
     waypoints: JsValue,
     shapes: JsValue,
     root_bounds: JsValue,
+    ik_link: String,
     is_ik: bool,
 ) -> Result<JsValue, serde_wasm_bindgen::Error> {
     // Convert inputs into required forms from JsValues
@@ -96,6 +97,7 @@ pub fn plan_trajectory_js(
         waypoint_joints,
         environment,
         bounds,
+        ik_link,
         is_ik,
     ));
 }
@@ -192,46 +194,10 @@ impl Planner {
         return state_proximity(&state);
     }
 
-    fn dot_product(&self, a: &Vec<f64>, b: &Vec<f64>) -> f64 {
-        // Calculate the dot product of two vectors.
-        assert_eq!(a.len(), b.len());
-        let mut product = 0.0;
-        for i in 0..a.len() {
-            product += a[i] * b[i];
-        }
-        product
-    }
-
-    fn distance(&self, a: &Vec<f64>, b: &Vec<f64>) -> f64 {
-        assert_eq!(a.len(), b.len());
-        let mut dist = 0.0;
-        for i in 0..a.len() {
-            dist += (a[i] - b[i]) * (a[i] - b[i]);
-        }
-        dist = dist.sqrt();
-        dist
-    }
-
-    fn sub_vectors(&self, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
-        assert_eq!(a.len(), b.len());
-        let mut c: Vec<f64> = Vec::new();
-        for i in 0..a.len() {
-            c.push(b[i] - a[i])
-        }
-        c
-    }
-
-    fn add_vectors(&self, a: &Vec<f64>, b: &Vec<f64>) -> Vec<f64> {
-        assert_eq!(a.len(), b.len());
-        let mut c: Vec<f64> = Vec::new();
-        for i in 0..a.len() {
-            c.push(b[i] + a[i])
-        }
-        c
-    }
-
-    pub fn check_state_ik(&self, vector: &Vec<f64>, start: &Vec<f64>, goal: &Vec<f64>) -> bool {
+    pub fn check_state_ik(&self, vector: &Vec<f64>, ik_link: &String, start: &Isometry3<f64>, goal: &Isometry3<f64>) -> bool {
         let state: State = self.robot_model.get_state(&vector, true, 0.0);
+
+        let ik_link_iso3 = state.get_link_transform(ik_link);
 
         let mut passes: bool = true;
 
@@ -246,16 +212,13 @@ impl Planner {
         }
 
         if passes {
-            let ap: Vec<f64> = self.sub_vectors(start, vector);
-            let ab: Vec<f64> = self.sub_vectors(start, goal);
-            let ik_tolerance: f64 = 0.01;
-            let scaler: f64 = self.dot_product(&ap, &ab) / self.dot_product(&ab, &ab);
-            let mut scaled_a_b: Vec<f64> = Vec::new();
-            for i in 0..ab.len() {
-                scaled_a_b.push(scaler * ab[i]);
-            }
-            let proj_vec: Vec<f64> = self.add_vectors(start, &scaled_a_b);
-            if self.distance(&proj_vec, vector) > ik_tolerance {
+            let ik_tolerance = 1.0;
+            let ap = ik_link_iso3.translation.vector - start.translation.vector;
+            let ab = goal.translation.vector - start.translation.vector;
+            let projected = goal.translation.vector + (ab*(ap.dot(&ab)/ab.dot(&ab)));
+            let x_val = (ik_link_iso3.translation.vector - projected).norm();
+
+            if x_val > ik_tolerance {
                 passes = false;
             }
         }
@@ -284,10 +247,11 @@ pub fn plan_trajectory(
     waypoints: Vec<HashMap<String, f64>>,
     shapes: Vec<Shape>,
     root_bounds: Vec<ScalarRange>,
+    ik_link: String,
     is_ik: bool,
 ) -> PlanningResult {
     // Define the robot model
-    let planner = Planner::new(urdf, shapes, root_bounds);
+    let planner = Planner::new(urdf.clone(), shapes.clone(), root_bounds.clone());
 
     let waypoint_pairs: Vec<(&HashMap<String, f64>, &HashMap<String, f64>)> = waypoints
         .iter()
@@ -295,6 +259,7 @@ pub fn plan_trajectory(
         .collect::<Vec<(&HashMap<String, f64>, &HashMap<String, f64>)>>();
 
     let mut trajectory: Vec<State> = vec![];
+    let mut add_start_state = true;
     for (start_wp, end_wp) in &waypoint_pairs {
         // For each pair of waypoints, try to calculate a trajcectory between them.
         // If successful, append that list to the set of trajectory points
@@ -308,44 +273,204 @@ pub fn plan_trajectory(
         });
         let start_vec = planner.robot_model.get_x(&start_state);
         let end_vec = planner.robot_model.get_x(&end_state);
+        let start_state = planner.robot_model.get_state(&start_vec.to_vec(), false, 0.0);
+        let start_iso3 = start_state.get_link_transform(&ik_link);
+        let end_state = planner.robot_model.get_state(&end_vec.to_vec(), false, 0.0);
+        let end_iso3 = end_state.get_link_transform(&ik_link);
+
+        if add_start_state {
+            trajectory.push(start_state.clone());
+            add_start_state = false;
+        }
 
         println!("Start {:?}", start_vec);
         println!("End {:?}", end_vec);
         if is_ik {
-            let planning_result = rrt::dual_rrt_connect(
-                &start_vec.as_slice(),
-                &end_vec.as_slice(),
-                |x| planner.check_state_ik(&x.to_vec(), &start_vec.to_vec(), &end_vec.to_vec()),
-                || planner.get_sample(),
-                0.1,
-                1000,
+            println!("I am running hte IK stuff and things");
+            
+            let mut objectives: HashMap<String, Objective> = HashMap::new();
+            objectives.insert(
+                "position_line_match".to_string(),
+                Objective::PositionLineMatch(PositionLineMatchObjective::new(
+                    "position_line_match".to_string(),
+                    7.0,
+                    ik_link.clone(),
+                )),
+            );
+            objectives.insert(
+                "position_match".to_string(),
+                Objective::PositionMatch(PositionMatchObjective::new(
+                    "position_match".to_string(),
+                    4.0,
+                    ik_link.clone(),
+                )),
+            );
+            // objectives.insert(
+            //     "smoothness".to_string(),
+            //     Objective::SmoothnessMacro(SmoothnessMacroObjective::new(
+            //         "smoothness".to_string(),
+            //         7.0,
+            //         true,
+            //         false,
+            //         true
+            //     )),
+            // );
+            objectives.insert(
+                "joint_velocity".to_string(),
+                Objective::JointVelocityMinimization(JointVelocityMinimizationObjective::new(
+                    "joint_velocity".to_string(),
+                    5.0,
+                )),
+            );
+            objectives.insert(
+                "joint_velocity".to_string(),
+                Objective::LinkVelocityMinimization(LinkVelocityMinimizationObjective::new(
+                    "joint_velocity".to_string(),
+                    7.0,
+                )),
+            );
+            objectives.insert(
+                "collision_avoidance".to_string(),
+                Objective::CollisionAvoidance(CollisionAvoidanceObjective::new(
+                    "collision_avoidance".to_string(),
+                    1.0,
+                )),
+            );
+            objectives.insert(
+                "orientation_match".to_string(),
+                Objective::OrientationMatch(OrientationMatchObjective::new(
+                    "orientation_match".to_string(),
+                    3.0,
+                    ik_link.clone(),
+                )),
+            );
+            for joint_name in &planner.robot_model.joint_names {
+                objectives.insert(
+                    joint_name.to_string(),
+                    Objective::JointMatch(JointMatchObjective::new(
+                        joint_name.to_string(),
+                        0.0,
+                        joint_name.to_string()
+                    )),
+                );
+            }
+
+            let mut goals: HashMap<String, Goal> = HashMap::new();
+            goals.insert(
+                "position_match".to_string(),
+                Goal::Translation(end_iso3.translation)
+            );
+            goals.insert(
+                "orientation_match".to_string(),
+                Goal::Rotation(end_iso3.rotation)
+            );
+            goals.insert(
+                "position_line_match".to_string(),
+                Goal::Line(Line::new(start_iso3.translation.vector, end_iso3.translation.vector))
+            );
+            for joint_name in &planner.robot_model.joint_names {
+                println!("Joint {} Position Value {}", joint_name.to_string(), end_state.get_joint_position(joint_name));
+                goals.insert(
+                    joint_name.to_string(),
+                    Goal::Scalar(end_state.get_joint_position(joint_name))
+                );
+            }
+
+            let mut solver = Solver::new(
+                urdf.clone(),
+                objectives,
+                Some(root_bounds.clone()),
+                Some(shapes.clone()),
+                Some(start_state.clone()),
+                Some(5),
+                Some(75),
+                None,
             );
 
-            println!("Computed Planning Result");
+            solver.compute_average_distance_table();
+            
+            let mut weights: HashMap<String, f64> = HashMap::new();
 
-            match planning_result {
-                Ok(p) => {
-                    let smoothed_path = filter(
-                        &p,
-                        |x| {
-                            planner.check_state_ik(
-                                &x.to_vec(),
-                                &start_vec.to_vec(),
-                                &end_vec.to_vec(),
-                            )
-                        },
-                        p.len() * 200,
-                        0,
-                    )
-                    .unwrap();
-                    smoothed_path.iter().for_each(|x| {
-                        trajectory.push(planner.robot_model.get_state(x, true, 0.0));
-                    })
+            let mut keep_looping = true;
+            let mut failed = false;
+            let mut time = 0.0;
+            let mut previous_state = start_state.clone();
+            let mut distance_between_start_and_end = 0.0;
+            let mut non_change_counter = 0;
+            let max_non_change = 10;
+            let non_change_threshold = 0.01;
+
+            // Calculate the distance between the start and end waypoints
+            for joint_name in &planner.robot_model.joint_names {
+                let e = end_state.get_joint_position(joint_name);
+                let s = start_state.get_joint_position(joint_name);
+                distance_between_start_and_end += (e - s) * (e - s);
+            }
+            distance_between_start_and_end = distance_between_start_and_end.sqrt();
+            
+            while keep_looping {
+                // Calculate distance from current state to the end state
+                let mut distance_to_end_wp = 0.0;
+                for joint_name in &planner.robot_model.joint_names {
+                    let e = end_state.get_joint_position(joint_name);
+                    let p = previous_state.get_joint_position(joint_name);
+                    distance_to_end_wp += (e - p) * (e - p);
                 }
-                _ => {
-                    // Return the current trajectory as a failed planning result
-                    return PlanningResult::Failure { trajectory };
+                distance_to_end_wp = distance_to_end_wp.sqrt();
+                // Ratio of distances
+                let percent_trajectory_completed = distance_to_end_wp / distance_between_start_and_end;
+
+                // Update joint weights
+                let new_weight = 10.0 / (percent_trajectory_completed / 10.0).exp();
+                // let new_weight = -0.09 * percent_trajectory_completed + 20.0;
+                println!("New weight {} Percept Completed {}", new_weight, percent_trajectory_completed);
+                for joint_name in &planner.robot_model.joint_names {
+                    weights.insert(
+                        joint_name.to_string(),
+                        new_weight
+                    );
                 }
+
+                // Solve new state and update trajectory
+                let new_state = solver.solve(goals.clone(), weights.clone(), time, None);
+                trajectory.push(new_state.clone());
+
+                // 
+                let mut state_distance = 0.0;
+                let mut end_distance = 0.0;
+                for joint_name in &planner.robot_model.joint_names {
+                    let p = previous_state.get_joint_position(joint_name);
+                    let n = new_state.get_joint_position(joint_name);
+                    let e = end_state.get_joint_position(joint_name);
+                    state_distance += (n - p) * (n - p);
+                    end_distance += (e - n) * (e - n);
+                }
+                
+                // Check if whether a sufficient change has occurred
+                if state_distance.sqrt() < non_change_threshold {
+                    non_change_counter += 1;
+                }
+
+                // Check if we exceed the maximum amount of stalling
+                if non_change_counter >= max_non_change {
+                    failed = true;
+                    keep_looping = false;
+                }
+                // TODO, reset counter when changes occur
+
+                // Check if we've reached the end goal
+                if end_distance.sqrt() < 0.01 {
+                    keep_looping = false;
+                    trajectory.push(end_state.clone());
+                }
+
+                previous_state = new_state;
+                time = time + 0.1;
+            }
+
+            if failed {
+                // Return the current trajectory as a failed planning result
+                return PlanningResult::Failure { trajectory };
             }
         } else {
             let planning_result = rrt::dual_rrt_connect(
@@ -586,7 +711,52 @@ mod tests {
         let wps = vec![wp1, wp2, wp3];
         let length = wps.len();
 
-        let plan_result: PlanningResult = plan_trajectory(urdf, wps, vec![], root_bounds, false);
+        let plan_result: PlanningResult = plan_trajectory(urdf, wps, vec![], root_bounds, "tool0".to_string(),  false);
+        println!("{:?}", plan_result);
+        match plan_result {
+            PlanningResult::Failure {
+                trajectory: _trajectory,
+            } => assert!(false),
+            PlanningResult::Success { trajectory } => assert!(trajectory.len() > length + 1),
+        }
+        // assert_matches!()
+    }
+
+
+    #[test]
+    fn test_trajectory_planning_ik() {
+        let urdf =
+            fs::read_to_string("./src/ur5e.urdf").expect("Something went wrong reading the file");
+
+        let mut wp1: HashMap<String, f64> = HashMap::new();
+        wp1.insert("shoulder_lift_joint".into(), -1.4344370712156858);
+        wp1.insert("shoulder_pan_joint".into(), 1.4803176226228232);
+        wp1.insert("elbow_joint".into(), 1.9321455633363789);
+        wp1.insert("wrist_1_joint".into(), 2.6425606393623737);
+        wp1.insert("wrist_2_joint".into(), -1.478588627652706);
+        wp1.insert("wrist_3_joint".into(), 0.00020121298222051235);
+
+        let mut wp2: HashMap<String, f64> = HashMap::new();
+        wp2.insert("shoulder_lift_joint".into(), -1.247770144502285);
+        wp2.insert("shoulder_pan_joint".into(), 0.6712059012773973);
+        wp2.insert("elbow_joint".into(), 1.690894776746486);
+        wp2.insert("wrist_1_joint".into(), 2.696739679727712);
+        wp2.insert("wrist_2_joint".into(), -0.6706905188057736);
+        wp2.insert("wrist_3_joint".into(), 0.001609596542650402);
+
+        let root_bounds: Vec<ScalarRange> = vec![
+            ScalarRange::new(0.0, 0.0),
+            ScalarRange::new(-0.15, 0.0),
+            ScalarRange::new(0.0, 0.0),
+            ScalarRange::new(0.0, 0.0),
+            ScalarRange::new(0.0, 0.0),
+            ScalarRange::new(0.0, 0.0),
+        ];
+
+        let wps = vec![wp1, wp2];
+        let length = wps.len();
+
+        let plan_result: PlanningResult = plan_trajectory(urdf, wps, vec![], root_bounds, "tool0".to_string(),  true);
         println!("{:?}", plan_result);
         match plan_result {
             PlanningResult::Failure {
