@@ -548,7 +548,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
         });
 
         let program = filter(state.programData, function (v) { return v.type === 'programType' && v.dataType === DATA_TYPES.INSTANCE })[0];
-        let steps = compiledState[program.id]?.[ROOT_PATH]?.steps;
+        let steps = compiledState?.[program.id]?.[ROOT_PATH]?.steps;
         let sceneTmp = (steps && moveTrajectoryId) ? steps.filter(step => step.type === STEP_TYPE.SCENE_UPDATE && step.source === moveTrajectoryId) : [];
         let programModel = createEnvironmentModel(state.programData);
         let gripOffsetID = gripperAgent.id + '-gripOffset';
@@ -600,7 +600,9 @@ const updateRobotScene = (useCompiledStore, useStore) => {
         }
     });
 
-    stepsToAnimation(state, compiledState, tfs, items);
+    if (compiledState) {
+        stepsToAnimation(state, compiledState, tfs, items);
+    }
     
     state.setSceneState({tfs, items, lines, hulls, texts});
 }
@@ -647,7 +649,7 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
     } else if (condition.type === GOAL_FUNCTIONS.CID) {
         // path : ["","",...] - path in object
         // id: id of object
-        let path = compiledData[condition.id];
+        let path = compiledData?.[condition.id];
         if (condition.path) {
             condition?.path.forEach(piece => {
                 path = path?.[piece];
@@ -657,14 +659,14 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
     } else if (condition.type === GOAL_FUNCTIONS.MOVE) {
         // startLocation: id of locationType
         // endLocation: id of locationType
-        const stepLength = compiledData[programID]?.[ROOT_PATH]?.steps?.length;
+        const stepLength = compiledData?.[programID]?.[ROOT_PATH]?.steps?.length;
         if (stepLength) {
             for (let i = 0; i < stepLength; i++) {
-                const step = compiledData[programID]?.[ROOT_PATH]?.steps[i];
+                const step = compiledData?.[programID]?.[ROOT_PATH]?.steps[i];
                 const source = programState.programData[step?.source];
                 if (step.type === STEP_TYPE.SCENE_UPDATE &&
                     source.type === 'moveTrajectoryType') {
-                        const trajectoryData = compiledData[source?.properties?.trajectory];
+                        const trajectoryData = compiledData?.[source?.properties?.trajectory];
                         if (trajectoryData?.[ROOT_PATH]?.startLocation?.id === condition.startLocation &&
                             trajectoryData?.[ROOT_PATH]?.endLocation?.id === condition.endLocation) {
                                 return true;
@@ -678,10 +680,10 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
     } else if (condition.type === GOAL_FUNCTIONS.GRASP) {
         // release: T/F
         // gizmo: id of thingType or toolType
-        const stepLength = compiledData[programID]?.[ROOT_PATH]?.steps?.length;
+        const stepLength = compiledData?.[programID]?.[ROOT_PATH]?.steps?.length;
         if (stepLength) {
             for (let i = 0; i < stepLength; i++) {
-                const step = compiledData[programID]?.[ROOT_PATH]?.steps[i];
+                const step = compiledData?.[programID]?.[ROOT_PATH]?.steps[i];
                 const source = programState.programData[step?.source];
                 if (step.type === STEP_TYPE.ACTION_START &&
                     source.type === 'moveGripperType' &&
@@ -705,10 +707,10 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
         // processId: id of the process
         // machineId: id of the machine
         // state: start/wait
-        const stepLength = compiledData[programID]?.[ROOT_PATH]?.steps?.length;
+        const stepLength = compiledData?.[programID]?.[ROOT_PATH]?.steps?.length;
         if (stepLength) {
             for (let i = 0; i < stepLength; i++) {
-                const step = compiledData[programID]?.[ROOT_PATH]?.steps[i];
+                const step = compiledData?.[programID]?.[ROOT_PATH]?.steps[i];
                 const source = programState.programData[step?.source];
                 if (condition.state === 'start' &&
                     step.type === STEP_TYPE.PROCESS_START &&
@@ -730,10 +732,10 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
         return false;
     } else if (condition.type === GOAL_FUNCTIONS.CHECKINIT) {
         // machineId: id of the machine
-        const stepLength = compiledData[programID]?.[ROOT_PATH]?.steps?.length;
+        const stepLength = compiledData?.[programID]?.[ROOT_PATH]?.steps?.length;
         if (stepLength) {
             for (let i = 0; i < stepLength; i++) {
-                const step = compiledData[programID]?.[ROOT_PATH]?.steps[i];
+                const step = compiledData?.[programID]?.[ROOT_PATH]?.steps[i];
                 const source = programState.programData[step?.source];
                 if (step.type === STEP_TYPE.LANDMARK &&
                     source.type === 'machineInitType' &&
@@ -883,7 +885,7 @@ export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
 
 
     useCompiledStore.subscribe(state =>
-        [state[programID]?.[ROOT_PATH]?.steps],
+        [state?.[programID]?.[ROOT_PATH]?.steps],
         (current, previous) => {
             const programState = useStore.getState();
             updateRobotScene(useCompiledStore, useStore);

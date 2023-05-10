@@ -5,17 +5,17 @@ import { Blurb } from "../ContextualInfo/Blurb";
 import useStore from "../../stores/Store";
 import { shallow } from 'zustand/shallow';
 import { GOAL_FUNCTIONS } from "../../stores/Constants";
+import { swapProgram } from "../../stores/programChanger";
 
 export const GoalIssue = ({ goal }) => {
-  const [addFocusItem, clearFocus, focus, isProcessing, setActiveTab, setCurrentProgram] = useStore(
+  const [addFocusItem, clearFocus, focus, isProcessing, setActiveTab] = useStore(
     (state) => [
       state.addFocusItem,
       state.clearFocus,
       state.focus,
       state.processes.planProcess !== null &&
         state.processes.planProcess !== undefined,
-      state.setActiveTab,
-      state.setCurrentProgram
+      state.setActiveTab
     ],
     shallow
   );
@@ -98,7 +98,7 @@ export const GoalIssue = ({ goal }) => {
               variant="outlined"
               style={{ top: "50%", transform: "translateY(-50%)" }}
               color={"vibrant"}
-              onClick={() => {setCurrentProgram(goal.properties.condition.progId)}}
+              onClick={() => {swapProgram(goal.properties.condition.progId)}}
               disabled={isProcessing || !goal.properties.isComplete}
             >
               Next Progam

@@ -15,6 +15,7 @@ import {
 import { SceneSlice } from "robot-scene";
 import lodash from "lodash";
 import KnifeAssembly from "./Knife_Assembly_Simple_VP_UR5.json";
+import KnifeAssemblyCompiled from "./UR5_Compiled_Knife_Assembly.json";
 import TestProgram2 from "./TestProgram2.json";
 // import PandaDemo from "./Panda_Demo.json";
 import { STATUS } from "./Constants";
@@ -108,10 +109,13 @@ computedSliceSubscribe(useStore);
 
 if (Object.keys(useStore.getState().programData).length === 0) {
   console.log("Setting with Knife Assembly Task");
-  useStore.getState().addProgramData("KnifeAssembly", KnifeAssembly);
-  useStore.getState().addProgramData("testProgram2", TestProgram2);
-  useStore.getState().setCurrentProgram("KnifeAssembly");
-  // useStore.getState().setData(KnifeAssembly);
+  // Load all the programs
+  useStore.getState().addProgramData("KnifeAssembly", KnifeAssembly, KnifeAssemblyCompiled);
+  useStore.getState().addProgramData("testProgram2", TestProgram2, {});
+
+  // Set the starting program
+  useCompiledStore.setState(KnifeAssemblyCompiled);
+  useStore.getState().setData(KnifeAssembly);
   // useStore.persist.rehydrate()
 }
 
