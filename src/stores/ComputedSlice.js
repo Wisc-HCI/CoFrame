@@ -212,17 +212,32 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     scale: { x: 1, y: 1, z: 1 },
                     transformMode: itemTransformMethod(state, input)
                 }
-                items[input] = {
-                    shape: thing.properties.mesh,
-                    frame: input,
-                    position: { x: 0, y: 0, z: 0 },
-                    rotation: { w: 1, x: 0, y: 0, z: 0 },
-                    scale: { x: 1, y: 1, z: 1 },
-                    transformMode: null,
-                    color: { r: 0, g: 200, b: 0, a: 0.2 },
-                    highlighted: false,
-                    hidden: !(state.focus.includes(entry.id) || state.focus.includes(input))
-                };
+                let thingMesh = state.programData?.[thing.properties.mesh];
+                if (thingMesh) {
+                    items[input] = {
+                        shape: thingMesh.properties.keyword,
+                        frame: input,
+                        position: thingMesh.properties.position,
+                        rotation: thingMesh.properties.rotation,
+                        scale: thingMesh.properties.scale,
+                        transformMode: itemTransformMethod(state, input),
+                        color: { r: 0, g: 200, b: 0, a: 0.2 },
+                        highlighted: false,
+                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(input))
+                    };
+                } else {
+                    items[input] = {
+                        shape: thing.properties.mesh,
+                        frame: input,
+                        position: { x: 0, y: 0, z: 0 },
+                        rotation: { w: 1, x: 0, y: 0, z: 0 },
+                        scale: { x: 1, y: 1, z: 1 },
+                        transformMode: null,
+                        color: { r: 0, g: 200, b: 0, a: 0.2 },
+                        highlighted: false,
+                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(input))
+                    };
+                }
                 thing.properties.graspPoints.forEach((gp) => {
                     const gpData = state.programData[gp];
                     const id = input + gp + '-viz';
@@ -259,16 +274,31 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 }
 
 
-                items[output] = {
-                    shape: thing.properties.mesh,
-                    frame: output,
-                    position: { x: 0, y: 0, z: 0 },
-                    rotation: { w: 1, x: 0, y: 0, z: 0 },
-                    scale: { x: 1, y: 1, z: 1 },
-                    transformMode: itemTransformMethod(state, output),
-                    color: { r: 0, g: 200, b: 0, a: 0.2 },
-                    highlighted: false,
-                    hidden: !(state.focus.includes(entry.id) || state.focus.includes(output))
+                let thingMesh = state.programData?.[thing.properties.mesh];
+                if (thingMesh) {
+                    items[output] = {
+                        shape: thingMesh.properties.keyword,
+                        frame: output,
+                        position: thingMesh.properties.position,
+                        rotation: thingMesh.properties.rotation,
+                        scale: thingMesh.properties.scale,
+                        transformMode: itemTransformMethod(state, output),
+                        color: { r: 0, g: 200, b: 0, a: 0.2 },
+                        highlighted: false,
+                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(output))
+                    }
+                } else {
+                    items[output] = {
+                        shape: thing.properties.mesh,
+                        frame: output,
+                        position: { x: 0, y: 0, z: 0 },
+                        rotation: { w: 1, x: 0, y: 0, z: 0 },
+                        scale: { x: 1, y: 1, z: 1 },
+                        transformMode: itemTransformMethod(state, output),
+                        color: { r: 0, g: 200, b: 0, a: 0.2 },
+                        highlighted: false,
+                        hidden: !(state.focus.includes(entry.id) || state.focus.includes(output))
+                    }
                 }
 
 
