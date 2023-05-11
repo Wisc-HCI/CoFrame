@@ -226,6 +226,10 @@ export const GuiSlice = (set, get) => ({
   setOccupancyVisible: (visible) => set(state => {
     state.occupancyVisible = visible;
   }),
+  fixtureClickable: false,
+  setFixtureClickable: (clickable) => set(state => {
+    state.fixtureClickable = clickable;
+  }),
   tfVisible: false,
   setTfVisible: (visible) => set(state => {
     state.tfVisible = visible;
@@ -297,6 +301,10 @@ export const GuiSlice = (set, get) => ({
         // update that location with the name of the grasp point
         // state.programData[newId].name = "Loc: " + graspObj.name;
         state.programData[newId].name = "Grasp Point";
+      } else if (state.programData[id]?.type === 'fixtureType') {
+        if (state.fixtureClickable) {
+          state = addFocus(state, id, false);
+        }
       } else {
         state = addFocus(state, id, false);
       }

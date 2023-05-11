@@ -38,6 +38,8 @@ export function Controls() {
     setTfVisible,
     robotPreviewVisible,
     setRobotPreviewVisible,
+    fixtureClickable,
+    setFixtureClickable
   ] = useStore(
     (state) => [
       state.viewMode,
@@ -50,6 +52,8 @@ export function Controls() {
       state.setTfVisible,
       state.robotPreviewVisible,
       state.setRobotPreviewVisible,
+      state.fixtureClickable,
+      state.setFixtureClickable,
     ],
     shallow
   );
@@ -124,6 +128,12 @@ export function Controls() {
             {tfVisible ? <FiCheckCircle /> : <FiCircle />}
           </ListItemIcon>
           <ListItemText>Show TFs</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => setFixtureClickable(!fixtureClickable)}>
+          <ListItemIcon>
+            {fixtureClickable ? <FiCheckCircle /> : <FiCircle />}
+          </ListItemIcon>
+          <ListItemText>Clickable Fixtures</ListItemText>
         </MenuItem>
         <MenuItem onClick={() => setRobotPreviewVisible(!robotPreviewVisible)}>
           <ListItemIcon>
