@@ -837,6 +837,8 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
             }
         });
         return pass;
+    } else {
+        return true;
     }
 }
 
