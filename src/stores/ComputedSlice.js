@@ -695,7 +695,7 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
                 const step = compiledData?.[programID]?.[ROOT_PATH]?.steps[i];
                 const source = programState.programData[step?.source];
                 if (step.type === STEP_TYPE.SCENE_UPDATE &&
-                    source.type === 'moveTrajectoryType') {
+                    source?.type === 'moveTrajectoryType') {
                         const trajectoryData = compiledData?.[source?.properties?.trajectory];
                         if (trajectoryData?.[ROOT_PATH]?.startLocation?.id === condition.startLocation &&
                             trajectoryData?.[ROOT_PATH]?.endLocation?.id === condition.endLocation) {
@@ -716,7 +716,7 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
                 const step = compiledData?.[programID]?.[ROOT_PATH]?.steps[i];
                 const source = programState.programData[step?.source];
                 if (step.type === STEP_TYPE.ACTION_START &&
-                    source.type === 'moveGripperType' &&
+                    source?.type === 'moveGripperType' &&
                     step.data.thing.id === condition.gizmo) {
                         // released gizmo
                         if (source.properties.positionEnd < source.properties.positionStart && !condition.release) {
@@ -744,14 +744,14 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
                 const source = programState.programData[step?.source];
                 if (condition.state === 'start' &&
                     step.type === STEP_TYPE.PROCESS_START &&
-                    source.type === 'processStartType' &&
+                    source?.type === 'processStartType' &&
                     step.data.gizmo === condition.machineId &&
                     step.data.process === condition.processId) {
                         return true;
                 }
                 if (condition.state === 'wait' &&
                     step.type === STEP_TYPE.PROCESS_START &&
-                    source.type === 'processWaitType' &&
+                    source?.type === 'processWaitType' &&
                     step.data.gizmo === condition.machineId &&
                     step.data.process === condition.processId) {
                         return true;
@@ -768,7 +768,7 @@ const executeGoalCondition = (condition, compiledData, programState, programID, 
                 const step = compiledData?.[programID]?.[ROOT_PATH]?.steps[i];
                 const source = programState.programData[step?.source];
                 if (step.type === STEP_TYPE.LANDMARK &&
-                    source.type === 'machineInitType' &&
+                    source?.type === 'machineInitType' &&
                     step.data.machine === condition.machineId) {
                         return true;
                     }
