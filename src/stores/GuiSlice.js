@@ -290,7 +290,7 @@ export const GuiSlice = (set, get) => ({
         state = swapLocations(state, id.replace('-pointer', ''));
       } else if (id.endsWith('-tag')) {
         state = swapLocations(state, id.replace('-tag', ''));
-      } else if (id.startsWith('ghost-')) {
+      } else if (id.startsWith('ghost-') || id.endsWith("-viz")) {
         // Grasp obj
         // let graspId = id.split('--')[3];
         // let graspObj = state.programData[graspId];

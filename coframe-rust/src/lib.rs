@@ -1,7 +1,7 @@
 use lively::{
     objectives::{
         core::{
-            base::{CollisionAvoidanceObjective, SmoothnessMacroObjective, LinkVelocityMinimizationObjective, JointVelocityMinimizationObjective},
+            base::{CollisionAvoidanceObjective, LinkVelocityMinimizationObjective, JointVelocityMinimizationObjective},
             matching::{OrientationMatchObjective, PositionMatchObjective, PositionLineMatchObjective, JointMatchObjective},
         },
         objective::Objective,
@@ -259,35 +259,57 @@ pub fn plan_trajectory(
         .collect::<Vec<(&HashMap<String, f64>, &HashMap<String, f64>)>>();
 
     let mut trajectory: Vec<State> = vec![];
-    let mut add_start_state = true;
+    let mut waypoint_index = 0;
+    let mut previous_state: Option<State> = None;
     for (start_wp, end_wp) in &waypoint_pairs {
+        waypoint_index += 1;
         // For each pair of waypoints, try to calculate a trajcectory between them.
         // If successful, append that list to the set of trajectory points
-        let mut start_state = planner.robot_model.get_default_state();
-        start_wp.iter().for_each(|(key, joint_value)| {
-            start_state.joints.insert(key.clone(), joint_value.clone());
-        });
         let mut end_state = planner.robot_model.get_default_state();
         end_wp.iter().for_each(|(key, joint_value)| {
             end_state.joints.insert(key.clone(), joint_value.clone());
         });
-        let start_vec = planner.robot_model.get_x(&start_state);
         let end_vec = planner.robot_model.get_x(&end_state);
+
+        let mut start_state: State;
+        let start_vec: Vec<f64>;
+        if is_ik && waypoint_index > 1 {
+            let previous_value: State;
+            match previous_state {
+                Some(ref x) => { previous_value = x.clone(); }
+                None => { return PlanningResult::Failure { trajectory }; }
+            }
+            start_state = planner.robot_model.get_default_state();
+            for joint_name in &planner.robot_model.joint_names {
+                match previous_value.joints.get(joint_name) {
+                    Some(x) => { start_state.joints.insert(joint_name.clone(), *x); }
+                    None => { }
+                }
+            }
+            start_vec = planner.robot_model.get_x(&start_state);
+        } else {
+            start_state = planner.robot_model.get_default_state();
+            start_wp.iter().for_each(|(key, joint_value)| {
+                start_state.joints.insert(key.clone(), joint_value.clone());
+            });
+            start_vec = planner.robot_model.get_x(&start_state);
+        }
+
+
         let start_state = planner.robot_model.get_state(&start_vec.to_vec(), false, 0.0);
         let start_iso3 = start_state.get_link_transform(&ik_link);
         let end_state = planner.robot_model.get_state(&end_vec.to_vec(), false, 0.0);
         let end_iso3 = end_state.get_link_transform(&ik_link);
 
-        if add_start_state {
+        // Initialize previous state as the starting state if using IK and computing the first pair of waypoints
+        if is_ik && waypoint_index == 1 {
+            previous_state = Some(start_state.clone());
             trajectory.push(start_state.clone());
-            add_start_state = false;
         }
 
         println!("Start {:?}", start_vec);
         println!("End {:?}", end_vec);
         if is_ik {
-            println!("I am running hte IK stuff and things");
-            
             let mut objectives: HashMap<String, Objective> = HashMap::new();
             objectives.insert(
                 "position_line_match".to_string(),
@@ -305,16 +327,6 @@ pub fn plan_trajectory(
                     ik_link.clone(),
                 )),
             );
-            // objectives.insert(
-            //     "smoothness".to_string(),
-            //     Objective::SmoothnessMacro(SmoothnessMacroObjective::new(
-            //         "smoothness".to_string(),
-            //         7.0,
-            //         true,
-            //         false,
-            //         true
-            //     )),
-            // );
             objectives.insert(
                 "joint_velocity".to_string(),
                 Objective::JointVelocityMinimization(JointVelocityMinimizationObjective::new(
@@ -344,15 +356,19 @@ pub fn plan_trajectory(
                     ik_link.clone(),
                 )),
             );
-            for joint_name in &planner.robot_model.joint_names {
-                objectives.insert(
-                    joint_name.to_string(),
-                    Objective::JointMatch(JointMatchObjective::new(
+
+            // Add joint matching for the final location in the path
+            if waypoint_index >= waypoint_pairs.len() {
+                for joint_name in &planner.robot_model.joint_names {
+                    objectives.insert(
                         joint_name.to_string(),
-                        0.0,
-                        joint_name.to_string()
-                    )),
-                );
+                        Objective::JointMatch(JointMatchObjective::new(
+                            joint_name.to_string(),
+                            0.0,
+                            joint_name.to_string()
+                        )),
+                    );
+                }
             }
 
             let mut goals: HashMap<String, Goal> = HashMap::new();
@@ -394,7 +410,6 @@ pub fn plan_trajectory(
             let mut keep_looping = true;
             let mut failed = false;
             let mut time = 0.0;
-            let mut previous_state = start_state.clone();
             let mut distance_between_start_and_end = 0.0;
             let mut non_change_counter = 0;
             let max_non_change = 10;
@@ -410,10 +425,15 @@ pub fn plan_trajectory(
             
             while keep_looping {
                 // Calculate distance from current state to the end state
+                let previous_value: State;
+                match previous_state {
+                    Some(x) => { previous_value = x; }
+                    None => { return PlanningResult::Failure { trajectory }; }
+                }
                 let mut distance_to_end_wp = 0.0;
                 for joint_name in &planner.robot_model.joint_names {
                     let e = end_state.get_joint_position(joint_name);
-                    let p = previous_state.get_joint_position(joint_name);
+                    let p = previous_value.get_joint_position(joint_name);
                     distance_to_end_wp += (e - p) * (e - p);
                 }
                 distance_to_end_wp = distance_to_end_wp.sqrt();
@@ -422,8 +442,6 @@ pub fn plan_trajectory(
 
                 // Update joint weights
                 let new_weight = 10.0 / (percent_trajectory_completed / 10.0).exp();
-                // let new_weight = -0.09 * percent_trajectory_completed + 20.0;
-                println!("New weight {} Percept Completed {}", new_weight, percent_trajectory_completed);
                 for joint_name in &planner.robot_model.joint_names {
                     weights.insert(
                         joint_name.to_string(),
@@ -438,33 +456,50 @@ pub fn plan_trajectory(
                 // 
                 let mut state_distance = 0.0;
                 let mut end_distance = 0.0;
-                for joint_name in &planner.robot_model.joint_names {
-                    let p = previous_state.get_joint_position(joint_name);
-                    let n = new_state.get_joint_position(joint_name);
-                    let e = end_state.get_joint_position(joint_name);
-                    state_distance += (n - p) * (n - p);
-                    end_distance += (e - n) * (e - n);
+                if waypoint_index >= waypoint_pairs.len() {
+                    for joint_name in &planner.robot_model.joint_names {
+                        let p = previous_value.get_joint_position(joint_name);
+                        let n = new_state.get_joint_position(joint_name);
+                        let e = end_state.get_joint_position(joint_name);
+                        state_distance += (n - p) * (n - p);
+                        end_distance += (e - n) * (e - n);
+                    }
+                } else {
+                    // Focus on position/rotation matching for waypoints
+                    let p = previous_value.get_link_transform(&ik_link);
+                    let n = new_state.get_link_transform(&ik_link);
+                    let e = end_state.get_link_transform(&ik_link);
+
+                    for i in 0..n.translation.vector.len() {
+                        state_distance += (n.translation.vector[i] - p.translation.vector[i]) * (n.translation.vector[i] - p.translation.vector[i]);
+                        end_distance += (e.translation.vector[i] - n.translation.vector[i]) * (e.translation.vector[i] - n.translation.vector[i]);
+                    }
                 }
                 
                 // Check if whether a sufficient change has occurred
                 if state_distance.sqrt() < non_change_threshold {
                     non_change_counter += 1;
+                } else {
+                    non_change_counter = 0;
                 }
 
                 // Check if we exceed the maximum amount of stalling
                 if non_change_counter >= max_non_change {
                     failed = true;
                     keep_looping = false;
+                    println!("Change dist {} Dist to end {}", state_distance.sqrt(), end_distance.sqrt());
+                    println!("Failed to reach point");
                 }
-                // TODO, reset counter when changes occur
 
-                // Check if we've reached the end goal
                 if end_distance.sqrt() < 0.01 {
                     keep_looping = false;
-                    trajectory.push(end_state.clone());
+
+                    if waypoint_index >= waypoint_pairs.len() {
+                        trajectory.push(end_state.clone());
+                    }
                 }
 
-                previous_state = new_state;
+                previous_state = Some(new_state.clone());
                 time = time + 0.1;
             }
 
@@ -712,7 +747,7 @@ mod tests {
         let length = wps.len();
 
         let plan_result: PlanningResult = plan_trajectory(urdf, wps, vec![], root_bounds, "tool0".to_string(),  false);
-        println!("{:?}", plan_result);
+        // println!("{:?}", plan_result);
         match plan_result {
             PlanningResult::Failure {
                 trajectory: _trajectory,
@@ -736,6 +771,23 @@ mod tests {
         wp1.insert("wrist_2_joint".into(), -1.478588627652706);
         wp1.insert("wrist_3_joint".into(), 0.00020121298222051235);
 
+
+        let mut wp3: HashMap<String, f64> = HashMap::new();
+        wp3.insert("shoulder_lift_joint".into(), -1.5583034538302105);
+        wp3.insert("shoulder_pan_joint".into(), -1.2315336993582129);
+        wp3.insert("elbow_joint".into(), -1.5465031006099597);
+        wp3.insert("wrist_1_joint".into(), -0.039465651712721816);
+        wp3.insert("wrist_2_joint".into(), 1.2302577039366538);
+        wp3.insert("wrist_3_joint".into(), 0.0011699369937632734);
+
+        let mut wp4: HashMap<String, f64> = HashMap::new();
+        wp4.insert("shoulder_lift_joint".into(), 0.9051735805839543);
+        wp4.insert("shoulder_pan_joint".into(), 1.2319463990333313);
+        wp4.insert("elbow_joint".into(), -2.159611296300783);
+        wp4.insert("wrist_1_joint".into(), -1.8841486525597964);
+        wp4.insert("wrist_2_joint".into(), -1.2311485075465383);
+        wp4.insert("wrist_3_joint".into(), -0.0010893644751008378);
+
         let mut wp2: HashMap<String, f64> = HashMap::new();
         wp2.insert("shoulder_lift_joint".into(), -1.247770144502285);
         wp2.insert("shoulder_pan_joint".into(), 0.6712059012773973);
@@ -753,11 +805,11 @@ mod tests {
             ScalarRange::new(0.0, 0.0),
         ];
 
-        let wps = vec![wp1, wp2];
+        let wps = vec![wp1, wp4, wp3, wp2];
         let length = wps.len();
 
         let plan_result: PlanningResult = plan_trajectory(urdf, wps, vec![], root_bounds, "tool0".to_string(),  true);
-        println!("{:?}", plan_result);
+        // println!("{:?}", plan_result);
         match plan_result {
             PlanningResult::Failure {
                 trajectory: _trajectory,

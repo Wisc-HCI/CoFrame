@@ -150,9 +150,6 @@ export const robotMotionCompiler = ({
   const robots = Object.values(memo).filter((v) => v.type === "robotAgentType");
   const robot = robots[0];
   const motionType = properties.motionType;
-  console.log("MOTION Type");
-  console.log(motionType);
-  console.log(motionType==='IK');
   const duration = properties.duration;
 
   const poses = [
@@ -216,8 +213,6 @@ export const robotMotionCompiler = ({
         const jointWps = poses.map(pose=>pose.states[robot.id][gripper.id].joints);
         
         const planResult = module.planTrajectory(urdf,jointWps,staticEnvironment,rootBounds,attachmentLink,motionType==='IK');
-        console.log("Planned result or smth")
-        console.log(planResult.trajectory.length);
 
         if (planResult.code === 'Failure') {
           status = STATUS.WARN;
