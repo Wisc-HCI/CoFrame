@@ -22,7 +22,7 @@
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/material": "5.11.16",
-    "@people_and_robots/lively": "1.0.0-rc.2",
+    "@people_and_robots/lively": "1.1.0",
     "@radix-ui/react-scroll-area": "^1.0.0",
     "@robostack/roslib": "^1.1.1",
     "@tauri-apps/api": "^1.2.0",

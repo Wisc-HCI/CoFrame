@@ -935,9 +935,12 @@ export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
 
 export const computedSliceSubscribe = (useStore) => {
     useStore.subscribe(state =>
-        [state.programData, state.focus, state.occupancyVisible, state.collisionsVisible, state.robotPreviewVisible, state.playing],
+        [state.programData, state.focus, state.occupancyVisible, state.collisionsVisible, state.robotPreviewVisible, state.playing, state.captureFocus],
         (current, previous) => {
-            updateRobotScene(useCompiledStore, useStore);
+            if (!current[6]) {
+                updateRobotScene(useCompiledStore, useStore);
+            }
+            
         },
         { equalityFn: csArrayEquality }
     )

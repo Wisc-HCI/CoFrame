@@ -2,7 +2,7 @@ import React, { memo, useState } from "react";
 import PositionRotationTF from "./PositionRotationTF";
 import { GizmoDetail } from "./GizmoDetail";
 import useStore from "../../stores/Store";
-import { shallow } from 'zustand/shallow';
+import { shallow } from "zustand/shallow";
 import { FiX, FiSquare, FiTrash2, FiDelete } from "react-icons/fi";
 import { NumberInput } from "../Elements/NumberInput";
 import { DETAIL_TYPES, STATUS } from "../../stores/Constants";
@@ -28,6 +28,10 @@ import {
 import { BackRefSection } from "./BackRefSection";
 import { ForwardRefSection } from "./ForwardRefSection";
 import { DocSection } from "./DocSection";
+import {
+  RobotStateConfigurator,
+  SingleRobotConfigurator,
+} from "../Elements/RobotStateConfigurator";
 
 export const Detail = memo((_) => {
   const { item, objectTypeInfo } = useStore((state) => {
@@ -90,6 +94,11 @@ export const Detail = memo((_) => {
     (state) => state.updateItemDescription,
     shallow
   );
+  const setCustomMoveHook = useStore(
+    (state) => state.setCustomMoveHook,
+    shallow
+  );
+  const setCaptureFocus = useStore((state) => state.setCaptureFocus, shallow);
 
   const Icon = objectTypeInfo?.instanceBlock?.icon
     ? objectTypeInfo.instanceBlock.icon
@@ -127,6 +136,10 @@ export const Detail = memo((_) => {
       variant="persistent"
       open={open}
       hideBackdrop
+      onClose={() => {
+        setCustomMoveHook(null);
+        setCaptureFocus(false);
+      }}
       // elevation={16}
     >
       {open && (
@@ -221,21 +234,33 @@ export const Detail = memo((_) => {
                       titleTypographyProps={{ variant: "subtitle1" }}
                     />
                     <NumberInput
-                      value={item.properties.processTime/1000}
+                      value={item.properties.processTime / 1000}
                       min={0}
                       max={Infinity}
                       onChange={(value) =>
-                        updateItemSimpleProperty(item.id, "processTime", value*1000)
+                        updateItemSimpleProperty(
+                          item.id,
+                          "processTime",
+                          value * 1000
+                        )
                       }
                       step={0.1}
                       disabled={!item.canDelete}
                       suffix="sec"
-                      style={{width:345}}
+                      style={{ width: 345 }}
                     />
                   </Card>
                 )}
 
-                {item.properties.position !== undefined &&
+                {item.type === "robotAgentType" && (
+                  // <>
+                  //   <JointGripperInput robotID={item.id} isGripper={false} />
+                  // </>
+                  <SingleRobotConfigurator robot={item.id} />
+                )}
+
+                {!["waypointType", "locationType"].includes(item.type) &&
+                  item.properties.position !== undefined &&
                   item.properties.rotation !== undefined && (
                     <PositionRotationTF
                       itemID={item.id}
@@ -244,6 +269,13 @@ export const Detail = memo((_) => {
                       rotation={item.properties.rotation}
                     />
                   )}
+
+                {(item.type === "locationType" ||
+                  item.type === "waypointType") && (
+                  <>
+                    <LocationWaypointDetail itemID={item.id} />
+                  </>
+                )}
 
                 {(item.type === "machineType" || item.type === "toolType") && (
                   <BackRefSection
@@ -289,17 +321,7 @@ export const Detail = memo((_) => {
                     <JointGripperInput robotID={item.id} isGripper={true} />
                   </>
                 )}
-                {item.type === "robotAgentType" && (
-                  <>
-                    <JointGripperInput robotID={item.id} isGripper={false} />
-                  </>
-                )}
-                {(item.type === "locationType" ||
-                  item.type === "waypointType") && (
-                  <>
-                    <LocationWaypointDetail itemID={item.id} />
-                  </>
-                )}
+
                 {item.properties.gizmo && (
                   <>
                     <GizmoDetail gizmoId={item.properties.gizmo} />

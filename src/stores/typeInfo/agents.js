@@ -9,9 +9,6 @@ const robotAgentDoc = 'Robot Agents are the physical robots/cobots that cooperat
 
 const basicAgentData = {
   type: TYPES.OBJECT,
-  instanceBlock: {
-    color: "#629e6c",
-  },
   referenceBlock: null,
   properties: {
     position: {
@@ -44,6 +41,9 @@ const basicAgentData = {
 const robotAgentFeatures = {
   name: "Robot Agent",
   description: robotAgentDoc,
+  instanceBlock: {
+    color: "#629e6c",
+  },
   properties: {
     description: { default: "Robot Agent" },
     initialJointState: {
@@ -94,6 +94,9 @@ const robotAgentFeatures = {
 const gripperFeatures = {
   name: "Gripper",
   description: gripperAgentDoc,
+  instanceBlock: {
+    color: "#629E8A",
+  },
   properties: {
     description: { default: "Gripper" },
     initialGripState: {
@@ -133,6 +136,9 @@ const gripperFeatures = {
 
 const humanAgentFeatures = {
   name: "Human Agent",
+  instanceBlock: {
+    color: "#9E6294",
+  },
   description: humanAgentDoc,
   properties: {
     description: { default: "Human Agent" },

@@ -15,7 +15,7 @@ export const robotAgentCompiler = ({
   worldModel,
 }) => {
   const basePose = queryWorldPose(worldModel, data.id);
-  const baseEuler = eulerFromQuaternion([basePose.w, basePose.x, basePose.y, basePose.z],'sxyz');
+  const baseEuler = eulerFromQuaternion([basePose.rotation.w, basePose.rotation.x, basePose.rotation.y, basePose.rotation.z],'sxyz');
   // const quatLog = quaternionLog(basePose.rotation);
   const rootBounds = [
     { value: basePose.position.x, delta: 0.0 },

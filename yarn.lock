@@ -622,10 +622,10 @@
     prop-types "^15.8.1"
     react-is "^18.2.0"
 
-"@people_and_robots/lively@1.0.0-rc.2":
-  version "1.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@people_and_robots/lively/-/lively-1.0.0-rc.2.tgz#25bb54f46e7a52ae7a8900d1b51f34ee10c9fd21"
-  integrity sha512-1y4+JtrJ4TzGYP9et7AezEYh58g6QgI6AE7Ixp1CqyRHZdgFX0FP9py2JwaZqXB6T9tRdeejdVOevhdGb5QZLQ==
+"@people_and_robots/lively@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@people_and_robots/lively/-/lively-1.1.0.tgz#4455b294c7fc660639b58bab89a4912ab38ebe93"
+  integrity sha512-OCDc+ly8P/HH8a3Y0BQJ5KyHy4z8oeXBPYvWrRgY4AfQUOlC5ADLv+RM6/FhzseHoQOXtfl5JP0FAnmAaWOp3Q==
 
 "@popperjs/core@^2.11.7":
   version "2.11.7"

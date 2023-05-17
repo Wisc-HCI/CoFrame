@@ -35,8 +35,8 @@ export const Collapse = memo(({
               <ExpandCarrot expanded={open} disabled={disabled} />
             </IconButton>
           </Stack>
-          
         }
+        style={{alignItems:'center'}}
       />
       <MuiCollapse in={open}>
         <Stack

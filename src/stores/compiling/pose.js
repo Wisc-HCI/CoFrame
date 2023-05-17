@@ -68,7 +68,7 @@ export const poseCompiler = ({
 
       // const quatLog = quaternionLog(basePose.rotation);
       const baseEuler = eulerFromQuaternion(
-        [basePose.w, basePose.x, basePose.y, basePose.z],
+        [basePose.rotation.w, basePose.rotation.x, basePose.rotation.y, basePose.rotation.z],
         "sxyz"
       );
       // console.log("euler",{basePose,baseEuler})
