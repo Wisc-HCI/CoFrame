@@ -331,16 +331,19 @@ export const applyTransfer = (state, data, sourceInfo, destInfo) => {
         sourceInfo.idx,
         destInfo.idx
       );
+      state.programData[sourceInfo.parentId].properties.status = STATUS.PENDING;
   } else {
     // Place the value in its new location
     if (destIsList) {
       state.programData[destInfo.parentId].properties[
         destInfo.fieldInfo.value
       ].splice(destInfo.idx, 0, id);
+      state.programData[destInfo.parentId].properties.status = STATUS.PENDING;
     } else {
       state.programData[destInfo.parentId].properties[
         destInfo.fieldInfo.value
       ] = id;
+      state.programData[destInfo.parentId].properties.status = STATUS.PENDING;
     }
     // If existing, remove from the previous location
     if (
@@ -354,11 +357,13 @@ export const applyTransfer = (state, data, sourceInfo, destInfo) => {
       state.programData[sourceInfo.parentId].properties[
         destInfo.fieldInfo.value
       ].splice(sourceInfo.idx, 1);
+      state.programData[sourceInfo.parentId].properties.status = STATUS.PENDING;
     } else if (!newSpawn && !sourceIsList) {
       console.log("removing from previous by setting to null");
       state.programData[sourceInfo.parentId].properties[
         sourceInfo.fieldInfo.value
       ] = null;
+      state.programData[sourceInfo.parentId].properties.status = STATUS.PENDING;
     }
   }
 };
@@ -383,13 +388,6 @@ export const ProgrammingSliceOverride = (set, get) => ({
 
       // Delete current block
       state = deleteSelfBlock(state, data, parentId, fieldInfo);
-
-      console.log("EXISTS?", state.programData[data.id])
-      console.log("EXISTS?", state.programData["machineInitType-f6d1e4b9-0f1f-4262-b5df-daf4d3c54a19"])
-      console.log("EXISTS?", state.programData["machineInitType-548b4a21-efe2-4f5a-b278-323eb9ba0ecf"])
-      console.log("EXISTS?", state.programData["machineInitType-adb54fed-3608-448e-a0a2-72e8822416de"])
-      console.log("EXISTS?", state.programData["skillType-2f3e0a5c-3dbb-4eca-bef6-aecb0568da1d"])
-      console.log("EXISTS?", state.programData["skillType-18abecd8-3493-404f-861c-55b254517d7c"])
       
       // Clear parent properties
       if (parentId && parentId !== "spawner") {

@@ -525,7 +525,7 @@ const CurrentTimeIndicator = memo(({ xScale, lastEnd, yMax }) => {
     let process = setInterval(()=>{
       const time = (clock.getElapsed() * 1000) % lastEnd;
       if (time < 100 || time > lastEnd - 100) {
-        console.log('jumping')
+        // console.log('jumping')
         smoothedX.jump(xScale(time))
       } else {
         smoothedX.set(xScale(time));
