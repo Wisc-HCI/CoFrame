@@ -645,7 +645,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                                     moveGripper.properties.positionEnd <= graspWidth
                                 ) {
                                     grasping = true;
-                                    currentGraspedThingWidth = graspWdith;
+                                    currentGraspedThingWidth = graspWidth;
                                     id = bucket[i].id;
                                     selectedGraspRotation = graspRotation;
                                 }
