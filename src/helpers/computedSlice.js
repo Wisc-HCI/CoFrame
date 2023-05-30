@@ -367,6 +367,8 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
     // Tracks what is currently grasped by the gripper
     let currentGraspedThingID = '';
 
+    let currentGraspedThingWidth = -1;
+
     let graspAngle = null;
 
     // Tracks the previous grasped object by the gripper
@@ -398,6 +400,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
 
     // Build up the movements
     let steps = (focusStub && focusStub[ROOT_PATH]?.steps) ? focusStub[ROOT_PATH]?.steps : [];
+    
 
 
     steps.forEach((step) => {
@@ -642,6 +645,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                                     moveGripper.properties.positionEnd <= graspWidth
                                 ) {
                                     grasping = true;
+                                    currentGraspedThingWidth = graspWdith;
                                     id = bucket[i].id;
                                     selectedGraspRotation = graspRotation;
                                 }
@@ -650,7 +654,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                     }
                 // moveGripper is releasing instead of grasping
                 } else if (moveGripper.properties.positionEnd > moveGripper.properties.positionStart &&
-                    moveGripper.properties.positionEnd > width) {
+                    moveGripper.properties.positionEnd > currentGraspedThingWidth) {
                         releasing = true;
                 }
 
@@ -663,6 +667,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 if (!grasping && releasing) {
                     previousGraspedThingID = currentGraspedThingID;
                     currentGraspedThingID = '';
+                    currentGraspedThingWidth = -1;
                     graspAngle = null;
                 }
             }
