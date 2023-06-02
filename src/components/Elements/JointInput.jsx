@@ -10,6 +10,7 @@ export const JointInput = ({
   onChange,
   disabled,
 }) => {
+  
   return (
     <Card style={{ backgroundColor: "#000", padding: 10 }}>
       <Stack spacing={1}>
@@ -21,13 +22,14 @@ export const JointInput = ({
             <Stack direction="row" spacing={2}>
               <Slider
                 aria-label={`${key} Joint Value`}
-                value={jointState[key]}
+                value={jointState[key] || 0}
                 min={robotJointInfo[key].lower}
                 max={robotJointInfo[key].upper}
                 style={{ width: 150 }}
                 step={0.01}
                 disabled={disabled}
-                onChange={(e) =>
+                onChange={(e) =>{
+                  console.log(Number(e.target.value));
                   onChange({
                     ...jointState,
                     [key]: clamp(
@@ -35,11 +37,11 @@ export const JointInput = ({
                       robotJointInfo[key].lower,
                       robotJointInfo[key].upper
                     ),
-                  })
+                  })}
                 }
               />
               <Typography variant="caption" style={{width:35}}>
-                {round(jointState[key], 2)}
+                {jointState[key] ? round(jointState[key], 2) : 0}
               </Typography>
             </Stack>
           </Stack>

@@ -29,7 +29,7 @@ import { BackRefSection } from "./BackRefSection";
 import { ForwardRefSection } from "./ForwardRefSection";
 import { DocSection } from "./DocSection";
 import {
-  RobotStateConfigurator,
+  PoseConfigurator,
   SingleRobotConfigurator,
 } from "../Elements/RobotStateConfigurator";
 
@@ -137,6 +137,7 @@ export const Detail = memo((_) => {
       open={open}
       hideBackdrop
       onClose={() => {
+        console.log("onClose");
         setCustomMoveHook(null);
         setCaptureFocus(false);
       }}
@@ -189,7 +190,13 @@ export const Detail = memo((_) => {
               />
             </Stack>
 
-            <IconButton onClick={clearFocus}>
+            <IconButton
+              onClick={() => {
+                clearFocus();
+                setCustomMoveHook(null);
+                setCaptureFocus(false);
+              }}
+            >
               <FiX />
             </IconButton>
           </Stack>
@@ -272,9 +279,7 @@ export const Detail = memo((_) => {
 
                 {(item.type === "locationType" ||
                   item.type === "waypointType") && (
-                  <>
-                    <LocationWaypointDetail itemID={item.id} />
-                  </>
+                  <PoseConfigurator pose={item} />
                 )}
 
                 {(item.type === "machineType" || item.type === "toolType") && (

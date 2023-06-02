@@ -9,7 +9,7 @@ import {
 } from "react-icons/fi";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import "./rotate.css";
-import { baseTypeData } from "./baseType";
+import { baseIndicatorLabelFn, baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
 const trajectoryDoc = 'Trajectories are a collection of two [Locations](locationType), and a set of optional intermediate [Waypoints](waypointType). They are used within the [Move Trajectory](moveTrajectoryType) action to move a [Robot](robotAgentType) from one location to another.';
@@ -29,7 +29,7 @@ const trajectoryFeatures = {
         type: EXTRA_TYPES.INDICATOR_ICON,
         
         accessor: statusIcon,
-        label: "Status",
+        label: baseIndicatorLabelFn,
       },
       // EXTRA_TYPES.LOCKED_INDICATOR,
       EXTRA_TYPES.NAME_EDIT_TOGGLE,

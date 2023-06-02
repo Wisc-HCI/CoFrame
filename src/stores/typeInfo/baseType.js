@@ -1,6 +1,6 @@
 
 import { SIMPLE_PROPERTY_TYPES } from "simple-vp";
-import { STATUS } from "../Constants";
+import { STATUS, ERROR } from "../Constants";
 import "./rotate.css";
 
 export const baseTypeData = {
@@ -37,3 +37,39 @@ export const baseTypeData = {
       },
     },
   };
+
+  export const baseIndicatorLabelFn = (data)=>{
+    const status = data.properties?.status ? data.properties.status : data.refData?.properties?.status;
+    const errorCode = data.properties?.errorCode ? data.properties.errorCode : data.refData?.properties?.errorCode;
+    try {
+      switch (status) {
+        case STATUS.PENDING:
+          return "Updating";
+        case STATUS.VALID:
+          return "Valid";
+        default:
+          switch (errorCode) {
+            case ERROR.MISSING_PARAMETER: 
+              return "Missing required parameter";
+            case ERROR.INVALID_PARAMETER:
+              return "Invalid parameter";
+            case ERROR.MISMATCHED_GIZMO: 
+              return 'Process requires a different gizmo';
+            case ERROR.UNREACHABLE_POSE: 
+              return 'Pose is unreachable';
+            case ERROR.TRAJECTORY_PROGRESS: 
+              return 'Trajectory computation could not proceed';
+            case ERROR.TIMEOUT: 
+              return 'Compilation timed out';
+            case ERROR.CHILD_FAILED: 
+              return 'Failed due to failed inner content';
+            case ERROR.DOES_NOTHING: 
+              return 'This action does nothing';
+          };
+      }
+    } catch {
+      console.warn(`Error getting status with block of type ${data.type}`)
+      return "Status"
+    }
+    
+  }

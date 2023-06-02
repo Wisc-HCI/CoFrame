@@ -3009,12 +3009,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "shoulder_pan_joint": -2.7424206591467133,
-              "elbow_joint": -2.358017609667282,
-              "wrist_1_joint": 0.13755632072353732,
-              "wrist_2_joint": -0.7898817694990344,
-              "shoulder_lift_joint": 0.05682251713090642,
-              "wrist_3_joint": -0.8931931826273642
+              "shoulder_pan_joint": -2.742,
+              "elbow_joint": -2.35,
+              "wrist_1_joint": 0.1375,
+              "wrist_2_joint": -0.789,
+              "shoulder_lift_joint": 0.056,
+              "wrist_3_joint": -0.89
             },
             "links": {
               "forearm_link": {
@@ -5387,12 +5387,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "wrist_2_joint": 0.7826980846114756,
-              "wrist_3_joint": 1.5843076616695715,
-              "shoulder_pan_joint": 0.7838513116686668,
-              "shoulder_lift_joint": -1.870408365361263,
-              "elbow_joint": -2.433627597824102,
-              "wrist_1_joint": 1.1646693053724066
+              "wrist_2_joint": 0.782,
+              "wrist_3_joint": 1.584,
+              "shoulder_pan_joint": 0.7838,
+              "shoulder_lift_joint": -1.870,
+              "elbow_joint": -2.4336,
+              "wrist_1_joint": 1.1646
             },
             "links": {
               "shoulder_link": {
@@ -5422,10 +5422,10 @@
                   "z": 0
                 },
                 "rotation": {
-                  "w": 0.0005630880171994688,
-                  "x": -0.7071065569854976,
-                  "y": -0.7071065569854977,
-                  "z": -0.0005630880171994687
+                  "w": 0.00,
+                  "x": -0.707,
+                  "y": -0.707,
+                  "z": -0.00
                 },
                 "scale": {
                   "x": 1,
@@ -7864,12 +7864,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "wrist_3_joint": 0.9779576832165517,
-              "shoulder_lift_joint": 1.4721281977181433,
-              "elbow_joint": -2.573688446265559,
-              "shoulder_pan_joint": -0.7736118837602026,
-              "wrist_1_joint": -1.1490000594704814,
-              "wrist_2_joint": -0.9680524688427838
+              "wrist_3_joint": 0.9779,
+              "shoulder_lift_joint": 1.472,
+              "elbow_joint": -2.573,
+              "shoulder_pan_joint": -0.7736,
+              "wrist_1_joint": -1.149,
+              "wrist_2_joint": -0.968
             },
             "links": {
               "upper_arm_link": {
@@ -10295,12 +10295,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "shoulder_pan_joint": -1.9301294219374918,
-              "wrist_1_joint": -0.524614525742142,
-              "wrist_2_joint": -1.5705573799995534,
-              "wrist_3_joint": -0.35939752705524886,
-              "shoulder_lift_joint": 0.29033135195580495,
-              "elbow_joint": -1.334856497590809
+              "shoulder_pan_joint": -1.930,
+              "wrist_1_joint": -0.5246,
+              "wrist_2_joint": -1.5705,
+              "wrist_3_joint": -0.3593,
+              "shoulder_lift_joint": 0.2903,
+              "elbow_joint": -1.334
             },
             "links": {
               "upper_arm_link": {
@@ -12740,12 +12740,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "wrist_3_joint": -1.3764284415671686,
-              "shoulder_pan_joint": -2.4689413046042343,
-              "wrist_2_joint": -0.3735467975428991,
-              "elbow_joint": -2.2609663576660637,
-              "shoulder_lift_joint": -0.3195147106503465,
-              "wrist_1_joint": -5.50516725647525
+              "wrist_3_joint": -1.3764,
+              "shoulder_pan_joint": -2.468,
+              "wrist_2_joint": -0.3735,
+              "elbow_joint": -2.260,
+              "shoulder_lift_joint": -0.319,
+              "wrist_1_joint": -5.505
             },
             "links": {
               "shoulder_link": {
@@ -15261,12 +15261,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "wrist_3_joint": 0.7657945909868633,
-              "shoulder_pan_joint": 0.31181081508142183,
-              "wrist_2_joint": 0.0002386725762314973,
-              "shoulder_lift_joint": -2.326214952629915,
-              "wrist_1_joint": 1.936522944503454,
-              "elbow_joint": 2.765431687752512
+              "wrist_3_joint": 0.76579,
+              "shoulder_pan_joint": 0.311,
+              "wrist_2_joint": 0.000,
+              "shoulder_lift_joint": -2.32,
+              "wrist_1_joint": 1.9365,
+              "elbow_joint": 2.765
             },
             "links": {
               "flange": {
@@ -15277,10 +15277,10 @@
                   "z": 0
                 },
                 "rotation": {
-                  "w": 0.0005630880171994688,
-                  "x": -0.7071065569854976,
-                  "y": -0.7071065569854977,
-                  "z": -0.0005630880171994687
+                  "w": 0.00,
+                  "x": -0.707,
+                  "y": -0.707,
+                  "z": -0.00
                 },
                 "scale": {
                   "x": 1,
@@ -21810,12 +21810,12 @@
           "robot-agent-988926121c1911eccbe2600155d1a70a2": {
             "gripper-robotiq": {
               "joints": {
-                "elbow_joint": 0.8723802322159927,
-                "wrist_2_joint": 1.5966408294123589,
-                "shoulder_pan_joint": -0.01731930059785689,
-                "wrist_1_joint": -1.9337280659951543,
-                "wrist_3_joint": 1.5624315004024423,
-                "shoulder_lift_joint": 0.3643757990319805
+                "elbow_joint": 0.87238,
+                "wrist_2_joint": 1.596,
+                "shoulder_pan_joint": -0.017,
+                "wrist_1_joint": -1.933,
+                "wrist_3_joint": 1.562,
+                "shoulder_lift_joint": 0.36
               },
               "links": {
                 "wrist_3_link": {
@@ -26796,12 +26796,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "wrist_1_joint": -0.7123290377916833,
-              "wrist_3_joint": -0.6076975378683726,
-              "wrist_2_joint": -1.5705552029874246,
-              "shoulder_pan_joint": -2.178906010515304,
-              "shoulder_lift_joint": 0.166883171597612,
-              "elbow_joint": -1.0226434671029492
+              "wrist_1_joint": -0.7123,
+              "wrist_3_joint": -0.607,
+              "wrist_2_joint": -1.57,
+              "shoulder_pan_joint": -2.17,
+              "shoulder_lift_joint": 0.166,
+              "elbow_joint": -1.022
             },
             "links": {
               "upper_arm_link": {
@@ -29503,12 +29503,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "wrist_2_joint": -1.5729640369648012,
-              "elbow_joint": -1.4835904306163485,
-              "wrist_3_joint": -1.573026116873967,
-              "wrist_1_joint": -0.44854249020809217,
-              "shoulder_pan_joint": -1.5263577176970942,
-              "shoulder_lift_joint": 0.3285017391633282
+              "wrist_2_joint": -1.57,
+              "elbow_joint": -1.483,
+              "wrist_3_joint": -1.573,
+              "wrist_1_joint": -0.448,
+              "shoulder_pan_joint": -1.526,
+              "shoulder_lift_joint": 0.3285
             },
             "links": {
               "upper_arm_link": {
@@ -31968,12 +31968,12 @@
         "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
           "gripper-robotiq": {
             "joints": {
-              "wrist_2_joint": -1.5802098237677138,
-              "shoulder_lift_joint": 0.27403454394474924,
-              "shoulder_pan_joint": -1.301145160609519,
-              "wrist_3_joint": -1.3484803708895257,
-              "elbow_joint": -1.248188237552331,
-              "wrist_1_joint": -0.6261567887311192
+              "wrist_2_joint": -1.580,
+              "shoulder_lift_joint": 0.274,
+              "shoulder_pan_joint": -1.301,
+              "wrist_3_joint": -1.348,
+              "elbow_joint": -1.2481,
+              "wrist_1_joint": -0.6261
             },
             "links": {
               "shoulder_link": {
@@ -34289,12 +34289,12 @@
           "robotAgentType-10302b4f-e882-451e-b0a3-a0e7399d1c76": {
             "gripper-robotiq": {
               "joints": {
-                "wrist_2_joint": -0.7737441079893793,
-                "wrist_1_joint": 0.18626079389200353,
-                "wrist_3_joint": 5.355190562200266,
-                "shoulder_lift_joint": 0.044505864685658376,
-                "shoulder_pan_joint": 3.5129758571767344,
-                "elbow_joint": -2.3697057423531493
+                "wrist_2_joint": -0.7737,
+                "wrist_1_joint": 0.1862,
+                "wrist_3_joint": 5.3551,
+                "shoulder_lift_joint": 0.0445,
+                "shoulder_pan_joint": 3.512,
+                "elbow_joint": -2.369
               },
               "links": {
                 "upper_arm_link": {

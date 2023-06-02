@@ -4,9 +4,9 @@ import {
   FiMoreHorizontal
 } from "react-icons/fi";
 import { merge } from "lodash";
-import { COMPILE_FUNCTIONS } from "../Constants";
+import { COMPILE_FUNCTIONS, STATUS, ERROR } from "../Constants";
 import "./rotate.css";
-import { baseTypeData } from "./baseType";
+import { baseTypeData, baseIndicatorLabelFn } from "./baseType";
 
 const basicActionData = {
   type: TYPES.OBJECT,
@@ -20,7 +20,7 @@ const basicActionData = {
       {
         type: EXTRA_TYPES.INDICATOR_ICON,
         accessor: statusIcon,
-        label: "Status",
+        label: baseIndicatorLabelFn,
       },
       EXTRA_TYPES.DOC_TOGGLE,
       {
