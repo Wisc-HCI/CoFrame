@@ -11,9 +11,6 @@ import * as Comlink from "comlink";
 /* eslint-disable import/no-webpack-loader-syntax */
 import PlannerWorker from "./planner-worker?worker";
 
-const plannerWorker = new PlannerWorker();
-const { performCompileProcess } = Comlink.wrap(plannerWorker);
-
 // const plannerWorkerUrl = new URL('./planner-worker.js',import.meta.url);
 // const workerInstance = new ComlinkWorker(plannerWorkerUrl,{});
 // console.warn('workerInstance',workerInstance)
@@ -228,16 +225,10 @@ export const EvdSlice = (set, get) => ({
       console.log('terminating current plan process')
       currentProcess.terminate();
     }
-    // const workerInstance = new ComlinkWorker(plannerWorkerUrl,{});
-    // const plannerWorker = new PlannerWorker();
-    // console.log('plannerWorker',plannerWorker)
-    // console.log(workerInstance)
+    // Create a new worker
+    const plannerWorker = new PlannerWorker();
+    const { performCompileProcess } = Comlink.wrap(plannerWorker);
     get().updatePlanProcess(null, plannerWorker);
-    // const { performCompileProcess, test } = Comlink.wrap(plannerWorker);
-    // const message = await test();
-    // console.log(message)
-    // console.warn('performCompileProcess',performCompileProcess);
-    // let programData = mapValues(get().programData,((value)=>({...value,properties:{...value.properties,compiled:compiled[value.id]||{}}})))
     const programData = get().programData;
     console.log('step 1')
     const result = await performCompileProcess({
@@ -248,8 +239,6 @@ export const EvdSlice = (set, get) => ({
         cleanedObjectType
       ),
     });
-    // console.log(result)
-    // console.log('step 2')
     get().updatePlanProcess(result.data, null);
 
     // // Update the compiled store
