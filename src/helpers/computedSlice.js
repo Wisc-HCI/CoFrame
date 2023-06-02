@@ -367,6 +367,8 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
     // Tracks what is currently grasped by the gripper
     let currentGraspedThingID = '';
 
+    let currentGraspedThingWidth = -1;
+
     let graspAngle = null;
 
     // Tracks the previous grasped object by the gripper
@@ -398,6 +400,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
 
     // Build up the movements
     let steps = (focusStub && focusStub[ROOT_PATH]?.steps) ? focusStub[ROOT_PATH]?.steps : [];
+    
 
 
     steps.forEach((step) => {
@@ -453,7 +456,8 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 position: { x: [], y: [], z: [] },
                 rotation: { x: [], y: [], z: [], w: [] },
                 hidden: [],
-                mesh: state.programData[step.data.thing]?.properties?.mesh,
+                mesh: state.programData[state.programData[step.data.thing]?.properties?.mesh] ? state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.keyword : state.programData[step.data.thing]?.properties?.mesh,
+                scale: state.programData[state.programData[step.data.thing]?.properties?.mesh] ? state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.scale : {x: 1, y: 1, z: 1},
                 relativeTo: step.data.relativeTo?.id,
                 type: step.data.thing
             }
@@ -590,7 +594,8 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                         position: { x: [], y: [], z: [] },
                         rotation: { x: [], y: [], z: [], w: [] },
                         hidden: [],
-                        mesh: state.programData[thing]?.properties?.mesh,
+                        mesh: state.programData[state.programData[thing]?.properties?.mesh] ? state.programData[state.programData[thing]?.properties?.mesh]?.properties?.keyword : state.programData[thing]?.properties?.mesh,
+                        scale: state.programData[state.programData[thing]?.properties?.mesh] ? state.programData[state.programData[thing]?.properties?.mesh]?.properties?.scale : {x: 1, y: 1, z: 1},
                         relativeTo: state.programData[thing]?.properties.relativeTo?.id,
                         type: thing
                     }
@@ -640,6 +645,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                                     moveGripper.properties.positionEnd <= graspWidth
                                 ) {
                                     grasping = true;
+                                    currentGraspedThingWidth = graspWidth;
                                     id = bucket[i].id;
                                     selectedGraspRotation = graspRotation;
                                 }
@@ -648,7 +654,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                     }
                 // moveGripper is releasing instead of grasping
                 } else if (moveGripper.properties.positionEnd > moveGripper.properties.positionStart &&
-                    moveGripper.properties.positionEnd > width) {
+                    moveGripper.properties.positionEnd > currentGraspedThingWidth) {
                         releasing = true;
                 }
 
@@ -661,6 +667,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 if (!grasping && releasing) {
                     previousGraspedThingID = currentGraspedThingID;
                     currentGraspedThingID = '';
+                    currentGraspedThingWidth = -1;
                     graspAngle = null;
                 }
             }
@@ -853,7 +860,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 frame: link,
                 position: { x: 0, y: 0, z: 0 },
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
-                scale: { x: 1, y: 1, z: 1 },
+                scale: dict[link].scale,
                 transformMode: "inactive",
                 color: { r: 0, g: 200, b: 0, a: 0.2 },
                 highlighted: false,

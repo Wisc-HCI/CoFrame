@@ -2,41 +2,17 @@ import {
   STATUS,
   STEP_TYPE,
   ROOT_PATH,
-  ERROR,
-  MAX_POSE_DISTANCE_DIFF,
-  MAX_POSE_ROTATION_DIFF,
-  MAX_JOINT_DISTANCE_DIFF,
+  ERROR
 } from "../Constants";
-// import {
-//   timeGradientFunction,
-//   timeGradientFunctionOneTailStart,
-//   timeGradientFunctionOneTailEnd,
-// } from "../helpers";
 import { likStateToData } from "../../helpers/conversion";
 import {
   createStaticEnvironment,
   queryWorldPose,
-  // quaternionLog,
   eulerFromQuaternion,
-  // distance,
   attachmentToEEPose,
 } from "../../helpers/geometry";
-import { merge, mapValues, fromPairs } from "lodash";
-import { Quaternion, Vector3 } from "three";
+import { merge, isEqual } from "lodash";
 import { eventsToStates, statesToSteps } from ".";
-
-const FPS = 30;
-const FRAME_TIME = FPS / 1000;
-const POSITION_WEIGHT = 50;
-const ROTATION_WEIGHT = 20;
-const JOINT_WEIGHT = 20;
-const COLLISION_WEIGHT = 5;
-const SMOOTHNESS_WEIGHT = 50;
-const IMPROVEMENT_THRESHOLD = 0.5;
-const MS_TIME_LIMIT = 5000;
-const SIMPLE_SMOOTHNESS_WEIGHT = 50;
-const SIMPLE_COLLISION_WEIGHT = 5; //7;
-const SIMPLE_JOINT_WEIGHT = 25;
 
 const addOrMergeAnimation = (
   animations,
@@ -96,6 +72,21 @@ const addOrMergeAnimation = (
   return animations;
 };
 
+const updateSteps = (oldSteps, oldDuration, duration) => {
+  let newSteps = [];
+  oldSteps.forEach(step => {
+    if (step.stepType === STEP_TYPE.ACTION_START) {
+      newSteps.push({...step});
+    } else if (step.stepType === STEP_TYPE.ACTION_END || step.stepType === STEP_TYPE.LANDMARK) {
+      let newDelay = oldSteps.length - 3 > 0 ? oldSteps[oldSteps.length - 3].delay / oldDuration * duration : 0
+      newSteps.push({...step, delay: newDelay,})
+    } else {
+      newSteps.push({...step, delay: step.delay / oldDuration * duration});
+    }
+  })
+  return newSteps;
+};
+
 export const robotMotionCompiler = ({
   data,
   properties,
@@ -104,6 +95,7 @@ export const robotMotionCompiler = ({
   compiledMemo,
   module,
   worldModel,
+  compileModel
 }) => {
 
   const trajectory = properties.trajectory;
@@ -118,6 +110,8 @@ export const robotMotionCompiler = ({
       shouldBreak: false,
       events: [],
       steps: [],
+      duration: 0,
+      poses: [],
     };
   } else if (properties.duration < 0.01) {
     return {
@@ -126,6 +120,8 @@ export const robotMotionCompiler = ({
       shouldBreak: false,
       events: [],
       steps: [],
+      duration: 0,
+      poses: [],
     };
   } else if (
     trajectory.properties &&
@@ -137,6 +133,8 @@ export const robotMotionCompiler = ({
       shouldBreak: false,
       events: [],
       steps: [],
+      duration: 0,
+      poses: [],
     };
   }
 
@@ -159,6 +157,28 @@ export const robotMotionCompiler = ({
     ),
     compiledMemo[compiledMemo[trajectory.id][path].endLocation.id][path],
   ];
+
+  if (properties.duration !== compileModel?.[data.id]?.[path]?.duration && 
+      isEqual(poses, compileModel?.[data.id]?.[path]?.poses)) {
+    let eventstemp = updateSteps(compileModel?.[data.id]?.[path]?.events[0].onTrigger, compileModel?.[data.id]?.[path]?.duration, properties.duration);
+    let events = [
+      {
+        condition: robot
+          ? {
+              [robot.id]: { busy: false },
+            }
+          : {},
+        onTrigger: eventstemp,
+        source: data.id,
+      },
+    ]
+    return {
+      ...compileModel?.[data.id]?.[path],
+      events: events,
+      steps: statesToSteps(eventsToStates(events)),
+      duration: properties.duration,
+    };
+  }
 
   robots.forEach((robot)=>{
     console.log("Trajectory planning - robot",robot.id);
@@ -307,6 +327,8 @@ export const robotMotionCompiler = ({
     shouldBreak: false,
     events,
     steps: statesToSteps(eventsToStates(events)),
+    duration: duration,
+    poses: poses,
   };
 
   return newCompiled;

@@ -200,7 +200,7 @@ const moveTrajectoryFeatures = {
       step: 0.01,
       visualScaling: 1,
       visualPrecision: 2,
-      units: "m/s",
+      units: "s",
     },
     motionType: {
       name: "Motion Type",

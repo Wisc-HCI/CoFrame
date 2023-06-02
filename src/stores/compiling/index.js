@@ -150,6 +150,7 @@ const performUpdate = ({
   module,
   worldModel,
   updateFn,
+  compileModel,
 }) => {
   // console.warn('updating version of ', data);
   let newCompiled = updateFn({
@@ -163,6 +164,7 @@ const performUpdate = ({
     compiledMemo,
     module,
     worldModel,
+    compileModel,
   });
   // console.log('status',newCompiled.status)
   // console.log('memoizedData',memoizedData)
@@ -497,6 +499,7 @@ export const handleUpdate = ({
           module,
           worldModel,
           updateFn,
+          compileModel,
         });
 
         // Assign the results to the upper variables
