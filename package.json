@@ -22,10 +22,10 @@
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/material": "5.11.16",
-    "@people_and_robots/lively": "1.0.0-rc.2",
+    "@people_and_robots/lively": "1.1.0",
     "@radix-ui/react-scroll-area": "^1.0.0",
     "@robostack/roslib": "^1.1.1",
-    "@tauri-apps/api": "^1.2.0",
+    "@tauri-apps/api": "^1.3.0",
     "@visx/visx": "^3.1.2",
     "comlink": "^4.4.1",
     "fast-xml-parser": "^4.0.9",
@@ -50,7 +50,7 @@
     "zustand": "^4.3.6"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.2.3",
+    "@tauri-apps/cli": "^1.3.1",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^3.1.0",

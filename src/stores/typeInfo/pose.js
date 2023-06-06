@@ -1,28 +1,25 @@
 import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
-import { LocationIconStyled, statusIcon } from "./icons";
+import { LocationIconStyled, WaypointIconStyled, statusIcon } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { COMPILE_FUNCTIONS } from "../Constants";
 import './rotate.css'
-import { baseTypeData } from "./baseType";
+import { baseIndicatorLabelFn, baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
 const locationDoc = "Locations are meaningful positions in the scene. For example, they can be used to define goals for placing or picking up [Things](thingType), or specifying starting or ending positions for the [Robot](robotAgentType). [Waypoints](waypointType) can be used in [Trajectories](trajectoryType) to specify intermediates between pairs of locations.";
+const waypointDoc = "Waypoints are positions and orientations that are used as parts of [Trajectories](trajectoryType), and unlike [Locations](locationType), do not have inherent meaning other than to allow greater specificity of the manner with which the [Robot](robotAgentType) moves between a pair of locations."
 
-const locationFeatures = {
-  name: 'Location',
+const poseFeatures = {
   type: TYPES.OBJECT,
-  description: locationDoc,
   instanceBlock: null,
   referenceBlock: {
     onCanvas: false,
-    color: "#8624E0",
-    icon: LocationIconStyled,
     extras: [
       EXTRA_TYPES.LOCKED_INDICATOR,
       { 
         type: EXTRA_TYPES.INDICATOR_ICON,
         accessor: statusIcon,
-        label: 'Status'
+        label: baseIndicatorLabelFn
       },
       {
         icon: FiMoreHorizontal,
@@ -65,7 +62,7 @@ const locationFeatures = {
       default: COMPILE_FUNCTIONS.POSE
     },
     updateFields: {
-      default: ['position','rotation']
+      default: ['position','rotation','states','reachability']
     },
     singleton: {
       default: true
@@ -73,4 +70,23 @@ const locationFeatures = {
   }
 }
 
-export const locationType = merge(locationFeatures, baseTypeData);
+const locationFeatures = {
+  name: 'Location',
+  description: locationDoc,
+  referenceBlock: {
+    color: "#8624E0",
+    icon: LocationIconStyled
+  }
+}
+
+const waypointFeatures = {
+  name: 'Waypoint',
+  description: waypointDoc,
+  referenceBlock: {
+    color: "#AD1FDE",
+    icon: WaypointIconStyled
+  }
+}
+
+export const locationType = merge(locationFeatures, poseFeatures, baseTypeData);
+export const waypointType = merge(waypointFeatures, poseFeatures, baseTypeData);

@@ -184,7 +184,7 @@ export const robotMotionCompiler = ({
     console.log("Trajectory planning - robot",robot.id);
     const basePose = queryWorldPose(worldModel, robot.id);
     const baseEuler = eulerFromQuaternion(
-      [basePose.w, basePose.x, basePose.y, basePose.z],
+      [basePose.rotation.w, basePose.rotation.x, basePose.rotation.y, basePose.rotation.z],
       "sxyz"
     );
     // const quatLog = quaternionLog(basePose.rotation);

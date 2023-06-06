@@ -256,6 +256,15 @@ export const GuiSlice = (set, get) => ({
     state.hulls = hulls;
     state.texts = texts;
   }),
+  partialSceneState: ({tfs, items}) => set(state => {
+    Object.keys(tfs).forEach(key => {
+      state.tfs[key] = { ...state.tfs[key], ...tfs[key] };
+    });
+
+    Object.keys(items).forEach(key => {
+      state.items[key] = {...state.items[key], ...items[key]};
+    });
+  }),
   setRobotPreviewVisible: (visible) => set(state => {
     state.robotPreviewVisible = visible;
   }),
@@ -272,6 +281,7 @@ export const GuiSlice = (set, get) => ({
     if (!hidden && 
         !state.focus.includes('translate') && 
         !state.focus.includes('rotate') && 
+        !state.captureFocus && 
         !id.includes('-collision') && 
         !onClickIgnoredTypes.includes(state.programData[id]?.type)) {
       if (state.programData[id]?.type === 'linkType') {
@@ -311,28 +321,47 @@ export const GuiSlice = (set, get) => ({
       event.stopPropagation();
     }
   }),
-  onMove: (id, source, worldTransform, localTransform) => set(state => {
-    console.log('ON MOVE',{id,source,worldTransform,localTransform})
-    const filteredId = 
-    id.includes('-pointer') ? id.replace('-pointer', '') : 
-    id.includes('-tag') ? id.replace('-tag', '') : id;
-    const focused = state.focus.includes(filteredId);
-    const transform = state.focus.includes('translate') 
-      ? 'translate' 
-      : state.focus.includes('rotate')
-      ? 'rotate'
-      : 'inactive'
-    if (id.includes('-pointer') && focused && transform !== 'inactive') {
-      // state.setPoseTransform(filteredId, transform);
-      state.programData[filteredId].properties.position = mapValues(localTransform.position,(v)=>round(v,3));
-      state.programData[filteredId].properties.rotation = mapValues(localTransform.quaternion,(v)=>round(v,3));
-      state.programData[filteredId].properties.status = STATUS.PENDING;
-    } else if (!id.includes('pointer') && !id.includes('-tag') && focused && transform !== 'inactive') {
-     // This isn't correct, we'll want to offset by the object's tf (since we are technically moving the mesh)
-     // Similarly, we'll want to compute the quaternion transformation
-      state.programData[filteredId].properties.position = mapValues(localTransform.position,(v)=>round(v,3));;
-      state.programData[filteredId].properties.rotation = mapValues(localTransform.quaternion,(v)=>round(v,3));
-      state.programData[filteredId].properties.status = STATUS.PENDING;
+  moveFlag: 'default',
+  onMove: (id, source, worldTransform, localTransform) => {
+    if (get().moveFlag === 'default') {
+      set(state => {
+        console.log('ON MOVE',{id,source,worldTransform,localTransform})
+        const filteredId = 
+        id.includes('-pointer') ? id.replace('-pointer', '') : 
+        id.includes('-tag') ? id.replace('-tag', '') : id;
+        const focused = state.focus.includes(filteredId);
+        const transform = state.focus.includes('translate') 
+          ? 'translate' 
+          : state.focus.includes('rotate')
+          ? 'rotate'
+          : 'inactive'
+        if (id.includes('-pointer') && focused && transform !== 'inactive') {
+          // state.setPoseTransform(filteredId, transform);
+          state.programData[filteredId].properties.position = mapValues(localTransform.position,(v)=>round(v,3));
+          state.programData[filteredId].properties.rotation = mapValues(localTransform.quaternion,(v)=>round(v,3));
+          state.programData[filteredId].properties.status = STATUS.PENDING;
+        } else if (!id.includes('pointer') && !id.includes('-tag') && focused && transform !== 'inactive') {
+         // This isn't correct, we'll want to offset by the object's tf (since we are technically moving the mesh)
+         // Similarly, we'll want to compute the quaternion transformation
+          state.programData[filteredId].properties.position = mapValues(localTransform.position,(v)=>round(v,3));;
+          state.programData[filteredId].properties.rotation = mapValues(localTransform.quaternion,(v)=>round(v,3));
+          state.programData[filteredId].properties.status = STATUS.PENDING;
+        }
+      })
+    } else {
+      get().customMoveHook(id, source, worldTransform, localTransform)
     }
-  })
+  },
+  customMoveHook: ()=>{},
+  setCustomMoveHook: (newHook) => set(state=>{
+    if (newHook) {
+      state.customMoveHook = newHook;
+      state.moveFlag = 'custom';
+    } else {
+      state.customMoveHook = ()=>{},
+      state.moveFlag = 'default';
+    }
+  }),
+  captureFocus: false,
+  setCaptureFocus: (capture) => set(state=>{state.captureFocus = capture})
 });

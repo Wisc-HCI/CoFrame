@@ -418,7 +418,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 rotation: entry.properties.rotation,
                 scale: { x: 1, y: 1, z: 1 }
             }
-        } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
+        } else if (false && (entry.type === 'locationType' || entry.type === 'waypointType')) {
             const focused = state.focus.includes(entry.id);
             const trajectoryFocused = focusedTrajectoryChildren.includes(entry.id);
             let correctEntry = entry.ref ? state.programData[entry.ref] : entry;
@@ -617,7 +617,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
         const item = state.programData[focusId];
         if (!item) {
             return false
-        } else if (item.type === 'waypointType' || item.type === 'locationType') {
+        } else if (false && (item.type === 'waypointType' || item.type === 'locationType')) {
             Object.values(item.properties.states).forEach(robotGroup => {
                 Object.values(robotGroup).forEach(gripperGroup => {
                     tfs = { ...tfs, ...gripperGroup.links }
@@ -937,9 +937,12 @@ export const computedSliceCompiledSubscribe = (useCompiledStore, useStore) => {
 
 export const computedSliceSubscribe = (useStore) => {
     useStore.subscribe(state =>
-        [state.programData, state.focus, state.occupancyVisible, state.collisionsVisible, state.robotPreviewVisible, state.playing],
+        [state.programData, state.focus, state.occupancyVisible, state.collisionsVisible, state.robotPreviewVisible, state.playing, state.captureFocus],
         (current, previous) => {
-            updateRobotScene(useCompiledStore, useStore);
+            if (!current[6]) {
+                updateRobotScene(useCompiledStore, useStore);
+            }
+            
         },
         { equalityFn: csArrayEquality }
     )

@@ -35,7 +35,6 @@ export const Collapse = memo(({
               <ExpandCarrot expanded={open} disabled={disabled} />
             </IconButton>
           </Stack>
-          
         }
       />
       <MuiCollapse in={open}>

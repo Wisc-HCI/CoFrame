@@ -5,32 +5,33 @@ import { Collapse } from "../Elements/Collapse";
 import { shallow } from 'zustand/shallow';
 import { TextField } from "@mui/material";
 import { clamp } from 'lodash';
+import { JointInput } from "../Elements/JointInput";
 
 function JointGripperInput({ robotID, isGripper }) {
-  const [initialStateInfo, initialState, initialStateValue] = useStore(
+  const [limits, initialState, initialStateValue] = useStore(
     (state) => {
       if (isGripper) {
-        return [[], {}, state.programData[robotID].properties.initialGripState];
+        return [{}, {}, state.programData[robotID].properties.initialGripState];
       } else {
-        let initialStateInfo = [];
-        for (const [key, value] of Object.entries(
-          state.programData[robotID].properties.initialJointState
-        )) {
-          const lower =
-            state.programData[robotID].properties.jointLimit[key].lower;
-          const upper =
-            state.programData[robotID].properties.jointLimit[key].upper;
+        // let initialStateInfo = [];
+        // for (const [key, value] of Object.entries(
+        //   state.programData[robotID].properties.initialJointState
+        // )) {
+        //   const lower =
+        //     state.programData[robotID].properties.jointLimit[key].lower;
+        //   const upper =
+        //     state.programData[robotID].properties.jointLimit[key].upper;
 
-          initialStateInfo.push({
-            key,
-            value: value,
-            lower: lower,
-            upper: upper,
-          });
-        }
+        //   initialStateInfo.push({
+        //     key,
+        //     value: value,
+        //     lower: lower,
+        //     upper: upper,
+        //   });
+        // }
         const initialState =
           state.programData[robotID].properties.initialJointState;
-        return [initialStateInfo, initialState, null];
+        return [state.programData[robotID].properties.jointLimit, initialState, null];
       }
     },
     shallow
@@ -58,7 +59,8 @@ function JointGripperInput({ robotID, isGripper }) {
   } else {
     return (
       <Collapse defaultOpen header="Initial Joint States" spacing={2} contentStyle={{paddingTop:'15px'}}>
-        {initialStateInfo.map((io, i) => (
+        <JointInput jointState={initialState} robotJointInfo={limits} onChange={v=>updateItemSimpleProperty(robotID,v)}/>
+        {/* {initialStateInfo.map((io, i) => (
           <TextField
             key={io.key}
             label={io.key.replace(/_/g, " ")}
@@ -73,7 +75,7 @@ function JointGripperInput({ robotID, isGripper }) {
               })
             }
           />
-        ))}
+        ))} */}
       </Collapse>
     );
   }

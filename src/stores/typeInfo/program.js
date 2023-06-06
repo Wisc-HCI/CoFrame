@@ -5,7 +5,7 @@ import {
 } from "react-icons/fi";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import "./rotate.css";
-import { baseTypeData } from "./baseType";
+import { baseIndicatorLabelFn, baseTypeData } from "./baseType";
 import { merge } from "lodash";
 
 const programDoc = `The Program is the main sequence of actions, such as [Hierarchicals](hierarchicalType), [Move Trajectory](moveTrajectoryType), or [Process Start](processStartType), and [Skills](skillType) that are executed by the [Robot](robotAgentType).`;
@@ -23,7 +23,7 @@ const programFeatures = {
       {
         type: EXTRA_TYPES.INDICATOR_ICON,
         accessor: statusIcon,
-        label: "Status",
+        label: baseIndicatorLabelFn,
       },
       EXTRA_TYPES.DOC_TOGGLE,
       {

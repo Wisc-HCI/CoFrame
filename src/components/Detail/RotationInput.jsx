@@ -29,6 +29,7 @@ const CompoundInput = forwardRef(
         divider={<Divider orientation="vertical" flexItem />}
       >
         <Input
+          size="small"
           autoFocus
           disabled={disabled}
           disableUnderline
@@ -54,6 +55,7 @@ const CompoundInput = forwardRef(
           margin="dense"
         />
         <Input
+          size="small"
           disabled={disabled}
           disableUnderline
           className={other.className}
@@ -78,6 +80,7 @@ const CompoundInput = forwardRef(
           margin="dense"
         />
         <Input
+          size="small"
           disabled={disabled}
           disableUnderline
           className={other.className}
@@ -149,6 +152,7 @@ function RotationInput(props) {
       </InputLabel>
       <OutlinedInput
         notched
+        size="small"
         id="outlined-rotation-vector"
         label="Position"
         color="primaryColor"
@@ -163,6 +167,7 @@ function RotationInput(props) {
         endAdornment={
           <InputAdornment position="end">
             <IconButton
+              size="small"
               disabled={props.disabled || props.mode === "translate"}
               color={props.mode === "rotate" ? "primaryColor" : "inherit"}
               onClick={props.mode === "rotate" ? handleClose : buttonClick}
@@ -177,6 +182,50 @@ function RotationInput(props) {
   );
 }
 export default RotationInput;
+
+export function SimpleRotationInput({
+  value={x:0,y:0,z:0,w:1},
+  onChange=(value)=>{},
+  disabled=false,
+  active=false,
+  onToggleActivity=(newValue)=>{}
+}) {
+  const quatVec = [value.w, value.x, value.y, value.z];
+  const euler = eulerVecToDegrees(eulerFromQuaternion(quatVec,'sxyz'));
+
+  return (
+    <FormControl >
+      <InputLabel htmlFor="outlined-rotation-vector" color="primaryColor" shrink>
+        Rotation
+      </InputLabel>
+      <OutlinedInput
+        notched
+        size="small"
+        id="outlined-rotation-vector"
+        label="Position"
+        color="primaryColor"
+        disabled={disabled || !active}
+        value={euler}
+        inputComponent={CompoundInput}
+        onChange={onChange}
+        inputProps={{shrink:true}}
+        margin='dense'
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              size="small"
+              disabled={disabled}
+              color="primary"
+              onClick={()=>onToggleActivity(!active)}
+            >
+              {active ? <FiSave /> : <FiEdit2 />}
+            </IconButton>
+          </InputAdornment>
+        }
+      />
+    </FormControl>
+  );
+}
 
 // function RotationInput(props) {
 //   const RAD_2_DEG = 180 / Math.PI;

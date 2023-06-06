@@ -459,6 +459,14 @@ export const ProgrammingSliceOverride = (set, get) => ({
       });
     }
   },
+  updateItemSimpleProperties: (id, keyValues) => {
+    set((state) => {
+      Object.entries(keyValues).forEach(([key, value]) => {
+        state.programData[id].properties[key] = value;
+      });
+      state.programData[id].properties.status = STATUS.PENDING;
+    });
+  },
   updateItemPositionProperty: (id, property, value) => {
     set((state) => {
       state.programData[id].properties.position[property] = value;

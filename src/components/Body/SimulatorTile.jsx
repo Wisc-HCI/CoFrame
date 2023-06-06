@@ -18,6 +18,7 @@ export const SimulatorTile = forwardRef((_,ref) => {
   const clearFocus = useStore((state) => state.clearFocus,shallow);
   const tfVisible = useStore((state) => state.tfVisible,shallow);
   const paused = useStore((state) => state.focus.length === 0,shallow);
+  const captureFocus = useStore((state) => state.captureFocus,shallow);
 
   return (
     <Stack
@@ -75,7 +76,7 @@ export const SimulatorTile = forwardRef((_,ref) => {
                   plane={-0.75}
                   fov={50}
                   store={useStore}
-                  onPointerMissed={clearFocus}
+                  onPointerMissed={()=>{if (!captureFocus) {clearFocus()}}}
                   paused={paused}
                   meshLookup={MeshLookupTable}
                 />

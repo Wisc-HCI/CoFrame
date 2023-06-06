@@ -13,12 +13,17 @@ import {
 } from "@mui/material";
 import { strip } from "number-precision";
 
+// const strip = (v)=>{
+//   console.log(v)
+//   return Number(Number(v).toFixed(3))
+// }
 
 const CompoundInput = forwardRef(
   ({ onChange, value, disabled, ...other }, ref) => {
     return (
       <Stack direction="row" spacing={1} ref={ref} divider={<Divider orientation="vertical" flexItem />}>
         <Input
+          size="small"
           disabled={disabled}
           disableUnderline
           className={other.className}
@@ -32,6 +37,7 @@ const CompoundInput = forwardRef(
           margin="dense"
         />
         <Input
+          size="small"
           disabled={disabled}
           disableUnderline
           className={other.className}
@@ -45,6 +51,7 @@ const CompoundInput = forwardRef(
           margin="dense"
         />
         <Input
+          size="small"
           disabled={disabled}
           disableUnderline
           className={other.className}
@@ -87,6 +94,7 @@ function PositionInput(props) {
       </InputLabel>
       <OutlinedInput
         notched
+        size="small"
         id="outlined-position-vector"
         label="Position"
         color="primaryColor"
@@ -99,6 +107,7 @@ function PositionInput(props) {
         endAdornment={
           <InputAdornment position="end">
             <IconButton
+              size="small"
               disabled={props.disabled || props.mode === "rotate"}
               color={props.mode === "translate" ? "primaryColor" : "inherit"}
               aria-label="toggle password visibility"
@@ -113,4 +122,47 @@ function PositionInput(props) {
     </FormControl>
   );
 }
+
+export function SimplePositionInput({
+  value={x:0,y:0,z:0},
+  onChange=(value)=>{},
+  disabled=false,
+  active=false,
+  onToggleActivity=(newValue)=>{}
+}) {
+
+  return (
+    <FormControl>
+      <InputLabel htmlFor="outlined-position-vector" color="primaryColor" shrink>
+        Position
+      </InputLabel>
+      <OutlinedInput
+        notched
+        size="small"
+        id="outlined-position-vector"
+        label="Position"
+        color="primaryColor"
+        disabled={disabled || !active}
+        value={[value.x, value.y, value.z]}
+        inputComponent={CompoundInput}
+        onChange={onChange}
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              size="small"
+              disabled={disabled}
+              color="primary"
+              aria-label="toggle editing position"
+              onClick={()=>onToggleActivity(!active)}
+              // onMouseDown={open ? handleClose : buttonClick}
+            >
+              {active ? <FiSave /> : <FiEdit2 />}
+            </IconButton>
+          </InputAdornment>
+        }
+      />
+    </FormControl>
+  );
+}
+
 export default PositionInput;

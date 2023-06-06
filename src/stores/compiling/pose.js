@@ -40,18 +40,38 @@ export const poseCompiler = ({
   module,
   worldModel,
 }) => {
-  // Create a reachabilty object to indicate who can reach this pose;
-  let reachability = {};
-  let states = {};
-  let goalPose = null;
+  // Initialize status info
   let status = STATUS.VALID;
   let errorCode = null;
+
+  Object.keys(properties.reachability).forEach(robot=>{
+    Object.keys(properties.reachability[robot]).forEach(gripper=>{
+      if (!properties.reachability[robot][gripper]) {
+        status = STATUS.WARN;
+        errorCode = ERROR.UNREACHABLE_POSE;
+      }
+    })
+  })
+
+  if (Object.keys(properties?.states).length > 0 && properties?.position && properties?.rotation && Object.keys(properties?.reachability).length > 0) {
+    return {
+      goalPose:{position:properties.position,rotation:properties.rotation},
+      states:properties.states,
+      reachability:properties.reachability,
+      status,
+      errorCode,
+    };
+  }
+
+  
 
   // Enumerate the robotAgentTypes/gripperTypes currently in the memo. This is technically unsafe,
   // but we pre-process them beforehand so it is fine. We also always assume root execution
   // (which is fine for robots/humans/grippers).
 
   console.log("running pose compiler");
+  let reachability = {};
+  let states = {};
 
   const grippers = Object.values(memo).filter((v) => v.type === "gripperType");
 
@@ -68,7 +88,7 @@ export const poseCompiler = ({
 
       // const quatLog = quaternionLog(basePose.rotation);
       const baseEuler = eulerFromQuaternion(
-        [basePose.w, basePose.x, basePose.y, basePose.z],
+        [basePose.rotation.w, basePose.rotation.x, basePose.rotation.y, basePose.rotation.z],
         "sxyz"
       );
       // console.log("euler",{basePose,baseEuler})
@@ -148,7 +168,7 @@ export const poseCompiler = ({
           // };
 
           // Find the position we need in the attachment link to match the desired pose gripper position
-          goalPose = poseToGoalPosition(
+          const goalPose = poseToGoalPosition(
             worldModel,
             gripper.id,
             attachmentLink,
@@ -205,7 +225,7 @@ export const poseCompiler = ({
 
           // console.log('proximity',proximity)
 
-          // Construct the goals
+          // // Construct the goals
           // const pos = goalPose.position;
           // const rot = goalPose.rotation;
           // const goalQuat = new Quaternion(rot.x, rot.y, rot.z, rot.w);
@@ -268,15 +288,15 @@ export const poseCompiler = ({
       });
     });
 
-  // console.log("pose recalculation: ", { data, reachability, states });
+  console.log("pose recalculation: ", { data, reachability, states });
 
   const newCompiled = {
-    goalPose,
+    goalPose:{position:properties.position,rotation:properties.rotation},
     states,
     reachability,
     status,
     errorCode,
-    otherPropertyUpdates: { states, reachability },
+    otherPropertyUpdates: {states, reachability}
   };
 
   return newCompiled;
