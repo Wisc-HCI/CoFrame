@@ -178,7 +178,10 @@ export const robotMotionCompiler = ({
       steps: statesToSteps(eventsToStates(events)),
       duration: properties.duration,
     };
-  }
+  } else if (properties.duration === compileModel?.[data.id]?.[path]?.duration && 
+    isEqual(poses, compileModel?.[data.id]?.[path]?.poses)) {
+      return {...compileModel?.[data.id]?.[path]};
+    }
 
   robots.forEach((robot)=>{
     console.log("Trajectory planning - robot",robot.id);
