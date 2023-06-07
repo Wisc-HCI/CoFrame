@@ -17,13 +17,16 @@ import {
     addToEnvironModel,
     createEnvironmentModel,
     distance,
+    eulerFromQuaternion,
     getAllChildrenFromModel,
     getUserDataFromModel,
     quaternionFromEuler,
     queryWorldPose,
     updateEnvironModel
 } from "./geometry";
-import { Quaternion } from "three";
+import { Object3D, Quaternion, Vector3 } from "three";
+
+Object3D.DefaultUp.set(0, 0, 1);
 
 const pinchColorFromMagnitude = (magnitude = 0) => {
     return {
@@ -370,6 +373,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
     let currentGraspedThingWidth = -1;
 
     let graspAngle = null;
+    let graspPosition = null
 
     // Tracks the previous grasped object by the gripper
     let previousGraspedThingID = '';
@@ -625,6 +629,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 let gripperOffset = queryWorldPose(programModel, gripOffsetID, '');
                 let gripperRotation = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
                 let selectedGraspRotation = null;
+                let selectedGraspPosition = null;
 
                 // If grasp succeeded and we have things available to be grasped, search for the corresponding
                 // thing that is being grasped
@@ -632,22 +637,27 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                     for (let i = 0; i < bucket.length; i++) {
                         // Get all potential grasp locations for a given thing
                         let graspPointIDs = getAllChildrenFromModel(programModel, bucket[i].id);
+
+                        let thingPosition = queryWorldPose(programModel, bucket[i].id, '');
                         // Search over the grasp locations and determine whether any are within some
                         // tolerance of the gripper's offset position/rotation
                         if (graspPointIDs) {
                             graspPointIDs.forEach(graspPointID => {
-                                let graspPosition = queryWorldPose(programModel, graspPointID, '');
+                                let tmpgraspPosition = queryWorldPose(programModel, graspPointID, '');
                                 let graspWidth = getUserDataFromModel(programModel, graspPointID, 'width');
-                                let graspRotation = new Quaternion(graspPosition.rotation.x, graspPosition.rotation.y, graspPosition.rotation.z, graspPosition.rotation.w);
+                                let graspRotation = new Quaternion(tmpgraspPosition.rotation.x, tmpgraspPosition.rotation.y, tmpgraspPosition.rotation.z, tmpgraspPosition.rotation.w);
                                 if (!grasping &&
-                                    distance(graspPosition.position, gripperOffset.position) <= MAX_GRIPPER_DISTANCE_DIFF &&
+                                    distance(tmpgraspPosition.position, gripperOffset.position) <= MAX_GRIPPER_DISTANCE_DIFF &&
                                     graspRotation.angleTo(gripperRotation) <= MAX_GRIPPER_ROTATION_DIFF &&
                                     moveGripper.properties.positionEnd <= graspWidth
                                 ) {
                                     grasping = true;
                                     currentGraspedThingWidth = graspWidth;
                                     id = bucket[i].id;
-                                    selectedGraspRotation = graspRotation;
+                                    let gripperStuff = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
+                                    let thingStuff = new Quaternion(thingPosition.rotation.x, thingPosition.rotation.y, thingPosition.rotation.z, thingPosition.rotation.w);
+                                    selectedGraspRotation = gripperStuff.invert().multiply(thingStuff);
+                                    selectedGraspPosition = new Vector3(thingPosition.position.x - tmpgraspPosition.position.x, thingPosition.position.y - tmpgraspPosition.position.y, thingPosition.position.z - tmpgraspPosition.position.z);
                                 }
                             });
                         }
@@ -661,14 +671,15 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 // Update trackers for grasped things
                 if (grasping && !releasing) {
                     currentGraspedThingID = id;
-                    let {_, rotation} = queryWorldPose(programModel, currentGraspedThingID, '');
-                    graspAngle = (new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w)).multiply(selectedGraspRotation.invert());
+                    graspAngle = selectedGraspRotation;
+                    graspPosition = selectedGraspPosition;
                 }
                 if (!grasping && releasing) {
                     previousGraspedThingID = currentGraspedThingID;
                     currentGraspedThingID = '';
                     currentGraspedThingWidth = -1;
                     graspAngle = null;
+                    graspPosition = null;
                 }
             }
 
@@ -742,9 +753,10 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 // Get world pose of the gripper offset and update the grasped object to this pose
                 let gripperOffset = queryWorldPose(programModel, gripOffsetID, '');
                 // Rotate the thing to use the grasped point's rotation (relative to the thing)
-                let adjustedRotation = graspAngle ?  new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w).multiply(graspAngle) : gripperOffset.rotation
+                let adjustedRotation = graspAngle ? new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w).multiply(new Quaternion(graspAngle.x, graspAngle.y, graspAngle.z, graspAngle.w)) : gripperOffset.rotation
+                let adjustedPosition = graspPosition ? new Vector3(gripperOffset.position.x + graspPosition.x, gripperOffset.position.y + graspPosition.y, gripperOffset.position.z + graspPosition.z) : gripperOffset.position;
                 let rotatedToGraspPoint = {x: adjustedRotation.x, y: adjustedRotation.y, z: adjustedRotation.z, w: adjustedRotation.w};
-                programModel = updateEnvironModel(programModel, currentGraspedThingID, gripperOffset.position, rotatedToGraspPoint);
+                programModel = updateEnvironModel(programModel, currentGraspedThingID, adjustedPosition, rotatedToGraspPoint);
 
                 // If thing hasn't been updated to the most recent timestep, backfill data using last data point
                 if (lastTimestamp[currentGraspedThingID] !== 0 &&
@@ -765,9 +777,9 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
 
                 // Add newest datapoint
                 lastTimestamp[currentGraspedThingID] = timesteps.length;
-                dict[currentGraspedThingID].position.x.push(gripperOffset.position.x);
-                dict[currentGraspedThingID].position.y.push(gripperOffset.position.y);
-                dict[currentGraspedThingID].position.z.push(gripperOffset.position.z);
+                dict[currentGraspedThingID].position.x.push(adjustedPosition.x);
+                dict[currentGraspedThingID].position.y.push(adjustedPosition.y);
+                dict[currentGraspedThingID].position.z.push(adjustedPosition.z);
                 dict[currentGraspedThingID].rotation.x.push(rotatedToGraspPoint.x);
                 dict[currentGraspedThingID].rotation.y.push(rotatedToGraspPoint.y);
                 dict[currentGraspedThingID].rotation.z.push(rotatedToGraspPoint.z);
