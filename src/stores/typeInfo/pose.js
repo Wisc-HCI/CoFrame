@@ -88,5 +88,5 @@ const waypointFeatures = {
   }
 }
 
-export const locationType = merge(locationFeatures, poseFeatures, baseTypeData);
-export const waypointType = merge(waypointFeatures, poseFeatures, baseTypeData);
+export const locationType = merge(locationFeatures, baseTypeData, poseFeatures);
+export const waypointType = merge(waypointFeatures, baseTypeData, poseFeatures);
