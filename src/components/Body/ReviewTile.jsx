@@ -1,7 +1,7 @@
 import React from "react";
-import { FiRefreshCw } from "react-icons/fi";
+import { FiAlertCircle, FiCheckCircle, FiRefreshCcw, FiRefreshCw } from "react-icons/fi";
 import useStore from "../../stores/Store";
-import { shallow } from 'zustand/shallow';
+import { shallow } from "zustand/shallow";
 import { ReviewSection } from "../Review/ReviewSection";
 import useMeasure from "react-use-measure";
 import { FrameTabBar } from "../FrameTabBar";
@@ -12,9 +12,13 @@ import {
   Stack,
   Paper,
   Badge,
-  Typography
+  Typography,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import { memo } from "react";
+import { ExpandCarrot } from "../Elements/ExpandCarrot";
+import frameStyles from "../../frameStyles";
 
 const isComplete = (state, sectionId) =>
   state.sections[sectionId].issues
@@ -25,7 +29,7 @@ const isBlocked = (state, sectionId) =>
     (dep) => !isComplete(state, dep)
   ).length > 0;
 
-export const ReviewTile = memo(({drawerOpen}) => {
+export const ReviewTile = memo(({ drawerOpen }) => {
   const frames = useStore((state) => state.frames);
 
   const [frameId, setFrame, refresh, blockages] = useStore(
@@ -61,62 +65,93 @@ export const ReviewTile = memo(({drawerOpen}) => {
     .indexOf(frameId);
 
   const [ref, bounds] = useMeasure();
-  //   const divStyle = useSpring({ width: "100%", config: config.stiff });
+
+  const [reviewExpanded, setReviewExpanded] = useStore(
+    (state) => [state.reviewExpanded, state.setReviewExpanded],
+    shallow
+  );
 
   return (
     <Paper
       ref={ref}
       sx={{
-        width: 350,
+        width: reviewExpanded ? 300 : 50,
         borderRadius: 0,
         padding: "5px",
         backgroundColor: "black",
       }}
       elevation={0}
     >
-      <FrameTabBar
-        active={frameId}
-        onChange={setFrame}
-        width={338}
-        backgroundColor="transparent"
-      />
-      <Stack direction="row" style={{justifyContent:'space-between',alignContent:'center',padding:5}}>
-        <Typography component='span'>Review</Typography>
-        <Badge
-          color="primary"
-          badgeContent={<b>!</b>}
-          invisible={reviewableChanges === 0}
-          anchorOrigin={{ vertical: "top", horizontal: "left" }}
+      <Stack
+        direction={reviewExpanded ? "row" : "column"}
+        alignItems={reviewExpanded ? 'flex-start' : "center"}
+        justifyContent="center"
+        style={{marginBottom: reviewExpanded ? 5 : 0}}
+      >
+        <span>
+        <IconButton
+          onClick={() => {
+            setReviewExpanded(!reviewExpanded);
+          }}
         >
-          <Button
-            color="primaryColor"
-            variant="outlined"
-            size="small"
-            startIcon={<FiRefreshCw />}
-            onClick={refresh}
-            disabled={isProcessing}
+          <ExpandCarrot expanded={reviewExpanded} flip fontSize={20} />
+        </IconButton>
+        </span>
+        <FrameTabBar
+          active={frameId}
+          onChange={setFrame}
+          width={reviewExpanded ? 210 : 46}
+          height={reviewExpanded ? 60 : 210}
+          backgroundColor="transparent"
+          vertical={!reviewExpanded}
+        />
+        {reviewExpanded && (
+          <Tooltip
+            arrow
+            title="Refresh Feedback"
+            color={frameId}
           >
-            Refresh
-          </Button>
-        </Badge>
+            <span>
+            <IconButton
+              // style={{ width: 46, height: 46 }}
+              color="primaryColor"
+              variant="outlined"
+              onClick={refresh}
+              disabled={isProcessing || reviewableChanges === 0}
+            >
+              <FiRefreshCcw />
+            </IconButton>
+            </span>
+          </Tooltip>
+        )}
       </Stack>
-      <ScrollRegion vertical height={`calc(${bounds.height - 105}px - ${drawerOpen ? "20vh" : "0vh"})`}>
-        <Stack
-          direction="column"
-          style={{ width: "calc(100% - 6px)" }}
-          round="small"
-          spacing={0.5}
-        >
-          {Object.values(frames)[frameIdx].sections.map((section, idx) => (
-            <ReviewSection
-              key={section}
-              sectionId={section}
-              blocked={idx >= blockages[frameIdx]}
-              initialBlocked={idx === blockages[frameIdx]}
-            />
-          ))}
-        </Stack>
-      </ScrollRegion>
+
+      {reviewExpanded && (
+        <>
+          <ScrollRegion
+            vertical
+            height={`calc(${bounds.height - 75}px - ${
+              drawerOpen ? "20vh" : "0vh"
+            })`}
+          >
+            <Stack
+              direction="column"
+              style={{ width: "calc(100% - 1px)" }}
+              round="small"
+              spacing={0.5}
+            >
+              {Object.values(frames)[frameIdx].sections.map((section, idx) => (
+                <ReviewSection
+                  key={section}
+                  sectionId={section}
+                  blocked={idx >= blockages[frameIdx]}
+                  initialBlocked={idx === blockages[frameIdx]}
+                />
+              ))}
+            </Stack>
+          </ScrollRegion>
+        </>
+      )}
     </Paper>
   );
 });
