@@ -24,7 +24,7 @@ import {
     queryWorldPose,
     updateEnvironModel
 } from "./geometry";
-import { Object3D, Quaternion, Vector3 } from "three";
+import { Matrix4, Object3D, Quaternion, Vector3 } from "three";
 
 Object3D.DefaultUp.set(0, 0, 1);
 
@@ -654,10 +654,19 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                                     grasping = true;
                                     currentGraspedThingWidth = graspWidth;
                                     id = bucket[i].id;
-                                    let gripperStuff = new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w);
-                                    let thingStuff = new Quaternion(thingPosition.rotation.x, thingPosition.rotation.y, thingPosition.rotation.z, thingPosition.rotation.w);
-                                    selectedGraspRotation = gripperStuff.invert().multiply(thingStuff);
+                                    let gripperMatrix = new Matrix4();
+                                    gripperMatrix.compose(new Vector3(gripperOffset.position.x, gripperOffset.position.y, gripperOffset.position.z),
+                                                          new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w), 
+                                                          new Vector3(1,1,1));
+                                    let thingMatrix = new Matrix4();
+                                    thingMatrix.compose(new Vector3(thingPosition.position.x, thingPosition.position.y, thingPosition.position.z),
+                                                        new Quaternion(thingPosition.rotation.x, thingPosition.rotation.y, thingPosition.rotation.z, thingPosition.rotation.w),
+                                                        new Vector3(1,1,1));
+                                    let graspMatrix = new Matrix4();
+                                    // selectedGraspRotation = gripperStuff.invert().multiply(thingStuff);
+                                    selectedGraspRotation = gripperMatrix.invert().multiply(thingMatrix);
                                     selectedGraspPosition = new Vector3(thingPosition.position.x - tmpgraspPosition.position.x, thingPosition.position.y - tmpgraspPosition.position.y, thingPosition.position.z - tmpgraspPosition.position.z);
+                                    // selectedGraspPosition = new Vector3(thingPosition.position.x, thingPosition.position.y, thingPosition.position.z);
                                 }
                             });
                         }
@@ -753,8 +762,12 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 // Get world pose of the gripper offset and update the grasped object to this pose
                 let gripperOffset = queryWorldPose(programModel, gripOffsetID, '');
                 // Rotate the thing to use the grasped point's rotation (relative to the thing)
-                let adjustedRotation = graspAngle ? new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w).multiply(new Quaternion(graspAngle.x, graspAngle.y, graspAngle.z, graspAngle.w)) : gripperOffset.rotation
-                let adjustedPosition = graspPosition ? new Vector3(gripperOffset.position.x + graspPosition.x, gripperOffset.position.y + graspPosition.y, gripperOffset.position.z + graspPosition.z) : gripperOffset.position;
+                let gripperMatrix = new Matrix4();
+                gripperMatrix.compose(new Vector3(gripperOffset.position.x, gripperOffset.position.y, gripperOffset.position.z), new Quaternion(gripperOffset.rotation.x, gripperOffset.rotation.y, gripperOffset.rotation.z, gripperOffset.rotation.w), new Vector3(1,1,1));
+                let adjustedRotation = graspAngle ? new Quaternion().setFromRotationMatrix(gripperMatrix.multiply(graspAngle.clone())) : gripperOffset.rotation
+                // let adjustedPosition = graspPosition ? new Vector3(gripperOffset.position.x + graspPosition.x, gripperOffset.position.y + graspPosition.y, gripperOffset.position.z + graspPosition.z) : gripperOffset.position;
+                // let adjustedPosition = gripperOffset.position;
+                let adjustedPosition = graspAngle ? new Vector3().setFromMatrixPosition(gripperMatrix.multiply(graspAngle.clone())) : gripperOffset.position;
                 let rotatedToGraspPoint = {x: adjustedRotation.x, y: adjustedRotation.y, z: adjustedRotation.z, w: adjustedRotation.w};
                 programModel = updateEnvironModel(programModel, currentGraspedThingID, adjustedPosition, rotatedToGraspPoint);
 
