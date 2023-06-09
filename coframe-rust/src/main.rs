@@ -58,7 +58,7 @@ fn main() {
             vec![0.0, 0.4, 0.1],
         ];
 
-    let result = filter(&input_vec,|_v| true,100,0);
+    let result = filter(&input_vec,|_v| true,100);
     match result {
         Ok(smoothed) => {
             println!("Input\n{:?}",input_vec);

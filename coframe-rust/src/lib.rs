@@ -110,9 +110,18 @@ pub fn compute_pose_js(
     attachment_link: String,
     shapes: JsValue,
 ) -> Result<JsValue, serde_wasm_bindgen::Error> {
-    let goal_iso: Isometry3<f64> = serde_wasm_bindgen::from_value(goal).unwrap();
-    let origin_iso: Isometry3<f64> = serde_wasm_bindgen::from_value(origin).unwrap();
-    let shape_vec: Option<Vec<Shape>> = serde_wasm_bindgen::from_value(shapes).unwrap();
+    let goal_iso: Isometry3<f64> = serde_wasm_bindgen::from_value(goal.clone()).unwrap_or_else(|_| {
+        console_log!("Error in goal_iso: {:?}", goal);
+        Isometry3::identity()
+    });
+    let origin_iso: Isometry3<f64> = serde_wasm_bindgen::from_value(origin.clone()).unwrap_or_else(|_| {
+        console_log!("Error in origin_iso: {:?}", origin);
+        Isometry3::identity()
+    });
+    let shape_vec: Option<Vec<Shape>> = serde_wasm_bindgen::from_value(shapes.clone()).unwrap_or_else(|_| {
+        console_log!("Error in shape_vec: {:?}", shapes);
+        None
+    });
     return serialize(&compute_pose(urdf,goal_iso,origin_iso,attachment_link,shape_vec));
 }
 
@@ -521,7 +530,7 @@ pub fn plan_trajectory(
             match planning_result {
                 Ok(p) => {
                     let smoothed_path =
-                        filter(&p, |x| planner.check_state(&x.to_vec()), p.len() * 200, 0).unwrap();
+                        filter(&p, |x| planner.check_state(&x.to_vec()), p.len() * 200).unwrap();
                     // let mut raw_path = p.clone();
                     // // Smooth the result
                     // rrt::smooth_path(
@@ -874,7 +883,6 @@ pub fn filter<FF, N>(
     state_vector: &Vec<Vec<N>>,
     mut is_free: FF,
     rounds: usize,
-    _window_size: usize,
 ) -> Result<Vec<Vec<N>>, String>
 where
     FF: FnMut(&[N]) -> bool,
