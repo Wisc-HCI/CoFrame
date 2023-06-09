@@ -181,41 +181,43 @@ export const GuiSlice = (set, get) => ({
   setViewMode: (mode) => set(_ => ({ viewMode: mode })),
   updateItemSelected: (id, value) => {
     set((state) => {
-      console.log({id,value})
-      const item = state.programData[id];
-      const usedId = (item.dataType === DATA_TYPES.REFERENCE || item.dataType === DATA_TYPES.CALL) ? item.ref : id;
-      
-      // Clear out current selected
-      state.focus.forEach(f => {
-        if (state.programData[f]) {
-          state.programData[f].selected = false
-        }
-      });
+      if (!state.captureFocus) {
+        console.log({id,value})
+        const item = state.programData[id];
+        const usedId = (item.dataType === DATA_TYPES.REFERENCE || item.dataType === DATA_TYPES.CALL) ? item.ref : id;
+        
+        // Clear out current selected
+        state.focus.forEach(f => {
+          if (state.programData[f]) {
+            state.programData[f].selected = false
+          }
+        });
 
-      // Handle logic of setting focus (replace or trim)
-      if (value) {
-        if (state.focus.includes(usedId)) {
-          state.focus.length = state.focus.indexOf(usedId) + 1
+        // Handle logic of setting focus (replace or trim)
+        if (value) {
+          if (state.focus.includes(usedId)) {
+            state.focus.length = state.focus.indexOf(usedId) + 1
+          } else {
+            state.focus = [usedId]
+          }
         } else {
-          state.focus = [usedId]
+          if (state.focus.includes(usedId)) {
+            state.focus.length = state.focus.indexOf(usedId)
+          } else {
+            state.focus = []
+          }
         }
-      } else {
-        if (state.focus.includes(usedId)) {
-          state.focus.length = state.focus.indexOf(usedId)
-        } else {
-          state.focus = []
-        }
+        
+
+        // Update the selected property for items in focus
+        state.focus.forEach(f => {
+          if (state.programData[f]) {
+            state.programData[f].selected = true
+          }
+        });
+
+        state.activeFocus = state.focus[state.focus.length-1]
       }
-      
-
-      // Update the selected property for items in focus
-      state.focus.forEach(f => {
-        if (state.programData[f]) {
-          state.programData[f].selected = true
-        }
-      });
-
-      state.activeFocus = state.focus[state.focus.length-1]
     })
   },
   collisionsVisible: false,
