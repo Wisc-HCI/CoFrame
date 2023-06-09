@@ -465,6 +465,9 @@ export const RobotStateConfigurator = memo(
     );
     const setCaptureFocus = useStore((state) => state.setCaptureFocus, shallow);
 
+    // Disallows swapping to other locations/waypoints, must exit the detail window to remove capturefocus
+    setCaptureFocus(true);
+
     const [origin, setOrigin] = useState({
       translation: [0, 0, 0],
       rotation: [0, 0, 0, 1],
@@ -621,12 +624,10 @@ export const RobotStateConfigurator = memo(
           };
           onNewPoseGoal(goal);
         });
-        setCaptureFocus(true);
       } else {
         setEditMode(null);
         setSolver(null);
         setCustomMoveHook(null);
-        setCaptureFocus(false);
       }
     }, [editing, editMode]);
 
