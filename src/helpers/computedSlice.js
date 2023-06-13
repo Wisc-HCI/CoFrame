@@ -22,9 +22,10 @@ import {
     getUserDataFromModel,
     quaternionFromEuler,
     queryWorldPose,
-    updateEnvironModel
+    updateEnvironModel,
+    updateEnvironModelQuaternion
 } from "./geometry";
-import { Matrix4, Object3D, Quaternion, Vector3 } from "three";
+import { Matrix4, Object3D, Quaternion, Vector3, Euler } from "three";
 
 Object3D.DefaultUp.set(0, 0, 1);
 
@@ -299,9 +300,9 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
             position: pose_stored.refData
                 ? pose_stored.refData.properties.position
                 : pose_stored.properties.position,
-            rotation: pose_stored.refData
+            rotation: quaternionFromEuler(pose_stored.refData
                 ? pose_stored.refData.properties.rotation
-                : pose_stored.properties.rotation,
+                : pose_stored.properties.rotation),
             scale: { x: 1, y: 1, z: 1 },
             highlighted: false,
             showName: false,
@@ -622,7 +623,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
 
                 // Update model positions of all links in the gripper
                 Object.keys(lastMoveGripperData.data.links).forEach((link) => {
-                    programModel = updateEnvironModel(programModel, link, lastMoveGripperData.data.links[link].position, lastMoveGripperData.data.links[link].rotation);
+                    programModel = updateEnvironModelQuaternion(programModel, link, lastMoveGripperData.data.links[link].position, lastMoveGripperData.data.links[link].rotation);
                 });
 
                 // Get the gripper offset position/rotation

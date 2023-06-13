@@ -71,6 +71,7 @@ export const useNumeric = ({
   const [state, setState] = useState(parse(initial));
 
   const onChange = (event) => {
+    console.log("onchange", event.target.value);
     if (event?.nativeEvent?.data) {
       if (!VALID_CHARS.includes(event.nativeEvent.data)) {
         setState((prev) => ({
@@ -78,6 +79,7 @@ export const useNumeric = ({
           status: prev.status,
           textValue: prev.textValue
         }));
+        console.log("finished setstate")
         return;
       }
     }
@@ -88,6 +90,7 @@ export const useNumeric = ({
         status: getStatus(0),
         textValue: event.target.value
       });
+      console.log("finished setstate")
       return;
     }
 
@@ -98,6 +101,7 @@ export const useNumeric = ({
         status: getStatus(0),
         textValue: event.target.value
       });
+      console.log("finished setstate")
       return;
     }
 
@@ -108,18 +112,22 @@ export const useNumeric = ({
         status: NUMERIC_STATUS.INVALID,
         textValue: event.target.value
       }));
+      console.log("finished setstate")
       return;
     } else if (PASSABLE_NUMERIC_STATUSES.includes(newState.status)) {
       setState(newState);
       onValidChange(newState.numeric);
+      console.log("finished setstate")
       return;
     } else if (newState.status === NUMERIC_STATUS.BELOW) {
       setState(newState);
       onValidChange(min);
+      console.log("finished setstate")
       return;
     } else if (newState.status === NUMERIC_STATUS.ABOVE) {
       setState(newState);
       onValidChange(max);
+      console.log("finished setstate")
       return;
     }
     console.log("not handled", event.target.value);

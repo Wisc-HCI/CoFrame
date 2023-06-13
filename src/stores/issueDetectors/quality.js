@@ -18,6 +18,7 @@ import {
   getUserDataFromModel,
   queryWorldPose,
   updateEnvironModel,
+  updateEnvironModelQuaternion
 } from "../../helpers/geometry";
 import { Quaternion } from "three";
 
@@ -942,7 +943,7 @@ export const findThingFlowIssues = ({ program, programData, compiledData }) => {
     if (step.type === STEP_TYPE.SCENE_UPDATE) {
       Object.keys(step.data.links).forEach((link) => {
         // Update the program model for each link
-        programModel = updateEnvironModel(
+        programModel = updateEnvironModelQuaternion(
           programModel,
           link,
           step.data.links[link].position,
@@ -957,7 +958,7 @@ export const findThingFlowIssues = ({ program, programData, compiledData }) => {
           gripperId + "-gripOffset",
           ""
         );
-        programModel = updateEnvironModel(
+        programModel = updateEnvironModelQuaternion(
           programModel,
           currentGrippedThing,
           gripperOffset.position,

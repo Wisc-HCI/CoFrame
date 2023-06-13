@@ -11,7 +11,8 @@ import {
   Divider,
   Stack,
 } from "@mui/material";
-import { strip } from "number-precision";
+import { useNumeric, NUMERIC_STATUS } from "../Elements/useNumeric";
+import { Spinner } from "../Elements/NumberInput";
 
 // const strip = (v)=>{
 //   console.log(v)
@@ -20,21 +21,104 @@ import { strip } from "number-precision";
 
 const CompoundInput = forwardRef(
   ({ onChange, value, disabled, ...other }, ref) => {
+    const {
+      textValue: textValue0,
+      status: status0,
+      onChange: onChangeInner0,
+      onStepUp: onStepUp0,
+      onStepDown: onStepDown0,
+    } = useNumeric({
+      initial: value[0],
+      stepSize: other.step || 0.1,
+      min: other.min == undefined ? -Infinity : other.min,
+      max: other.max == undefined ? -Infinity : other.max,
+      onValidChange: async (v) => {
+        console.log('changing x');
+        onChange({
+          target: {
+            name: other.name,
+            value: { x: v, y: value[1], z: value[2] },
+          },
+        })
+      },
+    });
+
+    const {
+      textValue: textValue1,
+      status: status1,
+      onChange: onChangeInner1,
+      onStepUp: onStepUp1,
+      onStepDown: onStepDown1,
+    } = useNumeric({
+      initial: value[1],
+      stepSize: other.step || 0.1,
+      min: other.min == undefined ? -Infinity : other.min,
+      max: other.max == undefined ? -Infinity : other.max,
+      onValidChange: async (v) =>
+        onChange({
+          target: {
+            name: other.name,
+            value: { x: value[0], y: v, z: value[2] },
+          },
+        }),
+    });
+
+    const {
+      textValue: textValue2,
+      status: status2,
+      onChange: onChangeInner2,
+      onStepUp: onStepUp2,
+      onStepDown: onStepDown2,
+    } = useNumeric({
+      initial: value[2],
+      stepSize: other.step || 0.1,
+      min: other.min == undefined ? -Infinity : other.min,
+      max: other.max == undefined ? -Infinity : other.max,
+      onValidChange: async (v) =>
+        onChange({
+          target: {
+            name: other.name,
+            value: { x: value[0], y: value[1], z: v },
+          },
+        }),
+    });
+
     return (
-      <Stack direction="row" spacing={1} ref={ref} divider={<Divider orientation="vertical" flexItem />}>
+      <Stack
+        direction="row"
+        spacing={1}
+        ref={ref}
+        divider={<Divider orientation="vertical" flexItem />}
+      >
         <Input
           size="small"
           disabled={disabled}
           disableUnderline
           className={other.className}
           label={null}
-          value={value[0]}
-          inputProps={{step:0.1}}
+          value={textValue0}
+          inputProps={{ step: 0.1 }}
           onFocus={other.onFocus}
           onBlur={other.onBlur}
-          onChange={(e)=>{onChange({target:{name:other.name,value:{x:strip(e.target.value),y:value[1],z:value[2]}}})}}
-          type="number"
+          onChange={onChangeInner0}
           margin="dense"
+          endAdornment={
+            <InputAdornment position="end">
+              <Spinner
+                disabled={disabled}
+                above={
+                  status0 === NUMERIC_STATUS.ABOVE ||
+                  status0 === NUMERIC_STATUS.UPPER_BOUND
+                }
+                below={
+                  status0 === NUMERIC_STATUS.BELOW ||
+                  status0 === NUMERIC_STATUS.LOWER_BOUND
+                }
+                onClickDown={onStepDown0}
+                onClickUp={onStepUp0}
+              />
+            </InputAdornment>
+          }
         />
         <Input
           size="small"
@@ -42,13 +126,29 @@ const CompoundInput = forwardRef(
           disableUnderline
           className={other.className}
           label={null}
-          value={value[1]}
-          inputProps={{step:0.1}}
+          value={textValue1}
+          inputProps={{ step: 0.1 }}
           onFocus={other.onFocus}
           onBlur={other.onBlur}
-          onChange={(e)=>{onChange({target:{name:other.name,value:{x:value[0],y:strip(e.target.value),z:value[2]}}})}}
-          type="number"
+          onChange={onChangeInner1}
           margin="dense"
+          endAdornment={
+            <InputAdornment position="end">
+              <Spinner
+                disabled={disabled}
+                above={
+                  status1 === NUMERIC_STATUS.ABOVE ||
+                  status1 === NUMERIC_STATUS.UPPER_BOUND
+                }
+                below={
+                  status1 === NUMERIC_STATUS.BELOW ||
+                  status1 === NUMERIC_STATUS.LOWER_BOUND
+                }
+                onClickDown={onStepDown1}
+                onClickUp={onStepUp1}
+              />
+            </InputAdornment>
+          }
         />
         <Input
           size="small"
@@ -56,13 +156,29 @@ const CompoundInput = forwardRef(
           disableUnderline
           className={other.className}
           label={null}
-          value={value[2]}
-          inputProps={{step:0.1}}
+          value={textValue2}
+          inputProps={{ step: 0.1 }}
           onFocus={other.onFocus}
           onBlur={other.onBlur}
-          onChange={(e)=>{onChange({target:{name:other.name,value:{x:value[0],y:value[1],z:strip(e.target.value)}}})}}
-          type="number"
+          onChange={onChangeInner2}
           margin="dense"
+          endAdornment={
+            <InputAdornment position="end">
+              <Spinner
+                disabled={disabled}
+                above={
+                  status2 === NUMERIC_STATUS.ABOVE ||
+                  status2 === NUMERIC_STATUS.UPPER_BOUND
+                }
+                below={
+                  status2 === NUMERIC_STATUS.BELOW ||
+                  status2 === NUMERIC_STATUS.LOWER_BOUND
+                }
+                onClickDown={onStepDown2}
+                onClickUp={onStepUp2}
+              />
+            </InputAdornment>
+          }
         />
       </Stack>
     );
@@ -89,7 +205,11 @@ function PositionInput(props) {
 
   return (
     <FormControl>
-      <InputLabel htmlFor="outlined-position-vector" color="primaryColor" shrink>
+      <InputLabel
+        htmlFor="outlined-position-vector"
+        color="primaryColor"
+        shrink
+      >
         Position
       </InputLabel>
       <OutlinedInput
@@ -124,16 +244,19 @@ function PositionInput(props) {
 }
 
 export function SimplePositionInput({
-  value={x:0,y:0,z:0},
-  onChange=(value)=>{},
-  disabled=false,
-  active=false,
-  onToggleActivity=(newValue)=>{}
+  value = { x: 0, y: 0, z: 0 },
+  onChange = (value) => {},
+  disabled = false,
+  active = false,
+  onToggleActivity = (newValue) => {},
 }) {
-
   return (
     <FormControl>
-      <InputLabel htmlFor="outlined-position-vector" color="primaryColor" shrink>
+      <InputLabel
+        htmlFor="outlined-position-vector"
+        color="primaryColor"
+        shrink
+      >
         Position
       </InputLabel>
       <OutlinedInput
@@ -153,7 +276,7 @@ export function SimplePositionInput({
               disabled={disabled}
               color="primary"
               aria-label="toggle editing position"
-              onClick={()=>onToggleActivity(!active)}
+              onClick={() => onToggleActivity(!active)}
               // onMouseDown={open ? handleClose : buttonClick}
             >
               {active ? <FiSave /> : <FiEdit2 />}

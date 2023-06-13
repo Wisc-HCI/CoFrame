@@ -1,4 +1,4 @@
-import { Quaternion, Vector3, Group, Object3D, Matrix4 } from "three";
+import { Quaternion, Vector3, Group, Object3D, Matrix4, Euler } from "three";
 import { DATA_TYPES } from "simple-vp";
 import { REFERENCEABLE_OBJECTS } from "../stores/Constants";
 import { transformToThreeMatrix } from "./conversion";
@@ -68,56 +68,57 @@ axes : One of 24 axis sequences as string or encoded tuple
 >>> numpy.allclose(q, [0.435953, 0.310622, -0.718287, 0.444435])
 True
 */
-  let [ai, aj, ak] = [...vec3];
-  let [firstaxis, parity, repetition, frame] = [
-    ..._AXES2TUPLE[axes.toLowerCase()],
-  ];
+  // let [ai, aj, ak] = [...vec3];
+  // let [firstaxis, parity, repetition, frame] = [
+  //   ..._AXES2TUPLE[axes.toLowerCase()],
+  // ];
 
-  let i = firstaxis + 1;
-  let j = _NEXT_AXIS[i + parity - 1] + 1;
-  let k = _NEXT_AXIS[i - parity] + 1;
+  // let i = firstaxis + 1;
+  // let j = _NEXT_AXIS[i + parity - 1] + 1;
+  // let k = _NEXT_AXIS[i - parity] + 1;
 
-  if (frame !== 0) {
-    let values = [...[ai, ak]];
-    ai = values[1];
-    ak = values[0];
-  }
-  if (parity !== 0) {
-    aj = -1 * aj;
-  }
+  // if (frame !== 0) {
+  //   let values = [...[ai, ak]];
+  //   ai = values[1];
+  //   ak = values[0];
+  // }
+  // if (parity !== 0) {
+  //   aj = -1 * aj;
+  // }
 
-  ai = ai / 2.0;
-  aj = aj / 2.0;
-  ak = ak / 2.0;
-  let ci = Math.cos(ai);
-  let si = Math.sin(ai);
-  let cj = Math.cos(aj);
-  let sj = Math.sin(aj);
-  let ck = Math.cos(ak);
-  let sk = Math.sin(ak);
-  let cc = ci * ck;
-  let cs = ci * sk;
-  let sc = si * ck;
-  let ss = si * sk;
+  // ai = ai / 2.0;
+  // aj = aj / 2.0;
+  // ak = ak / 2.0;
+  // let ci = Math.cos(ai);
+  // let si = Math.sin(ai);
+  // let cj = Math.cos(aj);
+  // let sj = Math.sin(aj);
+  // let ck = Math.cos(ak);
+  // let sk = Math.sin(ak);
+  // let cc = ci * ck;
+  // let cs = ci * sk;
+  // let sc = si * ck;
+  // let ss = si * sk;
 
-  let q = [null, null, null, null];
-  if (repetition !== 0) {
-    q[0] = cj * (cc - ss);
-    q[i] = cj * (cs + sc);
-    q[j] = sj * (cc + ss);
-    q[k] = sj * (cs - sc);
-  } else {
-    q[0] = cj * cc + sj * ss;
-    q[i] = cj * sc - sj * cs;
-    q[j] = cj * ss + sj * cc;
-    q[k] = cj * cs - sj * sc;
-  }
+  // let q = [null, null, null, null];
+  // if (repetition !== 0) {
+  //   q[0] = cj * (cc - ss);
+  //   q[i] = cj * (cs + sc);
+  //   q[j] = sj * (cc + ss);
+  //   q[k] = sj * (cs - sc);
+  // } else {
+  //   q[0] = cj * cc + sj * ss;
+  //   q[i] = cj * sc - sj * cs;
+  //   q[j] = cj * ss + sj * cc;
+  //   q[k] = cj * cs - sj * sc;
+  // }
 
-  if (parity !== 0) {
-    q[j] *= -1.0;
-  }
+  // if (parity !== 0) {
+  //   q[j] *= -1.0;
+  // }
   
-  return q;
+  // return q;
+  return new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
 };
 
 export const eulerFromMatrix = (matrix, axes = "szxy") => {
@@ -408,11 +409,10 @@ export const updateWorldModelWithTransforms = (model, transforms) => {
       transform.position.y,
       transform.position.z
     );
-    model[transformId].quaternion.set(
+    model[transformId].rotation.set(
       transform.rotation.x,
       transform.rotation.y,
-      transform.rotation.z,
-      transform.rotation.w
+      transform.rotation.z
     );
   });
   return model;
@@ -507,11 +507,10 @@ export const addGraspPointToModel = (model, parentId, itemId, position, rotation
       position.y,
       position.z
     );
-    model[itemId].quaternion.set(
+    model[itemId].rotation.set(
       rotation.x,
       rotation.y,
-      rotation.z,
-      rotation.w
+      rotation.z
     );
     model[itemId].uuid = itemId;
     model[itemId].userData['width'] = width;
@@ -543,6 +542,22 @@ export const addToEnvironModel = (model, parentId, itemId, position, rotation) =
 }
 
 export const updateEnvironModel = (model, itemId, position, rotation) => {
+  if (model[itemId]) {
+    model[itemId].position.set(
+      position.x,
+      position.y,
+      position.z
+    );
+    model[itemId].rotation.set(
+      rotation.x,
+      rotation.y,
+      rotation.z
+    );
+  }
+  return model;
+}
+
+export const updateEnvironModelQuaternion = (model, itemId, position, rotation) => {
   if (model[itemId]) {
     model[itemId].position.set(
       position.x,
@@ -585,11 +600,10 @@ export const createEnvironmentModel = (programData) => {
             collisionObj.properties.position.y,
             collisionObj.properties.position.z
           );
-          model[collisionObjKey].quaternion.set(
+          model[collisionObjKey].rotation.set(
             collisionObj.properties.rotation.x,
             collisionObj.properties.rotation.y,
-            collisionObj.properties.rotation.z,
-            collisionObj.properties.rotation.w
+            collisionObj.properties.rotation.z
           );
           if (collisionObj.properties.keyword === "cube") {
             model[collisionObjKey].scale.set(
@@ -625,11 +639,10 @@ export const createEnvironmentModel = (programData) => {
         item.properties.position.y,
         item.properties.position.z
       );
-      model[item.id].quaternion.set(
+      model[item.id].rotation.set(
         item.properties.rotation.x,
         item.properties.rotation.y,
-        item.properties.rotation.z,
-        item.properties.rotation.w
+        item.properties.rotation.z
       );
       model[item.id].uuid = item.id;
       model[parentId].add(model[item.id]);
@@ -643,11 +656,10 @@ export const createEnvironmentModel = (programData) => {
           item.properties.gripPositionOffset.y,
           item.properties.gripPositionOffset.z
         );
-        model[gripKey].quaternion.set(
+        model[gripKey].rotation.set(
           item.properties.gripRotationOffset.x,
           item.properties.gripRotationOffset.y,
-          item.properties.gripRotationOffset.z,
-          item.properties.gripRotationOffset.w
+          item.properties.gripRotationOffset.z
         );
         model[item.id].add(model[gripKey]);
       }
