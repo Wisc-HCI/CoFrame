@@ -15,7 +15,7 @@ import {
 import { DATA_TYPES } from 'simple-vp';
 import { GOAL_FUNCTIONS, ROOT_PATH, STEP_TYPE } from './Constants';
 import lodash from 'lodash';
-import { createEnvironmentModel, queryWorldPose, updateEnvironModel, quaternionFromEuler } from '../helpers/geometry';
+import { createEnvironmentModel, queryWorldPose, updateEnvironModel, eulerToQuaternion } from '../helpers/geometry';
 import { csArrayEquality, objectEquality } from '../helpers/performance';
 import useCompiledStore from './CompiledStore';
 import useStore from './Store';
@@ -108,10 +108,11 @@ const updateRobotScene = (useCompiledStore, useStore) => {
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
-                rotation: quaternionFromEuler(entry.properties.rotation),
+                rotation: eulerToQuaternion(entry.properties.rotation),
                 transformMode: itemTransformMethod(state, entry.id),
                 scale: { x: 1, y: 1, z: 1 }
             }
+
 
             if (meshObject) {
                 items[itemKey] = {
@@ -119,7 +120,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     name: entry.name,
                     frame: entry.id,
                     position: meshObject.properties.position,
-                    rotation: quaternionFromEuler(meshObject.properties.rotation),
+                    rotation: eulerToQuaternion(meshObject.properties.rotation),
                     color: meshObject.properties.color,//{r:10,g:10,b:10,a:0.35},//
                     scale: meshObject.properties.scale,
                     highlighted
@@ -134,7 +135,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                         name: componentShape.name,
                         frame: entry.id,
                         position: componentShape.properties.position,
-                        rotation: quaternionFromEuler(componentShape.properties.rotation),
+                        rotation: eulerToQuaternion(componentShape.properties.rotation),
                         scale: componentShape.properties.scale,
                         color: { r: 250, g: 0, b: 0, a: 0.6 },
                         transformMode: "inactive",
@@ -144,11 +145,11 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     };
                 })
             }
-        } else if (entry.type === 'zoneType' && state.programData[entry.properties.agent]?.type === 'humanAgentType') {
+        } else if ( entry.type === 'zoneType' && state.programData[entry.properties.agent]?.type === 'humanAgentType') {
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
-                rotation: quaternionFromEuler(entry.properties.rotation),
+                rotation: eulerToQuaternion(entry.properties.rotation),
                 transformMode: itemTransformMethod(state, entry.id),
                 scale: entry.properties.scale
             }
@@ -172,7 +173,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     name: meshObj.name,
                     frame: entry.id,
                     position: meshObj.properties.position,
-                    rotation: quaternionFromEuler(meshObj.properties.rotation),
+                    rotation: eulerToQuaternion(meshObj.properties.rotation),
                     color: { ...OCCUPANCY_ERROR_COLOR, a: 0.5 },
                     scale: meshObj.properties.scale,
                     highlighted: false,
@@ -190,7 +191,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     name: collisionShape.id,
                     frame: entry.id,
                     position: collisionShape.properties.position,
-                    rotation: quaternionFromEuler(collisionShape.properties.rotation),
+                    rotation: eulerToQuaternion(collisionShape.properties.rotation),
                     scale: collisionShape.properties.scale,
                     extraParams: collisionShape.properties.extraParams,
                     transformMode: 'inactive',
@@ -200,7 +201,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     hidden: !(state.collisionsVisible && state.occupancyVisible)
                 }
             });
-        } else if (entry.type === 'processType') {
+        } else if ( entry.type === 'processType') {
             entry.properties.inputs.forEach(input => {
 
                 let inputObj = state.programData[input];
@@ -208,7 +209,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 tfs[input] = {
                     frame: inputObj.properties.relativeTo ? inputObj.properties.relativeTo : "world",
                     position: inputObj.properties.position,
-                    rotation: quaternionFromEuler(inputObj.properties.rotation),
+                    rotation: eulerToQuaternion(inputObj.properties.rotation),
                     scale: { x: 1, y: 1, z: 1 },
                     transformMode: itemTransformMethod(state, input)
                 }
@@ -218,7 +219,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                         shape: thingMesh.properties.keyword,
                         frame: input,
                         position: thingMesh.properties.position,
-                        rotation: quaternionFromEuler(thingMesh.properties.rotation),
+                        rotation: eulerToQuaternion(thingMesh.properties.rotation),
                         scale: thingMesh.properties.scale,
                         transformMode: itemTransformMethod(state, input),
                         color: { r: 0, g: 200, b: 0, a: 0.2 },
@@ -244,7 +245,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     tfs[id] = {
                         frame: input,
                         position: gpData.properties.position,
-                        rotation: quaternionFromEuler(gpData.properties.rotation),
+                        rotation: eulerToQuaternion(gpData.properties.rotation),
                         transformMode: itemTransformMethod(state, gp),
                         scale: { x: 1, y: 1, z: 1 }
                     }
@@ -268,7 +269,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 tfs[output] = {
                     frame: outputObj.properties.relativeTo ? outputObj.properties.relativeTo : "world",
                     position: outputObj.properties.position,
-                    rotation: quaternionFromEuler(outputObj.properties.rotation),
+                    rotation: eulerToQuaternion(outputObj.properties.rotation),
                     scale: { x: 1, y: 1, z: 1 },
                     transformMode: itemTransformMethod(state, output)
                 }
@@ -280,7 +281,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                         shape: thingMesh.properties.keyword,
                         frame: output,
                         position: thingMesh.properties.position,
-                        rotation: quaternionFromEuler(thingMesh.properties.rotation),
+                        rotation: eulerToQuaternion(thingMesh.properties.rotation),
                         scale: thingMesh.properties.scale,
                         transformMode: itemTransformMethod(state, output),
                         color: { r: 0, g: 200, b: 0, a: 0.2 },
@@ -308,7 +309,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     tfs[id] = {
                         frame: output,
                         position: gpData.properties.position,
-                        rotation: quaternionFromEuler(gpData.properties.rotation),
+                        rotation: eulerToQuaternion(gpData.properties.rotation),
                         transformMode: itemTransformMethod(state, gp),
                         scale: { x: 1, y: 1, z: 1 }
                     }
@@ -325,7 +326,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     }
                 });
             });
-        } else if (entry.type === 'machineType' || entry.type === 'toolType') {
+        } else if ( entry.type === 'machineType' || entry.type === 'toolType') {
             let entryProps = entry.properties;
             let meshObject = state.programData[entryProps.mesh];
             let collisionObject = state.programData[entryProps.collision];
@@ -333,7 +334,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
-                rotation: quaternionFromEuler(entry.properties.rotation),
+                rotation: eulerToQuaternion(entry.properties.rotation),
                 transformMode: itemTransformMethod(state, entry.id),
                 scale: { x: 1, y: 1, z: 1 }
             }
@@ -342,7 +343,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 name: entry.name,
                 frame: entry.id,
                 position: meshObject.properties.position,
-                rotation: quaternionFromEuler(meshObject.properties.rotation),
+                rotation: eulerToQuaternion(meshObject.properties.rotation),
                 scale: meshObject.properties.scale,
                 highlighted: state.focus.includes(entry.id)
             }
@@ -357,7 +358,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     name: collisionShape.id,
                     frame: entry.id,
                     position: collisionShape.properties.position,
-                    rotation: quaternionFromEuler(collisionShape.properties.rotation),
+                    rotation: eulerToQuaternion(collisionShape.properties.rotation),
                     scale: collisionShape.properties.scale,
                     extraParams: collisionShape.properties.extraParams,
                     transformMode: 'inactive',
@@ -372,7 +373,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 tfs['tool-viz-' + gp] = {
                     frame: entry.id,
                     position: gpData.properties.position,
-                    rotation: quaternionFromEuler(gpData.properties.rotation),
+                    rotation: eulerToQuaternion(gpData.properties.rotation),
                     transformMode: itemTransformMethod(state, gp),
                     scale: { x: 1, y: 1, z: 1 }
                 }
@@ -395,7 +396,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 tfs['ghost--viz--tool--' + gp] = {
                     frame: entry.id,
                     position: gpData.properties.position,
-                    rotation: quaternionFromEuler(gpData.properties.rotation),
+                    rotation: eulerToQuaternion(gpData.properties.rotation),
                     transformMode: itemTransformMethod(state, gp),
                     scale: { x: 1, y: 1, z: 1 }
                 }
@@ -415,7 +416,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
             tfs[entry.id] = {
                 frame: entry.properties.relativeTo ? entry.properties.relativeTo : "world",
                 position: entry.properties.position,
-                rotation: quaternionFromEuler(entry.properties.rotation),
+                rotation: eulerToQuaternion(entry.properties.rotation),
                 scale: { x: 1, y: 1, z: 1 }
             }
         } else if (false && (entry.type === 'locationType' || entry.type === 'waypointType')) {
@@ -460,7 +461,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 tfs[id] = {
                     frame: frame,
                     position: isGripper ? state.programData[link].properties.position : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].position,
-                    rotation: quaternionFromEuler(isGripper ? state.programData[link].properties.rotation : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].rotation),
+                    rotation: eulerToQuaternion(isGripper ? state.programData[link].properties.rotation : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].rotation),
                     transformMode: "inactive",
                     scale: { x: 1, y: 1, z: 1 }
                 }
@@ -471,7 +472,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                         name: id,
                         frame: id,
                         position: meshObject.properties.position,
-                        rotation: quaternionFromEuler(meshObject.properties.rotation),
+                        rotation: eulerToQuaternion(meshObject.properties.rotation),
                         color: robotColor,
                         scale: meshObject.properties.scale,
                         highlighted: false,

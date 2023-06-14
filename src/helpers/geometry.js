@@ -121,6 +121,16 @@ True
   return new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
 };
 
+export const eulerToQuaternion = (vec3) => {
+  let tmp = new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
+  return {x: tmp.x, y: tmp.y, z: tmp.z, w: tmp.w};
+}
+
+export const quaternionToEuler = (quaternion) => {
+  let tmp = new Euler().setFromQuaternion(new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
+  return {x: tmp.x, y: tmp.y, z: tmp.z};
+}
+
 export const eulerFromMatrix = (matrix, axes = "szxy") => {
   /*
   Return Euler angles from rotation matrix for specified axis sequence.

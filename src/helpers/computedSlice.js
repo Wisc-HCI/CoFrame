@@ -20,7 +20,7 @@ import {
     eulerFromQuaternion,
     getAllChildrenFromModel,
     getUserDataFromModel,
-    quaternionFromEuler,
+    eulerToQuaternion,
     queryWorldPose,
     updateEnvironModel,
     updateEnvironModelQuaternion
@@ -300,7 +300,7 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
             position: pose_stored.refData
                 ? pose_stored.refData.properties.position
                 : pose_stored.properties.position,
-            rotation: quaternionFromEuler(pose_stored.refData
+            rotation: eulerToQuaternion(pose_stored.refData
                 ? pose_stored.refData.properties.rotation
                 : pose_stored.properties.rotation),
             scale: { x: 1, y: 1, z: 1 },
