@@ -19722,7 +19722,7 @@
         "b": 0,
         "a": 0
       },
-      "keyword": "cube",
+      "keyword": "package://evd_ros_tasks/tasks/3d_printer_machine_tending/models/MK2-Printer/MK2-Printer.stl",
       "extraParams": null,
       "compileFn": 0,
       "updateFields": [

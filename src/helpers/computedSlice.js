@@ -623,7 +623,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
 
                 // Update model positions of all links in the gripper
                 Object.keys(lastMoveGripperData.data.links).forEach((link) => {
-                    programModel = updateEnvironModelQuaternion(programModel, link, lastMoveGripperData.data.links[link].position, lastMoveGripperData.data.links[link].rotation);
+                    programModel = updateEnvironModel(programModel, link, lastMoveGripperData.data.links[link].position, lastMoveGripperData.data.links[link].rotation);
                 });
 
                 // Get the gripper offset position/rotation
@@ -702,7 +702,12 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
             Object.keys(step.data.links).forEach((link) => {
                 // Update the program model for each link
                 if (link in tfs) {
-                    programModel = updateEnvironModel(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                    if (step.data.links[link].rotation?.w) {
+                        programModel = updateEnvironModelQuaternion(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                    } else {
+                        programModel = updateEnvironModel(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                    }
+                    
                 }
 
                 // If link didn't previously exist add it
@@ -775,7 +780,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 let adjustedRotation = graspAngle ? new Quaternion().setFromRotationMatrix(gripperToThing) : gripperOffset.rotation
                 let adjustedPosition = graspPosition ? new Vector3().setFromMatrixPosition(gripperMatrix.clone().multiply(graspPosition.clone())) : gripperOffset.position;
                 let rotatedToGraspPoint = {x: adjustedRotation.x, y: adjustedRotation.y, z: adjustedRotation.z, w: adjustedRotation.w};
-                programModel = updateEnvironModel(programModel, currentGraspedThingID, adjustedPosition, rotatedToGraspPoint);
+                programModel = updateEnvironModelQuaternion(programModel, currentGraspedThingID, adjustedPosition, rotatedToGraspPoint);
 
                 // If thing hasn't been updated to the most recent timestep, backfill data using last data point
                 if (lastTimestamp[currentGraspedThingID] !== 0 &&

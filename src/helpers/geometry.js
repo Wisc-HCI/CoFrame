@@ -558,6 +558,7 @@ export const updateEnvironModel = (model, itemId, position, rotation) => {
       position.y,
       position.z
     );
+    model[itemId].quaternion.set(0,0,0,1);
     model[itemId].rotation.set(
       rotation.x,
       rotation.y,
@@ -574,6 +575,7 @@ export const updateEnvironModelQuaternion = (model, itemId, position, rotation) 
       position.y,
       position.z
     );
+    model[itemId].rotation.set(0,0,0);
     model[itemId].quaternion.set(
       rotation.x,
       rotation.y,
