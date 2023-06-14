@@ -35,6 +35,7 @@ import {
   createStaticEnvironment,
   eulerFromQuaternion,
   quaternionToEuler,
+  getGoalTransformer,
   queryWorldPose,
 } from "../../helpers/geometry";
 import { likStateToData } from "../../helpers/conversion";
@@ -54,49 +55,6 @@ Object3D.DEFAULT_UP = new Vector3(0, 0, 1);
 const DEFAULT_POSE = {
   position: { x: 0, y: 0, z: 0 },
   rotation: { x: 0, y: 0, z: 0, w: 1 },
-};
-
-const getGoalTransformer = (positionOffset, rotationOffset, invert) => {
-  let m = new Matrix4().compose(
-    new Vector3(positionOffset.x, positionOffset.y, positionOffset.z),
-    new Quaternion(
-      rotationOffset.x,
-      rotationOffset.y,
-      rotationOffset.z,
-      rotationOffset.w
-    ),
-    new Vector3(1.0, 1.0, 1.0)
-  );
-
-  if (invert) {
-    m = m.invert();
-  }
-
-  const transformer = (pose) => {
-    let originalM = new Matrix4().compose(
-      new Vector3(
-        pose.translation ? pose.translation[0] : pose.position.x,
-        pose.translation ? pose.translation[1] : pose.position.y,
-        pose.translation ? pose.translation[2] : pose.position.z
-      ),
-      new Quaternion(
-        Array.isArray(pose.rotation) ? pose.rotation[0] : pose.rotation.x,
-        Array.isArray(pose.rotation) ? pose.rotation[1] : pose.rotation.y,
-        Array.isArray(pose.rotation) ? pose.rotation[2] : pose.rotation.z,
-        Array.isArray(pose.rotation) ? pose.rotation[3] : pose.rotation.w
-      ),
-      new Vector3(1.0, 1.0, 1.0)
-    );
-
-    let newM = new Matrix4().multiplyMatrices(originalM, m);
-    let position = new Vector3().setFromMatrixPosition(newM);
-    let rotation = new Quaternion().setFromRotationMatrix(newM);
-    return {
-      position: { x: position.x, y: position.y, z: position.z },
-      rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
-    };
-  };
-  return transformer;
 };
 
 const getLivelyInput = (
@@ -356,6 +314,7 @@ const sceneFromState = ({
   occupancyZones = {},
   reachable = true,
   linkParentMap = {},
+  invTransformer = () => {}
 }) => {
   console.log("gen tfs and items");
   let tfs = {};
@@ -371,6 +330,10 @@ const sceneFromState = ({
       highlighted: editMode !== "inactive",
     };
   });
+  
+  let g = invTransformer(goalPose);
+  let offsetPos = new Vector3(g.position.x, g.position.y, g.position.z);
+  let newPos = offsetPos.lerp(new Vector3(goalPose.position.x, goalPose.position.y, goalPose.position.z), 0.5);
 
   // Create a (waypoint or location marker)
   items[`${attachmentLink}-tag-robotstateconfig`] = {
@@ -378,7 +341,7 @@ const sceneFromState = ({
     frame: "world",
     shape: visualType === "location" ? "flag" : "tag",
     position: goalPose.position,
-    rotation: { w: 1, x: 0, y: 0, z: 0 },
+    rotation: goalPose.rotation,
     scale: { x: -0.25, y: 0.25, z: 0.25 },
     highlighted: editMode !== "inactive",
     hidden: false,
@@ -397,7 +360,7 @@ const sceneFromState = ({
       visualType === "location"
         ? "package://app/meshes/LocationMarker.stl"
         : "package://app/meshes/OpenWaypointMarker.stl",
-    position: goalPose.position,
+    position: {x: newPos.x, y: newPos.y, z: newPos.z},
     rotation: goalPose.rotation,
     scale: { x: 1, y: 1, z: 1 },
     highlighted: editMode !== "inactive",
@@ -648,6 +611,7 @@ export const RobotStateConfigurator = memo(
         occupancyZones,
         reachable: reached,
         linkParentMap: activeCombination.robot.properties.linkParentMap,
+        invTransformer
       });
       partialSceneState({ tfs, items });
     }, [

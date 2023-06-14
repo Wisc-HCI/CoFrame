@@ -15,11 +15,12 @@ import {
 import { DATA_TYPES } from 'simple-vp';
 import { GOAL_FUNCTIONS, ROOT_PATH, STEP_TYPE } from './Constants';
 import lodash from 'lodash';
-import { createEnvironmentModel, queryWorldPose, updateEnvironModel, eulerToQuaternion } from '../helpers/geometry';
+import { createEnvironmentModel, getGoalTransformer, queryWorldPose, updateEnvironModel, eulerToQuaternion } from '../helpers/geometry';
 import { csArrayEquality, objectEquality } from '../helpers/performance';
 import useCompiledStore from './CompiledStore';
 import useStore from './Store';
 import { filter } from "lodash";
+import { Vector3 } from 'three';
 
 const updateRobotScene = (useCompiledStore, useStore) => {
     let executablePrimitives = {};
@@ -93,6 +94,8 @@ const updateRobotScene = (useCompiledStore, useStore) => {
     }
 
     // Add items from the initial static scene
+    let invTransformer = getGoalTransformer(gripperAgent?.properties?.gripPositionOffset, gripperAgent?.properties?.gripRotationOffset, true);
+
     Object.values(state.programData).filter(v => v.dataType === DATA_TYPES.INSTANCE).forEach(entry => {
         if (entry.type === 'linkType' || entry.type === 'fixtureType') {
             const itemKey = entry.id;
@@ -241,10 +244,17 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 }
                 thing.properties.graspPoints.forEach((gp) => {
                     const gpData = state.programData[gp];
+                    let backTrack = invTransformer({
+                        position: gpData.properties.position,
+                        rotation: gpData.properties.rotation
+                    });
+                    
+                    let newPos = new Vector3(backTrack.position.x, backTrack.position.y, backTrack.position.z).lerp(new Vector3(gpData.properties.position.x, gpData.properties.position.y, gpData.properties.position.z), 0.5);
+
                     const id = input + gp + '-viz';
                     tfs[id] = {
                         frame: input,
-                        position: gpData.properties.position,
+                        position: newPos,
                         rotation: eulerToQuaternion(gpData.properties.rotation),
                         transformMode: itemTransformMethod(state, gp),
                         scale: { x: 1, y: 1, z: 1 }
@@ -302,13 +312,19 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     }
                 }
 
-
                 thing.properties.graspPoints.forEach((gp) => {
                     const gpData = state.programData[gp];
                     const id = output + gp + '-viz';
+                    let backTrack = invTransformer({
+                        position: gpData.properties.position,
+                        rotation: gpData.properties.rotation
+                    });
+                    
+                    let newPos = new Vector3(backTrack.position.x, backTrack.position.y, backTrack.position.z).lerp(new Vector3(gpData.properties.position.x, gpData.properties.position.y, gpData.properties.position.z), 0.5);
+
                     tfs[id] = {
                         frame: output,
-                        position: gpData.properties.position,
+                        position: newPos,
                         rotation: eulerToQuaternion(gpData.properties.rotation),
                         transformMode: itemTransformMethod(state, gp),
                         scale: { x: 1, y: 1, z: 1 }
@@ -370,9 +386,14 @@ const updateRobotScene = (useCompiledStore, useStore) => {
             });
             graspPoints.forEach((gp) => {
                 const gpData = state.programData[gp];
+                let backTrack = invTransformer({
+                    position: gpData.properties.position,
+                    rotation: gpData.properties.rotation
+                });
+                let newPos = new Vector3(backTrack.position.x, backTrack.position.y, backTrack.position.z).lerp(new Vector3(gpData.properties.position.x, gpData.properties.position.y, gpData.properties.position.z), 0.5);
                 tfs['tool-viz-' + gp] = {
                     frame: entry.id,
-                    position: gpData.properties.position,
+                    position: newPos,
                     rotation: eulerToQuaternion(gpData.properties.rotation),
                     transformMode: itemTransformMethod(state, gp),
                     scale: { x: 1, y: 1, z: 1 }
@@ -393,9 +414,14 @@ const updateRobotScene = (useCompiledStore, useStore) => {
             // Ghost grasp points
             graspPoints.forEach((gp) => {
                 const gpData = state.programData[gp];
+                let backTrack = invTransformer({
+                    position: gpData.properties.position,
+                    rotation: gpData.properties.rotation
+                });
+                let newPos = new Vector3(backTrack.position.x, backTrack.position.y, backTrack.position.z).lerp(new Vector3(gpData.properties.position.x, gpData.properties.position.y, gpData.properties.position.z), 0.5);
                 tfs['ghost--viz--tool--' + gp] = {
                     frame: entry.id,
-                    position: gpData.properties.position,
+                    position: newPos,
                     rotation: eulerToQuaternion(gpData.properties.rotation),
                     transformMode: itemTransformMethod(state, gp),
                     scale: { x: 1, y: 1, z: 1 }
@@ -419,99 +445,101 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                 rotation: eulerToQuaternion(entry.properties.rotation),
                 scale: { x: 1, y: 1, z: 1 }
             }
-        } else if (false && (entry.type === 'locationType' || entry.type === 'waypointType')) {
+        } else if (entry.type === 'locationType' || entry.type === 'waypointType') {
             const focused = state.focus.includes(entry.id);
             const trajectoryFocused = focusedTrajectoryChildren.includes(entry.id);
-            let correctEntry = entry.ref ? state.programData[entry.ref] : entry;
-
-            // Handle in the case where the trajectory is focused
-            let color = entry.type === 'location' ? { ...DEFAULT_LOCATION_COLOR } : { ...DEFAULT_WAYPOINT_COLOR };
-            if (state.frame === 'performance' && !correctEntry.properties.reachable) {//pose, frame, focused, locationOrWaypoint
-                color = { ...UNREACHABLE_COLOR };
-            } else if (state.frame === 'safety' && occupancyOverlap(correctEntry.properties.position, state.programData)) {
-                color = { ...OCCUPANCY_ERROR_COLOR };
-            }
-            let robotColor = {...color};
             if (trajectoryFocused) {
-                const idx = focusedTrajectoryChildren.indexOf(entry.id);
-                color.a = (time) => 0.5 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
-                robotColor.a = (time) => 0.2 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
-            } else {
-                color.a = 0.7;
-                robotColor.a = 0.35;
-            }
+                let correctEntry = entry.ref ? state.programData[entry.ref] : entry;
 
-            const addItem = (link, isGripper) => {
-                let id = 'ghost-' + entry.id + link;
-                let linkData = state.programData[link];
-                let meshObject = state.programData[linkData.properties.mesh];
-                
-                let frame = 'world';
-                if (!isGripper) {
-                    let frameFlag = state.programData[entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame]?.type === 'robotAgentType';
-                    frame = frameFlag ? entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame : 'ghost-' + entry.id + entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame
+                // Handle in the case where the trajectory is focused
+                let color = entry.type === 'location' ? { ...DEFAULT_LOCATION_COLOR } : { ...DEFAULT_WAYPOINT_COLOR };
+                if (state.frame === 'performance' && !correctEntry.properties.reachable) {//pose, frame, focused, locationOrWaypoint
+                    color = { ...UNREACHABLE_COLOR };
+                } else if (state.frame === 'safety' && occupancyOverlap(correctEntry.properties.position, state.programData)) {
+                    color = { ...OCCUPANCY_ERROR_COLOR };
+                }
+                let robotColor = {...color};
+                if (trajectoryFocused) {
+                    const idx = focusedTrajectoryChildren.indexOf(entry.id);
+                    color.a = (time) => 0.5 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
+                    robotColor.a = (time) => 0.2 * Math.pow(Math.E, -Math.sin(time / 800 + idx * 0.98));
                 } else {
-                    let frameFlag = state.programData[state.programData[link]?.properties?.relativeTo]?.type === 'gripperType';
-                    frame = 'ghost-' + entry.id + (
-                        frameFlag ? 
-                            state.programData[state.programData[link]?.properties?.relativeTo]?.properties?.relativeTo : 
-                            state.programData[link]?.properties?.relativeTo
-                        );
+                    color.a = 0.7;
+                    robotColor.a = 0.35;
                 }
-                tfs[id] = {
-                    frame: frame,
-                    position: isGripper ? state.programData[link].properties.position : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].position,
-                    rotation: eulerToQuaternion(isGripper ? state.programData[link].properties.rotation : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].rotation),
-                    transformMode: "inactive",
-                    scale: { x: 1, y: 1, z: 1 }
-                }
-    
-                if (meshObject) {
-                    items[id] = {
-                        shape: meshObject.properties.keyword,
-                        name: id,
-                        frame: id,
-                        position: meshObject.properties.position,
-                        rotation: eulerToQuaternion(meshObject.properties.rotation),
-                        color: robotColor,
-                        scale: meshObject.properties.scale,
-                        highlighted: false,
-                        hidden: !(state.robotPreviewVisible && trajectoryFocused),
+
+                const addItem = (link, isGripper) => {
+                    let id = 'ghost-' + entry.id + link;
+                    let linkData = state.programData[link];
+                    let meshObject = state.programData[linkData.properties.mesh];
+                    
+                    let frame = 'world';
+                    if (!isGripper) {
+                        let frameFlag = state.programData[entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame]?.type === 'robotAgentType';
+                        frame = frameFlag ? entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame : 'ghost-' + entry.id + entry.properties.states[robotAgent.id][gripperAgent.id].links[link].frame
+                    } else {
+                        let frameFlag = state.programData[state.programData[link]?.properties?.relativeTo]?.type === 'gripperType';
+                        frame = 'ghost-' + entry.id + (
+                            frameFlag ? 
+                                state.programData[state.programData[link]?.properties?.relativeTo]?.properties?.relativeTo : 
+                                state.programData[link]?.properties?.relativeTo
+                            );
+                    }
+                    tfs[id] = {
+                        frame: frame,
+                        position: isGripper ? state.programData[link].properties.position : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].position,
+                        rotation: eulerToQuaternion(isGripper ? state.programData[link].properties.rotation : entry.properties.states[robotAgent.id][gripperAgent.id].links[link].rotation),
+                        transformMode: "inactive",
+                        scale: { x: 1, y: 1, z: 1 }
+                    }
+        
+                    if (meshObject) {
+                        items[id] = {
+                            shape: meshObject.properties.keyword,
+                            name: id,
+                            frame: id,
+                            position: meshObject.properties.position,
+                            rotation: eulerToQuaternion(meshObject.properties.rotation),
+                            color: robotColor,
+                            scale: meshObject.properties.scale,
+                            highlighted: false,
+                            hidden: !(state.robotPreviewVisible && trajectoryFocused),
+                        }
                     }
                 }
-            }
 
-            // Add ghost robot to location
-            let addedLinks = false;
-            const allLinks = entry.properties?.states?.[robotAgent?.id]?.[gripperAgent?.id]?.links
-            if (allLinks) {
-                Object.keys(allLinks).forEach(link => {
-                    addItem(link, false);
-                    addedLinks = true;
-                });
-            }
+                // Add ghost robot to location
+                let addedLinks = false;
+                const allLinks = entry.properties?.states?.[robotAgent?.id]?.[gripperAgent?.id]?.links
+                if (allLinks) {
+                    Object.keys(allLinks).forEach(link => {
+                        addItem(link, false);
+                        addedLinks = true;
+                    });
+                }
 
-            // Add ghost gripper to location
-            if (addedLinks) {
-                Object.keys(gripperAgent?.properties?.gripperFrames).forEach(link => {
-                    addItem(link, true);
-                })
-            }
+                // Add ghost gripper to location
+                if (addedLinks) {
+                    Object.keys(gripperAgent?.properties?.gripperFrames).forEach(link => {
+                        addItem(link, true);
+                    })
+                }
 
-            poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
-                const transform = state.focus.includes('translate')
-                    ? 'translate'
-                    : state.focus.includes('rotate')
-                        ? 'rotate'
-                        : 'inactive'
-                items[shape.uuid] = {
-                    ...shape,
-                    highlighted: focused,
-                    hidden: !focused && !trajectoryFocused,
-                    color,
-                    transformMode: shape.uuid.includes('pointer') && focused ? transform : "inactive"
-                };
-            })
+                poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
+                    const transform = state.focus.includes('translate')
+                        ? 'translate'
+                        : state.focus.includes('rotate')
+                            ? 'rotate'
+                            : 'inactive'
+                    items[shape.uuid] = {
+                        ...shape,
+                        highlighted: focused,
+                        hidden: !focused && !trajectoryFocused,
+                        color,
+                        transformMode: shape.uuid.includes('pointer') && focused ? transform : "inactive"
+                    };
+                })   
+            }
         }
     })
 
