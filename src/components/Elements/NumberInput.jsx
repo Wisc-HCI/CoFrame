@@ -1,5 +1,7 @@
-import React, { memo } from "react";
+import React, { memo, useReducer, useEffect } from "react";
 import {
+  Stack,
+  Divider,
   InputAdornment,
   InputLabel,
   FormControl,
@@ -9,7 +11,7 @@ import {
 } from "@mui/material";
 import styled from "@emotion/styled";
 import { FiChevronUp, FiChevronDown } from "react-icons/fi";
-import { useNumeric, NUMERIC_STATUS } from "./useNumeric";
+import { NUMERIC_STATUS, NumberReducer, getStatus } from "./useNumeric";
 
 export const NumberInput = memo(
   ({
@@ -28,25 +30,45 @@ export const NumberInput = memo(
     max = Number.POSITIVE_INFINITY,
     style = {}
   }) => {
-    const {
-      textValue,
-      status,
-      onChange: onChangeInner,
-      onStepUp,
-      onStepDown
-    } = useNumeric({
-      initial: value,
-      stepSize: step,
-      min,
-      max,
-      onValidChange: onChange
-    });
+    // const {
+    //   textValue,
+    //   status,
+    //   onChange: onChangeInner,
+    //   onStepUp,
+    //   onStepDown
+    // } = useNumeric({
+    //   initial: value,
+    //   stepSize: step,
+    //   min,
+    //   max,
+    //   onValidChange: onChange
+    // });
+
+    const [state, dispatch] = useReducer(
+      NumberReducer,
+      NumberReducer(
+        { value, min, max, status: getStatus(value,min,max), textValue: String(value), min, max, step },
+        {}
+      )
+    );
+
+    useEffect(() => {
+      if (
+        [
+          NUMERIC_STATUS.WITHIN,
+          NUMERIC_STATUS.LOWER_BOUND,
+          NUMERIC_STATUS.UPPER_BOUND,
+        ].includes(state.status)
+      ) {
+        onChange(state.value);
+      }
+    }, [state.value, state.status]);
 
     const errorState = ![
       NUMERIC_STATUS.LOWER_BOUND,
       NUMERIC_STATUS.WITHIN,
       NUMERIC_STATUS.UPPER_BOUND
-    ].includes(status);
+    ].includes(state.status);
 
     return (
       <FormControl
@@ -75,15 +97,15 @@ export const NumberInput = memo(
               NUMERIC_STATUS.LOWER_BOUND,
               NUMERIC_STATUS.WITHIN,
               NUMERIC_STATUS.UPPER_BOUND
-            ].includes(status)
+            ].includes(state.status)
               ? "primary"
               : "error"
           }
           onFocus={onFocus}
           onBlur={onBlur}
           disabled={disabled}
-          value={textValue}
-          onChange={onChangeInner}
+          value={state.textValue}
+          onChange={(e) => dispatch({ type: "change", value: e.target.value, change: e.nativeEvent?.data })}
           style={{ paddingRight: 4, ...style }}
           inputProps={{ min, max, className: "nodrag" }}
           startAdornment={
@@ -97,15 +119,15 @@ export const NumberInput = memo(
               <Spinner
                 disabled={disabled}
                 above={
-                  status === NUMERIC_STATUS.ABOVE ||
-                  status === NUMERIC_STATUS.UPPER_BOUND
+                  state.status === NUMERIC_STATUS.ABOVE ||
+                  state.status === NUMERIC_STATUS.UPPER_BOUND
                 }
                 below={
-                  status === NUMERIC_STATUS.BELOW ||
-                  status === NUMERIC_STATUS.LOWER_BOUND
+                  state.status === NUMERIC_STATUS.BELOW ||
+                  state.status === NUMERIC_STATUS.LOWER_BOUND
                 }
-                onClickDown={onStepDown}
-                onClickUp={onStepUp}
+                onClickDown={() => dispatch({ type: "decrement" })}
+                onClickUp={() => dispatch({ type: "increment" })}
               />
             </InputAdornment>
           }
@@ -132,47 +154,59 @@ const SpinnerButton = styled.button(
     margin: "0px",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: "4px",
+    borderRadius: "2px",
     lineHeight: 1,
     height: "10px",
-    background: "#22222299",
+    borderStyle: "solid",
+    borderWidth: "1px",
+    borderColor: "#88888899",
+    // background: "#88888899",
     "&:focus": {
-      background: "#222222"
+      background: "#88888899",
     },
     "&:hover": {
-      background: "#222222"
+      background: "#88888899",
     },
-    opacity: `${(props) => (props.disabled ? 0.5 : 1)}`
+    opacity: `${(props) => (props.disabled ? 0.5 : 1)}`,
   },
   (props) => ({ opacity: props.disabled ? 0.5 : 1 })
 );
 
 export const Spinner = ({ onClickUp, onClickDown, disabled, above, below }) => {
   return (
-    <div
+    <Stack
+      divider={<Divider orientation="vertical" flexItem />}
       style={{
         marginLeft: 3,
         display: "inline-flex",
         flexDirection: "column",
         borderRadius: 3,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
       }}
     >
       <SpinnerButton
         disabled={disabled || above}
         onClick={onClickUp}
-        style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}
+        style={{
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          borderBottomStyle: above ? "none" : "solid",
+        }}
       >
         <FiChevronUp />
       </SpinnerButton>
       <SpinnerButton
         disabled={disabled || below}
         onClick={onClickDown}
-        style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+        style={{
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+          borderTopStyle: below || (!above && !below) ? "none" : "solid",
+        }}
       >
         <FiChevronDown />
       </SpinnerButton>
-    </div>
+    </Stack>
   );
 };

@@ -24,6 +24,7 @@ import {
   Avatar,
   Card,
   CardHeader,
+  debounce,
 } from "@mui/material";
 import { BackRefSection } from "./BackRefSection";
 import { ForwardRefSection } from "./ForwardRefSection";
@@ -244,12 +245,12 @@ export const Detail = memo((_) => {
                       value={item.properties.processTime / 1000}
                       min={0}
                       max={Infinity}
-                      onChange={(value) =>
+                      onChange={debounce((value) =>
                         updateItemSimpleProperty(
                           item.id,
                           "processTime",
                           value * 1000
-                        )
+                        ),150)
                       }
                       step={0.1}
                       disabled={!item.canDelete}

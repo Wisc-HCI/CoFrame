@@ -1,4 +1,10 @@
-import React, { useCallback, useState, useEffect, memo } from "react";
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  memo,
+  startTransition,
+} from "react";
 import { JointInput } from "./JointInput";
 import { Collapse } from "./Collapse";
 import {
@@ -20,14 +26,15 @@ import { FiAlertCircle, FiEdit2, FiSave, FiX } from "react-icons/fi";
 import useStore from "../../stores/Store";
 import { shallow } from "zustand/shallow";
 import { pickBy, mapValues } from "lodash";
-import { SimplePositionInput } from "../Detail/PositionInput";
-import { SimpleRotationInput } from "../Detail/RotationInput";
+// import { SimplePositionInput } from "../Detail/PositionInput";
+// import { SimpleRotationInput } from "../Detail/RotationInput";
 import { Solver } from "@people_and_robots/lively";
 import init, { computePose } from "coframe-rust";
 import {
   createEnvironmentModel,
   createStaticEnvironment,
   eulerFromQuaternion,
+  quaternionToEuler,
   queryWorldPose,
 } from "../../helpers/geometry";
 import { likStateToData } from "../../helpers/conversion";
@@ -39,6 +46,7 @@ import {
 } from "../../stores/Constants";
 import { stringEquality } from "../../helpers/performance";
 import { PoseCopier } from "./PoseCopier";
+import VectorInput from "./VectorInput";
 
 init();
 
@@ -532,12 +540,7 @@ export const RobotStateConfigurator = memo(
           activeCombination.robot.properties.urdf,
           {
             translation: [g.position.x, g.position.y, g.position.z],
-            rotation: [
-                g.rotation.x,
-                g.rotation.y,
-                g.rotation.z,
-                g.rotation.w,
-              ],
+            rotation: [g.rotation.x, g.rotation.y, g.rotation.z, g.rotation.w],
           },
           origin,
           activeCombination.gripper.properties.relativeTo,
@@ -552,7 +555,9 @@ export const RobotStateConfigurator = memo(
         //   result.state.frames[activeCombination.gripper.properties.relativeTo].world
         // );
         setGripperGoalPose(pose);
-        setGoalJoints(mapValues(result.state.joints, (v) => Number(v.toFixed(3))));
+        setGoalJoints(
+          mapValues(result.state.joints, (v) => Number(v.toFixed(3)))
+        );
         setReached(result.status === "Success");
         setStateData(sd);
       } else if (!pose) {
@@ -669,62 +674,61 @@ export const RobotStateConfigurator = memo(
     };
 
     const onNewPoseGoal = (newPose) => {
-      console.log("new pose goal", newPose);
-      const g = invTransformer(newPose);
-      let sd = {};
-      let agp = {};
-      let result = computePose(
-        activeCombination.robot.properties.urdf,
-        {
-          translation: [g.position.x, g.position.y, g.position.z],
-          rotation: [
-              g.rotation.x,
-              g.rotation.y,
-              g.rotation.z,
-              g.rotation.w,
-            ],
-        },
-        origin,
-        activeCombination.gripper.properties.relativeTo,
-        staticEnvironment
-      );
-      sd = likStateToData(
-        result.state,
-        activeCombination.robot.id,
-        activeCombination.robot.properties.linkParentMap
-      );
-      agp = fwdTransformer(
-        result.state.frames[activeCombination.gripper.properties.relativeTo].world
-      );
-      setGripperGoalPose(newPose);
-      setGoalJoints(mapValues(result.state.joints, (v) => Number(v.toFixed(3))));
-      setReached(result.code === 'Success');
-      setStateData(sd);
-    };
-
-    const onNewJointGoal = (newJoints) => {
-      console.log("new joint goal", newJoints);
-      if (solver && editMode === "joints") {
-        console.log("updating from joints...");
-        const currentState = solver.currentState;
-        const state = solver.forward({
-          origin: currentState.origin,
-          joints: newJoints,
-        });
-        solver.reset(state, {});
-        const sd = likStateToData(
-          state,
+      
+        console.log("new pose goal", newPose);
+        const g = invTransformer(newPose);
+        let sd = {};
+        let agp = {};
+        let result = computePose(
+          activeCombination.robot.properties.urdf,
+          {
+            translation: [g.position.x, g.position.y, g.position.z],
+            rotation: [g.rotation.x, g.rotation.y, g.rotation.z, g.rotation.w],
+          },
+          origin,
+          activeCombination.gripper.properties.relativeTo,
+          staticEnvironment
+        );
+        sd = likStateToData(
+          result.state,
           activeCombination.robot.id,
           activeCombination.robot.properties.linkParentMap
         );
-        const agp = fwdTransformer(
-          state.frames[activeCombination.gripper.properties.relativeTo].world
+        agp = fwdTransformer(
+          result.state.frames[activeCombination.gripper.properties.relativeTo]
+            .world
         );
-        setGripperGoalPose(agp);
-        setGoalJoints(mapValues(newJoints, (v) => Number(v.toFixed(3))));
-        setReached(true);
+        setGripperGoalPose(newPose);
+        setGoalJoints(
+          mapValues(result.state.joints, (v) => Number(v.toFixed(3)))
+        );
+        setReached(result.code === "Success");
         setStateData(sd);
-      }
+    };
+
+    const onNewJointGoal = (newJoints) => {
+        console.log("new joint goal", newJoints);
+        if (solver && editMode === "joints") {
+          console.log("updating from joints...");
+          const currentState = solver.currentState;
+          const state = solver.forward({
+            origin: currentState.origin,
+            joints: newJoints,
+          });
+          solver.reset(state, {});
+          const sd = likStateToData(
+            state,
+            activeCombination.robot.id,
+            activeCombination.robot.properties.linkParentMap
+          );
+          const agp = fwdTransformer(
+            state.frames[activeCombination.gripper.properties.relativeTo].world
+          );
+          setGripperGoalPose(agp);
+          setGoalJoints(mapValues(newJoints, (v) => Number(v.toFixed(3))));
+          setReached(true);
+          setStateData(sd);
+        }
     };
 
     return (
@@ -855,12 +859,14 @@ export const RobotStateConfigurator = memo(
               }
             />
             <Stack gap={2}>
-              <SimplePositionInput
-                value={gripperGoalPose.position}
-                onChange={(e) => {
+              <VectorInput
+                label="Position"
+                value={[gripperGoalPose.position.x, gripperGoalPose.position.y, gripperGoalPose.position.z]}
+                onChange={(v) => {
+                  // console.log("onChangeHandle",v)
                   const newPose = {
                     ...gripperGoalPose,
-                    position: e.target.value,
+                    position: {x:v[0], y:v[1], z:v[2]},
                   };
                   console.log("updating from position...", newPose);
                   onNewPoseGoal(newPose);
@@ -871,7 +877,27 @@ export const RobotStateConfigurator = memo(
                   setEditMode(a ? "position" : "pose");
                 }}
               />
-              <SimpleRotationInput
+
+              <VectorInput
+                label="Rotation"
+                value={[gripperGoalPose.rotation.x, gripperGoalPose.rotation.y, gripperGoalPose.rotation.z]}
+                onChange={(v) => {
+                  // console.log("onChangeHandle",v)
+                  const newPose = {
+                    ...gripperGoalPose,
+                    rotation: {x:v[0], y:v[1], z:v[2]},
+                  };
+                  console.log("updating from rotation...", newPose);
+                  onNewPoseGoal(newPose);
+                }}
+                disabled={!editing || !["rotation", "pose"].includes(editMode)}
+                active={editMode === "rotation"}
+                onToggleActivity={(a) => {
+                  setEditMode(a ? "rotation" : "pose");
+                }}
+              />  
+
+              {/* <SimpleRotationInput
                 value={gripperGoalPose.rotation}
                 disabled={!editing || !["rotation", "pose"].includes(editMode)}
                 active={editMode === "rotation"}
@@ -886,7 +912,7 @@ export const RobotStateConfigurator = memo(
                   console.log("updating from rotation...", newPose);
                   onNewPoseGoal(newPose);
                 }}
-              />
+              /> */}
             </Stack>
           </Card>
           <Card

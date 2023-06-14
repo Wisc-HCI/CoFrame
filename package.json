@@ -19,9 +19,9 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@emotion/react": "^11.9.3",
-    "@emotion/styled": "^11.9.3",
-    "@mui/material": "5.11.16",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "5.13.5",
     "@people_and_robots/lively": "1.1.0",
     "@radix-ui/react-scroll-area": "^1.0.0",
     "@robostack/roslib": "^1.1.1",

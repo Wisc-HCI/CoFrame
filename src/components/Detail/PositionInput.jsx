@@ -32,7 +32,7 @@ const CompoundInput = forwardRef(
       stepSize: other.step || 0.1,
       min: other.min == undefined ? -Infinity : other.min,
       max: other.max == undefined ? -Infinity : other.max,
-      onValidChange: async (v) => {
+      onValidChange: (v) => {
         console.log('changing x');
         onChange({
           target: {
@@ -54,7 +54,7 @@ const CompoundInput = forwardRef(
       stepSize: other.step || 0.1,
       min: other.min == undefined ? -Infinity : other.min,
       max: other.max == undefined ? -Infinity : other.max,
-      onValidChange: async (v) =>
+      onValidChange: (v) =>
         onChange({
           target: {
             name: other.name,
@@ -74,7 +74,7 @@ const CompoundInput = forwardRef(
       stepSize: other.step || 0.1,
       min: other.min == undefined ? -Infinity : other.min,
       max: other.max == undefined ? -Infinity : other.max,
-      onValidChange: async (v) =>
+      onValidChange: (v) =>
         onChange({
           target: {
             name: other.name,
@@ -245,7 +245,7 @@ function PositionInput(props) {
 
 export function SimplePositionInput({
   value = { x: 0, y: 0, z: 0 },
-  onChange = (value) => {},
+  onChange = () => {},
   disabled = false,
   active = false,
   onToggleActivity = (newValue) => {},
