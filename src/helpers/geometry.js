@@ -9,6 +9,49 @@ Object3D.DefaultUp.set(0, 0, 1);
 
 export const DEFAULT_SCALE = new Vector3(1, 1, 1);
 
+export const getGoalTransformer = (positionOffset, rotationOffset, invert) => {
+  let m = new Matrix4().compose(
+    new Vector3(positionOffset.x, positionOffset.y, positionOffset.z),
+    new Quaternion(
+      rotationOffset.x,
+      rotationOffset.y,
+      rotationOffset.z,
+      rotationOffset.w
+    ),
+    new Vector3(1.0, 1.0, 1.0)
+  );
+
+  if (invert) {
+    m = m.invert();
+  }
+
+  const transformer = (pose) => {
+    let originalM = new Matrix4().compose(
+      new Vector3(
+        pose.translation ? pose.translation[0] : pose.position.x,
+        pose.translation ? pose.translation[1] : pose.position.y,
+        pose.translation ? pose.translation[2] : pose.position.z
+      ),
+      new Quaternion(
+        Array.isArray(pose.rotation) ? pose.rotation[0] : pose.rotation.x,
+        Array.isArray(pose.rotation) ? pose.rotation[1] : pose.rotation.y,
+        Array.isArray(pose.rotation) ? pose.rotation[2] : pose.rotation.z,
+        Array.isArray(pose.rotation) ? pose.rotation[3] : pose.rotation.w
+      ),
+      new Vector3(1.0, 1.0, 1.0)
+    );
+
+    let newM = new Matrix4().multiplyMatrices(originalM, m);
+    let position = new Vector3().setFromMatrixPosition(newM);
+    let rotation = new Quaternion().setFromRotationMatrix(newM);
+    return {
+      position: { x: position.x, y: position.y, z: position.z },
+      rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
+    };
+  };
+  return transformer;
+};
+
 export const distance = (pos1, pos2) => {
   return Math.sqrt(
     Math.pow(pos1.x - pos2.x, 2) +
