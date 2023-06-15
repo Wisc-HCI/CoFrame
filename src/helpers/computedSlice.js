@@ -397,8 +397,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
     let focusStub = null;
     // Only back up to once for the animation correlating to the issue (if applicable)
     if (!state.programData[state.activeFocus]) {
-        focusStub =
-        compiledState[state.focus[state.focus.length - 2]];
+        focusStub = compiledState[state.focus[state.focus.length - 2]];
     } else {
         focusStub = compiledState[state.activeFocus];
     }
@@ -702,7 +701,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
             Object.keys(step.data.links).forEach((link) => {
                 // Update the program model for each link
                 if (link in tfs) {
-                    if (step.data.links[link].rotation?.w) {
+                    if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
                         programModel = updateEnvironModelQuaternion(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
                     } else {
                         programModel = updateEnvironModel(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
@@ -729,10 +728,19 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                         dict[link].position.x.push(step.data.links[link].position.x);
                         dict[link].position.y.push(step.data.links[link].position.y);
                         dict[link].position.z.push(step.data.links[link].position.z);
-                        dict[link].rotation.x.push(step.data.links[link].rotation.x);
-                        dict[link].rotation.y.push(step.data.links[link].rotation.y);
-                        dict[link].rotation.z.push(step.data.links[link].rotation.z);
-                        dict[link].rotation.w.push(step.data.links[link].rotation.w);
+
+
+                        let stepRotation = {};
+                        if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
+                            stepRotation = step.data.links[link].rotation;
+                        } else {
+                            stepRotation = eulerToQuaternion(step.data.links[link].rotation);
+                        }
+
+                        dict[link].rotation.x.push(stepRotation.x);
+                        dict[link].rotation.y.push(stepRotation.y);
+                        dict[link].rotation.z.push(stepRotation.z);
+                        dict[link].rotation.w.push(stepRotation.w);
                     }
                 // Link exists in dict and t interactions have passed since we previously updated it
                 // Use the last data point to backfill up to the current time
@@ -761,10 +769,18 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 dict[link].position.x.push(step.data.links[link].position.x);
                 dict[link].position.y.push(step.data.links[link].position.y);
                 dict[link].position.z.push(step.data.links[link].position.z);
-                dict[link].rotation.x.push(step.data.links[link].rotation.x);
-                dict[link].rotation.y.push(step.data.links[link].rotation.y);
-                dict[link].rotation.z.push(step.data.links[link].rotation.z);
-                dict[link].rotation.w.push(step.data.links[link].rotation.w);
+
+                let stepRotation = {};
+                if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
+                    stepRotation = step.data.links[link].rotation;
+                } else {
+                    stepRotation = eulerToQuaternion(step.data.links[link].rotation);
+                }
+
+                dict[link].rotation.x.push(stepRotation.x);
+                dict[link].rotation.y.push(stepRotation.y);
+                dict[link].rotation.z.push(stepRotation.z);
+                dict[link].rotation.w.push(stepRotation.w);
             });
 
             // Update gripped object
