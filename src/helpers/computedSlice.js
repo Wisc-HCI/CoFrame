@@ -772,7 +772,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                                       new Vector3(1,1,1));
                 let gripperToThing = gripperMatrix.clone().multiply(graspAngle.clone());
                 let adjustedRotation = graspAngle ? new Quaternion().setFromRotationMatrix(gripperToThing) : gripperOffset.rotation
-                let adjustedPosition = graspPosition ? new Vector3().setFromMatrixPosition(gripperMatrix.clone().multiply(graspPosition.clone())) : gripperOffset.position;
+                let adjustedPosition = graspPosition ? new Vector3().setFromMatrixPosition(gripperToThing) : gripperOffset.position;
                 let rotatedToGraspPoint = {x: adjustedRotation.x, y: adjustedRotation.y, z: adjustedRotation.z, w: adjustedRotation.w};
                 programModel = updateEnvironModel(programModel, currentGraspedThingID, adjustedPosition, rotatedToGraspPoint);
 
