@@ -274,17 +274,23 @@ export function poseToColor(pose, frame, focused, occupancyZones) {
     return color;
 }
 
-export function poseDataToShapes(pose, frame, occupancyZones) {
+export function poseDataToShapes(pose, frame, occupancyZones, invTransformer) {
     let pose_stored = pose;
+    let position = pose_stored.refData ? pose_stored.refData.properties.position : pose_stored.properties.position;
+    let rotation = pose_stored.refData ? pose_stored.refData.properties.rotation : pose_stored.properties.rotation;
+    let backTrack = invTransformer({
+        position: position,
+        rotation: rotation
+    });
+    let newPos = new Vector3(backTrack.position.x, backTrack.position.y, backTrack.position.z).lerp(new Vector3(position.x, position.y, position.z), 0.5);
+    
     return [
         {
             uuid: `${pose_stored.id}-tag`,
             frame: "world",
             name: pose.name,
             shape: pose_stored.type.includes("location") ? "flag" : "tag",
-            position: pose_stored.refData
-                ? pose_stored.refData.properties.position
-                : pose_stored.properties.position,
+            position: position,
             rotation: { w: 1, x: 0, y: 0, z: 0 },
             scale: { x: -0.25, y: 0.25, z: 0.25 },
             highlighted: false,
@@ -297,9 +303,7 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
             shape: pose_stored.type.includes("location")
                 ? "package://app/meshes/LocationMarker.stl"
                 : "package://app/meshes/OpenWaypointMarker.stl",
-            position: pose_stored.refData
-                ? pose_stored.refData.properties.position
-                : pose_stored.properties.position,
+            position: newPos,
             rotation: eulerToQuaternion(pose_stored.refData
                 ? pose_stored.refData.properties.rotation
                 : pose_stored.properties.rotation),

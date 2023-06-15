@@ -10,13 +10,17 @@ Object3D.DefaultUp.set(0, 0, 1);
 export const DEFAULT_SCALE = new Vector3(1, 1, 1);
 
 export const getGoalTransformer = (positionOffset, rotationOffset, invert) => {
+  let rotateValue = rotationOffset;
+  if (typeof(rotateValue?.w) !== typeof(1)) {
+    rotateValue = eulerToQuaternion(rotationOffset);
+  }
   let m = new Matrix4().compose(
     new Vector3(positionOffset.x, positionOffset.y, positionOffset.z),
     new Quaternion(
-      rotationOffset.x,
-      rotationOffset.y,
-      rotationOffset.z,
-      rotationOffset.w
+      rotateValue.x,
+      rotateValue.y,
+      rotateValue.z,
+      rotateValue.w
     ),
     new Vector3(1.0, 1.0, 1.0)
   );
@@ -26,18 +30,26 @@ export const getGoalTransformer = (positionOffset, rotationOffset, invert) => {
   }
 
   const transformer = (pose) => {
+    let tmpRotate = pose.rotation;
+    if (Array.isArray(pose.rotation)) {
+      if (pose.rotation.length > 3) {
+        tmpRotate = {x: pose.rotation[0], y: pose.rotation[1], z: pose.rotation[2], w: pose.rotation[3]}
+      } else {
+        tmpRotate = {x: pose.rotation[0], y: pose.rotation[1], z: pose.rotation[2]}
+      }
+    }
+
+    if (typeof(tmpRotate?.w) !== typeof(1)) {
+      tmpRotate = eulerToQuaternion(pose.rotation);
+    }
+    
     let originalM = new Matrix4().compose(
       new Vector3(
         pose.translation ? pose.translation[0] : pose.position.x,
         pose.translation ? pose.translation[1] : pose.position.y,
         pose.translation ? pose.translation[2] : pose.position.z
       ),
-      new Quaternion(
-        Array.isArray(pose.rotation) ? pose.rotation[0] : pose.rotation.x,
-        Array.isArray(pose.rotation) ? pose.rotation[1] : pose.rotation.y,
-        Array.isArray(pose.rotation) ? pose.rotation[2] : pose.rotation.z,
-        Array.isArray(pose.rotation) ? pose.rotation[3] : pose.rotation.w
-      ),
+      new Quaternion(tmpRotate.x, tmpRotate.y, tmpRotate.z, tmpRotate.w),
       new Vector3(1.0, 1.0, 1.0)
     );
 
