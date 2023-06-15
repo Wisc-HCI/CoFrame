@@ -274,17 +274,23 @@ export function poseToColor(pose, frame, focused, occupancyZones) {
     return color;
 }
 
-export function poseDataToShapes(pose, frame, occupancyZones) {
+export function poseDataToShapes(pose, frame, occupancyZones, invTransformer) {
     let pose_stored = pose;
+    let position = pose_stored.refData ? pose_stored.refData.properties.position : pose_stored.properties.position;
+    let rotation = pose_stored.refData ? pose_stored.refData.properties.rotation : pose_stored.properties.rotation;
+    let backTrack = invTransformer({
+        position: position,
+        rotation: rotation
+    });
+    let newPos = new Vector3(backTrack.position.x, backTrack.position.y, backTrack.position.z).lerp(new Vector3(position.x, position.y, position.z), 0.5);
+    
     return [
         {
             uuid: `${pose_stored.id}-tag`,
             frame: "world",
             name: pose.name,
             shape: pose_stored.type.includes("location") ? "flag" : "tag",
-            position: pose_stored.refData
-                ? pose_stored.refData.properties.position
-                : pose_stored.properties.position,
+            position: position,
             rotation: { w: 1, x: 0, y: 0, z: 0 },
             scale: { x: -0.25, y: 0.25, z: 0.25 },
             highlighted: false,
@@ -297,9 +303,7 @@ export function poseDataToShapes(pose, frame, occupancyZones) {
             shape: pose_stored.type.includes("location")
                 ? "package://app/meshes/LocationMarker.stl"
                 : "package://app/meshes/OpenWaypointMarker.stl",
-            position: pose_stored.refData
-                ? pose_stored.refData.properties.position
-                : pose_stored.properties.position,
+            position: newPos,
             rotation: eulerToQuaternion(pose_stored.refData
                 ? pose_stored.refData.properties.rotation
                 : pose_stored.properties.rotation),
@@ -397,8 +401,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
     let focusStub = null;
     // Only back up to once for the animation correlating to the issue (if applicable)
     if (!state.programData[state.activeFocus]) {
-        focusStub =
-        compiledState[state.focus[state.focus.length - 2]];
+        focusStub = compiledState[state.focus[state.focus.length - 2]];
     } else {
         focusStub = compiledState[state.activeFocus];
     }
@@ -702,7 +705,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
             Object.keys(step.data.links).forEach((link) => {
                 // Update the program model for each link
                 if (link in tfs) {
-                    if (step.data.links[link].rotation?.w) {
+                    if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
                         programModel = updateEnvironModelQuaternion(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
                     } else {
                         programModel = updateEnvironModel(programModel, link, step.data.links[link].position, step.data.links[link].rotation);
@@ -729,10 +732,19 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                         dict[link].position.x.push(step.data.links[link].position.x);
                         dict[link].position.y.push(step.data.links[link].position.y);
                         dict[link].position.z.push(step.data.links[link].position.z);
-                        dict[link].rotation.x.push(step.data.links[link].rotation.x);
-                        dict[link].rotation.y.push(step.data.links[link].rotation.y);
-                        dict[link].rotation.z.push(step.data.links[link].rotation.z);
-                        dict[link].rotation.w.push(step.data.links[link].rotation.w);
+
+
+                        let stepRotation = {};
+                        if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
+                            stepRotation = step.data.links[link].rotation;
+                        } else {
+                            stepRotation = eulerToQuaternion(step.data.links[link].rotation);
+                        }
+
+                        dict[link].rotation.x.push(stepRotation.x);
+                        dict[link].rotation.y.push(stepRotation.y);
+                        dict[link].rotation.z.push(stepRotation.z);
+                        dict[link].rotation.w.push(stepRotation.w);
                     }
                 // Link exists in dict and t interactions have passed since we previously updated it
                 // Use the last data point to backfill up to the current time
@@ -761,10 +773,18 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 dict[link].position.x.push(step.data.links[link].position.x);
                 dict[link].position.y.push(step.data.links[link].position.y);
                 dict[link].position.z.push(step.data.links[link].position.z);
-                dict[link].rotation.x.push(step.data.links[link].rotation.x);
-                dict[link].rotation.y.push(step.data.links[link].rotation.y);
-                dict[link].rotation.z.push(step.data.links[link].rotation.z);
-                dict[link].rotation.w.push(step.data.links[link].rotation.w);
+
+                let stepRotation = {};
+                if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
+                    stepRotation = step.data.links[link].rotation;
+                } else {
+                    stepRotation = eulerToQuaternion(step.data.links[link].rotation);
+                }
+
+                dict[link].rotation.x.push(stepRotation.x);
+                dict[link].rotation.y.push(stepRotation.y);
+                dict[link].rotation.z.push(stepRotation.z);
+                dict[link].rotation.w.push(stepRotation.w);
             });
 
             // Update gripped object

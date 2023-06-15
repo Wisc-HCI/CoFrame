@@ -15,7 +15,7 @@ import {
 import { DATA_TYPES } from 'simple-vp';
 import { GOAL_FUNCTIONS, ROOT_PATH, STEP_TYPE } from './Constants';
 import lodash from 'lodash';
-import { createEnvironmentModel, getGoalTransformer, queryWorldPose, updateEnvironModel, eulerToQuaternion } from '../helpers/geometry';
+import { createEnvironmentModel, getGoalTransformer, queryWorldPose, updateEnvironModel, eulerToQuaternion, updateEnvironModelQuaternion } from '../helpers/geometry';
 import { csArrayEquality, objectEquality } from '../helpers/performance';
 import useCompiledStore from './CompiledStore';
 import useStore from './Store';
@@ -525,7 +525,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
                     })
                 }
 
-                poseDataToShapes(entry, state.frame, state.programData).forEach((shape) => {
+                poseDataToShapes(entry, state.frame, state.programData, invTransformer).forEach((shape) => {
                     const transform = state.focus.includes('translate')
                         ? 'translate'
                         : state.focus.includes('rotate')
@@ -613,7 +613,12 @@ const updateRobotScene = (useCompiledStore, useStore) => {
         let gripOffsetID = gripperAgent.id + '-gripOffset';
         let eePoseVerts = sceneTmp.map(sceneUpdate => {
             Object.keys(sceneUpdate.data.links).forEach(link => {
-                programModel = updateEnvironModel(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
+                if (typeof(sceneUpdate.data.links[link].rotation?.w) === typeof(1)) {
+                    programModel = updateEnvironModelQuaternion(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
+                } else {
+                    programModel = updateEnvironModel(programModel, link, sceneUpdate.data.links[link].position, sceneUpdate.data.links[link].rotation);
+                }
+                
             });
             let { position, rotation } = queryWorldPose(programModel, gripOffsetID, '');
             return {
@@ -642,22 +647,22 @@ const updateRobotScene = (useCompiledStore, useStore) => {
     });
 
     // Show preview of deepest preview type.
-    reversedFocus.some(focusId => {
-        const item = state.programData[focusId];
-        if (!item) {
-            return false
-        } else if (false && (item.type === 'waypointType' || item.type === 'locationType')) {
-            Object.values(item.properties.states).forEach(robotGroup => {
-                Object.values(robotGroup).forEach(gripperGroup => {
-                    tfs = { ...tfs, ...gripperGroup.links }
-                })
-            }
-            )
-            return true
-        } else {
-            return false
-        }
-    });
+    // reversedFocus.some(focusId => {
+    //     const item = state.programData[focusId];
+    //     if (!item) {
+    //         return false
+    //     } else if (false && (item.type === 'waypointType' || item.type === 'locationType')) {
+    //         Object.values(item.properties.states).forEach(robotGroup => {
+    //             Object.values(robotGroup).forEach(gripperGroup => {
+    //                 tfs = { ...tfs, ...gripperGroup.links }
+    //             })
+    //         }
+    //         )
+    //         return true
+    //     } else {
+    //         return false
+    //     }
+    // });
 
     if (compiledState) {
         stepsToAnimation(state, compiledState, tfs, items);

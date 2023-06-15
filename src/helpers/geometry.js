@@ -10,13 +10,17 @@ Object3D.DefaultUp.set(0, 0, 1);
 export const DEFAULT_SCALE = new Vector3(1, 1, 1);
 
 export const getGoalTransformer = (positionOffset, rotationOffset, invert) => {
+  let rotateValue = rotationOffset;
+  if (typeof(rotateValue?.w) !== typeof(1)) {
+    rotateValue = eulerToQuaternion(rotationOffset);
+  }
   let m = new Matrix4().compose(
     new Vector3(positionOffset.x, positionOffset.y, positionOffset.z),
     new Quaternion(
-      rotationOffset.x,
-      rotationOffset.y,
-      rotationOffset.z,
-      rotationOffset.w
+      rotateValue.x,
+      rotateValue.y,
+      rotateValue.z,
+      rotateValue.w
     ),
     new Vector3(1.0, 1.0, 1.0)
   );
@@ -26,18 +30,26 @@ export const getGoalTransformer = (positionOffset, rotationOffset, invert) => {
   }
 
   const transformer = (pose) => {
+    let tmpRotate = pose.rotation;
+    if (Array.isArray(pose.rotation)) {
+      if (pose.rotation.length > 3) {
+        tmpRotate = {x: pose.rotation[0], y: pose.rotation[1], z: pose.rotation[2], w: pose.rotation[3]}
+      } else {
+        tmpRotate = {x: pose.rotation[0], y: pose.rotation[1], z: pose.rotation[2]}
+      }
+    }
+
+    if (typeof(tmpRotate?.w) !== typeof(1)) {
+      tmpRotate = eulerToQuaternion(pose.rotation);
+    }
+    
     let originalM = new Matrix4().compose(
       new Vector3(
         pose.translation ? pose.translation[0] : pose.position.x,
         pose.translation ? pose.translation[1] : pose.position.y,
         pose.translation ? pose.translation[2] : pose.position.z
       ),
-      new Quaternion(
-        Array.isArray(pose.rotation) ? pose.rotation[0] : pose.rotation.x,
-        Array.isArray(pose.rotation) ? pose.rotation[1] : pose.rotation.y,
-        Array.isArray(pose.rotation) ? pose.rotation[2] : pose.rotation.z,
-        Array.isArray(pose.rotation) ? pose.rotation[3] : pose.rotation.w
-      ),
+      new Quaternion(tmpRotate.x, tmpRotate.y, tmpRotate.z, tmpRotate.w),
       new Vector3(1.0, 1.0, 1.0)
     );
 
@@ -164,15 +176,27 @@ True
   return new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
 };
 
-export const eulerToQuaternion = (vec3,asThree) => {
-  let tmp = new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
+
+const RAD_2_DEG = 180 / Math.PI;
+const DEG_2_RAD = Math.PI / 180;
+
+export const eulerToDegrees = (vec) => {
+  return {x: vec.x * RAD_2_DEG, y: vec.y * RAD_2_DEG, z: vec.z * RAD_2_DEG};
+};
+export const eulerToRadians = (vec) => {
+  return {x: vec.x * DEG_2_RAD, y: vec.y * DEG_2_RAD, z: vec.z * DEG_2_RAD};
+};
+
+
+export const eulerToQuaternion = (vec3, asThree) => {
+  let radianEuler = eulerToRadians(vec3);
+  let tmp = new Quaternion().setFromEuler(new Euler(radianEuler.x, radianEuler.y, radianEuler.z));
   if (asThree) return tmp;
   return {x: tmp.x, y: tmp.y, z: tmp.z, w: tmp.w};
 }
 
-export const quaternionToEuler = (quaternion,asThree) => {
-  let tmp = new Euler().setFromQuaternion(new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
-  if (asThree) return tmp;
+export const quaternionToEuler = (quaternion) => {
+  let tmp = eulerToDegrees(new Euler().setFromQuaternion(new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w)));
   return {x: tmp.x, y: tmp.y, z: tmp.z};
 }
 
