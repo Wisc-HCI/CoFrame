@@ -34,7 +34,6 @@ import {
   createEnvironmentModel,
   createStaticEnvironment,
   eulerFromQuaternion,
-  // quaternionToEuler,
   getGoalTransformer,
   queryWorldPose,
   eulerToQuaternion,
@@ -578,15 +577,6 @@ export const RobotStateConfigurator = memo(
     useEffect(() => {
       console.log("handling editing change", editing);
       if (editing) {
-        // setSolver(
-        //   getLivelyInput(
-        //     origin,
-        //     activeCombination.robot,
-        //     goalJoints,
-        //     activeCombination.gripper.properties.relativeTo,
-        //     staticEnvironment
-        //   )
-        // );
         setCustomMoveHook((id, source, worldTransform, localTransform) => {
           const goal = {
             position: worldTransform.position,
