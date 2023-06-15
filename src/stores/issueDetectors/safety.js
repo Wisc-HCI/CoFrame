@@ -5,7 +5,7 @@ import { checkHandThresholds, stepsToEEPoseScores, getIDsAndStepsFromCompiled } 
 import { likProximityAdjustment } from "../../helpers/conversion";
 import lodash from 'lodash';
 import { hexToRgb } from "../../helpers/colors";
-import { queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
+import { queryWorldPose, updateEnvironModel, updateEnvironModelQuaternion } from "../../helpers/geometry";
 
 const endEffectorPoseDoc = `During this action, it appears that the gripper may be moving in a potentially dangerous manner. Specifically, this involves cases where the gripper moves quickly in the direction of its outstretched fingers, such that they could result in problems if coming in contact with a worker's soft tissue. To address this issue, consider one or more of the following changes:
 - Slow down the action so the movement of the gripper is not as fast, and therefore less of a danger
@@ -265,7 +265,11 @@ export const findCollisionIssues = ({program, programData, settings, environment
 
             Object.keys(sCol[moveID][i]).forEach(rLink => {
                 if (positionData[moveID][i][rLink]) {
-                    environmentModel = updateEnvironModel(environmentModel, rLink, positionData[moveID][i][rLink].position, positionData[moveID][i][rLink].rotation)
+                    if (typeof(positionData[moveID][i][rLink].rotation?.w) === typeof(1)) {
+                        environmentModel = updateEnvironModelQuaternion(environmentModel, rLink, positionData[moveID][i][rLink].position, positionData[moveID][i][rLink].rotation)
+                    } else {
+                        environmentModel = updateEnvironModel(environmentModel, rLink, positionData[moveID][i][rLink].position, positionData[moveID][i][rLink].rotation)
+                    }
                 } else {
                     console.log('ERROR, rLink, POSITION', rLink, positionData[moveID][i][rLink]);
                 }
@@ -448,7 +452,12 @@ export const findOccupancyIssues = ({program, programData, settings, environment
             let dataPoint = {x: timeData[source][j]};
             for (let i = 0; i < shouldGraphlink[source].length; i++) {
                 // Grab the position data for each link and mark it's color
-                environmentModel = updateEnvironModel(environmentModel, linkNames[i], positionData[source][j][linkNames[i]].position, positionData[source][j][linkNames[i]].rotation)
+                if (typeof(positionData[source][j][linkNames[i]].rotation?.w) === typeof(1)) {
+                    environmentModel = updateEnvironModelQuaternion(environmentModel, linkNames[i], positionData[source][j][linkNames[i]].position, positionData[source][j][linkNames[i]].rotation)
+                } else {
+                    environmentModel = updateEnvironModel(environmentModel, linkNames[i], positionData[source][j][linkNames[i]].position, positionData[source][j][linkNames[i]].rotation)
+                }
+                
                 const posRot = queryWorldPose(environmentModel, linkNames[i], '');
                 let curFrame = posRot.position;
                 let point = null;

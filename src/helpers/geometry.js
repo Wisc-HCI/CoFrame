@@ -42,7 +42,7 @@ export const getGoalTransformer = (positionOffset, rotationOffset, invert) => {
     if (typeof(tmpRotate?.w) !== typeof(1)) {
       tmpRotate = eulerToQuaternion(pose.rotation);
     }
-    
+
     let originalM = new Matrix4().compose(
       new Vector3(
         pose.translation ? pose.translation[0] : pose.position.x,
@@ -488,10 +488,11 @@ export const updateWorldModelWithTransforms = (model, transforms) => {
       transform.position.y,
       transform.position.z
     );
+    let radians = eulerToRadians(transform.rotation);
     model[transformId].rotation.set(
-      transform.rotation.x,
-      transform.rotation.y,
-      transform.rotation.z
+      radians.x,
+      radians.y,
+      radians.z
     );
   });
   return model;
@@ -586,10 +587,11 @@ export const addGraspPointToModel = (model, parentId, itemId, position, rotation
       position.y,
       position.z
     );
+    let radians = eulerToRadians(rotation);
     model[itemId].rotation.set(
-      rotation.x,
-      rotation.y,
-      rotation.z
+      radians.x,
+      radians.y,
+      radians.z
     );
     model[itemId].uuid = itemId;
     model[itemId].userData['width'] = width;
@@ -628,10 +630,11 @@ export const updateEnvironModel = (model, itemId, position, rotation) => {
       position.z
     );
     model[itemId].quaternion.set(0,0,0,1);
+    let radians = eulerToRadians(rotation);
     model[itemId].rotation.set(
-      rotation.x,
-      rotation.y,
-      rotation.z
+      radians.x,
+      radians.y,
+      radians.z
     );
   }
   return model;
@@ -681,10 +684,11 @@ export const createEnvironmentModel = (programData) => {
             collisionObj.properties.position.y,
             collisionObj.properties.position.z
           );
+          let radians = eulerToRadians(collisionObj.properties.rotation);
           model[collisionObjKey].rotation.set(
-            collisionObj.properties.rotation.x,
-            collisionObj.properties.rotation.y,
-            collisionObj.properties.rotation.z
+            radians.x,
+            radians.y,
+            radians.z
           );
           if (collisionObj.properties.keyword === "cube") {
             model[collisionObjKey].scale.set(
@@ -720,10 +724,11 @@ export const createEnvironmentModel = (programData) => {
         item.properties.position.y,
         item.properties.position.z
       );
+      let itemRadians = eulerToRadians(item.properties.rotation);
       model[item.id].rotation.set(
-        item.properties.rotation.x,
-        item.properties.rotation.y,
-        item.properties.rotation.z
+        itemRadians.x,
+        itemRadians.y,
+        itemRadians.z
       );
       model[item.id].uuid = item.id;
       model[parentId].add(model[item.id]);
@@ -737,10 +742,11 @@ export const createEnvironmentModel = (programData) => {
           item.properties.gripPositionOffset.y,
           item.properties.gripPositionOffset.z
         );
+        let gripRotation = eulerToRadians(item.properties.gripRotationOffset);
         model[gripKey].rotation.set(
-          item.properties.gripRotationOffset.x,
-          item.properties.gripRotationOffset.y,
-          item.properties.gripRotationOffset.z
+          gripRotation.x,
+          gripRotation.y,
+          gripRotation.z
         );
         model[item.id].add(model[gripKey]);
       }

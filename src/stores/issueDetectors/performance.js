@@ -3,7 +3,7 @@ import frameStyles from "../../frameStyles";
 import { ROOT_PATH, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"
 import { anyReachable, getIDsAndStepsFromCompiled, verticesToVolume } from "../helpers";
-import { distance, queryWorldPose, updateEnvironModel } from "../../helpers/geometry";
+import { distance, queryWorldPose, updateEnvironModel, updateEnvironModelQuaternion } from "../../helpers/geometry";
 import { Vector3 } from "three";
 import lodash from 'lodash';
 import { hexToRgb } from "../../helpers/colors";
@@ -154,19 +154,27 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
 
         // Base update
         Object.keys(moveTrajectorySteps[source][0].data.links).forEach(link => {
-            environmentModel = updateEnvironModel(environmentModel, link, moveTrajectorySteps[source][0].data.links[link].position, moveTrajectorySteps[source][0].data.links[link].rotation);
+            if (typeof(moveTrajectorySteps[source][0].data.links[link].rotation?.w) === typeof(1)) {
+                environmentModel = updateEnvironModelQuaternion(environmentModel, link, moveTrajectorySteps[source][0].data.links[link].position, moveTrajectorySteps[source][0].data.links[link].rotation);    
+            } else {
+                environmentModel = updateEnvironModel(environmentModel, link, moveTrajectorySteps[source][0].data.links[link].position, moveTrajectorySteps[source][0].data.links[link].rotation);
+            }
         });
 
         moveTrajectorySteps[source].forEach(step => {
             if (count > 0) {
                 timeData[source].push(step.time);
-                let prevousPositions = {}
-                jointNames.forEach(joint => {
-                    prevousPositions[joint] = {...queryWorldPose(environmentModel, jointLinkMap[joint], '')};
-                });
+                // let prevousPositions = {}
+                // jointNames.forEach(joint => {
+                //     prevousPositions[joint] = {...queryWorldPose(environmentModel, jointLinkMap[joint], '')};
+                // });
 
                 Object.keys(step.data.links).forEach(link => {
-                    environmentModel = updateEnvironModel(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                    if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
+                        environmentModel = updateEnvironModelQuaternion(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                    } else {
+                        environmentModel = updateEnvironModel(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                    }
                 });
 
                 jointNames.forEach(joint => {
@@ -290,7 +298,12 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
 
         // Initially update the model
         Object.keys(linkData[moveID][0]).forEach(link => {
-            environmentModel = updateEnvironModel(environmentModel, link, {...linkData[moveID][0][link].position}, {...linkData[moveID][0][link].rotation});
+            if (typeof(linkData[moveID][0][link].rotation?.w) === typeof(1)) {
+                environmentModel = updateEnvironModelQuaternion(environmentModel, link, {...linkData[moveID][0][link].position}, {...linkData[moveID][0][link].rotation});
+            } else {
+                environmentModel = updateEnvironModel(environmentModel, link, {...linkData[moveID][0][link].position}, {...linkData[moveID][0][link].rotation});
+            }
+            
         });
 
         for (let i = 1; i < linkData[moveID].length; i++) {
@@ -300,7 +313,11 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
 
             // Update model to current frame
             Object.keys(linkData[moveID][i]).forEach(link => {
-                environmentModel = updateEnvironModel(environmentModel, link, {...linkData[moveID][i][link].position}, {...linkData[moveID][i][link].rotation});
+                if (typeof(linkData[moveID][i][link].rotation?.w) === typeof(1)) {
+                    environmentModel = updateEnvironModelQuaternion(environmentModel, link, {...linkData[moveID][i][link].position}, {...linkData[moveID][i][link].rotation});
+                } else {
+                    environmentModel = updateEnvironModel(environmentModel, link, {...linkData[moveID][i][link].position}, {...linkData[moveID][i][link].rotation});
+                }
             });
 
             // Pull current end-effector position

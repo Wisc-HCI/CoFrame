@@ -943,12 +943,21 @@ export const findThingFlowIssues = ({ program, programData, compiledData }) => {
     if (step.type === STEP_TYPE.SCENE_UPDATE) {
       Object.keys(step.data.links).forEach((link) => {
         // Update the program model for each link
-        programModel = updateEnvironModelQuaternion(
-          programModel,
-          link,
-          step.data.links[link].position,
-          step.data.links[link].rotation
-        );
+        if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
+          programModel = updateEnvironModelQuaternion(
+            programModel,
+            link,
+            step.data.links[link].position,
+            step.data.links[link].rotation
+          );
+        } else {
+          programModel = updateEnvironModel(
+            programModel,
+            link,
+            step.data.links[link].position,
+            step.data.links[link].rotation
+          );
+        }
       });
 
       if (currentGrippedThing !== "") {
@@ -1003,12 +1012,21 @@ export const findThingFlowIssues = ({ program, programData, compiledData }) => {
       if (thing) {
         // Update model positions of all links in the gripper
         Object.keys(lastMoveGripperData.data.links).forEach((link) => {
-          programModel = updateEnvironModel(
-            programModel,
-            link,
-            lastMoveGripperData.data.links[link].position,
-            lastMoveGripperData.data.links[link].rotation
-          );
+          if (typeof(lastMoveGripperData.data.links[link].rotation?.w) === typeof(1)) {
+            programModel = updateEnvironModelQuaternion(
+              programModel,
+              link,
+              lastMoveGripperData.data.links[link].position,
+              lastMoveGripperData.data.links[link].rotation
+            );
+          } else {
+            programModel = updateEnvironModel(
+              programModel,
+              link,
+              lastMoveGripperData.data.links[link].position,
+              lastMoveGripperData.data.links[link].rotation
+            );
+          }
         });
 
         // Get the gripper offset position/rotation

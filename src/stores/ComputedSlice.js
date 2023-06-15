@@ -23,6 +23,10 @@ import { filter } from "lodash";
 import { Vector3 } from 'three';
 
 const updateRobotScene = (useCompiledStore, useStore) => {
+    if (!state.captureFocus) {
+        return;
+    }
+
     let executablePrimitives = {};
     let tfs = {};
     let items = {};
@@ -667,7 +671,7 @@ const updateRobotScene = (useCompiledStore, useStore) => {
     if (compiledState) {
         stepsToAnimation(state, compiledState, tfs, items);
     }
-    
+
     state.setSceneState({tfs, items, lines, hulls, texts});
 }
 
