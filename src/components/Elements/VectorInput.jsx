@@ -1,10 +1,6 @@
 import React, {
   forwardRef,
-  memo,
-  useEffect,
-  useReducer,
-  useCallback,
-  useDeferredValue,
+  memo
 } from "react";
 import { FiEdit2, FiSave } from "react-icons/fi";
 import {
@@ -16,15 +12,10 @@ import {
   Input,
   Divider,
   Stack,
+  debounce,
 } from "@mui/material";
-import { Spinner } from "./NumberInput";
-import {
-  NUMERIC_STATUS,
-  getStatus,
-  VectorReducer,
-} from "./useNumeric";
 import PropTypes from "prop-types";
-import { useTheme } from "@emotion/react";
+import { round } from 'number-precision';
 
 const CompoundInput = memo(
   forwardRef(
@@ -43,65 +34,6 @@ const CompoundInput = memo(
     ) => {
       console.log("rerendering compound input", value);
 
-      const theme = useTheme();
-
-      const [state, dispatch] = useReducer(
-        VectorReducer,
-        { value, min, max },
-        // useCallback(
-          ({ value, min, max }) => ({
-            vector: [
-              {
-                value: value[0],
-                status: getStatus(value[0], min, max),
-                textValue: String(value[0]),
-              },
-              {
-                value: value[1],
-                status: getStatus(value[1], min, max),
-                textValue: String(value[1]),
-              },
-              {
-                value: value[0],
-                status: getStatus(value[2], min, max),
-                textValue: String(value[2]),
-              },
-            ],
-            min,
-            max,
-            step,
-          }),
-        //   [value, min, max, step]
-        // )
-      );
-
-      useEffect(()=>{
-        dispatch({type: "reset", value})
-      },[value])
-
-      useEffect(() => {
-        if (
-          active &&
-          [
-            NUMERIC_STATUS.WITHIN,
-            NUMERIC_STATUS.LOWER_BOUND,
-            NUMERIC_STATUS.UPPER_BOUND,
-          ].includes(state.vector[0].status) &&
-          [
-            NUMERIC_STATUS.WITHIN,
-            NUMERIC_STATUS.LOWER_BOUND,
-            NUMERIC_STATUS.UPPER_BOUND,
-          ].includes(state.vector[1].status) &&
-          [
-            NUMERIC_STATUS.WITHIN,
-            NUMERIC_STATUS.LOWER_BOUND,
-            NUMERIC_STATUS.UPPER_BOUND,
-          ].includes(state.vector[2].status)
-        ) {
-          onChange(state.vector.map((v) => v.value));
-        }
-      }, [state.vector]);
-
       return (
         <Stack
           direction="row"
@@ -115,46 +47,32 @@ const CompoundInput = memo(
             disableUnderline
             className={other.className}
             label={null}
-            value={state.vector[0].textValue}
-            onChange={(e) =>
-              dispatch({
-                type: "change",
-                value: e.target.value,
-                idx: 0,
-                change: e.nativeEvent?.data,
-              })
-            }
+            value={value[0]}
+            onChange={debounce((e) =>{
+              onChange([round(e.target.value,3),value[1], value[2]])}
+            )}
+            type='number'
             inputProps={{
-              style: {
-                paddingTop: 7,
-                color: [
-                  NUMERIC_STATUS.LOWER_BOUND,
-                  NUMERIC_STATUS.WITHIN,
-                  NUMERIC_STATUS.UPPER_BOUND,
-                ].includes(state.vector[0].status)
-                  ? null
-                  : theme.palette.error,
-              },
+              min,max,step
+            }}
+            margin="dense"
+          />
+          <Input
+            size="small"
+            disabled={disabled}
+            disableUnderline
+            className={other.className}
+            label={null}
+            value={Number(value[1]).toFixed(3)}
+            onChange={debounce((e) =>
+              onChange([value[0], round(e.target.value,3),value[2]])
+            )}
+            type='number'
+            inputProps={{
+              min,max,step
             }}
             margin="dense"
             style={{ display: "inline-flex" }}
-            endAdornment={
-              <InputAdornment position="end">
-                <Spinner
-                  disabled={disabled}
-                  above={
-                    state.vector[0].status === NUMERIC_STATUS.ABOVE ||
-                    state.vector[0].status === NUMERIC_STATUS.UPPER_BOUND
-                  }
-                  below={
-                    state.vector[0].status === NUMERIC_STATUS.BELOW ||
-                    state.vector[0].status === NUMERIC_STATUS.LOWER_BOUND
-                  }
-                  onClickDown={() => dispatch({ type: "decrement", idx: 0 })}
-                  onClickUp={() => dispatch({ type: "increment", idx: 0 })}
-                />
-              </InputAdornment>
-            }
           />
           <Input
             size="small"
@@ -162,86 +80,21 @@ const CompoundInput = memo(
             disableUnderline
             className={other.className}
             label={null}
-            value={state.vector[1].textValue}
-            onChange={(e) =>
-              dispatch({
-                type: "change",
-                value: e.target.value,
-                idx: 1,
-                change: e.nativeEvent?.data,
-              })
-            }
-            inputProps={{ style: { paddingTop: 7 } }}
+            value={Number(value[2]).toFixed(3)}
+            onChange={debounce((e) =>
+              onChange([value[0], value[1], round(e.target.value,3)])
+            )}
+            type='number'
+            inputProps={{
+              min,max,step
+            }}
             margin="dense"
             style={{ display: "inline-flex" }}
-            endAdornment={
-              <InputAdornment position="end">
-                <Spinner
-                  disabled={disabled}
-                  above={
-                    state.vector[1].status === NUMERIC_STATUS.ABOVE ||
-                    state.vector[1].status === NUMERIC_STATUS.UPPER_BOUND
-                  }
-                  below={
-                    state.vector[1].status === NUMERIC_STATUS.BELOW ||
-                    state.vector[1].status === NUMERIC_STATUS.LOWER_BOUND
-                  }
-                  onClickDown={() => dispatch({ type: "decrement", idx: 1 })}
-                  onClickUp={() => dispatch({ type: "increment", idx: 1 })}
-                />
-              </InputAdornment>
-            }
-          />
-          <Input
-            size="small"
-            disabled={disabled}
-            disableUnderline
-            className={other.className}
-            label={null}
-            value={state.vector[2].textValue}
-            onChange={(e) =>
-              dispatch({
-                type: "change",
-                value: e.target.value,
-                idx: 2,
-                change: e.nativeEvent?.data,
-              })
-            }
-            inputProps={{ style: { paddingTop: 7 } }}
-            margin="dense"
-            style={{ display: "inline-flex" }}
-            endAdornment={
-              <InputAdornment position="end">
-                <Spinner
-                  disabled={disabled}
-                  above={
-                    state.vector[2].status === NUMERIC_STATUS.ABOVE ||
-                    state.vector[2].status === NUMERIC_STATUS.UPPER_BOUND
-                  }
-                  below={
-                    state.vector[2].status === NUMERIC_STATUS.BELOW ||
-                    state.vector[2].status === NUMERIC_STATUS.LOWER_BOUND
-                  }
-                  onClickDown={() => dispatch({ type: "decrement", idx: 2 })}
-                  onClickUp={() => dispatch({ type: "increment", idx: 2 })}
-                />
-              </InputAdornment>
-            }
           />
         </Stack>
       );
     }
-  ),
-  (prev, next) => {
-    return (
-      prev.value[0] === next.value[0] &&
-      prev.value[1] === next.value[1] &&
-      prev.value[2] === next.value[2] &&
-      prev.disabled === next.disabled &&
-      prev.active === next.active &&
-      prev.disabled === next.disabled
-    );
-  }
+  )
 );
 
 
