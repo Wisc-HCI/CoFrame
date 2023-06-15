@@ -164,13 +164,26 @@ True
   return new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
 };
 
+
+const RAD_2_DEG = 180 / Math.PI;
+const DEG_2_RAD = Math.PI / 180;
+
+export const eulerToDegrees = (vec) => {
+  return {x: vec.x * RAD_2_DEG, y: vec.y * RAD_2_DEG, z: vec.z * RAD_2_DEG};
+};
+export const eulerToRadians = (vec) => {
+  return {x: vec.x * DEG_2_RAD, y: vec.y * DEG_2_RAD, z: vec.z * DEG_2_RAD};
+};
+
+
 export const eulerToQuaternion = (vec3) => {
-  let tmp = new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
+  let radianEuler = eulerToRadians(vec3);
+  let tmp = new Quaternion().setFromEuler(new Euler(radianEuler.x, radianEuler.y, radianEuler.z));
   return {x: tmp.x, y: tmp.y, z: tmp.z, w: tmp.w};
 }
 
 export const quaternionToEuler = (quaternion) => {
-  let tmp = new Euler().setFromQuaternion(new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
+  let tmp = eulerToDegrees(new Euler().setFromQuaternion(new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w)));
   return {x: tmp.x, y: tmp.y, z: tmp.z};
 }
 
