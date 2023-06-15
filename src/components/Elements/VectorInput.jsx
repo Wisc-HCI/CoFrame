@@ -1,10 +1,10 @@
 import React, {
   forwardRef,
   memo,
-  useState,
   useEffect,
   useReducer,
   useCallback,
+  useDeferredValue,
 } from "react";
 import { FiEdit2, FiSave } from "react-icons/fi";
 import {
@@ -20,8 +20,6 @@ import {
 import { Spinner } from "./NumberInput";
 import {
   NUMERIC_STATUS,
-  NumberReducer,
-  parse,
   getStatus,
   VectorReducer,
 } from "./useNumeric";
@@ -38,18 +36,19 @@ const CompoundInput = memo(
         step = 0.1,
         min = Number.NEGATIVE_INFINITY,
         max = Number.POSITIVE_INFINITY,
+        active = true,
         ...other
       },
       ref
     ) => {
-      // console.log("rerendering compound input", value);
+      console.log("rerendering compound input", value);
 
       const theme = useTheme();
 
       const [state, dispatch] = useReducer(
         VectorReducer,
         { value, min, max },
-        useCallback(
+        // useCallback(
           ({ value, min, max }) => ({
             vector: [
               {
@@ -72,43 +71,17 @@ const CompoundInput = memo(
             max,
             step,
           }),
-          [value, min, max, step]
-        )
+        //   [value, min, max, step]
+        // )
       );
 
-      const [focusCount, setFocusCount] = useState(0);
-
-      const handleChange = () => {
-        if (
-          [
-            NUMERIC_STATUS.WITHIN,
-            NUMERIC_STATUS.LOWER_BOUND,
-            NUMERIC_STATUS.UPPER_BOUND,
-          ].includes(state.vector[0].status) &&
-          [
-            NUMERIC_STATUS.WITHIN,
-            NUMERIC_STATUS.LOWER_BOUND,
-            NUMERIC_STATUS.UPPER_BOUND,
-          ].includes(state.vector[1].status) &&
-          [
-            NUMERIC_STATUS.WITHIN,
-            NUMERIC_STATUS.LOWER_BOUND,
-            NUMERIC_STATUS.UPPER_BOUND,
-          ].includes(state.vector[2].status)
-        ) {
-          // console.log(
-          //   "dispatching change",
-          //   state.vector[0].value,
-          //   state.vector[1].value,
-          //   state.vector[2].value
-          // );
-          onChange(state.vector.map((v) => v.value));
-        }
-      };
+      useEffect(()=>{
+        dispatch({type: "reset", value})
+      },[value])
 
       useEffect(() => {
         if (
-          focusCount > 0 &&
+          active &&
           [
             NUMERIC_STATUS.WITHIN,
             NUMERIC_STATUS.LOWER_BOUND,
@@ -125,12 +98,6 @@ const CompoundInput = memo(
             NUMERIC_STATUS.UPPER_BOUND,
           ].includes(state.vector[2].status)
         ) {
-          // console.log(
-          //   "dispatching change",
-          //   state.vector[0].value,
-          //   state.vector[1].value,
-          //   state.vector[2].value
-          // );
           onChange(state.vector.map((v) => v.value));
         }
       }, [state.vector]);
@@ -149,19 +116,14 @@ const CompoundInput = memo(
             className={other.className}
             label={null}
             value={state.vector[0].textValue}
-            onFocus={(e) => {
-              other.onFocus(e);
-              setFocusCount((prev) => ({ focusCount: prev + 1 }));
-            }}
-            onBlur={(e) => {
-              other.onBlur(e);
-              setFocusCount((prev) => ({ focusCount: prev - 1 }));
-            }}
-            // onBlur={other.onBlur}
             onChange={(e) =>
-              dispatch({ type: "change", value: e.target.value, idx: 0 })
+              dispatch({
+                type: "change",
+                value: e.target.value,
+                idx: 0,
+                change: e.nativeEvent?.data,
+              })
             }
-            on
             inputProps={{
               style: {
                 paddingTop: 7,
@@ -201,16 +163,13 @@ const CompoundInput = memo(
             className={other.className}
             label={null}
             value={state.vector[1].textValue}
-            onFocus={(e) => {
-              other.onFocus(e);
-              setFocusCount((prev) => ({ focusCount: prev + 1 }));
-            }}
-            onBlur={(e) => {
-              other.onBlur(e);
-              setFocusCount((prev) => ({ focusCount: prev - 1 }));
-            }}
             onChange={(e) =>
-              dispatch({ type: "change", value: e.target.value, idx: 1 })
+              dispatch({
+                type: "change",
+                value: e.target.value,
+                idx: 1,
+                change: e.nativeEvent?.data,
+              })
             }
             inputProps={{ style: { paddingTop: 7 } }}
             margin="dense"
@@ -240,16 +199,13 @@ const CompoundInput = memo(
             className={other.className}
             label={null}
             value={state.vector[2].textValue}
-            onFocus={(e)=>{
-              other.onFocus(e);
-              setFocusCount((prev)=>({focusCount:prev + 1}));
-            }}
-            onBlur={(e)=>{
-              other.onBlur(e);
-              setFocusCount((prev)=>({focusCount:prev - 1}));
-            }}
             onChange={(e) =>
-              dispatch({ type: "change", value: e.target.value, idx: 2 })
+              dispatch({
+                type: "change",
+                value: e.target.value,
+                idx: 2,
+                change: e.nativeEvent?.data,
+              })
             }
             inputProps={{ style: { paddingTop: 7 } }}
             margin="dense"
@@ -275,12 +231,19 @@ const CompoundInput = memo(
         </Stack>
       );
     }
-  )
+  ),
+  (prev, next) => {
+    return (
+      prev.value[0] === next.value[0] &&
+      prev.value[1] === next.value[1] &&
+      prev.value[2] === next.value[2] &&
+      prev.disabled === next.disabled &&
+      prev.active === next.active &&
+      prev.disabled === next.disabled
+    );
+  }
 );
 
-// function PositionInput({ itemID, disabled, mode }) {
-//   return <Card variant='outline'></Card>;
-// }
 
 export const VectorInput = memo(
   ({
@@ -291,7 +254,6 @@ export const VectorInput = memo(
     active = false,
     onToggleActivity = (newValue) => {},
   }) => {
-    // console.log("VECTOR VALUE", value);
     return (
       <FormControl>
         <InputLabel htmlFor="outlined-position-vector" color="primary" shrink>
@@ -307,6 +269,7 @@ export const VectorInput = memo(
           value={value}
           inputComponent={CompoundInput}
           onChange={onChange}
+          inputProps={{ active }}
           endAdornment={
             <InputAdornment position="end">
               <IconButton
@@ -315,7 +278,6 @@ export const VectorInput = memo(
                 color="primary"
                 aria-label="toggle editing position"
                 onClick={() => onToggleActivity(!active)}
-                // onMouseDown={open ? handleClose : buttonClick}
               >
                 {active ? <FiSave /> : <FiEdit2 />}
               </IconButton>

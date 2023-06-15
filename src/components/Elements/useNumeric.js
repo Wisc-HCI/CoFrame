@@ -139,6 +139,7 @@ export const NumberReducer = (state, action) => {
 
 // State: {vector: [{ value, status, textValue }, min, max, step]}
 export const VectorReducer = (state, action) => {
+  console.log({state,action})
   if (action.type === "increment") {
     // console.log("STATE", state);
     const incrementedState = parse(
@@ -188,6 +189,7 @@ export const VectorReducer = (state, action) => {
       return { ...state, vector };
     } else {
       const result = parse(action.value, state.min, state.max);
+      // console.log({result})
       if (!result) {
         const vectorValue = {...state.vector[action.idx], textValue: action.value, status: NUMERIC_STATUS.INVALID};
         let vector = [...state.vector];
@@ -209,8 +211,27 @@ export const VectorReducer = (state, action) => {
         };
       }
     }
-  } else {
-    return state;
+  } else if (action.type === 'reset') {
+    return {
+      ...state,
+      vector: [
+        {
+          value: action.value[0],
+          status: getStatus(action.value[0], state.min, state.max),
+          textValue: String(action.value[0]),
+        },
+        {
+          value: action.value[1],
+          status: getStatus(action.value[1], state.min, state.max),
+          textValue: String(action.value[1]),
+        },
+        {
+          value: action.value[0],
+          status: getStatus(action.value[2], state.min, state.max),
+          textValue: String(action.value[2]),
+        },
+      ]
+    };
   }
 };
 
