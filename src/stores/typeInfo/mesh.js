@@ -22,7 +22,7 @@ const meshFeatures = {
     rotation: {
       name: "Local Rotation",
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: { w: 1, x: 0, y: 0, z: 0 },
+      default: { x: 0, y: 0, z: 0 },
       isList: false,
       fullWidth: true,
     },

@@ -23,10 +23,6 @@ import { filter } from "lodash";
 import { Vector3 } from 'three';
 
 const updateRobotScene = (useCompiledStore, useStore) => {
-    if (!state.captureFocus) {
-        return;
-    }
-
     let executablePrimitives = {};
     let tfs = {};
     let items = {};
@@ -36,6 +32,10 @@ const updateRobotScene = (useCompiledStore, useStore) => {
 
     const state = useStore.getState();
     const compiledState = useCompiledStore.getState();
+
+    if (state.captureFocus) {
+        return;
+    }
 
     let reversedFocus = [];
     for (var i = state.focus.length - 1; i >= 0; i--) {

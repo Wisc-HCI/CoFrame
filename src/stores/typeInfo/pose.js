@@ -44,7 +44,7 @@ const poseFeatures = {
     rotation: {
       name: 'Rotation',
       type: SIMPLE_PROPERTY_TYPES.IGNORED,
-      default: {x: 0, y: 0, z: 0, w: 1},
+      default: {x: 0, y: 0, z: 0},
       isList: false,
       fullWidth: true
     },
