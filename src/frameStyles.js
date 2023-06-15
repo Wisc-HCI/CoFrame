@@ -3,7 +3,8 @@ const frameStyles = {
       safety: "#CC79A7",
       quality: "#56B4E9",
       performance: "#E69F00",
-      business: "#009E73"
+      business: "#009E73",
+      default: "#FFFFFF",
     },
     labels: {
       safety: "Safety Concerns",

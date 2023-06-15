@@ -164,13 +164,15 @@ True
   return new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
 };
 
-export const eulerToQuaternion = (vec3) => {
+export const eulerToQuaternion = (vec3,asThree) => {
   let tmp = new Quaternion().setFromEuler(new Euler(vec3.x, vec3.y, vec3.z));
+  if (asThree) return tmp;
   return {x: tmp.x, y: tmp.y, z: tmp.z, w: tmp.w};
 }
 
-export const quaternionToEuler = (quaternion) => {
+export const quaternionToEuler = (quaternion,asThree) => {
   let tmp = new Euler().setFromQuaternion(new Quaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w));
+  if (asThree) return tmp;
   return {x: tmp.x, y: tmp.y, z: tmp.z};
 }
 

@@ -1,4 +1,11 @@
-import React, { forwardRef, memo, useEffect, useReducer } from "react";
+import React, {
+  forwardRef,
+  memo,
+  useState,
+  useEffect,
+  useReducer,
+  useCallback,
+} from "react";
 import { FiEdit2, FiSave } from "react-icons/fi";
 import {
   IconButton,
@@ -41,8 +48,9 @@ const CompoundInput = memo(
 
       const [state, dispatch] = useReducer(
         VectorReducer,
-        VectorReducer(
-          {
+        { value, min, max },
+        useCallback(
+          ({ value, min, max }) => ({
             vector: [
               {
                 value: value[0],
@@ -63,12 +71,14 @@ const CompoundInput = memo(
             min,
             max,
             step,
-          },
-          {}
+          }),
+          [value, min, max, step]
         )
       );
 
-      useEffect(() => {
+      const [focusCount, setFocusCount] = useState(0);
+
+      const handleChange = () => {
         if (
           [
             NUMERIC_STATUS.WITHIN,
@@ -94,9 +104,36 @@ const CompoundInput = memo(
           // );
           onChange(state.vector.map((v) => v.value));
         }
-      }, [
-        state.vector,
-      ]);
+      };
+
+      useEffect(() => {
+        if (
+          focusCount > 0 &&
+          [
+            NUMERIC_STATUS.WITHIN,
+            NUMERIC_STATUS.LOWER_BOUND,
+            NUMERIC_STATUS.UPPER_BOUND,
+          ].includes(state.vector[0].status) &&
+          [
+            NUMERIC_STATUS.WITHIN,
+            NUMERIC_STATUS.LOWER_BOUND,
+            NUMERIC_STATUS.UPPER_BOUND,
+          ].includes(state.vector[1].status) &&
+          [
+            NUMERIC_STATUS.WITHIN,
+            NUMERIC_STATUS.LOWER_BOUND,
+            NUMERIC_STATUS.UPPER_BOUND,
+          ].includes(state.vector[2].status)
+        ) {
+          // console.log(
+          //   "dispatching change",
+          //   state.vector[0].value,
+          //   state.vector[1].value,
+          //   state.vector[2].value
+          // );
+          onChange(state.vector.map((v) => v.value));
+        }
+      }, [state.vector]);
 
       return (
         <Stack
@@ -112,11 +149,19 @@ const CompoundInput = memo(
             className={other.className}
             label={null}
             value={state.vector[0].textValue}
-            onFocus={other.onFocus}
-            onBlur={other.onBlur}
+            onFocus={(e) => {
+              other.onFocus(e);
+              setFocusCount((prev) => ({ focusCount: prev + 1 }));
+            }}
+            onBlur={(e) => {
+              other.onBlur(e);
+              setFocusCount((prev) => ({ focusCount: prev - 1 }));
+            }}
+            // onBlur={other.onBlur}
             onChange={(e) =>
               dispatch({ type: "change", value: e.target.value, idx: 0 })
             }
+            on
             inputProps={{
               style: {
                 paddingTop: 7,
@@ -144,7 +189,7 @@ const CompoundInput = memo(
                     state.vector[0].status === NUMERIC_STATUS.LOWER_BOUND
                   }
                   onClickDown={() => dispatch({ type: "decrement", idx: 0 })}
-                  onClickUp={() => dispatch({ type: "increment", idx: 0})}
+                  onClickUp={() => dispatch({ type: "increment", idx: 0 })}
                 />
               </InputAdornment>
             }
@@ -156,8 +201,14 @@ const CompoundInput = memo(
             className={other.className}
             label={null}
             value={state.vector[1].textValue}
-            onFocus={other.onFocus}
-            onBlur={other.onBlur}
+            onFocus={(e) => {
+              other.onFocus(e);
+              setFocusCount((prev) => ({ focusCount: prev + 1 }));
+            }}
+            onBlur={(e) => {
+              other.onBlur(e);
+              setFocusCount((prev) => ({ focusCount: prev - 1 }));
+            }}
             onChange={(e) =>
               dispatch({ type: "change", value: e.target.value, idx: 1 })
             }
@@ -189,8 +240,14 @@ const CompoundInput = memo(
             className={other.className}
             label={null}
             value={state.vector[2].textValue}
-            onFocus={other.onFocus}
-            onBlur={other.onBlur}
+            onFocus={(e)=>{
+              other.onFocus(e);
+              setFocusCount((prev)=>({focusCount:prev + 1}));
+            }}
+            onBlur={(e)=>{
+              other.onBlur(e);
+              setFocusCount((prev)=>({focusCount:prev - 1}));
+            }}
             onChange={(e) =>
               dispatch({ type: "change", value: e.target.value, idx: 2 })
             }
