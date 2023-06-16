@@ -343,6 +343,12 @@ const sceneFromState = ({
       true,
       occupancyZones
     ),
+    transformMode:
+      editMode === "position"
+        ? "translate"
+        : editMode === "rotation"
+        ? "rotate"
+        : null,
   };
 
   items[`${attachmentLink}-pointer-robotstateconfig`] = {
@@ -363,13 +369,7 @@ const sceneFromState = ({
       frame,
       true,
       occupancyZones
-    ),
-    transformMode:
-      editMode === "position"
-        ? "translate"
-        : editMode === "rotation"
-        ? "rotate"
-        : null,
+    )
   };
   console.log({ tfs, items });
   return { tfs, items };
