@@ -47,7 +47,7 @@ export const NumberInput = memo(
     const [state, dispatch] = useReducer(
       NumberReducer,
       NumberReducer(
-        { value, min, max, status: getStatus(value,min,max), textValue: String(value), min, max, step },
+        { value, min, max, step, status: getStatus(value,min,max), textValue: String(value) },
         {}
       )
     );
