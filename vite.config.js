@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react from '@vitejs/plugin-react-swc'
 import { comlink } from "vite-plugin-comlink";
 import svgr from "vite-plugin-svgr";
 import wasmPack from "vite-plugin-wasm-pack";
