@@ -659,7 +659,7 @@ pub fn normal_solve(
         state: solver.get_current_state(),
         message: "Could not resolve after 0 iterations.".to_string(),
     };
-    for i in 0..20 {
+    for i in 0..5 {
         let candidate_state = solver.solve(goals.clone(), HashMap::new(), 0.0, None);
         let position_diff: f64 = (candidate_state
             .get_link_transform(&attachment_link)
