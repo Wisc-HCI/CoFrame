@@ -25,7 +25,7 @@ import {
 import { FiAlertCircle, FiEdit2, FiSave, FiX } from "react-icons/fi";
 import useStore from "../../stores/Store";
 import { shallow } from "zustand/shallow";
-import { pickBy, mapValues } from "lodash";
+import { pickBy, mapValues, filter } from "lodash";
 // import { SimplePositionInput } from "../Detail/PositionInput";
 // import { SimpleRotationInput } from "../Detail/RotationInput";
 import { Solver } from "@people_and_robots/lively";
@@ -315,7 +315,11 @@ const sceneFromState = ({
   occupancyZones = {},
   reachable = true,
   linkParentMap = {},
-  invTransformer = () => {}
+  invTransformer = () => {},
+  gripperFrames,
+  gripperLinks,
+  gripperMeshes,
+  gripper
 }) => {
   console.log("gen tfs and items");
   let tfs = {};
@@ -332,18 +336,29 @@ const sceneFromState = ({
     };
   });
   
-  let g = invTransformer(goalPose);
-  let offsetPos = new Vector3(g.position.x, g.position.y, g.position.z);
-  let newPos = offsetPos.lerp(new Vector3(goalPose.position.x, goalPose.position.y, goalPose.position.z), 0.5);
   let goalQuat = eulerToQuaternion(goalPose.rotation);
+
+  tfs[`${attachmentLink}-tag-robotstateconfig`] = {
+    id: `${attachmentLink}-tag-robotstateconfig`,
+    frame: "world",
+    position: goalPose.position,
+    rotation: goalQuat,
+    scale: { x: 1, y: 1, z: 1 },
+    highlighted: editMode !== "inactive",
+    transformMode: editMode === "position"
+                    ? "translate"
+                    : editMode === "rotation"
+                    ? "rotate"
+                    : null
+  }
 
   // Create a (waypoint or location marker)
   items[`${attachmentLink}-tag-robotstateconfig`] = {
     id: `${attachmentLink}-tag-robotstateconfig`,
-    frame: "world",
+    frame: `${attachmentLink}-tag-robotstateconfig`,
     shape: visualType === "location" ? "flag" : "tag",
-    position: goalPose.position,
-    rotation: goalQuat,
+    position: {x: 0, y: 0, z: 0},
+    rotation: {x: 0, y: 0, z: 0, w: 1},
     scale: { x: -0.25, y: 0.25, z: 0.25 },
     highlighted: editMode !== "inactive",
     hidden: false,
@@ -354,33 +369,73 @@ const sceneFromState = ({
       occupancyZones
     ),
   };
+  
+  Object.keys(gripperFrames).forEach(frame => {
+    let gripperPiece = gripperLinks[frame];
+    tfs[frame + "-ghost"] = {
+      frame: gripperPiece.properties.relativeTo + "-ghost",
+      position: gripperPiece.properties.position,
+      rotation: eulerToQuaternion(gripperPiece.properties.rotation),
+      scale: { x: 1, y: 1, z: 1 },
+      highlighted: true,
+    }
 
-  items[`${attachmentLink}-pointer-robotstateconfig`] = {
-    id: `${attachmentLink}-pointer-robotstateconfig`,
-    frame: "world",
-    shape:
-      visualType === "location"
-        ? "package://app/meshes/LocationMarker.stl"
-        : "package://app/meshes/OpenWaypointMarker.stl",
-    position: {x: newPos.x, y: newPos.y, z: newPos.z},
-    rotation: goalQuat,
-    scale: { x: 1, y: 1, z: 1 },
-    highlighted: editMode !== "inactive",
-    showName: false,
-    hidden: false,
-    color: poseToColor(
-      { properties: {position:goalPose.position,rotation:goalQuat}, reachable: reachable },
-      frame,
-      true,
-      occupancyZones
+    let gripperPieceMesh = gripperMeshes[gripperPiece.properties.mesh];
+    items[frame + "-ghost"] = {
+      id: frame + "-ghost",
+      frame: frame + "-ghost",
+      shape: gripperPieceMesh.properties.keyword,
+      position: gripperPieceMesh.properties.position,
+      rotation: eulerToQuaternion(gripperPieceMesh.properties.rotation),
+      scale: gripperPieceMesh.properties.scale,
+      highlighted: true,
+      showName: false,
+      hidden: false,
+      color: { r: 62, g: 16, b: 102, a: 0.7 }
+    }
+  });
+  let goalStuff = invTransformer({position: [0,0,0], rotation: [0,0,0,1]});
+  
+  let m = new Matrix4().compose(
+    new Vector3(gripper.properties.gripPositionOffset.x, gripper.properties.gripPositionOffset.y, gripper.properties.gripPositionOffset.z),
+    new Quaternion(
+      gripper.properties.gripRotationOffset.x,
+      gripper.properties.gripRotationOffset.y,
+      gripper.properties.gripRotationOffset.z,
+      gripper.properties.gripRotationOffset.w
     ),
-    transformMode:
-      editMode === "position"
-        ? "translate"
-        : editMode === "rotation"
-        ? "rotate"
-        : null,
-  };
+    new Vector3(1.0, 1.0, 1.0)
+  );
+  m = m.invert();
+  
+  tfs[gripper.id + "-ghost"] = {
+    frame: `${attachmentLink}-tag-robotstateconfig`,
+    position: goalStuff.position,
+    rotation: goalStuff.rotation,
+    scale: { x: 1, y: 1, z: 1 },
+    highlighted: true
+  }
+
+  // items[`${attachmentLink}-pointer-robotstateconfig`] = {
+  //   id: `${attachmentLink}-pointer-robotstateconfig`,
+  //   frame: "world",
+  //   shape:
+  //     visualType === "location"
+  //       ? "package://app/meshes/LocationMarker.stl"
+  //       : "package://app/meshes/OpenWaypointMarker.stl",
+  //   position: {x: lerpPosition.x, y: lerpPosition.y, z: lerpPosition.z},
+  //   rotation: goalQuat,
+  //   scale: { x: 1, y: 1, z: 1 },
+  //   highlighted: editMode !== "inactive",
+  //   showName: false,
+  //   hidden: false,
+  //   color: poseToColor(
+  //     { properties: {position:goalPose.position,rotation:goalQuat}, reachable: reachable },
+  //     frame,
+  //     true,
+  //     occupancyZones
+  //   )
+  // };
   console.log({ tfs, items });
   return { tfs, items };
 };
@@ -419,6 +474,18 @@ export const RobotStateConfigurator = memo(
     );
     const [editing, setEditing] = useState(false);
     const [editMode, setEditMode] = useState(null);
+
+    let gripFrames = activeCombination?.gripper?.properties?.gripperFrames ? Object.keys(activeCombination?.gripper?.properties?.gripperFrames) : [];
+    const gripperLinks = useStore(
+      (state) => pickBy(state.programData, (item) => item.type === "linkType" && gripFrames.includes(item.id)),
+      shallow
+    );
+    // console.log('whatttttt', gripperLinks);
+    let neededMeshIds = Object.values(gripperLinks).map(link => link?.properties?.mesh);
+    // console.log(neededMeshIds);
+    const gripperMeshes = useStore(state =>
+      pickBy(state.programData, (piece) => piece.type === "meshType" && neededMeshIds.includes(piece.id)),
+    );
 
     const fwdTransformer = getGoalTransformer(
       activeCombination.gripper.properties.gripPositionOffset,
@@ -593,9 +660,12 @@ export const RobotStateConfigurator = memo(
 
     useEffect(() => {
       console.log("detecting change in visuals");
+
+      let goalPose = configuratorState.gripperGoalPose;
+      
       const { tfs, items } = sceneFromState({
         stateData: configuratorState.stateData,
-        goalPose: configuratorState.gripperGoalPose,
+        goalPose,
         visualType,
         editMode,
         attachmentLink: activeCombination.gripper.properties.relativeTo,
@@ -603,7 +673,11 @@ export const RobotStateConfigurator = memo(
         occupancyZones,
         reachable: configuratorState.reached,
         linkParentMap: activeCombination.robot.properties.linkParentMap,
-        invTransformer
+        invTransformer,
+        gripperFrames: activeCombination.gripper.properties.gripperFrames,
+        gripperLinks,
+        gripperMeshes,
+        gripper: activeCombination.gripper
       });
       partialSceneState({ tfs, items });
     }, [
