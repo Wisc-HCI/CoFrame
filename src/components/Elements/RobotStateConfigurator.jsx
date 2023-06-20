@@ -321,11 +321,7 @@ const sceneFromState = ({
   occupancyZones = {},
   reachable = true,
   linkParentMap = {},
-  invTransformer = () => {},
-  gripperFrames,
-  gripperLinks,
-  gripperMeshes,
-  gripper
+  invTransformer = () => {}
 }) => {
   console.log("gen tfs and items");
   let tfs = {};
@@ -378,62 +374,35 @@ const sceneFromState = ({
       occupancyZones
     ),
   };
-  
-  Object.keys(gripperFrames).forEach(frame => {
-    let gripperPiece = gripperLinks[frame];
-    tfs[frame + "-ghost"] = {
-      frame: gripperPiece.properties.relativeTo + "-ghost",
-      position: gripperPiece.properties.position,
-      rotation: eulerToQuaternion(gripperPiece.properties.rotation),
-      scale: { x: 1, y: 1, z: 1 },
-      highlighted: true,
-    }
 
-    let gripperPieceMesh = gripperMeshes[gripperPiece.properties.mesh];
-    items[frame + "-ghost"] = {
-      id: frame + "-ghost",
-      frame: frame + "-ghost",
-      shape: gripperPieceMesh.properties.keyword,
-      position: gripperPieceMesh.properties.position,
-      rotation: eulerToQuaternion(gripperPieceMesh.properties.rotation),
-      scale: gripperPieceMesh.properties.scale,
-      highlighted: true,
-      showName: false,
-      hidden: false,
-      color: { r: 62, g: 16, b: 102, a: 0.7 }
-    }
-  });
-  let goalStuff = invTransformer({position: [0,0,0], rotation: [0,0,0,1]});
+  let g = invTransformer({position: [0,0,0], rotation: [0,0,0,1]});
+  let offsetPos = new Vector3(g.position.x, g.position.y, g.position.z);
+  let lerpPosition = offsetPos.lerp(
+    new Vector3(0, 0, 0),
+    0.5
+  );
   
-  tfs[gripper.id + "-ghost"] = {
+  items[`${attachmentLink}-pointer-robotstateconfig`] = {
+    id: `${attachmentLink}-pointer-robotstateconfig`,
     frame: `${attachmentLink}-tag-robotstateconfig`,
-    position: goalStuff.position,
-    rotation: goalStuff.rotation,
+    shape:
+      visualType === "location"
+        ? "package://app/meshes/LocationMarker.stl"
+        : "package://app/meshes/OpenWaypointMarker.stl",
+    position: {x: lerpPosition.x, y: lerpPosition.y, z: lerpPosition.z},
+    rotation: {x: 0, y: 0, z: 0, w: 1},
     scale: { x: 1, y: 1, z: 1 },
-    highlighted: true
-  }
+    highlighted: editMode !== "inactive",
+    showName: false,
+    hidden: false,
+    color: poseToColor(
+      { properties: {position:goalPose.position,rotation:goalQuat}, reachable: reachable },
+      frame,
+      true,
+      occupancyZones
+    )
+  };
 
-  // items[`${attachmentLink}-pointer-robotstateconfig`] = {
-  //   id: `${attachmentLink}-pointer-robotstateconfig`,
-  //   frame: "world",
-  //   shape:
-  //     visualType === "location"
-  //       ? "package://app/meshes/LocationMarker.stl"
-  //       : "package://app/meshes/OpenWaypointMarker.stl",
-  //   position: {x: lerpPosition.x, y: lerpPosition.y, z: lerpPosition.z},
-  //   rotation: goalQuat,
-  //   scale: { x: 1, y: 1, z: 1 },
-  //   highlighted: editMode !== "inactive",
-  //   showName: false,
-  //   hidden: false,
-  //   color: poseToColor(
-  //     { properties: {position:goalPose.position,rotation:goalQuat}, reachable: reachable },
-  //     frame,
-  //     true,
-  //     occupancyZones
-  //   )
-  // };
-  console.log({ tfs, items });
   return { tfs, items };
 };
 
@@ -674,7 +643,7 @@ export const RobotStateConfigurator = memo(
       console.log("detecting change in visuals");
 
       let goalPose = configuratorState.gripperGoalPose;
-      
+
       const { tfs, items } = sceneFromState({
         stateData: configuratorState.stateData,
         goalPose,
@@ -685,11 +654,7 @@ export const RobotStateConfigurator = memo(
         occupancyZones,
         reachable: configuratorState.reached,
         linkParentMap: activeCombination.robot.properties.linkParentMap,
-        invTransformer,
-        gripperFrames: activeCombination.gripper.properties.gripperFrames,
-        gripperLinks,
-        gripperMeshes,
-        gripper: activeCombination.gripper
+        invTransformer
       });
       partialSceneState({ tfs, items });
     }, [
