@@ -1,5 +1,6 @@
 import lodash from "lodash";
 import {
+    MAX_DESTROY_ITEM_DIFF,
     MAX_GRIPPER_DISTANCE_DIFF,
     MAX_GRIPPER_ROTATION_DIFF,
     ROOT_PATH,
@@ -500,46 +501,70 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
 
             // Find and remove the tracked thing
             let bucket = trackedByType[step.data.thing];
+            
+            // Use whatever the last item to have been grabbed as a base
+            let id = null;
+
+            // Add a temp item to the model to see where to look for the position
+            programModel = addToEnvironModel(programModel, 
+                step.data?.relativeTo?.id ? step.data.relativeTo.id : 'world', 
+                "tempIOPlacement", 
+                step.data.position, 
+                step.data.rotation
+            );
+            let tempItemPosition = queryWorldPose(programModel, "tempIOPlacement");
+
             if (bucket.length === 1) {
-                delete trackedByType[step.data.thing];
+                let thingPos = queryWorldPose(programModel, trackedByType[step.data.thing][0].id);
+                
+                if (distance(tempItemPosition.position, thingPos.position) <= MAX_DESTROY_ITEM_DIFF) {
+                    id = trackedByType[step.data.thing][0].id;
+                    delete trackedByType[step.data.thing];
+                }
             } else {
                 // Remove the item that was most recently tracked
                 let lst = trackedByType[step.data.thing];
-                let idx = 0;
+                let idx = -1;
+
                 for (let i = 0; i < lst.length; i++) {
-                    if (lst[i].id === previousGraspedThingID) {
+                    let thingPos = queryWorldPose(programModel, lst[i].id);
+                    if (distance(tempItemPosition.position, thingPos.position) <= MAX_DESTROY_ITEM_DIFF) {
                         idx = i;
+                        id = lst[i].id;
                         i = lst.length;
                     }
                 }
-                trackedByType[step.data.thing].splice(idx, 1);
+                if (idx >= 0) {
+                    trackedByType[step.data.thing].splice(idx, 1);
+                }
             }
 
-            // Use whatever the last item to have been grabbed
-            let id = previousGraspedThingID;
+            
+            if (id) {
+                // backfill data
+                let curLength = dict[id].position.x.length;
+                for (let i = lastTimestamp[id]; i < timesteps.length; i++) {
+                    dict[id].position.x.push(dict[id].position.x[curLength-1]);
+                    dict[id].position.y.push(dict[id].position.y[curLength-1]);
+                    dict[id].position.z.push(dict[id].position.z[curLength-1]);
+                    dict[id].rotation.x.push(dict[id].rotation.x[curLength-1]);
+                    dict[id].rotation.y.push(dict[id].rotation.y[curLength-1]);
+                    dict[id].rotation.z.push(dict[id].rotation.z[curLength-1]);
+                    dict[id].rotation.w.push(dict[id].rotation.w[curLength-1]);
+                    dict[id].hidden.push(dict[id].hidden[curLength-1]);
+                }
 
-            // backfill data
-            for (let i = lastTimestamp[id]; i < timesteps.length; i++) {
-                dict[id].position.x.push(dict[id].position.x[curLength-1]);
-                dict[id].position.y.push(dict[id].position.y[curLength-1]);
-                dict[id].position.z.push(dict[id].position.z[curLength-1]);
-                dict[id].rotation.x.push(dict[id].rotation.x[curLength-1]);
-                dict[id].rotation.y.push(dict[id].rotation.y[curLength-1]);
-                dict[id].rotation.z.push(dict[id].rotation.z[curLength-1]);
-                dict[id].rotation.w.push(dict[id].rotation.w[curLength-1]);
-                dict[id].hidden.push(dict[id].hidden[curLength-1]);
+                // push latest data (hide thing)
+                lastTimestamp[id] = timesteps.length;
+                dict[id].position.x.push(step.data.position.x);
+                dict[id].position.y.push(step.data.position.y);
+                dict[id].position.z.push(step.data.position.z);
+                dict[id].rotation.x.push(step.data.rotation.x);
+                dict[id].rotation.y.push(step.data.rotation.y);
+                dict[id].rotation.z.push(step.data.rotation.z);
+                dict[id].rotation.w.push(step.data.rotation.w);
+                dict[id].hidden.push(true);
             }
-
-            // push latest data (hide thing)
-            lastTimestamp[id] = timesteps.length;
-            dict[id].position.x.push(step.data.position.x);
-            dict[id].position.y.push(step.data.position.y);
-            dict[id].position.z.push(step.data.position.z);
-            dict[id].rotation.x.push(step.data.rotation.x);
-            dict[id].rotation.y.push(step.data.rotation.y);
-            dict[id].rotation.z.push(step.data.rotation.z);
-            dict[id].rotation.w.push(step.data.rotation.w);
-            dict[id].hidden.push(false);
         }
 
         if (step.type === STEP_TYPE.SCENE_UPDATE) {

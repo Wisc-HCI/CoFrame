@@ -117,3 +117,4 @@ export const MAX_POSE_DISTANCE_DIFF = 0.01;
 export const MAX_POSE_ROTATION_DIFF = 0.01;
 export const MAX_GRIPPER_DISTANCE_DIFF = 0.125;
 export const MAX_GRIPPER_ROTATION_DIFF = 10;
+export const MAX_DESTROY_ITEM_DIFF = 0.1;
