@@ -567,7 +567,32 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
             }
         }
 
-        if (step.type === STEP_TYPE.SCENE_UPDATE) {
+        if (step.type === STEP_TYPE.ACTION_END) {
+            // Update time trackers
+            if (step.time > finalTime) {
+                finalTime = step.time;
+            }
+            timesteps.push(step.time);
+            // Buffer all object position and rotations
+            Object.keys(dict).forEach((link) => {
+                let posLength = dict[link].position.x.length;
+
+                for (let tmpLength = posLength; tmpLength < timesteps.length; tmpLength++) {
+                    dict[link].position.x.push(dict[link].position.x[posLength - 1]);
+                    dict[link].position.y.push(dict[link].position.y[posLength - 1]);
+                    dict[link].position.z.push(dict[link].position.z[posLength - 1]);
+                    dict[link].rotation.x.push(dict[link].rotation.x[posLength - 1]);
+                    dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
+                    dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
+                    dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
+                    if (thingList.includes(link)) {
+                        dict[link].hidden.push(dict[link].hidden[posLength-1]);
+                    }
+                }
+
+                lastTimestamp[link] = timesteps.length;
+            });
+        } else if (step.type === STEP_TYPE.SCENE_UPDATE) {
             // Update time
             if (step.time > finalTime) {
                 finalTime = step.time;

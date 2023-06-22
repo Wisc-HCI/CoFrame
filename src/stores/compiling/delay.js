@@ -25,7 +25,7 @@ export const delayCompiler = ({data, memo}) => {
                     effect: { 
                         [robot.id] : { busy: false } },
                     source: data.id,
-                    delay: data.properties.duration,
+                    delay: data.properties.duration * 1000,
                 }
             ],
             source: data.id
