@@ -3,6 +3,7 @@ import { generateUuid } from "../generateUuid";
 import { pickBy } from "lodash";
 import {
   ERROR,
+  MAX_DESTROY_ITEM_DIFF,
   MAX_GRIPPER_DISTANCE_DIFF,
   MAX_GRIPPER_ROTATION_DIFF,
   ROOT_PATH,
@@ -425,24 +426,29 @@ export const findUnusedFeatureIssues = ({ programData }) => {
     if (primitive.dataType !== DATA_TYPES.CALL && primitive.properties) {
       // First, handle the cases where the primitives are simple
       Object.keys(primitive.properties).forEach((paramKey) => {
-        if (paramKey === "thing" && primitive.properties[paramKey] !== null) {
+        if (paramKey === "thing" && 
+            primitive.properties[paramKey] !== null && 
+            programData[primitive.properties[paramKey]]) {
           let thing = programData[primitive.properties[paramKey]].ref;
           usedThingPlaceholders.push(thing);
         } else if (
           paramKey === "machine" &&
-          primitive.properties[paramKey] !== null
+          primitive.properties[paramKey] !== null && 
+          programData[primitive.properties[paramKey]]
         ) {
           let machine = programData[primitive.properties[paramKey]].ref;
           usedMachines.push(machine);
         } else if (
           paramKey === "process" &&
-          primitive.properties[paramKey] !== null
+          primitive.properties[paramKey] !== null && 
+          programData[primitive.properties[paramKey]]
         ) {
           let process = programData[primitive.properties[paramKey]].ref;
           usedProcesses.push(process);
         } else if (
           paramKey === "trajectory" &&
-          primitive.properties[paramKey] !== null
+          primitive.properties[paramKey] !== null && 
+          programData[primitive.properties[paramKey]]
         ) {
           let trajectory =
             programData[primitive.properties[paramKey]].dataType ===
@@ -452,19 +458,22 @@ export const findUnusedFeatureIssues = ({ programData }) => {
           usedTrajectories.push(trajectory);
         } else if (
           paramKey === "startLocation" &&
-          primitive.properties[paramKey] !== null
+          primitive.properties[paramKey] !== null && 
+          programData[primitive.properties[paramKey]]
         ) {
           let location = programData[primitive.properties[paramKey]].ref;
           usedLocations.push(location);
         } else if (
           paramKey === "endLocation" &&
-          primitive.properties[paramKey] !== null
+          primitive.properties[paramKey] !== null && 
+          programData[primitive.properties[paramKey]]
         ) {
           let location = programData[primitive.properties[paramKey]].ref;
           usedLocations.push(location);
         } else if (
           paramKey === "waypoints" &&
-          primitive.properties[paramKey] !== []
+          primitive.properties[paramKey] !== [] && 
+          programData[primitive.properties[paramKey]]
         ) {
           primitive.properties[paramKey].forEach((wp) => {
             let waypoint = programData[wp].ref;
@@ -922,19 +931,41 @@ export const findThingFlowIssues = ({ program, programData, compiledData }) => {
     if (step.type === STEP_TYPE.DESTROY_ITEM) {
       // Find and remove the tracked thing
       let bucket = trackedByType[step.data.thing];
+      // Use whatever the last item to have been grabbed as a base
+      let id = null;
+
+      // Add a temp item to the model to see where to look for the position
+      programModel = addToEnvironModel(programModel, 
+          step.data?.relativeTo?.id ? step.data.relativeTo.id : 'world', 
+          "tempIOPlacement", 
+          step.data.position, 
+          step.data.rotation
+      );
+      let tempItemPosition = queryWorldPose(programModel, "tempIOPlacement");
+
       if (bucket.length === 1) {
-        delete trackedByType[step.data.thing];
-      } else {
-        // Remove the item that was most recently tracked
-        let lst = trackedByType[step.data.thing];
-        let idx = 0;
-        for (let i = 0; i < lst.length; i++) {
-          if (lst[i].id === previousGraspedThingID) {
-            idx = i;
-            i = lst.length;
+          let thingPos = queryWorldPose(programModel, trackedByType[step.data.thing][0].id);
+
+          if (distance(tempItemPosition.position, thingPos.position) <= MAX_DESTROY_ITEM_DIFF) {
+              id = trackedByType[step.data.thing][0].id;
+              delete trackedByType[step.data.thing];
           }
-        }
-        trackedByType[step.data.thing].splice(idx, 1);
+      } else {
+          // Remove the item that was most recently tracked
+          let lst = trackedByType[step.data.thing];
+          let idx = -1;
+
+          for (let i = 0; i < lst.length; i++) {
+              let thingPos = queryWorldPose(programModel, lst[i].id);
+              if (distance(tempItemPosition.position, thingPos.position) <= MAX_DESTROY_ITEM_DIFF) {
+                  idx = i;
+                  id = lst[i].id;
+                  i = lst.length;
+              }
+          }
+          if (idx >= 0) {
+              trackedByType[step.data.thing].splice(idx, 1);
+          }
       }
     }
 
