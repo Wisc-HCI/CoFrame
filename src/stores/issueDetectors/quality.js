@@ -714,15 +714,13 @@ export const findProcessLogicIssues = ({
 
     // Cleanup for process/action end
     if (step.type === STEP_TYPE.PROCESS_END) {
+      // Remove the process since it is no longer running
+      trackedActions = trackedActions.filter((ta) => ta !== step.source);
+
       // Reset the machine's state to the init configuration
       if (step.data.gizmo) {
         machineState[step.data.gizmo] = "init";
       }
-    }
-
-    if (step.type === STEP_TYPE.PROCESS_END) {
-      // Remove the process since it is no longer running
-      trackedActions = trackedActions.filter((ta) => ta !== step.source);
     }
 
     // Check the machine has been initialized twice
@@ -803,7 +801,7 @@ export const findProcessLogicIssues = ({
 
       // Add the action to the set of running processes
       trackedActions.push(source.id);
-      if (needsGizmo) {
+      if (step?.data?.gizmo) {
         machineState[step.data.gizmo] = "running";
       }
     } else if (
@@ -832,7 +830,7 @@ export const findProcessLogicIssues = ({
       }
 
       // Check that the process is running
-      if (!trackedActions.includes(source.id)) {
+      if (machineState[step.data.gizmo] === "idle") {
         const uuid = generateUuid("issue");
         issues[uuid] = {
           id: uuid,
