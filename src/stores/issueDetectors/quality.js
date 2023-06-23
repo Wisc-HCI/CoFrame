@@ -720,7 +720,7 @@ export const findProcessLogicIssues = ({
       }
     }
 
-    if (step.type === STEP_TYPE.ACTION_END) {
+    if (step.type === STEP_TYPE.PROCESS_END) {
       // Remove the process since it is no longer running
       trackedActions = trackedActions.filter((ta) => ta !== step.source);
     }
