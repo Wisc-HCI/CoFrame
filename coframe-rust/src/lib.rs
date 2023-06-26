@@ -324,7 +324,7 @@ pub fn plan_trajectory(
                 "position_line_match".to_string(),
                 Objective::PositionLineMatch(PositionLineMatchObjective::new(
                     "position_line_match".to_string(),
-                    7.0,
+                    10.0,
                     ik_link.clone(),
                 )),
             );
@@ -344,9 +344,9 @@ pub fn plan_trajectory(
                 )),
             );
             objectives.insert(
-                "joint_velocity".to_string(),
+                "link_velocity".to_string(),
                 Objective::LinkVelocityMinimization(LinkVelocityMinimizationObjective::new(
-                    "joint_velocity".to_string(),
+                    "link_velocity".to_string(),
                     7.0,
                 )),
             );
@@ -447,7 +447,7 @@ pub fn plan_trajectory(
                 }
                 distance_to_end_wp = distance_to_end_wp.sqrt();
                 // Ratio of distances
-                let percent_trajectory_completed = distance_to_end_wp / distance_between_start_and_end;
+                let percent_trajectory_completed = (distance_to_end_wp / distance_between_start_and_end) * 100.0;
 
                 // Update joint weights
                 let new_weight = 10.0 / (percent_trajectory_completed / 10.0).exp();
