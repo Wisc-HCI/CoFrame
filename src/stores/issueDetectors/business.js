@@ -67,7 +67,7 @@ export const findCycleTimeIssues = ({program, stats, compiledData}) => {
                 {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
             ],
             units: 's',
-            decimal: 5,
+            decimals: 5,
             title: '',
             isTimeseries: false
         }
@@ -117,7 +117,7 @@ export const findIdleTimeIssues = ({programData, program, stats, compiledData}) 
                 {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
             ],
             units: 's',
-            decimal: 5,
+            decimals: 5,
             title: '',
             isTimeseries: false
         }
@@ -233,7 +233,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
                     {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
                 ],
                 units: '%',
-                decimal: 5,
+                decimals: 5,
                 title: '',
                 isTimeseries: false
             }

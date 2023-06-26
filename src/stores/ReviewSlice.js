@@ -71,7 +71,7 @@ export const ReviewSlice = (set, get) => ({
                 title: '',
                 thresholds : [{range: [0, 1], color: '', label: ''}],
                 units: '',
-                decimal: 0,
+                decimals: 0,
                 isTimeseries: true/false
             }
             sceneData: 🤷

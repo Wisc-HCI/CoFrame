@@ -127,7 +127,7 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
     let moveTrajectorySteps = {};
     let moveIds = [];
     compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
-        if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source].type === 'moveTrajectoryType') {
+        if (programData[step.source].type === 'moveTrajectoryType') {
             if (!(moveIds.includes(step.source))) {
                 moveIds.push(step.source);
                 moveTrajectorySteps[step.source] = [];
@@ -141,7 +141,7 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
     moveIds.forEach(source => {
         let count = 0;
 
-        timeData[source] = [];
+        timeData[source] = [0];
 
         let sceneData = {};
         let jointVelocities = {};
@@ -153,45 +153,60 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
         });
 
         // Base update
-        Object.keys(moveTrajectorySteps[source][0].data.links).forEach(link => {
-            environmentModel = updateEnvironModel(environmentModel, link, moveTrajectorySteps[source][0].data.links[link].position, moveTrajectorySteps[source][0].data.links[link].rotation);
-        });
+        if (moveTrajectorySteps[source][0]?.data?.links) {
+            Object.keys(moveTrajectorySteps[source][0]?.data?.links).forEach(link => {
+                environmentModel = updateEnvironModel(environmentModel, link, moveTrajectorySteps[source][0].data.links[link].position, moveTrajectorySteps[source][0].data.links[link].rotation);
+            });
+        }
 
+        let prevMoveTrajectoryStep = null;
+        let initialTime = moveTrajectorySteps[source][0].time;
         moveTrajectorySteps[source].forEach(step => {
             if (count > 0) {
-                timeData[source].push(step.time);
-                let prevousPositions = {}
-                jointNames.forEach(joint => {
-                    prevousPositions[joint] = {...queryWorldPose(environmentModel, jointLinkMap[joint], '')};
-                });
+                timeData[source].push(step.time - initialTime);
+                if (step.type === STEP_TYPE.SCENE_UPDATE) {
+                    let prevousPositions = {}
+                    jointNames.forEach(joint => {
+                        prevousPositions[joint] = {...queryWorldPose(environmentModel, jointLinkMap[joint], '')};
+                    });
 
-                Object.keys(step.data.links).forEach(link => {
-                    environmentModel = updateEnvironModel(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
-                });
+                    Object.keys(step.data.links).forEach(link => {
+                        environmentModel = updateEnvironModel(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                    });
 
-                jointNames.forEach(joint => {
-                    const prevJointValue = moveTrajectorySteps[source][count-1].data.joints[joint];
-                    const prevTime = moveTrajectorySteps[source][count-1].time;
-                    const curJointValue = step.data.joints[joint];
-                    const curTime = step.time;
-                    const currentPosition = queryWorldPose(environmentModel, jointLinkMap[joint], '');
-                    const curFrame = currentPosition.position;
-                    const calcVel = Math.abs((curJointValue - prevJointValue) / ((curTime - prevTime) / 1000));
+                    jointNames.forEach(joint => {
+                        const prevJointValue = prevMoveTrajectoryStep.data.joints[joint];
+                        const prevTime = prevMoveTrajectoryStep.time;
+                        const curJointValue = step.data.joints[joint];
+                        const curTime = step.time;
+                        const currentPosition = queryWorldPose(environmentModel, jointLinkMap[joint], '');
+                        const curFrame = currentPosition.position;
+                        const calcVel = Math.abs((curJointValue - prevJointValue) / ((curTime - prevTime) / 1000));
 
-                    if (calcVel >= errorLevel) {
-                        errorWarning[joint].error = true;
-                        errorWarning[joint].warning = true;
-                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["performance"])});
-                    } else if (calcVel >= warningLevel) {
-                        errorWarning[joint].warning = true;
-                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["performance"])});
-                    } else {
-                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
-                    }
-                    jointVelocities[joint].push(calcVel);
-                });
+                        if (calcVel >= errorLevel) {
+                            errorWarning[joint].error = true;
+                            errorWarning[joint].warning = true;
+                            sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["performance"])});
+                        } else if (calcVel >= warningLevel) {
+                            errorWarning[joint].warning = true;
+                            sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["performance"])});
+                        } else {
+                            sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
+                        }
+                        jointVelocities[joint].push(calcVel);
+                    });
+                    prevMoveTrajectoryStep = {...step};
+                } else {
+                    Object.keys(jointVelocities).forEach(jointName => {
+                        jointVelocities[jointName].push(jointVelocities[jointName][jointVelocities[jointName].length - 1]);
+                    });
+                }
+                count += 1;
             }
-            count += 1;
+            if (count === 0 && step.type === STEP_TYPE.SCENE_UPDATE) {
+                count += 1;
+                prevMoveTrajectoryStep = {...step};
+            }
         });
 
         // Filter and format graph data
@@ -235,15 +250,15 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
                 focus: [source],
                 graphData: {
                     series: jointGraphData,
-                    xAxisLabel: 'Timestamp',
+                    xAxisLabel: 'Time',
                     yAxisLabel: 'Velocity',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
                         {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
-                    units: 'm/s',
-                    decimal: 5,
+                    units: 'rad/s',
+                    decimals: 2,
                     title: '',
                     isTimeseries: true
                 },
@@ -268,12 +283,14 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
     let sceneUpdates = res[1];
 
     let timeData = {};
+    let initialTimeData = {}
     let linkData = {};
     sceneUpdates.forEach(step => {
         if (step.source && moveTrajectoryIDs.includes(step.source)) {
             if (!(step.source in timeData)) {
                 timeData[step.source] = [];
                 linkData[step.source] = [];
+                initialTimeData[step.source] = step.time;
             }
             timeData[step.source].push(step.time);
             linkData[step.source].push({...step.data.links});
@@ -328,7 +345,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
                 endEffectorVelocities.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
             }
 
-            endEffectorGraphData.push({x: timeData[moveID][i], 'End Effector Velocity': calcVel});
+            endEffectorGraphData.push({x: timeData[moveID][i] - initialTimeData[moveID], 'End Effector Velocity': calcVel});
             
         }
 
@@ -352,7 +369,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
                     units: 'm/s',
-                    decimal: 5,
+                    decimals: 5,
                     title: '',
                     isTimeseries: true
                 },
@@ -508,7 +525,7 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings, com
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
                     units: '%',
-                    decimal: 5,
+                    decimals: 5,
                     title: '',
                     isTimeseries: true
                 },
