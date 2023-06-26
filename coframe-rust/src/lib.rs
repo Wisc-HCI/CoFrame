@@ -324,7 +324,7 @@ pub fn plan_trajectory(
                 "position_line_match".to_string(),
                 Objective::PositionLineMatch(PositionLineMatchObjective::new(
                     "position_line_match".to_string(),
-                    10.0,
+                    7.0,
                     ik_link.clone(),
                 )),
             );
