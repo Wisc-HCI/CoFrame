@@ -196,7 +196,7 @@ const moveTrajectoryFeatures = {
       type: SIMPLE_PROPERTY_TYPES.NUMBER,
       default: 1,
       min: 0.01,
-      max: 15,
+      max: 60,
       step: 0.01,
       visualScaling: 1,
       visualPrecision: 2,
