@@ -336,13 +336,13 @@ pub fn plan_trajectory(
                     ik_link.clone(),
                 )),
             );
-            objectives.insert(
-                "joint_velocity".to_string(),
-                Objective::JointVelocityMinimization(JointVelocityMinimizationObjective::new(
-                    "joint_velocity".to_string(),
-                    5.0,
-                )),
-            );
+            // objectives.insert(
+            //     "joint_velocity".to_string(),
+            //     Objective::JointVelocityMinimization(JointVelocityMinimizationObjective::new(
+            //         "joint_velocity".to_string(),
+            //         5.0,
+            //     )),
+            // );
             objectives.insert(
                 "link_velocity".to_string(),
                 Objective::LinkVelocityMinimization(LinkVelocityMinimizationObjective::new(
@@ -447,6 +447,7 @@ pub fn plan_trajectory(
                 }
                 distance_to_end_wp = distance_to_end_wp.sqrt();
                 // Ratio of distances
+                // let percent_trajectory_completed = (distance_to_end_wp / distance_between_start_and_end) * 100.0;
                 let percent_trajectory_completed = (distance_to_end_wp / distance_between_start_and_end) * 100.0;
 
                 // Update joint weights
