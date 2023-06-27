@@ -194,7 +194,12 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
                     let timeDelta = (step.time - previousTimeStep) / 1000;
                     let jointVelocity = (jointValue - previousJoints[joint]) / timeDelta;
                     let jointAcceleration = (jointVelocity - previousVelocity[joint]) / timeDelta;
-                    wearTearCost = wearTearCost + wearAndTear(jointAcceleration);
+                    if (!isNaN(jointAcceleration)) {
+                        let wtcost = wearAndTear(jointAcceleration);
+                        if (!isNan(wtcost)) {
+                            wearTearCost += wtcost;
+                        }
+                    }
 
                     previousVelocity[joint] = jointVelocity;
                     previousJoints[joint] = jointValue;
