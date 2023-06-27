@@ -214,31 +214,28 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     priorData.push({x:i, ROI:roi});
 
     // build roi issue
-    if (wearTearCost > 0) {
-        newStats = {roi: roi};
-        let uuid = generateUuid('issue');
-        issues[uuid] = {
-            id: uuid,
-            requiresChanges: false,
-            title: 'Return on Investment',
-            description: 'Return on Investment',
-            featuredDocs: {[program.id]:roiDoc},
-            complete: false,
-            focus: [program.id],
-            graphData: {
-                series: priorData,
-                xAxisLabel: 'Program Iteration',
-                yAxisLabel: 'ROI',
-                thresholds: [
-                    {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
-                ],
-                units: '%',
-                decimals: 5,
-                title: '',
-                isTimeseries: false
-            }
+    newStats = {roi: roi};
+    let uuid = generateUuid('issue');
+    issues[uuid] = {
+        id: uuid,
+        requiresChanges: false,
+        title: 'Return on Investment',
+        description: 'Return on Investment',
+        featuredDocs: {[program.id]:roiDoc},
+        complete: false,
+        focus: [program.id],
+        graphData: {
+            series: priorData,
+            xAxisLabel: 'Program Iteration',
+            yAxisLabel: 'ROI',
+            thresholds: [
+                {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
+            ],
+            units: '%',
+            decimals: 5,
+            title: '',
+            isTimeseries: false
         }
-
     }
 
     return [issues, newStats];
