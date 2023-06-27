@@ -462,6 +462,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 rotation: { x: [], y: [], z: [], w: [] },
                 hidden: [],
                 mesh: state.programData[state.programData[step.data.thing]?.properties?.mesh] ? state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.keyword : state.programData[step.data.thing]?.properties?.mesh,
+                color: state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.color ? state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.color : { r: 0, g: 200, b: 0, a: 0.2 },
                 scale: state.programData[state.programData[step.data.thing]?.properties?.mesh] ? state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.scale : {x: 1, y: 1, z: 1},
                 relativeTo: step.data.relativeTo?.id,
                 type: step.data.thing
@@ -649,6 +650,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                         rotation: { x: [], y: [], z: [], w: [] },
                         hidden: [],
                         mesh: state.programData[state.programData[thing]?.properties?.mesh] ? state.programData[state.programData[thing]?.properties?.mesh]?.properties?.keyword : state.programData[thing]?.properties?.mesh,
+                        color: state.programData[state.programData[thing]?.properties?.mesh]?.properties?.color ? {...state.programData[state.programData[thing]?.properties?.mesh]?.properties?.color} : { r: 0, g: 200, b: 0, a: 0.2 },
                         scale: state.programData[state.programData[thing]?.properties?.mesh] ? state.programData[state.programData[thing]?.properties?.mesh]?.properties?.scale : {x: 1, y: 1, z: 1},
                         relativeTo: state.programData[thing]?.properties.relativeTo?.id,
                         type: thing
@@ -942,7 +944,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
                 scale: dict[link].scale,
                 transformMode: "inactive",
-                color: { r: 0, g: 200, b: 0, a: 0.2 },
+                color: dict[link].color,
                 highlighted: false,
                 hidden: interpolateScalar(timesteps, dict[link].hidden)
             }
