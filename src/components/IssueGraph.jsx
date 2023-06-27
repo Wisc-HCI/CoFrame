@@ -102,8 +102,6 @@ const IssueGraph = withTooltip(memo(
       label: t.label
     }));
 
-    console.log(filledThresholds)
-
     const colorDomain = filledThresholds.map((t) => t.range[0]);
     const colorRange = filledThresholds.map((t) => t.color);
 

@@ -130,6 +130,14 @@ const DialogContent = () => {
     updateIssueSetting(item);
   };
 
+  const updateDropdownIssue = (value, issue) => {
+    const item = {
+      ...issue,
+      value: value,
+    };
+    updateIssueSetting(item);
+  };
+
   const [tab, setTab] = useState("settings");
 
   const filteredIssueSettings = Object.values(issueSettings).filter(
@@ -367,7 +375,7 @@ const DialogContent = () => {
                                 id={entry.name.concat("select")}
                                 value={entry.value}
                                 label={entry.name}
-                                onChange={(e) => updateIssue(e.target.value, entry)}
+                                onChange={(e) => updateDropdownIssue(e.target.value, entry)}
                               >
                                 {Object.values(data).map(block => {
                                   if (block.type === entry.blocktype) {
@@ -375,7 +383,7 @@ const DialogContent = () => {
                                   } else {
                                     return null
                                   }
-                                })}
+                                }).filter(block => block !== null)}
                               </Select>
                             </FormControl>
                           </Box>

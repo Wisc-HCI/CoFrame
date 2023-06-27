@@ -133,7 +133,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     // get prior values
     let priorData = [];
     let i = 0;
-    let peak = 0;
+    let peak = Number.MIN_VALUE;
     for (i = 0; i < stats.length; i++) {
         if (stats[i].roi !== null) {
             if (stats[i].roi > peak) {
