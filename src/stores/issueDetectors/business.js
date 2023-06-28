@@ -194,12 +194,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
                     let timeDelta = (step.time - previousTimeStep) / 1000;
                     let jointVelocity = (jointValue - previousJoints[joint]) / timeDelta;
                     let jointAcceleration = (jointVelocity - previousVelocity[joint]) / timeDelta;
-                    if (!isNaN(jointAcceleration)) {
-                        let wtcost = wearAndTear(jointAcceleration);
-                        if (!isNan(wtcost)) {
-                            wearTearCost += wtcost;
-                        }
-                    }
+                    wearTearCost += wearAndTear(jointAcceleration);
 
                     previousVelocity[joint] = jointVelocity;
                     previousJoints[joint] = jointValue;
@@ -218,28 +213,32 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     }
     priorData.push({x:i, ROI:roi});
 
-    // build roi issue
-    newStats = {roi: roi};
-    let uuid = generateUuid('issue');
-    issues[uuid] = {
-        id: uuid,
-        requiresChanges: false,
-        title: 'Return on Investment',
-        description: 'Return on Investment',
-        featuredDocs: {[program.id]:roiDoc},
-        complete: false,
-        focus: [program.id],
-        graphData: {
-            series: priorData,
-            xAxisLabel: 'Program Iteration',
-            yAxisLabel: 'ROI',
-            thresholds: [
-                {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
-            ],
-            units: '%',
-            decimals: 5,
-            title: '',
-            isTimeseries: false
+    if (wearTearCost > 0) {
+        // build roi issue
+        newStats = {roi: roi};
+        let uuid = generateUuid('issue');
+        issues[uuid] = {
+            id: uuid,
+            requiresChanges: false,
+            title: 'Return on Investment',
+            description: 'Return on Investment',
+            featuredDocs: {[program.id]:roiDoc},
+            complete: false,
+            focus: [program.id],
+            graphData: {
+                series: priorData,
+                xAxisLabel: 'Program Iteration',
+                yAxisLabel: 'ROI',
+                thresholds: [
+                    {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
+                ],
+                units: '%',
+                decimals: 5,
+                title: '',
+                isTimeseries: false
+            }
+
+            
         }
     }
 
