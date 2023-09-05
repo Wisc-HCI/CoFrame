@@ -373,6 +373,12 @@ const sceneFromState = ({
       true,
       occupancyZones
     ),
+    transformMode:
+      editMode === "position"
+        ? "translate"
+        : editMode === "rotation"
+        ? "rotate"
+        : null,
   };
 
   let g = invTransformer({position: [0,0,0], rotation: [0,0,0,1]});

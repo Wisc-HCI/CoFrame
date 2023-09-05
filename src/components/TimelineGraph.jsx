@@ -366,19 +366,19 @@ const InnerGraph = withTooltip(
               </g>
             ))}
             {filteredBlockData
-              .filter((entry) => xScale(entry.end - entry.start) > 100)
+              .filter((entry) => xScale(entry.end - entry.start) > 50)
               .map((entry, i) => {
                 // console.log({track:entry.track,yscale:yScale(entry.track)})
                 return (
                   <Text
                     key={`${i}block-text`}
                     fontFamily="helvetica"
-                    scaleToFit
+                    scaleToFit={true}
                     textAnchor="start"
                     verticalAnchor="middle"
                     dy="-0.15em"
                     lineHeight={barHeight * 0.6}
-                    width={100}
+                    width={50}
                     fill="white"
                     line="black"
                     x={xScale(entry.start) + 20}

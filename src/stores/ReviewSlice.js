@@ -51,7 +51,7 @@ export const ReviewSlice = (set, get) => ({
         'productValue': {id: 'productValue', frame: 'business', type: "text", name: "Product Value", value: 10, min: 0},
         'productCost': {id: 'productCost', frame: 'business', type: "text", name: "Product Cost", value: 5, min: 0},
         'roiAccelError': {id: 'roiAccelError', frame: 'business', type: "text", name: "ROI Acceleration Error Level", value: 10, min: 0},
-        'product': {id: 'product', frame: 'business', type: "dropdown", blocktype: "thingType", name: "Produced Product", value: "thingType-98892e001c1911ecbe2600155d1a70a2"},
+        'product': {id: 'product', frame: 'business', type: "dropdown", blocktype: "thingType", name: "Produced Product", value: ""},
     },
     issues: {
         /* 
@@ -71,7 +71,7 @@ export const ReviewSlice = (set, get) => ({
                 title: '',
                 thresholds : [{range: [0, 1], color: '', label: ''}],
                 units: '',
-                decimal: 0,
+                decimals: 0,
                 isTimeseries: true/false
             }
             sceneData: 🤷

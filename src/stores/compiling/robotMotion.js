@@ -159,7 +159,8 @@ export const robotMotionCompiler = ({
   ];
 
   if (properties.duration !== compileModel?.[data.id]?.[path]?.duration && 
-      isEqual(poses, compileModel?.[data.id]?.[path]?.poses)) {
+      isEqual(poses, compileModel?.[data.id]?.[path]?.poses) &&
+      properties.motionType === compileModel?.[data.id]?.[path]?.motionType) {
     let eventstemp = updateSteps(compileModel?.[data.id]?.[path]?.events[0].onTrigger, compileModel?.[data.id]?.[path]?.duration, properties.duration);
     let events = [
       {
@@ -177,8 +178,10 @@ export const robotMotionCompiler = ({
       events: events,
       steps: statesToSteps(eventsToStates(events)),
       duration: properties.duration,
+      motionType: properties.motionType
     };
   } else if (properties.duration === compileModel?.[data.id]?.[path]?.duration && 
+    properties.motionType === compileModel?.[data.id]?.[path]?.motionType &&
     isEqual(poses, compileModel?.[data.id]?.[path]?.poses)) {
       return {...compileModel?.[data.id]?.[path]};
     }
@@ -332,6 +335,7 @@ export const robotMotionCompiler = ({
     steps: statesToSteps(eventsToStates(events)),
     duration: duration,
     poses: poses,
+    motionType: motionType,
   };
 
   return newCompiled;

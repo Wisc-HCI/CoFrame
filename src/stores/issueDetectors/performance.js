@@ -127,7 +127,7 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
     let moveTrajectorySteps = {};
     let moveIds = [];
     compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
-        if (step.type === STEP_TYPE.SCENE_UPDATE && programData[step.source].type === 'moveTrajectoryType') {
+        if (programData[step.source].type === 'moveTrajectoryType') {
             if (!(moveIds.includes(step.source))) {
                 moveIds.push(step.source);
                 moveTrajectorySteps[step.source] = [];
@@ -141,7 +141,7 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
     moveIds.forEach(source => {
         let count = 0;
 
-        timeData[source] = [];
+        timeData[source] = [0];
 
         let sceneData = {};
         let jointVelocities = {};
@@ -178,8 +178,8 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
                 });
 
                 jointNames.forEach(joint => {
-                    const prevJointValue = moveTrajectorySteps[source][count-1].data.joints[joint];
-                    const prevTime = moveTrajectorySteps[source][count-1].time;
+                    const prevJointValue = prevMoveTrajectoryStep.data.joints[joint];
+                    const prevTime = prevMoveTrajectoryStep.time;
                     const curJointValue = step.data.joints[joint];
                     const curTime = step.time;
                     const currentPosition = queryWorldPose(environmentModel, jointLinkMap[joint], '');
@@ -198,6 +198,7 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
                     }
                     jointVelocities[joint].push(calcVel);
                 });
+                prevMoveTrajectoryStep = {...step};
             }
             count += 1;
         });
@@ -243,15 +244,15 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
                 focus: [source],
                 graphData: {
                     series: jointGraphData,
-                    xAxisLabel: 'Timestamp',
+                    xAxisLabel: 'Time',
                     yAxisLabel: 'Velocity',
                     thresholds: [
                         {range: ["MIN", warningLevel], color: 'grey', label: 'OK'},
                         {range: [warningLevel, errorLevel], color: frameStyles.colors["performance"], label: 'Warning'},
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
-                    units: 'm/s',
-                    decimal: 5,
+                    units: 'rad/s',
+                    decimals: 2,
                     title: '',
                     isTimeseries: true
                 },
@@ -276,12 +277,14 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
     let sceneUpdates = res[1];
 
     let timeData = {};
+    let initialTimeData = {}
     let linkData = {};
     sceneUpdates.forEach(step => {
         if (step.source && moveTrajectoryIDs.includes(step.source)) {
             if (!(step.source in timeData)) {
                 timeData[step.source] = [];
                 linkData[step.source] = [];
+                initialTimeData[step.source] = step.time;
             }
             timeData[step.source].push(step.time);
             linkData[step.source].push({...step.data.links});
@@ -345,7 +348,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
                 endEffectorVelocities.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
             }
 
-            endEffectorGraphData.push({x: timeData[moveID][i], 'End Effector Velocity': calcVel});
+            endEffectorGraphData.push({x: timeData[moveID][i] - initialTimeData[moveID], 'End Effector Velocity': calcVel});
             
         }
 
@@ -369,7 +372,7 @@ export const findEndEffectorSpeedIssues = ({program, programData, settings, envi
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
                     units: 'm/s',
-                    decimal: 5,
+                    decimals: 5,
                     title: '',
                     isTimeseries: true
                 },
@@ -525,7 +528,7 @@ export const findSpaceUsageIssues = ({program, programData, stats, settings, com
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["performance"], label: 'Error'},
                     ],
                     units: '%',
-                    decimal: 5,
+                    decimals: 5,
                     title: '',
                     isTimeseries: true
                 },
