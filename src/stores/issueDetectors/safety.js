@@ -75,10 +75,12 @@ export const findEndEffectorPoseIssues = ({program, programData, settings, compi
     let toolFrames = {};
     let endPointFrames = {};
     let timeData = {};
+    let initialTimeData = {};
     sceneUpdates.forEach(step => {
         if (step.source && moveTrajectoryIDs.includes(step.source)) {
             if (!(step.source in timeData)) {
                 timeData[step.source] = [];
+                initialTimeData[step.source] = step.time;
                 toolFrames[step.source] = [];
                 endPointFrames[step.source] = [];
             }
@@ -109,7 +111,7 @@ export const findEndEffectorPoseIssues = ({program, programData, settings, compi
             } else {
                 endEffectorScores.push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
             }
-            graphData.push({x: timeData[moveID][i] / 1000, endEffectorScore: scores[i]});
+            graphData.push({x: timeData[moveID][i] - initialTimeData[moveID], endEffectorScore: scores[i]});
         }
 
         if (shouldReportIssue) {
@@ -133,7 +135,7 @@ export const findEndEffectorPoseIssues = ({program, programData, settings, compi
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
                     ],
                     units: '',
-                    decimal: 5,
+                    decimals: 5,
                     isTimeseries: true
                 },
                 sceneData: {vertices: {endEffectorPose: endEffectorScores}}
@@ -181,6 +183,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
     });
 
     let timeData = {};
+    let initialTimeData = {};
     let sCol = {};
     let eCol = {};
     let positionData = {};
@@ -191,6 +194,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
             if (!timeData[step.source]) {
                 moveTrajectoryIDs.push(step.source);
                 timeData[step.source] = [];
+                initialTimeData[step.source] = step.time;
                 sCol[step.source] = [];
                 eCol[step.source] = [];
                 positionData[step.source] = [];
@@ -259,7 +263,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
         // Build the graph and collision data
         // If a joint should be graphed, add it's data points to the respective array
         for (let i = 0; i < timeData[moveID].length; i++) {
-            let timestamp = timeData[moveID][i] / 1000;
+            let timestamp = timeData[moveID][i] - initialTimeData[moveID];
             graphData[selfIndex].push({x: timestamp});
             graphData[envIndex].push({x: timestamp});
 
@@ -345,7 +349,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
                     ],
                     units: 'm',
-                    decimal: 5,
+                    decimals: 5,
                     isTimeseries: true
                 },
                 sceneData: {vertices: collisionData[selfIndex]}
@@ -374,7 +378,7 @@ export const findCollisionIssues = ({program, programData, settings, environment
                         {range: [errorLevel, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'},
                     ],
                     units: 'm',
-                    decimal: 5,
+                    decimals: 5,
                     isTimeseries: true
                 },
                 sceneData: {vertices: collisionData[envIndex]}
@@ -393,6 +397,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
     const errorLevel = settings['occupancyErr'].value;
 
     let timeData = {};
+    let initialTimeData = {};
     let proximityData = {};
     let positionData = {};
     let shouldGraphlink = {};
@@ -413,6 +418,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
                 moveIds.push(step.source);
                 
                 timeData[step.source] = [];
+                initialTimeData[step.source] = step.time;
                 proximityData[step.source] = [];
                 positionData[step.source] = [];
                 
@@ -449,7 +455,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
 
 
         for (let j = 0; j < proximityData[source].length; j++) {
-            let dataPoint = {x: timeData[source][j]};
+            let dataPoint = {x: timeData[source][j] - initialTimeData[source]};
             for (let i = 0; i < shouldGraphlink[source].length; i++) {
                 // Grab the position data for each link and mark it's color
                 if (typeof(positionData[source][j][linkNames[i]].rotation?.w) === typeof(1)) {
@@ -510,7 +516,7 @@ export const findOccupancyIssues = ({program, programData, settings, environment
                         {range: [warningLevel, "MAX"], color: 'grey', label: 'OK'},
                     ],
                     units: 'm',
-                    decimal: 5,
+                    decimals: 5,
                     isTimeseries: true
                 },
                 sceneData: {vertices: occupancyValues[source]}
@@ -527,6 +533,7 @@ export const findPinchPointIssues = ({program, programData, compiledData}) => { 
 
     let pinchPoints = {};
     let timeData = {};
+    let initialTimeData = {};
     let errorSteps = [];
 
     compiledData[program.id]?.[ROOT_PATH]?.steps?.forEach(step => {
@@ -541,6 +548,7 @@ export const findPinchPointIssues = ({program, programData, compiledData}) => { 
 
             if (!pinchPoints[step.source]) {
                 timeData[step.source] = [step.time];
+                initialTimeData[step.source] = step.time;
                 pinchPoints[step.source] = [hasError];
             } else {
                 timeData[step.source].push(step.time);
@@ -556,7 +564,7 @@ export const findPinchPointIssues = ({program, programData, compiledData}) => { 
     errorSteps.forEach(source => {
         if (!addressed.includes(source)) {
             const graphData = timeData[source].map((element, idx, arr) => {
-                return {x: element, inPinch: (pinchPoints[source][idx] ? 1 : 0)}
+                return {x: element - initialTimeData[source], inPinch: (pinchPoints[source][idx] ? 1 : 0)}
             });
 
             const uuid = generateUuid('issue');
@@ -577,7 +585,7 @@ export const findPinchPointIssues = ({program, programData, compiledData}) => { 
                         {range: ["MIN", 1], color: 'grey', label: 'OK'},
                         {range: [1, "MAX"], color: frameStyles.errorColors["safety"], label: 'Error'}
                     ],
-                    decimal: 1,
+                    decimals: 1,
                     title: '',
                     isTimeseries: true
                 },

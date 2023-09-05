@@ -1,5 +1,6 @@
 import lodash from "lodash";
 import {
+    MAX_DESTROY_ITEM_DIFF,
     MAX_GRIPPER_DISTANCE_DIFF,
     MAX_GRIPPER_ROTATION_DIFF,
     ROOT_PATH,
@@ -465,6 +466,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 rotation: { x: [], y: [], z: [], w: [] },
                 hidden: [],
                 mesh: state.programData[state.programData[step.data.thing]?.properties?.mesh] ? state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.keyword : state.programData[step.data.thing]?.properties?.mesh,
+                color: state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.color ? state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.color : { r: 0, g: 200, b: 0, a: 0.2 },
                 scale: state.programData[state.programData[step.data.thing]?.properties?.mesh] ? state.programData[state.programData[step.data.thing]?.properties?.mesh]?.properties?.scale : {x: 1, y: 1, z: 1},
                 relativeTo: step.data.relativeTo?.id,
                 type: step.data.thing
@@ -504,49 +506,98 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
 
             // Find and remove the tracked thing
             let bucket = trackedByType[step.data.thing];
+            
+            // Use whatever the last item to have been grabbed as a base
+            let id = null;
+
+            // Add a temp item to the model to see where to look for the position
+            programModel = addToEnvironModel(programModel, 
+                step.data?.relativeTo?.id ? step.data.relativeTo.id : 'world', 
+                "tempIOPlacement", 
+                step.data.position, 
+                step.data.rotation
+            );
+            let tempItemPosition = queryWorldPose(programModel, "tempIOPlacement");
+
             if (bucket.length === 1) {
-                delete trackedByType[step.data.thing];
+                let thingPos = queryWorldPose(programModel, trackedByType[step.data.thing][0].id);
+                
+                if (distance(tempItemPosition.position, thingPos.position) <= MAX_DESTROY_ITEM_DIFF) {
+                    id = trackedByType[step.data.thing][0].id;
+                    delete trackedByType[step.data.thing];
+                }
             } else {
                 // Remove the item that was most recently tracked
                 let lst = trackedByType[step.data.thing];
-                let idx = 0;
+                let idx = -1;
+
                 for (let i = 0; i < lst.length; i++) {
-                    if (lst[i].id === previousGraspedThingID) {
+                    let thingPos = queryWorldPose(programModel, lst[i].id);
+                    if (distance(tempItemPosition.position, thingPos.position) <= MAX_DESTROY_ITEM_DIFF) {
                         idx = i;
+                        id = lst[i].id;
                         i = lst.length;
                     }
                 }
-                trackedByType[step.data.thing].splice(idx, 1);
+                if (idx >= 0) {
+                    trackedByType[step.data.thing].splice(idx, 1);
+                }
             }
 
-            // Use whatever the last item to have been grabbed
-            let id = previousGraspedThingID;
+            
+            if (id) {
+                // backfill data
+                let curLength = dict[id].position.x.length;
+                for (let i = lastTimestamp[id]; i < timesteps.length; i++) {
+                    dict[id].position.x.push(dict[id].position.x[curLength-1]);
+                    dict[id].position.y.push(dict[id].position.y[curLength-1]);
+                    dict[id].position.z.push(dict[id].position.z[curLength-1]);
+                    dict[id].rotation.x.push(dict[id].rotation.x[curLength-1]);
+                    dict[id].rotation.y.push(dict[id].rotation.y[curLength-1]);
+                    dict[id].rotation.z.push(dict[id].rotation.z[curLength-1]);
+                    dict[id].rotation.w.push(dict[id].rotation.w[curLength-1]);
+                    dict[id].hidden.push(dict[id].hidden[curLength-1]);
+                }
 
-            // backfill data
-            for (let i = lastTimestamp[id]; i < timesteps.length; i++) {
-                dict[id].position.x.push(dict[id].position.x[curLength-1]);
-                dict[id].position.y.push(dict[id].position.y[curLength-1]);
-                dict[id].position.z.push(dict[id].position.z[curLength-1]);
-                dict[id].rotation.x.push(dict[id].rotation.x[curLength-1]);
-                dict[id].rotation.y.push(dict[id].rotation.y[curLength-1]);
-                dict[id].rotation.z.push(dict[id].rotation.z[curLength-1]);
-                dict[id].rotation.w.push(dict[id].rotation.w[curLength-1]);
-                dict[id].hidden.push(dict[id].hidden[curLength-1]);
+                // push latest data (hide thing)
+                lastTimestamp[id] = timesteps.length;
+                dict[id].position.x.push(step.data.position.x);
+                dict[id].position.y.push(step.data.position.y);
+                dict[id].position.z.push(step.data.position.z);
+                dict[id].rotation.x.push(step.data.rotation.x);
+                dict[id].rotation.y.push(step.data.rotation.y);
+                dict[id].rotation.z.push(step.data.rotation.z);
+                dict[id].rotation.w.push(step.data.rotation.w);
+                dict[id].hidden.push(true);
             }
-
-            // push latest data (hide thing)
-            lastTimestamp[id] = timesteps.length;
-            dict[id].position.x.push(step.data.position.x);
-            dict[id].position.y.push(step.data.position.y);
-            dict[id].position.z.push(step.data.position.z);
-            dict[id].rotation.x.push(step.data.rotation.x);
-            dict[id].rotation.y.push(step.data.rotation.y);
-            dict[id].rotation.z.push(step.data.rotation.z);
-            dict[id].rotation.w.push(step.data.rotation.w);
-            dict[id].hidden.push(false);
         }
 
-        if (step.type === STEP_TYPE.SCENE_UPDATE) {
+        if (step.type === STEP_TYPE.ACTION_END) {
+            // Update time trackers
+            if (step.time > finalTime) {
+                finalTime = step.time;
+            }
+            timesteps.push(step.time);
+            // Buffer all object position and rotations
+            Object.keys(dict).forEach((link) => {
+                let posLength = dict[link].position.x.length;
+
+                for (let tmpLength = posLength; tmpLength < timesteps.length; tmpLength++) {
+                    dict[link].position.x.push(dict[link].position.x[posLength - 1]);
+                    dict[link].position.y.push(dict[link].position.y[posLength - 1]);
+                    dict[link].position.z.push(dict[link].position.z[posLength - 1]);
+                    dict[link].rotation.x.push(dict[link].rotation.x[posLength - 1]);
+                    dict[link].rotation.y.push(dict[link].rotation.y[posLength - 1]);
+                    dict[link].rotation.z.push(dict[link].rotation.z[posLength - 1]);
+                    dict[link].rotation.w.push(dict[link].rotation.w[posLength - 1]);
+                    if (thingList.includes(link)) {
+                        dict[link].hidden.push(dict[link].hidden[posLength-1]);
+                    }
+                }
+
+                lastTimestamp[link] = timesteps.length;
+            });
+        } else if (step.type === STEP_TYPE.SCENE_UPDATE) {
             // Update time
             if (step.time > finalTime) {
                 finalTime = step.time;
@@ -603,6 +654,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                         rotation: { x: [], y: [], z: [], w: [] },
                         hidden: [],
                         mesh: state.programData[state.programData[thing]?.properties?.mesh] ? state.programData[state.programData[thing]?.properties?.mesh]?.properties?.keyword : state.programData[thing]?.properties?.mesh,
+                        color: state.programData[state.programData[thing]?.properties?.mesh]?.properties?.color ? {...state.programData[state.programData[thing]?.properties?.mesh]?.properties?.color} : { r: 0, g: 200, b: 0, a: 0.2 },
                         scale: state.programData[state.programData[thing]?.properties?.mesh] ? state.programData[state.programData[thing]?.properties?.mesh]?.properties?.scale : {x: 1, y: 1, z: 1},
                         relativeTo: state.programData[thing]?.properties.relativeTo?.id,
                         type: thing
@@ -798,7 +850,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                                       new Vector3(1,1,1));
                 let gripperToThing = gripperMatrix.clone().multiply(graspAngle.clone());
                 let adjustedRotation = graspAngle ? new Quaternion().setFromRotationMatrix(gripperToThing) : gripperOffset.rotation
-                let adjustedPosition = graspPosition ? new Vector3().setFromMatrixPosition(gripperMatrix.clone().multiply(graspPosition.clone())) : gripperOffset.position;
+                let adjustedPosition = graspPosition ? new Vector3().setFromMatrixPosition(gripperToThing) : gripperOffset.position;
                 let rotatedToGraspPoint = {x: adjustedRotation.x, y: adjustedRotation.y, z: adjustedRotation.z, w: adjustedRotation.w};
                 programModel = updateEnvironModelQuaternion(programModel, currentGraspedThingID, adjustedPosition, rotatedToGraspPoint);
 
@@ -918,7 +970,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 rotation: { w: 1, x: 0, y: 0, z: 0 },
                 scale: dict[link].scale,
                 transformMode: "inactive",
-                color: { r: 0, g: 200, b: 0, a: 0.2 },
+                color: dict[link].color,
                 highlighted: false,
                 hidden: interpolateScalar(timesteps, dict[link].hidden)
             }

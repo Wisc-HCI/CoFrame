@@ -602,7 +602,9 @@ export const addGraspPointToModel = (model, parentId, itemId, position, rotation
 
 export const addToEnvironModel = (model, parentId, itemId, position, rotation) => {
   if (model[parentId]) {
-    model[itemId] = new Group();
+    if (model[itemId]) {} else {
+      model[itemId] = new Group();
+    }
     model[itemId].userData.parent = parentId;
 
     model[itemId].position.set(

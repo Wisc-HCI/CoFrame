@@ -67,7 +67,7 @@ export const findCycleTimeIssues = ({program, stats, compiledData}) => {
                 {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
             ],
             units: 's',
-            decimal: 5,
+            decimals: 5,
             title: '',
             isTimeseries: false
         }
@@ -117,7 +117,7 @@ export const findIdleTimeIssues = ({programData, program, stats, compiledData}) 
                 {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
             ],
             units: 's',
-            decimal: 5,
+            decimals: 5,
             title: '',
             isTimeseries: false
         }
@@ -133,7 +133,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     // get prior values
     let priorData = [];
     let i = 0;
-    let peak = 0;
+    let peak = Number.MIN_VALUE;
     for (i = 0; i < stats.length; i++) {
         if (stats[i].roi !== null) {
             if (stats[i].roi > peak) {
@@ -194,7 +194,7 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
                     let timeDelta = (step.time - previousTimeStep) / 1000;
                     let jointVelocity = (jointValue - previousJoints[joint]) / timeDelta;
                     let jointAcceleration = (jointVelocity - previousVelocity[joint]) / timeDelta;
-                    wearTearCost = wearTearCost + wearAndTear(jointAcceleration);
+                    wearTearCost += wearAndTear(jointAcceleration);
 
                     previousVelocity[joint] = jointVelocity;
                     previousJoints[joint] = jointValue;
@@ -213,8 +213,8 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
     }
     priorData.push({x:i, ROI:roi});
 
-    // build roi issue
     if (wearTearCost > 0) {
+        // build roi issue
         newStats = {roi: roi};
         let uuid = generateUuid('issue');
         issues[uuid] = {
@@ -233,12 +233,13 @@ export const findReturnOnInvestmentIssues = ({programData, program, stats, setti
                     {range: ["MIN","MAX"], color: frameStyles.colors["business"], label: 'OK'}
                 ],
                 units: '%',
-                decimal: 5,
+                decimals: 5,
                 title: '',
                 isTimeseries: false
             }
-        }
 
+            
+        }
     }
 
     return [issues, newStats];
