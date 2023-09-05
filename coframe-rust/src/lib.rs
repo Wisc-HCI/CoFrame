@@ -8,7 +8,7 @@ use lively::{
     },
     utils::{
         goals::Goal,
-        info::{ProximityInfo, ScalarRange, TransformInfo, Line},
+        info::{ProximityInfo, ScalarRange, TransformInfo, LinkInfo, JointInfo, Line},
         robot_model::RobotModel,
         shapes::Shape,
         state::State,
@@ -61,16 +61,6 @@ where
     Ok(obj.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?)
 }
 
-#[wasm_bindgen]
-pub fn big_computation() {
-    alert("Big computation in Rust");
-}
-
-#[wasm_bindgen]
-pub fn welcome(name: &str) -> String {
-    return format!("Hello {}, from Rust!", name);
-}
-
 #[wasm_bindgen(js_name = planTrajectory)]
 pub fn plan_trajectory_js(
     urdf: String,
@@ -100,6 +90,54 @@ pub fn plan_trajectory_js(
         ik_link,
         is_ik,
     ));
+}
+
+#[derive(Serialize,Deserialize,Clone,Debug)]
+pub struct ForwardResult {
+    pub state: State,
+    pub links: Vec<LinkInfo>,
+    pub joints: Vec<JointInfo>
+}
+
+#[wasm_bindgen(js_name = computeForward)]
+pub fn compute_forward(
+    urdf: String,
+    initial_state: JsValue,
+    shapes: JsValue,
+) -> Result<JsValue, serde_wasm_bindgen::Error> {
+    let state: Option<State> = serde_wasm_bindgen::from_value(initial_state.clone()).unwrap_or_else(|_| {
+        console_log!("Error in initial_state: {:?}", initial_state);
+        None
+    });
+    let shape_vec: Option<Vec<Shape>> = serde_wasm_bindgen::from_value(shapes.clone()).unwrap_or_else(|_| {
+        console_log!("Error in shape_vec: {:?}", shapes);
+        None
+    });
+
+    let mut solver = Solver::new(
+        urdf,
+        HashMap::new(),
+        state.clone().map(|s| vec![
+            ScalarRange::new(s.origin.translation.x,0.0),
+            ScalarRange::new(s.origin.translation.y,0.0),
+            ScalarRange::new(s.origin.translation.z,0.0),
+            ScalarRange::new(s.origin.rotation.euler_angles().0,0.0),
+            ScalarRange::new(s.origin.rotation.euler_angles().1,0.0),
+            ScalarRange::new(s.origin.rotation.euler_angles().2,0.0),
+        ]),
+        shape_vec,
+        state,
+        Some(5),
+        Some(75),
+        None,
+    );
+    solver.compute_average_distance_table();
+    let fwd_result: ForwardResult = ForwardResult {
+        state: solver.get_current_state(),
+        links: solver.robot_model.links.clone(),
+        joints: solver.robot_model.joints.clone()
+    };
+    return serialize(&fwd_result);
 }
 
 #[wasm_bindgen(js_name = computePose)]

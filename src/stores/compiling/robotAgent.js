@@ -40,26 +40,31 @@ export const robotAgentCompiler = ({
   };
 
   // console.log(module.solver_new)
-  const fwdsolver = new module.Solver(
+  const fwdResult = module.computeForward(
     properties.urdf,
-    {},
-    rootBounds,
-    createStaticEnvironment(worldModel),
     { origin, joints: properties.initialJointState },
-    1,
-    450,
-    null
-  );
-  // console.log('robotAgentCompiled',{...fwdsolver.currentState});
-  const proximity = fwdsolver.computeAverageDistanceTable();
-  const newCompiled = likStateToData({...fwdsolver.currentState,proximity},data.id,properties.linkParentMap);
+    createStaticEnvironment(worldModel)
+  )
+  // const fwdsolver = new module.Solver(
+  //   properties.urdf,
+  //   {},
+  //   rootBounds,
+  //   createStaticEnvironment(worldModel),
+  //   { origin, joints: properties.initialJointState },
+  //   1,
+  //   450,
+  //   null
+  // );
+  // // console.log('robotAgentCompiled',{...fwdsolver.currentState});
+  // const proximity = fwdsolver.computeAverageDistanceTable();
+  const newCompiled = likStateToData(fwdResult.state,data.id,properties.linkParentMap);
   // console.log('newCompiled',newCompiled)
   return {
     type: data.type,
     ...newCompiled,
     ...properties,
-    linkInfo: fwdsolver.links,
-    jointInfo: fwdsolver.joints,
+    linkInfo: fwdResult.links,
+    jointInfo: fwdResult.joints,
     status: STATUS.VALID,
   };
 };

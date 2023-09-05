@@ -2,20 +2,19 @@ import { ROOT_PATH, PREPROCESS_TYPES, POSTPROCESS_TYPES } from '../Constants';
 import { handleUpdate } from './';
 import { DATA_TYPES } from 'simple-vp';
 import { createEnvironmentModel } from '../../helpers/geometry';
-import init, {Solver, planTrajectory, computePose} from 'coframe-rust';
+import * as coframerust from 'coframe-rust';
 // import { Solver } from '@people_and_robots/lively';
 
 export const performCompileProcess = async (data) => {
-    console.log('performCompilerProcess--inworker')
-    const { programData, compiledData, objectTypes, module } = data;
+    console.log('performCompilerProcess -- in worker')
+    
+    const { programData, compiledData, objectTypes, module:defaultmodule } = data;
+    if (!defaultmodule) {
+        await coframerust.default();
+    }
     // Process the data without stalling the UI
     // const module = await loadLikModule();
     // console.warn('performing compile process')
-    
-    // const compModule = await loadCompilerModule();
-    // console.warn(compModule.welcome("Harry"));
-    // const poses = Object.values(programData).filter(d=>(d.type==='waypointType'||d.type==='locationType')&&d.dataType===DATA_TYPES.INSTANCE)
-    // console.warn({input:poses,output:compModule.compile(poses)});
 
     let root = null;
     Object.values(programData).some(v=>{
@@ -27,9 +26,7 @@ export const performCompileProcess = async (data) => {
         }
     })
 
-    if (!module) {
-        await init()
-    }
+    const module = defaultmodule || coframerust;
 
     // TODO: define scene based on the scene item instances
     const worldModel = createEnvironmentModel(programData)
@@ -51,7 +48,7 @@ export const performCompileProcess = async (data) => {
                 path:ROOT_PATH,
                 memo,
                 compiledMemo,
-                module:module||{Solver,planTrajectory,computePose},
+                module,
                 worldModel,
                 compileModel
             }
@@ -70,7 +67,7 @@ export const performCompileProcess = async (data) => {
         path:ROOT_PATH,
         memo,
         compiledMemo,
-        module:module||{Solver,planTrajectory,computePose},
+        module,
         worldModel,
         compileModel
     }
@@ -90,7 +87,7 @@ export const performCompileProcess = async (data) => {
                 path:ROOT_PATH,
                 memo,
                 compiledMemo,
-                module:{Solver,planTrajectory,computePose},
+                module,
                 worldModel,
                 compileModel
             }
@@ -98,6 +95,6 @@ export const performCompileProcess = async (data) => {
             memo = {...memo,...newMemo};
             compiledMemo = {...compiledMemo, ...newCompiledMemo};
     })
-    console.log('performCompilerProcess--inworker ended')
+    console.log('performCompilerProcess -- in worker [complete]')
     return {data: memo, compiledData: compiledMemo };
 }
