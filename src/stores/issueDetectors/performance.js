@@ -161,46 +161,57 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
             }
         });
 
+        let prevMoveTrajectoryStep = null;
+        let initialTime = moveTrajectorySteps[source][0].time;
         moveTrajectorySteps[source].forEach(step => {
             if (count > 0) {
-                timeData[source].push(step.time);
+                timeData[source].push(step.time - initialTime);
                 // let prevousPositions = {}
                 // jointNames.forEach(joint => {
                 //     prevousPositions[joint] = {...queryWorldPose(environmentModel, jointLinkMap[joint], '')};
                 // });
+                if (step.type === STEP_TYPE.SCENE_UPDATE) {
+                    Object.keys(step.data.links).forEach(link => {
+                        if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
+                            environmentModel = updateEnvironModelQuaternion(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                        } else {
+                            environmentModel = updateEnvironModel(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
+                        }
+                    });
 
-                Object.keys(step.data.links).forEach(link => {
-                    if (typeof(step.data.links[link].rotation?.w) === typeof(1)) {
-                        environmentModel = updateEnvironModelQuaternion(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
-                    } else {
-                        environmentModel = updateEnvironModel(environmentModel, link, step.data.links[link].position, step.data.links[link].rotation);
-                    }
-                });
+                    jointNames.forEach(joint => {
+                        const prevJointValue = prevMoveTrajectoryStep.data.joints[joint];
+                        const prevTime = prevMoveTrajectoryStep.time;
+                        const curJointValue = step.data.joints[joint];
+                        const curTime = step.time;
+                        const currentPosition = queryWorldPose(environmentModel, jointLinkMap[joint], '');
+                        const curFrame = currentPosition.position;
+                        const calcVel = Math.abs((curJointValue - prevJointValue) / ((curTime - prevTime) / 1000));
 
-                jointNames.forEach(joint => {
-                    const prevJointValue = prevMoveTrajectoryStep.data.joints[joint];
-                    const prevTime = prevMoveTrajectoryStep.time;
-                    const curJointValue = step.data.joints[joint];
-                    const curTime = step.time;
-                    const currentPosition = queryWorldPose(environmentModel, jointLinkMap[joint], '');
-                    const curFrame = currentPosition.position;
-                    const calcVel = Math.abs((curJointValue - prevJointValue) / ((curTime - prevTime) / 1000));
-
-                    if (calcVel >= errorLevel) {
-                        errorWarning[joint].error = true;
-                        errorWarning[joint].warning = true;
-                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["performance"])});
-                    } else if (calcVel >= warningLevel) {
-                        errorWarning[joint].warning = true;
-                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["performance"])});
-                    } else {
-                        sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
-                    }
-                    jointVelocities[joint].push(calcVel);
-                });
+                        if (calcVel >= errorLevel) {
+                            errorWarning[joint].error = true;
+                            errorWarning[joint].warning = true;
+                            sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.errorColors["performance"])});
+                        } else if (calcVel >= warningLevel) {
+                            errorWarning[joint].warning = true;
+                            sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["performance"])});
+                        } else {
+                            sceneData[joint].push({position: {x: curFrame.x, y: curFrame.y, z: curFrame.z}, color: hexToRgb(frameStyles.colors["default"])});
+                        }
+                        jointVelocities[joint].push(calcVel);
+                    });
+                    prevMoveTrajectoryStep = {...step};
+                } else {
+                    Object.keys(jointVelocities).forEach(jointName => {
+                        jointVelocities[jointName].push(jointVelocities[jointName][jointVelocities[jointName].length - 1]);
+                    });
+                }
+                count += 1;
+            }
+            if (count === 0 && step.type === STEP_TYPE.SCENE_UPDATE) {
+                count += 1;
                 prevMoveTrajectoryStep = {...step};
             }
-            count += 1;
         });
 
         // Filter and format graph data

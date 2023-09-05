@@ -119,7 +119,7 @@ if (Object.keys(useStore.getState().programData).length === 0) {
   // useStore.getState().addProgramData("testProgram2", TestProgram2, {});
 
   // Set the starting program
-  useCompiledStore.setState(KnifeAssemblyCompiled);
+  useCompiledStore.setState({});
   useStore.getState().setData(KnifeAssembly);
   // useStore.persist.rehydrate()
 }
