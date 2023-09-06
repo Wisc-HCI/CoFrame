@@ -344,12 +344,14 @@ export const GuiSlice = (set, get) => ({
           state.programData[filteredId].properties.position = mapValues(localTransform.position,(v)=>round(v,3));
           state.programData[filteredId].properties.rotation = quaternionToEuler(mapValues(localTransform.quaternion,(v)=>round(v,3)));
           state.programData[filteredId].properties.status = STATUS.PENDING;
+          state.programData[filteredId].properties.pendingChanges += 1;
         } else if (!id.includes('pointer') && !id.includes('-tag') && focused && transform !== 'inactive') {
          // This isn't correct, we'll want to offset by the object's tf (since we are technically moving the mesh)
          // Similarly, we'll want to compute the quaternion transformation
           state.programData[filteredId].properties.position = mapValues(localTransform.position,(v)=>round(v,3));;
           state.programData[filteredId].properties.rotation = quaternionToEuler(mapValues(localTransform.quaternion,(v)=>round(v,3)));
           state.programData[filteredId].properties.status = STATUS.PENDING;
+          state.programData[filteredId].properties.pendingChanges += 1;
         }
       })
     } else {

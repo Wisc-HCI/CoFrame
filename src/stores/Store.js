@@ -120,6 +120,7 @@ if (Object.keys(useStore.getState().programData).length === 0) {
   // Set the starting program
   useCompiledStore.setState(KnifeAssemblyCompiled);
   useStore.getState().setData(KnifeAssembly);
+  useStore.getState().performCompileProcess();
   // useStore.persist.rehydrate()
 }
 

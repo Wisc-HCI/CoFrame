@@ -52,6 +52,7 @@ export function deleteFromChildren(state, idsToDelete, parentData) {
         delete state.programData[parentData.properties[propName]];
         state.programData[parentData.id].properties[propName] = null;
         state.programData[parentData.id].properties.status = STATUS.PENDING;
+        state.programData[parentData.id].properties.pendingChanges += 1;
       }
     });
     for (let i = 0; i < idsToDelete.length; i++) {
@@ -103,6 +104,7 @@ export function deleteFromChildren(state, idsToDelete, parentData) {
             // entry.properties[propName] = null;
             state.programData[parentData.id].properties[propName] = null;
             state.programData[parentData.id].properties.status = STATUS.PENDING;
+            state.programData[parentData.id].properties.pendingChanges += 1;
           }
         }
       });
@@ -189,6 +191,7 @@ export function deleteSelfBlock(state, data, parentId, fieldInfo) {
                 entry.properties[propName] = null;
                 state.programData[entryId].properties[propName] = null;
                 state.programData[entryId].properties.status = STATUS.PENDING;
+                state.programData[entryId].properties.pendingChanges += 1;
               }
             }
           }
@@ -332,6 +335,7 @@ export const applyTransfer = (state, data, sourceInfo, destInfo) => {
         destInfo.idx
       );
       state.programData[sourceInfo.parentId].properties.status = STATUS.PENDING;
+      state.programData[sourceInfo.parentId].properties.pendingChanges += 1;
   } else {
     // Place the value in its new location
     if (destIsList) {
@@ -339,11 +343,13 @@ export const applyTransfer = (state, data, sourceInfo, destInfo) => {
         destInfo.fieldInfo.value
       ].splice(destInfo.idx, 0, id);
       state.programData[destInfo.parentId].properties.status = STATUS.PENDING;
+      state.programData[destInfo.parentId].properties.pendingChanges += 1;
     } else {
       state.programData[destInfo.parentId].properties[
         destInfo.fieldInfo.value
       ] = id;
       state.programData[destInfo.parentId].properties.status = STATUS.PENDING;
+      state.programData[destInfo.parentId].properties.pendingChanges += 1;
     }
     // If existing, remove from the previous location
     if (
@@ -358,12 +364,14 @@ export const applyTransfer = (state, data, sourceInfo, destInfo) => {
         destInfo.fieldInfo.value
       ].splice(sourceInfo.idx, 1);
       state.programData[sourceInfo.parentId].properties.status = STATUS.PENDING;
+      state.programData[sourceInfo.parentId].properties.pendingChanges += 1;
     } else if (!newSpawn && !sourceIsList) {
       console.log("removing from previous by setting to null");
       state.programData[sourceInfo.parentId].properties[
         sourceInfo.fieldInfo.value
       ] = null;
       state.programData[sourceInfo.parentId].properties.status = STATUS.PENDING;
+      state.programData[sourceInfo.parentId].properties.pendingChanges += 1;
     }
   }
 };
@@ -372,6 +380,7 @@ export const ProgrammingSliceOverride = (set, get) => ({
   forceRefreshBlock: (id) =>
     set((state) => {
       state.programData[id].properties.status = STATUS.PENDING;
+      state.programData[id].properties.pendingChanges += 1;
     }),
   transferBlock: (data, sourceInfo, destInfo) => {
     console.log('transferBlock')
@@ -405,6 +414,7 @@ export const ProgrammingSliceOverride = (set, get) => ({
 
       if (state.programData[parentId] !== undefined) {
         state.programData[parentId].properties.status = STATUS.PENDING;
+        state.programData[parentId].properties.pendingChanges += 1;
       }
     });
   },
@@ -436,12 +446,14 @@ export const ProgrammingSliceOverride = (set, get) => ({
       state.programData[id] = template;
       state.programData[parentFunctionId].arguments.push(id);
       state.programData[id].properties.status = STATUS.PENDING;
+      state.programData[id].properties.pendingChanges += 1;
       Object.values(state.programData).forEach((node) => {
         if (
           node.dataType === DATA_TYPES.CALL &&
           node.ref === parentFunctionId
         ) {
           state.programData[node.id].properties.status = STATUS.PENDING;
+          state.programData[node.id].properties.pendingChanges += 1;
         }
       });
     });
@@ -451,11 +463,13 @@ export const ProgrammingSliceOverride = (set, get) => ({
       set((state) => {
         state.programData[id].properties.initialJointState = property;
         state.programData[id].properties.status = STATUS.PENDING;
+        state.programData[id].properties.pendingChanges += 1;
       });
     } else {
       set((state) => {
         state.programData[id].properties[property] = value;
         state.programData[id].properties.status = STATUS.PENDING;
+        state.programData[id].properties.pendingChanges += 1;
       });
     }
   },
@@ -465,12 +479,14 @@ export const ProgrammingSliceOverride = (set, get) => ({
         state.programData[id].properties[key] = value;
       });
       state.programData[id].properties.status = STATUS.PENDING;
+      state.programData[id].properties.pendingChanges += 1;
     });
   },
   updateItemPositionProperty: (id, property, value) => {
     set((state) => {
       state.programData[id].properties.position[property] = value;
       state.programData[id].properties.status = STATUS.PENDING;
+      state.programData[id].properties.pendingChanges += 1;
     });
   },
   updateItemRotationProperty: (id, value) => {
@@ -480,6 +496,7 @@ export const ProgrammingSliceOverride = (set, get) => ({
       state.programData[id].properties.rotation["y"] = value[2];
       state.programData[id].properties.rotation["z"] = value[3];
       state.programData[id].properties.status = STATUS.PENDING;
+      state.programData[id].properties.pendingChanges += 1;
     });
   },
   updateItemDescription: (id, value) => {
