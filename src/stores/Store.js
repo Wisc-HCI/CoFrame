@@ -86,16 +86,15 @@ const useStore = create(subscribeStore);
 useStore.subscribe(
   (state) =>
     lodash.mapValues(state.programData, (value) => {
-      return value?.properties?.status
-        ? value.properties.status
-        : STATUS.PENDING;
+      return value?.properties?.pendingChanges
+        ? value.properties.pendingChanges
+        : 0;
     }),
   (currentStatuses, previousStatuses) => {
     if (
       Object.keys(currentStatuses).some(
         (id) =>
-          currentStatuses[id] === STATUS.PENDING &&
-          previousStatuses[id] !== STATUS.PENDING
+          currentStatuses[id] > previousStatuses[id]
       )
     ) {
       console.log("REPLANNING");

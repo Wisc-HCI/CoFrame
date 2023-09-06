@@ -203,14 +203,13 @@ export const EvdSlice = (set, get) => ({
         // state.programData = lodash.merge(state.programData, newData);
         Object.keys(newData).forEach((entry) => {
           reviewableChanges += 1;
+          newData[entry].pendingChanges = 0;
           Object.keys(newData[entry].properties)
             .forEach((field) => {
               if (field !== 'compiled') {
                 state.programData[entry].properties[field] =
                   newData[entry].properties[field];
               }
-            
-            // console.log(`setting ${entry}/${field} to ${newData[entry].properties[field]}`)
           });
         });
         state.reviewableChanges += reviewableChanges;

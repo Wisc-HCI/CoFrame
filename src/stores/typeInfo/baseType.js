@@ -16,6 +16,11 @@ export const baseTypeData = {
         type: SIMPLE_PROPERTY_TYPES.METADATA,
         default: STATUS.PENDING,
       },
+      pendingChanges: {
+        name: "Pending Changes",
+        type: SIMPLE_PROPERTY_TYPES.METADATA,
+        default: 0,
+      },
       errorCode: {
         name: "Error Code",
         type: SIMPLE_PROPERTY_TYPES.METADATA,
