@@ -153,13 +153,25 @@ export const findJointSpeedIssues = ({program, programData, settings, environmen
         });
 
         // Base update
-        Object.keys(moveTrajectorySteps[source][0].data.links).forEach(link => {
-            if (typeof(moveTrajectorySteps[source][0].data.links[link].rotation?.w) === typeof(1)) {
-                environmentModel = updateEnvironModelQuaternion(environmentModel, link, moveTrajectorySteps[source][0].data.links[link].position, moveTrajectorySteps[source][0].data.links[link].rotation);    
-            } else {
-                environmentModel = updateEnvironModel(environmentModel, link, moveTrajectorySteps[source][0].data.links[link].position, moveTrajectorySteps[source][0].data.links[link].rotation);
+        let tindex = 0;
+        let found = false;
+        while (!found) {
+            if (moveTrajectorySteps?.[source]?.[tindex]?.data?.links) {
+                Object.keys(moveTrajectorySteps?.[source]?.[tindex]?.data?.links).forEach(link => {
+                    if (typeof(moveTrajectorySteps[source][tindex].data.links[link].rotation?.w) === typeof(1)) {
+                        environmentModel = updateEnvironModelQuaternion(environmentModel, link, moveTrajectorySteps[source][tindex].data.links[link].position, moveTrajectorySteps[source][tindex].data.links[link].rotation);    
+                        found = true;
+                    } else {
+                        environmentModel = updateEnvironModel(environmentModel, link, moveTrajectorySteps[source][tindex].data.links[link].position, moveTrajectorySteps[source][tindex].data.links[link].rotation);
+                        found = true;
+                    }
+                });
             }
-        });
+            tindex += 1;
+            if (tindex >= moveTrajectorySteps?.[source].length) {
+                found = true;
+            }
+        }
 
         let prevMoveTrajectoryStep = null;
         let initialTime = moveTrajectorySteps[source][0].time;
