@@ -9,7 +9,7 @@ export const ReviewIssue = memo(({ issueId }) => {
   const issue = useStore(
     useCallback((state) => state.issues[issueId], [issueId])
   );
-  const [setFeaturedDocs,setIssueCompletion, primaryColor, addFocusItem, clearFocus, focus] =
+  const [setFeaturedDocs,setIssueCompletion, primaryColor, addFocusItem, clearFocus, focus, captureFocus] =
     useStore(
       (state) => [
         state.setFeaturedDocs,
@@ -18,6 +18,7 @@ export const ReviewIssue = memo(({ issueId }) => {
         state.addFocusItem,
         state.clearFocus,
         state.focus,
+        state.captureFocus
       ],
       shallow
     );
@@ -61,6 +62,7 @@ export const ReviewIssue = memo(({ issueId }) => {
             <IconButton
               color={focused ? 'primary' : 'vibrant'}
               size="small"
+              disabled={captureFocus}
               onClick={() => {
                 if (focused) {
                   clearFocus();

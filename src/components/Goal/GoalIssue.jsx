@@ -8,14 +8,15 @@ import { GOAL_FUNCTIONS } from "../../stores/Constants";
 import { swapProgram } from "../../stores/programChanger";
 
 export const GoalIssue = ({ goal }) => {
-  const [addFocusItem, clearFocus, focus, isProcessing, setActiveTab] = useStore(
+  const [addFocusItem, clearFocus, focus, isProcessing, setActiveTab, captureFocus] = useStore(
     (state) => [
       state.addFocusItem,
       state.clearFocus,
       state.focus,
       state.processes.planProcess !== null &&
         state.processes.planProcess !== undefined,
-      state.setActiveTab
+      state.setActiveTab,
+      state.captureFocus
     ],
     shallow
   );
@@ -86,7 +87,7 @@ export const GoalIssue = ({ goal }) => {
                 }
               }}
               startIcon={exampleFocused ? <FiEyeOff /> : <FiEye />}
-              disabled={isProcessing}
+              disabled={isProcessing || captureFocus}
             >
               Preview
             </Button>
