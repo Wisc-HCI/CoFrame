@@ -375,8 +375,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1079_1.geometry,
-                          material: nodes.Body1079_1.material,
+                          geometry: nodes.Body1079.geometry,
+                          material: nodes.Body1079.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -391,8 +391,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1080_1.geometry,
-                          material: nodes.Body1080_1.material,
+                          geometry: nodes.Body1080.geometry,
+                          material: nodes.Body1080.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -408,8 +408,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1081_1.geometry,
-                          material: nodes.Body1081_1.material,
+                          geometry: nodes.Body1081.geometry,
+                          material: nodes.Body1081.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -426,8 +426,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1075_1.geometry,
-                          material: nodes.Body1075_1.material,
+                          geometry: nodes.Body1075.geometry,
+                          material: nodes.Body1075.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -443,8 +443,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1076_1.geometry,
-                          material: nodes.Body1076_1.material,
+                          geometry: nodes.Body1076.geometry,
+                          material: nodes.Body1076.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -514,8 +514,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1074_1.geometry,
-                          material: nodes.Body1074_1.material,
+                          geometry: nodes.Body1074.geometry,
+                          material: nodes.Body1074.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -650,8 +650,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1073_1.geometry,
-                          material: nodes.Body1073_1.material,
+                          geometry: nodes.Body1073.geometry,
+                          material: nodes.Body1073.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -770,8 +770,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1082_1.geometry,
-                          material: nodes.Body1082_1.material,
+                          geometry: nodes.Body1082.geometry,
+                          material: nodes.Body1082.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -786,8 +786,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1083_1.geometry,
-                          material: nodes.Body1083_1.material,
+                          geometry: nodes.Body1083.geometry,
+                          material: nodes.Body1083.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -802,8 +802,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1084_1.geometry,
-                          material: nodes.Body1084_1.material,
+                          geometry: nodes.Body1084.geometry,
+                          material: nodes.Body1084.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -2777,7 +2777,7 @@ export default function Model(_) {
                           children: [
                             {
                               type: 'raw',
-                              geometry: nodes.Body1054_1.geometry,
+                              geometry: nodes.Body1054.geometry,
                               material: materials['Opaque(0,192,0)']
                             }, {
                               type: 'raw',
@@ -2859,8 +2859,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1125_1.geometry,
-                          material: nodes.Body1125_1.material,
+                          geometry: nodes.Body1125.geometry,
+                          material: nodes.Body1125.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -2875,8 +2875,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1126_1.geometry,
-                          material: nodes.Body1126_1.material,
+                          geometry: nodes.Body1126.geometry,
+                          material: nodes.Body1126.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -3088,8 +3088,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1122_1.geometry,
-                          material: nodes.Body1122_1.material,
+                          geometry: nodes.Body1122.geometry,
+                          material: nodes.Body1122.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -3192,8 +3192,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1123_1.geometry,
-                          material: nodes.Body1123_1.material,
+                          geometry: nodes.Body1123.geometry,
+                          material: nodes.Body1123.material,
                           scale: [10, 10, 10]
                         }
                       ]
@@ -3208,8 +3208,8 @@ export default function Model(_) {
                       children: [
                         {
                           type: 'raw',
-                          geometry: nodes.Body1124_1.geometry,
-                          material: nodes.Body1124_1.material,
+                          geometry: nodes.Body1124.geometry,
+                          material: nodes.Body1124.material,
                           scale: [10, 10, 10]
                         }
                       ]
