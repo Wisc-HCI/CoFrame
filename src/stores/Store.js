@@ -15,7 +15,7 @@ import {
 import { SceneSlice } from "robot-scene";
 import lodash from "lodash";
 // import KnifeAssembly from "./Knife_Assembly_Simple_VP_UR5.json";
-import KnifeAssembly from "./Knife_Assembly_Example.json";
+import KnifeAssembly from "./Knife_Assembly_Example_HighLevel.json";
 // import KnifeAssemblyCompiled from "./UR5_Compiled_Knife_Assembly.json";
 // import KnifeAssembly from './Prime_Process_2_v29.json';
 import KnifeAssemblyCompiled from "./Knife_Assembly_Example_Compiled.json";
