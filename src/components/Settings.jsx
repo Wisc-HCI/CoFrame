@@ -48,6 +48,7 @@ const DialogContent = () => {
     shallow
   );
   const setData = useStore((store) => store.setData, shallow);
+  const performCompileProcess = useStore((store) => store.performCompileProcess, shallow);
   const data = useStore((store) => ({...store.programData,tabs:store.tabs,activeTab:store.activeTab}), shallow);
   const compiledData = useCompiledStore.getState();
   const frameId = useStore((store) => store.frame, shallow);
@@ -112,6 +113,7 @@ const DialogContent = () => {
         if (data) {
           // Do handling
           setData(data);
+          performCompileProcess();
         }
       };
       reader.readAsText(fileUploaded);

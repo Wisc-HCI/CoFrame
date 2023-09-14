@@ -519,7 +519,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
             );
             let tempItemPosition = queryWorldPose(programModel, "tempIOPlacement");
 
-            if (bucket.length === 1) {
+            if (bucket?.length === 1) {
                 let thingPos = queryWorldPose(programModel, trackedByType[step.data.thing][0].id);
                 
                 if (distance(tempItemPosition.position, thingPos.position) <= MAX_DESTROY_ITEM_DIFF) {
@@ -531,7 +531,7 @@ export function stepsToAnimation(state, compiledState, tfs, items) {
                 let lst = trackedByType[step.data.thing];
                 let idx = -1;
 
-                for (let i = 0; i < lst.length; i++) {
+                for (let i = 0; i < lst?.length; i++) {
                     let thingPos = queryWorldPose(programModel, lst[i].id);
                     if (distance(tempItemPosition.position, thingPos.position) <= MAX_DESTROY_ITEM_DIFF) {
                         idx = i;
