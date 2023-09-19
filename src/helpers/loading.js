@@ -6,7 +6,7 @@ import collisionTypes from "../stores/typeInfo/collision";
 import sceneObjects from "../stores/typeInfo/sceneObjects";
 import { quaternionFromEuler, quaternionVecToObject } from "./geometry";
 import { meshType } from "../stores/typeInfo/mesh";
-import { Solver } from "@people_and_robots/lively";
+import init, { computeForward } from "coframe-rust";
 
 const capitalize = (value) => value[0].toUpperCase() + value.substring(1);
 
@@ -27,7 +27,8 @@ const childrenPaths = [
   "robot.link.visual",
 ];
 
-export const robotDataFromUrdf = (urdf, relativeTo) => {
+export const robotDataFromUrdf = async (urdf, relativeTo) => {
+  init();
   const parser = new XMLParser({
     ignoreNameSpace: true,
     ignoreAttributes: false,
@@ -37,9 +38,18 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
       childrenPaths.includes(jpath),
   });
 
-  const solver = new Solver(urdf, {});
+  // const solver = new Solver(urdf, {});
+  const fwdResult = computeForward(
+    urdf, 
+    {
+      origin: {translation:[0,0,0],rotation:[0,0,0,1]},
+      joints: {}
+    },
+    []
+  )
 
-  console.log({ links: solver.links, joints: solver.joints });
+
+  console.log({ links: fwdResult.links, joints: fwdResult.joints });
 
   const data = parser.parse(urdf);
   console.log(data.robot);
@@ -63,14 +73,14 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
   console.log(robot.properties)
 
   let jointLinkMap = {};
-  solver.joints.forEach(j=>{
+  fwdResult.joints.forEach(j=>{
     jointLinkMap[j.name] = j.childLink
   })
   robot.properties.jointLinkMap = jointLinkMap;
 
   let linkParentMap = {};
-  solver.links.forEach((l,i)=>{
-    linkParentMap[l.name] = getParentLink(l.parentJoint,solver.joints,robotId,i>0?solver.links[i-1].name:robotId)
+  fwdResult.links.forEach((l,i)=>{
+    linkParentMap[l.name] = getParentLink(l.parentJoint,fwdResult.joints,robotId,i>0?fwdResult.links[i-1].name:robotId)
   })
   robot.properties.linkParentMap = linkParentMap;
 
@@ -81,15 +91,15 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
   // Find the root node. This is the link that is not referenced as a child of any joint.
   
 
-  const initialState = solver.currentState;
+  const initialState = fwdResult.state;
   console.log("initialState", initialState);
 
   let initialJointState = {};
   let linkNames = [];
   let initialJoints = {};
-  solver.joints.forEach(j=>initialJoints[j.name]=initialState.joints[j.name])
+  fwdResult.joints.forEach(j=>initialJoints[j.name]=initialState.joints[j.name])
 
-  solver.links.forEach((link,linkIdx) => {
+  fwdResult.links.forEach((link,linkIdx) => {
     console.log(link.name);
     linkNames.push(link.name);
     initialJointState = initialState.joints;
@@ -157,7 +167,7 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
     linkData.properties.collision = collisionBodyId;
     linkData.properties.mesh = linkMeshId;
 
-    linkData.properties.relativeTo = getParentLink(link.parentJoint,solver.joints,robotId,linkIdx>0?solver.links[linkIdx-1].name:robotId);
+    linkData.properties.relativeTo = getParentLink(link.parentJoint,fwdResult.joints,robotId,linkIdx>0?fwdResult.links[linkIdx-1].name:robotId);
     linkData.properties.frameKey = link.name;
     linkData.properties.agent = robotId;
     linkData.properties.position = {
@@ -184,7 +194,7 @@ export const robotDataFromUrdf = (urdf, relativeTo) => {
   });
 
   let jointLimit = {};
-  solver.joints.forEach(joint=>{
+  fwdResult.joints.forEach(joint=>{
     if (joint.jointType === 'rotational') {
       jointLimit[joint.name] = {upper:joint.upperBound,lower:joint.lowerBound}
     }

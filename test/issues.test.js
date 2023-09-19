@@ -2,7 +2,7 @@ import { assert, expect, test } from "vitest";
 // import init, { Solver } from 'coframe-rust';
 import { performIssueTest } from "../src/stores/issueDetectors/tests";
 import doubleInit from "./programs/double_init.json"
-import {Solver} from '@people_and_robots/lively';
+import init, {Solver} from '@people_and_robots/lively';
 import {UR5E_ROBOT_DATA} from "../src/presets/robotAgents/ur5eRobot"
 
 test("Math.sqrt()", () => {
@@ -26,7 +26,7 @@ test("JSON", () => {
 test("Double Init Test", async () => {
     // await init();
     // const issues = await performIssueTest(doubleInit,Solver);
-    // await init();
+    await init();
     let solver = new Solver(UR5E_ROBOT_DATA["robot-agent"].properties.urdf,{});
     solver.computeAverageDistanceTable();
     // const matchedIssues = Object.values(issues).filter((issue)=>issue.code === "machineDoubleInit");

@@ -16,12 +16,17 @@ export default defineConfig({
     comlink(),
     wasmPack("./coframe-rust"),
     wasm(),
-    topLevelAwait(),
+    // topLevelAwait(),
   ],
   assetsInclude: ["**/*.gltf", "**/*.glb"],
   worker: {
     format: "es",
-    plugins: [wasmPack("./coframe-rust"), comlink(), wasm(), topLevelAwait()],
+    plugins: [
+      wasmPack("./coframe-rust"), 
+      comlink(), 
+      wasm(),
+      // topLevelAwait(),
+    ],
   },
   esbuild: {
     target: "es2020",
@@ -44,6 +49,6 @@ export default defineConfig({
     },
   },
   test: {
-    deps: { inline: ["@people_and_robots/lively", /\.wasm$/] },
+    // deps: { inline: ["@people_and_robots/lively", /\.wasm$/] },
   },
 });

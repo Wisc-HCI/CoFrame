@@ -1,6 +1,5 @@
 import * as Comlink from "comlink";
-import init, { Solver, computePose } from "coframe-rust";
-import { quaternionToEuler } from "../geometry";
+import init, { computePose } from "coframe-rust";
 
 // const forward = async ({ urdf, joints, origin, staticEnvironment }) => {
 //   console.log("IN FORWARD");
