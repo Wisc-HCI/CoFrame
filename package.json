@@ -43,7 +43,7 @@
     "react-use-measure": "^2.1.1",
     "redux": "^4.2.0",
     "robot-scene": "github:Wisc-HCI/robot-scene#v0.9.10",
-    "simple-vp": "github:Wisc-HCI/simple-vp#55b20aaf872376646ba8d3424be5ff6b347c3bb5",
+    "open-vp": "github:Wisc-HCI/open-vp#v0.8.14",
     "three": "^0.142.0",
     "uuid": "^8.3.2",
     "worker-loader": "^3.0.8",

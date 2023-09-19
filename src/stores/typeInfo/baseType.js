@@ -1,5 +1,5 @@
 
-import { SIMPLE_PROPERTY_TYPES } from "simple-vp";
+import { SIMPLE_PROPERTY_TYPES } from "open-vp";
 import { STATUS, ERROR } from "../Constants";
 import "./rotate.css";
 

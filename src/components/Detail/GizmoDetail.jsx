@@ -1,6 +1,6 @@
 import React from 'react';
 import useStore from '../../stores/Store';
-import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
+import { ExternalBlock, referenceTemplateFromSpec } from "open-vp";
 import {Collapse} from '../Elements/Collapse';
 import { Stack, Typography } from '@mui/material';
 

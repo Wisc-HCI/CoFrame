@@ -4,7 +4,7 @@ import {
   TYPES,
   DATA_TYPES,
   SIMPLE_PROPERTY_TYPES
-} from "simple-vp";
+} from "open-vp";
 import { shallow } from 'zustand/shallow';
 import { Collapse } from "../Elements/Collapse";
 import {

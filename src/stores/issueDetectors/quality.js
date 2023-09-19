@@ -1,4 +1,4 @@
-import { DATA_TYPES } from "simple-vp";
+import { DATA_TYPES } from "open-vp";
 import { generateUuid } from "../generateUuid";
 import { pickBy } from "lodash";
 import {

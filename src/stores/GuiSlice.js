@@ -1,5 +1,5 @@
 import frameStyles from '../frameStyles';
-import { DATA_TYPES, instanceTemplateFromSpec } from 'simple-vp';
+import { DATA_TYPES, instanceTemplateFromSpec } from 'open-vp';
 import { remove } from 'lodash';
 import { STATUS } from './Constants';
 import { mapValues } from 'lodash';

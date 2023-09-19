@@ -1,4 +1,4 @@
-import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
+import { EXTRA_TYPES, TYPES, SIMPLE_PROPERTY_TYPES } from "open-vp";
 import { LocationIconStyled, WaypointIconStyled, statusIcon } from "./icons";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { COMPILE_FUNCTIONS } from "../Constants";

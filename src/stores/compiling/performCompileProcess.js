@@ -1,6 +1,6 @@
 import { ROOT_PATH, PREPROCESS_TYPES, POSTPROCESS_TYPES } from '../Constants';
 import { handleUpdate } from './';
-import { DATA_TYPES } from 'simple-vp';
+import { DATA_TYPES } from 'open-vp';
 import { createEnvironmentModel } from '../../helpers/geometry';
 import * as coframerust from 'coframe-rust';
 // import { Solver } from '@people_and_robots/lively';

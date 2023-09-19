@@ -1,4 +1,4 @@
-// These icons need to be readjusted for Simple-VP
+// These icons need to be readjusted for open-vp
 import { LocationIcon } from '../../components/CustomIcons/Location';
 import { PrimitiveIcon } from '../../components/CustomIcons/Primitive';
 import { MachineIcon } from '../../components/CustomIcons/Machine';

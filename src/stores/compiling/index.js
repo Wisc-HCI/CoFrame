@@ -13,7 +13,7 @@ import { linkCompiler } from "./link";
 import { propertyCompiler } from "./property";
 import lodash from "lodash";
 import { COMPILE_FUNCTIONS, ERROR, ROOT_PATH, STATUS } from "../Constants";
-import { DATA_TYPES } from "simple-vp";
+import { DATA_TYPES } from "open-vp";
 import { gripperCompiler } from "./gripper";
 import { goalCompiler } from "./goal";
 

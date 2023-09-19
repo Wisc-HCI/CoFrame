@@ -15,7 +15,7 @@ import {
   poseToGoalPosition,
   distance,
 } from "../../helpers/geometry";
-// import { DATA_TYPES } from "simple-vp";
+// import { DATA_TYPES } from "open-vp";
 import { range, random } from "lodash";
 
 const COLLISION_WEIGHT = 1;

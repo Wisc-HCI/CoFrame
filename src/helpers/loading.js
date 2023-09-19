@@ -1,6 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import { generateUuid } from "../stores/generateUuid";
-import { instanceTemplateFromSpec } from "simple-vp";
+import { instanceTemplateFromSpec } from "open-vp";
 import agentTypes from "../stores/typeInfo/agents";
 import collisionTypes from "../stores/typeInfo/collision";
 import sceneObjects from "../stores/typeInfo/sceneObjects";

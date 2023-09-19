@@ -1,5 +1,5 @@
 import { Quaternion, Vector3, Group, Object3D, Matrix4, Euler } from "three";
-import { DATA_TYPES } from "simple-vp";
+import { DATA_TYPES } from "open-vp";
 import { REFERENCEABLE_OBJECTS } from "../stores/Constants";
 import { transformToThreeMatrix } from "./conversion";
 import { strip } from "number-precision";

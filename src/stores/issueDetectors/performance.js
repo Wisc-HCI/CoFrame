@@ -1,4 +1,4 @@
-import { DATA_TYPES } from "simple-vp";
+import { DATA_TYPES } from "open-vp";
 import frameStyles from "../../frameStyles";
 import { ROOT_PATH, STEP_TYPE } from "../Constants";
 import { generateUuid } from "../generateUuid"

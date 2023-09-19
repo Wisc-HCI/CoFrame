@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react';
-import { Environment } from 'simple-vp';
+import { Environment } from 'open-vp';
 import Tile from '../Elements/Tile';
 import useStore from '../../stores/Store';
 import { FiSettings, FiMaximize, FiMinimize } from "react-icons/fi";

@@ -1,4 +1,4 @@
-import { TYPES, SIMPLE_PROPERTY_TYPES } from "simple-vp";
+import { TYPES, SIMPLE_PROPERTY_TYPES } from "open-vp";
 import { STATUS, COMPILE_FUNCTIONS } from "../Constants";
 import { baseTypeData } from "./baseType";
 import { merge } from "lodash";

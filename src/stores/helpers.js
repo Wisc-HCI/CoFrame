@@ -3,7 +3,7 @@ import lodash from "lodash";
 import { Vector3 } from "three";
 import { ConvexGeometry } from "three-stdlib";
 // import { EVD_MESH_LOOKUP } from './initialSim';
-// import { DATA_TYPES } from "simple-vp";
+// import { DATA_TYPES } from "open-vp";
 import {
   HAND_PINCH_MAX_DISTANCE,
   HAND_PINCH_MIN_DISTANCE,

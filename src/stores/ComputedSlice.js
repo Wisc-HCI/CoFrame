@@ -12,7 +12,7 @@ import {
     stepsToAnimation,
     pinchpointAnimationFromExecutable
 } from '../helpers/computedSlice';
-import { DATA_TYPES } from 'simple-vp';
+import { DATA_TYPES } from 'open-vp';
 import { GOAL_FUNCTIONS, ROOT_PATH, STEP_TYPE } from './Constants';
 import lodash from 'lodash';
 import { createEnvironmentModel, getGoalTransformer, queryWorldPose, updateEnvironModel, eulerToQuaternion, updateEnvironModelQuaternion } from '../helpers/geometry';

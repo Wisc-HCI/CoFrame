@@ -1,4 +1,4 @@
-import { TYPES, SIMPLE_PROPERTY_TYPES, EXTRA_TYPES } from "simple-vp";
+import { TYPES, SIMPLE_PROPERTY_TYPES, EXTRA_TYPES } from "open-vp";
 import { baseTypeData } from "./baseType";
 import { COMPILE_FUNCTIONS } from "../Constants";
 import { RiSpace } from "react-icons/ri";

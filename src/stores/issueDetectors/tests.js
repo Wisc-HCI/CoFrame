@@ -1,7 +1,7 @@
 import {performCompileProcess} from '../compiling/performCompileProcess';
 import rawObjectTypes from '../typeInfo';
 import {pick, omit, mapValues, filter} from "lodash";
-import { instanceTemplateFromSpec, DATA_TYPES } from "simple-vp";
+import { instanceTemplateFromSpec, DATA_TYPES } from "open-vp";
 import {
     findCollisionIssues, 
     findEndEffectorPoseIssues, 

@@ -1,6 +1,6 @@
 import React from "react";
 import useStore from "../../stores/Store";
-import { ExternalBlock, referenceTemplateFromSpec } from "simple-vp";
+import { ExternalBlock, referenceTemplateFromSpec } from "open-vp";
 import { shallow } from 'zustand/shallow';
 import { stringEquality } from "../../helpers/performance";
 import {Collapse} from "../Elements/Collapse";

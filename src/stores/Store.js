@@ -6,7 +6,7 @@ import { GuiSlice } from "./GuiSlice";
 import { ReviewSlice } from "./ReviewSlice";
 import { EvdSlice } from "./EvdSlice";
 import { RosSlice } from "./RosSlice";
-import { ProgrammingSlice } from "simple-vp";
+import { ProgrammingSlice } from "open-vp";
 import { ProgrammingSliceOverride } from "./ProgrammingSlice";
 import {
   computedSliceCompiledSubscribe,
@@ -36,7 +36,7 @@ const store = (set, get) => ({
     console.log('new loaded test',get().loaded);
   },
   ...SceneSlice(set, get),
-  ...ProgrammingSlice(set, get), // default programming slice for simple-vp
+  ...ProgrammingSlice(set, get), // default programming slice for open-vp
   ...ProgrammingSliceOverride(set, get), // overrides data-editing functionality to update pending properties
   ...GuiSlice(set, get),
   ...ReviewSlice(set, get),

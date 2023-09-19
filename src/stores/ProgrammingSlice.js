@@ -1,6 +1,6 @@
-import { DATA_TYPES, TYPES } from "simple-vp";
+import { DATA_TYPES, TYPES } from "open-vp";
 import { remove, pickBy } from "lodash";
-import { instanceTemplateFromSpec } from "simple-vp";
+import { instanceTemplateFromSpec } from "open-vp";
 import { generateUuid } from "./generateUuid";
 import { STATUS } from "./Constants";
 // import { FiUnderline } from "react-icons/fi";

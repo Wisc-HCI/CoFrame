@@ -1,11 +1,11 @@
 // import { arrayMove, deleteAction } from './helpers';
 import {pick, omit, mapValues} from "lodash";
 // import { FiClipboard, FiBriefcase, FiGrid, FiBox, FiLogOut, FiMoreHorizontal, FiLayers, FiFeather } from "react-icons/fi";
-import { DATA_TYPES } from "simple-vp";
+import { DATA_TYPES } from "open-vp";
 
 import typeInfo from "./typeInfo";
 // import { performPoseProcess } from './planner-worker';
-import { instanceTemplateFromSpec } from "simple-vp";
+import { instanceTemplateFromSpec } from "open-vp";
 import useCompiledStore from './CompiledStore';
 import * as Comlink from "comlink";
 /* eslint-disable import/no-webpack-loader-syntax */

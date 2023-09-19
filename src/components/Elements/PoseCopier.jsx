@@ -2,7 +2,7 @@ import { FormControl, Select, InputLabel, MenuItem } from "@mui/material";
 import useStore from "../../stores/Store";
 import { pickBy } from "lodash";
 import { shallow } from "zustand/shallow";
-import { DATA_TYPES } from "simple-vp";
+import { DATA_TYPES } from "open-vp";
 import { useState } from "react";
 
 export const PoseCopier = ({ disabled, onSelect = () => {} }) => {
