@@ -32,7 +32,7 @@ export default defineConfig({
   resolve: {
     // mainFields:['module'],
     alias: {
-      '$simple-vp': path.resolve('.', '$simple-vp'),
+      '$open-vp': path.resolve('.', '$open-vp'),
     },
   },
   server: {
