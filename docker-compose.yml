@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  CoFrame:
+    container_name: coframe-docker
+    image: coframe-docker-image
+    build:
+      context: .
+    ports:
+      - 8080:80
